@@ -1,0 +1,47 @@
+// imported from Source-File: D:\10. Semester\d3web-TextParser\exampleFiles\visioTrees\Spielbaeume.vdx
+// imported from Worksheet: Großer Baum
+Start
+- Hautrötung? [yn]
+-- nein
+--- Fleckigkeit [oc]
+---- nicht zu erkennen
+----- "Ende5" (!)
+---- groß
+----- "Ende6" (!)
+---- klein
+----- Kleiner Baum
+---- mittel
+----- "Ende8" (!)
+-- ja
+--- Frage3 [oc]
+---- ja
+----- Frage4 [num]
+------ <5
+------- "Ende1" (!)
+------ >=5
+------- "Ende2 (Comment)" (!)
+---- nein
+----- Frage5 [oc]
+------ eher nein
+------- "Ende3 (nochn Comment)" (P7)
+------ ja klar!
+------- "Ende4" (N3)
+
+// imported from Source-File: D:\10. Semester\d3web-TextParser\exampleFiles\visioTrees\Spielbaeume.vdx
+// imported from Worksheet: kleiner Baum
+Kleiner Baum
+- Entscheidung1 [oc]
+-- ja
+--- "Ende1" (!)
+-- nein
+--- "Ende2" (!)
+
+// imported from Source-File: D:\10. Semester\d3web-TextParser\exampleFiles\visioTrees\Spielbaeume.vdx
+// imported from Worksheet: Page-3
+Kleiner Baum
+- Entscheidung1 [oc]
+-- ja
+--- "Ende1" (!)
+-- nein
+--- "Ende2" (!)
+

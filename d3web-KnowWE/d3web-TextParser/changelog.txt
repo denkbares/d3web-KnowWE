@@ -1,0 +1,1189 @@
+°º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°
+
+		d3web-TextParser
+
+¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤º°`°º¤ø,
+
+
++--------------------------------------------------------------+
+Änderungsverlauf:
++--------------------------------------------------------------+
+build_20090511_1030 smark
+    * replaced KnOfficeMessage with Message from d3web-report project
+
+build_20090507_1452 friedrich
+	* wrapped KnowledgeBaseManagement into IDObjectManagement (in KnOfficeParser)
+	* removed all corresponding occurrences of kbm
+
+build_20090403_1830 reutelshoefer
+	* correct setting of IDs for QContainers and Solutions
+
+build_20090327_2100 reutelshoefer
+	* hotfixed setting of specified Object-IDs
+
+build_20090212_1715 reutelshoefer
+	* removed project d3web-SCM
+
+build_20000102_1630 reutelshoefer
+	* added another factory Method for AnnotationParser
+
+build_20081210_1815 reutelshoefer
+	* added another constructor for Report
+	
+build_20081107_1800 reutelshoefer
+	* dependency to d3web-KnOfficeParser project
+	* (using new parsers)
+
+build_20081107_1330 reutelshoefer
+	* refers to d3web-KnOfficeParser-project
+	* KnOfficeParser-DecisionTreeParser is default now
+	* can be configured 
+	* XCLParser works with QuestionState
+	* fixed ComplexRule-Parser NullP. with SuppresQuestion actions
+build_20081110_1830 reutelshoefer
+	* renamed QuestionState to QuestionSolution
+
+build_20081030_0200 astriffler
+	* removed folder 'properties' from the list of excluded resource folders in build path
+
+build_20081028_1515 haupt
+	* fixed build path, new version of antlr is now: antlr-3.1.1.jar
+	* regenerated xclparser files
+
+build_20081027_1000 reutelshoefer
+	* added some trim() calls in Diagnosishierarchy-parser
+
+build_20081013_1445 haupt
+	* XCLLists are interpreted by the xcl-parser. not preliminary processing required anymore
+	
+build_20080919_1000 reutelshoefer
+	* DiagnosisHierarchieParser can parse Explanationtexts (Property.EXPLANATION)
+	* - Solutionname ~ Explanationtext
+
+build_20080919_1030 reutelshoefer
+	* changed referencing syntax: from '~REF' to '&REF'
+
+build_20080918_1800 reutelshoefer
+	* DecisionTreeParser: Enabled referencing for repetitive indication
+
+build_20080918_1320 reutelshoefer
+	* DecisionTreeParser: support for setValue for CHOICE-SIs
+
+build_20080915_1515 haupt
+	* added AND - syntax in xcl-parser
+
+build_20080911_1330 wittner
+	*minor reorganization of the IncludeManager class to provide functions static to other components.
+		(used for the knoffice import plugin)
+		
+build_20080911_1440 reutelshoefer
+	* AddValue and SetValue: wrapped FormularNumber into FormularExpression
+
+build_20080910_1800 reutelshoefer
+	* support for AddValue and SetValue:
+	* addValue is default, for SetValue use the SET keyword
+	* example:
+	Fragebogen
+	- SI1 [num] <abstract>
+	- Frage1 [oc]
+	-- A1
+	--- SI1 SET (-5)
+	-- A2
+	--- SI1 (-5)	
+
+
+build_20080910_1615 reutelshoefer
+	* Action is AddValue instead of SetValue
+	* example:
+	Fragebogen
+	- SI1 [num] <abstract>
+	- Frage1 [oc]
+	-- A1
+	--- SI1 (5)
+	-- A2
+
+build_20080905_1730 reutelshoefer
+	* support for QuestionType [info] is generated QuestionZC objects without answers
+	
+
+build_20080904_1315 reutelshoefer
+	* extDecisionTreeParser: enabled SetValue Rules for numerical SIs
+	* exampleTree:
+	Fragebogen
+	- SI1 [num] <abstract>
+	- Frage1 [oc]
+	-- A1
+	--- SI1 (5)
+	-- A2
+	
+build_20080825_1140 haupt
+	* allowed additional characters in scl-sections: '(' ')' '/' ';'
+
+build_20080821_1750 reutelshoefer
+	* fixed newLine-problem in xcl-splitter
+
+build_20080820_1041 haupt
+	* single scl-line bugfix
+	
+build_20080819_0950 reutelshoefer
+	* bugfix für splitterfix 
+
+build_20080814_1732 haupt
+	* included Jochen's splitter-fix for multiple scl-sections
+
+ build_20080730_1132 haupt
+    * XCLParser: more compatibility with lady2 inputs 
+    * added field KBTextInterpreter.SOURCE_TEXT
+    * fixed umlautproblem in inputtexthandling
+    * removed dependency for JSPWiki-like file provider in XCL handling
+    * extended TextParserResource to be able to hold a text source itself
+    
+build_20080729 reutelshoefer
+	* added XCL-splitter functionality to XCLHelper
+	* changed interface of XCLHelper
+
+build_20080717_1616 haupt	
+  	* fixed problem with thresholds in parser
+
+build_20080703_1545 astriffler
+	* fixed spelling mistake in ComplexRuleConfiguration:
+	changed english version of public static String AUSSER
+	from "EXEPT" to "EXCEPT"
+
+build_20080701_1030 reutelshoefer
+	* fixed quotes problem when ~ is used to enter questiontexts
+
+build_20080629_2359	haupt	
+	* added more flexibility in xclparser for knowwe1 setcoveringtables
+
+build_20080624_2224 haupt
+	* single line comments in xcl now working
+	
+build_20080624_1532 haupt
+	* fixed bug #95
+	
+build_20080624_1000 haupt
+	* allowed ß and _ in names/questions xclparser
+
+build_20080623_2200 haupt
+	* xclParser: allowed enclosing an answerstring in "
+
+build_20080621_1650 haupt
+	* added possibility for lazyknowledgequestions xclparser
+
+build_20080621_0130 haupt
+	* fixed empty reports bug - xclparser
+	* added _loads_ of detailed error reporting - xclparser
+	* allowed umlauts in names again, allowed numbers in question names - xclparser	
+
+build_20080620_1640 reutelshoefer	
+	* some changes in xclparser grammar
+
+build_20080620_1320 reutelshoefer	
+	* fixed NullPointer when solution String not entered properly
+
+build_20080620_1130 haupt
+	* '-' and '.' are now allowed in string in xcl-parts
+
+build_20080619_1300 reutelshoefer|haupt
+	* numbers allowed as answers in grammar
+
+build_20080619_1300 reutelshoefer
+	* xclparser creates CondNums after "=",">",">=","<","<=" when question ist QuestionNum
+
+build_20080618_2200 haupt
+	* added line information to error output in xclparser
+	* more verbose error messages in xclparser
+	* some general code cleaning
+
+build_20080618_1019 haupt
+	* removed noise in reports
+	
+build_20080617_2300 haupt
+	* introduced d3web-verbalizer as project dependency
+	* added modelverbalisation as output to xclparser
+	* cleared some unused import statements
+	* fixed a nullpointer in xclparser
+	
+build_20080617_1515 haupt
+	* even more changes, improved parseerror reporting in xclparser
+	
+build_20080617_1433 reutelshoefer|haupt
+	* some tiny changes in XCLParser
+	
+build_20080617_1240 haupt
+	* added antlr3 task definition for ant
+	* added antlrworks to lib/
+	* added antscript to generate xclParser grammar from grammar-file
+	
+build_20080617_1215 reutelshoefer
+	* AnnotationParsers generate XCL-Knowledge
+	* SetCoveringList-section parsed by XCL-Parser
+	* changed XCL-Parser: looks for existing model before creating one
+
+build_20080614_1105 haupt
+	   * added another interface for xclparser
+	   * included ant.jar from d3web-utilies in buildpath 
+
+build_20080614_1030 haupt
+		* fixed nullpointerbug in case of faulty questions in xclparser
+		
+build_20080610_1700 reutelshoefer
+	* fixed nullpointer in ExtDecisionTree when QuestionText is tried 
+	* to be set on unexisting questions (due to syntax errors in tree-data)
+	
+build_20080521_1445 haupt
+	* added Parser for xclPattern
+	* changed changelog.txt encoding to utf-8
+	* added antlr-3 library
+
+build_20080521_1415 reutelshoefer
+	* fixed rendering problem of ExRuleAnnoations
+
+build_20080517_1745 reutelshoefer
+	* added subject attribute to AnnotationFinding
+	* Syntax: [ text phrase <=> subject propertyName:: Finding]
+
+build_20080517_1715 reutelshoefer
+	* Made constructor of AnnotationParserManager private
+	* added 2 factory methods
+
+build_20080516_1800 reutelshoefer
+	* some small changes for integration of TiRex in KnowWE2
+
+
+build_20080319_1100 reutelshoefer
+	* one more constructor for TextParserResource
+
+build_20080314_1530 reutelshoefer
+	* added AnnotationParser: GenericPropertyParser (for rendering in KnowWE2)
+
+build_20080313_1245 smark
+    * fixed: questionname/questiontext replacement in ExtDecisionTreeParser
+
+build_20080304_1615 smark
+    * ExtDecisionTreeParser: added "tilde" to specify questiontext 
+
+build_20080227_0845 smark
+    * DiagnosisHierachyParser: added features -> same tag 
+
+build_20080125_1240 reutelshoefer
+	* AnnotationParser: changed syntax to [optionaltext <=> explains:: finding]
+
+build_20080125_1230 reutelshoefer
+	* SCListParser: fixed last lineproblem when lazy parsing
+
+build_20080124_1745 reutelshoefer
+	* SCListParser: fixed Bug/Exception with intervalls when komma is forgotten
+
+build_20080123_1430 reutelshoefer
+	* added CaseParser - based on SetCoveringListParser
+
+build_20080115_1000 reutelshoefer
+	* bugfix update - fix also for knowledge wiki context
+
+
+build_20080111_1600 smark
+    * fixed: parse 0kb diagnosis hierarchy files throws exception
+             --> entry in report
+
+build_20080110_0800 smark
+    * added constant for "multimedia folder" import in KBTextInterpreter
+
+build_200820107_1445 reutelshoefer
+	* some interface changes to use AnnotationParser also for rendering in JSPWiki
+
+build_20071217_1630 reutelshoefer
+	* bugfix lazy answer creation !
+
+build_20071212_1630 reutelshoefer
+	* added ExclusionRule-AnnotationsParser
+	* fixed lazy type casting bug that stole last char of QName ;)
+
+build_20071211_1730 reutelshoefer
+	* algorithm for annotation recognition rewritten
+	* allows [] in expressions
+	* supports lazy type casting [mc],[yn] etc.
+	* supports numerical intervalls [3.1 10]  
+
+build_20071211_1040 reutelshoefer
+	* update annotation-parser:
+	* multiple oc relations in one anno: 
+	[can be red or blue | explains: color = red, blue]
+	* answer alternatives for lazy definition can be inserted after "!"
+	[is low | explains: myQuestionOC = low ! high, medium]
+	* support for <,>,>=,>=
+
+
+build_20071204_1415 reutelshoefer
+	* initial version of AnnotationParser
+
+build_20071203_1100 reutelshoefer
+	* Default ConfigParameter:
+	* RuleBaseExclusion : true
+	* SimpleSCProblemSolver : true
+
+build_20071126_1500 reutelshoefer
+	* added SimpleSCProblemSolver option to KBconfigParser
+
+build_20071123_1140 reutelshoefer
+	* extended SCListParser for intervals
+
+build_20071119_1120 reutelshoefer
+	* fixed Umlaute in PreParser
+	* fixed Language Problem in RuleParser
+	* fixed Error handling problem in ExtDecisionTreeparser
+	* fixed report Messages create-statements
+	* fixed Bug in SCListParser
+
+build_20071106_1615 reutelshoefer
+	* KWikiToKnofficePreParser:
+	* fixed quote problems in tables
+
+build_20071025_0121 rommel
+	* bug fixed: AttributeTable
+
+build_20070921_1205 rommel
+	* bug fixed in SimilarityTable
+
+build_20070911_1449 rommel
+	* AttributeTable : added check order
+
+build_20070910_1340 reutelshoefer
+	* SCListRenderer: change in output format
+
+build_20070828_1615 rommel
+	* ExtDecisionTreeParser : added feature -> same tag 
+	
+build_20070825_2210 fhaupt
+	* fixed german umlauts in VisioXMLReader	
+
+build_20070821_1330 rommel
+	* improved KnowledgeAddon, SimilarityTableValueChecker
+	
+build_20070813 rommel
+	* improved tests for extDecisionTreeParser
+	
+build_20070809_0925 ochlast
+	* VisioXMLReader initial checkin
+	* Added main class Files, GUI Components and exampleFiles
+
+build_20070808_1250 joba
+	* removed example knowledge bases
+
+build_20070720_1800 reutelshoefer
+	* NewHeuristicDecisionTreeParser: added negations
+
+build_20070712_1445 reutelshoefer
+	* SCListParser: renders resulting inherited knowledge in report
+
+build_20070711_1545 reutelsoefer
+	* SCListParser: Default-Score P7 when left
+	* 	            Initial Version of SCList-Inheritage
+
+build_20070703_1720 reutelshoefer
+	* SCListParser: tolerates list ending on ",}"
+	* 				fixed bug when QNum as last item
+
+build_20070629_1820 reutelshoefer
+	* RuleParser: forbid " and ' in rule comments, which cause crash of BasicPersistencHandling
+
+build_20070629_1620 reutelshoefer
+	* NewHeuristicDecisionTreeParser: fixed problem with quotes
+	* SetCoveringListParser: fixed problem with lazy parsing QNums
+
+build_20070627_1045 joba
+	* bug fix: answer "unknown" is no parsed correctly for
+	  textual rule parsers (possible keywords: "unbekannt" and "unknown")
+
+build_20070622_1545 reutelshoefer
+	* baustellen-fix ExtendedDecisionTreeParser
+
+build_20070620_1450 reutelshoefer
+	* HeuristicDecisionTableParser sets defaults when score or logical operator missing
+	* introduced NewHeuristicDecisionTableParser
+
+build_20070612_1715 reutelshoefer
+	* bugfix in error handling rule parser
+
+build_20070608_1530 joba
+	* added feature of rule-based exclusion of scm solutions 
+	  in KnowledgeBaseConfigParser
+
+build_20070529_1715 reutelshoefer
+	* Bugfix Nullpointer when no KBConfig-file set
+
+build_20070529_1715 reutelshoefer
+	* ErrorHandling KwikiPreparser
+
+build_20070522_1715 reutelshoefer
+	*  SetCoveringListParser: extended/corrected error messages
+	
+
+build_20070522_1630 reutelshoefer
+	* SetCoveringListParser:
+	* allowing comment lines
+	* extended error messages
+	* support for QuestionNum: =,<,>,<=,>=
+
+build_20070521_1245 reutelshoefer
+	* english mode for rule parser (IF, THEN, NOT, OR, etc..)
+	* ConfigParser: language.english enables english mode for rule parser
+	* added include-support for SCList-Parser
+
+build_20070502_1230 reutelshoefer
+	* ConfigParser: verbalization.unknown
+
+build_20070501_1915 reutelshoefer
+	* SetCoveringListParser:
+	* fixed empty line bug
+	* lazy parsing suppport added
+	
+build_20070430_1500 reutelshoefer
+	* initial version of SetCoveringListParser (unstable)
+	
+build_20070430_1035 rommel
+	* extDecisionTreeParser -> Verbesserung des Quellcodes von ##allowedNames
+
+build_20070429_2214 rommel
+	* extDecisionTreeParser -> bug fixed in ##allowedNames
+
+build_20070427_1630 reutelshoefer
+	* ConfigParser:
+	* fixed unknownVisible problem
+	* accepts comment lines
+	* fixed report bug
+
+build_20070425_1645 reutelshoefer
+	* introduced IncludeManager
+	* enabled for DecisionTreeParser and Diagnosishierarchieparser
+	* Syntax: <include src="fileToInclude.txt">
+
+build_20070330_1630
+	* ComplexRuleParser:
+	* 	fixed problem with setValue Action on QuestionYNs
+	*	some extensions on error handling
+
+build_20070328_1400 reutelshoefer
+	* some changes on error handling: ComplexRuleParser, ExtDecisionTreeParser
+
+build_20070322_1745 reutelshoefer
+	* ComplexRuleParser: parsing rule comments: // @info Beschreibung
+
+build_20070322_1600 reutelshoefer
+	* KBConfigParser: added excludeDiscard and establishRefine flags
+
+build_20070309_1735 reutelshoefer
+	* error message correction-correction in config parser
+
+build_20070309_1725 reutelshoefer
+	* corrected error message on incorrect lines in config parser
+
+build_20070309_1716 reutelshoefer/joba
+	* added check for empty lines in config parser
+
+build_20070309_1710 reutelshoefer
+	* added config option for uniqueQuestionNames at decTree parsing
+
+build_20070309_1530 reutelshoefer
+	* extracted report texts to properties-file
+
+build_20070309_1440 reutelshoefer
+	* extDecisionTreeParser:
+	* fixed problem with multiple identical AnswerChoices in questions
+	appeared multiple times
+	* added warnings when same question appears multiple times
+
+build_20070309_1115 reutelshoefer
+	* added error/sucess-reports to KBconfigParser
+
+build_20070306_1810 reutelshoefer
+	* added KnowledgebaseConfigParser to parse metadata items like author,title etc.
+	* full path conditions in extDecisionTreeParser made optional
+
+build_20070302_1345 reutelshoefer
+	* extDecisionTreeParser: generated Indication- and Diagnosisrules now
+	have (complex) conjunctional conditions up to the root
+	* extDecisionTreeParser:no more new Question-objects for Questions with same name
+	* ParserManagement: switched from decisionTreeParser to extendedDecisionTreeParser
+
+build_20070222_1335 joba
+	* changed umlauts in class constants to a more 
+	  international spelling (some linux eclipse machines 
+	  have problems with umlauts/encodings)
+
+build_20070217_1845 rommel
+	* bug fixed
+
+build_20070216_1530 reutelshoefer
+	* changed internal input handling from URL to Reader 
+
+build_20070215_1740 reutelshoefer
+	* modified DecisionTableValueChecker to tolerate qTag annotation 'questionname[oc|mc|num|yn]'
+	
+build_20070215_1415 reutelshoefer
+	* correction
+
+build_20070215_1415 reutelshoefer
+	* correction
+
+build_20070215_1315 reutelshoefer
+	* some extensions on report Messages
+
+build_20070207_1620 reutelshoefer
+	* some extensions on error handling in decisionTreeParser
+
+build_20070207_1245 reutelshoefer
+	* fixed bug in attributeTableParser
+	* added Properties to attributeTableParser config file: Num2Choice, Private, External, Foreign-namespace
+
+build_20070202_1759 reutelshoefer
+	* added exportXLSScoreTableToKWikiText algorithm to KWikiToKnofficePreParser
+
+build_20070109_1759 rommel
+	* Fuzzy bei Ähnlichkeitstabellen eingefügt
+	
+build_20070108_1227 rommel
+	* Attributtabellen können jetzt die Tabellenspalte Num2Choice auslesen und interpretieren
+
+build_20061217_1800 rommel
+	* KnowledgeAddon: parst Text-Datei, die Autor, Name und Multimedia-Dateien
+		einer KnowledgeBase enthält
+
+build_20061211_1510 rommel
+	* SetCoveringTableRuleGenerator: score kann angegeben werden
+	* DecisionTree.atg : allowedNames möglich
+		
+build_20061208_1730 pkluegl
+	* added MMInfo Url and Multimedia
+
+build_20061124_0645 rommel
+	* fixed bug: Value wird jetzt richtig gespeichert.
+
+build_20061122_0952 rommel
+	* SetCoveringTableRuleGenerator um die Funktion erweitert, dass 
+	  nun in der Exceltabelle zu einer NumQuestion die Antwortalternativen
+	  anstatt der Bewertungen geschrieben werden kann. 	
+
+build_20061109_1430 pkluegl
+	* fixed cast due to new generics
+
+build_20061105_1614 rommel
+	ExtDecisionTreeParser: 
+	* Erklärungstexte zu Fragen,Antworten und Diagnosen werden gespeichert
+	* Erklärungstexte dürfen nun alle beliebigen Zeichen enthalten
+	* (!) wird nun als (P7) und (?) als (P3) erkannt
+
+build_20061016_1745 joba
+    * additions due to new indication action Instant Indication
+	  reader for ActionInstantIndication
+	
+build_20061009_1600_unstable reutelshoefer
+	* Heuristic decision tables can be parsed from KWiki-Syntax
+	* KWiki table pre-parsing algorithms in KWikiToKnofficePreParser
+
+build_20060927_1700_unstable reutelshoefer
+	* SetCoveringTables and AttributeTables can be parsed from KWiki-Syntax
+
+build_20060925_0951 rommel
+
+	ExtDecisionTreeParser: 
+	* Links werden zu Diagnosen erkannt. 
+	* Erklärungstexte zu Fragen,Antworten und Diagnosen werden erkannt.
+	
+build_20060912_1710_unstable reutelshoefer
+	* invented syntaxCheckOnly-Modus --> prevents from creating Objects
+
+build_20060909_1021_unstable joba
+	* added formula parsing for question_add_rules 
+	  (formely only function for question_set_rules).
+	* removed some unused imports
+
+build_20060904_1350_unstable reutelshoefer
+	* added support for data input in java.io.Reader format (refactoring not completed)
+	* added parsing algorithm for parsing tables from Wiki-Text-Format
+	
+build_20060808_1150 schwab
+	* intervals in answers are now declarated (example:) [13.7 14] instead of =(13.7 14)
+	* DecisionTableRuleGenerator and DecisionTableValueChecker now accept for all numerical answers which are quoted (example:) "= 8.4"
+
+build_20060803_2130 schwab
+	* added warnings when trying to import answers without following indication
+	* neighboured questions are now also saved list, now just one rule is created
+
+build_20060727_1515 schwab
+	* removed build targets ".java to .class" from Ant .xml files, added comments for "how-to-use"
+	* created devdoc folder for CocoR_UserManual.pdf
+	* DecisionTreeParser: made negative number values parseable
+	* renamed DecisionTreeParserManagement.java to ParserManagement.java, removed it from
+	  src/de/d3web/textParser/decisionTree to src/de/d3web/textParser
+	* deleted folder src/de/d3web/textParser/decisionTree with its content
+	  (old DecisionTreeParser, QuestionHierarchyParser and DiagnosisHierarchyParser is no longer needed)
+	* refactored ParserManagement.java, deleted old, unneeded code
+	
+
+build_20060717_0730 schwab
+	* CasesTableParser: empty fields do not longer have to contain "-?-", they can be left empty now
+	* whitespace is now trimmed
+	* DecisionTreeParser: handleAnswerChoice now returns an AbstractCondition, null if not parseable
+	* removed unnecessary casts
+	* merged handleQContainerAccu and handleQContainerAccumulation, method is now void
+	* changed counting behaviour for reports
+	* beautified and indented *.atg file correctly
+	* some further refactoring
+
+build_20060705_1630 schwab
+	* more QContainer indications by one answer now are aggregated in just one rule
+
+build_20060703_1710 schwab
+	* ComplexRuleParser and RuleWriter now can handle ContraIndicationRules
+
+build_20060703_1545 schwab
+	* ComplexRuleParser and RuleWriter now can handle SuppressRules
+	
+build_20060701_1615 joba
+	* added support for AddValueRules (for QuestionNum) in complex rule parser
+
+build_20060606_2140 schwab
+	* ID-treatment should now work correctly
+	* Questions now can have directly Questions as childs, not only answers
+
+build_20060529_1545 schwab
+  * fixed bug with ids vor AnswerChoices, now using new function findNewIDForAnswerChoice(....)
+    all AnswerChoices should now be added right.
+
+build_20060522_0815 schwab
+    * changed order of parsing "<", "<=" comparators for number comparison due to lack of CocoR
+    * fixed bug in convertTable() in String[][] tableData, now the last cell in a row can also be read (this caused the DiagnosisScore-Parser not to work)
+    * SimilarityTableValueChecker.java: catched Nullpointer-Exceptions for Question q in some methods
+    
+build_20060508_0730 schwab
+	* QContainer indicated by diagnoses: 
+	  QContainer have either be declared with a repeating diagnosis again, or they have to be declared only the first time.
+	  otherwise a failure will be thrown.
+	
+build_20060407_1230 schwab
+    * for diagnoses, qcontainers, questions and choice-answers in textparsing can be set an id with "#id34" for example.
+       choice-answers id must be in format "#ida1", this means an a with a following number at last char-position
+    * importer-dialog and cases-dialog now singleton, importer-dialog side-effects proved
+    * DiagnosisState.Unlcear throws warning
+    
+build_20060405_1240 schwab
+	* DecisionTreeParser: fixed bug with special chars
+
+build_20060403_1220 schwab
+	* DiagnosisHierarchyParser: it is now possible to create Questions without Answers
+	
+build_20060330_1600 georg
+	* added score "N8" in DecisionTableConfigReader in the same way
+	  as "P0" has been added previously
+
+build_20060328_2225 schwab
+	* added original parser frame files for reference
+	* added comments in *.atg and *.frame files
+	* now supporting float-values as numbers
+
+build_20060313_1320 schwab
+	* unknown condition enabled for YN/Question in DecisionTreeParser
+	* when indicated more than 1 QContainer by a Diagnosis: then now will only be one rule created, not severals
+
+build_20060307_1750 krause
+	* cases parser: workaround for documents saved with openoffice
+
+build_20060303_1920 krause
+	* cases parser: removed unitcases support, made updating work
+
+build_20060303_0630 krause
+	* cases parser:
+	*	changed diagnosis column head format
+	*	even more error detection
+	* 	handling of imported cases moved to KnOffice->ImportManager
+
+build_20060302_0540 krause
+	* cases parser updates: language detection, parse errors
+
+build_20060302_0230 schwab
+	* decision-tree parser: ActionClarify and ActionRefine enabled for Conditions over Diagnoses which indicate QContainers
+
+build_20060227_0245 krause
+	* cases parser updates
+
+build_20060224_0645 krause
+	* partial implementation of cases parser
+
+build_20060223_1555 schwab
+	* integration of the new decision-tree parser
+
+build_20060121_2235 schwab
+    * integration of the new qcontainer-hierarchy parser
+    * DecisionTreeHandler.java: replaced some malformed constructs, now calling .... instanceof .... for checking classes of objects
+
+build_20060116_0605 schwab
+	* activation of the new DiagnosisHierarchyParser
+	* added error-messages and outsourced them into property-file
+	* added linkedChildren function
+	* added update function
+	* some restructuring of files in the project concerning the changes above
+	* some refactoring
+
+build_20060109_0027 schwab
+    * changes in .classpath concerning 3 new files in resources-directory which are needed for parser-generating
+    * Utils.Message.java now supports column-number, which are used by new diagnosis-parser. old constructors for this class generate columnNo = 0
+    * decisionTree.DecisionTreeParserManagement.java: new attribute: boolean useNewDhParser: allows to switch between old and new DiagnosisHierarchyParser; default: false (uses old Parser)
+    * new package: cocor.diagnosisHierarchyParser: contains Parser.java and Scanner.java which are generated by new file dev/buildDiagnosisHierarchyParser.xml
+    * added lib/Coco.jar to generate new Parsers/Scanners
+
+build_20051219_1800 georg
+	* before updating scm-relations of a diagnosis, all its old scm-relations
+	  are removed
+
+build_20051215_1030 georg
+	* scores in SetCoveringTableRuleGenerator are always upper case
+
+build_20051215_0615 krause
+	* P0 nun im set covering table verwendbar.
+
+build_2005 klar
+	* Parser für Ähnlichkeitstabellen fertiggestellt
+	(bis auf genaue Überprüfung der Ähnlichkeitsmatrix und der Wertepaare bei Abschnitt) 
+	* Ähnlichkeiten werden gelöscht bevor neue geschrieben werden
+	
+build_20051123_1017 schwab
+	* Support für das Einlesen von asymmetrischen Ähnlichkeitsmatrizen
+	  Dazu war die Umbenennung einiger Methoden, Variablen und Keys im Property-File notwendig,
+	  die vorher nur symmetrische Ähnlichkeitsmatrizen behandelten.
+
+build_20051109_1730 reutelshoefer
+	* Alle 'File' ersetzt durch 'URL' außer beim abspeichern der reports
+
+build_20051103_1300 reutelshoefer
+	* QuestionComparatorOCGrouped ersetzt durch QuestionComparatorOCGroupedSymmetric
+	* gemäß den Änderungen in SharedKnowledge
+
+build 20051025_1530 klar
+	decision-tree:
+	* Hierarchien werden korrekt und ohne exceptions eingelesen
+	* Elemente im Entscheidungsbaum werden nun beim Parsen der richtigen
+	Stufe zugeordnet
+	* Falsche, überflüssige Indikationsregeln werden nicht mehr angelegt
+	
+	decision-table
+	* Standardnamen für Link, Bilder, Kommentar in Attributtabelle, falls diese
+	nicht angegeben sind
+	* Intervalle bei numerischen Fragen werden anders angegeben (eckige Klammern, statt "in") 
+
+build 20051004_2000 klar
+	* Bei Fehlermeldungen werden jetzt die Locations richtig angegeben,
+	so dass man zwischen den Tabellen unterschiedlicher sheets unterscheiden kann
+	* Unterstützung für Mehrsprachigkeit in DecisionTable vervollständigt
+	* Attributtabelle erzeugt nur Warnungen (statt Fehlern), wenn bestimmte Angaben fehlen
+	* Bugfix bei Ersetzungstabellen
+
+build_20051004_1021 C. Haeunke
+	* abstrakte Frage müssen nun mit <abstract> oder <abstrakt>
+	  gekennzeichnet sein
+	* Diagnosenhierarchiebug korregiert
+	* Refactoring
+	
+build_20051002_1905 Braun
+	ComplexRuleParser:
+	* Es können nun CondNumIn-Regeln erzeugt werden
+	* Minmax kann nun beliebige Bedingungen beinhalten
+
+build_20050928_1100 C. Haeunke
+	* Repalce von Frageklassen möglich
+	* Setzen eines Alternativtext von AnswersNos bei MC Fragen möglich
+	
+build_20050927_1515 klar
+	* Neuer Tabellenparser für Überdeckungstabellen
+	* some bugfixes
+
+build_20050919_1315 C. Haeunke
+	* Frageklassenupdate funktioniert odrnungsgemäss
+	* Abstraktionsfragen können angelegt werden
+	* Frageklassenreplace Prototyp
+	
+build_20050918_0015 Braun
+	ComplexRuleParser:
+	* Es können nun Cond(Un)Known-Regeln erzeugt werden
+	* Es können nun DiagnosisState-Regeln erzeugt werden
+	
+build_20050914_2145 klar
+	DecisionTableParser:
+	+ neuer Tabellentyp: Symptom-Interpretationstabelle
+	+ neuer Tabellentyp: Indikationstabelle für Diagnosen
+	* "SimpleTable" umbenannt in "DiagnosisScoresTable"
+	* "ComplexTable" umbenannt in "HeuristicDecisionTable"
+	* Mangement von Fehlermeldungen umgestellt auf ResourceBundle
+	(somit zweisprachig möglich)
+	
+	Report/Message:
+	* kleine Änderungen und neue Methoden
+
+build_20050914_1135 C. Braun
+	ComplexRuleParser:
+	* Indikationsregeln können nun erzeugt werden
+	* diverse Bugfixes
+	
+build_20050909_1240 C. Haeunke
+	* MC-Fragen werden ordnungsgemäß angelegt
+	* Überflüssige Fehlermeldungen werden nicht mehr angezeigt
+	
+build_20050909_1045 C. Haeunke
+	* Frageklassen können als Startfrageklassen markiert werden
+	  - ist keine markiert, werden alle, die eine Frage beinhalten 
+	  der Einlesereihenfolge nach als Startfargeklassen gesetzt 
+	  - auch im update-Fall
+	  
+build_20050906_2010 C. Braun
+	* Bugfix beim Vergleich von Formeln
+	* Man kann nun mit dem Operator '+=' ActionAddValues erzeugen
+
+build_20050906_1350 C. Braun
+	* kleine Bugfixes im ComplexRuleParser
+	* Aktivierung des ComplexRuleParser in KnofficeTest
+
+build_20050905_1600 klar
+	* Regel-Parser bekommt update-flag übergeben
+	* Bewertungen in Tabellen sind nicht mehr case-sensitive
+	* Tabellen können jetzt bis zu 5 Leerzeilen enthalten
+	* Zwischen Fragen in Tabellen dürfen Leezeilen stehen
+	* Bei numerischen Fragen können die Werte auch Kommas enthalten
+	* Bei numerischen Fragen wird CondEqual erzeugt, falls kein
+	  Vergleichsoperator vorhanden ist
+
+build_20050905_1345 C. Haeunke
+	* Methode isAncstor in DecisionTreeHandler entfernt
+	
+build_20050905_1130 C. Haeunke DecisionTree
+	* Intervallgrenzen werden mit . oder , akzeptiert
+	* bei Antwortalternativen von Num-Fragen kann das = weggelassen
+	  werden und negative Zahlen können ebenfalls so eingegeben werden
+	* Groß- und Kleinschreibung bei Fragetyp ist nun irrelevant
+	* Verhinderung von Schleifen mit Linkedchildren
+	* Bugfix: Letzte Frageklasse der Hierarchie wird angelegt und 
+	  somit ist das
+	  Einlesen aller Dateien nun auch auf einmal möglich
+
+build_20050901_1400 klar
+	* ReplacementTable: Umbenennung von Antworten ist möglich
+	* ReplacementTable: Überprüfung der Tabellen verbessert
+	* Hierarchie-Parser muss nicht alle Dateien übergeben bekommen
+	* Einige Bugfixes im Tabellenparser entfernt
+
+build_20050901_0450 C. Braun
+
+	COMPLEX RULES:
+	* Als Aktionen werden nun auch ActionSetValues unterstützt
+	* Unterscheidung zwischen Update und Replace
+	* Regeln können nun entfernt werden
+	* Es kann in ComplexRuleReportGenerator nun konfiguriert
+	  werden, ob fehlerhafte Stellen im Report markiert werden
+	  sollen oder nicht
+	* Entfernung von altem, nicht mehr benötigtem Code,
+	  der für den XML-Output zuständig war
+	* Genauere Bemerkung über hinzugefügte, gelöschte, ... Regeln
+	  im Report
+	* Kleine Bugfixes / Refactorisierungen
+	* Sonstige Kleinigkeiten, die ich schon wieder vergessen habe
+	
+	SONSTIGES:
+	* Verschieben einiger Klassen aus textParser.Utils nach
+	  textParser.complexRules, da der TerminologieChecker nun
+	  nicht mehr existiert
+	* Entfernen einiger Compiler-Warnungen (unnötige Casts) aus
+	  KBUtils.java und KBTextInterpreter.java
+
+build_20050829_1835 klar
+	* finished replacementTableParser
+	* did some refactoring of KnowledgeGenerators
+	+ added new method addAll(Report report) to class Report
+
+build_20050829_1545 A.Klar
+	* removed bug in AttributeTableKnowledgeGenerator
+	* remove bug in DecisionTableRuleGenerator
+	* corrected file handling in KBTextInterpreter
+
+build_20050822_1830 C. Haeunke
+	* Bugfix in KBTestInterpreter, wenn update false, wird die vorhandene KB 	   
+	  nicht mehr überschrieben
+
+build_20050822_1830 C. Haeunke
+	* Anzahl upgedateter Diagnosen und Frageklassen jetzt Korrekt
+	* leere Anker erscheinen nicht mehr in den Hierarchien bei update
+	* An leere Frageklassen können Entscheidungsbäume angehangen
+	  werden
+
+build_20050819_1930 georg
+	* new method getKnowledgeBase in KBTextInterpreter
+	* commented out a debugging line in DecisionTreeParserManagement
+
+build_20050818_1700 a.klar
+	* added update and replace with attribute tables
+	* added ReplacementTableParser
+	* added KBUtils for additinal operations on the KB
+
+build_20050817_1430 C. Haeunke
+	* endgültige Trennung von TC
+	x Löschung des Paketes TerminologieChecker
+	
+build_20050815_2100 A.Klar
+	* Übergabe bereits vorhandener Wissensbasis möglich
+	* Modi "update" und "replace" zum Einfügen von Informationen in
+	  bestehende Wissensbasis
+	* Nachträgliches Einfügen von Regeln mittels Tabellen möglich
+
+build_20050815_1630 C.Haeunke
+	* Update von Diagnose- und Frageklassenhierarchien möglich
+	* Genaue Bemerkungen bzgl. des Anlegens der Diagnose- und
+	  Frageklassenhierarchie
+	* Neuer Konstruktor für DecisionTreeParserManagement, der 
+	  die Flag update erwartet - true bei Update, false wenn neu
+	  angelegt wird.
+	! Alter Konstruktor für DecisionTreeParserManagement noch 
+	  vorhanden, hier wird update = false gesetzt
+
+	* Abänderung der Klassen HierarchyCreator, QContainerHierarchyCreator
+	  und DiagnosisHierarchyCreator, damit ein Update möglich wird
+	   
+build_20050812_1520 C.Haeunke
+	* Abschluss Refactoring des Paketes DecisionTree
+	* Div. Bugfixes
+	
+build_20050804_2215 A.Klar
+	* Refactoring package decisionTable abgeschlossen
+
+build_20050803_1940 A.Klar
+	* Änderung von "Meldung" in "Message" und neue Methoden in dieser 	Klasse
+
+build_20050803_0150 C.Haeunke
+	* Refactoring Stufe 3
+	
+build_20050803_0048 A.Klar
+	* Refactoring des packages decisionTable
+	
+build_20050728_1100 C. Haeunke
+	* Refactoring Stufe 2 Methodennamen, Klassenvariblen und teilweise
+	  Variablen geändert
+	
+bulid_20050728_1005 C. Haeunke
+	* Refactoring Stufe 1
+	* Java Generics
+	
+build_20050727_2345 A.Klar
+	* Attribut-Tabellen:
+    Link- und Bilder-Namen in den Tabellen
+	* Keine Benutzung des TerminologieCheckers
+	* Verwendung von Java Generics
+
+build_20050721_2125 C.Braun
+	* Fixed ArrayList-Problem in Scanner.java
+	* Bereinigung des RegelParsers von Warnungen
+
+build_20050721_1245
+	!Refactoring der Klassennamen durchgeführt
+	
+build_20050720_1735 C.Braun
+	* RegelParser unterstützt nun auch JA/NEIN Fragen
+	* RegelParser benötigt nun kein Terminologiechecker mehr
+	* Alle Vector --> ArrayList geändert in den Paketen
+	  regelParser und terminologieChecker
+	
+build_20050719_1200 C.Haeunke
+	* notes für die vollständigen Entscheidungsbäume werden 
+	  erzeugt
+	* Fehlermeldungen, Warnungen und Bemerkung überarbeitet
+	* Frageklassen dürfen nur entweder weitere Frageklassen 
+	  oder Fragen beinhalten
+	
+build_20050713_0045 C.Braun
+	* RegelParser vollständig umgeschrieben
+	
+build_20050712_2245 C.Haeunke
+	* output von Hierarchie.java entfernt
+	
+build_20050712_2200 C.Haeunke
+	* div bugfixes
+	* erkennen von vorkommen über alle hierarchieebenen
+	* teilweise überarbeitung der fehlermeldungen
+	
+build_20050708_1130 A.Klar
+	* KBTextInterpreter
+	Einbindung der Config-Files angepasst
+	* Main
+	Config-Files werden im Hashtable übergeben
+
+build_20050708_0325: C. Braun
+	Umschreiben des Textparsers zur Erzeugung von Regeln
+	(unvollständig)
+
+build_20050706_1500: A.Klar
+	vorläufige Version für NuWiBs-Dialog
+	
+	* Config-Datei für Attribut-Tabellen-Parser hinzugefügt
+	* Beispiel-Datei für Attribut-Tabelle hinzugefügt
+
+	KnowledgeGenerator:
+	* neues Interface
+
+	RuleMaker:
+	* erbt von KnowledgeGenerator
+	* Methoden zum Suchen von Wissensbasis-Objekten entfernt (->jetzt in KnowledgeBaseManagement)
+
+	decisionTable:
+	* volle Unterstützung von Num-Fragen
+	* Parser für Attribut-Tabellen hinzugefügt2
+
+	KBTextInterpreter:
+	* Aufrufe für Tabellen-Parser angepasst
+
+	XLSParserTable:
+	* Methoden umbenannt
+	
+build_20050617_1325 C. Haeunke
+	* Hierarchiarchietekturkontrolle verbessert
+	
+build_20050615_1530 A. Klar
+	SimpleTableRuleMaker und ComplexTableRuleMaker:
+	* Unterscheidung zwischen YN, Choice und Num-Fragen.
+	* Regeln werden dementsprechenden Conditions erzeugt.
+
+	resources-Verzeichnis:
+	* Alle Input-Dateien in Verzeichnis "input" gelegt
+
+	RuleMaker:
+	* Methoden intern angepasst
+
+	ScoreFinder:
+	* verschoben in package .textParser und aus .textParser.decisionTable gelöscht
+
+	KBTextInterpreter:
+	* vorbereitet für Regelparser und Attribut-Tabellen
+	* diverse kleine Änderungen
+	* auskommentierter Code entfernt
+
+	Main:
+	* Verzeichnisse angepasst
+	* auskommentierter Code entfernt
+
+build_20050615_1345 C. Haeunke
+	* abstract class Hierarchy
+	* DiagnosisHierarchy extends Hierarchy
+	* QContainerHierarchy extends Hierarchy
+
+build_20050615_1145 C. Haeunke
+	* Dateienübergabe und Konstruktoraufruf angepasst
+
+build_20050615_1105 C.Haeunke
+	* neue Inputdatei mit Frageklassenhierarchie
+
+build_20050610_1340 C.Haeunke
+	TextParser:	
+	* Konstruktoraufruf erneut abgeändert, da diagnosen.txt nicht mehr
+	  benötigt wird
+	  
+	DecisionTree: resources/input:
+	* daignosen.txt wurde überflüssig
+	
+	DecisionTree:
+	* Entfernung eines Bugs in DiagnosisHierarchy
+	* Übergabe durch intere Datenstrukturen anstelle über diagnosen.txt	
+
+build_20050609_2200 C. Braun
+	Textparser:
+	* Generierung der javadocs
+	
+	TerminologieChecker:
+	* Konstruktor mit (File symptome, String diagnosen)
+	  (Diagnoseliste als String) hinzugefügt.
+	* Konstruktor mit (String symptome, String diagnosen) als
+	  Dateinamen entfernt und ersetzt durch (String, String) als
+	  Listen.
+	* Methoden getErrorMsg(), getWarningMsg(), getNoteMsg() in
+	  der Klasse Report hinzugefügt.
+	
+build_20050609_1535 C. Haeunke
+	Textparser:
+	* KBTextInterpreter erweitert für neuen Konstruktoraufruf 
+	  der Klasse Dateiein, dieser muss/sollte jetzt noch die Datei 
+	  mit der Diagnosen Hierarchie übergeben
+	* Ebenso die Main abgeändert, damit hier der Aufruf für 
+	  KBTextInterpreter stimmt
+	! Main ist dadurch noch voll funktionsfähig (nach update aller
+	  geänderten Dateien)
+
+	DecisionTree: /resources/input
+	* Neue Inputdatei "diagnosishierarchy" diese beinhaltet die 
+	  Diagnosehierarchie
+	* diagnosen.txt, die dem TC übergeben wird, wird zur Zeit 
+	  jedesmal neu geschrieben, da entsprechender Konstruktor 
+	  für den TC zu Aufruf mit 2 Strings noch nicht zur Verfügung
+	* nadelbaum.txt für diverse Test erweitert
+
+	DecisionTree:
+	* Viele neue Konstruktoren in Dateien, u.a. zum Einlesen der
+	  diagnosishierarchy.txt; ebenso die entsprechenden 
+	  verarbeitenden Methoden
+	* Neue Klasse DiagnosisHierarchy, zum Auslesen der Diagnose-
+	  hierarchie und zum erstellen des daignosisTC -Strings der 
+	  später dem TC übergeben wird.
+	* Konstruktor in Hierarchie.java abgeändert; hier muss jetzt
+	  noch zusätzlich ein String diagnosisTC übergeben werden
+	* Bug entfernt regel.java, die Element Frageklasse und 
+	  Frageklasse/Diagnose werden jetzt nicht mehr als Strings 
+	  gesehen, die nicht auf Orthographie geprüft werden können
+
+build_20050602_1700 C.Braun
+	* Testen der Synchronisierung des CVS :-)
+	
+	RegelParser:
+	* Hinzufügen des Packages für den RegelParser
+	  (allerdiungs noch die alte XML-Version)
+
+build_20050601 C.Haeunke
+	* Schreiben von AA mittels addChoiceAnswer() der Klasse kbm
+	
+build_20050601_1600 A.Klar u. C.Haeunke
+	*angepasste Beispiele
+	*Funktionierende Test-Version
+
+build_20050601_1300 C. Haeunke
+	* Diagnosen des Beispiels für Vorführung in diagnosen.txt hinzugefügt
+
+build_20050530_2215 C.Haeunke
+    * final Strings (OC, MC, YN, NUM) in Hierarchie
+    * diverse insert...IntoKB()-Methoden in Hierarchie
+	* alle ELement werden korrekt in die KB eingefügt
+
+build_20050530_1700 C.Haeunke
+	* Dateien: Neuer Konstruktor
+	* Hierarchien: Schreibt schon teilweise Daten in die KB
+
+build_20050530_1555 A.Klar
+	* Kommentierte Version von RuleMaker
+	* resources-Verzeichnis für Tabellen umbenannt
+	
+build_20050525_2100 C.Haeunke
+	Textparser:
+	* Korrektur des Konstruktoraufrufs für den Hierarchie-
+	  parser in der Methode parseHierarchy() in 
+	  KBTextInterpreter
+	* Schreibpfad für angelegte KB auf nachstehendes 
+	  Verzeichnis geändert
+	* Anlegen eines Output-Verzeichnisses für die Klasse
+	  KBTextInterpreter, in welches die KB geschrieben wird
+
+	DecisionTree:
+	* Zugriff auf den letzten TC möglich
+	* Anlegen der In- und Output-Verzeichnisse unter 
+	  Resources für den Hierarchieparser
+
+build_20050527_1120 C.Haeunke
+	Textparser:
+	* Konstruktoraufruf für Hierarchieparser um KB erweitert
+
+	DecisionTree
+	* Zusätzlicher Konstruktoraufruf für Dateien mit KB
+	* Konstruktoraufruf für Hierarchie um KB erweitert
+	* Beispiel mit Bäumen hinzugefügt
+	* Configdatei "frageklassen" dem Entscheidungsbaum aussehen angepasst

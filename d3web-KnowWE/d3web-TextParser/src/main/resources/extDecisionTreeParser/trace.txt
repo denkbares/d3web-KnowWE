@@ -1,0 +1,365 @@
+
+Cross reference list:
+--------------------
+
+  "!"          1522
+  "#"          1655
+  "+"          1512
+  "++"         1515
+  "+++"        1518
+  "/"          1656
+  "<"          1457 1654
+  "<="         1463
+  "<abstract>" 1550
+  "<abstrakt>" 1550
+  "="          1481 1654 1668 1690
+  ">"          1469 1654
+  ">="         1475
+  "?"          1525
+  "@"          1655
+  "N1"         1504
+  "N2"         1504
+  "N3"         1504
+  "N4"         1504
+  "N5"         1504
+  "N5+"        1504
+  "N6"         1507
+  "N7"         1507
+  "P1"         1508
+  "P2"         1508
+  "P3"         1508
+  "P4"         1508
+  "P5"         1508
+  "P5+"        1508
+  "P6"         1511
+  "P7"         1511
+  "[date]"     1192
+  "[info]"     1228
+  "[jn]"       1216
+  "[mc]"       1180
+  "[num]"      1134
+  "[oc]"       1168
+  "[text]"     1204
+  "[yn]"       1216
+  "\""         1655
+  "\'"         1655
+  "\\"         1655
+  "{"          1138 1654 1690
+  "|"          1078 1078 1609 1615 1619
+  "}"          1141 1654 1740
+  AllowedNames-1689 1078
+  AnswerChoice-1274 1178 1190 1226
+  AnswerChoice-1558 1281
+  AnswerDate  -1296 1202
+  AnswerNum   -1249 1166
+  AnswerText  -1322 1214
+  AnswerYN    -1348 1239
+  Comparison  -1453 1252
+  Content     -1654 1619
+  Dashes      -1444 1097 1252 1277 1299 1325 1351 1404 1412 1437
+  DecisionTree-1077
+  Declaration -1448 1081 1098 1277 1299 1325 1351 1404 1412 1437 1535
+  Description -1602 1078
+  DescriptionI-1648 1602
+  DescriptionI-1569 1259 1287 1308 1334 1374
+  DescriptionI-1580 1427
+  DescriptionI-1591 1162 1174 1186 1198 1210 1222 1235
+  Diagnosis   -1409 1398
+  EOF          1079
+  ID           1554 1558 1656
+  Indication  -1390 1260 1288 1309 1335 1375
+  IndicationSt-1503 1415
+  IsAbstract  -1550 1163 1175 1187 1199 1211 1223 1236
+  Link        -1663 1428
+  Name        -1652 1615
+  QContainerDe-1081 1077 1078
+  QContainerIn-1403 1400
+  QContainerIn-1436 1430
+  Question    -1093 1085 1086 1126 1393
+  QuestionDate-1192 1121
+  QuestionIden-1554 1164 1176 1188 1200 1212 1224 1237
+  QuestionMC  -1180 1120
+  QuestionNum -1134 1118
+  QuestionOC  -1168 1119
+  QuestionText-1204 1122
+  QuestionYN  -1216 1123
+  QuestionZC  -1228 1124
+  Separator   -1442 1078 1094 1252 1277 1299 1325 1351 1404 1412 1437
+  Typ         -1650 1610
+  Unit        -1450 1138
+  allowedNames 1689
+  bracketClose 1428 1499 1654 1672 1678
+  bracketOpen  1428 1488 1654 1663 1673
+  dash         1444 1445 1538 1541 1544 1654
+  declaration  1448 1450 1650 1652 1656 1663 1668 1674 1691
+  descriptionI 1569 1580 1591 1648 1655
+  newline      1077 1078 1079 1442 1442 1654 1740
+  number       1149 1152 1458 1464 1470 1476 1482 1489 1492 1531 1656
+  parenthesisC 1155 1423 1655
+  parenthesisO 1148 1415 1655
+
+
+
+---------- states ----------
+                0: #A 37
+                   zeroDigit  3
+                   digitWithoutZero  5
+                   newline  6
+                   '"' 86
+                   '-' 38
+                   '('  7
+                   ')'  8
+                   '[' 87
+                   ']'  9
+                   '#' 88
+                   '@' 89
+                   '/' 39
+                   '|' 43
+                   '{' 48
+                   '}' 49
+                   '<' 90
+                   '>' 91
+                   '=' 79
+E(declaration ) 1: allowedDeclarationFurtherWithBrackets  1
+                   '"'  2
+E(declaration ) 2:
+E(number      ) 3: #D  4
+E(number      ) 4: digit  4
+E(number      ) 5: digit  5
+                   #D  4
+E(newline     ) 6:
+E(parenthesisO) 7:
+E(parenthesisC) 8:
+E(bracketClose) 9:
+E(ID          )10: allowedDeclaration 10
+E(descriptionI)11: allowedDeclarationFurther 11
+               12: 'l' 13
+               13: 'l' 14
+               14: 'o' 15
+               15: 'w' 16
+               16: 'e' 17
+               17: 'd' 18
+               18: 'N' 19
+               19: 'a' 20
+               20: 'm' 21
+               21: 'e' 22
+               22: 's' 34
+               23: 'l' 24
+               24: 'l' 25
+               25: 'o' 26
+               26: 'w' 27
+               27: 'e' 28
+               28: 'd' 29
+               29: 'N' 30
+               30: 'a' 31
+               31: 'm' 32
+               32: 'e' 33
+               33: 's' 34
+E(allowedNames)34:
+               35: newline 36
+                   commentChar 35
+E(comment     )36: newline 36
+E(declaration )37: allowedDeclarationFurther 40
+E(dash        )38: zeroDigit  3
+                   digitWithoutZero  5
+E(declaration )39: #B 40
+                   '/' 42
+E(declaration )40: allowedDeclarationFurther 40
+               41: 'a' 12
+                   'A' 23
+E(declaration )42: allowedDeclarationFurther 42
+                   newline 36
+                   #C 35
+E("|"         )43:
+               44: 'u' 45
+               45: 'm' 46
+               46: ']' 47
+E("[num]"     )47:
+E("{"         )48:
+E("}"         )49:
+               50: 'c' 51
+               51: ']' 52
+E("[oc]"      )52:
+               53: 'c' 54
+               54: ']' 55
+E("[mc]"      )55:
+               56: 'a' 57
+               57: 't' 58
+               58: 'e' 59
+               59: ']' 60
+E("[date]"    )60:
+               61: 'e' 62
+               62: 'x' 63
+               63: 't' 64
+               64: ']' 65
+E("[text]"    )65:
+               66: 'n' 67
+               67: ']' 68
+E("[jn]"      )68:
+               69: 'n' 70
+               70: ']' 71
+E("[yn]"      )71:
+               72: 'n' 73
+               73: 'f' 74
+               74: 'o' 75
+               75: ']' 76
+E("[info]"    )76:
+E("<="        )77:
+E(">="        )78:
+E("="         )79:
+               80: 't' 81
+               81: '>' 82
+E("<abstrakt>")82:
+               83: 't' 84
+               84: '>' 85
+E("<abstract>")85:
+E("\""        )86: allowedDeclarationFurtherWithBrackets  1
+E(bracketOpen )87: 'n' 44
+                   'o' 50
+                   'm' 53
+                   'd' 56
+                   't' 61
+                   'j' 66
+                   'y' 69
+                   'i' 72
+E("#"         )88: allowedDeclaration 10
+                   '#' 41
+E("@"         )89: allowedDeclarationFurther 11
+E("<"         )90: '=' 77
+                   'a' 92
+E(">"         )91: '=' 78
+               92: 'b' 93
+               93: 's' 94
+               94: 't' 95
+               95: 'r' 96
+               96: 'a' 97
+               97: 'k' 80
+                   'c' 83
+
+---------- character classes ----------
+newline:  10 13 
+zeroDigit: '0' 
+digitWithoutZero: '1'..'9' 
+digit:    '0'..'9' 
+allowedDeclaration: 0..9 11..12 14..'!' '$'..39 '*'..',' '.'..';' '?' 'A'..'Z' 92 '^'..'z' '~'..255 
+allowedDeclarationFurther: 0..9 11..12 14..'!' '$'..39 '*'..';' '?' 'A'..'Z' 92 '^'..'z' '~'..255 
+allowedDeclarationNoSpace: 0..9 11..12 14..31 '!' '$'..39 '*'..',' '.'..';' '?' 'A'..'Z' 92 '^'..'z' '~'..255 
+allowedDeclarationFurtherNoSpace: 0..9 11..12 14..31 '!' '$'..39 '*'..';' '?' 'A'..'Z' 92 '^'..'z' '~'..255 
+allowedDeclarationNoDigitNoSpace: 0..9 11..12 14..31 '!' '$'..39 '*'..',' '.'..'/' ':'..';' '?' 'A'..'Z' 92 '^'..'z' '~'..255 
+allowedDeclarationFurtherWithBrackets: 0..'!' '#'..'?' 'A'..'{' '}'..255 
+commentChar: 0..9 11..12 14..255 
+#A:       0..9 11..12 14..31 '!' '$'..39 '*'..',' '.' ':'..';' '?' 'A'..'Z' 92 '^'..'z' '~'..255 
+#B:       0..9 11..12 14..'!' '$'..39 '*'..'.' '0'..';' '?' 'A'..'Z' 92 '^'..'z' '~'..255 
+#C:       '"'..'#' '('..')' '<'..'>' '@' '[' ']' '{'..'}' 
+#D:       ',' '.' 
+
+Symbol Table:
+------------
+
+ nr name           typ  hasAt graph  del   line tokenKind
+  0 EOF            t    false                 0 fixedToken
+  1 declaration    t    false              1036 classLitToken
+  2 number         t    false              1046 classToken
+  3 newline        t    false              1047 classToken
+  4 dash           t    false              1048 fixedToken
+  5 parenthesisO   t    false              1049 fixedToken
+  6 parenthesisC   t    false              1050 fixedToken
+  7 bracketOpen    t    false              1051 fixedToken
+  8 bracketClose   t    false              1052 fixedToken
+  9 ID             t    false              1053 classToken
+ 10 descriptionI   t    false              1056 classToken
+ 11 allowedNames   t    false              1057 fixedToken
+ 12 "|"            t    false              1078 fixedToken
+ 13 "[num]"        t    false              1134 fixedToken
+ 14 "{"            t    false              1138 fixedToken
+ 15 "}"            t    false              1141 fixedToken
+ 16 "[oc]"         t    false              1168 fixedToken
+ 17 "[mc]"         t    false              1180 fixedToken
+ 18 "[date]"       t    false              1192 fixedToken
+ 19 "[text]"       t    false              1204 fixedToken
+ 20 "[jn]"         t    false              1216 fixedToken
+ 21 "[yn]"         t    false              1216 fixedToken
+ 22 "[info]"       t    false              1228 fixedToken
+ 23 "<"            t    false              1457 fixedToken
+ 24 "<="           t    false              1463 fixedToken
+ 25 ">"            t    false              1469 fixedToken
+ 26 ">="           t    false              1475 fixedToken
+ 27 "="            t    false              1481 fixedToken
+ 28 "N1"           t    false              1504 litToken
+ 29 "N2"           t    false              1504 litToken
+ 30 "N3"           t    false              1504 litToken
+ 31 "N4"           t    false              1504 litToken
+ 32 "N5"           t    false              1504 litToken
+ 33 "N5+"          t    false              1504 litToken
+ 34 "N6"           t    false              1507 litToken
+ 35 "N7"           t    false              1507 litToken
+ 36 "P1"           t    false              1508 litToken
+ 37 "P2"           t    false              1508 litToken
+ 38 "P3"           t    false              1508 litToken
+ 39 "P4"           t    false              1508 litToken
+ 40 "P5"           t    false              1508 litToken
+ 41 "P5+"          t    false              1508 litToken
+ 42 "P6"           t    false              1511 litToken
+ 43 "P7"           t    false              1511 litToken
+ 44 "+"            t    false              1512 litToken
+ 45 "++"           t    false              1515 litToken
+ 46 "+++"          t    false              1518 litToken
+ 47 "!"            t    false              1522 litToken
+ 48 "?"            t    false              1525 litToken
+ 49 "<abstrakt>"   t    false              1550 fixedToken
+ 50 "<abstract>"   t    false              1550 fixedToken
+ 51 "#"            t    false              1655 fixedToken
+ 52 "@"            t    false              1655 fixedToken
+ 53 "\'"           t    false              1655 litToken
+ 54 "\\"           t    false              1655 litToken
+ 55 "\""           t    false              1655 fixedToken
+ 56 "/"            t    false              1656 litToken
+ 57 ???            t    false                 0 fixedToken
+ 58 comment        pr   false              1062 classToken
+  0 DecisionTree   nt   false     2 false  1077 fixedToken
+  1 QContainerDe   nt   false    21 false  1081 fixedToken
+  2 Separator      nt   false   247 false  1442 fixedToken
+  3 AllowedNames   nt   false   436 false  1689 fixedToken
+  4 Description    nt   false   361 false  1602 fixedToken
+  5 Declaration    nt   false   254 false  1448 fixedToken
+  6 Question       nt   true     28 false  1093 fixedToken
+  7 Dashes         nt   false   251 false  1444 fixedToken
+  8 QuestionNum    nt   true     51 false  1134 fixedToken
+  9 QuestionOC     nt   true     76 false  1168 fixedToken
+ 10 QuestionMC     nt   true     87 false  1180 fixedToken
+ 11 QuestionDate   nt   true     98 false  1192 fixedToken
+ 12 QuestionText   nt   true    109 false  1204 fixedToken
+ 13 QuestionYN     nt   true    122 false  1216 fixedToken
+ 14 QuestionZC     nt   true    134 false  1228 fixedToken
+ 15 Unit           nt   false   255 false  1450 fixedToken
+ 16 DescriptionI   nt   false   359 false  1591 fixedToken
+ 17 IsAbstract     nt   true    348 false  1550 fixedToken
+ 18 QuestionIden   nt   true    351 false  1554 fixedToken
+ 19 AnswerNum      nt   true    145 false  1249 fixedToken
+ 20 AnswerChoice   nt   true    157 false  1274 fixedToken
+ 21 AnswerDate     nt   true    171 false  1296 fixedToken
+ 22 AnswerText     nt   true    184 false  1322 fixedToken
+ 23 AnswerYN       nt   true    197 false  1348 fixedToken
+ 24 Comparison     nt   true    256 false  1453 fixedToken
+ 25 DescriptionI   nt   false   355 false  1569 fixedToken
+ 26 Indication     nt   true    215 false  1390 fixedToken
+ 27 AnswerChoice   nt   false   353 false  1558 fixedToken
+ 28 Diagnosis      nt   false   223 false  1409 fixedToken
+ 29 QContainerIn   nt   true    219 false  1403 fixedToken
+ 30 IndicationSt   nt   false   286 false  1503 fixedToken
+ 31 DescriptionI   nt   false   357 false  1580 fixedToken
+ 32 Link           nt   false   422 false  1663 fixedToken
+ 33 QContainerIn   nt   true    243 false  1436 fixedToken
+ 34 DescriptionI   nt   false   375 false  1648 fixedToken
+ 35 Typ            nt   false   376 false  1650 fixedToken
+ 36 Name           nt   false   377 false  1652 fixedToken
+ 37 Content        nt   false   411 false  1654 fixedToken
+
+Literal Tokens:
+--------------
+_bracketOpen = "[".
+_bracketClose = "]".
+_dash = "-".
+_parenthesisOpen = "(".
+_parenthesisClose = ")".
+
