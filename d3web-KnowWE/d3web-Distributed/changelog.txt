@@ -1,0 +1,133 @@
+build_20090212_1715 reutelshoefer
+	* removed project d3web-SCM
+
+build_20090108_1330 reutelshoefer
+	* D3webKnowledgeService init does only save();
+	instead of save();load();
+
+build_20081103_1330 reutelshoefer
+	* added MMInfoPersistenceHandler
+
+build_20080901_1530 kluegl/reutelshoefer
+	* correct call of removeService to prevent phantom-alignments
+
+build_20080622_1615 reutelshoefer
+	* added XCLModelValueListener in D3webKnowledgeServiceSession
+	
+build_20080619_1830 reutelshoefer
+	* changed interface of D3webKnowledgeService: getKnowledgebaseManagement()
+
+build_20080619_1310 reutelshoefer
+	* finished XCL-PSMethod integration 
+
+build_20080617_1433 reutelshoefer
+	* some changes to integrate XCL-PSMethod
+
+build_20080611_1333 reutelshoefer
+	* added XCLPersistenceHandler
+
+renamed_from_KnowWE_to_d3web-Distributed reutelshoefer
+
+build_200820107_1445 reutelshoefer
+	* some changes for KnowWE 2.0
+
+build_20071219_1100 reutelshoefer
+	* clear session action reinits all KnowledgeServiceSessions to used updated KBs
+	
+build_20071212_1630 reutelshoefer
+	* recall value as second output in KSSession
+	
+build_20071211_1040 reutelshoefer
+	* change in SCResult rendering
+	* escaped DEFAULT_QUESIONNAIRE from rendered Questionnaire-terminology
+	* added error message when xml-files cannot be deleted at reinit
+
+build_20071128_1400 reutelshoefer	
+	* extended solution rendering for simple SC problem solving
+
+build_20071117_1500 reutelshoefer
+	* added support for simpleSCProblemSolving
+
+build_20071119_1120 reutelshoefer
+	* reInitialize DPSEnvironment
+
+
+build_20070910_1345 reutelshoefer
+	* Peters save() - load() bugfix
+	* clear infos if namespace is removed
+
+build_20070702_1115 pkluegl
+	* added support for filtered translation process 
+	  (hidden alignments for navigation)
+
+build_20070626_1630 pkluegl	
+	* terminology integration uses Property.FOREIGN
+
+build_20070626_1615 pkluegl	
+	* fixed typo
+
+build_20070612_1325 pkluegl	
+	* extended Blackboard -> InferenceInfos
+
+build_20070612_1215 reutelshoefer	
+	* update
+
+build_20070416_1430_UNSTABLE pkluegl
+	* experimental cbr support
+
+build_20070416_1430 pkluegl
+	* update
+
+build_20070328_1515 reutelshoefer
+	* fixed lazy parser bug
+	* changed error link in parseRenderer
+
+build_20070327_2000 pkluegl
+	* big update
+
+	
+build_20070323_1830 pkluegl
+	* fixed problems with cyclic terminologies
+
+build_20070322_1930 pkluegl
+	* updated
+
+build_20070320_2015 pkluegl
+	* updated
+	* refactored persistence 
+
+build_20070318_1800 pkluegl
+	* sc sends inference infos now
+	* improved cluster inference
+	* reimplemented distributed dialog control
+	* many changes due to (new) dialog control interface
+
+build_20070317_1845 pkluegl
+	* fixed persistence (using CDATA)
+	* added complete cluster solution funtionality
+	* added several new methods and classes due to cluster calculations
+
+build_20070317_1500 pkluegl
+	* update
+
+build_20070314_1815 pkluegl
+	* big update
+	
+build_20070214_1815 pkluegl
+	* some smaller fixes
+
+build_20070214_1600 pkluegl
+	* added more support for instant delegate
+
+build_20070213_1415 pkluegl
+	* updated
+
+build_20070212_1710 pkluegl
+	* added batch runs again for testing
+
+build_20070212_1700 pkluegl
+	* updated
+
+build_20070212_1445 pkluegl
+	* initial commit
+	* merged KWiki-Core, KWiki-Basic, KWiki-Alignment and d3web-Distributed
