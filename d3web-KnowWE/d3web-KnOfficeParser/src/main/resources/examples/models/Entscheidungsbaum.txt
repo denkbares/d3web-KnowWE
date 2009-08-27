@@ -1,0 +1,39 @@
+Allgemeines
+- Name ~ Wie heißen Sie? [text]
+- Geburtsdatum [date]
+- Gewicht [num] {kg}
+- Größe {Länge} [num] {cm} (0 250)
+- BMI [num] <abstrakt>
+-- > 25
+--- Übergewicht (P7)
+- Geschlecht [oc]
+-- weiblich
+--- Sind Sie schwanger? [jn]
+---- "ja"
+----- Schwanger(!) [["http://de.wikipedia.org/wiki/Schwanger"][Wikipedia Eintrag]]
+------ Schwangerschaftsfragen
+---- "nein"
+-- männlich
+
+Grobdiagnose
+- Wo haben Sie Schmerzen? [mc]
+-- Beine
+--- Chronisch ~ Sind die Schmerzen chronisch? [jn]
+-- Arme
+--- &REF Chronisch
+-- Oberkörper
+-- Kopf
+-- Hals @hals
+
+Schwangerschaftsfragen
+- Im wievielten Monat sind Sie? [num]
+
+Ausstattung
+- Sitzbezüge [oc] #F1
+-- Stoff
+--- Schwangerschaftsfragen
+-- Leder #A2
+
+
+##allowedNames = {Erläuterung}
+| @hals | info | Erläuterung | Zwischenstück zwischen Kopf und Oberkörper |

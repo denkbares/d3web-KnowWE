@@ -1,0 +1,138 @@
+package de.d3web.KnOfficeParser.util;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import de.d3web.kernel.domainModel.KnowledgeBase;
+import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.kernel.domainModel.answers.AnswerChoice;
+import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.kernel.domainModel.qasets.QuestionChoice;
+import de.d3web.kernel.domainModel.qasets.QuestionNum;
+
+public class KBLoaderTT implements TerminologyTester {
+
+	private Map<String, KnowledgeBase> kbs;
+	private String id;
+
+	public static void main(String[] args) {
+		KBLoaderTT tester = KBLoaderTT.getInstance();
+		tester.setKBID("0");
+		boolean found = tester.checkQuestion("Hauptdarsteller");
+		System.out.println(found);
+
+	}
+
+	private static KBLoaderTT instance;
+
+	private KBLoaderTT() {
+		init();
+	}
+
+	public void setKBID(String id) {
+		this.id = id;
+	}
+
+	public static KBLoaderTT getInstance() {
+		if (instance == null) {
+			instance = new KBLoaderTT();
+
+		}
+
+		return instance;
+	}
+
+	private void init() {
+		kbs = new HashMap<String, KnowledgeBase>();
+		String path = "resources";
+		File f = new File(path);
+		if (!f.exists()) {
+			try {
+				URL resource = this.getClass().getResource(path);
+				f = new File(resource.toURI());
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		System.out.println("exists:" + f.exists());
+		if (f.exists()) {
+			File[] files = f.listFiles();
+			for (File file : files) {
+				System.out.println(file.toString());
+			}
+		}
+
+		StringBuffer buffy = new StringBuffer();
+		Collection<KnowledgeBase> coll = TestLoader.loadAllKBs(f, buffy);
+		System.out.println(buffy);
+
+		for (KnowledgeBase knowledgeBase : coll) {
+
+			kbs.put(knowledgeBase.getId(), knowledgeBase);
+			System.out.println(knowledgeBase.getId());
+		}
+	}
+
+	public boolean checkQuestion(String term) {
+//		System.out.println("Frage: "+term);
+		KnowledgeBase kb = null;
+		if (id != null) {
+			kb = kbs.get(id);
+		}
+		if (kb == null) {
+			Collection<String> keys = kbs.keySet();
+			if (keys.size() > 0) {
+				kb = kbs.get(keys.iterator().next());
+			}
+		}
+		KnowledgeBaseManagement kbm = KnowledgeBaseManagement
+				.createInstance(kb);
+//		List<Question> fl = kb.getQuestions();
+//		for (Question q: fl) {
+//			System.out.println(q.getText());
+//		}
+		return kbm.findQuestion(term) != null;
+	}
+
+	public boolean checkAnswer(String question, String answer) {
+//		System.out.println("Frage: "+question+", Antwort: "+answer);
+		KnowledgeBase kb = null;
+		if (id != null) {
+			kb = kbs.get(id);
+		}
+		if (kb == null) {
+			Collection<String> keys = kbs.keySet();
+			if (keys.size() > 0) {
+				kb = kbs.get(keys.iterator().next());
+			}
+		}
+		KnowledgeBaseManagement kbm = KnowledgeBaseManagement
+				.createInstance(kb);
+
+		Question q = kbm.findQuestion(question);
+		if (q != null && q instanceof QuestionChoice) {
+			AnswerChoice a = kbm.findAnswerChoice((QuestionChoice) q, answer);
+			if (a != null)
+				return true;
+		}
+		
+		if (q != null && q instanceof QuestionNum) {
+			try {
+				Double.parseDouble(answer.trim());
+			} catch (Exception e) {
+				return false;
+			}
+			return true;
+		} 
+
+		return false;
+	}
+
+}

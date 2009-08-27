@@ -1,0 +1,354 @@
+// REFERENZDATEI
+// Diese Datei enthält alle features des Entscheidungsbaumparsers
+// Fachliche Korrektheit nicht mehr gewährleistet!
+//
+// FEATURELLISTE:
+// * Fragebogen
+// * Numerische Frage
+// * OC-Frage
+// * MC-Frage
+// * YN-Frage
+// * Choice-Antwort
+// * Text-Frage
+// * Date-Frage
+// * Abstraktionsfrage
+// * AddValue numerisch
+// * SetValue numerisch
+// * AddValue Choice
+// * numerische Bedingung (<,>)
+// * numerische Bedingung  Intervall
+// * Lösungsbewertung
+// * Link für Lösung
+// * Info-Text (Info-Frage)
+// * Erläuterung
+// * Numerische Einheiten
+// * Wertebereiche für numerische Fragen
+// * Ausführlicher Fragetext
+// * Setzen von IDs
+// * includieren anderer Dateien
+// * Referenzierende Indikation
+//
+// NEUE FEATURES:
+// * Frage unterdrücken (SuppressAction)
+// * Überdeckungsrelation hinter Anworten
+// * Dialoglayout (z.B. in wievielen Spalten sollen die Antworten angezeigt werden)
+// * unbekannt anzeigen hierarchisch überschreiben (global, Fragebogen, Frage)
+
+// Fragebogen
+Abstraktionsfragen
+//Numerische Frage, Abstraktionsfrage
+- Rheumazaehler [num] <abstrakt>
+//OC-Frage, Abstraktionsfrage
+- RheumazaehlerKategorie [oc] <abstrakt>
+// Choice-Antwort
+-- Rheumaerkrankung wahrscheinlich
+-- Rheumaerkrankung möglich
+-- Rheumaerkrankung unwahrscheinlich
+- EntzuendlicherKreuzschmerzzaehler [num] <abstrakt>
+- EntzuendlicheKreuzschmerzBewertung [oc] <abstrakt>
+-- Entzündlicher Kreuzschmerz wahrscheinlich
+-- Entzündlicher Kreuzschmerz möglich
+-- Entzündlicher Kreuzschmerz unwahrscheinlich
+- "BMI-Bewertung" [oc] <abstrakt>
+-- untergewichtig
+-- normal
+-- übergewichtig
+//AddValue numerisch
+--- Rheumazaehler (-5)
+-- Adipositas
+// SetValue numerisch
+--- Rheumazaehler SET (10)
+- BMI [num] <abstrakt>
+//numerische Bedingung (<,>)
+-- < 19
+//AddValue Choice
+--- "BMI-Bewertung" (untergewichtig)
+//numerische Bedingung  Intervall
+-- [19 25]
+--- "BMI-Bewertung" (normal)
+-- [25,0001 30]
+--- "BMI-Bewertung" (übergewichtig)
+-- > 30
+--- "BMI-Bewertung" (Adipositas) 
+//Lösungsbewertung, Link für Lösung
+--- Adipositas (P7)  [["http://de.wikipedia.org/wiki/Adipositas"][Erklärung zu Adipositas]]
+// Text-Frage
+- TextFrage [text]
+// Date-Frage
+- Datumsfrage [date]
+
+
+
+Rheumafragen1
+// (Allgemeinfragen zur Entscheidung, entzündliche Rheumaerkrankung wahrscheinlich oder nicht wahrscheinlich)
+// Info-Text (Info-Frage), Erläuterung
+-"Sehr geehrter Benutzer, sehr geehrte Benutzerin, Sie interessieren sich für die Frage, ob Sie eine entzündliche Rheumaerkrankung haben? Dann lesen Sie bitte den folgenden Text, bevor Sie fortfahren." [info] @1
+
+//Numerische Einheiten, Wertebereiche für numerische Fragen
+- Wie alt sind Sie? [num] {Jahre} (0 120)
+// -- [120 160] 
+// --- Rheumazaehler (10)
+// -- < 0
+// --- Rheumazaehler (-5) 
+- Welches Geschlecht haben Sie? [oc]
+-- "männlich,"
+-- weiblich
+- Groesse ~ Wie groß sind Sie? [num] {cm} (50 250)
+
+- Gewicht ~ Wieviel wiegen Sie? [num] {kg} (5 500)
+
+  // Ausrechnen BMI (body mass index) und Unterteilung in untergewichtig, normalgewichtig, übergewichtig, Adipositas.
+
+- Wie lange haben Sie schon Ihre Beschwerden? [oc]
+-- Tage
+-- bis zu 6 Wochen
+-- Monate bis zu einem Jahr
+-- mehrere Jahre
+
+// MC-Frage, Ausführlicher Fragetext
+- Gelenkstatus ~ "Bezeichnen Sie auf den folgenden Strichmännchen die Region, an der Sie Schmerzen oder eine Gelenkschwellung bemerken oder gehabt haben! Klicken Sie auf die Regionen Ihrer Schmerzen oder Schwellungen! Bei jeder Region, wo dieses sinnvoll ist, wird in einem Menü abgefragt, ob diese Region nur geschmerzt hat oder zusätzlich eine Schwellung bemerkt wurde." [mc] @2
+
+// (Strichmännchen von vorne und hinten: vorne: 
+//Setzen von IDs
+-- Kiefergelenk rechts # A1
+//YN-Frage
+--- Ist das Kiefergelenk rechts geschwollen? [yn]
+---- ja
+----- Rheumazaehler (5)
+---- nein 
+-- Kiefergelenk links # A2
+--- Ist das Kiefergelenk links geschwollen? [oc]
+---- ja
+---- nein 
+-- Schulter rechts # A3
+-- Schulter links # A4 
+-- Ellbogengelenk rechts # A5
+--- Ist das  Ellbogengelenk rechts geschwollen? [oc]
+---- ja
+---- nein
+-- Ellbogengelenk links # A6
+--- Ist das  Ellbogengelenk links geschwollen? [oc]
+---- ja
+----- Rheumazaehler (5)
+---- nein
+-- Handgelenk rechts # A7
+--- Ist das  Handgelenk rechts geschwollen? [oc]
+---- ja
+----- Rheumazaehler (5)
+---- nein
+-- Handgelenk links # A8
+--- Ist das  Handgelenk links geschwollen? [oc]
+---- ja
+----- Rheumazaehler (5)
+---- nein
+-- Fingergelenke global rechts # A9
+--- Ist mindestens ein Fingergelenk rechts geschwollen? [oc]
+---- ja
+----- Rheumazaehler (5)
+---- nein 
+-- Fingergelenke global links # A10
+--- Ist mindestens ein Fingergelenk links geschwollen? [oc]
+---- ja
+----- Rheumazaehler (5)
+---- nein 
+-- Hüftgelenk rechts # A11
+-- Hüftgelenk links # A12
+-- Kniegelenk rechts # A13
+--- Ist das  Kniegelenk rechts geschwollen? [oc]
+---- ja
+----- Rheumazaehler (5)
+---- nein
+-- Kniegelenk links # A14
+--- Ist das  Kniegelenk links geschwollen? [oc]
+---- ja
+----- Rheumazaehler (5)
+---- nein
+-- oberes Sprunggelenk rechts # A15
+--- Ist das obere Sprunggelenk rechts geschwollen? [oc]
+---- ja
+----- Rheumazaehler (2)
+---- nein
+-- oberes Sprunggelenk links # A16
+--- Ist das obere Sprunggelenk links geschwollen? [oc]
+---- ja
+----- Rheumazaehler (2)
+---- nein
+-- "unteres Sprunggelenk (Mittelfuß) rechts" # A17
+--- Ist das untere Sprunggelenk rechts geschwollen? [oc]
+---- ja
+----- Rheumazaehler (2)
+---- nein
+-- "unteres Sprunggelenk (Mittelfuß) links" # A18
+--- Ist das untere Sprunggelenk links geschwollen? [oc]
+---- ja
+----- Rheumazaehler (2)
+---- nein
+-- Zehengelenke global rechts # A19
+--- Ist mindestens ein Zehengelenk rechts geschwollen? [oc]
+---- ja
+----- Rheumazaehler (2)
+---- nein 
+-- Zehengelenke global links # A20
+--- Ist mindestens ein Zehengelenk links geschwollen? [oc]
+---- ja
+----- Rheumazaehler (2)
+---- nein 
+//  Strichmännchen von hinten: 
+-- "Halswirbelsäule (Nacken)" # A21
+-- "Brustwirbelsäule (Rücken)" # A22
+-- "Lendenwirbelsäule (Kreuz)" # A23
+-- Iliosakralgelenk rechts # A24
+-- Iliosakralgelenk links # A25
+-- Kniekehle rechts  # A26
+--- Ist die Kniekehle rechts geschwollen? [oc]
+---- ja
+---- nein 
+-- Kniekehle links  # A27
+--- Ist die Kniekehle links geschwollen? [oc]
+---- ja
+---- nein 
+-- Ferse rechts # A28
+--- Ist die Ferse rechts geschwollen? [oc]
+---- ja
+----- Rheumazaehler (2)
+---- nein 
+-- Ferse links  # A29
+--- Ist die Ferse links geschwollen? [oc]
+---- ja
+----- Rheumazaehler (2)
+---- nein 
+
+- Rheumafragen2 ~ "Es folgen allgemeine Fragen zu Ihren Gelenken." [info]
+- "Wenn Sie eine Gelenkschwellung haben oder hatten, wie lange hat die Schwellung des am stärksten betroffenen Gelenks angehalten?" [oc] 
+-- Ich hatte  nie eine Gelenkschwellung
+--- Rheumazaehler (-10)
+-- wenige Minuten bis Stunden
+--- Rheumazaehler (-10)
+--- GelenkschmerzenOhneSchwellung ~ "Haben oder hatten Sie über längere Zeit (mindestens Wochen) Gelenkschmerzen auch ohne Schwellung?" [oc]
+---- "Ja, vorwiegend Gelenkschmerzen" 
+---- "Gelenk- und Muskelschmerzen" 
+---- nur Muskelschmerzen ohne Gelenkschmerzen
+--- AnzahlGelenke ~ Ist oder war immer nur ein Gelenk und geschwollen oder mehrere? [oc] @2
+---- immer nur ein Gelenk war geschwollen
+----- Rheumazaehler (10)
+---- ein bis 3 Gelenke waren gleichzeitig geschwollen
+----- Rheumazaehler (20)
+---- "4 und mehr Gelenke waren gleichzeitig geschwollen"
+----- Rheumazaehler (20)
+--- Gelenkbeweglichkeit ~ "Wie lange dauert es nach einer längeren Ruhepause oder morgens beim Aufstehen, bis Sie Ihre am stärksten betroffenen Gelenke wieder einigermaßen normal bewegen können?" [oc]
+---- wenige Minuten
+----- Rheumazaehler (-5) 
+---- bis zu einer halben Stunde
+----- Rheumazaehler (2) 
+---- bis zu einer Stunde
+----- Rheumazaehler (10)
+---- länger als eine Stunde
+----- Rheumazaehler (20) 
+---- ich kann den ganzen Tag meine Gelenke nicht normal bewegen
+----- Rheumazaehler (2) 
+---- ich habe keinerlei Einschränkung der Beweglichkeit meiner Gelenke
+----- Rheumazaehler (-5) 
+---- weiß nicht
+-- wenige Tage
+--- Rheumazaehler (2)
+//Referenzierende Indikation
+--- &REF GelenkschmerzenOhneSchwellung
+--- &REF AnzahlGelenke
+--- &REF Gelenkbeweglichkeit
+-- "Wochen (1-4 Wochen)"
+--- &REF GelenkschmerzenOhneSchwellung
+--- &REF AnzahlGelenke
+--- &REF Gelenkbeweglichkeit
+--- Rheumazaehler (5) 
+-- unter 3 Monate
+--- Rheumazaehler (5)
+--- &REF GelenkschmerzenOhneSchwellung
+--- &REF AnzahlGelenke
+--- &REF Gelenkbeweglichkeit
+-- über 3 Monate
+--- Rheumazaehler (10)
+--- &REF GelenkschmerzenOhneSchwellung
+--- &REF AnzahlGelenke
+--- &REF Gelenkbeweglichkeit
+-- Jahre
+--- Rheumazaehler (10)
+--- &REF GelenkschmerzenOhneSchwellung
+--- &REF AnzahlGelenke
+--- &REF Gelenkbeweglichkeit
+
+- "Wann sind Ihre Gelenk- oder Muskelbeschwerden stärker?" [mc]
+-- "Mehr morgens," 
+-- "mehr abends," 
+-- "gleich über den ganzen Tag," 
+-- auch nachts 	
+-- "ich wache durch meine Gelenkbeschwerden auf,"
+-- kann mich nicht festlegen
+
+
+
+// Nur bei Betroffenheit der Fingergelenke der Hände:
+- Haben Sie Probleme beim Schließen der Finger zur Faust? [oc]
+-- "Die Faust (oder auch einzelne Finger) lässt sich ohne Probleme schließen."
+--- Rheumazaehler (-5)
+-- "Die Faust lässt sich anfangs schwer schließen, jedoch nach wenigen Minuten ist das ohne Probleme möglich" 
+-- "Es dauert über 30 Minuten, bis ich die Faust wieder normal schließen kann"
+--- Rheumazaehler (10) 
+-- "weiß nicht."
+
+- Ist Bewegung eher gut für Ihre Gelenkbeschwerden? [oc]
+-- Meine Gelenkprobleme verstärken sich durch Bewegung 
+-- meine Gelenkprobleme bessern sich langsam durch nicht belastende Bewegung
+--- Rheumazaehler (5)
+-- "Bewegung hat keinen Einfluss auf meine Gelenkprobleme."
+-- kann mich nicht entscheiden
+
+- Haben Sie Beschwerden an der Wirbelsäule? [oc]
+-- ja
+//includieren anderer Dateien
+<include src="HWS-fragen.part">
+
+-- nein
+--- Rheumafragen3
+
+// Ab hier wieder für alle, egal ob Gelenk-, Muskel- oder WS-Beschwerden!
+Rheumafragen3
+- "Haben oder hatten Sie selbst oder ein Familienmitglied von Ihnen (nur direkte Verwandte) eine Schuppenflechte (siehe beiliegende Bilder, trifft eines ähnlich auch auf Sie zu)?" [oc]
+-- "Nein," 
+-- "Ja, bei mir selbst ist eine Schuppenflechte (Psoriasis) bekannt oder durch einen Hautarzt bestätigt"
+--- Rheumazaehler (20)  
+-- "Ja, eine ähnliche Erkrankung wie auf den Bildern, aber bisher nicht durch einen Hautarzt bestätigt"
+--- Rheumazaehler (10)  
+-- "ein direkter Verwandter von mir hat oder hatte eine Schuppenflechte."
+--- Rheumazaehler (10) 
+
+- "Hauterkrankungen ~ Haben Sie oder hatten Sie andere Hauterkrankungen (hier werden nur die Hauterkrankungen genannt, die mit einer Rheumaerkrankung zu tun haben können, aber nicht müssen)? Bitte nur ankreuzen, wenn ein Arzt diese Erkrankung bestätigt hat oder hatte:" [mc]
+-- Ekzem
+-- Lupus
+--- Rheumazaehler (20) 
+-- Sklerodermie
+--- Rheumazaehler (20) 
+-- "Wanderröte (Borreliose) vor Monaten"
+-- "Sonnenallergie (ausgeprägter und länger anhaltend als ein Sonnenbrand)"
+// +20 (wenn nur ein oder bis zu 3 Gelenke geschwollen)
+--- Rheumazaehler (2) 
+
+- Meine Finger verfärben sich unter Kälte [oc]
+-- Ja
+--- Finger Farbe [mc]
+---- Weiß
+----- Rheumazaehler (10)
+---- Blau
+----- Rheumazaehler (2)
+---- Lila
+----- Rheumazaehler (2)
+---- Rot
+----- Rheumazaehler (5)
+-- Nein
+
+<include src="weitereFragen.part">
+
+##allowedNames = {Beschreibung, Kurze Erklärung}
+| @1 | info | 'Erläuterung' | Die folgenden Fragebögen sind gedacht für Personen, die auf Grund von Beschwerden erstmalig vor die Frage gestellt sind, ob sie eine entzündliche Rheumaerkrankung haben könnten. Sie sind also nicht für Personen gedacht, die schon von Ihrer Rheumaerkrankung wissen, sie sind nicht als Fragebögen erstellt, die den Verlauf einer bekannten Rheumaerkrankung beschreiben. Beachten Sie bitte, dass eine entzündliche Rheumaerkrankung meist ohne erkennbaren Anlass beginnt, es sind mit dem Fragenkatalog somit keine Probleme angesprochen, die z.B. nach einer Verletzung, nach einer Überanstrengung aufgetreten sind. <br /><br />Die anschließenden Fragen werden in 3 unterschiedlichen Fragebögen gestellt. Sie allerdings wissen, dass die Diagnose einer entzündlichen Rheumaerkrankung nicht nur über Fragen zu Ihren Beschwerden, sondern auch durch die Untersuchung eines Arztes und  weitere technische Untersuchungen gestellt werden muss. Wenn wir hier im Netz Ihnen nur Fragen stellen können, so sind wir mit allen daraus abgeleiteten Entscheidungen auf den Wahrheitsgehalt Ihrer Antworten angewiesen. Wir werden somit immer schlechter sein als ein genau fragender und untersuchender Arzt. Andererseits haben Ärzte heutzutage kaum noch Zeit, durch viele Fragen mögliche Rheumaerkrankungen (von denen es über 100 gibt) einzugrenzen, viele vertrauen deshalb mehr auf Labortests und hoch aufwendige Verfahren zur Darstellung von Gelenken und Organen. Dieses erhöht einerseits den Aufwand pro Patient beträchtlich und trägt das Risiko in sich, dass Dinge entdeckt werden, die für die  bestehende Diagnose keine Bedeutung haben. <br /><br /> Es hängt somit von Ihnen ab, wie genau und wie korrekt Sie die gestellten Fragen beantworten, ob das Ergebnis dieses Tests dem später behandelnden Arzt, der letztlich nur eine Diagnose stellen kann, helfen wird oder nicht. Wie oben schon angedeutet, ersetzt ein Fragebogen nicht das Wissen und die Genauigkeit der Untersuchungstechnik eines Arztes, wenn er Sie vor sich sitzen hat und damit deutlich mehr Hinweise auf mögliche Erkrankungen bekommt. <br /><br />Der erste Fragebogen soll die Frage klären, ob bei Ihnen überhaupt eine entzündliche Rheumaerkrankung wahrscheinlich ist. Der zweite Fragebogen stellt sehr genaue und ausführliche Fragen zu möglichen Organbeteiligungen nur dann, wenn aus dem ersten Fragebogen abgeleitet werden kann, dass eine entzündliche Rheumaerkrankung vorliegt. Er verlangt von Ihnen die eigene Untersuchung zum Beispiel Ihrer Gelenke, aus denen die Entscheidung zusammen mit den Fragen zum ersten Fragebogen besser abgeleitet werden kann, ob bei Ihnen eine Rheumaerkrankung vorliegt und welche der über 100 möglichen Rheumaerkrankungen wahrscheinlich ist. Der dritte Fragebogen erfragt schon bekannte Labortests und sonstige Untersuchungsergebnisse, die normalerweise dem Arzt zur Verfügung stehen bzw. von ihm schon veranlasst wurden bzw. noch veranlasst werden sollten. Selbst wenn wir alle Informationen aus allen 3 Fragebögen haben, werden wir immer nur mit einer gewissen Wahrscheinlichkeit, nie mit Sicherheit darauf hinweisen können, ob es für Sie Sinn macht, einen Arzt (internistischer Rheumatologe, orthopädischer Rheumatologe oder andere Ärzte) aufzusuchen. Abhängig von Ihren Antworten kann die Empfehlung falsch sein, da wir uns hier nur auf Antworten zu Fragen verlassen müssen. Noch einmal, diese Fragen ersetzen niemals das Wissen eines Arztes, den Sie im Zweifelsfall immer aufsuchen sollten. |
+| @2 | info | Erläuterung | Mit Gelenkschwellung ist die auch von anderen erkennbare schmerzhafte Schwellung eines Gelenks gemeint. Viele Menschen haben das Gefühl, dass ein schmerzhaftes Gelenk sich auch geschwollen anfühlt, obwohl es nicht wirklich geschwollen ist, deshalb wird diese Frage oftmals falsch gedeutet und beantwortet, sie ist aber wesentlich für eine entzündliche Rheumaerkrankung. Es geht hier also nur um die eindeutige, auch von anderen klar zu erkennende Gelenkschwellung, dabei kann ein Gelenk auch vor Jahren oder Monaten geschwollen gewesen sein. Ausgenommen sind die Gelenkschwellungen, die direkt nach eine Verletzung des fraglichen Gelenks aufgetreten sind. |
+| @3 | info | Beschreibung | Die folgenden Fragen unterscheiden neben anderen zwischen einer Entzündung als Ursache von Gelenk- oder Muskelbeschwerden und Abnutzungserscheinungen. Gelenkschmerzen sind daran zu erkennen, dass sie sich in Abhängigkeit von der Bewegung in dem betroffenen Gelenk verändern. Muskelschmerzen können auch ohne Bewegung bestehen, auch sie verändern sich, wenn die Muskeln betätigt werden. Deshalb versuchen Sie die am wahrscheinlichsten zutreffende Antwort zu geben. |
+| @4 | info | Kurze Erklärung | Jetzt noch einige kurze Ja/Nein Fragen, die Sie mit ja beantworten sollten, wenn entweder ein Arzt das bei Ihnen festgestellt hat oder Sie selbst das in ganz ungewöhnlichem Ausmaß über längere Zeit bemerkt haben. Wenn Sie unsicher sind, lassen Sie lieber die Frage unbeantwortet:|

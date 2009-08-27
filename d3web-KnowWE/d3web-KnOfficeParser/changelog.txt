@@ -1,0 +1,253 @@
+build_20090519_2100 legler
+	* taught QuestionnaireBuilder to process descriptions
+
+build_20090519_1345 friedrich
+	* added option to disable Question HashMap in ConditionBuilder 
+
+build_20090515_1727 friedrich
+	* allowed attribute prompt in attribute table in the decision tree
+	* language saved as dcinfo
+
+build_20090514_2337 friedrich
+	* added support for different languages in the decisiontree parser
+	* enabled the use of more than one annotation to an item (@id is not unique)
+
+build_20090513_1340 astriffler
+	* Messages are now returned in Lists instead of Collections
+
+build_20090512_2310 furth
+	* added solutions parsed and questionaires parsed message
+
+build_20090511_1030 smark
+    * replaced KnOfficeMessage with Message from d3web-report project
+
+build_20090510_1920 JoeD
+	* adapted install2ext.xml
+	* Introducing: XCLRelations now parsed to KnowledgeBase via kdom.
+	  Configurable in KnowWE_config.proper.
+	  Enables Highlighting of Relations in XCLLists
+	  Highlighting now with ajax.
+
+build_20090507_1626 friedrich
+	* added getter/setter for file in D3webConditionBuilder
+
+build_20090507_1452 friedrich
+	* wrapped KnowledgeBaseManagement into IDObjectManagement
+	* removed all corresponding occurrences of kbm 
+
+build_20090430_1305 legler
+	* added the questionnaire builder for the dashtree parser 
+	* added a new MessageKnOffice error for ambiguous initial question orders. 
+	
+build_20090430_1055 furth
+	* added dashtree package, containing new ANTLR dashtree parser
+	for solutions and questionaires (both using new DashTBuilder Interface)
+	* added DashTree ANTLR grammar
+
+build_20090406_1500 reutelshoefer
+	* fixed creation of SetValue Action for QCs
+	* added TODO for AddValues for formulars
+	* added Todos for error handling
+
+build_20090403_1720 reutelshoefer
+	* removed Hotfix to set custom IDs
+	* new KBM.changeID is used
+	
+build_20090327_2100 reutelshoefer
+	* hotfixed setting of specified Object-IDs
+
+build_20090323_1520 reutelshoefer
+	* decisionTree is parsed to KDOM by ANTLR-parser (some changes in DTBuilder)
+
+build_20090314_1903 friedrich
+	* parsers rebuild 
+
+build_20090313_0882 friedrich
+	* example models & tester added
+
+build_20090310_1450 friedrich
+	* typo in errors.properties fixed
+
+build_20090228_1442 friedrich
+	* ruleparser accepts actions like "THEN q1 = q2/q3"
+
+build_20090218_1339 friedrich
+	* ruleparser and decisiontreeparser create correct rules for established/suggested solutions
+	* added errormessage for failedPredicateExceptions
+
+build_20090218_0114 friedrich
+	* added support for more than one questionclassindikations in one line
+	* fixed a bug which stopped the ruleparser without an error message when the formala wasn't surrounded with parantheses
+	* condition proving the state of a solution introduced
+
+build_20090217_1147 friedrich
+	* various bugs fixed
+
+build_20090203_1640 friedrich
+	* fixed a bug caused by the previous update 
+
+build_20090203_1517 friedrich
+	* added questionid as a prefix to manual answerids
+
+build_20090202_1527 friedrich
+	* fixed null conditions in ands, ors....
+	* fixed missing whitespace in complexrules, which caused a nullpointer exception in "THEN NOT[..." rules
+
+build_20090130_1243 friedrich
+	* bugfix in ComplexCondition
+	* intervallrange check in decisiontree implemented
+
+build_20090118_1806 friedrich
+	* decision tree parser creates startquestionclass
+
+build_20090118_1806 friedrich
+	* SCMCBR parser & package added
+
+build_20090113_1522 friedrich
+	* decisiontree packacke: added support for multiple diagnosis in one line
+
+build_20090111_0106 friedrich
+	* added ":" to Basic Lexer -> recompile alle parser
+	* added dialog annotations to decisiontreeparser
+	* tableparser creates initquestionclass when lazyparsing
+
+build_20090108_1330 reutelshoefer
+	* Error Verbalization: 
+	* change catch block from MissingResouceException to Exception
+	because IllegalArgumentException was thrown
+
+build_20090107_1307 friedrich
+	* optimized visioparser (now it can parse Morphology.vdx)
+	* new Antlr jar included
+
+build_20090106_1521 friedrich
+	* added createUncompleteFindings Flag to XCL Table Builder
+
+build_20090104_0132 friedrich
+	* added createUncompleteFindings Flag to XCL Builder
+	* added buildonlywith0Errors Flag to rule builder, implemented therefore innerclass myRule
+	* added positive Note after Parsing with no errors to xcl, rule and table parser
+	* improved errorMessages in table parser
+
+build_20090102_0103 friedrich
+	* fixed lazyparsing bug in ruleparser
+
+build_20081230_0250 friedrich
+	* added ExceltoTextParser
+	* added quote removing in TableParser
+
+build_20081222_0113 friedrich
+	* lazydiagflag in decisionparser introduced
+
+build_20081219_1514 friedrich
+	* package visio refactored
+
+build_20081218_1715 friedrich
+	* DefaultLexer introduced
+
+build_20081218_1436 friedrich
+	* package decisiontree refactored
+	* added newline ignore option in BasicLexer
+	* moved common methods of builders to util classes
+
+build_20081211_1644 friedrich
+	* errors.properties translated into English
+
+build_20081212_1235 friedrich
+	* errors.properties created (atm German, will be translated soon)
+
+build_20081211_1817 friedrich
+	* fixed problem with doubles in ComplexRules
+
+build_20081211_0133 friedrich
+	* fixed String of propertie file in xcl and rule
+	* fixed NullpointerException in DefaultParserErrorHandler
+	* added support for leeding newlines in TableParser
+
+build_20081208_1730	reutelshoefer
+	* added additional konstruktur to D3webBuilder
+
+build_20081208_1600 friedrich
+	* properties changed to ressource bundle
+	* temp.xls moved to root and is deleted after parsing
+
+build_20081208_1440 friedrich
+	* transformToWorkbook in TableParser implemented
+
+build_20081208_1056 friedrich
+	* bugfix for decisionparser
+
+build_20081207_22:24 friedrich
+	* new TableParser (example: Fallstudie.xls)
+	* Data in xls Files can start in any row/line (constructor arguments for table parser)
+	* packages KnOfficeParser, rule, util and xcl support error messages in propertie files
+
+build_20081207_1800 reutelshoefer
+	* some interface refactoring in TableParser
+
+build_20081128_0143 friedrich
+	* new RuleParser
+	* added optional type in lazy parse mode for xcl and rule
+
+build_20081124_1811 friedrich
+	* improved error messages for xcl parsers
+	* new default error handler
+	* files sorted in folders
+
+build_20081124_0149 friedrich
+	* complete new XCL parser
+	* new BasicLexer&Parser
+	* new Condition Grammar & Builder
+
+build_20081120_1245 friedrich
+	* added comments to classes in package table
+
+build_20081120_1103 friedrich
+	* package table added to project
+
+build_20081114_1426 friedrich
+	* grammars and parsers renamed
+
+build_20081113_1500 friedrich
+	* added threshold to rewriting rules in step2 and adapt step3xml & template file
+
+build_20081112_2308 friedrich
+	* added rewriting rules to step2
+	* rename step3 to step3xml
+	* renew step3xml and template file
+
+build_20081112_1633 friedrich
+	* CondChoiceYes replaced
+	* parsers refactored
+
+build_20081112_1354 friedrich
+	* added simple conditions option and made it default
+
+build_20081110_1830 reutelshoefer
+	* renamed QuestionState to QuestionSolution
+	
+build_20081110_1800 friedrich
+	* fixed condands with 1 condition
+
+build_20081112_2110 friedrich
+	* changed condition for yn-Answers to CondChoiceYes/No
+	* started to extract condition building to ConditionBuilder
+
+build_20081108_2345 friedrich
+	* errormessages improved in D3DTBuilder
+	* changed back to ANSI encoding for input files
+	* fixed bug in Diagnosis (Score)
+
+build_20081108_1901 friedrich
+	* error list fixed (contained only list errors and not getErrors())
+
+build_20081108_1805 friedrich
+	* changed coding of input file to utf-8
+	* added acceptance for question[jn] as question[yn]
+	* added acceptance for yes and no as question[yn] answers
+
+build_20081107_2343 friedrich
+	* parser generated files added to version control
+	
+build_20081104_1730 reutelshoefer
+	* added Question-type 'state' to D3DTBuilder

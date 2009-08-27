@@ -1,0 +1,32 @@
+group VisiotoXML; 
+root(it,qid,popq,picname) ::= <<
+\<Question id="<qid>"\> 
+	<popq; separator="\n">
+	\<MMInfo align="left" position="top" padding="5px"/\>
+	\<QuestionImage file="<picname>" align="center" answersPosition="right" showRegionOnMouseOver="true"\>  
+		<it; separator="\n">
+	\</QuestionImage\> 
+\</Question\> 
+>>
+
+page(shapes) ::= <<
+\<page\>
+	<shapes>
+\</page\>
+>>
+
+shape(xstart,xend,ystart,yend,text) ::= <<
+\<AnswerRegion answerID="<text>" xStart="<xstart>" xEnd="<xend>" yStart="<ystart>" yEnd="<yend>" /\>
+>>
+
+string(w) ::= <<
+<w>
+>>
+
+foo(i) ::= <<
+<i; separator="\n">
+>>
+
+popupquestion(target,answer) ::= <<
+\<PopupQuestion target="<target>" firingAnswer="<answer>" /\> 
+>>
