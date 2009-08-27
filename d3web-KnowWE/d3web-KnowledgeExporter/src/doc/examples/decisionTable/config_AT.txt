@@ -1,0 +1,33 @@
+// Attribut-Text	| Name der Property	| Attribut-Typ		| zugelassen bei
+
+Info			| MMINFO:SUBJECT:INFO		| String	| QContainer, Diagnosis, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Kommentar		| MMINFO:SUBJECT:COMMENT	| String	| QContainer, Diagnosis, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Link			| MMINFO:SUBJECT:LINK		| [String]*	| QContainer, Diagnosis, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Bilder			| MMINFO:SUBJECT:MEDIA		| [String]*	| QContainer, Diagnosis, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Synonyme		| MMINFO:SUBJECT:SYNONYMS	| String	| QContainer, Diagnosis, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Fragetext		| MMINFO:SUBJECT:PROMPT		| String	| QContainer, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+
+Abstraktionsfrage	| ABSTRACTION_QUESTION 		| Boolean		| QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Unbekannt sichtbar	| UNKNOWN_VISIBLE		| Boolean		| QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Text für "unbekannt"	| UNKNOWN_VERBALISATION		| String		| QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Risiko			| RISK				| Number		| QContainer, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Kosten			| COST				| Number		| QContainer, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Zeitaufwand		| TIME				| Number		| QContainer, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Präfix-Einheit		| PREFIX_UNIT			| String		| QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Einheit			| UNIT				| String		| QuestionNum
+Im Dialog verbergen	| HIDE_IN_DIALOG		| Boolean		| QContainer, Diagnosis, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Im Trainer verbergen	| HIDE_IN_TRAINING		| Boolean		| Diagnosis
+ICD-10			| ICD10				| String		| Diagnosis
+Therapie		| IS_THERAPY			| Boolean		| Diagnosis
+Partitionierungsklassen | PARTITION_CLASS		| List<Number>		| Diagnosis
+Knappe Feedback Erklärung| SOLUTION_FEEDBACK_EXPLANATION | String		| Diagnosis
+Priorität		|				| Number		| QContainer
+
+// special attributes
+A Priori Bewertung	| setAPrioriProbability()		| {P5,P4,P3,P2,N2,N3,N4,N5}	| Diagnosis
+Abnormalität		| PSMethodShared:SHARED_ABNORMALITY	| {A0,A1,A2,A3,A4,A5}		| QuestionMC, QuestionOC, QuestionYN
+Gewicht			| PSMethodShared:SHARED_WEIGHT		| {G0,G1,G2,G3,G4,G5,G6,G7}	| QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Lokales Gewicht		| PSMethodShared:SHARED_LOCAL_WEIGHT	| {G0,G1,G2,G3,G4,G5,G6,G7}	| QuestionMC, QuestionOC, QuestionYN
+//Ähnlichkeit		| PSMethodShared:SHARED_SIMILARITY  	|				| QuestionMC, QuestionOC, QuestionYN, QuestionNum
+//Wertebereichordnung	|					| {undefiniert, nominal, ordinal} | QuestionOC
+Num2Choice              | NUM2CHOICE                            |    String                       | QuestionChoice

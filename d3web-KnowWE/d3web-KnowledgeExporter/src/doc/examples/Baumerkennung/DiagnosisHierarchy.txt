@@ -1,0 +1,13 @@
+Nadelbaum
+- Fichte
+- Tanne
+- Kiefer
+Laubbaum
+- Eiche
+- Buche
+- Ahorn
+- Linde
+- Kastanie
+- Esche
+- Birke
+Anderer Baum

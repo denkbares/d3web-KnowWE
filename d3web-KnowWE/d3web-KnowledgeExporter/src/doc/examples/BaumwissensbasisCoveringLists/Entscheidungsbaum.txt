@@ -1,0 +1,62 @@
+
+Startfragen
+- Einheimische Baumart [jn]
+-- ja
+--- Baumfragen
+-- nein
+--- Anderer Baum (P7)
+- Temperatur [num]
+
+
+Baumfragen
+- Nadeln [jn]
+-- ja
+-- nein
+- Fruchtart [oc]
+-- längliche Zapfen
+--- Zapfenrichtung [oc]
+---- hängend
+---- stehend
+-- rundliche Zapfen
+- Nadellänge [oc]
+-- kurz
+--- Nadelanordnung [oc]
+---- eher scheitelförmig
+---- rundum
+-- lang
+- Rindenoberfläche [oc]
+-- glatt
+-- rissig oder geborsten
+- Stammfarbe [oc]
+-- weißlich
+-- rötlich
+-- braun oder grau
+- Fruchttyp [oc]
+-- "becherförmig, grün/braun (Eichel)"
+-- "tertraederförmig, braun (Buchecker)"
+-- "Flügel mit 1 Kern"
+-- "Flügel mit 2 Kernen"
+-- Kastanie
+-- Propeller mit Kern
+- Blüten [oc]
+-- grünlich, klein, mit dem Laubaustrieb
+-- weiß oder rot, kerzenförmig, nach dem Laubaustrieb
+-- gelb, klein, vor dem Laubaustrieb
+-- gelbe Kätzchen, mit dem Laubaustrieb
+-- weiß/gelb, klein, nach dem Laubaustrieb
+-- grün/gleb, vor oder mit dem Laubaustrieb
+- Blatttyp [oc]
+-- ein Blatt pro Stiel
+--- Blattaufteilung [oc]
+---- ungeteilt
+----- Blattform [oc]
+------ andere Blattform
+------- Blattrand [oc]
+-------- glattrandig
+-------- gesägt/gezackt
+------ herzförmig
+------ rund oder elliptisch
+---- "geteilt (tiefe Einschnitte)"
+---- "gebuchtet (kleine Einbuchtungen)"
+-- gegenständige kleine Blätter an einem Blattstiel
+-- "gefiedert (von einem Blattstiel fingerförmig angeordnete Blätter)"

@@ -1,0 +1,46 @@
+// ATTRIBUTE-TEXT   | NAME OF PROPERTY      | TYPE          | ALLOWED OBJECTS
+
+// **** STANDARD PROPERTIES ****
+Abstraktionsfrage   | ABSTRACTION_QUESTION  | Boolean       | Question
+Unbekannt sichtbar  | UNKNOWN_VISIBLE       | Boolean       | Question
+Text für "unbekannt"| UNKNOWN_VERBALISATION | String        | Question
+Risiko              | RISK                  | Number        | QASet
+Kosten              | COST                  | Number        | QASet
+Zeitaufwand         | TIME                  | Number        | QASet
+Präfix-Einheit      | PREFIX_UNIT           | String        | QuestionNum
+Einheit             | UNIT                  | String        | QuestionNum
+Im Dialog verbergen | HIDE_IN_DIALOG        | Boolean       | QASet, Diagnosis
+Im Trainer verbergen| HIDE_IN_TRAINING      | Boolean       | Diagnosis
+ICD-10              | ICD10                 | String        | Diagnosis
+Ist Therapie        | IS_THERAPY            | Boolean       | Diagnosis
+Abkürzung           | SHORT_DESCRIPTION     | String        | QASet, Diagnosis
+Priorität           |                       | Number        | QContainer
+Partitionierungsklassen  | PARTITION_CLASS  | List<Number>  | QASet, Diagnosis
+Knappe Feedback Erklärung| SOLUTION_FEEDBACK_EXPLANATION | String | Diagnosis
+Numerisches Transformationsschema | NUM2CHOICE | List<Number> | QuestionOC, QuestionYN
+Privat		|	PRIVATE			| Boolean		| QContainer, Diagnosis, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Extern	|	EXTERNAL		| Boolean		| QContainer, Diagnosis, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+Foreign-namespace|FOREIGN_NAMESPACE	| String	| QContainer, Diagnosis, QuestionMC, QuestionOC, QuestionYN, QuestionNum
+
+
+// **** MMINFO ****
+Info                | MMINFO:SUBJECT:INFO       | String    | QASet, Diagnosis
+Kommentar           | MMINFO:SUBJECT:COMMENT    | String    | QASet, Diagnosis
+Link                | MMINFO:SUBJECT:LINK       | [String]* | QASet, Diagnosis
+Bilder              | MMINFO:SUBJECT:MEDIA      | [String]* | QASet, Diagnosis
+Url                 | MMINFO:SUBJECT:URL        | [String]* | QASet, Diagnosis
+Multimedia          | MMINFO:SUBJECT:MULTIMEDIA | [String]* | QASet, Diagnosis
+Synonyme            | MMINFO:SUBJECT:SYNONYMS   | String    | QASet, Diagnosis
+Fragetext           | MMINFO:SUBJECT:PROMPT     | String    | QASet
+Therapie            | MMINFO:SUBJECT:THERAPY    | String    | Diagnosis
+Prognose            | MMINFO:SUBJECT:PREDICTION | String    | Diagnosis
+
+// **** SHARED KNOWLEDGE ****
+Abnormalität        | PSMethodShared:SHARED_ABNORMALITY   | {A0,A1,A2,A3,A4,A5}             | QuestionChoice
+Gewicht             | PSMethodShared:SHARED_WEIGHT        | {G0,G1,G2,G3,G4,G5,G6,G7}       | Question
+Lokales Gewicht     | PSMethodShared:SHARED_LOCAL_WEIGHT  | {G0,G1,G2,G3,G4,G5,G6,G7}       | QuestionChoice
+//Ähnlichkeit       | PSMethodShared:SHARED_SIMILARITY    |                                 | Ähnlichkeit
+//Wertebereichordnung |                                   | {undefiniert, nominal, ordinal} | QuestionOC
+
+// **** OTHER ****
+A Priori Bewertung  | setAPrioriProbability()             | {P5,P4,P3,P2,N2,N3,N4,N5}       | Diagnosis

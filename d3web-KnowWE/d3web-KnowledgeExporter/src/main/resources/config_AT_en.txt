@@ -1,0 +1,41 @@
+// ATTRIBUTE-TEXT     | NAME OF PROPERTY      | TYPE          | ALLOWED OBJECTS
+
+// **** STANDARD PROPERTIES ****
+abstraction question  | ABSTRACTION_QUESTION  | Boolean       | Question
+unknown visible       | UNKNOWN_VISIBLE       | Boolean       | Question
+unknown verbalisation | UNKNOWN_VERBALISATION | String        | Question
+risk                  | RISK                  | Number        | QASet
+cost                  | COST                  | Number        | QASet
+time expenditure      | TIME                  | Number        | QASet
+prefix unit           | PREFIX_UNIT           | String        | QuestionNum
+unit                  | UNIT                  | String        | QuestionNum
+hide in dialog        | HIDE_IN_DIALOG        | Boolean       | QASet, Diagnosis
+hide in training      | HIDE_IN_TRAINING      | Boolean       | Diagnosis
+ICD-10                | ICD10                 | String        | Diagnosis
+is therapy            | IS_THERAPY            | Boolean       | Diagnosis
+short description     | SHORT_DESCRIPTION     | String        | QASet, Diagnosis
+priority              |                       | Number        | QContainer
+partition class       | PARTITION_CLASS  | List<Number>  | QASet, Diagnosis
+solution feedback explanation| SOLUTION_FEEDBACK_EXPLANATION | String | Diagnosis
+
+// **** MMINFO ****
+info                  | MMINFO:SUBJECT:INFO       | String    | QASet, Diagnosis
+comment               | MMINFO:SUBJECT:COMMENT    | String    | QASet, Diagnosis
+link                  | MMINFO:SUBJECT:LINK       | [String]* | QASet, Diagnosis
+media                 | MMINFO:SUBJECT:MEDIA      | [String]* | QASet, Diagnosis
+url                   | MMINFO:SUBJECT:URL        | [String]* | QASet, Diagnosis
+multimedia            | MMINFO:SUBJECT:MULTIMEDIA | [String]* | QASet, Diagnosis
+synonyms              | MMINFO:SUBJECT:SYNONYMS   | String    | QASet, Diagnosis
+prompt                | MMINFO:SUBJECT:PROMPT     | String    | QASet
+therapy               | MMINFO:SUBJECT:THERAPY    | String    | Diagnosis
+prediction            | MMINFO:SUBJECT:PREDICTION | String    | Diagnosis
+
+// **** SHARED KNOWLEDGE ****
+abnormality           | PSMethodShared:SHARED_ABNORMALITY   | {A0,A1,A2,A3,A4,A5}             | QuestionChoice
+weight                | PSMethodShared:SHARED_WEIGHT        | {G0,G1,G2,G3,G4,G5,G6,G7}       | Question
+local weight          | PSMethodShared:SHARED_LOCAL_WEIGHT  | {G0,G1,G2,G3,G4,G5,G6,G7}       | QuestionChoice
+//similarity          | PSMethodShared:SHARED_SIMILARITY    |                                 | Ähnlichkeit
+//Wertebereichordnung |                                     | {undefiniert, nominal, ordinal} | QuestionOC
+
+// **** OTHER ****
+a priori probability  | setAPrioriProbability()             | {P5,P4,P3,P2,N2,N3,N4,N5}       | Diagnosis

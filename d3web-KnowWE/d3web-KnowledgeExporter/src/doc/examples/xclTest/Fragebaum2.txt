@@ -1,0 +1,37 @@
+Questions
+- Medium [oc]
+-- water
+-- land
+- Type of sport [oc]
+-- individual
+-- group
+- My favorite sports form [oc]
+-- Swimming
+-- Running
+- Training goals [mc]
+-- endurance
+-- stress reduction
+-- losing weight
+-- having fun
+- Favorite color [mc]
+-- red
+-- green
+-- blue
+-- yellow
+- Running costs [oc]
+-- low
+-- medium
+-- nothing
+-- high
+- Trained muscles [mc]
+-- upper part
+-- back
+-- legs
+- Physical problems [mc]
+-- skin allergy
+-- joint problems on the legs
+-- overweight
+- Available time [num] {hour} (1 5)
+-- < 2
+-- <= 3
+-- > 4

@@ -1,0 +1,16 @@
+Swimming {
+  Medium = water OR Type of sport = individual [!],
+  My favorite sports form = Swimming [++],
+  Trained muscles = upper part [2],
+  Trained muscles = back [2],
+  Training goals ALL {endurance, stress reduction},
+  Favorite color IN {red, green, blue},
+  Running costs = medium,
+  Running costs = low [-1],
+  Running costs = nothing [--],
+  Physical problems = skin allergy [--],
+  Type of sport = group [--],
+}[ establishedThreshold = 0.7,
+   suggestedThreshold = 0.5,
+   minSupport = 0.5
+ ]

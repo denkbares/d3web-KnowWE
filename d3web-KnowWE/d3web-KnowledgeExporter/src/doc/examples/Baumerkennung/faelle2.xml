@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<CaseRepository>
+
+<Cases>
+
+<Problem>
+<DCMarkup>
+<DCElement label="DC.TITLE"><![CDATA[Fall: Fichte]]></DCElement>
+<DCElement label="DC.RESOURCE_IDENTIFIER" value="nullc749634fa:10c3f07d9a6:-7ffd"/>
+</DCMarkup>
+<Properties>
+<Property name="case_metadata" class="de.d3web.caserepository.MetaDataImpl"><Metadata>
+<Account>guest@guest</Account>
+</Metadata>
+</Property>
+</Properties>
+<Questions>
+<Question id='Q4'>
+<Answer id='Q4a1'/>
+</Question>
+<Question id='Q2'>
+<Answer id='Q2YES'/>
+</Question>
+<Question id='Q6'>
+<Answer id='Q6a2'/>
+</Question>
+<Question id='Q1'>
+<Answer id='Q1YES'/>
+</Question>
+<Question id='Q5'>
+<Answer id='Q5a2'/>
+</Question>
+<Question id='Q3'>
+<Answer id='Q3a2'/>
+</Question>
+</Questions>
+<Solutions>
+<Solution id="P2" weight="1.0" psmethod="de.d3web.kernel.psMethods.userSelected.PSMethodUserSelected" state="established"/>
+</Solutions>
+</Problem>
+
+<Problem>
+<DCMarkup>
+<DCElement label="DC.TITLE"><![CDATA[Fall: Kiefer]]></DCElement>
+<DCElement label="DC.RESOURCE_IDENTIFIER" value="nullc749634fa:10c3f07d9a6:-7ffc"/>
+</DCMarkup>
+<Properties>
+<Property name="case_metadata" class="de.d3web.caserepository.MetaDataImpl"><Metadata>
+<Account>guest@guest</Account>
+</Metadata>
+</Property>
+</Properties>
+<Questions>
+<Question id='Q2'>
+<Answer id='Q2YES'/>
+</Question>
+<Question id='Q1'>
+<Answer id='Q1YES'/>
+</Question>
+<Question id='Q8'>
+<Answer id='Q8a2'/>
+</Question>
+<Question id='Q5'>
+<Answer id='Q5a1'/>
+</Question>
+<Question id='Q3'>
+<Answer id='Q3a1'/>
+</Question>
+</Questions>
+<Solutions>
+<Solution id="P4" weight="1.0" psmethod="de.d3web.kernel.psMethods.userSelected.PSMethodUserSelected" state="established"/>
+</Solutions>
+</Problem>
+
+<Problem>
+<DCMarkup>
+<DCElement label="DC.TITLE"><![CDATA[Fall:Tanne]]></DCElement>
+<DCElement label="DC.RESOURCE_IDENTIFIER" value="nullc749634fa:10c3f07d9a6:-7ffb"/>
+</DCMarkup>
+<Properties>
+<Property name="case_metadata" class="de.d3web.caserepository.MetaDataImpl"><Metadata>
+<Account>guest@guest</Account>
+</Metadata>
+</Property>
+</Properties>
+<Questions>
+<Question id='Q4'>
+<Answer id='Q4a2'/>
+</Question>
+<Question id='Q2'>
+<Answer id='Q2YES'/>
+</Question>
+<Question id='Q6'>
+<Answer id='Q6a1'/>
+</Question>
+<Question id='Q1'>
+<Answer id='Q1YES'/>
+</Question>
+<Question id='Q5'>
+<Answer id='Q5a2'/>
+</Question>
+<Question id='Q3'>
+<Answer id='Q3a2'/>
+</Question>
+</Questions>
+<Solutions>
+<Solution id="P3" weight="1.0" psmethod="de.d3web.kernel.psMethods.userSelected.PSMethodUserSelected" state="established"/>
+</Solutions>
+</Problem>
+
+<Problem>
+<DCMarkup>
+<DCElement label="DC.TITLE"><![CDATA[Fall:Eiche]]></DCElement>
+<DCElement label="DC.RESOURCE_IDENTIFIER" value="nullc749634fa:10c3f07d9a6:-7ffa"/>
+</DCMarkup>
+<Properties>
+<Property name="case_metadata" class="de.d3web.caserepository.MetaDataImpl"><Metadata>
+<Account>guest@guest</Account>
+</Metadata>
+</Property>
+</Properties>
+<Questions>
+<Question id='Q2'>
+<Answer id='Q2NO'/>
+</Question>
+<Question id='Q1'>
+<Answer id='Q1YES'/>
+</Question>
+<Question id='Q12'>
+<Answer id='Q12a2'/>
+</Question>
+<Question id='Q10'>
+<Answer id='Q10a4'/>
+</Question>
+<Question id='Q9'>
+<Answer id='Q9a1'/>
+</Question>
+</Questions>
+<Solutions>
+<Solution id="P6" weight="1.0" psmethod="de.d3web.kernel.psMethods.userSelected.PSMethodUserSelected" state="established"/>
+</Solutions>
+</Problem>
+
+<Problem>
+<DCMarkup>
+<DCElement label="DC.TITLE"><![CDATA[Fall:Buche]]></DCElement>
+<DCElement label="DC.RESOURCE_IDENTIFIER" value="nullc749634fa:10c3f07d9a6:-7ff9"/>
+</DCMarkup>
+<Properties>
+<Property name="case_metadata" class="de.d3web.caserepository.MetaDataImpl"><Metadata>
+<Account>guest@guest</Account>
+</Metadata>
+</Property>
+</Properties>
+<Questions>
+<Question id='Q7'>
+<Answer id='Q7a1'/>
+</Question>
+<Question id='Q1'>
+<Answer id='Q1YES'/>
+</Question>
+<Question id='Q10'>
+<Answer id='Q10a1'/>
+</Question>
+<Question id='Q13'>
+<Answer id='Q13a2'/>
+</Question>
+<Question id='Q9'>
+<Answer id='Q9a2'/>
+</Question>
+</Questions>
+<Solutions>
+<Solution id="P7" weight="1.0" psmethod="de.d3web.kernel.psMethods.userSelected.PSMethodUserSelected" state="established"/>
+</Solutions>
+</Problem>
+
+</Cases>
+
+</CaseRepository>
+
