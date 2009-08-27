@@ -57,6 +57,7 @@
 	<modules>
 		<module>d3web-Report</module>
 		<module>d3web-KnOfficeParser</module>
+		<module>d3web-TextParser</module>
 	</modules>
 	<repositories>
 		<repository>
