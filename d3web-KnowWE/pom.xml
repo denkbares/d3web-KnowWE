@@ -58,6 +58,7 @@
 		<module>d3web-Report</module>
 		<module>d3web-KnOfficeParser</module>
 		<module>d3web-TextParser</module>
+		<module>d3web-TiRex</module>
 	</modules>
 	<repositories>
 		<repository>
