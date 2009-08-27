@@ -54,6 +54,9 @@
 		</extensions>
 
 	</build>
+	<modules>
+		<module>d3web-Report</module>
+	</modules>
 	<repositories>
 		<repository>
 			<id>infoVI-public</id>
