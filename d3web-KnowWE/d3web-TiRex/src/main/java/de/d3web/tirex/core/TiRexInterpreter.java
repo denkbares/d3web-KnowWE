@@ -23,7 +23,7 @@ import de.d3web.tirex.core.extractionStrategies.ExtractionStrategy;
  */
 public class TiRexInterpreter {
 
-	public static final String TIREX_START_TAG = "<TiRex(?:[ ]solution[ ]*=[ ]*[\"]?([a-zA-Z0-9äööüÄÖÜß]+)[\"]?)?>";
+	public static final String TIREX_START_TAG = "<TiRex(?:[ ]solution[ ]*=[ ]*[\"]?([a-zA-Z0-9Ã¤Ã¶Ã¶Ã¼Ã„Ã–ÃœÃŸ]+)[\"]?)?>";
 	public static final String TIREX_END_TAG = "</TiRex>";
 
 	/**
