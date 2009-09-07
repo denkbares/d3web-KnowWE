@@ -61,6 +61,10 @@
 		<module>d3web-TiRex</module>
 		<module>d3web-KnowledgeExporter</module>
 		<module>d3web-Distributed</module>
+		<module>KnowWE2-Plugin-d3web</module>
+		<module>KnowWE2</module>
+		<module>KnowWE2-core</module>
+		<module>KnowWE2-JSPWiki-Connector</module>
 	</modules>
 	<repositories>
 		<repository>
