@@ -1,0 +1,84 @@
+package de.d3web.we.action;
+
+import java.util.ResourceBundle;
+
+import de.d3web.we.core.broker.Broker;
+import de.d3web.we.core.dialog.Dialog;
+import de.d3web.we.core.dialog.DialogControl;
+import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
+import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.javaEnv.KnowWEAttributes;
+import de.d3web.we.javaEnv.KnowWEParameterMap;
+
+public class UserInterventionRenderer implements KnowWEAction {
+
+
+	public String perform(KnowWEParameterMap map){
+		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+		StringBuffer sb = new StringBuffer();
+		Broker broker = D3webModule.getBroker(map);
+		DialogControl dc = broker.getDialogControl();
+		Dialog nextActiveDialog = dc.getNextActiveDialog();
+		String text = nextActiveDialog.getComment();
+		KnowledgeServiceSession target = nextActiveDialog.getDialog();
+		KnowledgeServiceSession reason = nextActiveDialog.getReason();
+		
+		String renderer = map.get(KnowWEAttributes.STEP_RENDERER);
+		String action = KnowWEAttributes.ACTION_SWITCH_CASE;
+		String noAction = "KWiki_noDelegate";
+		
+		
+		sb.append("<div style='text-align:center'>");
+		if(reason != null) {
+			sb.append("<h3>");
+			sb.append(getVerbalisation(reason));
+			sb.append("</h3>");
+			sb.append(rb.getString("KnowWE.intervention.delegate"));
+			sb.append("<h3>");
+			sb.append(getVerbalisation(target));
+			sb.append("</h3>");
+			sb.append("<br/>");		
+			sb.append("<div>");
+			sb.append("<h2>");
+			sb.append(text);
+			sb.append("</h2>");
+		} else {
+			sb.append(rb.getString("KnowWE.intervention.wannaDelegate"));
+		}
+		sb.append("</div>");
+		
+		sb.append("<br/>");		
+		
+		sb.append("<div>");		
+		sb.append("<a style='padding-left:2em;padding-right:2em;decoration:none;color:#000;border-width:0px;font-size:150%' href='KnowWE.jsp?action=" + action + "&renderer=" + renderer + "'alt='"+rb.getString("KnowWE.intervention.no")+"'>");
+		sb.append("<img width='2em' src='../images/tree/yes.png' alt='"+rb.getString("KnowWE.intervention.yes")+"'>");
+		sb.append("</img>");
+		sb.append("</a>");
+		sb.append("<a style='padding-left:2em;padding-right:2em;decoration:none;color:#000;border-width:0px;font-size:150%' href='KnowWE.jsp?action=" + noAction + "&renderer=" + renderer + "&"+KnowWEAttributes.NAMESPACE+"="+target.getNamespace()+"'>");
+		sb.append("<img width='2em' src='../images/tree/no.png' alt='"+rb.getString("KnowWE.intervention.no")+"'>");
+		sb.append("</img>");
+		sb.append("</a>");
+		sb.append("</div>");
+		
+		return sb.toString();
+	}
+
+	private String getVerbalisation(KnowledgeServiceSession kss) {
+		String[] split = kss.getNamespace().split("\\.\\.");
+		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+		String result = "";
+		if(split.length == 0) {
+			result = rb.getString("KnowWE.intervention.kss");
+			result = result.replaceAll("&service", split[0]);
+		} else {
+			result = rb.getString("KnowWE.intervention.kss");
+			result += " ";
+			result += rb.getString("KnowWE.intervention.topic");
+			result = result.replaceAll("&topic", split[0]);
+			result = result.replaceAll("&service", split[1]);
+		}
+		return result;
+	}
+	
+	
+}

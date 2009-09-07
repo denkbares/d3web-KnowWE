@@ -1,0 +1,330 @@
+*****************************************************************************
+* 																			*
+*     ,/|    y               /|    /(_)\    |\               y    |\		*
+*   ,/  \   ,OGmm          /' `\   \`,'/   /' `\          mm3O,   / `\		*
+*  /     \_//            /' / | `\_/\~/\_/' | \ `\            \\_/    `\	*
+* /    |   ||           O  |   \/'   V   `\/   |  O           ||   |    \	*
+*|  |  |  /||          O   |,-,|   ,_;_,   |,-,|   O          ||\  |  |  |	*
+*|  |   \ | \\        oO    \  \\ '\ I /` //  /    Oo        // | /   |  |	*
+*|  \   /\|  M        oO     \ \`\  \ /  /'/ /     Oo        M  |/\   /  |	*
+*|   \ |  ` //         O    /~\ \,\  |  /,/ /~\    O         \\ '  | /   |	*
+*|  /'\|    M      _____O  /__/ /__| I |__\ \__\  O____       M    |/`\  |	*
+* \ |  `    \\     |     \|  '''  ''' ```  ```  |/     |     //    '  | /	*
+*  \|    |   M     |     KnowWE2 - The answer to       |     M   |    |/	*
+*   \    \\_//     |           everything              |     \\_//    /		*
+*    `    `~'      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      `~'    '		*
+*****************************************************************************
+
+build_20090521_0400 astriffler
+	* implemented new DefaultLineNumberDeligateRenderer replacing the old
+	  LineNumberRenderers
+	* fixed sectionizing in QuestionnairesKDOMBuilder
+	* fixed and extended sectionizing in QuestionLineKDOMBuilder (more to come)
+	* hotfixed include highlighting in Solutions-, Questions- and Questionnaires-section
+	
+build_20090520_1000 reutelshoefer
+	* some cleaning up on types
+	* added added DefaultAbstractKnowWEObjectType that implements 
+	* empty methods of optional methods
+
+build_20090519_2245 legler
+	* added colored rendering for Questionnaires
+	* removed custom solutions renderer
+	* changed QClassID and SolutionID to no longer inherit from TextLine
+
+build_20090519_1115 reutelshoefer
+	* interface change of KDOMRenderer.render()
+	* 'String user' becomes 'KnowWEUserContext user'
+	* same with TagHandler.render()
+
+build_20090518_1525 astriffler
+	* fixed a small Solutions sectionizing issue
+	
+build_20090518_1255 astriffler
+	* fixed some XCL sectionizing issues
+
+build_20090515_0909 friedrich
+	* added parameter language to QuestionLineKDOMBuilder.addDescription
+
+build_20090513_1330 astriffler
+	* moved and adapted reviseSubTree method of RuleSection
+	to the RuleSubTreeHandler -> Rules are now parsed individually
+	* changed some Strings to StringBuilder
+
+build_20090513_1220 JoeD
+	* Getting of KnowledgeBase-Ids for XCLRelations now in
+		XCLRelation
+
+build_20090512_1030 reutelshoefer
+	* moved ant-call copying KnowWE-JSPWiki-Connector from KnowWE-Plugin-d3web to KnowWE2
+
+build_20090512_2310 furth
+	* added color rendering and proper kdom entries for solutions section
+
+build_20090512_1230 hatko
+	* changes due to changes of KnowWEModule#getTagHandlers()
+
+build_20090511_2350 mdiez
+	* added linebreak to HTMLDialogRenderer.renderDialog
+
+build_20090511_1240 reutelshoefer
+    * changes due to Report refactoring
+
+build_20090510_1920 JoeD
+	* adapted install2ext.xml
+	* Introducing: XCLRelations now parsed to KnowledgeBase via kdom.
+	  Configurable in KnowWE_config.proper.
+	  Enables Highlighting of Relations in XCLLists
+	  Highlighting now with ajax.
+
+build_20090507_1452 friedrich
+	* wrapped KnowledgeBaseManagement into IDObjectManagement (in KnOfficeParser)
+	* removed all corresponding occurrences of kbm
+
+build_20090507_1145
+	* Refactor: Renamed findChildOfType in findSuccessor() in Sction because
+				it searches deep. Introduced new findChildOType() which only
+				searches the children of the Section.
+	* FindingToConditionBuilder offers Methods to create conditions from
+	  kdom-Findings
+
+build_20090506_2110 astriffler
+	* fixed some KDOM inconsistencies in ANTLR generated Sections
+	  removed some unnecessary hotfixes...
+
+build_20090505_0100 mdiez
+	* added TagHandlerType to rootTypes
+
+build_20090430_1700 astriffler
+	* overhauled ConditionKDOMBuilder to fix the most frequent errors occuring
+	while building KDOM
+	* minor fixes in other classes for the same reason
+	* fixed/rewrote XCLRelationWeightSectionFinder using regex
+
+build_20090430_1330 legler
+	* migrated QuestionnairesSection to the new ANTLR dash tree parser
+	* adapted SolutionsSection to KnowledgeRepresenationHandler
+
+build_20090430_1100 furth
+	* changed reviseSubtree method in SolutionsSection in
+	order to use the new ANTLR Parser
+	* added init() method to SolutionsSection
+	* added SolutionsContent
+	
+build_20090428_1850 reutelshoefer
+	* revised and commented KnowWEModule-interface
+	* some further renaming (TerminlogyHandler --> KnowledgeRepresenationHandler)
+
+build_20090420_1140 JoeD
+	* Added description for KnowledgeBasesGenerator
+
+build_20090420_1030 reutelshoefer
+	* plugin mechanism now creates Module-instances correctly
+	as singletons using reflections
+
+build_20090409_1400 reutelshoefer
+	* fixed 9 FindBugs bugs
+ 
+
+build_20090408_1340 reutelshoefer
+	* fixed package problems on TiRexTail
+	caused by package refactoring
+
+build_20090407_1615 reutelshoefer
+	* revised renderer management
+	* introduced RendererManager
+	* special renderer can be registered for certain types
+	* if none registered all rendered as until now
+
+build_20090406_1615 reutelshoefer
+	* corrected ResourceBundle-name
+
+build_20090404_1730 mdiez
+	* added method getKwikiBundle_d3web() to class D3webModule
+	* and used in all taghandlers instead of the static field
+	
+build_20090402_1920 reutelshoefer
+	* some cleaning up of package structure:
+	* moved core classes to core package
+	* moved actions to action package
+	* rename dom package to kdom
+	* renamed many packages (no more 'webapp')
+	* deleted some unused/old classes
+
+build_20090402_1610 reutelshoefer
+	* changed d3webModule according to changes in KnowWEModule about Management of TagHandlers
+	* added descriptions to TagHandlers
+
+
+build_20090401_1540 mdiez
+	* added method getDescription() in TagHandlers
+
+build_20090325_1240 smark
+    * changed child in CoveringTableContent to TableContent
+
+build_20090325_1220 reutelshoefer
+	* added ant-lib to classpath
+
+build_20090324_1920 reutelshoefer
+	* fixed bug in DPSSolutionRenderer
+
+build_20090323_1540 reutelshoefer
+	* switched some colors on syntax highlighting of decision tree
+
+build_20090323_1520 reutelshoefer
+	* decisionTree is parsed to KDOM by ANTLR-parser
+
+build_20090311_1350 reutelshoefer
+	* some refactoring of package structure
+
+build_20090311_1330 smark
+    * extracted strings in SolutionStateViewHandler to properties file
+
+build_20090311_1320 reutelshoefer
+	* extended KDOM generation for Conditions from ANTLR
+	* passing IDGenerator from Article
+	* keeping quotes and brackets
+	* added CondKnown
+
+build_20090311_1030 haupt	
+	* fixed comparator=null bug
+
+build_20090310_1745 reutelshoefer
+	* change KopicSectionRenderer to mark Errors correctly in QuestionSection
+
+build_200903081715   friedrich/reutelshoefer (haupt)
+  * fixed syntaxtreebuilder bug 
+  * added Intervalltypes
+  
+
+build_20090306_1806 haupt
+  * added the OwlDownload  taghandler which creates a downloadlink for the owl-ontology
+
+build_20090305_2320 haupt
+    * performance improvements on the upper ontology access
+    
+    
+build_20090303_1745 astriffler
+	* fixed bug in RuleFinder (last Rule wasn't found)
+
+build_20090302_1000 reutelshoefer
+	* SyntaxTreeBuilder: added some NullChecks
+	* passing correct topic name
+
+build_20090301_1107 haupt
+* d3webannotation stuff now in this project
+* new annotation sytanx {{..}}
+* lots of small fixes
+
+
+build_20090228_1845 astriffler
+	* hotfixed EmptyStackException in SyntaxTreeBuilder (bugzilla no. 198)
+
+build_20090227_2030 reutelshoefer
+	* reworked parsing and rendering of rules
+	* condition-KDOMs are now parsed by ANTLR-KDOM-builder
+	* additionaly dependency: ANTLR-lib
+
+build_20090226_1330 reutelshoefer/belli
+	* stopped onclick event on quickEditButton for IE
+
+build_20090226_1245 reutelshoefer/belli
+	* fixed KopicSectionRenderer for spaces in javascript parameters
+
+build_20090226_1100 reutelshoefer
+	* KnowledgeService created when questions or solutions inserted
+
+build_20090221_1115 reutelshoefer
+	* some changes & fixes
+
+build_20090220_1130 reutelshoefer
+	* renamed class: WebEnvironmentManager --> DPSEnvironmentManager
+
+build_20090220_1045 smark
+    * added encodeHTMLEntities to CodeCompletion box
+
+build_20090219_1720 reutelshoefer
+	* added section key words (SetCoveringLists-section) to codeCompletion keyword list
+
+build_20090218_0835 JoeD
+	* cleaned KnowWE.jsp: KnowWEParameterMap now adds Parameters over Request
+
+build_20090217_1130 smark
+    * CodeCompletion returns "no completion found" when no finding is found
+
+build_20090213045 reutelshoefer
+	* fixed SCM dependencies
+
+build_20090209_1545 smark
+    * moved "update", "clear" and "show findings" from right panel
+      to solutionstate panel 
+
+build_20090206_1605 astriffler
+	* reimplemented ObjectType Rule with a new SectionFinder
+	  compatible to includes
+	* XCListSectionizer is now compatible to includes too
+
+build_20090206_0150 astriffler
+	* fixed bug concerning the Rules-Section and includes
+	  -> removed unnecessary ObjectType Rule and its SectionFinder RuleFinder
+
+build_20090205_1245 reutelshoefer
+	* added types for rules
+	* added some Syntax-Highlighting to Rules and XCLs
+
+
+build_20090203_1645 astriffler
+	* removed code concerning the old highlighting mechanism for includes
+
+build_20090129_1845 reutelshoefer
+	* fixed bug in KB registration in DPSE after parsing process
+
+build_200901012_1600 reutelshoefer
+	* fixed bug in TiRexParagraph
+
+build_20090111_0000 astriffler
+	* implemented new IncludedFromTypes and Renderer for CoveringListSection, 
+	CoveringTableSection,  QuestionsSection, QuestionnairesSection, RuleSection, 
+	SolutionsSection and KopicContent
+	* changes in the according section classes to make them work
+
+build_20090109_1800 reutelshoefer
+	* some refactoring on types
+
+build_20090107_1930 reutelshoefer
+	* lots of package restructuring and renaming
+	* fixed bug with lazy created solutions in TiRex
+
+build_20090106_1717 reutelshoefer
+	* first editable version of CoveringTable
+	* added QuickEdit Button to all KopicSections
+	* added CoveringTable to KnOfficeUpload
+
+build_20081230_2110 reutelshoefer
+	* module sets InlineAnswerRenderer as ConditionalRenderer for Annotations (asks::)
+	
+build_20081225_1405 JoeD
+	* Some Refactoring in structure
+	
+build_20081223_1915 reutelshoefer
+	*correct call of Questionnaires-parser in QuestionnairesSection
+	
+build_20081221_1745 reutelshoefer
+	* restructured TiRex-ing (splitted in Paragrahs, then sentences)
+	* added HighlightRender
+	* KBRenderer renders Highlighting-link if possible
+	
+build_20081218_1530 haupt
+ 	* added tomcat libraries and tomcat nature to project..
+ 		 (better than including a jar of a project which is no depency of any other project)
+
+build_20081218_1315 reutelshoefer
+	* major refactoring: all d3web functionality of KnowWE2 is in THIS project
+	
+
+build_20081217_1600 haupt	
+	* updated sesame2
+
+build_20081215_1650 haupt
+    * fixed bug #176
+    * added changelog file

@@ -1,0 +1,322 @@
+package de.d3web.we.action;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import de.d3web.kernel.XPSCase;
+import de.d3web.kernel.domainModel.Answer;
+import de.d3web.kernel.domainModel.Diagnosis;
+import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.kernel.domainModel.KnowledgeSlice;
+import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
+import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
+import de.d3web.kernel.psMethods.xclPattern.XCLInferenceTrace;
+import de.d3web.kernel.psMethods.xclPattern.XCLModel;
+import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
+import de.d3web.kernel.verbalizer.VerbalizationManager;
+import de.d3web.kernel.verbalizer.Verbalizer;
+import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
+import de.d3web.we.core.broker.Broker;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
+import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
+import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.javaEnv.KnowWEAttributes;
+import de.d3web.we.javaEnv.KnowWEParameterMap;
+
+public class XCLExplanationRenderer implements de.d3web.we.action.KnowWEAction {
+
+	private static ResourceBundle kwikiBundle = ResourceBundle.getBundle("KnowWE_messages");
+	
+	//properties only
+	private static final String SOLUTION = "SOLUTION";
+	private static final String SCORE = "SCORE";
+	private static final String SUPPORT = "SUPPORT";
+	private static final String TITLE = "TITLE";
+	
+	//properties and template
+	private static final String STATE = "STATE";
+	private static final String KB = "KB";
+	private static final String SUFFICIENTLY = "SUFFICIENTLY";
+	private static final String CONTRADICTED = "CONTRADICTED";
+	private static final String REQUIRED = "REQUIRED";
+	private static final String REQUIREDFALSE = "REQUIREDFALSE";
+	private static final String EXPLAINED = "EXPLAINED";
+	private static final String NOTEXPLAINED = "NOTEXPLAINED";
+	private static final String GIVENANSWER = "GIVENANSWER";
+	private static final String EXPECTEDANSWER = "EXPECTEDANSWER";
+	private static final String QUESTION = "QUESTION";
+	
+	private StringBuffer template; 
+	private ResourceBundle labels;
+	private Map<String, Object> parameterMap;
+	private String kbId;
+	private Collection<XCLRelation> relations;
+	private XPSCase currentCase;
+	
+	public String perform(KnowWEParameterMap parameterMap) {
+		String jumpId = parameterMap.get(KnowWEAttributes.JUMP_ID);
+		String id = parameterMap.get(KnowWEAttributes.SESSION_ID);
+		String solutionid = parameterMap.get(KnowWEAttributes.TERM);
+		Broker broker = D3webModule.getBroker(parameterMap);
+		broker.activate(broker.getSession().getServiceSession(id), null, true,
+				false, null);
+		broker.getDialogControl().showNextActiveDialog();
+		KnowledgeServiceSession serviceSession = broker.getSession()
+				.getServiceSession(id);
+		
+		if (serviceSession instanceof D3webKnowledgeServiceSession) {
+
+//			String namespace;
+//
+//			namespace = parameterMap.get(KnowWEAttributes.TARGET);
+//			if (namespace == null) {
+//				namespace = parameterMap.get(KnowWEAttributes.NAMESPACE);
+//			}
+
+			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) serviceSession;
+			KnowledgeBaseManagement baseManagement = d3webKSS.getBaseManagement();
+			
+			XPSCase c = d3webKSS.getXpsCase();
+			this.currentCase = c;
+			this.kbId = c.getKnowledgeBase().getId();
+			
+			
+			Diagnosis solution = baseManagement.findDiagnosis(solutionid);
+			if (solution == null) {
+				return kwikiBundle.getString("xclrenderer.nosolution") + solutionid;
+			}
+
+			Collection<KnowledgeSlice> models = c.getKnowledgeBase()
+					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
+			for (KnowledgeSlice knowledgeSlice : models) {
+				if (knowledgeSlice instanceof XCLModel) {
+					if (((XCLModel) knowledgeSlice).getSolution().equals(
+							solution)) {
+						XCLInferenceTrace trace = ((XCLModel) knowledgeSlice)
+								.getInferenceTrace(c);
+						if (trace == null) {
+							return kwikiBundle.getString("xclrenderer.notrace");
+						}
+						return verbalizeTrace(trace, solution.getText());
+					}
+				}
+			}
+		}
+
+		return kwikiBundle.getString("xclrenderer.findingtrace");
+	}
+
+
+	private String verbalizeTrace(XCLInferenceTrace trace, String solution) {
+		this.template= new StringBuffer();
+		this.labels = ResourceBundle.getBundle("XCLExplanationRenderer", Locale.getDefault());
+		loadTemplate();
+		
+		
+		this.parameterMap = new HashMap<String, Object>();
+		parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
+		
+		
+		//Score and Support
+		Double score = trace.getScore();
+		Double support = trace.getSupport();
+		String stateString = "no state found";
+		if(trace.getState() != null) {
+			stateString = trace.getState().toString();
+		}
+		renderState(stateString,roundDouble(score), roundDouble(support), solution);
+		
+		
+		//sufficiently derived by
+		Collection<XCLRelation> suff = trace.getSuffRelations();
+		renderTable(SUFFICIENTLY, suff);
+		
+		
+		//is contradicted by
+		Collection<XCLRelation> contr = trace.getContrRelations();
+		renderTable(CONTRADICTED, contr);
+
+		
+		//is required by
+		Collection<XCLRelation> reqPos = trace.getReqPosRelations();
+		renderTable(REQUIRED, reqPos);
+		
+		
+		//is required by NOT FULFILLED
+		Collection<XCLRelation> reqNeg = trace.getReqNegRelations();
+		renderTable(REQUIREDFALSE, reqNeg);
+		
+		
+		//explains
+		Collection<XCLRelation> relPos = trace.getPosRelations();
+		renderTable(EXPLAINED, relPos);
+		
+		
+		//explains negative
+		Collection<XCLRelation> relNeg = trace.getNegRelations();
+		renderTable(NOTEXPLAINED, relNeg);
+
+		return  this.template.toString();
+	}
+	
+	/**
+	 * method replaces wild card in template with corresponding table (HTML syntax)
+	 * @param type the table type 
+	 * @param content the content of the table
+	 */
+	private void renderTable(String type, Collection<XCLRelation> content){
+		StringBuffer table = new StringBuffer();
+		if(content != null && content.size() >0){
+			
+			if(!type.equals(NOTEXPLAINED)){
+				if(!type.equals(CONTRADICTED)){
+					table.append("<table>");
+				} else {
+					table.append("<table class=emphasized>");
+				}
+				table.append("<thead><tr><th>"+ this.labels.getString(type)+"</th></tr></thead>");
+				table.append("<tbody>"+ renderContent(content) + "</tbody></table>");
+			} else {
+				table.append("<table class=emphasized><thead><tr><th colspan=3>"+ this.labels.getString(type)+"</th></tr></thead>");
+				table.append("<tbody>" + renderContentNotExplained(content) + "</tbody></table>");
+			}
+		}
+		replaceWildcard(type, table.toString());
+	}
+	
+	/**
+	 * Renders the table content, new row for every answer
+	 * @param content the answers to be rendered
+	 * @return a table representation of the content
+	 */
+	private String renderContent(Collection<XCLRelation> content){
+		StringBuffer cont = new StringBuffer();
+		
+		for (XCLRelation rel : content) {
+			AbstractCondition cond = rel.getConditionedFinding();	
+			cont.append("<tr><td>"
+					+ VerbalizationManager.getInstance().verbalize(cond,
+							RenderingFormat.HTML, parameterMap) + "</td></tr>");
+		}
+		return cont.toString();
+	}
+	
+	
+	
+
+	/**
+	 * Content for "Not Explained" has to be rendered differently since it contains
+	 * the question, the answer given and the expected answer (verbalized condition)
+	 * @param content the content to get rendered
+	 * @return a table representation of the content
+	 */
+	private String renderContentNotExplained(Collection<XCLRelation> content){
+		StringBuffer cont = new StringBuffer();	
+		cont.append("<tr class=emphasized><td>"+ this.labels.getString(QUESTION)+"</td>");
+		cont.append("<td>"+ this.labels.getString(GIVENANSWER)+"</td>");
+		cont.append("<td class=emphasized>"+ this.labels.getString(EXPECTEDANSWER)+"</td></tr>");
+		for (XCLRelation rel : content) {
+			cont.append("<tr><td>");
+			AbstractCondition cond = rel.getConditionedFinding();	
+			List questions = cond.getTerminalObjects();
+			ListIterator condIt = questions.listIterator();
+			int count = 0;
+			Question cq = null;
+			while(condIt.hasNext()){
+			cq =(Question) condIt.next();
+			cont.append(cq.getText());
+				if(count >0){
+					cont.append("<br>");
+				}
+				count = count +1;
+			}
+			cont.append("</td><td>");
+			List answers = cq.getValue(this.currentCase);
+			ListIterator iterator = answers.listIterator();
+			count = 0;
+			while(iterator.hasNext()){
+				Answer a = (Answer) iterator.next();
+				cont.append(a.getValue(this.currentCase));
+				if(count > 0){
+					cont.append("<br>");
+				}
+				count = count+1;
+			}
+			cont.append("</td>");
+		
+			cont.append("<td class=emphasized>"
+					+ VerbalizationManager.getInstance().verbalize(cond,
+							RenderingFormat.HTML, parameterMap) + "</td></tr>");
+		}	
+		return cont.toString();
+	}
+	
+	
+	
+	/**
+	 * Replaces a wildcard in the generated template with the actual (rendered) content
+	 * @param type the wildcard to be replaced
+	 * @param renderedTable the content to be inserted
+	 */
+	private void replaceWildcard(String type, String renderedTable){
+		int start = this.template.indexOf(type);
+		if(start != -1){
+			int end = start + type.length();
+			this.template.replace(start, end, renderedTable);
+		}
+	}
+	
+	
+	/**
+	 * Renders the state of the explanation
+	 * @param state the state to be rendered
+	 * @param score the explanation score
+	 * @param support the explanation support
+	 */
+	private void renderState(String state, Double score, Double support, String solution){
+		StringBuffer cont  = new StringBuffer();
+		if(score != null && support != null) {
+			cont.append("<table><thead><tr><th colspan=2>"+this.labels.getString(SOLUTION)+":"+ solution+"</th></tr></thead>");
+			cont.append("<tbody><tr><td colspan=2><strong>"+this.labels.getString(STATE) +" : </strong>" + state+"</td></tr>");
+			cont.append("<tr><td colspan=2><strong>"+ this.labels.getString(KB)  + " : </strong>"+ this.kbId + "</td></tr>");
+			cont.append("<tr><td><strong>"+this.labels.getString(SCORE)+ " : </strong>"+ score + "</td>"
+					+ "<td><strong>"+this.labels.getString(SUPPORT) + " : </strong>"+ support +"</td></tr></tbody></table>");
+		}
+		replaceWildcard(STATE, cont.toString());
+	}
+	
+	
+	
+	
+	/**
+	 * Generates a template with wildcards
+	 */
+	private void loadTemplate(){
+		this.template = new StringBuffer();
+		this.template.append("<html><head><title>" + this.labels.getString(TITLE)+"</title>"
+				+ "<link rel=\"stylesheet\" type=\"text/css\" href=\"KnowWEExtension/css/general.css\"/>"
+				+ "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/KnowWE.js\">"
+				+ "</script></head>");
+		this.template.append("<body><div id=\"popup-xcle\">");
+		this.template.append(STATE);
+		this.template.append(SUFFICIENTLY);	
+		this.template.append(CONTRADICTED);	
+		this.template.append(REQUIRED);	
+		this.template.append(REQUIREDFALSE);	
+		this.template.append(EXPLAINED);	
+		this.template.append(NOTEXPLAINED);	
+		this.template.append("</div></body></html>");
+	}
+
+	private Double roundDouble(Double d){
+		return d = Math.round( d * 100. ) / 100.;
+	}
+	
+	
+}
