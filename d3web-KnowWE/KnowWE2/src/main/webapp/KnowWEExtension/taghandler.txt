@@ -1,0 +1,7 @@
+de.d3web.we.taghandler.PageViewHandler
+de.d3web.we.taghandler.PageViewHandlerHG
+de.d3web.we.taghandler.OwlUploadHandler
+de.d3web.we.taghandler.AdminPanelHandler
+de.d3web.we.taghandler.DialogLinkTagHandler
+de.d3web.we.taghandler.KnowledgeBasesGeneratorHandler
+de.d3web.we.taghandler.TagHandlerListHandler

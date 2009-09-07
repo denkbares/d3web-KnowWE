@@ -1,0 +1,238 @@
+lkh
+[Dreht der Anlasser durch? <=> asks:: Anlasser]
+
+<Kopic>
+
+
+<Solutions-section>
+
+Leerlaufsystem defekt
+Ansaugsystem undicht
+Luftfiltereinsatz verschmutzt
+Zündeinstellung falsch
+Batterie leer
+
+</Solutions-section>
+
+<Questions-section>
+
+Allgemeines
+- Automarke [oc]
+-- VW
+-- Opel
+-- Mercedes Benz
+-- BMW
+-- Porsche
+-- Fiat
+-- Toyota
+-- Mazda
+-- sonstige
+- Baujahr [num]
+
+Beobachtungen
+- Abgase [oc]
+-- schwarz
+--- Luftfiltereinsatz verschmutzt (P5)
+--- Untersuchung Luftfiltereinsatz
+-- bläulich
+-- farblos
+- Auspuffrohrfarbe [oc]
+-- braun
+-- grau
+-- hellgrau
+-- schwarzverrußt
+-- Bewertung Auspuffrohrfarbe [oc]<abstrakt>
+--- abnorm
+---- Luftfiltereinsatz verschmutzt (P5)
+--- normal
+- Benzinart [oc]
+-- Diesel
+-- Normal oder Super
+- "Üblicher Kraftstoffverbrauch/100km" [num]
+-- "Num. Bewertung Kraftstoffverbrauch" [num]<abstrakt>
+--- Bewertung Kraftstoffverbrauch [oc]<abstrakt>
+---- leicht erhöht
+----- Ansaugsystem undicht (P3)
+----- Untersuchung Ansaugsystem
+----- Luftfiltereinsatz verschmutzt (P3)
+---- normal
+----- Ansaugsystem undicht (N4)
+----- Luftfiltereinsatz verschmutzt (N4)
+---- erhöht
+----- Luftfiltereinsatz verschmutzt (P4)
+----- Ansaugsystem undicht (P4)
+- "Tatsächlicher Kraftstoffverbrauch/100km" [num]
+- Motorgeräusche [mc]
+-- klopfen
+-- klingeln
+-- "Nein/Sonstiges"
+- Verhalten bei Motorstart [oc]
+-- springt schlecht an
+--- Leerlaufsystem defekt (P5)
+--- Untersuchung Leerlaufsystem
+-- springt normal an
+-- springt überhaupt nicht an
+-- Anlasser [oc]
+--- dreht nicht richtig durch
+---- Batterie leer (P5)
+---- Untersuchung Batterie
+--- dreht durch
+---- Batterie leer (N4)
+- Fahrverhalten [mc]
+-- zu wenig Leistung bei Teillast
+--- Ansaugsystem undicht (P3)
+-- Leerlauf ist unregelmäßig
+--- Ansaugsystem undicht (P1)
+--- Leerlaufsystem defekt (P1)
+--- Zündeinstellung falsch (P1)
+--- Untersuchung Zündeinstellung
+--- Luftfiltereinsatz verschmutzt (P4)
+-- Leerlauf ist zu niedrig
+--- Leerlaufsystem defekt (P4)
+-- verzögertes Anfahren
+--- Zündeinstellung falsch (P3)
+-- schlechte Beschleunigung
+-- zu wenig Leistung bei Volllast
+-- "Nein/Sonstiges"
+
+
+Untersuchung Leerlaufsystem
+- Leerlaufsystem [yn]
+-- ja
+-- nein
+
+Untersuchung Ansaugsystem
+- Ansaugsystem [yn]
+-- ja
+-- nein
+
+Untersuchung Luftfiltereinsatz
+- Luftfiltereinsatz [yn]
+-- ja
+-- nein
+
+Untersuchung Zündeinstellung
+- Zündeinstellung [yn]
+-- ja
+-- nein
+
+Untersuchung Batterie
+- Batterie [yn]
+-- ja
+-- nein
+
+</Questions-section>
+
+
+<Questionnaires-section>
+
+Allgemeines [1]
+Beobachtungen [2]
+Technische Untersuchungen
+- Untersuchung Leerlaufsystem
+- Untersuchung Ansaugsystem
+- Untersuchung Luftfiltereinsatz
+- Untersuchung Zündeinstellung
+- Untersuchung Batterie
+
+</Questionnaires-section>
+
+<Rules-section>
+
+
+IF Batterie = nein
+THEN Batterie leer = P7
+
+IF (Benzinart = "Normal oder Super" AND Auspuffrohrfarbe = schwarzverrußt)
+THEN Bewertung Auspuffrohrfarbe += abnorm  
+
+IF NOT ((Verhalten bei Motorstart = "springt überhaupt nicht an" OR Verhalten bei Motorstart = springt schlecht an)) 
+THEN Zündeinstellung falsch = N5
+
+IF (Motorgeräusche = klingeln OR Motorgeräusche = klopfen)
+THEN Zündeinstellung falsch = P5
+
+IF Luftfiltereinsatz = nein
+THEN Luftfiltereinsatz verschmutzt = N7
+
+IF Ansaugsystem = nein
+THEN "Ansaugsystem undicht" = N7
+
+IF NOT (Anlasser = dreht durch) 
+THEN Luftfiltereinsatz verschmutzt = N6
+
+IF Leerlaufsystem = nein
+THEN Leerlaufsystem defekt = N7
+
+IF NOT (Fahrverhalten = Leerlauf ist unregelmäßig) 
+THEN Leerlaufsystem defekt = N4
+
+IF (Auspuffrohrfarbe = braun OR Auspuffrohrfarbe = grau OR Auspuffrohrfarbe = hellgrau)
+THEN Bewertung Auspuffrohrfarbe += normal  
+
+IF Zündeinstellung = nein
+THEN Zündeinstellung falsch = N7
+
+IF NOT (Anlasser = dreht durch) 
+THEN Zündeinstellung falsch = N6
+
+IF ((Verhalten bei Motorstart = "springt überhaupt nicht an" OR Verhalten bei Motorstart = springt schlecht an) AND Anlasser = dreht durch)
+THEN Zündeinstellung falsch = P5
+
+IF ("Num. Bewertung Kraftstoffverbrauch" >= 110 AND "Num. Bewertung Kraftstoffverbrauch" <= 130)
+THEN Bewertung Kraftstoffverbrauch = leicht erhöht  
+
+IF "Num. Bewertung Kraftstoffverbrauch" > 130
+THEN Bewertung Kraftstoffverbrauch = erhöht  
+
+IF "Üblicher Kraftstoffverbrauch/100km" > 0 AND BEKANNT["Tatsächlicher Kraftstoffverbrauch/100km"]
+THEN "Num. Bewertung Kraftstoffverbrauch" = (("Tatsächlicher Kraftstoffverbrauch/100km" / "Üblicher //Kraftstoffverbrauch/100km") * 100.0)  
+
+IF (Verhalten bei Motorstart = "springt überhaupt nicht an" OR Verhalten bei Motorstart = springt schlecht an)
+THEN Batterie leer = P5
+
+IF Zündeinstellung = ja
+THEN Zündeinstellung falsch = P7
+
+IF Luftfiltereinsatz = ja
+THEN Luftfiltereinsatz verschmutzt = P7
+
+IF Leerlaufsystem = ja
+THEN Leerlaufsystem defekt = P7
+
+IF NOT ((Verhalten bei Motorstart = "springt überhaupt nicht an" OR Verhalten bei Motorstart = springt schlecht an)) 
+THEN Luftfiltereinsatz verschmutzt = N4
+
+IF NOT ((Motorgeräusche = klingeln OR Motorgeräusche = klopfen)) 
+THEN Zündeinstellung falsch = N3
+
+IF (Auspuffrohrfarbe = schwarzverrußt AND Benzinart = Diesel)
+THEN Bewertung Auspuffrohrfarbe += normal  
+
+IF Batterie = ja
+THEN Batterie leer = P7
+
+IF "Num. Bewertung Kraftstoffverbrauch" < 110
+THEN Bewertung Kraftstoffverbrauch = normal  
+
+IF (Verhalten bei Motorstart = springt schlecht an OR Verhalten bei Motorstart = "springt überhaupt nicht an")
+THEN Anlasser  
+
+IF Ansaugsystem = ja
+THEN "Ansaugsystem undicht" = P7
+
+IF ((Verhalten bei Motorstart = "springt überhaupt nicht an" OR Verhalten bei Motorstart = springt schlecht an) AND Anlasser = dreht durch)
+THEN Luftfiltereinsatz verschmutzt = P4
+
+IF NOT (Fahrverhalten = Leerlauf ist zu niedrig) 
+THEN Leerlaufsystem defekt = N3
+
+</Rules-section>
+
+
+</Kopic>
+
+[{KnowWEPlugin renderKnowledge}]
+
+[{KnowWEPlugin renderKDOM}]
+

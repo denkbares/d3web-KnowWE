@@ -1,0 +1,16 @@
+[{DeltaTimePlugin startDate='2008.05.24 00:11:00'}]
+
+_(weg)_ hin
+
+
+
+%%Refering Pages
+[{ReferringPagesPlugin max=5, maxwidth=17}]
+%%commentbox
+blabla
+%%
+<Kopic id="123">
+* Test1
+* Test2
+
+</Kopic>

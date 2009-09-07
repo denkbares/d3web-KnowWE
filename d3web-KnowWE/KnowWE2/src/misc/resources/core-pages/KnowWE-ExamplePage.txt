@@ -1,0 +1,211 @@
+[{TableOfContents }]
+
+
+
+
+
+!!! KnowWE2 Example Page
+
+This page demonstrate how to use KnowWE2 by showing a simple example.
+Knowledge about the Problem "What to do this evening" is put together using the XCL formalization pattern. Then the possibilities for executing and reviewing the knowledge are shown.
+
+----
+
+
+!! Defining explicit knowledge
+
+Starting a Knowledge Base using the Kopic tag:
+* At first the questions are defined
+* Then we additionally can enter some covering knowledge for solutions
+* For clarity the lists for the solutions are very short in this demo. On real knowledge definition for expressive results at least 8 relations per list are recommended, the more the better.
+
+
+<Kopic id="demo">
+
+<Questionnaires-section>
+Inverview for what to do
+</Questionnaires-section>
+
+<Questions-section>
+Inverview for what to do
+
+- Are you tired from work? [oc]
+-- Can hardly keep the eyes open
+-- A little bit
+-- No
+- Is your fridge empty? [oc]
+-- Yes
+-- No
+- Are you hungry? [oc]
+-- Very very hungry
+-- Yes
+-- No
+- Do you have a date? [oc]
+-- Yes
+-- No
+- What do you like? [mc]
+-- Sports
+-- Movies
+-- Books
+-- Relaxing
+-- Meeting people
+-- Shopping
+- "How much time (in hours) do you have to spend?" [num]
+- Do your legs hurt? [oc]
+-- Yes
+-- No
+- Is there a friend to hang out with? [oc]
+-- Yes
+-- No
+- Are the stores still open? [oc]
+-- Yes
+-- No
+</Questions-section>
+
+<SetCoveringList-section>
+
+"Go Jogging!" {
+    "How much time (in hours) do you have to spend?" > "0.5",
+    Do you have a date? = No,
+    Is your fridge empty? = No,
+    What do you like? = Sports,
+    Do your legs hurt? = Yes [--],
+}
+
+"Go to your date!" {
+    Do you have a date? = Yes,
+}
+
+Go to bed {
+    Are you tired from work? = Can hardly keep the eyes open,
+    What do you like? = Relaxing,
+    "How much time (in hours) do you have to spend?" <= 1,
+}
+
+Buy some food { 
+    Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],
+    Are you hungry? = Yes,
+    What do you like? = Shopping,
+    Are the stores still open? = Yes [!],
+}
+
+Meet someone at a restaurant {
+    Are you hungry? = Yes OR Are you hungry? = Very very hungry [2],
+    Do you have a date? = Yes OR Is there a friend to hang out with? = Yes [2],
+    Is your fridge empty? = Yes [1],
+    What do you like? = Meeting people,
+}
+
+
+</SetCoveringList-section>
+
+</Kopic>
+
+
+----
+
+!! Use of Knowledge
+
+! Questionsheet
+With the tag 
+%%prettify 
+{{{
+[{KnowWEPlugin questionsheet}]
+
+}}}
+/%
+a list of questions is generated. Those can be answered by clicking on them, as shown here:
+
+
+
+
+[{KnowWEPlugin questionsheet}]
+
+! Embedded Dialog
+With the tag 
+%%prettify 
+{{{
+[{KnowWEPlugin dialog}]
+}}}
+/%
+a simple dialog is embedded in the wiki-page. Answers can be chosen by klicking on them:
+
+[{KnowWEPlugin dialog}]
+
+! External dialog
+With the use of the tag 
+%%prettify 
+{{{
+[{KnowWEPlugin dialogLink=}]
+}}}
+/%
+a small icon is rendered, forming a link to the external dialog: [{KnowWEPlugin dialogLink=KnowWE2-ExamplePage..demo}]
+
+__HINT:__ After answering and closing the external dialog the 'solution' button in the upper right corner needs to be pressed to refresh the solution view.
+
+
+! Text-based custom dialog using Inline-Answering
+
+
+With the following annotation technique inline-answers can be embedded in common text:
+
+%%prettify 
+{{{ 
+[word phrase < = > asks:: QuestionText]
+}}}
+/%
+
+__Example:__
+
+If you  arr hungry you should think about wether you have [something to eat at home <=> Buy some food explains:: Is your fridge empty? = Yes ]. If you have a [date <=> asks:: Do you have a date? ], you definitely should go there, even if you´re [tired <=> asks:: Are you tired from work? ].
+
+
+!! Review the formal knowledge of a local page
+With the use of the tag 
+%%prettify 
+{{{
+[{KnowWEPlugin renderKnowledge}]
+}}}
+/%
+a verbalization of the knowledgebase is generated into the page as follows:
+
+
+[{KnowWEPlugin renderKnowledge}]
+
+
+!! Notation:
+
+__Weighting:__
+%%prettify 
+{{{
+[<Number>]
+}}} 
+
+__Excludes this solution:__
+%%prettify 
+{{{[--]}}}  
+
+__Necessary to derive solution:__
+%%prettify 
+{{{
+[!]
+}}}  
+
+__suffices to derive solution:__
+%%prettify 
+{{{
+[++]
+}}}  
+
+
+!! Comments
+With the tag 
+%%prettify 
+{{{
+[{Comment This is a comment}]
+}}}
+/%
+a highlighted comment is rendered:
+
+
+[{Comment This is a comment}]

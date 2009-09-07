@@ -1,0 +1,477 @@
+/* 
+Table of content
+(1) General
+(2) Plugins common
+(3) Plugin Adminconsole
+(4) Plugin Renaming
+(5) Plugin HTML Dialog
+(6) Plugin KnowledgeBasesGenerator
+(7) Plugin KnowObjectTypeActivator
+
+used colors
+#D2D2D2 ~ even tbl column color
+#5DA4B6 ~ links
+#A375D1 ~ link visited
+#FFD324 ~ lines info boxes
+#FFF6BF ~ bg info boxes
+#F1F6FA ~ bg rename tbl + input fields
+#96BBD9 ~ bg headerboxes | borders
+*/
+/* ################################################## */
+/* -------------- general settings    --------------- */
+/* ################################################## */
+a {
+    color: #5DA4B6;
+    cursor: pointer;
+    text-decoration:none;
+}
+a:link {
+    color: #5DA4B6;
+    cursor: pointer;
+    text-decoration:none;
+}
+a:visited{ 
+    color: #A375D1;
+}
+a:hover {
+    color: #003DF5;
+    text-decoration: underline;
+}
+a:active{
+    color: #CCFF00; 
+}
+.hidden{
+    display: none;  
+}
+.visible{
+    display: inline;
+}
+h1, h2, h3, h4 {
+    font-family:Helvetica,Sans-Serif, Arial;
+    font-weight:bold;
+    padding:15px 0px 5px 5px;
+    margin: 0px;
+}
+.even{
+    background-color:#D2D2D2;   
+}
+.left{
+    float:left;
+}
+.right{
+    float:right;
+}
+.clear{
+    clear:both;
+}
+.small{
+    font-size: 10px;
+}
+.bg-green{
+    background-color: #CFC; 
+}
+.bg-red{
+    background-color: #FCC; 
+}
+.bg-blue{
+    background-color: #CCF; 
+}
+.pointer{
+    cursor: pointer;    
+}
+.extend-panel-down{
+    padding:0px 20px;
+    background: #FFF url(../images/arrow_down.png) no-repeat 0px 3px;   
+}
+.extend-panel-up{
+    padding:0px 20px;
+    background: #FFF url(../images/arrow_up.png) no-repeat 0px 3px; 
+}
+/* ################################################## */
+/* ------------->>> info boxes       <<<------------- */
+.box{
+    text-align: left;
+    border-top: 2px solid #FFD324;
+    border-bottom: 2px solid #FFD324;
+    margin: 10px 0px;   
+}
+.error {
+    background: #FFF6BF url(../images/msg_cross.png) center no-repeat;
+    background-position: 10px 50%; /* x-pos y-pos */
+    padding: 5px 20px 5px 45px;
+}
+.ok {
+    background: #FFF6BF url(../images/msg_checkmark.png) center no-repeat;
+    background-position: 10px 50%; /* x-pos y-pos */
+    padding: 5px 20px 5px 45px; 
+}
+.info{
+    background: #FFF6BF url(../images/msg_info.png) center no-repeat;
+    background-position: 10px 50%; /* x-pos y-pos */
+    padding: 5px 20px 5px 45px; 
+}
+.hint{
+  display:none;
+  position: absolute;
+  right: 30px;
+  width: 200px;
+  margin-top: -4px;
+  border: 1px solid #c93;
+  padding: 10px 12px;
+  background-color: #ffc;
+}
+.knowwetable select{
+  	width: 100px;
+}
+/* ################################################## */
+/* ------------->>> Panel Different  <<<------------- */
+/* ################################################## */
+.panel{
+    border: 1px solid #96BBD9;
+    margin: 5px 0px;
+    padding: 5px;
+}
+.panel h3{
+    background-color: #96BBD9;
+    color:#000;
+    cursor: pointer;
+    font-size:1.4em;
+    padding: 3px 15px;
+    margin: 3px 0px;
+}
+.panel img{
+    margin-right:5px;
+    vertical-align:middle;
+}
+#admin-panel ul {
+    list-style-type: none;  
+}
+/* ################################################## */
+/* ------------->>> Panel Admin      <<<------------- */
+/* ################################################## */
+#admin-panel li{
+    font-size:0.9em;
+    padding:0px 20px;
+    background: #FFF url(../images/arrow_right.png) no-repeat 0px 3px;
+}
+#admin-panel table{
+    background-color:#FFF;
+    margin: 10px 0px;   
+}
+#admin-panel thead{
+    border: 2px solid #000; 
+}
+/* ################################################## */
+/* ------------->>> Panel Rename     <<<------------- */
+/* ################################################## */
+#rename-panel fieldset {
+    border:0px solid #DDD;
+    padding: 5px 10px;
+}
+#rename-panel input {
+    margin: 2px 15px;
+    padding: 6px;
+    width: 100px;
+}
+#rename-panel input.button, #knoffice-panel input.button{
+    border:1px solid #DEDEDE;
+    cursor:pointer;
+    margin: 14px 0px;
+}
+#rename-panel input.button:hover, #knoffice-panel input.button:hover{
+    background-color:#E6EFC2;
+    border:1px solid #C6D880;
+    color:#529214;
+}
+#rename-panel input.field {
+    background-color: #F1F6FA;
+    border: 1px solid #96BBD9;
+    margin: 2px 15px;
+    width: 100px;
+}
+#rename-panel label, #KnowWEObjectTypeBrowser label{
+    color:#5DA4B6;
+    display:block;
+    font:bold 0.8em/1.4em Arial;
+    margin:0px 15px;
+    width:150px;
+}
+#rename-panel legend, #KnowWEObjectTypeBrowser legend{
+    font-weight: bold;
+    color: #5DA4B6;
+}
+/* ################################################### */
+/* --------- styling of the search knoffice panel ---- */
+#knoffice-panel label{
+    color:#5DA4B6;
+    display:block;
+    float:left;
+    font:bold 1.0em/1.6em Arial;
+    margin:5px 15px;
+    width:150px;
+}
+
+#knoffice-panel input.button{
+    margin: 2px 15px;
+    padding: 6px;
+}
+.xls{
+    background: #FFF url(../images/xls.png) no-repeat right 0px;    
+}
+.txt{
+    background: #FFF url(../images/txt.png) no-repeat right 0px;    
+}
+.xml{
+    background: #FFF url(../images/xml.png) no-repeat right 0px;
+}
+.css{
+    background: #FFF url(../images/css.png) no-repeat right 0px;    
+}
+.img{
+    background: #FFF url(../images/img.png) no-repeat right 0px;    
+}
+/* ################################################### */
+/* --------- styling of the search result table ------ */
+#rename-panel table, #rename-panel th, #renameResult td, #KnowWEObjectTypeBrowser table, #KnowWEObjectTypeBrowser th, #KnowWEObjectTypeBrowser td {
+    border: 1px solid #777;
+}
+#rename-panel table col.match, #KnowWEObjectTypeBrowser table col.match{
+    width: 250px;
+}
+#rename-panel table col.section{
+    width: 50px;
+}
+#rename-panel table col.replace {
+    width: 50px;
+}
+#rename-panel table col.preview, #KnowWEObjectTypeBrowser table col.preview{
+    width: 200px;
+}
+#rename-panel th, #rename-panel tfoot, #KnowWEObjectTypeBrowser th{
+    background:#DDD;
+    text-align:center;
+    font-weight:bold;
+}
+#rename-panel tbody, #KnowWEObjectTypeBrowser tbody{
+    background:#F1F6FA;
+}
+#rename-panel .check{
+    background: #FFF no-repeat left center;
+    border: 0px;
+    width: 30px;
+}
+#rename-panel #check-select{
+    background-image: url(../images/checkmark-all.png);
+}
+#rename-panel #check-deselect{
+    background-image: url(../images/checkmark-none.png);  
+}
+/* ################################################### */
+/* ------- styling of the further settings panel ----- */
+#rename-panel img{
+    vertical-align: bottom;
+}
+/* ################################################## */
+/* ------------->>> Panel HTML Dialog <<<------------ */
+/* ################################################## */
+#dialog label{
+    margin: 0px;
+    white-space: normal;
+}
+#dialog > div {
+    border-top: 1px solid #96BBD9;  
+}
+
+/* ################################################## */
+/* --------------table styling ---------------------- */
+#dialog .labelcell {
+    background-color: #96BBD9;
+    color: #000;
+    display:block;
+    font-weight:bold;
+    width: 220px;
+}
+#dialog .fieldcell input {
+    background-color: #D7E5F2;
+    border: 1px solid #96BBD9;
+    width: 100px;
+    margin: 0px 5px;
+}
+#dialog .fieldcell input[type='button']{
+    width: 40px;        
+}
+/* ################################################## */
+/* --------------question styling ------------------- */
+#dialog .answer-set {
+    border: 2px solid red;
+}
+#dialog .answerTextActive{
+    color:#FFF;
+    background-color: #96BBD9;  
+}
+#dialog .answerText:hover, #dialog .answerTextActive:hover{
+    color:#000;
+    background-color: #FFCC33;
+}
+
+/* ################################################## */
+/* ------------->>> Popups            <<<------------ */
+/* ################################################## */
+#popup-findings {
+    border: 1px solid #96BBD9;
+    margin: 10px;
+}
+#popup-findings h3{
+    background-color: #96BBD9;
+    font-size:1.8em;
+    letter-spacing:0px;
+    line-height:1.1em;
+    color:#FFF;
+    padding-left:10px;
+    margin: 0px;
+}
+#popup-findings table{
+    margin: 5px;
+}
+#popup-xcle > *{
+    font: 0.9em/1.4em "Arial", "sans-serif";
+    margin: 0px;
+    padding: 0px;   
+}
+
+#popup-xcle .emphasized{
+    color: #D60000; 
+}
+#popup-xcle table{
+    border: 1px solid #839CBD;
+    border-collapse: collapse;    
+    margin: 10px;
+    width: 90%;
+}
+#popup-xcle table.emphasized{
+    border: 1px solid #D60000;
+    width: 90%;
+    margin: 10px;
+}
+#popup-xcle td {
+    border: 1px solid #839CBD;
+    padding: 5px 10px;
+}
+#popup-xcle th{
+    text-align: left;
+    background-color: #96BBD9;
+    color: #FFF;
+    padding-left: 5px;
+}
+
+/* ################################################## */
+/* ------->>> KnowledgeBasesGenerator  <<<------- --- */
+/* ################################################## */
+#KnowledgeBasesGenerator label{
+    width:120px;
+    margin:0px 50px;
+}
+
+#KnowledgeBasesGenerator input{
+    margin: 2px 15px;
+    padding: 6px;
+    width: 100px;
+}
+#KnowledgeBasesGenerator input.button {
+    border:1px solid #DEDEDE;
+    cursor:pointer;
+    margin: 2px 0px;
+}
+#KnowledgeBasesGenerator input.button:hover{
+    background-color:#E6EFC2;
+    border:1px solid #C6D880;
+    color:#529214;
+}
+#KnowledgeBasesGenerator input.field {
+    background-color: #F1F6FA;
+    border: 1px solid #96BBD9;
+    margin: 2px 15px;
+    width: 100px;
+}
+
+a.action.dialog {
+    border-bottom:medium none;
+    margin-left:4px;
+}
+a.action.dialog {
+    background:#F9F9F9 none repeat scroll 0%;
+    border:1px solid #DDDDDD;
+    line-height:normal;
+    padding:0.25em 0.5em;
+    text-decoration:none;
+    white-space:nowrap;
+}
+
+/* ################################################## */
+/* ------->>> KnowWEObjectTypeActivator  <<<----------*/
+/* ################################################## */
+#KnowWEObjectTypeActivator label{
+    width:120px;
+    margin:0px 50px;
+}
+#KnowWEObjectTypeActivator input{
+    margin: 2px 15px;
+    padding: 6px;
+    width: 100px;
+}
+#KnowWEObjectTypeActivator input.button {
+    border:1px solid #DEDEDE;
+    cursor:pointer;
+    margin: 2px 0px;
+}
+#KnowWEObjectTypeActivator input.button:hover{
+    background-color:#E6EFC2;
+    border:1px solid #C6D880;
+    color:#529214;
+}
+    
+/* ################################################## */
+/* ------->>> KnowWEObjectTypeBrowser  <<<------- --- */
+/* ################################################## */
+#KnowWEObjectTypeBrowser label{
+    width:120px;
+    margin:0px 50px;
+}
+#KnowWEObjectTypeBrowser table col.section {
+	width: 300px;	
+}
+#KnowWEObjectTypeBrowser input{
+    margin: 2px 15px;
+    padding: 6px;
+    width: 100px;
+}
+#KnowWEObjectTypeBrowser input.button {
+    border:1px solid #DEDEDE;
+    cursor:pointer;
+    margin: 2px 0px;
+}
+#KnowWEObjectTypeBrowser input.button:hover{
+    background-color:#E6EFC2;
+    border:1px solid #C6D880;
+    color:#529214;
+}
+
+/* ################################################## */
+/* ------->>> CodeCompletion  <<<-------------------- */
+/* ################################################## */
+.codeCompletion{
+    border-style:solid;
+    border-width:1px;
+    padding:3px;
+    background-color:#CCCCCC;   
+}
+.codeCompletion option {
+    border-style:solid;
+    padding:3px;
+    background-color:#FFFFFF;
+    border-width:1px
+}
+
+#overDiv {
+font-size:120%;
+}

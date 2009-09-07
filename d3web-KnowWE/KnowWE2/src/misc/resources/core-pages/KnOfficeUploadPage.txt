@@ -1,0 +1,3 @@
+!!! Upload KnOffice files into a Wiki-Knowledgebase
+
+[{KnowWEPlugin KnOfficeImport}]
