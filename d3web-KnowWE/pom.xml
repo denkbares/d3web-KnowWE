@@ -112,6 +112,12 @@
 		<name>Universität Würzburg</name>
 		<url>http://uni-wuerzburg.de/</url>
 	</organization>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>contrib</id>
+			<url>http://win6154.informatik.uni-wuerzburg.de:8080/nexus/content/repositories/contrib/</url>
+		</pluginRepository>
+	</pluginRepositories>
 	<dependencies>
 	</dependencies>
 </project>
