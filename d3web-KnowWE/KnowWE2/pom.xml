@@ -37,9 +37,34 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>local</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<webResources>
+								<resource>
+									<directory>src/resources/local</directory>
+									<excludes>
+										<exclude>**/README</exclude>
+									</excludes>
+								</resource>
+							</webResources>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	
 	<dependencies>
 		<!--
-			Short explanation for JSPWiki They don't really use Maven, so, the
+			Short explanation for JSPWiki: They don't really use Maven, so, the
 			build is done by calling the `war' task of the Ant stuff that builds
 			JSPWiki, then upload the resulting war to $your_favourite_repository
 			or install it locally. The war:war task will then use it as an
@@ -200,6 +225,5 @@
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-
 	</dependencies>
 </project>
