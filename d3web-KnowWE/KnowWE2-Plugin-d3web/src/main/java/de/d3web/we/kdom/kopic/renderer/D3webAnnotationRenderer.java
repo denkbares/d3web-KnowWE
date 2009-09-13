@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.kopic.renderer;
 
 import de.d3web.kernel.domainModel.KnowledgeBase;
@@ -20,20 +40,21 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 
 	@Override
-	public String render(Section sec, KnowWEUserContext user, String web, String topic) {
+	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
 
 		String question = null;
-		Section qAChild = sec
-				.findSuccessor(SimpleAnnotation.class);
+		Section qAChild = sec.findSuccessor(SimpleAnnotation.class);
+		
 		if (qAChild==null){
-		    qAChild=sec.findSuccessor(AnnotationObject.class);
+		    qAChild = sec.findSuccessor(AnnotationObject.class);
 		}
+		
 		if (qAChild != null) {
 			question = qAChild.getOriginalText().trim();
 		}
+		
 		if (question == null) {
-			Section findChildOfType = sec
-					.findSuccessor(SimpleAnnotation.class);
+			Section findChildOfType = sec.findSuccessor(SimpleAnnotation.class);
 			if (findChildOfType != null) {
 				question = findChildOfType.getOriginalText();
 			}
@@ -43,23 +64,21 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 		try {
 			text = sec.findSuccessor(AnnotatedString.class).getOriginalText();
 		} catch (NullPointerException e) {
-			return new StandardAnnotationRenderer().render(sec, user, web,
-					topic);
+			new StandardAnnotationRenderer().render(sec, user, string);
 		}
 
-		D3webKnowledgeService service = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);
+		D3webKnowledgeService service =
+					D3webModule.getInstance().
+						getAD3webKnowledgeServiceInTopic(sec.getWeb(), sec.getTitle());
 
 		
-		String middle = null;
-	
-			middle = renderline(sec, user.getUsername(), question, text, service);
+		String middle = renderline(sec, user.getUsername(), question, text, service);
 		
 
 		if (middle != null) {
-			return middle;
+			string.append(middle);
 		} else {
-			return new StandardAnnotationRenderer().render(sec, user, web,
-					topic);
+			new StandardAnnotationRenderer().render(sec, user, string);
 		}
 	}
 

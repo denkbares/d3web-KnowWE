@@ -18,18 +18,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rules;
+package de.d3web.we.kdom.xcl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class If extends DefaultAbstractKnowWEObjectType{
-
+public class XCLRelationWhiteSpaces extends DefaultAbstractKnowWEObjectType {
+	
 	@Override
 	protected void init() {
-		sectionFinder = new RegexSectionFinder("( *WENN\\s+| *IF\\s+)");
-		setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
+		sectionFinder = new XCLRelationWhiteSpacesSectionFinder();
+	}
+	
+	public class XCLRelationWhiteSpacesSectionFinder extends SectionFinder {
+		
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section father) {
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			Pattern relPattern = Pattern.compile("^\\s*");
+			Matcher m = relPattern.matcher(text);
+			while (m.find()) {
+				result.add(new SectionFinderResult(m.start(), m.end()));
+			}
+			return result;
+		}
+		
 	}
 
 }

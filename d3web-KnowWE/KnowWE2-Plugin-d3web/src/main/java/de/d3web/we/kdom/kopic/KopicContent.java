@@ -1,7 +1,34 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.kopic;
 
+import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
+import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
+import de.d3web.we.kdom.rules.RulesSection;
+import de.d3web.we.kdom.table.attributes.AttributeTableSection;
+import de.d3web.we.kdom.table.xcl.CoveringTableSection;
+import de.d3web.we.kdom.xcl.CoveringListSection;
 import de.d3web.we.kdom.xml.XMLContent;
+import de.d3web.we.testsuite.TestsuiteSection;
 
 public class KopicContent extends XMLContent {
 	
@@ -10,8 +37,10 @@ public class KopicContent extends XMLContent {
 		childrenTypes.add(new SolutionsSection());
 		childrenTypes.add(new QuestionnairesSection());
 		childrenTypes.add(new QuestionsSection());
-		childrenTypes.add(new CoveringListSection());
+		childrenTypes.add(new AttributeTableSection());
+		childrenTypes.add(new TestsuiteSection());
 		childrenTypes.add(new CoveringTableSection());
+		childrenTypes.add(new CoveringListSection());
 		childrenTypes.add(new RulesSection());
 	}
 

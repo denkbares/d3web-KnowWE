@@ -22,33 +22,46 @@ package de.d3web.we.kdom.xcl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class XCLTail extends DefaultAbstractKnowWEObjectType {
+public class XCLRelationLineEnd extends DefaultAbstractKnowWEObjectType {
 	
-	public class XCLTailSectionFinder extends SectionFinder {
+	@Override
+	protected void init() {
+		sectionFinder = new XCLRelationLineEndSectionFinder();
+		setCustomRenderer(new XCLRelationLineEndRenderer());
+	}
+	
+	private class XCLRelationLineEndRenderer extends KnowWEDomRenderer {
+
+		@Override
+		public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+			string.append(sec.getOriginalText());
+		}
+		
+	}
+	
+	public class XCLRelationLineEndSectionFinder extends SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			List<SectionFinderResult> matches = new ArrayList<SectionFinderResult>();
-			
-			int end = text.lastIndexOf('}');
-			if(text.lastIndexOf('[') > end) {
-				matches.add(new SectionFinderResult(end+1, text.length()));
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			Pattern relPattern = Pattern.compile(", *\\r?\\n");
+			Matcher m = relPattern.matcher(text);
+			while (m.find()) {
+				result.add(new SectionFinderResult(m.start(), m.end()));
 			}
-			
-			return matches;
+			return result;
 		}
-
-	}
-
-	@Override
-	protected void init() {
-		this.sectionFinder = new XCLTailSectionFinder();		
+		
 	}
 
 }

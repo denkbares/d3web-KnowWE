@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.xcl;
 
 import java.util.ArrayList;
@@ -11,56 +31,46 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IDGenerator;
-import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionFinder;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.SolutionContext;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.rendering.SpecialDelegateRenderer;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology2;
+import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 
 public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	
-	Map<Section, String> solutionStore = new HashMap<Section, String>(); 
-
-	@Override
-	public KnowWEDomRenderer getDefaultRenderer() {
-		return SpecialDelegateRenderer.getInstance();
-	}
+	Map<String, String> solutionStore = new HashMap<String, String>(); 
 
 	
-	
-	class XCLHeadSectionFinder extends SectionFinder{
-		public XCLHeadSectionFinder(KnowWEObjectType type) {
-			super(type);
-		}
+	public class XCLHeadSectionFinder extends SectionFinder{
 
 		@Override
-		public List<Section> lookForSections(Section tmp, Section father, KnowledgeRepresentationManager kbm, KnowWEDomParseReport report, IDGenerator idg) {
-			String text = tmp.getOriginalText();
+		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			if(text.length() == 0) return null;
-			List<Section> result = new ArrayList<Section>();
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			
 			int start = 0;
-			while(text.charAt(start) == ' ' || text.charAt(start) == '\n' || text.charAt(start) == '\r') {
+			while(text.charAt(start) == ' ' || text.charAt(start) == '\n'
+						|| text.charAt(start) == '\r') {
 				start++;
 				if(start == text.length()) break;
 			}
 			int end=text.indexOf('{');
-			Section s = Section.createSection(this.getType(), father, tmp, start,end, kbm, report, idg);			
+						
 			
-			if(s != null && start <= end) {
+			if(start <= end) {
 			    String solution=text.substring(start,end).trim();
-				result.add(s);				
-				solutionStore.put(s, solution);
-				SolutionContext con=new SolutionContext();
-				con.setSolution(solution);
-				ContextManager.getInstance().attachContext(father, con);
+				result.add(new SectionFinderResult(start, end));				
+				solutionStore.put(text.substring(start, end), solution);
+				
+				if (father != null) {
+					SolutionContext con=new SolutionContext();
+					con.setSolution(solution);
+					ContextManager.getInstance().attachContext(father, con);
+				}
 			}
 			
 			return result;
@@ -69,16 +79,21 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public IntermediateOwlObject getOwl(Section section) {
-	    IntermediateOwlObject io =new IntermediateOwlObject();		
-		SolutionContext sol=(SolutionContext)ContextManager.getInstance().getContext(section, SolutionContext.CID);
-		String solution=sol!=null?sol.getSolution():null;
-		UpperOntology2 uo=SemanticCore.getInstance().getUpper();
-		try {
-			URI solutionuri=uo.createlocalURI(solution);
-			io.addStatement(uo.createStatement(solutionuri,RDF.TYPE, UpperOntology2.SOLUTION));
-		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	    IntermediateOwlObject io = new IntermediateOwlObject();
+		SolutionContext sol = (SolutionContext) ContextManager.getInstance()
+				.getContext(section, SolutionContext.CID);
+		String solution = sol != null ? sol.getSolution() : null;
+		if (solution != null) {
+			UpperOntology uo = SemanticCore.getInstance().getUpper();
+
+			try {
+				URI solutionuri = uo.getHelper().createlocalURI(solution);
+				io.addStatement(uo.getHelper().createStatement(solutionuri,
+						RDF.TYPE, OwlHelper.SOLUTION));
+			} catch (RepositoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return io;
 	}
@@ -87,7 +102,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		this.sectionFinder = new XCLHeadSectionFinder(this);
+		this.sectionFinder = new XCLHeadSectionFinder();
 		
 	}
 

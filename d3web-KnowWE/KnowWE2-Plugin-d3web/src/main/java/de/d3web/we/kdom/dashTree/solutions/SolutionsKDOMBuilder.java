@@ -1,30 +1,43 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.dashTree.solutions;
 
 import java.util.List;
 import java.util.Stack;
 
-import de.d3web.we.kdom.IDGenerator;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.TextLine;
 import de.d3web.we.kdom.dashTree.DashTreeKDOMBuilder;
 import de.d3web.we.kdom.dashTree.Tilde;
 import de.d3web.we.kdom.decisionTree.SolutionID;
+import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 
 public class SolutionsKDOMBuilder implements DashTreeKDOMBuilder {
 
-	private Stack<Section> sections = new Stack<Section>();
-
-	private String topic;
-
-	private IDGenerator idgen;
-
-	public SolutionsKDOMBuilder(String topic, IDGenerator idgen) {
-		this.topic = topic;
-		this.idgen = idgen;
+	private Stack<ExpandedSectionFinderResult> sections = new Stack<ExpandedSectionFinderResult>();
+	
+	public SolutionsKDOMBuilder() {
 	}
 
 	public void reInit() {
-		sections = new Stack<Section>();
+		sections = new Stack<ExpandedSectionFinderResult>();
 	}
 
 	public static String makeDashes(int k) {
@@ -45,54 +58,49 @@ public class SolutionsKDOMBuilder implements DashTreeKDOMBuilder {
 			String linetext) {
 	}
 
-	public Section peek() {
+	public ExpandedSectionFinderResult peek() {
 		if (sections.size() == 0)
 			return null;
 		return sections.peek();
 	}
 
-	public void setSections(Stack<Section> sections) {
+	public void setSections(Stack<ExpandedSectionFinderResult> sections) {
 		this.sections = sections;
 	}
 
-	public void setTopic(String topic) {
-		this.topic = topic;
-	}
-
-	public String getTopic() {
-		return topic;
-	}
-
-	public void setIdgen(IDGenerator idgen) {
-		this.idgen = idgen;
-	}
+//	public void setTopic(String topic) {
+//		this.topic = topic;
+//	}
+//
+//	public String getTopic() {
+//		return topic;
+//	}
+//
+//	public void setIdgen(IDGenerator idgen) {
+//		this.idgen = idgen;
+//	}
 
 	@Override
 	public void line(String text) {
 
 	}
 
-	public Stack<Section> getSections() {
+	public Stack<ExpandedSectionFinderResult> getSections() {
 		return sections;
 	}
 
 	@Override
 	public void newLine() {
-		
-		Section newLine = Section.createExpandedSection("\r\n", new TextLine(),
-				null, sections.size() * (-1), topic, null, null, idgen);
-		
-		sections.push(newLine);
-
+		sections.push(new ExpandedSectionFinderResult("\r\n", new TextLine(), sections.size() * (-1)));
 	}
 
 	@Override
 	public void addNode(int dashes, String name, int line, String description, int order) {
 			
 			// Generate SolutionLine Object
-			Section father = Section.createExpandedSection(((dashes != 0) ? makeDashes(dashes) : "" ) +
-							 name + ((description != null) ? " ~ " + description : "" ) + "\r\n", 
-							 new SolutionLine(), null, sections.size() * (-1), topic, null, null, idgen);
+			ExpandedSectionFinderResult father = new ExpandedSectionFinderResult(((dashes != 0) ? makeDashes(dashes) : "" ) 
+					+ name + ((description != null) ? " ~ " + description : "" ) + "\r\n", 
+					new SolutionLine(), sections.size() * (-1));
 			
 			sections.push(father);
 			
@@ -101,35 +109,41 @@ public class SolutionsKDOMBuilder implements DashTreeKDOMBuilder {
 
 	}
 
-	private void generateSection(int dashes, String name, int line, String description, int order, Section father) {
+	private void generateSection(int dashes, String name, int line, String description, 
+			int order, ExpandedSectionFinderResult father) {
 		
-		Section s;
 		
 		if (dashes == 0) { // root diagnosis (not P000!)
 			
-			s = Section.createExpandedSection(name + ((description == null) ? "\r\n" : "" ),
-				new RootSolution(), father, sections.size() * (-1), topic, null, null, idgen);
+			father.addChild(new ExpandedSectionFinderResult(name + ((description == null) ? "\r\n" : "" ),
+				new RootSolution(),  getOffset(father)));
 			
 		} else { // normal diagnosis
 			
-			s = Section.createExpandedSection(makeDashes(dashes) + name + 
-				((description == null) ? "\r\n" : "" ),	new SolutionID(), 
-				father, sections.size() * (-1), topic, null, null, idgen);			
+			father.addChild(new ExpandedSectionFinderResult(makeDashes(dashes) + name + 
+					((description == null) ? "\r\n" : "" ),	new SolutionID(), getOffset(father)));			
 			
 		}
 		
 		if (description != null) { // save tilde and description
  			
 			// Tilde ("~")
-			s = Section.createExpandedSection(" ~ ", new Tilde(), father, 
-				sections.size() * (-1), topic, null, null, idgen);	
+			father.addChild(new ExpandedSectionFinderResult(" ~ ", new Tilde(), getOffset(father)));	
 			
 			// Description			
-			s = Section.createExpandedSection(description + "\r\n",	new SolutionDescription(), 
-				father, sections.size() * (-1), topic, null, null, idgen);	
+			father.addChild(new ExpandedSectionFinderResult(description + "\r\n",
+					new SolutionDescription(), getOffset(father)));	
 			
 		}
 		
+	}
+	
+	private int getOffset(ExpandedSectionFinderResult father) {
+		int i = 0;
+		for (ExpandedSectionFinderResult child:father.getChildren()) {
+			i += child.getText().length();
+		}
+		return i;
 	}
 
 	@Override

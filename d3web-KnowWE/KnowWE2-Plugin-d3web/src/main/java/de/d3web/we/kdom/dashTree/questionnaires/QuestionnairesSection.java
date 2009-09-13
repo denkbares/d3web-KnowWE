@@ -18,36 +18,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.xcl;
+package de.d3web.we.kdom.dashTree.questionnaires;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
+import de.d3web.KnOfficeParser.dashtree.QuestionnaireBuilder;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.report.Message;
 import de.d3web.report.Report;
-import de.d3web.textParser.xclPatternParser.XCLParserHelper;
-import de.d3web.we.d3webModule.DistributedRegistrationManager;
 import de.d3web.we.javaEnv.KnowWEParseResult;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 
-public class XCL extends AbstractXMLObjectType {
+public class QuestionnairesSection extends AbstractKopicSection {
 
-	
-	public XCL() {
-		super("XCL");
+	public static final String TAG = "Questionnaires-section";
+
+	public QuestionnairesSection() {
+		super(TAG);
 	}
-	
+
 	@Override
-	public void init() {
-		subtreeHandler.add(new XCLSubTreeHandler());
+	protected void init() {
+		childrenTypes.add(new QuestionnairesContent());
+		subtreeHandler.add(new QuestionnairesSubTreeHandler());
 	}
-	
-	private class XCLSubTreeHandler extends D3webReviseSubTreeHandler {
 
+	private class QuestionnairesSubTreeHandler extends D3webReviseSubTreeHandler {
+	
 		@Override
 		public void reviseSubtree(Section s) {
 			
@@ -55,31 +56,22 @@ public class XCL extends AbstractXMLObjectType {
 			
 			if (kbm != null) {
 				
-				String parseText = s.getOriginalText();
-	
-				// HOTFIX
-				parseText = parseText.replaceAll("<XCL>", "");
-				parseText = parseText.replaceAll("</XCL>", "");
-	
-				Report p = new Report();
-	
-				Report singleReport = XCLParserHelper.getXCLModel(kbm
-						.getKnowledgeBase(), new StringReader(parseText));
-				p.addAll(singleReport);
-				s.getArticle().getReport().addReport(new KnowWEParseResult(p, s.getTitle(), s
-						.getOriginalText()));
-				
-				DistributedRegistrationManager.getInstance().registerKnowledgeBase(kbm, s.getTitle(), s.getArticle().getWeb());
+			
+				Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
+				if (content != null) {
+					List<de.d3web.report.Message> messages = QuestionnaireBuilder
+					.parse(new StringReader(removeIncludedFromTags(content.getOriginalText())), new SingleKBMIDObjectManager(kbm));
+					
+					storeMessages(s,messages);
+					Report ruleRep = new Report();
+					for (Message messageKnOffice : messages) {
+						ruleRep.add(messageKnOffice);
+					}
+					KnowWEParseResult result = new KnowWEParseResult(ruleRep, s
+							.getTitle(), removeIncludedFromTags(s.getOriginalText()));
+					s.getArticle().getReport().addReport(result);				
+				}
 			}
 		}
-	}
-
-
-
-	@Override
-	public List<KnowWEObjectType> getAllowedChildrenTypes() {
-		List<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();
-		types.add(new XCList());
-		return types;
 	}
 }

@@ -20,16 +20,17 @@
 
 package de.d3web.we.kdom.rules;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.kopic.renderer.RuleSectionRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.xml.XMLContent;
 
-public class If extends DefaultAbstractKnowWEObjectType{
-
+public class RulesSectionContent extends XMLContent {
+	
 	@Override
 	protected void init() {
-		sectionFinder = new RegexSectionFinder("( *WENN\\s+| *IF\\s+)");
-		setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
+		childrenTypes.add(new Rule());		
 	}
-
+	
+	protected KnowWEDomRenderer renderer = new RuleSectionRenderer();
+	
 }

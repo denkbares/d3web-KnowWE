@@ -1,8 +1,29 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.xcl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
@@ -12,65 +33,27 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IDGenerator;
-import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionFinder;
 import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.SolutionContext;
-import de.d3web.we.kdom.renderer.KDomXCLRelationRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.rendering.SpecialDelegateRenderer;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology2;
+import de.d3web.we.module.semantic.owl.UpperOntology;
 
 public class XCLRelation extends DefaultAbstractKnowWEObjectType {
-	
-	/**
-	 * Stores the KnowledgeBase-Ids from XCLRelation Sections.
-	 * Can be retrieved with kdomId.
-	 */
-	private HashMap<String, String> knowledgeBaseIds;
-	
-	/**
-	 * Stores an id in knowledgeBaseIds
-	 * 
-	 * @param kdomId
-	 * @param kbId
-	 */
-	public void storeId(String kdomId, String kbId) {
-		this.knowledgeBaseIds.put(kdomId, kbId);
-	}
-	
-	/**
-	 * Gets the KnowledgeBase-Id for a given kdomId.
-	 * 
-	 * @param kdomId
-	 * @return
-	 */
-	public String getId(String kdomId) {
-		return this.knowledgeBaseIds.get(kdomId);
-	}
-	
-	@Override
-	public KnowWEDomRenderer getDefaultRenderer() {
-		return SpecialDelegateRenderer.getInstance();
-	}
 
 	@Override
 	public void init() {
+		this.childrenTypes.add(new XCLRelationLineEnd());
+		this.childrenTypes.add(new XCLRelationWhiteSpaces());
 		this.childrenTypes.add(new XCLRelationWeight());
 		this.childrenTypes.add(new ComplexFinding());
-		this.sectionFinder = new XCLRelationSectionFinder(this);
-		this.knowledgeBaseIds = new HashMap<String,String>();
+		this.sectionFinder = new XCLRelationSectionFinder();
+		this.setCustomRenderer(XCLRelationKdomIdWrapperRenderer.getInstance());
 	}
 	
-	@Override
-	public KnowWEDomRenderer getRenderer() {
-		return KDomXCLRelationRenderer.getInstance();
-	}
 	
 	public static List<String> splitUnquoted(String conditionText2,
 			String operatorGreaterEqual) {
@@ -86,9 +69,10 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 				actualPart.append(conditionText2.charAt(i));
 				continue;
 			}
-			if ((i + operatorGreaterEqual.length() <= conditionText2.length()) && conditionText2
-					.subSequence(i, i + operatorGreaterEqual.length()).equals(
-							operatorGreaterEqual)) {
+			if ((i + operatorGreaterEqual.length() <= conditionText2.length())
+					&& conditionText2.subSequence(
+							i, i + operatorGreaterEqual.length()).
+							equals(operatorGreaterEqual)) {
 				parts.add(actualPart.toString().trim());
 				actualPart = new StringBuffer();
 				i += operatorGreaterEqual.length() - 1;
@@ -102,43 +86,73 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 	}
 
 
-	class XCLRelationSectionFinder extends SectionFinder {
-		public XCLRelationSectionFinder(KnowWEObjectType type) {
-			super(type);
-		}
-
+	public class XCLRelationSectionFinder extends SectionFinder {
+		
 		@Override
-		public List<Section> lookForSections(Section tmp, Section father,
-				de.d3web.we.knowRep.KnowledgeRepresentationManager kbm, KnowWEDomParseReport report,
-				IDGenerator idg) {
-			String text = tmp.getOriginalText();
-			List<Section> result = new ArrayList<Section>();
-			List<String> lines = splitUnquoted(text, ",");
-			for (String string : lines) {
-				if (containsData(string)) {
-					int indexOf = text.indexOf(string);
-					result.add(Section.createSection(this.getType(), father,
-							tmp, indexOf, indexOf + string.length(), kbm,
-							report, idg));
-				}
+		public List<SectionFinderResult> lookForSections(String text, Section father) {
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			Pattern relPattern = Pattern.compile(", *\\r?\\n");
+			Matcher m = relPattern.matcher(text);
+			int start = 0;
+			int end;
+			while (m.find()) {
+				end = m.end();
+				if (containsData(text.substring(start, end)))
+					result.add(new SectionFinderResult(start, end));
+				start = end;
 			}
-
 			return result;
 		}
-
+		
 		private boolean containsData(String string) {
-			int index = 0;
-			while (index < string.length()) {
-				char charAt = string.charAt(index);
-				if (charAt != ' ' && charAt != '\n' && charAt != '\r'
-						&& charAt != '}') {
-					return true;
-				}
-				index++;
+		int index = 0;
+		while (index < string.length()) {
+			char charAt = string.charAt(index);
+			if (charAt != ' ' && charAt != '\n' && charAt != '\r'
+					&& charAt != '}') {
+				return true;
 			}
-
-			return false;
+			index++;
 		}
+
+		return false;
+	}
+		
+		
+		
+//		public XCLRelationSectionFinder(KnowWEObjectType type) {
+//			super(type);
+//		}
+//
+//		@Override
+//		public List<Section> lookForSections(Section tmp, Section father) {
+//			String text = tmp.getOriginalText();
+//			List<Section> result = new ArrayList<Section>();
+//			List<String> lines = splitUnquoted(text, ",");
+//			for (String string : lines) {
+//				if (containsData(string)) {
+//					int indexOf = text.indexOf(string);
+//					result.add(Section.createSection(this.getType(), father,
+//							tmp, indexOf, indexOf + string.length(), father.getArticle()));
+//				}
+//			}
+//
+//			return result;
+//		}
+//
+//		private boolean containsData(String string) {
+//			int index = 0;
+//			while (index < string.length()) {
+//				char charAt = string.charAt(index);
+//				if (charAt != ' ' && charAt != '\n' && charAt != '\r'
+//						&& charAt != '}') {
+//					return true;
+//				}
+//				index++;
+//			}
+//
+//			return false;
+//		}
 	}
 
 	@Override
@@ -152,33 +166,33 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 	public IntermediateOwlObject getOwl(Section s) {
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		try {
-			UpperOntology2 uo = UpperOntology2.getInstance();
+			UpperOntology uo = UpperOntology.getInstance();
 
-			URI explainsdings = uo.createlocalURI(s.getTopic() + ".."
+			URI explainsdings = uo.getHelper().createlocalURI(s.getTitle() + ".."
 					+ s.getId());
 			URI solutionuri = ((SolutionContext) ContextManager.getInstance()
 					.getContext(s, SolutionContext.CID)).getSolutionURI();
-			io.addStatement(uo.createStatement(solutionuri, uo
-					.createURI("isRatedBy"), explainsdings));
+			io.addStatement(uo.getHelper().createStatement(solutionuri, uo
+				.getHelper().createURI("isRatedBy"), explainsdings));
 
-			URI torigin = uo.createlocalURI("Origin" + s.getTopic()
+			URI torigin = uo.getHelper().createlocalURI("Origin" + s.getTitle()
 					+ solutionuri.getLocalName() + s.getId());
-			io.addStatement(uo.createStatement(torigin, RDF.TYPE, uo
-					.createURI("TextOrigin")));
+			io.addStatement(uo.getHelper().createStatement(torigin, RDF.TYPE, uo
+				.getHelper().createURI("TextOrigin")));
 			Literal nodeid = uo.getConnection().getValueFactory()
 					.createLiteral(s.getId());
-			io.addStatement(uo.createStatement(torigin,
-					uo.createURI("hasNode"), nodeid));
+			io.addStatement(uo.getHelper().createStatement(torigin,
+					uo.getHelper().createURI("hasNode"), nodeid));
 
-			io.addStatement(uo.createStatement(explainsdings, RDF.TYPE, uo
-					.createURI("Explains")));
+			io.addStatement(uo.getHelper().createStatement(explainsdings, RDF.TYPE, uo
+				.getHelper().createURI("Explains")));
 			for (Section current : s.getChildren()) {
 				if (current.getObjectType() instanceof ComplexFinding) {
 					AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) current
 							.getObjectType();
 					for (URI curi : handler.getOwl(current).getLiterals()) {
-						Statement state = uo.createStatement(explainsdings, uo
-								.createURI("hasFinding"), curi);
+						Statement state = uo.getHelper().createStatement(explainsdings, uo
+							.getHelper().createURI("hasFinding"), curi);
 						io.addStatement(state);
 						handler.getOwl(current).removeLiteral(curi);
 					}
@@ -187,8 +201,8 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 					AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) current
 							.getObjectType();
 					if (handler.getOwl(current).getLiterals().size() > 0) {
-						io.addStatement(uo.createStatement(explainsdings, uo
-								.createURI("hasWeight"), handler
+						io.addStatement(uo.getHelper().createStatement(explainsdings, uo
+							.getHelper().createURI("hasWeight"), handler
 								.getOwl(current).getLiterals().get(0)));
 						io.addAllStatements(handler.getOwl(current)
 								.getAllStatements());

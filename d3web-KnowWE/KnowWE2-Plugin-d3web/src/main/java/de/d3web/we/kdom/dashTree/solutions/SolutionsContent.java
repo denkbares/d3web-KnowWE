@@ -18,18 +18,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rules;
+package de.d3web.we.kdom.dashTree.solutions;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.include.IncludedFromTypeHead;
+import de.d3web.we.kdom.include.IncludedFromTypeTail;
+import de.d3web.we.kdom.xml.XMLContent;
 
-public class If extends DefaultAbstractKnowWEObjectType{
-
+public class SolutionsContent extends XMLContent {
+	
 	@Override
 	protected void init() {
-		sectionFinder = new RegexSectionFinder("( *WENN\\s+| *IF\\s+)");
-		setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
+		childrenTypes.add(IncludedFromTypeHead.getInstance()); // hotfix!
+		childrenTypes.add(IncludedFromTypeTail.getInstance()); // hotfix!
+		childrenTypes.add(new SolutionsTreeANTLR());
 	}
-
+	
+	
 }
+	
+	
+	
+
+

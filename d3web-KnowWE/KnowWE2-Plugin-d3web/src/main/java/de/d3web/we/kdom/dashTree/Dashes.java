@@ -18,18 +18,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.rules;
+package de.d3web.we.kdom.dashTree;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.LineContent;
 
-public class If extends DefaultAbstractKnowWEObjectType{
-
+public class Dashes extends LineContent {
+	
 	@Override
 	protected void init() {
-		sectionFinder = new RegexSectionFinder("( *WENN\\s+| *IF\\s+)");
-		setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
+		
 	}
 
 }

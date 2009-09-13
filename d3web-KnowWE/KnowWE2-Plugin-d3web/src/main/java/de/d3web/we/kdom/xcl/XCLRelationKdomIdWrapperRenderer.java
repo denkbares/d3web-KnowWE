@@ -18,41 +18,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.kopic.renderer;
+package de.d3web.we.kdom.xcl;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class EditCoveringTableCellRenderer extends KnowWEDomRenderer {
+/**
+ * This renderer adds the kdomid to the span in which a
+ * Section is rendered. Use it to enable highlighting is possible.
+ * It Uses the XCLRelationHighlightingRenderer.
+ * 
+ * @author Johannes Dienst
+ */
+public class XCLRelationKdomIdWrapperRenderer extends KnowWEDomRenderer {
 
-	private static String[] options =
-				{ "  ", "ja", "! ", "--", "++", "1 ", "2 ", "3 ", "4 ", "5 ", "10" };
+	private static XCLRelationKdomIdWrapperRenderer instance;
 	
-	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
-		String currentOp = sec.getOriginalText().trim();
-		String secID = sec.getId();
-
-		StringBuilder b = new StringBuilder();
-		b.append("<select id=\"editCell"
-					  + secID
-					  + "\" onchange=\"cellChanged('"
-					  + secID + "','" + sec.getTitle() + "');\">");
-		b.append("<option value=\""
-				      + currentOp + "\">"
-				      + currentOp + "</option>");
-		for (int i = 0; i < options.length; i++) {
-			if (!options[i].equals(currentOp)) {
-				b.append("<option value=\"" + options[i] + "\">" + options[i]
-						+ "</option>");
-			}
-		}
-		b.append("</select>");
-		string.append(KnowWEEnvironment.maskHTML(b.toString()));
+	public static synchronized XCLRelationKdomIdWrapperRenderer getInstance() {
+		if (instance == null)
+			instance = new XCLRelationKdomIdWrapperRenderer();
+		return instance;
 	}
 	
-	
-
+	@Override
+	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {	
+		// Span is for kdom id.
+		// id can be found by the class.
+		StringBuilder b = new StringBuilder();
+		XCLRelationHighlightingRenderer.getInstance().render(sec, user, b);
+		string.append(KnowWEEnvironment.maskHTML("<span id='"+sec.getId()+"' class = 'XCLRelationInList'>"
+										  + b.toString()
+										  + "</span>"));
+	}
 }
