@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.xml;
 
 import java.io.BufferedReader;
@@ -10,64 +30,53 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.IDGenerator;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionFinder;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
+import de.d3web.we.kdom.SectionID;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
 
+/**
+ * @author astriffler
+ *
+ */
 public class XMLSectionFinder extends SectionFinder {
-
-	public static final String HEAD = "head";
-//	public static final String CONTENT = "content";
-	public static final String TAIL = "tail";
 	
-	private String tagName;
+	private String tagNamePattern;
 	
-	public static String ATTRIBUTE_MAP = "XMLSectionFinder.attributeMap";
+	public static String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
 	
-	
-	public XMLSectionFinder(String tagName, KnowWEObjectType type) {
-		super(type);
-		this.tagName = tagName;
+	/**
+	 * Finds any XML-Section.
+	 * The name of the XML-Section must not contain ' ', '>' and '/'.
+	 */
+	public XMLSectionFinder() {
+		this.tagNamePattern = getTagNamePatternString(null);
 	}
 	
-	protected Section makeSection(Section father, Section tmpSection, int start, int end, 
-			KnowledgeRepresentationManager kbm, KnowWEDomParseReport report, IDGenerator idg,
-			Map<String, String> parameterMap) {
-		
-		Section s = null;
-		String id = "";
-		if (parameterMap.containsKey("id")) {
-			id = parameterMap.get("id");
+	/**
+	 * Finds XML-Sections with name <code>tagName</code>.
+	 */
+	public XMLSectionFinder(String tagName) {
+		this.tagNamePattern = getTagNamePatternString(tagName);
+	}
+
+	private String getTagNamePatternString(String tagName) {
+		if (tagName == null) {
+			return "[^ >/]+";
 		} else {
-			id = idg.newID().getID()+"_XML";
+			return Pattern.quote(tagName);
 		}
-		KnowWEArticle art = father.getArticle();
-		if (art != null) {
-			KnowWEUtils.storeSectionInfo(art.getWeb(), art.getTitle(), id, ATTRIBUTE_MAP, parameterMap);
-		}
-		
-		s = Section.createSection(this.getType(), father, tmpSection, 
-				start, end, kbm, report, idg, id);
-		
-		
-		return s;
 	}
 
-	
 	@Override
-	public List<Section> lookForSections(Section tmpSection, Section father,
-			KnowledgeRepresentationManager kbm, KnowWEDomParseReport report,
-			IDGenerator idg) {
+	public List<SectionFinderResult> lookForSections(String text, Section father) {
 		
-		/*
+		/**
 		 * RegEx-Description 1:
 		 * 
-		 * For this example, tagName = Test
+		 * For this example, tagNamePattern = Test
 		 * 
 		 * - Has to start with '<Test'
 		 * - Optionally after '<Test' there can be attributes (-> RegEx-Description 2)
@@ -75,10 +84,9 @@ public class XMLSectionFinder extends SectionFinder {
 		 * - The first sequence of '</Test> terminates the content part and the match
 		 */
 		Pattern tagPattern = 
-			Pattern.compile("(<" + tagName + "([^>]+?)?>\\s{0,3})|(</" + tagName + ">)", 
-					Pattern.MULTILINE);
+			Pattern.compile("<(/)?(" + tagNamePattern + ")\\s*([^>]*?)?(/)?> *\\r?\\n?");
 
-		/*
+		/**
 		 * RegEx-Description 2:
 		 * 
 		 * Attribute format: attributeName="value"
@@ -91,73 +99,119 @@ public class XMLSectionFinder extends SectionFinder {
 		 */
 		Pattern attributePattern = Pattern.compile("([^=\"\\s]+) *= *\"([^\"]+)\"");
 		
-		Matcher tagMatcher = tagPattern.matcher(tmpSection.getOriginalText());
+		Matcher tagMatcher = tagPattern.matcher(text);
 		
-		ArrayList<Section> result = new ArrayList<Section>();
+		ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		Map<String, String> parameterMap = new HashMap<String, String>();
 		
 		int depth = 0;
 		int sectionStart = 0;
+		String foundTagName = new String();
+		
 		while (tagMatcher.find()) {
-			
-			if (!tagMatcher.group().equals(tmpSection.getOriginalText())) {
 				
-				// found opening tag
-				if (tagMatcher.group(1) != null) {
-					// its the first opening tag
-					if (depth == 0) {
-						
-						parameterMap.put(XMLSectionFinder.HEAD, tagMatcher.group(1));
-						sectionStart = tagMatcher.start(1);
-						
-						// get attributes
-						if (tagMatcher.group(2) != null) {
-							Matcher attributeMatcher = attributePattern.matcher(tagMatcher.group(2));
-							while (attributeMatcher.find()) {
-								parameterMap.put(attributeMatcher.group(1), attributeMatcher.group(2));
-							}
+			// found an opening or single tag
+			if (tagMatcher.group(1) == null) {
+				
+				// its the first tag with this name
+				if (depth == 0 && foundTagName.equals(new String())) {
+					
+					parameterMap.put(AbstractXMLObjectType.HEAD, tagMatcher.group());
+					sectionStart = tagMatcher.start();
+					foundTagName = tagMatcher.group(2);
+					
+					// get attributes
+					if (tagMatcher.group(3) != null) {
+						Matcher attributeMatcher = attributePattern.matcher(tagMatcher.group(3));
+						while (attributeMatcher.find()) {
+							parameterMap.put(attributeMatcher.group(1), attributeMatcher.group(2));
 						}
 					}
-					// following opening tags get counted as the depth of the nesting
-					depth++;
 					
-				// found closing tag
-				} else {
-					// it's the closing tag belonging to the first opening tag
-					if (depth == 1) {
-						parameterMap.put(XMLSectionFinder.TAIL, tagMatcher.group(3));
-						result.add(this.makeSection(father, tmpSection, sectionStart, 
-								tagMatcher.end(3), kbm, report, idg, parameterMap));
+					// found single-tag
+					if (tagMatcher.group(4) != null) {
+						result.add(makeSectionFinderResult(father, text, sectionStart, 
+								tagMatcher.end(), parameterMap));
 						parameterMap = new HashMap<String, String>();
+						foundTagName = new String();
+						continue;
 					}
-					// closing tags are counting backwards for the depth of the nesting
+				}
+				// following opening tags get counted as the depth of the nesting
+				if (foundTagName.equals(tagMatcher.group(2)))
+					depth++;
+				
+			// found closing tag
+			} else {
+				// it's the closing tag belonging to the first opening tag
+				if (depth == 1 && foundTagName.equals(tagMatcher.group(2))) {
+					parameterMap.put(AbstractXMLObjectType.TAIL, tagMatcher.group());
+					parameterMap.put(AbstractXMLObjectType.TAGNAME, tagMatcher.group(2));
+					result.add(makeSectionFinderResult(father, text, sectionStart, 
+							tagMatcher.end(), parameterMap));
+				}
+				
+				// closing tags are counting backwards for the depth of the nesting
+				if (foundTagName.equals(tagMatcher.group(2)))
 					depth--;
+				
+				// new HashMap for next Result...
+				if (depth == 0) {
+					parameterMap = new HashMap<String, String>();
+					foundTagName = new String();
 				}
 			}
 		}
 		
 		return result;
-	} 
+	}
 	
-	public static void main(String[] args) {
+	protected SectionFinderResult makeSectionFinderResult(Section father, String text, int start, int end, Map<String, String> parameterMap) {
 
-		String tagName = "Questionnaires-section";
-		Pattern tagPattern = 
-			Pattern.compile("(<" + tagName + "([^>]+?)?>)|(</" + tagName + ">)", 
-					Pattern.DOTALL);
-		
-		Matcher m = tagPattern.matcher(readTxtFile("D:\\Wikis\\TestPage.txt"));
-
-		System.out.println("FOUND: ");
-		while (m.find()) {
-			System.out.println("----------");
-			System.out.println(m.group(1));
-			System.out.println(m.group(2));
-			System.out.println(m.group(3));
-//			System.out.println(m.group(4));
-//			System.out.println(m.group());
+		SectionID sectionID;
+		if (parameterMap.containsKey("id")) {
+			sectionID = new SectionID(parameterMap.get("id"), null, father.getArticle().getIDGen());
+		} else {
+			sectionID = new SectionID(null, "_XML", father.getArticle().getIDGen());
 		}
+		KnowWEArticle art = father.getArticle();
+		if (art != null) {
+			KnowWEUtils.storeSectionInfo(art.getWeb(), art.getTitle(), sectionID.getID(), ATTRIBUTE_MAP_STORE_KEY, parameterMap);
+		}
+		
+		return new SectionFinderResult(start, end, sectionID);
+	}
 
+	// Everything below this line is for testing only!
+	public static void main(String[] args) {
+		TestSectionFinder finder = new XMLSectionFinder().new TestSectionFinder();
+		String text = readTxtFile("D:/KFZDemo1.txt");
+		List<SectionFinderResult> results= finder.lookForSections(text, null);
+		
+		for (SectionFinderResult result:results) {
+			System.out.println("#######+++++++");
+			System.out.println(text.substring(result.getStart(), result.getEnd()));
+			System.out.println("#######-------");
+		}
+		
+	}
+
+	
+	private class TestSectionFinder extends XMLSectionFinder {
+		
+		public TestSectionFinder() {
+			
+		}
+		
+		public TestSectionFinder(String tag) {
+			super(tag);
+		}
+		
+		@Override
+		protected SectionFinderResult makeSectionFinderResult(Section father, String text, int start, int end, Map<String, String> parameterMap) {
+			return new SectionFinderResult(start, end);
+		}
+		
 	}
 
 	private static String readTxtFile(String fileName) {
@@ -165,11 +219,12 @@ public class XMLSectionFinder extends SectionFinder {
 		try {
 			BufferedReader bufferedReader = new BufferedReader(
 					new InputStreamReader(new FileInputStream(fileName), "UTF8"));
-			String line = bufferedReader.readLine();
-			while (line != null) {
-				inContent.append(line + "\n");
-				line = bufferedReader.readLine();
+			int char1 = bufferedReader.read();
+			while (char1 != -1) {
+				inContent.append((char) char1);
+				char1 = bufferedReader.read();
 			}
+			bufferedReader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

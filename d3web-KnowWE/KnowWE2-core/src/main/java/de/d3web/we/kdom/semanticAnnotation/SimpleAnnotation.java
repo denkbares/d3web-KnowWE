@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 /**
  * 
  */
@@ -9,14 +29,11 @@ import java.util.List;
 import org.openrdf.model.URI;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IDGenerator;
-import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionFinder;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology2;
+import de.d3web.we.module.semantic.owl.UpperOntology;
 
 /**
  * @author kazamatzuri
@@ -24,24 +41,15 @@ import de.d3web.we.module.semantic.owl.UpperOntology2;
  */
 public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 
-	private class SimpleAnnotationFinder extends SectionFinder {
-		/**
-		 * @param type
-		 */
-		public SimpleAnnotationFinder(KnowWEObjectType type) {
-			super(type);
-		}
+	public static class SimpleAnnotationSectionFinder extends SectionFinder {
 
 		@Override
-		public List<Section> lookForSections(Section tmp, Section father,
-				KnowledgeRepresentationManager mgn, KnowWEDomParseReport rep,
-				IDGenerator idg) {
-			ArrayList<Section> result = new ArrayList<Section>();
-			if (tmp.getOriginalText().trim().length() > 0) {
-				Section s = Section.createSection(this.getType(), father, tmp,
-						0, tmp.getOriginalText().length(), mgn, rep, idg);
-
-				result.add(s);
+		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		
+			ArrayList<SectionFinderResult> result =
+						new ArrayList<SectionFinderResult>();
+			if (text.trim().length() > 0) {
+				result.add(new SectionFinderResult(0, text.length()));
 			}
 			return result;
 		}
@@ -49,13 +57,13 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
-		this.sectionFinder = new SimpleAnnotationFinder(this);
+		this.sectionFinder = new SimpleAnnotationSectionFinder();
 	}
 
 	@Override
 	public IntermediateOwlObject getOwl(Section s) {
 		IntermediateOwlObject io = new IntermediateOwlObject();
-		UpperOntology2 uo = UpperOntology2.getInstance();
+		UpperOntology uo = UpperOntology.getInstance();
 		String annos = s.getOriginalText().trim().replaceAll(" ", "_");
 		URI anno = null;
 		if (annos.contains(":")) {
@@ -64,9 +72,9 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 			if (ns.equals("ns")){
 				ns=uo.getBaseNS();
 			}
-			anno = uo.createURI(ns, list[1]);
+			anno = uo.getHelper().createURI(ns, list[1]);
 		} else {
-			anno = uo.createlocalURI(annos);
+			anno = uo.getHelper().createlocalURI(annos);
 		}
 		if (anno != null) {
 			io.addLiteral(anno);

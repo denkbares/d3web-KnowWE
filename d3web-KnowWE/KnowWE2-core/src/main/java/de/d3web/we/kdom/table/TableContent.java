@@ -1,76 +1,54 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.table;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.rendering.SpecialDelegateRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * <p>Represents the body of the <code>Table</code> tag.</p>
+ * <p>
+ * Represents the body of the <code>Table</code> tag.
+ * </p>
  * 
  * @author smark
  * @see XMLContent
  */
-public class TableContent extends XMLContent 
-{
+public class TableContent extends XMLContent {
 
 	@Override
-	protected void init() 
-	{
-		childrenTypes.add( new TableLine () );
+	protected void init() {
+		childrenTypes.add(new TableLine());
+		this.setCustomRenderer(new TableContentRenderer());
+		this.addReviseSubtreeHandler(new TableSubTreeHandler());
 	}
 
-	@Override
-	public KnowWEDomRenderer getRenderer()
-	{
-		/**
-		 * This is a renderer for the TableContent. I wraps the <code>Table</code>
-		 * tag into an own DIV and delegates the rendering of each <code>TableCellContent</code> 
-		 * to its own renderer.
-		 * 
-		 * @author smark
-		 */
-		class TableContentRenderer extends KnowWEDomRenderer
-		{
-			@Override
-			public String render(Section sec, KnowWEUserContext user, String web, String topic) 
-			{				
-				StringBuilder html = new StringBuilder();
-				
-				html.append( "<div class=\"table-edit\" id=\"" + sec.getId() + "\">" );
-				html.append( generateQuickEdit( topic, sec.getId() ));
-				
-				html.append( "<table class='wikitable knowwetable' border='1'><tbody>" );
-				html.append( SpecialDelegateRenderer.getInstance().render(sec, user, web, topic) );
-				html.append( "</tbody></table>" );
-				
-				if ( sec.hasQuickEditModeSet( user.getUsername() ) )
-				{
-				    html.append( "<input id=\"" + sec.getId() + "\" type=\"submit\" value=\"save\"/>" );
-				}
-				
-				html.append("</div>");
-				
-				return KnowWEEnvironment.maskHTML( html.toString() );
-			}
-			
-			/**
-			 * Generates a link used to enable or disable the Quick-Edit-Flag.
-			 * 
-			 * @see UserSetting, UserSettingsManager, NodeFlagSetting
-			 * @param topic     name of the current page
-			 * @param id        of the section the flag should assigned to
-			 * @return
-			 */
-			private String generateQuickEdit(String topic, String id)
-			{
-				String icon = " <img src='KnowWEExtension/images/pencil.png' title='Set QuickEdit-Mode'/>";
-				return "<a href=\"javascript:QuickEdit.doTable('" + id + "')\">" + icon + "</a>";
-			}
-			
+	private class TableSubTreeHandler implements ReviseSubTreeHandler {
+
+		@Override
+		public void reviseSubtree(Section s) {
+			Section headerLine = s.findSuccessor(TableLine.class);
+			AbstractKnowWEObjectType solutionHeaderType = new TableHeaderLine();
+			headerLine.setType(solutionHeaderType);
 		}
-		return new TableContentRenderer();
 	}
 }

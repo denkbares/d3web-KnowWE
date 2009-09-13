@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.action;
 
 import java.util.Map;
@@ -13,13 +33,12 @@ import de.d3web.we.utils.KnowWEUtils;
 
 public class ParseWebOfflineRenderer implements KnowWEAction {
 
-	private static ResourceBundle kwikiBundle = ResourceBundle
-			.getBundle("KnowWE_messages");
-
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		String webname = parameterMap.get(KnowWEAttributes.WEB);
 
+		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest());
+		
 		Map<String, String> articles = KnowWEEnvironment.getInstance()
 				.getWikiConnector().getAllArticles(webname);
 		Set<String> articleNames = articles.keySet();
@@ -35,7 +54,7 @@ public class ParseWebOfflineRenderer implements KnowWEAction {
 			} else {
 				reports.append("<p class=\"box ok\">");
 			}
-			reports.append(kwikiBundle.getString("webparser.info.parsing")
+			reports.append(rb.getString("webparser.info.parsing")
 					+ createLink(name, webname) + ": "
 					+ object.getShortStatus() + "<br />");
 			if (object.hasErrors()) {
@@ -43,7 +62,7 @@ public class ParseWebOfflineRenderer implements KnowWEAction {
 				reports.append("<br />\n");
 			} else {
 
-				reports.append(kwikiBundle.getString("webparser.info.saved")
+				reports.append(rb.getString("webparser.info.saved")
 						+ " </p>");
 			}
 		}
@@ -52,7 +71,7 @@ public class ParseWebOfflineRenderer implements KnowWEAction {
 		reports.delete(0, reports.length());
 		reports.append(converted);
 		
-		reports.insert(0, "<a href=\"#\" onclick=\"clearInnerHTML('parseWeb');\">" + kwikiBundle.getString("KnowWE.buttons.close") + "</a><br />");
+		reports.insert(0, "<a href=\"#\" onclick=\"clearInnerHTML('parseWeb');\">" + rb.getString("KnowWE.buttons.close") + "</a><br />");
 		
 		return reports.toString();
 

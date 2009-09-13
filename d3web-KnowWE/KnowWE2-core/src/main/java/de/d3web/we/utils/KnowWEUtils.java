@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.utils;
 
 import java.util.ResourceBundle;
@@ -7,6 +27,8 @@ import javax.servlet.ServletContext;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.javaEnv.KnowWEAttributes;
 import de.d3web.we.javaEnv.KnowWEParameterMap;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.store.SectionStore;
 
 public class KnowWEUtils {
 
@@ -26,8 +48,32 @@ public class KnowWEUtils {
 		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().storeObject(article, kdomid, key, o);
 	}
 	
+	public static void storeSectionInfo(Section sec, String key, Object o) {
+		storeSectionInfo(sec.getWeb(), sec.getTitle(), sec.getId(), key, o);
+	}
+	
+	public static void putSectionStore(String web, String article, String kdomid, SectionStore store) {
+		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().putSectionStore(article, kdomid, store);
+	}
+	
 	public static Object getStoredObject(String web, String article, String kdomid, String key) {
 		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObject(article, kdomid, key);
+	}
+	
+	public static Object getStoredObject(Section s , String key) {
+		return getStoredObject(s.getWeb(), s.getTitle(), s.getId(), key);
+	}
+	
+	public static Object getOldStoredObject(String web, String article, String kdomid, String key) {
+		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getOldStoredObject(article, kdomid, key);
+	}
+	
+	public static SectionStore getSectionStore(String web, String article, String kdomid) {
+		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObjects(article, kdomid);
+	}
+	
+	public static SectionStore getOldSectionStore(String web, String article, String kdomid) {
+		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getOldStoredObjects(article, kdomid);
 	}
 	
 	public static String convertUmlaut(String text) {

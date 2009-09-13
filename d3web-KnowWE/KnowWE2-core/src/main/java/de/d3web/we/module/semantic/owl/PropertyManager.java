@@ -1,13 +1,30 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 /**
  * 
  */
 package de.d3web.we.module.semantic.owl;
 
 import org.apache.log4j.Logger;
-import org.openrdf.model.BNode;
 import org.openrdf.model.URI;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
@@ -16,7 +33,6 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.we.kdom.Section;
 
 /**
  * @author kazamatzuri
@@ -25,7 +41,7 @@ import de.d3web.we.kdom.Section;
 public class PropertyManager {
 
     static PropertyManager instance;
-    private UpperOntology2 uo;
+    private UpperOntology uo;
 
     /**
      * 
@@ -50,52 +66,11 @@ public class PropertyManager {
      * 
      */
     private PropertyManager() {
-	uo = UpperOntology2.getInstance();
+	uo = UpperOntology.getInstance();
     }
 
-    public IntermediateOwlObject createProperty(String subject,
-	    String property, String object, Section source) {
-
-	
-	URI suri=uo.createlocalURI(subject);
-	URI puri=uo.createlocalURI(property);
-	URI ouri=uo.createlocalURI(object);
-	
-	return createProperty(suri,puri,ouri,source);
-    }
-    /**
-     * @param soluri
-     * @param prop
-     * @param stringa
-     * @param id
-     * @return
-     */
-    public IntermediateOwlObject createProperty(URI suri, URI puri,
-	    URI ouri, Section source) {
-	IntermediateOwlObject io = new IntermediateOwlObject();
-	try {
-	    BNode to = uo.getVf().createBNode();
-	    BNode nary = uo.getVf().createBNode();
-	    io.addStatement(uo.createStatement(to,RDF.TYPE, uo.createURI("TextOrigin")));
-	    io.addStatement(uo.createStatement(to,uo.createURI("hasNode"), uo.createLiteral(source.getId())));
-	    io.addStatement(uo.createStatement(to,uo.createURI("hasTopic"), uo.createLiteral(source.getTopic())));
-	    io.addStatement(uo.createStatement(nary,RDFS.ISDEFINEDBY, to));
-	    io.addStatement(uo.createStatement(nary,RDF.TYPE,RDF.STATEMENT));
-	    io.addStatement(uo.createStatement(nary,RDF.PREDICATE,puri));
-	    io.addStatement(uo.createStatement(nary,RDF.OBJECT,ouri));
-	    io.addStatement(uo.createStatement(nary,RDF.SUBJECT,suri));
-	    
-	} catch (RepositoryException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	
-	return io;
-    }
-
-    
     public boolean isValid(String property) {
-	URI prop = UpperOntology2.getInstance().createlocalURI(property);
+	URI prop = UpperOntology.getInstance().getHelper().createlocalURI(property);
 	return isValid(prop);
     }
 
@@ -120,7 +95,7 @@ public class PropertyManager {
 	String objectpropquery=querystring+"ASK WHERE { <"+property.toString()+"> rdf:type owl:ObjectProperty }";
 	String datatypepropquery=querystring+"ASK WHERE { <"+property.toString()+"> rdf:type owl:DatatypeProperty }";
 	querystring+= "ASK WHERE { <"+property.toString()+"> rdfs:subClassOf ns:NaryProperty }";
-	RepositoryConnection con = UpperOntology2.getInstance().getConnection();
+	RepositoryConnection con = UpperOntology.getInstance().getConnection();
 	Query query = null;
 	try {
 	    query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
@@ -170,25 +145,6 @@ public class PropertyManager {
     }
 
     /**
-     * @param cur
-     */
-    public IntermediateOwlObject createProperty(String cur) {
-	URI prop = uo.createlocalURI(cur);
-	URI naryprop = uo.createURI("NaryProperty");
-	IntermediateOwlObject io = new IntermediateOwlObject();
-	if (!isValid(prop)) {
-	    try {
-		io.addStatement(uo.createStatement(prop, RDFS.SUBCLASSOF, naryprop));
-	    } catch (RepositoryException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
-	}
-	return io;
-
-    }
-
-    /**
      * 
      * 
      * @param string
@@ -205,6 +161,14 @@ public class PropertyManager {
     public boolean isRDFS(URI property) {
 	// TODO Auto-generated method stub
 	return (property.getLocalName().contains("subClassOf")||property.getLocalName().contains("type")||property.getLocalName().contains("subPropertyOf"));
+	    
+    }
+    /**
+     * @param prop
+     * @return
+     */
+    public boolean isRDF(URI property) {
+	return (property.getLocalName().contains("type"));
 	    
     }
 

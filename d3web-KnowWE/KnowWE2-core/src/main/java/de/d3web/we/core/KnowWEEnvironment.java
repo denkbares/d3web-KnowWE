@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.core;
 
 import java.io.BufferedReader;
@@ -9,11 +29,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.javaEnv.KnowWEParameterMap;
@@ -22,6 +44,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.VerbatimType;
 import de.d3web.we.kdom.css.CSS;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
@@ -37,9 +60,10 @@ import de.d3web.we.taghandler.KnowWEObjectTypeBrowserHandler;
 import de.d3web.we.taghandler.KnowWETypeActivationHandler;
 import de.d3web.we.taghandler.OwlDownloadHandler;
 import de.d3web.we.taghandler.RenamingTagHandler;
-import de.d3web.we.taghandler.TagHandlerListHandler;
 import de.d3web.we.taghandler.TagHandler;
+import de.d3web.we.taghandler.TagHandlerType;
 import de.d3web.we.user.UserSettingsManager;
+import de.d3web.we.utils.KnowWEObjectTypeSet;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -58,18 +82,17 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class KnowWEEnvironment {
 
-	private static ResourceBundle kwikiBundle = ResourceBundle
-			.getBundle("KnowWE_messages");
-
 	private KnowWETopicLoader topicLoader;
 
-	private KnowledgeRepresentationManager terminologyManager;
-
 	private List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
+	private List<KnowWEObjectType> globalTypes = new ArrayList<KnowWEObjectType>();
 	
-	private List<KnowWEObjectType> allKnowWEObjectTypes;
-	// 
+	public List<KnowWEObjectType> getGlobalTypes() {
+		return globalTypes;
+	}
 
+	private List<KnowWEObjectType> allKnowWEObjectTypes;
+	
 	/**
 	 * default paths, used only, if null is given to the constructor as path
 	 * should NOT BE USED, path a read from the KnowWE_config properties file.
@@ -97,13 +120,13 @@ public class KnowWEEnvironment {
 	 */
 	private List<KnowWEModule> modules = new java.util.ArrayList<KnowWEModule>();
 
-	/**
-	 * The servlet context of the running application. Necessary to determine
-	 * the path of the running app on the server
-	 * 
-	 * TODO cant this be factored out?
-	 */
-	private ServletContext context;
+//	/**
+//	 * The servlet context of the running application. Necessary to determine
+//	 * the path of the running app on the server
+//	 * 
+//	 * TODO cant this be factored out?
+//	 */
+//	private ServletContext context;
 
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
@@ -124,9 +147,24 @@ public class KnowWEEnvironment {
 	public HashMap<String, TagHandler> getDefaultTagHandlers() {
 		return tagHandlers;
 	}
+	
 	public ResourceBundle getKwikiBundle() {
-		return kwikiBundle;
+
+		return ResourceBundle.getBundle("KnowWE_messages");
 	}
+	
+	public ResourceBundle getKwikiBundle(KnowWEUserContext user) {
+		
+		Locale.setDefault(wikiConnector.getLocale(user.getHttpRequest()));
+		return this.getKwikiBundle();
+	}
+	
+	public ResourceBundle getKwikiBundle(HttpServletRequest request) {
+		
+		Locale.setDefault(wikiConnector.getLocale(request));
+		return this.getKwikiBundle();
+	}
+	
 	/**
 	 * Hard coded name of the default web
 	 */
@@ -152,6 +190,8 @@ public class KnowWEEnvironment {
 	 * Name of the WikiFindings-page
 	 */
 	public static final String WIKI_FINDINGS = "WikiFindings";
+
+	public static final boolean GLOBAL_TYPES_ENABLED = true;
 
 	/**
 	 * Singleton instance
@@ -229,7 +269,7 @@ public class KnowWEEnvironment {
 		return this.articleManagers.get(web).getArticle(topic);
 	}
 
-	private void initArticleManager(String web) {
+	public void initArticleManager(String web) {
 		this.articleManagers.put(web, new KnowWEArticleManager(this, web));
 
 	}
@@ -258,16 +298,16 @@ public class KnowWEEnvironment {
 	private KnowWEEnvironment(KnowWEWikiConnector wiki) {
 		try {
 			this.wikiConnector = wiki;
-			context = wiki.getServletContext();
+			
 			System.out.println("INITIALISING KNOWWE ENVIRONMENT...");
 			ResourceBundle bundle = ResourceBundle.getBundle("WebParserConfig");
 			if (bundle != null) {
 				// convert the $web_app$-variable from the resourcebundle
 //				defaultJarsPath = KnowWEUtils.getRealPath(context, bundle
 //						.getString("path_to_jars"));
-				defaultReportPath = KnowWEUtils.getRealPath(context, bundle
+				defaultReportPath = KnowWEUtils.getRealPath(wikiConnector.getServletContext(), bundle
 						.getString("path_to_reports"));
-				defaultModulesTxtPath = KnowWEUtils.getRealPath(context, bundle
+				defaultModulesTxtPath = KnowWEUtils.getRealPath(wikiConnector.getServletContext(), bundle
 						.getString("path_to_knowweextension"));
 
 			}
@@ -293,7 +333,8 @@ public class KnowWEEnvironment {
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
-			e.printStackTrace();
+			Logger.getLogger(KnowWEEnvironment.class.getName());
+//			e.printStackTrace();
 		}
 
 	}
@@ -378,7 +419,7 @@ public class KnowWEEnvironment {
 		} catch (IOException e) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Could not find taghandler.txt!");
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 
 		// each of these String try to find and init the Module
@@ -431,7 +472,7 @@ public class KnowWEEnvironment {
 		} catch (IOException e) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Could not find module.txt!");
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 
 		// each of these String try to find and init the Module
@@ -491,6 +532,9 @@ public class KnowWEEnvironment {
 		
 		
 		this.rootTypes.add(defaultTextType);
+		this.rootTypes.add( new Table() );
+		this.rootTypes.add( new CSS() );
+		this.rootTypes.add( new TagHandlerType());
 
 		// init modules and add root types
 		for (KnowWEModule modul : modules) {
@@ -499,7 +543,7 @@ public class KnowWEEnvironment {
 			modul.initModule(context);
 
 			// TERMINLOGY-HANDLER
-			modul.registerKnowledgeRepresentationHandler(this.getTerminologyManager());
+			modul.registerKnowledgeRepresentationHandler(KnowledgeRepresentationManager.getInstance());
 			
 			//GET TAGHANDLERS
 			List<TagHandler> handlers = modul.getTagHandlers();
@@ -521,17 +565,20 @@ public class KnowWEEnvironment {
 			}
 
 			// ADD ROOT TYPES
-			List<KnowWEObjectType> moduleRoots = modul.getRootTypes();
+			List<? extends KnowWEObjectType> moduleRoots = modul.getRootTypes();
 			if (moduleRoots != null) {
 				this.rootTypes.addAll(moduleRoots);
+			}
+			
+			// ADD Global TYPES
+			List<? extends TerminalType> moduleGlobals = modul.getGlobalTypes();
+			if (moduleGlobals != null) {
+				this.globalTypes.addAll(moduleGlobals);
 			}
 
 		}			
 		
 		
-
-		this.rootTypes.add( new Table() );
-		this.rootTypes.add( new CSS() );
 		// ensuring it is last in list
 		this.rootTypes.remove(defaultTextType);
 		this.rootTypes.add(defaultTextType);
@@ -572,7 +619,7 @@ public class KnowWEEnvironment {
 		String key = params.get("_cmdline").split("=")[0].trim();
 		if (this.tagHandlers.containsKey(key.toLowerCase())) {
 			return this.tagHandlers.get(key.toLowerCase()).render(
-					topic, user, params.get(key), web);
+					topic, user, params, web);
 		}
 
 //		// Then asking Modules in given order for TagHandlers
@@ -670,12 +717,27 @@ public class KnowWEEnvironment {
 
 	}
 
+	/**
+	 * Called by the Core-Junit-Tests
+	 * 
+	 * @param username
+	 * @param content
+	 * @param topic
+	 * @param web
+	 * @return
+	 */
+	public void processAndUpdateArticleJunit(String username, String content,
+			String topic, String web, List<KnowWEObjectType> types) {
+		this.rootTypes = types;
+		this.articleManagers.get(web).saveUpdatedArticle(new KnowWEArticle(content, topic, types,web));
+	}
+	
 	public List<KnowWEModule> getModules() {
 		return modules;
 	}
 
 	public ServletContext getContext() {
-		return context;
+		return wikiConnector.getServletContext();
 	}
 
 	/**
@@ -795,13 +857,6 @@ public class KnowWEEnvironment {
 		return data;
 	}
 
-	public KnowledgeRepresentationManager getTerminologyManager() {
-		if (terminologyManager == null) {
-			terminologyManager = new KnowledgeRepresentationManager();
-		}
-		return terminologyManager;
-	}
-
 	public List<KnowWEObjectType> getRootTypes() {
 		return rootTypes;
 	}
@@ -814,16 +869,14 @@ public class KnowWEEnvironment {
 	public List<KnowWEObjectType> getAllKnowWEObjectTypes() {
 		
 		if (this.allKnowWEObjectTypes == null) {
-			this.allKnowWEObjectTypes = new ArrayList<KnowWEObjectType>();
+			KnowWEObjectTypeSet allTypes = new KnowWEObjectTypeSet();
 			
 			for(KnowWEObjectType type : this.getRootTypes()) {
-				List <KnowWEObjectType> test = KnowWEObjectTypeUtils.getChildrenTypes(type, this.allKnowWEObjectTypes);
-				if (test != null) {
-					this.allKnowWEObjectTypes = test;
-				}
+				KnowWEObjectTypeSet s = KnowWEObjectTypeUtils.getAllChildrenTypesRecursive(type, new KnowWEObjectTypeSet());
+				allTypes.addAll(s.toList());
 			}
-			this.allKnowWEObjectTypes = KnowWEObjectTypeUtils.cleanList(this.allKnowWEObjectTypes);
-			this.allKnowWEObjectTypes = KnowWEObjectTypeUtils.sortTypeList(this.allKnowWEObjectTypes);
+			
+			this.allKnowWEObjectTypes = allTypes.toLexicographicalList();
 		}
 
 		return this.allKnowWEObjectTypes;

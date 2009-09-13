@@ -1,0 +1,71 @@
+<Kopic>
+<Questions-section>
+Interview for what to do
+
+- Are you tired from work? [oc]
+-- Can hardly keep the eyes open
+-- A little bit
+-- No
+- Is your fridge empty? [oc]
+-- Yes
+-- No
+- Are you hungry? [oc]
+-- Very very hungry
+-- Yes
+-- No
+- Do you have a date? [oc]
+-- Yes
+-- No
+- What do you like? [mc]
+-- Sports
+-- Movies
+-- Books
+-- Relaxing
+-- Meeting people
+-- Shopping
+- "How much time (in hours) do you have to spend?" [num]
+- Do your legs hurt? [oc]
+-- Yes
+-- No
+- Is there a friend to hang out with? [oc]
+-- Yes
+-- No
+- Are the stores still open? [oc]
+-- Yes
+-- No
+</Questions-section>
+
+<SetCoveringList-section>
+"Go Jogging!" {
+    Do you have a date? = No,
+    "How much time (in hours) do you have to spend?" <= "0.5",
+    Is your fridge empty? = No,
+    What do you like? = Sports,
+    Do your legs hurt? = Yes [--],
+}
+
+"Go to your date!" {
+    Do you have a date? = Yes,
+}
+
+Go to bed {
+    Are you tired from work? = Can hardly keep the eyes open,
+    What do you like? = Relaxing,
+    "How much time (in hours) do you have to spend?" <= 1,
+}
+
+Buy some food { 
+    Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],
+    Are you hungry? = Yes,
+    What do you like? = Shopping,
+    Are the stores still open? = Yes [!],
+}
+
+Meet someone at a restaurant {
+    Are you hungry? = Yes OR Are you hungry? = Very very hungry [2],
+    Do you have a date? = Yes OR Is there a friend to hang out with? = Yes [2],
+    Is your fridge empty? = Yes [1],
+    What do you like? = Meeting people,
+}
+</SetCoveringList-section>
+</Kopic>

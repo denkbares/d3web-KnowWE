@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 /**
  * 
  */
@@ -6,7 +26,7 @@ package de.d3web.we.taghandler;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ResourceBundle;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.openrdf.query.BindingSet;
@@ -20,7 +40,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.module.semantic.owl.UpperOntology2;
+import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -42,8 +62,8 @@ public class FactSheet extends AbstractTagHandler {
      * java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public String render(String topic, KnowWEUserContext user, String value, String web) {
-	UpperOntology2 uo = UpperOntology2.getInstance();
+    public String render(String topic, KnowWEUserContext user, Map<String,String> values, String web) {
+	UpperOntology uo = UpperOntology.getInstance();
 	String querystring = "PREFIX ns: <" + uo.getBaseNS() + "> \n";
 	querystring += "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
 	querystring += "PREFIX lns: <" + uo.getLocaleNS() + "> \n";
@@ -60,7 +80,7 @@ public class FactSheet extends AbstractTagHandler {
 		+ "?t rdf:object ?q .\n" + "?t rdf:predicate ?p .\n"
 		+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic \"" + topicenc
 		+ "\" .\n" + "}";
-	RepositoryConnection con = UpperOntology2.getInstance().getConnection();
+	RepositoryConnection con = UpperOntology.getInstance().getConnection();
 	Query query = null;
 	try {
 	    query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
@@ -113,7 +133,7 @@ public class FactSheet extends AbstractTagHandler {
 		    table += "</tr>";
 		}
 	    } catch (QueryEvaluationException e) {
-		return KnowWEEnvironment.getInstance().getKwikiBundle()
+		return KnowWEEnvironment.getInstance().getKwikiBundle(user)
 			.getString("KnowWE.owl.query.evalualtion.error")
 			+ ":" + e.getMessage();
 	    } finally {
@@ -127,7 +147,7 @@ public class FactSheet extends AbstractTagHandler {
 	}
 	String output="";
 	if (empty) {
-	    output += KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.owl.query.no_result");
+	    output += KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.owl.query.no_result");
 	    return KnowWEEnvironment.maskHTML(output);
 	} else {
 	    output += "<table border=\"1\">" + table + "</table>";
@@ -138,8 +158,8 @@ public class FactSheet extends AbstractTagHandler {
     }
     
     @Override
-	public String getDescription() {
-		return KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.FactSheet.description");
+	public String getDescription(KnowWEUserContext user) {
+		return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.FactSheet.description");
 	}
 
 }

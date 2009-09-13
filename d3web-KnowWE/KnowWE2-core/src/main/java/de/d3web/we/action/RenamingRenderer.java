@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.action;
 
 import java.util.Collection;
@@ -21,12 +41,17 @@ import de.d3web.we.kdom.Section;
 
 public class RenamingRenderer implements KnowWEAction {
 
-	private static ResourceBundle kwikiBundle = ResourceBundle.getBundle("KnowWE_messages");
+	private static ResourceBundle rb;
 
 	private boolean caseSensitive;
+	
+	public final static String TXT_SEPERATOR = ":";
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
+		
+		rb = KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest());
+		
 		String queryString = parameterMap.get(KnowWEAttributes.TARGET);
 		String queryContextPrevious = parameterMap.get(KnowWEAttributes.CONTEXT_PREVIOUS);
 		String queryContextAfter = parameterMap.get(KnowWEAttributes.CONTEXT_AFTER);
@@ -75,7 +100,7 @@ public class RenamingRenderer implements KnowWEAction {
 
 		// article#section#position#curChars#direction
 		// e.g. Swimming#0#264#20#a
-		String[] params = atmURL.split("#");
+		String[] params = atmURL.split( RenamingRenderer.TXT_SEPERATOR );
 		String articleTitle = params[0];
 		int sectionNum = Integer.parseInt(params[1]);
 		int pos = Integer.parseInt(params[2]);
@@ -91,10 +116,17 @@ public class RenamingRenderer implements KnowWEAction {
 
 			if (article.getTitle().equals(articleTitle)) {
 				Section section = article.getSection().getChildren().get(sectionNum);
-				additionalText = RenameFinding.getAdditionalContext(pos,
-						direction, chars, query.length(), section.getOriginalText());
+				String context = RenameFinding.getAdditionalContext(pos, direction, chars, query.length(), section.getOriginalText());
+				String span = createAdditionalMatchingTextSpan(article, sectionNum, pos, chars + RenameFinding.CONTEXT_SIZE_SMALL, direction.charAt(0), false);
 				
-				additionalText += createAdditionalMatchingTextSpan(article, sectionNum, pos, chars + RenameFinding.CONTEXT_SIZE_SMALL, direction.charAt(0), false);
+				if( direction.charAt(0) == 'a')
+				{
+					additionalText = context + span;
+				}
+				else
+				{
+				    additionalText = span + context;
+				}
 			}
 		}
 		return additionalText;
@@ -111,7 +143,7 @@ public class RenamingRenderer implements KnowWEAction {
 	 *            any string the user is looking for
 	 * @return a map containing all findings of the string <code>query<code>
 	 */
-	private Map<KnowWEArticle, Collection<RenameFinding>> scanForFindings(
+	public Map<KnowWEArticle, Collection<RenameFinding>> scanForFindings(
 			String web, String query, int previousMatchLength) {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		Map<KnowWEArticle, Collection<RenameFinding>> map = new HashMap<KnowWEArticle, Collection<RenameFinding>>();
@@ -164,19 +196,19 @@ public class RenamingRenderer implements KnowWEAction {
 		StringBuffer mask = new StringBuffer();
 
 		mask.append("<form method='post' action=''><fieldset><legend>"
-				+ kwikiBundle.getString("KnowWE.renamingtool.searchresult")
+				+ rb.getString("KnowWE.renamingtool.searchresult")
 				+ " '" + query + "'</legend>");
 		mask.append("<table id='sortable1'><colgroup><col class='match' /><col class='section' />");
 		mask.append("<col class='replace' /><col class='preview' /></colgroup>");
 		mask.append("<thead><tr><th scope='col'>"
-				+ kwikiBundle.getString("KnowWE.renamingtool.clmn.match")
+				+ rb.getString("KnowWE.renamingtool.clmn.match")
 				+ "</th><th scope='col'>"
-				+ kwikiBundle.getString("KnowWE.renamingtool.clmn.section")
+				+ rb.getString("KnowWE.renamingtool.clmn.section")
 				+ "</th>");
 		mask.append("<th scope='col'>"
-				+ kwikiBundle.getString("KnowWE.renamingtool.clmn.replace")
+				+ rb.getString("KnowWE.renamingtool.clmn.replace")
 				+ "</th><th scope='col'>"
-				+ kwikiBundle.getString("KnowWE.renamingtool.clmn.preview")
+				+ rb.getString("KnowWE.renamingtool.clmn.preview")
 				+ "</th></tr></thead>");
 
 		for (Entry<KnowWEArticle, Collection<RenameFinding>> entry : findings.entrySet()) {
@@ -187,7 +219,7 @@ public class RenamingRenderer implements KnowWEAction {
 				mask.append("<thead>");
 				mask.append("<tr><td>");
 				mask.append("<strong>"
-						+ kwikiBundle.getString("KnowWE.renamingtool.article")
+						+ rb.getString("KnowWE.renamingtool.article")
 						+ ": " + article.getTitle() + "</strong>");
 				mask.append("</td><td></td><td>");
 				mask.append("<input id='check-select' class='check' onclick='selectPerSection(this, \""
@@ -207,8 +239,8 @@ public class RenamingRenderer implements KnowWEAction {
 
 				String checkBoxID = "replaceBox_"
 						+ article.getTitle()
-						+ "#"
-						+ renameFinding.getSec().getId() + "#"
+						+ TXT_SEPERATOR
+						+ renameFinding.getSec().getId() + TXT_SEPERATOR
 						+ renameFinding.getStart();
 
 				mask.append("<tr>");
@@ -240,8 +272,7 @@ public class RenamingRenderer implements KnowWEAction {
 		mask.append("<tr><td></td><td></td>");
 		mask
 				.append("<td><input onclick='replaceAll();' value='"
-						+ kwikiBundle
-								.getString("KnowWE.renamingtool.bttn.replace")
+						+ rb.getString("KnowWE.renamingtool.bttn.replace")
 						+ "' type='button' class='button' title='Begriff in ausgewï¿½hlten Stellen ersetzen'/></td>");
 		mask.append("<td></td></tr>");
 		mask.append("</tfoot>");
@@ -258,7 +289,7 @@ public class RenamingRenderer implements KnowWEAction {
 		}
 		String name = null;
 		try {
-			name = kwikiBundle.getString("KnowWE.sectionfinder." + modName);
+			name = rb.getString("KnowWE.sectionfinder." + modName);
 
 		} catch (Exception e) {
 		}
@@ -365,8 +396,11 @@ public class RenamingRenderer implements KnowWEAction {
 		}
 
 		// create atmUrl (e.g. schwimming#0#264#20#-1)
-		String atmUrl = article.getTitle() + "#" + section + "#" + start + "#"
-				+ chars + "#" + direction;
+		String atmUrl = article.getTitle() + RenamingRenderer.TXT_SEPERATOR 
+		        + section + RenamingRenderer.TXT_SEPERATOR 
+		        + start + RenamingRenderer.TXT_SEPERATOR
+				+ chars + RenamingRenderer.TXT_SEPERATOR
+				+ direction;
 
 		if (span) {
 			html.append("<span id='" + direction + start

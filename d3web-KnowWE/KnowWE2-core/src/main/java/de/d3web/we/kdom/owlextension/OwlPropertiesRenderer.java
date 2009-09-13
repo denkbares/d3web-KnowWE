@@ -1,9 +1,27 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 /**
  * 
  */
 package de.d3web.we.kdom.owlextension;
-
-import java.util.ResourceBundle;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -14,19 +32,18 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * 
  */
 public class OwlPropertiesRenderer extends KnowWEDomRenderer {
-    private static ResourceBundle kwikiBundle = ResourceBundle
-	    .getBundle("KnowWE_messages");
+
     private static OwlPropertiesRenderer instance;
 
     public static synchronized OwlPropertiesRenderer getInstance() {
-	if (instance == null)
-	    instance = new OwlPropertiesRenderer();
-	return instance;
+    	if (instance == null)
+    		instance = new OwlPropertiesRenderer();
+    	return instance;
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-	throw new CloneNotSupportedException();
+    	throw new CloneNotSupportedException();
     }
 
     private OwlPropertiesRenderer() {
@@ -41,13 +58,11 @@ public class OwlPropertiesRenderer extends KnowWEDomRenderer {
      * , java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public String render(Section sec, KnowWEUserContext user, String web, String topic) {
-	String text = sec.getOriginalText();
-	String output = "";
-	for (String cur : text.split("\r\n|\r|\n")) {
-	    if (cur.trim().length() > 0)
-		output += cur.trim() + "\\\\";
-	}
-	return output;
+    public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+    	String text = sec.getOriginalText();
+    	for (String cur : text.split("\r\n|\r|\n")) {
+    		if (cur.trim().length() > 0)
+    			string.append(cur.trim() + "\\\\");
+    	}
     }
 }

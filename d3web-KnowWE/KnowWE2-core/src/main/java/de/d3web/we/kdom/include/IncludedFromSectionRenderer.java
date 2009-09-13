@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.include;
 
 import de.d3web.we.core.KnowWEEnvironment;
@@ -7,29 +27,32 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class IncludedFromSectionRenderer extends KnowWEDomRenderer {
 
-	protected String title;
-	
-	protected String renderedContent;
+	protected String src;
 	
 	@Override
-	public String render(Section sec, KnowWEUserContext user, String web, String topic) {
-		title = sec.getTopic();
+	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+		src = sec instanceof IncludedFromSection ? ((IncludedFromSection) sec).getSrc() 
+				: "Unknown Source";
 		StringBuilder content = new StringBuilder();
+		StringBuilder b = new StringBuilder();
 		int i = 0;
 		for (Section child:sec.getChildren()) {
 			if (!((i < 2 || i > sec.getChildren().size() - 3) && child.isEmpty())) {
-				content.append(child.getObjectType().getRenderer().render(child, user, web, topic));
+				child.getObjectType().getRenderer().render(child, user, content);
+				b.append(content.toString());
+				// make content empty, so no new Object has to be created
+				content.delete(0, content.length());
 			}
 			i++;
 		}
-		renderedContent = content.toString();
+
 		//renderedContent = DefaultDelegateRenderer.getInstance().render(sec, user, web, topic);
-		return wrapIncludeFrame();
+		string.append(wrapIncludeFrame(b.toString()));		
 	}
 	
-	protected String wrapIncludeFrame() {
+	protected String wrapIncludeFrame(String renderedContent) {
 		return KnowWEEnvironment.maskHTML("<div style=\"text-align:left; padding-top:5px; padding-right:5px; padding-left:5px; border:thin solid #99CC99\">") 
-			+ renderedContent + KnowWEEnvironment.maskHTML("<div style=\"text-align:right\"><font size=\"1\">" + title + "</font></div></div><p>");
+			+ renderedContent + KnowWEEnvironment.maskHTML("<div style=\"text-align:right\"><font size=\"1\">" + src + "</font></div></div><p>");
 	}
 
 }

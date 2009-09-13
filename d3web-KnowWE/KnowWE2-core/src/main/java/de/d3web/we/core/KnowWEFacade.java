@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.core;
 
 import java.io.OutputStream;
@@ -7,23 +27,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.apache.commons.fileupload.FileItem;
 
 import de.d3web.we.action.GlobalReplaceAction;
 import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.KnowWEObjectTypeActivationRenderer;
 import de.d3web.we.action.KnowWEObjectTypeBrowserRenderer;
 import de.d3web.we.action.ParseWebOfflineRenderer;
-import de.d3web.we.action.RenamingRenderer;
 import de.d3web.we.action.ReplaceKDOMNodeAction;
 import de.d3web.we.action.SetQuickEditFlagAction;
 import de.d3web.we.action.UpdateTableKDOMNodes;
+import de.d3web.we.action.WordBasedRenamingAction;
+import de.d3web.we.javaEnv.KnowWEAttributes;
 import de.d3web.we.javaEnv.KnowWEParameterMap;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.WordBasedRenameFinding;
 import de.d3web.we.module.KnowWEModule;
-import de.d3web.we.module.semantic.owl.UpperOntology2;
 import de.d3web.we.renderer.xml.GraphMLOwlRenderer;
-import de.d3web.we.upload.KnOfficeUploadManager;
+import de.d3web.we.upload.UploadManager;
 
 
 /**
@@ -39,9 +63,6 @@ import de.d3web.we.upload.KnOfficeUploadManager;
  * 
  */
 public class KnowWEFacade {
-
-	private static ResourceBundle kwikiBundle = ResourceBundle
-			.getBundle("KnowWE_messages");
 
 	/**
 	 * holds all possible Actions, that can be performed by the KnowWEEngine
@@ -88,13 +109,14 @@ public class KnowWEFacade {
 	private void initActions() {
         actionMap.put(SetQuickEditFlagAction.class, new SetQuickEditFlagAction());
 
-		actionMap.put(RenamingRenderer.class, new RenamingRenderer());
+		actionMap.put(WordBasedRenamingAction.class, new WordBasedRenamingAction());
 		actionMap.put(GlobalReplaceAction.class, new GlobalReplaceAction());
 
 		actionMap.put(ReplaceKDOMNodeAction.class, new ReplaceKDOMNodeAction());
 		actionMap.put(UpdateTableKDOMNodes.class, new UpdateTableKDOMNodes());
 		actionMap.put(KnowWEObjectTypeBrowserRenderer.class, new KnowWEObjectTypeBrowserRenderer());
-
+		actionMap.put(KnowWEObjectTypeActivationRenderer.class, new KnowWEObjectTypeActivationRenderer());
+		
 		List<KnowWEModule> modules = KnowWEEnvironment.getInstance()
 				.getModules();
 		for (KnowWEModule knowWEModule : modules) {
@@ -186,17 +208,17 @@ public class KnowWEFacade {
 	}
 
 	/**
-	 * renders the global search and renaming tool
+	 * Renders the global search and renaming tool
 	 * 
 	 * @param parameterMap
 	 * @return
 	 */
 	public String getRenamingMask(KnowWEParameterMap parameterMap) {
-		return this.actionMap.get(RenamingRenderer.class).perform(parameterMap);
+		return this.actionMap.get(WordBasedRenamingAction.class).perform(parameterMap);
 	}
 
 	/**
-	 * renders all currently entered findings for a user
+	 * Renders all currently entered findings for a user
 	 * 
 	 * @param parameterMap
 	 * @return
@@ -235,7 +257,6 @@ public class KnowWEFacade {
 
 		ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
 
-		
 		if (bundle.getString("knowwe2wiki.parseAllFunction").equals("true")) {
 
 			if (parameterMap.getWikiContext().userIsAdmin()) {
@@ -245,7 +266,7 @@ public class KnowWEFacade {
 			}
 
 			return "<p class=\"info box\">"
-					+ kwikiBundle.getString("KnowWE.login.error.admin")
+					+ KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest()).getString("KnowWE.login.error.admin")
 					+ "</p>";
 		}
 
@@ -426,6 +447,16 @@ public class KnowWEFacade {
 		return KnowWEEnvironment.getInstance().loadReport(topic, web);
 
 	}
+	
+	/**
+	 * Saves the choosen answers in the dialog as an XCLModel.
+	 * 
+	 * @param parameterMap
+	 * @return
+	 */
+	public String saveAsXCL(KnowWEParameterMap parameterMap) {
+		return performAction("SaveDialogAsXCLAction", parameterMap);
+	}
 
 	/**
 	 * Generates a KnowledgeBase from an Uploaded jarFile(Attachment).
@@ -445,6 +476,10 @@ public class KnowWEFacade {
 				throw new IllegalArgumentException("no action specified");
 			}
 		}
+		
+		//Hotfix: search in ActionMap
+		KnowWEAction actionInstance = findInActionMap(action); 
+		if(actionInstance != null) return actionInstance.perform(parameterMap);
 		try {
 			// check is action is fully qualified class name
 			if (!action.contains(".")) {
@@ -452,7 +487,7 @@ public class KnowWEFacade {
 				action = "de.d3web.we.action." + action;
 			}
 			Class clazz = Class.forName(action);
-			KnowWEAction actionInstance = actionMap.get(clazz);
+			actionInstance = actionMap.get(clazz);
 			if (actionInstance == null) {
 				Logger.getLogger(this.getClass().getName()).warning(
 						"Action/Render " + action + " wasn't registered => default instanciation");
@@ -482,6 +517,15 @@ public class KnowWEFacade {
 		}
 	}
 
+	private KnowWEAction findInActionMap(String action) {
+		for(Entry<Class<? extends KnowWEAction>, KnowWEAction> entry : this.actionMap.entrySet()) {
+			if(entry.getValue().getClass().getName().contains(action)) {
+				return entry.getValue();
+			}
+		}
+		return null;
+	}
+
 	public String performAction(KnowWEParameterMap parameterMap) {
 		return this.performAction(null, parameterMap);
 	}
@@ -491,7 +535,7 @@ public class KnowWEFacade {
 	}
 
 	public String uploadFiles(Collection<FileItem> fileItems) {
-		return KnOfficeUploadManager.getInstance().manageUpload(fileItems);
+		return UploadManager.getInstance().manageUpload(fileItems);
 	}
 
 	/**
@@ -542,6 +586,15 @@ public class KnowWEFacade {
 	 */
 	public void writeOwl(OutputStream stream){
 	    SemanticCore.getInstance().writeDump(stream);
+	}
+	
+	/**
+	 * This is for the JUnit Test of the Renaming Tool.
+	 */
+	public Map<KnowWEArticle, Collection<WordBasedRenameFinding>> renamingToolTest(KnowWEParameterMap map) {		
+		return ((WordBasedRenamingAction)this.actionMap.get(WordBasedRenamingAction.class)).
+				scanForFindings(map.getWeb(), map.get(KnowWEAttributes.TARGET),
+						map.get(KnowWEAttributes.CONTEXT_PREVIOUS).length());
 	}
 
 }

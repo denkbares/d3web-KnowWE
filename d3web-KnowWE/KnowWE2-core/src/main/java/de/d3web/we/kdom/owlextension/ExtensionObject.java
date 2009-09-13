@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.owlextension;
 
 import java.io.IOException;
@@ -15,27 +35,27 @@ import org.openrdf.rio.RDFParseException;
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology2;
+import de.d3web.we.module.semantic.owl.UpperOntology;
 
 public class ExtensionObject {
 	
 	private String errorreport;
 	private BNode context;
-	private Section section;
-	private boolean error;	
+	private boolean error;
+	private Section father;
 	
-	public ExtensionObject (Section sec,String value){
-		this.section=sec;	
+	public ExtensionObject (String value, Section father){
+		this.father = father;
 		setError(false);
 		extend(value);
 	}
 	
 	private String inlcudeDefaultNS(String s) {
-		String header = "<rdf:RDF xmlns=\""+UpperOntology2.getInstance().getLocaleNS()+"\""
-				+ " xml:base=\""+UpperOntology2.getInstance().getLocaleNS()+"\""
+		String header = "<rdf:RDF xmlns=\""+UpperOntology.getInstance().getLocaleNS()+"\""
+				+ " xml:base=\""+UpperOntology.getInstance().getLocaleNS()+"\""
 				+ " xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\""
 				+ " xmlns:owl2xml=\"http://www.w3.org/2006/12/owl2-xml#\""
-				+ " xmlns:knowwe=\""+UpperOntology2.getInstance().getBaseNS()+"\""
+				+ " xmlns:knowwe=\""+UpperOntology.getInstance().getBaseNS()+"\""
 				+ " xmlns:owl=\"http://www.w3.org/2002/07/owl#\""
 				+ " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\""
 				+ " xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""
@@ -48,10 +68,10 @@ public class ExtensionObject {
 	
 	private void extend(String value){	    
 		SemanticCore sc=SemanticCore.getInstance();
-		UpperOntology2 uo = UpperOntology2.getInstance();
+		UpperOntology uo = UpperOntology.getInstance();
 		RepositoryConnection con = uo.getConnection();
-		context=sc.getContext(section.getTopic()+"extension");
-		sc.clearContext(section.getTopic()+"extension");
+		context=sc.getContext(father.getTitle()+"extension");
+		sc.clearContext(father.getTitle()+"extension");
 		String output="";
 		try {
 			Reader r = new StringReader(inlcudeDefaultNS(value));
@@ -114,11 +134,11 @@ public class ExtensionObject {
 	 */
 	public IntermediateOwlObject getIntermediateOwlObject() {
 	    IntermediateOwlObject io = new IntermediateOwlObject();
-	    UpperOntology2 uo = UpperOntology2.getInstance();
+	    UpperOntology uo = UpperOntology.getInstance();
 		RepositoryConnection con = uo.getConnection();
 		try {
 		    io.addAllStatements(con.getStatements(null, null, null, false, context).asList());
-		    SemanticCore sc=SemanticCore.getInstance();		    
+		    //SemanticCore sc=SemanticCore.getInstance();		    
 		} catch (RepositoryException e) {
 		    // TODO Auto-generated catch block
 		    e.printStackTrace();

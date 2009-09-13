@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.semanticAnnotation;
 
 import java.util.ArrayList;
@@ -6,19 +26,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IDGenerator;
-import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionFinder;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class SemanticAnnotation extends DefaultAbstractKnowWEObjectType {
 
     private static String ANNOTATIONBEGIN = "\\[";
     private static String ANNOTATIONEND = "\\]";
-
-   
 
     public SemanticAnnotation() {
 
@@ -26,34 +41,26 @@ public class SemanticAnnotation extends DefaultAbstractKnowWEObjectType {
         
     @Override
     public SectionFinder getSectioner() {
-	return new AnnotationSectioner(this);
+	return new AnnotationSectionFinder();
     }
 
-    class AnnotationSectioner extends SectionFinder {
-	private String PATTERN = ANNOTATIONBEGIN
-		+ "[\\w\\W]*?"
-		+ ANNOTATIONEND;
+    public static class AnnotationSectionFinder extends SectionFinder {
+    	
+	private String PATTERN = ANNOTATIONBEGIN + "[\\w\\W]*?" + ANNOTATIONEND;
 
-	public AnnotationSectioner(KnowWEObjectType type) {
-	    super(type);
-	}
-
-	@Override
-	public List<Section> lookForSections(Section tmp, Section father,
-		KnowledgeRepresentationManager mgn, KnowWEDomParseReport rep,
-		IDGenerator idg) {
-	    String text = tmp.getOriginalText();
-	    ArrayList<Section> result = new ArrayList<Section>();
-	    Pattern p = Pattern.compile(PATTERN);
-	    Matcher m = p.matcher(text);
-	    while (m.find()) {
-		String found=m.group();
-		if (found.contains("::"))
-		    result.add(Section.createSection(this.getType(), father, tmp, m
-			.start(), m.end(), mgn, rep, idg));
-	    }
-	    return result;
-	}
+		@Override
+		public List<SectionFinderResult> lookForSections(String text,
+				Section father) {
+			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			Pattern p = Pattern.compile(PATTERN);
+			Matcher m = p.matcher(text);
+			while (m.find()) {
+				String found = m.group();
+				if (found.contains("::"))
+					result.add(new SectionFinderResult(m.start(), m.end()));
+			}
+			return result;
+		}
     }
 
     /*
@@ -63,11 +70,10 @@ public class SemanticAnnotation extends DefaultAbstractKnowWEObjectType {
      */
     @Override
     protected void init() {
-	this.setCustomRenderer(new StandardAnnotationRenderer());
-	this.childrenTypes.add(new AnnotationStartSymbol("["));
-	this.childrenTypes.add(new AnnotationEndSymbol("]"));
-	this.childrenTypes.add(new AnnotationContent());
-
+    	this.setCustomRenderer(new StandardAnnotationRenderer());
+    	this.childrenTypes.add(new AnnotationStartSymbol("["));
+    	this.childrenTypes.add(new AnnotationEndSymbol("]"));
+    	this.childrenTypes.add(new AnnotationContent());
     }
 
 }

@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 /**
  * 
  */
@@ -14,10 +34,10 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.SolutionContext;
-import de.d3web.we.kdom.sectionFinder.AllTextFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.PropertyManager;
-import de.d3web.we.module.semantic.owl.UpperOntology2;
+import de.d3web.we.module.semantic.owl.UpperOntology;
 
 /**
  * @author kazamatzuri
@@ -30,7 +50,7 @@ public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new AnnotationProperty());
 		this.childrenTypes.add(new AnnotationSubject());
 		this.childrenTypes.add(new SimpleAnnotation());
-		this.sectionFinder = new AllTextFinder(this);
+		this.sectionFinder = new AllTextSectionFinder();
 	}
 
 	@Override
@@ -40,7 +60,7 @@ public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public IntermediateOwlObject getOwl(Section s) {
-		UpperOntology2 uo = UpperOntology2.getInstance();
+		UpperOntology uo = UpperOntology.getInstance();
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		List<Section> childs = s.getChildren();
 		URI prop = null;
@@ -75,10 +95,12 @@ public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
 			URI soluri = sol.getSolutionURI();
 			try {
 				if (PropertyManager.getInstance().isRDFS(prop)) {
-					io.addStatement(uo.createStatement(soluri, prop, stringa));
-				} else {
-					IntermediateOwlObject tempio = PropertyManager
-							.getInstance().createProperty(soluri, prop,
+					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));
+				} else if (PropertyManager.getInstance().isRDF(prop)) {
+					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));
+				}
+				else {
+					IntermediateOwlObject tempio = UpperOntology.getInstance().getHelper().createProperty(soluri, prop,
 									stringa, s);
 					io.merge(tempio);
 				}

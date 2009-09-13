@@ -1,40 +1,52 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.sectionFinder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.IDGenerator;
-import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionFinder;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 
-public class StringSectionFinder extends SectionFinder{
+public class StringSectionFinder extends SectionFinder {
 	
 	private String string;
 	private boolean last = false;
 	
-	public StringSectionFinder(String s, KnowWEObjectType type ) {
-		super(type);
+	public StringSectionFinder(String s) {
 		this.string = s;
 	}
 	
-	public StringSectionFinder(String s, KnowWEObjectType type, boolean last) {
-		super(type);
+	public StringSectionFinder(String s, boolean last) {
 		this.string = s;
 		this.last = last;
 	}
 	
 	@Override
-	public List<Section> lookForSections(Section tmp, Section father, KnowledgeRepresentationManager mgn, KnowWEDomParseReport rep, IDGenerator idg) {
-		int index = tmp.getOriginalText().indexOf(string); 
-		if(last) index = tmp.getOriginalText().lastIndexOf(string);
+	public List<SectionFinderResult> lookForSections(String text, Section father) {
+		int index = text.indexOf(string); 
+		if(last) index = text.lastIndexOf(string);
 		
 		if(index == -1) return null;
-		List<Section> result = new ArrayList<Section>();
-		//return result;
-		result.add(Section.createSection(this.getType(), father, tmp, index, index + string.length(), mgn, rep, idg));		
+		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+		result.add(new SectionFinderResult(index, index + string.length()));		
 		return result;
 	}
 

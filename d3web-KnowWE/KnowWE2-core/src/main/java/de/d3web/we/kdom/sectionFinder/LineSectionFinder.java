@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.sectionFinder;
 
 import java.util.ArrayList;
@@ -5,33 +25,21 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.IDGenerator;
-import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionFinder;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 
 public class LineSectionFinder extends SectionFinder {
 
-	public LineSectionFinder(KnowWEObjectType type) {
-		super(type);
-	}
-
 	@Override
-	public List<Section> lookForSections(Section text, Section father,
-			KnowledgeRepresentationManager kbm, KnowWEDomParseReport report, IDGenerator idg) {
+	public List<SectionFinderResult> lookForSections(String text, Section father) {
 		
 		String lineRegex = "\\r\\n";
-		Pattern linePattern = Pattern.compile( lineRegex);
+		Pattern linePattern = Pattern.compile(lineRegex);
 		
-        Matcher tagMatcher = linePattern.matcher( text.getOriginalText() );		
-        ArrayList<Section> resultRegex = new ArrayList<Section>();
+        Matcher tagMatcher = linePattern.matcher(text);		
+        ArrayList<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
         int lastStart = 0;
-        while (tagMatcher.find()) 
-		{
-        	
-        	resultRegex.add(Section.createSection(this.getType(), father, text, lastStart, tagMatcher.end(), kbm, report, idg));
+        while (tagMatcher.find()) {
+        	resultRegex.add(new SectionFinderResult(lastStart, tagMatcher.end()));
         	lastStart = tagMatcher.end();
 		}
 		return resultRegex;

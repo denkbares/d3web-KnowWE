@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.table;
 
 import java.util.ArrayList;
@@ -5,17 +25,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.IDGenerator;
-import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionFinder;
 import de.d3web.we.kdom.TextLine;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.rendering.SpecialDelegateRenderer;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 /**
  * TableLine.
@@ -24,84 +40,57 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * 
  * @see TextLine
  */
-public class TableLine extends TextLine {
+public class TableLine extends DefaultAbstractKnowWEObjectType {
 	
+
 	@Override
-	protected void init() 
-	{
-		//childrenTypes.add(new TableLineBegin());
-		//childrenTypes.add(new TableLineEnd());
-		//childrenTypes.add(new TableDelimiter());
-		//childrenTypes.add(new TableCellContent());
+	protected void init() {
 		childrenTypes.add(new TableCell());
+		sectionFinder = new TableLineSectionFinder();
+		subtreeHandler.add(0, new TableLineHandler());
+		setCustomRenderer(new TableLineRenderer());
 	}
-	
-	@Override
-	public SectionFinder getSectioner() 
-	{
-		return this.sectionFinder = new TableLineSectionFinder( this );
-	}	
-	
+
 	/**
-	 * Returns the renderer for the <code>TableContent</code>.
-	 * 
-	 * @return KnowWEDomRenderer
-	 */
-	public KnowWEDomRenderer getRenderer()
-	{
-		/**
-		 * This is a renderer for the TableLine. It wraps the <code>TableLine</code>
-		 * into the according HTML element and delegates the rendering of each <code>TableCell</code> 
-		 * to its own renderer.
-		 * 
-		 * @author smark
-		 */
-		class TableLineRenderer extends KnowWEDomRenderer
-		{
-			@Override
-			public String render(Section sec, KnowWEUserContext user, String web, String topic) 
-			{
-				StringBuilder html = new StringBuilder();
-				html.append( "<tr>" );
-				html.append( SpecialDelegateRenderer.getInstance().render(sec, user, web, topic) );
-				html.append( "</tr>" );
-								
-				return KnowWEEnvironment.maskHTML( html.toString() );
-			}			
-		}
-		return new TableLineRenderer();
-	}
-	/**
-	 * Handles the table lines. Introduced to the fact, that the LineSectionFinder
-	 * allows empty lines. In the table context only lines with content are important
-	 * (line break after Table tag had been rendered as cell).
+	 * Handles the table lines. Introduced to the fact, that the
+	 * LineSectionFinder allows empty lines. In the table context only lines
+	 * with content are important (line break after Table tag had been rendered
+	 * as cell).
 	 * 
 	 * @author smark
 	 * @see SectionFinder
 	 */
-	class TableLineSectionFinder extends SectionFinder 
-	{
-		public TableLineSectionFinder(KnowWEObjectType type) 
-		{
-			super(type);
-		}
+	public class TableLineSectionFinder extends SectionFinder {
 
 		@Override
-		public List<Section> lookForSections(Section text, Section father,
-				KnowledgeRepresentationManager kbm, KnowWEDomParseReport report, IDGenerator idg) 
-		{
+		public List<SectionFinderResult> lookForSections(String text,
+				Section father) {
 			String lineRegex = ".+(\\r?\\n)";
-			Pattern linePattern = Pattern.compile( lineRegex , Pattern.MULTILINE);
-			
-	        Matcher tagMatcher = linePattern.matcher( text.getOriginalText() );		
-	        ArrayList<Section> resultRegex = new ArrayList<Section>();
-	        
-	        while (tagMatcher.find()) 
-			{
-	        	resultRegex.add(Section.createSection(this.getType(), father, text, tagMatcher.start(), tagMatcher.end(), kbm, report, idg));
+			Pattern linePattern = Pattern.compile(lineRegex, Pattern.MULTILINE);
+
+			Matcher tagMatcher = linePattern.matcher(text);
+			ArrayList<SectionFinderResult> resultRegex =
+							new ArrayList<SectionFinderResult>();
+
+			while (tagMatcher.find()) {
+				resultRegex.add(new SectionFinderResult(tagMatcher.start(),
+						tagMatcher.end()));
 			}
 			return resultRegex;
 		}
-	}	
-	
+	}
+
+	private class TableLineHandler implements ReviseSubTreeHandler {
+
+		@Override
+		public void reviseSubtree(Section s) {
+			Section colHeaderCell = s.findSuccessor(TableCell.class);
+			Section content = colHeaderCell
+					.findChildOfType(TableCellContent.class);
+			AbstractKnowWEObjectType colHeaderType = new TableColumnHeaderCellContent();
+			if (content != null) {
+				content.setType(colHeaderType);
+			}
+		}
+	}
 }

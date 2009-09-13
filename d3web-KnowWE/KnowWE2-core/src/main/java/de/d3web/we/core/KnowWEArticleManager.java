@@ -1,21 +1,39 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.we.javaEnv.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.PlainText;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.search.SearchEngine;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.utils.KnowWEUtils;
+import dummies.KnowWETestWikiConnector;
 
 /**
  * @author Jochen
@@ -30,6 +48,8 @@ public class KnowWEArticleManager {
 	 */
 	private HashMap<String, KnowWEArticle> articleMap = new java.util.HashMap<String, KnowWEArticle>();
 	
+	private List<String> initializingArticles = new ArrayList<String>();
+
 	protected KnowWESectionInfoStorage typeStore = new KnowWESectionInfoStorage();
 	
 	public KnowWESectionInfoStorage getTypeStore() {
@@ -46,18 +66,19 @@ public class KnowWEArticleManager {
 		return reportPath;
 	}
 
-	private List<String> loopArticles = new ArrayList<String>();
-
 	private static ResourceBundle rb = ResourceBundle
 			.getBundle("WebParserConfig");
 
 	public KnowWEArticleManager(KnowWEEnvironment env, String webname) {
 		this.webname = webname;
-		jarsPath = KnowWEUtils.getRealPath(env
-				.getContext(), rb.getString("path_to_jars"));
-		reportPath = KnowWEUtils.getRealPath(env.getContext(), rb
-				.getString("path_to_reports"));
-		sc=SemanticCore.getInstance(env);
+		if (!(env.getWikiConnector() instanceof KnowWETestWikiConnector)) {
+			jarsPath = KnowWEUtils.getRealPath(env.getWikiConnector().getServletContext()
+					, rb.getString("path_to_jars"));
+			reportPath = KnowWEUtils.getRealPath(env.getWikiConnector().getServletContext(), rb
+					.getString("path_to_reports"));
+		
+			sc=SemanticCore.getInstance(env);
+		}
 	}
 
 	public String getWebname() {
@@ -78,6 +99,10 @@ public class KnowWEArticleManager {
 	public Iterator<KnowWEArticle> getArticleIterator() {
 		return articleMap.values().iterator();
 	}
+	
+	public Collection<KnowWEArticle> getArticles() {
+		return articleMap.values();
+	}
 
 	/**
 	 * Replaces a KDOM-node with the given text
@@ -93,7 +118,7 @@ public class KnowWEArticleManager {
 	 */
 	public String replaceKDOMNode(KnowWEParameterMap map, String articleName,
 			String nodeID, String text) {
-		String user = map.getUser();
+		//String user = map.getUser();
 		String web = map.getWeb();
 		KnowWEArticle art = this.getArticle(articleName);
 		if (art == null)
@@ -107,7 +132,6 @@ public class KnowWEArticleManager {
 				newArticleSourceText, map);
 		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName, KnowWEEnvironment
 				.getInstance().getRootTypes(),this.webname));
-
 		return "done";
 	}
 	/**
@@ -129,11 +153,10 @@ public class KnowWEArticleManager {
 		Section root = art.getSection();
 		StringBuffer newText = new StringBuffer();
 		appendTextReplaceNode(root, nodeID, text, newText);
-
+		
 		String newArticleSourceText = newText.toString();
 		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName, KnowWEEnvironment
 				.getInstance().getRootTypes(),this.webname));
-
 		return newArticleSourceText;
 	}	
 
@@ -152,21 +175,20 @@ public class KnowWEArticleManager {
 		return art.findSection(nodeID);
 	}
 
-	private void appendTextReplaceNode(Section sec, String nodeID, String text,
-			StringBuffer newText) {
-		if (sec.getId().equals(nodeID)) {
-			newText.append(text);
-			return;
-		}
-		if (sec.getObjectType().equals(PlainText.getInstance())) {
-			newText.append(sec.getOriginalText());
+	private void appendTextReplaceNode(Section sec, String nodeID, String text, StringBuffer newText) {
+		if ( sec.getId().equals(nodeID) ) {
+			newText.append( text );
 			return;
 		}
 		List<Section> children = sec.getChildren();
+		if ( children.size() == 0 ) {
+			newText.append(sec.getOriginalText());
+			return;
+		}
+
 		for (Section section : children) {
 			appendTextReplaceNode(section, nodeID, text, newText);
 		}
-
 	}
 
 	/**
@@ -181,40 +203,19 @@ public class KnowWEArticleManager {
 	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle art) {
 		// store new article
 		articleMap.put(art.getTitle(), art);
-		sc.update(art.getTitle(), art);
+		//if(sc == null) sc = SemanticCore.getInstance();
+		if (!(KnowWEEnvironment.getInstance().getWikiConnector() instanceof KnowWETestWikiConnector))
+				sc.update(art.getTitle(), art);
 		
 		return art.getReport();
 	}
 	
-	public void addLoopArticles(List<String> loopArticles) {
-		for (String art:loopArticles) {
-			if (!this.loopArticles.contains(art)) {
-				this.loopArticles.add(art);
-			}
-		}
-	}
-	
-	public List<String> getLoopArticles() {
-		return this.loopArticles;
-	}
-	
-	public void updateLoopArticles() {
-		List<String> loopCopy = new ArrayList<String>();
-		loopCopy.addAll(this.loopArticles);
-		for (String art:loopCopy) {
-			this.loopArticles.remove(art);
-			saveUpdatedArticle(new KnowWEArticle(KnowWEEnvironment.getInstance()
-					.getWikiConnector().getArticleSource(art), art, KnowWEEnvironment
-					.getInstance().getRootTypes(), loopArticles,this.webname));
-		}
-	}
-	
-	/**
-	 * Creates and returns a new SearchEngine for the given articel manager.
-	 * @return
-	 */
-	public SearchEngine getSearchEngine() {
-		return new SearchEngine(this);
+	public List<String> getInitializingArticles() {
+		return initializingArticles;
 	}
 
+	public void addInitializingArticle(String article) {
+		this.initializingArticles.add(article);
+	}
+	
 }

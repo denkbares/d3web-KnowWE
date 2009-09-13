@@ -1,42 +1,72 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.filter.SectionFilter;
+import de.d3web.we.kdom.include.IncludedFromType;
 import de.d3web.we.kdom.include.IncludedFromTypeHead;
 import de.d3web.we.kdom.include.IncludedFromTypeTail;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.store.SectionStore;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.user.UserSettingsManager;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.PairOfInts;
 
 /**
  * @author Jochen
  * 
- * This class represents a node in the Knowledge-DOM of KnowWE. Basically it has
- * some text, one type and a list of children.
+ * This class represents a node in the Knowledge-DOM of KnowWE.
+ * Basically it has some text, one type and a list of children.
  * 
- * Further, it has a reference to its father and a positionOffset to its fathers
- * text.
+ * Further, it has a reference to its father and a positionOffset to its
+ * fathers text.
  * 
- * Further information can be attached to a node (TypeInformation), to connect
- * the text-parts with external resources, e.g. knowledge bases, OWL,
- * User-feedback-DBs etc.
+ * Further information can be attached to a node (TypeInformation), to
+ * connect the text-parts with external resources, e.g. knowledge bases,
+ * OWL, User-feedback-DBs etc.
  * 
  */
 public class Section implements Visitable, Comparable<Section> {
 
-	private boolean isExpanded = false;
+	protected KnowWEArticle article;
 
-	private KnowWEDomRenderer renderer;
+	protected boolean isExpanded = false;
 	
+	private boolean reused = false;
+	
+	private boolean hasReusedSuccessor = false;
+
+	protected KnowWEDomRenderer renderer;
+
 	/**
 	 * @deprecated
 	 */
@@ -47,6 +77,8 @@ public class Section implements Visitable, Comparable<Section> {
 	 * The id of this node, unique in an article
 	 */
 	protected String id;
+	
+	protected String idSuffix;
 
 	/**
 	 * If the parsed id for this section is already assigned to another section,
@@ -63,6 +95,8 @@ public class Section implements Visitable, Comparable<Section> {
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
 	protected List<Section> children = new ArrayList<Section>();
+	
+	private List<Section> childrenParsingOrder = new ArrayList<Section>();
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through
@@ -84,25 +118,16 @@ public class Section implements Visitable, Comparable<Section> {
 	 */
 	protected KnowWEObjectType objectType;
 
-	/**
-	 * the local topic TODO: still necessary in every node?
-	 */
-	protected String topic;
-
 	PairOfInts startPosFromTmp;
 
 	protected int absolutePositionStartInArticle = -1;
-	
+
 	/**
 	 * only for KDOM-tree building algorithm - shouldnt be referenced later
 	 * 
 	 * @return
 	 */
 	public PairOfInts getPosition() {
-		// if( startPosFromTmp == null) {
-		// return new PairOfInts(this.getOffSetFromFatherText(),
-		// this.getOffSetFromFatherText()+this.originalText.length());
-		// }
 		return startPosFromTmp;
 	}
 
@@ -124,151 +149,40 @@ public class Section implements Visitable, Comparable<Section> {
 	}
 
 	/**
-	 * Without topic, with id;
+	 * Without id;
 	 */
-	public static Section createSection(KnowWEObjectType objectType,
-			Section father, Section tmp, int beginIndex, int endIndex,
-			KnowledgeRepresentationManager kbm, KnowWEDomParseReport report,
-			IDGenerator idgen, String id) {
+	static Section createSection(KnowWEObjectType objectType, Section father,
+			Section tmp, int beginIndex, int endIndex, KnowWEArticle article) {
 		return createSection(objectType, father, tmp, beginIndex, endIndex,
-				null, kbm, report, idgen, id);
-	}
-
-	/**
-	 * Without topic, without id;
-	 */
-	public static Section createSection(KnowWEObjectType objectType,
-			Section father, Section tmp, int beginIndex, int endIndex,
-			KnowledgeRepresentationManager kbm, KnowWEDomParseReport report,
-			IDGenerator idgen) {
-		return createSection(objectType, father, tmp, beginIndex, endIndex,
-				null, kbm, report, idgen, null);
-	}
-
-	/**
-	 * With topic, without id;
-	 */
-	public static Section createSection(KnowWEObjectType objectType,
-			Section father, Section tmp, int beginIndex, int endIndex,
-			String topic, KnowledgeRepresentationManager kbm, KnowWEDomParseReport report,
-			IDGenerator idgen) {
-		return createSection(objectType, father, tmp, beginIndex, endIndex,
-				topic, kbm, report, idgen, null);
+				article, new SectionID(article.getIDGen()));
 
 	}
 
 	/**
-	 * With topic, with id.
+	 * With id.
 	 */
-	public static Section createSection(KnowWEObjectType objectType,
-			Section father, Section tmp, int beginIndex, int endIndex,
-			String topic, KnowledgeRepresentationManager kbm, KnowWEDomParseReport report,
-			IDGenerator idgen, String id) {
-		// validate subsections
-		boolean findingsOk = false;
-		try {
-			findingsOk = validateFinding(tmp.getOriginalText(), beginIndex,
-					endIndex);
-		} catch (InvalidSectionValuesException e) {
+	static Section createSection(KnowWEObjectType objectType, Section father,
+			Section tmp, int beginIndex, int endIndex, KnowWEArticle article,
+			SectionID id) {
 
-			Logger.getLogger(objectType.getName()).severe(
-					"INVALID SECTIONIZING: Type: "
-							+ objectType.getClass().getName() + " :"
-							+ e.getMessage());
-			return null;
-		}
+		if (id == null)
+			id = new SectionID(article.getIDGen());
 
 		Section s = new Section(tmp.getOriginalText().substring(beginIndex,
 				endIndex), objectType, father, tmp.getOffSetFromFatherText()
-				+ beginIndex, topic, kbm, report, idgen, id, false);
+				+ beginIndex, article, id, false);
 		s.setPosition(new PairOfInts(beginIndex, endIndex));
 		return s;
-	}
-
-	/**
-	 * With topic, with id.
-	 */
-	public static Section createSection(KnowWEObjectType objectType,
-			Section father, Section tmp, int beginIndex, int endIndex,
-			String topic, KnowledgeRepresentationManager kbm, KnowWEDomParseReport report,
-			IDGenerator idgen, String id, boolean expanded) {
-		// validate subsections
-		boolean findingsOk = false;
-		try {
-			findingsOk = validateFinding(tmp.getOriginalText(), beginIndex,
-					endIndex);
-		} catch (InvalidSectionValuesException e) {
-
-			Logger.getLogger(objectType.getName()).severe(
-					"INVALID SECTIONIZING: Type: "
-							+ objectType.getClass().getName() + " :"
-							+ e.getMessage());
-			return null;
-		}
-
-		Section s = new Section(tmp.getOriginalText().substring(beginIndex,
-				endIndex), objectType, father, tmp.getOffSetFromFatherText()
-				+ beginIndex, topic, kbm, report, idgen, id, expanded);
-		s.setPosition(new PairOfInts(beginIndex, endIndex));
-		return s;
-	}
-
-	// private Section(String text, KnowWEObjectType objectType, Section father,
-	// int beginIndexFather, KnowledgeBaseManagement kbm,
-	// KnowWEDomParseReport report, IDGenerator idgen, String id) {
-	// this(text, objectType, father, beginIndexFather, null, kbm, report,
-	// idgen, id);
-	// }
-
-	/**
-	 * Validates the result of a type allocated some text part for itself As
-	 * many types will be written with different parsing methods (ANTLR, REGEX,
-	 * pur Java) there is some plausibility check is made here, preventing the
-	 * KDOM generation process to crash, due to invalid text allocation
-	 * positions
-	 * 
-	 * @param findings
-	 * @param text
-	 * @return
-	 * @throws InvalidSectionValuesException
-	 */
-	private static boolean validateFinding(String fathertext, int start, int end)
-			throws InvalidSectionValuesException {
-		PairOfInts pairOfInts = new PairOfInts(start, end);
-		int a = start;
-		int b = end;
-		if (a < 0) {
-			throw new InvalidSectionValuesException(pairOfInts.toString());
-		}
-		if (b < a) {
-			throw new InvalidSectionValuesException(pairOfInts.toString());
-		}
-		if (b > fathertext.length()) {
-			throw new InvalidSectionValuesException(pairOfInts.toString());
-		}
-
-		return true;
 	}
 
 	/**
 	 * Constructor for Sections with automatically generated ids.
 	 */
-	public static Section createExpandedSection(String text,
+	static Section createExpandedSection(String text,
 			KnowWEObjectType objectType, Section father, int beginIndexFather,
-			String topic, KnowledgeRepresentationManager kbm, KnowWEDomParseReport report,
-			IDGenerator idgen) {
-		return new Section(text, objectType, father, beginIndexFather, topic,
-				kbm, report, idgen, null, true);
-	}
-
-	/**
-	 * Constructor for Sections with automatically generated ids.
-	 */
-	Section(String text, KnowWEObjectType objectType, Section father,
-			int beginIndexFather, String topic, KnowledgeRepresentationManager kbm,
-			KnowWEDomParseReport report, IDGenerator idgen) {
-		this(text, objectType, father, beginIndexFather, topic, kbm, report,
-				idgen, null, false);
+			KnowWEArticle article) {
+		return new Section(text, objectType, father, beginIndexFather, article,
+				new SectionID(article.getIDGen()), true);
 	}
 
 	/**
@@ -285,82 +199,134 @@ public class Section implements Visitable, Comparable<Section> {
 	 *            type of the node
 	 * @param father
 	 * @param beginIndexFather
-	 * @param topic
-	 * @param kbm
-	 *            the local knowledgebase (partly) filled, should contain local
-	 *            terminology
-	 * @param info
-	 * @param report
+	 * @param article
+	 *            is the article this section is hooked in
+	 */
+	/**
+	 * @param text
+	 * @param objectType
+	 * @param father
+	 * @param beginIndexFather
+	 * @param article
+	 * @param sectionID
+	 * @param isExpanded
 	 */
 	Section(String text, KnowWEObjectType objectType, Section father,
-			int beginIndexFather, String topic, KnowledgeRepresentationManager kbm,
-			KnowWEDomParseReport report, IDGenerator idgen, String id,
+			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
 			boolean isExpanded) {
-
-		if (topic == null && father!= null)
-			topic = father.getTopic();
-		this.isExpanded = isExpanded;
-		this.topic = topic;
 		
+
+		this.article = article;
+		this.isExpanded = isExpanded;
+
 		this.father = father;
 		if (father != null)
 			father.addChild(this);
 		this.originalText = text == null ? "null" : text;
 		this.objectType = objectType;
 		offSetFromFatherText = beginIndexFather;
-		IDGeneratorOutput idOut = idgen.newID(id);
-		this.id = idOut.getID();
-		this.idConflict = idOut.isIdConflict();
-		
-//		// try to get unchanged Sections from old article
-//		// still experimental!!!
-//		KnowWEArticle thisArt = getArticle();
-//		if (thisArt != null) {
-//			
-//			KnowWEArticle oldArt = KnowWEEnvironment.getInstance()
-//					.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
-//						.getArticle(thisArt.getTitle());
-//			
-//			if (oldArt != null) {
-//				Section firstTry = oldArt.findSection(this.id);
-//				if (firstTry != null && firstTry.getOriginalText().equals(this.getOriginalText())) {
-//					
-//					List<Section> oldChildren = firstTry.getChildren();
-//					for (Section oldChild:oldChildren) {
-//						oldChild.setFather(this);
-//						
-//					}
-//					this.children = oldChildren;
-//					List<Section> allChildren = this.getAllNodesPreOrder();
-//					for (Section child:allChildren) {
-//						child.getObjectType().reviseSubtree(child, kbm,
-//								KnowWEEnvironment.DEFAULT_WEB, report);
-//					}
-//					System.out.println("####################");
-//					System.out.println("Used old Children!!!");
-//					return;
-//				}
-//			}
-//		}
 
-		/**
-		 * fetches the allowed children types of the local type
-		 */
-		
+		this.id = sectionID.toString();
+		this.idSuffix = sectionID.getSuffix();
+		this.idConflict = sectionID.isIdConflict();
+
+		// try to get unchanged Sections from old article
+		if (article.getOldArticle() != null && !isExpanded
+				&& !objectType.isNotRecyclable()
+				&& !objectType.isLeaveType()) {
+			
+			Map<String, Section> sectionsOfSameType = article.getOldArticle()
+					.findChildrenOfTypeMap(getPathFromArticleToThis());
+			
+			Section match = sectionsOfSameType.remove(getOriginalText());
+			
+			if (match != null && (!match.reused && !match.hasReusedSuccessor)) {
+				
+				match.reused = true;
+				
+				Section ancestor = match.getFather();
+				while (ancestor != null) {
+					ancestor.hasReusedSuccessor = true;
+					ancestor = ancestor.getFather();
+				}
+				
+				List<Section> oldChildren = match.getChildren();
+				for (Section oldChild : oldChildren) {
+					oldChild.setFather(this);
+				}
+				this.children = oldChildren;
+				this.childrenParsingOrder = match.childrenParsingOrder;
+			
+				List<Section> newNodes = new ArrayList<Section>();
+				getAllNodesParsingPreOrder(newNodes);
+				for (Section node:newNodes) {
+					
+					node.article = this.article;
+					
+					SectionStore oldStore = KnowWEUtils.getOldSectionStore(getWeb(), getTitle(), 
+							node == this ? match.id : node.id);
+					
+					if (node != this) {
+						if (article.getIDGen().isAssignedID(node.id)) {
+							node.id = article.getIDGen().createID(null, node.idSuffix);
+						} else {
+							if (node.idSuffix != null && node.idSuffix.length() != 0) {
+								if (node.father.getObjectType() instanceof AbstractXMLObjectType 
+										&& !node.id.startsWith(node.father.id)
+										&& !article.getIDGen().isAssignedID(node.father.id + node.idSuffix)) {
+									node.id = node.father.id + node.idSuffix;
+								}
+								if (!article.getIDGen().isAssignedID(node.getIdWithoutSuffix())) {
+									article.getIDGen().assignID(node.getIdWithoutSuffix());
+									article.getIDGen().increaseIndexNumberBy(1);
+								} else {
+									article.getIDGen().assignID(node.id);
+								}
+							} else {
+								article.getIDGen().increaseIndexNumberBy(1);
+							}
+							article.getIDGen().assignID(node.id);
+						}
+					}
+					
+					node.reused = true;
+					
+					//System.out.print(oldStore.getAllObjects().isEmpty() ? "" : "#" + node.getId() + " " + node.getObjectType().getName() + " put " + oldStore.getAllObjects() + "\n");
+					KnowWEUtils.putSectionStore(getWeb(), getTitle(), node.id, oldStore);
+				}
+				
+				article.getUnchangedSubTrees().put(id, this);
+				//System.out.println("Used old " + this.getObjectType().getName());
+				return;
+			}
+		}
+
+		//fetches the allowed children types of the local type
 		List<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();
 
 		if (objectType != null && objectType.getAllowedChildrenTypes() != null) {
-			types.addAll(objectType
-					.getAllowedChildrenTypes());
+			types.addAll(objectType.getAllowedChildrenTypes());
 		}
 
-		if (objectType != null && !objectType.equals(IncludedFromTypeHead.getInstance())
+		if (objectType != null
+				&& !objectType.equals(IncludedFromTypeHead.getInstance())
 				&& !objectType.equals(IncludedFromTypeTail.getInstance())
 				&& !objectType.equals(PlainText.getInstance())) {
 			types.add(IncludedFromTypeHead.getInstance());
 			types.add(IncludedFromTypeTail.getInstance());
 
 		}
+		
+		/**
+		 * adding the registered global types to the children-list
+		 * 
+		 * TODO: Types should be able to restrict global types if they 
+		 * dont want any (foreign) global types in the sub-KDOM-tree
+		 */
+		if (KnowWEEnvironment.GLOBAL_TYPES_ENABLED && !(objectType instanceof TerminalType)) {
+			types.addAll(KnowWEEnvironment.getInstance().getGlobalTypes());
+		}
+
 
 		if (types.size() == 0 && objectType != null) {
 			if (!objectType.equals(PlainText.getInstance())) {
@@ -368,36 +334,33 @@ public class Section implements Visitable, Comparable<Section> {
 			}
 		}
 
-
 		/**
 		 * searches for children types and splits recursively
 		 */
 		if (!(this instanceof UndefinedSection)
 				&& !(objectType.equals(PlainText.getInstance())) && !isExpanded) {
-			Sectionizer.getInstance().splitToSections(text, types, this,
-					getTopic(), kbm, report, idgen);
+			Sectionizer.getInstance().splitToSections(originalText, types, this,
+					article);
 		}
-
-
-
+		
+		childrenParsingOrder.addAll(children);
+		
 		/**
 		 * sort children sections in text-order
 		 */
 		Collections.sort(children, new TextOrderComparator());
-
-		/**
-		 * a type can revise a complete subtree
-		 */
-		try {
-			this.objectType.reviseSubtree(this, kbm,
-					KnowWEEnvironment.DEFAULT_WEB, report);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
+		article.getChangedSections().put(id, this);
 	}
 
+	protected Section(KnowWEArticle article) {
+		this.article = article;
+	}
 
-	protected Section() {
+	/**
+	 * don't allow Sections without a KnowWEArticle
+	 */
+	private Section() {
 
 	}
 
@@ -460,7 +423,7 @@ public class Section implements Visitable, Comparable<Section> {
 	 */
 	public void setOriginalText(String newText) {
 		this.originalText = newText;
-		this.getArticle().setDirty(true);
+		this.article.setDirty(true);
 	}
 
 	/**
@@ -514,8 +477,8 @@ public class Section implements Visitable, Comparable<Section> {
 	public int getOffSetFromFatherText() {
 		return offSetFromFatherText;
 	}
-	
-	public void  setOffSetFromFatherText(int offSet) {
+
+	public void setOffSetFromFatherText(int offSet) {
 		this.offSetFromFatherText = offSet;
 	}
 
@@ -524,22 +487,31 @@ public class Section implements Visitable, Comparable<Section> {
 	 * 
 	 * @return
 	 */
-	public String getTopic() {
-		if (topic != null)
-			return topic;
-		if (father != null)
-			return father.getTopic();
-		return null;
+	public String getTitle() {
+		return this.article.getTitle();
+	}
+
+	public String getWeb() {
+		return this.article.getWeb();
+	}
+
+	public KnowWEDomParseReport getReport() {
+		return this.article.getReport();
 	}
 
 	public KnowWEArticle getArticle() {
-		if (this.getObjectType() instanceof KnowWEArticle) {
-			return (KnowWEArticle) this.getObjectType();
+		return this.article;
+	}
+
+	/**
+	 * @return the depth of this Section inside the KDOM
+	 */
+	public int getDepth() {
+		if (getObjectType() instanceof KnowWEArticle) {
+			return 0;
+		} else {
+			return father.getDepth() + 1;
 		}
-		if (father != null) {
-			return father.getArticle();
-		}
-		return null;
 	}
 
 	/**
@@ -582,9 +554,6 @@ public class Section implements Visitable, Comparable<Section> {
 		return false;
 	}
 
-	public void setObjectType(KnowWEObjectType objectType) {
-		this.objectType = objectType;
-	}
 
 	/**
 	 * part of the visitor pattern
@@ -605,7 +574,7 @@ public class Section implements Visitable, Comparable<Section> {
 	public String verbalize() {
 		StringBuffer buffi = new StringBuffer();
 		buffi.append(this.getObjectType().getClass().getSimpleName());
-		buffi.append(", ID: " + this.id);
+		buffi.append(", ID: " + this.id + (idConflict ? " (ID conflict)" : ""));
 		buffi.append(", length: " + this.getOriginalText().length() + " ("
 				+ offSetFromFatherText + ")" + ", children: " + children.size());
 		buffi.append(", \"" + replaceNewlines(getShortText(50)));
@@ -625,6 +594,10 @@ public class Section implements Visitable, Comparable<Section> {
 
 	public String getId() {
 		return id;
+	}
+	
+	public String getIdWithoutSuffix() {
+		return id.substring(0, id.length() - idSuffix.length());
 	}
 
 	@Override
@@ -707,20 +680,20 @@ public class Section implements Visitable, Comparable<Section> {
 	}
 
 	/**
-	 * Searches the Children of a Section and only the children
-	 * of a Section for a given class
+	 * Searches the Children of a Section and only the children of a Section for
+	 * a given class
 	 * 
 	 * @param section
 	 */
-	public Section findChildOfType(Class class1) {
-		
+	public Section findChildOfType(Class<?> class1) {
+
 		for (Section s : this.getChildren())
 			if (class1.isAssignableFrom(s.getObjectType().getClass()))
 				return s;
 		return null;
 	}
-	
-	public Section findSuccessor(Class class1) {
+
+	public Section findSuccessor(Class<?> class1) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
 			return this;
@@ -733,16 +706,149 @@ public class Section implements Visitable, Comparable<Section> {
 
 		return null;
 	}
-
-	public void findChildrenOfType(Class<?> class1, List<Section> found) {
+	
+	/**
+	 * Finds all successors of type <code>class1</code> in the KDOM below this
+	 * Section.
+	 */
+	public void findSuccessorsOfType(Class<?> class1, List<Section> found) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
 			found.add(this);
 		}
 		for (Section sec : children) {
-			sec.findChildrenOfType(class1, found);
+			sec.findSuccessorsOfType(class1, found);
+		}
+	}
+	
+	/**
+	 * Finds all successors of type <code>class1</code> in the KDOM below this
+	 * Section and stores them in a Map, using their originalText as key.
+	 */
+	public void findSuccessorsOfType(Class<?> class1, Map<String, Section> found) {
+
+		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
+			Section tmp = found.get(this.getOriginalText());
+			if (tmp == null || (tmp.reused && !this.reused)) {
+				found.put(this.getOriginalText(), this);
+			}
+		}
+		for (Section sec : children) {
+			sec.findSuccessorsOfType(class1, found);
 		}
 
+	}
+
+	/**
+	 * Finds all successors of type <code>class1</code> in the KDOM to the depth
+	 * of <code>depth</code> below this Section.
+	 */
+	public void findSuccessorsOfType(Class<?> class1, int depth,
+			List<Section> found) {
+
+		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
+			found.add(this);
+		}
+		if (depth == 0) {
+			return;
+		}
+		for (Section sec : children) {
+			sec.findSuccessorsOfType(class1, depth--, found);
+		}
+
+	}
+
+	/**
+	 * Finds all successors of type <tt>class1</tt> in the KDOM at the end of the
+	 * given path of ancestors. If your <tt>path</tt> starts with the ObjectType 
+	 * of this Section, set <tt>index</tt> to <tt>0</tt>. Else set the <tt>index</tt>
+	 * to the index of the ObjectType of this Section in the path.
+	 * </p>
+	 * Stores found successors in a Map of Sections, using their originalTexts as key.
+	 */
+
+	public void findSuccessorsOfTypeAtTheEndOfPath(
+			List<Class<? extends KnowWEObjectType>> path,
+			int index,
+			Map<String, Section> found) {
+
+		if (index < path.size() - 1 && path.get(index).isAssignableFrom(this.getObjectType().getClass())) {
+			for (Section sec : children) {
+				sec.findSuccessorsOfTypeAtTheEndOfPath(path, index + 1, found);
+			}
+		} else if (index == path.size() - 1 && path.get(index).isAssignableFrom(this.getObjectType().getClass())) {
+			found.put(this.getOriginalText(), this);
+		}
+
+	}
+	
+	/**
+	 * Finds all successors of type <tt>class1</tt> in the KDOM at the end of the
+	 * given path of ancestors. If your <tt>path</tt> starts with the ObjectType 
+	 * of this Section, set <tt>index</tt> to <tt>0</tt>. Else set the <tt>index</tt>
+	 * to the index of the ObjectType of this Section in the path.
+	 * </p>
+	 * Stores found successors in a List of Sections
+	 * 
+	 */
+
+	public void findSuccessorsOfTypeAtTheEndOfPath(
+			List<Class<? extends KnowWEObjectType>> path,
+			int index,
+			List<Section> found) {
+
+		if (index < path.size() - 1 && path.get(index).isAssignableFrom(this.getObjectType().getClass())) {
+			for (Section sec : children) {
+				sec.findSuccessorsOfTypeAtTheEndOfPath(path, index + 1, found);
+			}
+		} else if (index == path.size() - 1 && path.get(index).isAssignableFrom(this.getObjectType().getClass())) {
+			found.add(this);
+		}
+
+	}
+
+	/**
+	 * 
+	 * @return a List of ObjectTypes beginning at the KnowWWEArticle and ending
+	 *         at this Section. Returns <tt>null</tt> if no path is found.
+	 */
+	public LinkedList<Class<? extends KnowWEObjectType>> getPathFromArticleToThis() {
+		LinkedList<Class<? extends KnowWEObjectType>> path = new LinkedList<Class<? extends KnowWEObjectType>>();
+		
+		path.add(getObjectType().getClass());
+		Section father = getFather();
+		while (father != null) {
+			path.addFirst(father.getObjectType().getClass());
+			father = father.getFather();
+		}
+
+		if (path.getFirst().isAssignableFrom(KnowWEArticle.class)) {
+			return path;
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * 
+	 * @return a List of ObjectTypes beginning at the given Section and ending
+	 *         at this Section. Returns <tt>null</tt> if no path is found.
+	 */
+	public LinkedList<Class<? extends KnowWEObjectType>> getPathFromGivenSectionToThis(Section sec) {
+		LinkedList<Class<? extends KnowWEObjectType>> path = new LinkedList<Class<? extends KnowWEObjectType>>();
+
+		Section father = getFather();
+		while (father != null && father != sec) {
+			path.addFirst(father.getObjectType().getClass());
+			father = father.getFather();
+		}
+		path.addFirst(father.getObjectType().getClass());
+		
+		if (path.getFirst().isAssignableFrom(sec.getClass())) {
+			return path;
+		} else {
+			return null;
+		}
 	}
 
 	public void collectTextsFromLeaves(StringBuilder buffi) {
@@ -766,7 +872,7 @@ public class Section implements Visitable, Comparable<Section> {
 
 	public boolean hasQuickEditModeSet(String user) {
 		if (UserSettingsManager.getInstance().hasQuickEditFlagSet(getId(),
-				user, this.getTopic())) {
+				user, this.getTitle())) {
 			return true;
 		}
 		if (father == null)
@@ -775,32 +881,83 @@ public class Section implements Visitable, Comparable<Section> {
 		return father.hasQuickEditModeSet(user);
 	}
 
-	public List<Section> getAllNodesPreOrder() {
-		ArrayList<Section> nodes = new ArrayList<Section>();
+	public void getAllNodesPreOrder(List<Section> nodes) {
 		nodes.add(this);
 		if (this.getChildren() != null) {
 			for (Section child : this.getChildren()) {
-				nodes.addAll(child.getAllNodesPreOrder());
+				child.getAllNodesPreOrder(nodes);
 			}
 		}
-
-		return nodes;
+	}
+	
+	public void getAllNodesParsingPostOrder(List<Section> nodes) {
+		for (Section node:this.childrenParsingOrder) {
+			if (node.isExpanded) {
+				node.getAllNodesPreOrder(nodes);
+			} else {
+				node.getAllNodesParsingPostOrder(nodes);
+			}
+		}
+		nodes.add(this);
+	}
+	
+	public void getAllNodesParsingPreOrder(List<Section> nodes) {
+		nodes.add(this);
+		for (Section node:this.childrenParsingOrder) {
+			if (node.isExpanded) {
+				node.getAllNodesPreOrder(nodes);
+			} else {
+				node.getAllNodesParsingPreOrder(nodes);
+			}
+		}
 	}
 
 	public boolean isEmpty() {
 		String text = getOriginalText();
-		text = text.replaceAll("<includedFrom[^>]*>", "");
-		text = text.replaceAll("</includedFrom>", "");
+		text = text.replaceAll(IncludedFromType.PATTERN_BOTH, "");
 		text = text.replaceAll("\\s", "");
-		return text.length() == 0 ? true : false;
+		return text.length() == 0;
 	}
 
 	public boolean isExpanded() {
 		return isExpanded;
 	}
+	
+	public boolean isReused() {
+		return reused;
+	}
+	
+	public void resetStateRecursively() {
+		reused = false;
+		hasReusedSuccessor = false;
+		for (Section child:children) {
+			child.resetStateRecursively();
+		}
+	}
+
+	public boolean equalsOrIsChildrenOf(Section sec) {
+		if (sec == this) {
+			return true;
+		} else {
+			if (father == null) {
+				return false;
+			} else {
+				return father.equalsOrIsChildrenOf(sec);
+			}
+		}
+	}
 
 	public void setFather(Section father) {
 		this.father = father;
+	}
+	
+	public boolean setType(KnowWEObjectType newType) {
+		if(objectType.getClass() != (newType.getClass()) && objectType.getClass().isAssignableFrom(newType.getClass())) {
+			this.objectType = newType;
+			newType.reviseSubtree(this);
+			return true;
+		}
+		return false;
 	}
 
 }

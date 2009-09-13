@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.css;
 
 import java.util.Map;
@@ -5,8 +25,8 @@ import java.util.Map;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.PlainText;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DefaultDelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -18,25 +38,21 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author smark
  * @see KnowWEDomRenderer
  */
-public class CSSRenderer extends KnowWEDomRenderer
-{
+public class CSSRenderer extends KnowWEDomRenderer {
 
 	@Override
-	public String render(Section sec, KnowWEUserContext user, String web, String topic) 
-	{
-		Map<String, String> mapFor = ((AbstractXMLObjectType) sec.getObjectType()).getMapFor(sec);
+	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+		Map<String, String> mapFor = AbstractXMLObjectType.getAttributeMapFor(sec);
 		String style = mapFor.get("style");
 		
-		String content = "";
+		StringBuilder b = new StringBuilder();
 		
-		for (Section section : sec.getChildren())
-		{
-			if ( section.getObjectType() instanceof PlainText)
-			{
-				content = DefaultDelegateRenderer.getInstance().render(sec, user, web, topic);
+		for (Section section : sec.getChildren()) {
+			if ( section.getObjectType() instanceof PlainText) {
+				DelegateRenderer.getInstance().render(sec, user, b);
 			}
 		}
-		return wrapWithCSS(content, style);
+		string.append(wrapWithCSS(b.toString(), style));
 	}
 	
 	
@@ -48,8 +64,7 @@ public class CSSRenderer extends KnowWEDomRenderer
 	 * @param style
 	 * @return
 	 */
-	private String wrapWithCSS(String content, String style)
-	{
+	private String wrapWithCSS(String content, String style) {
 		StringBuilder result = new StringBuilder();
 		result.append("<span style='" + style + "'>");
 		result.append(content);

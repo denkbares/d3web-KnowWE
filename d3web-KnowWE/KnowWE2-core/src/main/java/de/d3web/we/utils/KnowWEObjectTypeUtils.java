@@ -1,24 +1,45 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.utils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.utils.KnowWEObjectTypeComparator;
 
 /**
- * This class provides some methods for the KnowWETypeBrowser
+ * This class offers some methods for the KnowWETypeBrowser
  * and the KnowWETypeActivator
  * 
- * @author Johannes
+ * @author Johannes Dienst
  *
  */
 public class KnowWEObjectTypeUtils {
 
 	/**
 	 * Removes duplicates.
+	 * Needed because the java.util.Set-approach wont work
+	 * (Different Objects).
+	 * TODO: Maybe implement a special Set for this
 	 * 
 	 * @param cleanMe
 	 * @return
@@ -38,51 +59,66 @@ public class KnowWEObjectTypeUtils {
 	}
 	
 	/**
+	 * Get the father element of the current cell content section. Search as long as the section
+	 * is instance of AbstractXMLObjectType. Used to get the <code>Table</code> section itself.
+	 * 
+	 * @param child
+	 * @return
+	 */
+	public static Section getAncestorOfType(Section child, String classname) {
+		if( child == null )
+			return null;
+		
+		try {
+			if( Class.forName( classname ).isAssignableFrom(
+					child.getObjectType().getClass() ) ) return child;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+		 
+		return getAncestorOfType(child.getFather(), classname);
+	}
+	
+	/**
 	 * Getting of all ChildrenTypes of a
 	 * KnowWEObjectType.
 	 * 
+	 * @param type
+	 * @param allTypes
 	 * @return
 	 */
-	public static List<KnowWEObjectType> getChildrenTypes(KnowWEObjectType type, List<KnowWEObjectType> children) {
+	public static KnowWEObjectTypeSet 
+			getAllChildrenTypesRecursive(KnowWEObjectType type, KnowWEObjectTypeSet allTypes) {
 		
-		// Rekursionsabbruch
-		if (hasTypeInList(children, type)) {
-			return null;
+		// Recursionstop
+		if (allTypes.contains(type)) {
+			return allTypes;
 		}
 		
-		List <KnowWEObjectType> children2 = new ArrayList<KnowWEObjectType>(children);
+		allTypes.add(type);
 		
 		// check all allowed children types from this type
 		if(type.getAllowedChildrenTypes() != null) {
 			List<? extends KnowWEObjectType> moreChildren = type.getAllowedChildrenTypes();
 			
-			// Loop Protection if type is in moreChildren
+			// Loop Protection
 			if (hasTypeInList(moreChildren, type))
-				moreChildren = removeTypeFromList(moreChildren, type);
+				removeTypeFromList(moreChildren, type);
 			
 			for (KnowWEObjectType childrentype : moreChildren) {
 				
-				// if children 2 does not contain this type
-				if (!hasTypeInList(children2, childrentype)) {
-					List<KnowWEObjectType> tester = getChildrenTypes(childrentype, children2);
-					
-					// tester contains children2-elements + new Elements
-					if (tester != null){
-						children2 = tester;					
+				// if children does not contain this type
+				if (!allTypes.contains(childrentype)) {
+					allTypes.add(childrentype);
+					for (KnowWEObjectType c : childrentype.getAllowedChildrenTypes()) {
+						KnowWEObjectTypeSet t = getAllChildrenTypesRecursive(c, allTypes);
+						allTypes.addAll(t.toList());
 					}
 				}
 			}
 		}
-		
-		// perhaps type has been added yet with recursion
-		if (!hasTypeInList(children2, type)) {
-			children2.add(type);
-		}
-		
-		// clean the list to remove duplicates
-		children2 = cleanList(children2);
-		
-		return children2;
+		return allTypes;
 	}
 	
 	/**
@@ -93,19 +129,22 @@ public class KnowWEObjectTypeUtils {
 	 * @param type
 	 * @return
 	 */
-	private static List<? extends KnowWEObjectType> removeTypeFromList(List<? extends KnowWEObjectType> types, KnowWEObjectType type) {
-		
+	private static void removeTypeFromList(List<? extends KnowWEObjectType> types, KnowWEObjectType type) {		
 		for (int i = 0; i < types.size(); i++) {
 			if (types.get(i).getName().equals(type.getName())) {
 				types.remove(i--);
 			}
 		}
-		
-		return types;
 	}
 
-	private static boolean hasTypeInList(List<? extends KnowWEObjectType> children, KnowWEObjectType type) {
-		
+	/**
+	 * Test if List contains a type.
+	 * 
+	 * @param children
+	 * @param type
+	 * @return
+	 */
+	private static boolean hasTypeInList(List<? extends KnowWEObjectType> children, KnowWEObjectType type) {		
 		if (children != null) {
 			for (int i = 0; i < children.size(); i++) {
 				if (children.get(i).getName().equals(type.getName())){
@@ -114,51 +153,22 @@ public class KnowWEObjectTypeUtils {
 			}
 			return false;
 		}
-
 		return true;
 	}
 
 	/**
-	 * Sorts a given KnowWEObjectTypeList.
-	 * At the Moment lexicographical.
+	 * Get the father element of the given section specified by class.
 	 * 
-	 * @param types
-	 * @return
-	 */
-	public static List<KnowWEObjectType> sortTypeList(List<KnowWEObjectType> types) {
-		KnowWEObjectTypeComparator c = new KnowWEObjectTypeComparator();
-		Collections.sort(types, c);
-		return types;
-	}
-	
-	/**
-	 * Checks if a given Section has a searched child.
-	 * 
-	 * @param type
 	 * @param child
 	 * @return
 	 */
-	public static boolean hasChildren(Section sec, String child) {
-		for (Section s : sec.getChildren()) {
-			if (s.getObjectType().getName().equals(child)) {
-				return true;
-			}
-		}
-		return false;
+	public static Section getAncestorOfType(Section child, Class clazz) {
+		if( child == null ) 
+			return null;		
+		
+		if( clazz.isAssignableFrom( child.getObjectType().getClass())) 
+			return child;
+		
+		return getAncestorOfType(child.getFather(), clazz);
 	}
-
-//	/**
-//	 * Searches the Children of a Section and only the children
-//	 * of a Section for a given child
-//	 * 
-//	 * @param section
-//	 * @param string
-//	 */
-//	public static Section findChildOfType(Section sec, String child) {
-//		for (Section s : sec.getChildren())
-//			if (s.getObjectType().getName().equals("XCLRelationWeight"))
-//				return s;
-//		return null;
-//	}
-
 }

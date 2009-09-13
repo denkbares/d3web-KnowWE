@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.core;
 
 import java.io.File;
@@ -32,11 +52,11 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.visitor.OWLBuilderVisitor;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.PropertyManager;
-import de.d3web.we.module.semantic.owl.UpperOntology2;
+import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class SemanticCore {
-    private UpperOntology2 uo;
+    private UpperOntology uo;
 
     private KnowWEEnvironment knowWEEnvironment;
     private static SemanticCore me;
@@ -55,7 +75,7 @@ public class SemanticCore {
 	for (String cur : settingsbundle.keySet()) {
 	    settings.put(cur, settingsbundle.getString(cur));
 	}
-	uo = UpperOntology2.getInstance(path);
+	uo = UpperOntology.getInstance(path);
 	try {
 	    uo.setLocaleNS(knowWEEnvironment.getWikiConnector().getBaseUrl());
 	} catch (RepositoryException e1) {
@@ -173,7 +193,7 @@ public class SemanticCore {
     private void addPropertyData(RepositoryConnection con, PropertyManager pm,
 	    String props) {
 	do  {
-	IntermediateOwlObject io = pm
+	IntermediateOwlObject io = UpperOntology.getInstance().getHelper()
 		.createProperty(props);
 	List<Statement> allStatements = io
 		.getAllStatements();
@@ -239,7 +259,7 @@ public class SemanticCore {
     /**
      * @return an UpperOntology instance
      */
-    public UpperOntology2 getUpper() {
+    public UpperOntology getUpper() {
 	return uo;
     }
 
@@ -424,7 +444,6 @@ public class SemanticCore {
 	File file = new File(includes, filename);
 	if (file.canWrite()) {
 	    file.delete();
-
 	    clearContext(filename.toLowerCase());
 
 	}

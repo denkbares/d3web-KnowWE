@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+package de.d3web.we.kdom.table;
+
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.contexts.Context;
+
+public class TableColumnContext extends Context {
+	
+	private Section table;
+	private int column;
+	
+	public TableColumnContext(Section table, int colNumber) {
+		this.table = table;
+		column = colNumber;
+	}
+
+	@Override
+	public String getCID() {
+		return table.getId()+"_col"+column;
+	}
+
+	@Override
+	protected boolean isValidForSection(Section s) {
+		if(TableContent.class.isAssignableFrom(table.getObjectType().getClass())) {
+			int foundCol = TableUtils.getColumn(s);
+			return foundCol == column;
+		}
+		return false;
+	}
+	
+	
+
+}

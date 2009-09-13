@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.sparql;
 
 import java.io.UnsupportedEncodingException;
@@ -13,11 +33,11 @@ import org.openrdf.query.TupleQueryResult;
 import de.d3web.we.core.KnowWEEnvironment;
 
 public class DefaultRenderer implements SparqlRenderer {
-    private static ResourceBundle kwikiBundle = ResourceBundle
-	    .getBundle("KnowWE_messages");
 
     public String render(TupleQueryResult result, Map<String, String> params) {
-	boolean empty = true;
+	
+    ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle();
+    boolean empty = true;
 	String table = "";
 	String output = "";
 	boolean links = false;
@@ -34,9 +54,9 @@ public class DefaultRenderer implements SparqlRenderer {
 		    tablemode = names.size() > 1;
 		}
 		if (tablemode) {
-		    table += "<tr>";
+		    table += KnowWEEnvironment.maskHTML("<tr>");
 		} else {
-		    table += "<ul>";
+		    table += KnowWEEnvironment.maskHTML("<ul>");
 		}
 
 		for (String cur : names) {
@@ -44,7 +64,7 @@ public class DefaultRenderer implements SparqlRenderer {
 		    if (erg.split("#").length == 2)
 			erg = erg.split("#")[1];
 		    if (links) {
-			erg = "[" + erg + "]";
+			erg = "[" + KnowWEEnvironment.maskHTML(erg) + "]";
 		    }
 		    try {
 			erg = URLDecoder.decode(erg, "UTF-8");
@@ -53,22 +73,22 @@ public class DefaultRenderer implements SparqlRenderer {
 			e.printStackTrace();
 		    }
 		    if (tablemode) {
-			table += "<td>" + erg + "</td>";
+			table += KnowWEEnvironment.maskHTML("<td>") + erg + KnowWEEnvironment.maskHTML("</td>");
 		    } else {
-			table += "<li>" + erg + "</li>";
+			table += KnowWEEnvironment.maskHTML("<li>") + erg + KnowWEEnvironment.maskHTML("</li>");
 		    }
 
 		}
 
 		if (tablemode) {
-		    table += "</tr>";
+		    table += KnowWEEnvironment.maskHTML("</tr>");
 		} else {
-		    table += "</ul>";
+		    table += KnowWEEnvironment.maskHTML("</ul>");
 		}
 
 	    }
 	} catch (QueryEvaluationException e) {
-	    return kwikiBundle.getString("KnowWE.owl.query.evalualtion.error")
+	    return rb.getString("KnowWE.owl.query.evalualtion.error")
 		    + ":" + e.getMessage();
 	} finally {
 	    try {
@@ -79,11 +99,11 @@ public class DefaultRenderer implements SparqlRenderer {
 	    }
 	}
 	if (empty) {
-	    output += kwikiBundle.getString("KnowWE.owl.query.no_result");
+	    output += rb.getString("KnowWE.owl.query.no_result");
 	    return KnowWEEnvironment.maskHTML(output);
 	} else {
-	    output += "<table>" + table + "</table>";
+	    output += KnowWEEnvironment.maskHTML("<table>") + table + KnowWEEnvironment.maskHTML("</table>");
 	}
-	return KnowWEEnvironment.maskHTML(output);
+	return output;
     }
 }
