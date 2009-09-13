@@ -1,41 +1,71 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 // $ANTLR 3.1.1 /HOME/s179455/workspaces/knowwe-semantic/d3web-TextParser/resources/xclPatternParser/xcl.g 2008-10-28 15:11:08
 
 package de.d3web.textParser.xclPatternParser;
 
-import de.d3web.report.Message;
-import de.d3web.report.Report;
-import de.d3web.textParser.decisionTable.MessageGenerator;
+import java.util.ArrayList;
 import java.util.Collection;
+
+import org.antlr.runtime.BaseRecognizer;
 import org.antlr.runtime.BitSet;
+import org.antlr.runtime.DFA;
 import org.antlr.runtime.EarlyExitException;
 import org.antlr.runtime.MismatchedSetException;
 import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.Parser;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
-import de.d3web.textParser.Utils.*;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
+
 import de.d3web.kernel.domainModel.Answer;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.qasets.QuestionChoice;
+import de.d3web.kernel.domainModel.qasets.QuestionNum;
 import de.d3web.kernel.domainModel.qasets.QuestionSolution;
-import de.d3web.kernel.domainModel.ruleCondition.*;
+import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
+import de.d3web.kernel.domainModel.ruleCondition.CondAnd;
+import de.d3web.kernel.domainModel.ruleCondition.CondEqual;
+import de.d3web.kernel.domainModel.ruleCondition.CondNumEqual;
+import de.d3web.kernel.domainModel.ruleCondition.CondNumGreater;
+import de.d3web.kernel.domainModel.ruleCondition.CondNumGreaterEqual;
+import de.d3web.kernel.domainModel.ruleCondition.CondNumLess;
+import de.d3web.kernel.domainModel.ruleCondition.CondNumLessEqual;
+import de.d3web.kernel.domainModel.ruleCondition.CondOr;
+import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
+import de.d3web.kernel.psMethods.xclPattern.XCLModel;
+import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
-import de.d3web.kernel.domainModel.qasets.QuestionNum;
-
-
-import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
+import de.d3web.report.Message;
+import de.d3web.report.Report;
+import de.d3web.textParser.Utils.AnswerNotInKBError;
+import de.d3web.textParser.Utils.ConceptNotInKBError;
+import de.d3web.textParser.Utils.QuestionNotInKBError;
+import de.d3web.textParser.decisionTable.MessageGenerator;
 
 public class xclParser extends Parser {
     public static final String[] tokenNames = new String[] {

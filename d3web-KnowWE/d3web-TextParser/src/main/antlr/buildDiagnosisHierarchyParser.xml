@@ -1,0 +1,30 @@
+<project name="CocorParser" basedir="../" default="translate">
+    <description>
+        Dieses Ant-Buildfile erstellt aus einer *.atg-File (resources/diagnosisHierarchyParser) das zugehörige Scanner/Parser-Gespann
+    	mit Hilfe der Coco.jar. Diese erzeugt *.java-Files (src/de.d3web.textParser.cocor.diagnosisHierarchyParser).
+    	Achtung: Nach dem generieren der Dateien müssen diese in Eclipse unbedingt aktualisiert bzw. geöffnet werden!
+    	Falls die Dateien noch nicht geöffnet waren, muss man sie öffnen, um die Änderungen zu übernehmen.
+		Sollten sie bereits offen gewesen sein, wird man beim aktualiseren darauf hingewiesen, dass sie von einem externen Programm geändert wurden und gefragt,
+    	ob die Änderungen übernommen werden sollen. Dies bitte bestätigen!
+    </description>
+  <!-- set global properties for this build -->
+  <property name="lib" location="lib"/>
+  <property name="resources" location="resources/diagnosisHierarchyParser"/>
+  <property name="src" location="src/de/d3web/textParser/cocor/diagnosisHierarchyParser"/>
+  <property name="bin"  location="bin"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+  </target>
+
+  <target name="translate" depends="init"
+        description="translate atg -> java" >
+    <!-- Translate the java code from ${resources} into ${src} -->
+    <java jar="${lib}/Coco.jar" fork="true">
+    	<arg line="&quot;${resources}/DiagnosisHierarchy.atg&quot; -package de.d3web.textParser.cocor.diagnosisHierarchyParser"/>
+    </java>
+  	<move file="${resources}/Scanner.java" tofile="${src}/Scanner.java"/>
+	<move file="${resources}/Parser.java" tofile="${src}/Parser.java"/>
+  </target>
+</project>

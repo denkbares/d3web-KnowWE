@@ -8,6 +8,8 @@
 +--------------------------------------------------------------+
 Änderungsverlauf:
 +--------------------------------------------------------------+
+===== 20090913 SVN migration - alegler ======================
+
 build_20090511_1030 smark
     * replaced KnOfficeMessage with Message from d3web-report project
 
