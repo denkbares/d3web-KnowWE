@@ -13,7 +13,6 @@
 	</parent>
 
 	<build>
-		<defaultGoal>package</defaultGoal>
 		<plugins>
 			<!-- Include src.example -->
 			<plugin>

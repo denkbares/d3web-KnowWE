@@ -1,7 +1,29 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.knowledgeExporter.txtWriters;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -28,6 +50,7 @@ import de.d3web.kernel.domainModel.qasets.QuestionText;
 import de.d3web.kernel.domainModel.qasets.QuestionYN;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.domainModel.ruleCondition.CondDState;
+import de.d3web.kernel.domainModel.ruleCondition.CondNum;
 import de.d3web.kernel.domainModel.ruleCondition.CondNumIn;
 import de.d3web.kernel.domainModel.ruleCondition.NonTerminalCondition;
 import de.d3web.kernel.psMethods.MethodKind;
@@ -220,28 +243,49 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		addChildren(q, PSMethodNextQASet.class, mergedRules);
 		addChildren(q, PSMethodHeuristic.class, mergedRules);
 		
-		ArrayList<AbstractCondition> conditions = new ArrayList<AbstractCondition>();
-		for (AbstractCondition condition:mergedRules.keySet()) {
-			conditions.add(0, condition);
+		Set<AbstractCondition> conditions = mergedRules.keySet();
+		Map<String, AbstractCondition> answerConds = new HashMap<String, AbstractCondition>();
+		Map<AbstractCondition, CondVerbalization> condCondVerbs = new HashMap<AbstractCondition, 
+			CondVerbalization>();
+		List<AbstractCondition> sortedConditions = new ArrayList<AbstractCondition>();
+		
+		for (AbstractCondition cond:conditions) {
+			if (cond instanceof NonTerminalCondition) {
+				continue;
+			}
+			TerminalCondVerbalization tCondVerb = (TerminalCondVerbalization) verbalizer.createConditionVerbalization(cond);
+			answerConds.put(tCondVerb.getAnswer(), cond);
+			condCondVerbs.put(cond, tCondVerb);
 		}
+		
 	
 		AnswerList answerList = new AnswerList();
 		if (q instanceof QuestionChoice) {
 			answerList.addAll(((QuestionChoice) q).getAllAlternatives());
 		}
+		
+		for (AnswerChoice ac:answerList) {
+			if (answerConds.containsKey(ac.toString())) {
+				sortedConditions.add(answerConds.remove(ac.toString()));
+			}
+		}
+		List<AbstractCondition> condNums = new ArrayList<AbstractCondition>();
+		condNums.addAll(answerConds.values());
+		Collections.sort(condNums, new CondNumComparator());
+		sortedConditions.addAll(condNums);
+		
 		String dashes = dashes(level);
 		boolean foundYesNo = false;
-		for (AbstractCondition cond:conditions) {
+		for (AbstractCondition cond:sortedConditions) {
 			if (cond instanceof NonTerminalCondition) {
 				continue;
 			}
 			
-			CondVerbalization condVerb = verbalizer.createConditionVerbalization(cond);
-
-			TerminalCondVerbalization tCondVerb = (TerminalCondVerbalization) condVerb;
+			TerminalCondVerbalization tCondVerb = (TerminalCondVerbalization) condCondVerbs.get(cond);
 			
 			String operator = "";
-			if (!tCondVerb.getOperator().equals("=") && !tCondVerb.getOperator().equals("in")) {
+			if (!tCondVerb.getOperator().equals("=") && !tCondVerb.getOriginalClass()
+					.equals(CondNumIn.class.getSimpleName())) {
 				operator = tCondVerb.getOperator() + " ";
 			}
 			
@@ -259,9 +303,9 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 				answer = quote(answer);
 			}
 			s.append(dashes + operator + answer + "\n");
-			
 			processActions(mergedRules, cond, s);
 		}
+		
 		if (!foundYesNo) {
 			for (Answer remainingAnswer:answerList) {
 				String sTemp = "";
@@ -302,135 +346,6 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	}
 	
 	
-//	private void writeAnswers2(Question q, StringBuffer s) {
-////		System.out.println(s.toString());
-////		System.out.println("-------------------");
-//		level++;
-//		Map<AbstractCondition, List<RuleComplex>> mergedRules = new HashMap<AbstractCondition, List<RuleComplex>>();
-//		addChildren(q, PSMethodNextQASet.class, mergedRules);
-//		addChildren(q, PSMethodHeuristic.class, mergedRules);
-//		
-//		ArrayList<AbstractCondition> conditions = new ArrayList<AbstractCondition>();
-//		for (AbstractCondition condition:mergedRules.keySet()) {
-//			conditions.add(0, condition);
-//		}
-//		
-//		
-//		if(q instanceof QuestionYN) {
-//			// it gets a bit ugly here, because the structure of
-//			// QuestionYN seems rather inconsistent
-//			QuestionYN qyn = (QuestionYN) q;
-//			boolean foundyes = false;
-//			boolean foundno = false;
-//			for (AnswerChoice answer:qyn.getAllAlternatives()) {
-//				if (answer instanceof AnswerYes) {
-//					for (AbstractCondition condition:conditions) {
-//						if (condition instanceof CondChoiceYes 
-//								|| (condition instanceof CondEqual && ((CondEqual) condition).getValues().size() == 1
-//									&& (((String) ((CondEqual) condition).getValues().get(0).toString()).compareToIgnoreCase("yes") == 0
-//										|| ((String) ((CondEqual) condition).getValues().get(0).toString()).compareToIgnoreCase("ja") == 0))) {
-//							String sTemp = KnowledgeManager.getResourceBundle().getString("datamanager.answerYes");
-//							s.append(dashes(level) + quote(sTemp));
-//							s.append("\n");
-//							foundyes = true;
-//							processActions(mergedRules, condition, s);
-//						}
-//					}
-//				} else if (answer instanceof AnswerNo) {
-//					for (AbstractCondition condition:conditions) {
-//						if (condition instanceof CondChoiceNo
-//								|| (condition instanceof CondEqual && ((CondEqual) condition).getValues().size() == 1
-//									&& (((String) ((CondEqual) condition).getValues().get(0).toString()).compareToIgnoreCase("no") == 0
-//										|| ((String) ((CondEqual) condition).getValues().get(0).toString()).compareToIgnoreCase("nein") == 0))) {
-//							String sTemp = KnowledgeManager.getResourceBundle().getString("datamanager.answerNo");
-//							s.append(dashes(level) + quote(sTemp));
-//							s.append("\n");
-//							foundno = true;
-//							processActions(mergedRules, condition, s);
-//						}
-//					}
-//				} 
-//				if (!foundno && !foundyes){
-//					String sTemp = "?";
-//					if (answer.getText().compareToIgnoreCase("yes") == 0 
-//							|| answer.getText().compareToIgnoreCase("ja") == 0) {
-//						sTemp = KnowledgeManager.getResourceBundle().getString("datamanager.answerYes");
-//					}
-//					if (answer.getText().compareToIgnoreCase("no") == 0 
-//							|| answer.getText().compareToIgnoreCase("nein") == 0) {
-//						sTemp = KnowledgeManager.getResourceBundle().getString("datamanager.answerNo");
-//					}
-//					s.append(dashes(level) + quote(sTemp));
-//					s.append("\n");
-//					if (conditions.size() > 0) {
-//						processActions(mergedRules, conditions.get(0), s);
-//					}
-//				}
-//			}
-//			
-//		} else if (q instanceof QuestionChoice) {
-//			QuestionChoice qc = (QuestionChoice)q;
-//			List<AnswerChoice> answerList = new LinkedList<AnswerChoice>();
-//			answerList.addAll(qc.getAllAlternatives());
-//			if (qc.getText().equals("Blüten")) {
-//				System.out.println(answerList);
-//			}
-//			for (AbstractCondition condition:conditions) {
-//	 			if (condition instanceof CondEqual && ((CondEqual)condition).getValues().size() == 1) {
-//	 				CondEqual ce = (CondEqual)condition;
-//					Answer answer = (Answer) ce.getValues().get(0);
-//					answerList.remove(answer);
-//					String sTemp = answer.toString();
-//					s.append(dashes(level) + quote(sTemp));
-//					if (exportDecisionTreeID) {
-//						s.append(" #" + answer.getId());
-//					}
-//					s.append("\n");
-//					processActions(mergedRules, condition, s);
-//				}
-//			}
-//			for (Answer remainingAnswer:answerList) {
-//				String sTemp = remainingAnswer.toString();
-//				s.append(dashes(level) + quote(sTemp));
-//				if (exportDecisionTreeID) {
-//					s.append(" #" + remainingAnswer.getId());
-//				}
-//				s.append("\n");
-//			}
-//			
-//		} else if (q instanceof QuestionNum) {
-//			for (AbstractCondition condition:conditions) {
-//	 			if (condition instanceof CondNum) {
-//					addNumAnswer((CondNum) condition, s);
-//					processActions(mergedRules, condition, s);
-//				}
-//			}
-//		} else if (q instanceof QuestionText) {
-//			for (AbstractCondition condition: mergedRules.keySet()) {
-//	 			if (condition instanceof CondTextEqual) {
-//					CondTextEqual cte = (CondTextEqual) condition;
-//					s.append(dashes(level) + quote(cte.getValue())
-//							+ "\n");
-//					processActions(mergedRules, condition, s);
-//				}
-//			}
-//		}
-//
-//		level--;
-////		System.out.println(s);
-////		System.out.println("######################");
-//	}
-	
-//	private List<AnswerChoice> createNewAnswerList(List<AnswerChoice> answerList) {
-//		if (answerList != null) {
-//			LinkedList<AnswerChoice> returnList = new LinkedList<AnswerChoice>();
-//			for(AnswerChoice a: answerList) {
-//				returnList.add(a);
-//			}
-//			return returnList;
-//		} else return null;
-//	}
-	
 	private void processActions(Map<AbstractCondition, List<RuleComplex>> mergedRules, AbstractCondition condition, StringBuffer s) {
 		for (RuleComplex rule: mergedRules.get(condition)) {
 			RuleAction action = rule.getAction();
@@ -462,7 +377,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 
 	private void processDiagnosis(Diagnosis diagnosis, StringBuffer s) {
 		Map<AbstractCondition, List<RuleComplex>> mergedRules = new HashMap<AbstractCondition, List<RuleComplex>>();
-		addChildren(diagnosis, PSMethodNextQASet.class, mergedRules);	
+		addChildren(diagnosis, PSMethodNextQASet.class, mergedRules);
 		for (AbstractCondition diagCondition: mergedRules.keySet()) {
 			if (diagCondition instanceof CondDState) {
 				for (RuleComplex diagRule: mergedRules.get(diagCondition)) {
@@ -559,6 +474,35 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	    	}
 	    	return null;
 	    }
+	}
+	
+	private class CondNumComparator implements Comparator<AbstractCondition> {
+
+		@Override
+		public int compare(AbstractCondition o1, AbstractCondition o2) {
+			if (o1 instanceof CondNum && o2 instanceof CondNum) {
+				CondNum n1 = (CondNum) o1;
+				CondNum n2 = (CondNum) o2;
+				if (n1 instanceof CondNumIn || n2 instanceof CondNumIn) {
+					if (n1 instanceof CondNumIn && n2 instanceof CondNumIn) {
+						if (Double.compare(((CondNumIn) n1).getMaxValue(), ((CondNumIn) n2).getMaxValue()) != 0) {
+							return Double.compare(((CondNumIn) n1).getMaxValue(), ((CondNumIn) n2).getMaxValue());
+						} else {
+							return Double.compare(((CondNumIn) n1).getMinValue(), ((CondNumIn) n2).getMinValue());
+						}
+					} else if (n1 instanceof CondNumIn) {
+						return Double.compare(((CondNumIn) n1).getMaxValue(), n2.getAnswerValue());
+					} else {
+						return Double.compare(n1.getAnswerValue(), ((CondNumIn) n2).getMinValue());
+					}
+				} else {
+					return Double.compare(n1.getAnswerValue(), n2.getAnswerValue());
+					
+				}
+			}
+			return 0;
+		}
+		
 	}
 
 }

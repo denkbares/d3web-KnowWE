@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.knowledgeExporter.tests;
 
 import java.io.File;
@@ -38,9 +58,9 @@ public class AttributeTableExportTest extends TestCase {
 	
 	public void setUp() {
 
-		String diagnosis = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "DiagnosisHierarchy.txt");
-		String initQuestion = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "QuestionClassHierarchy.txt");
-		String decisionTree = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "QuestionTree.txt");
+		String diagnosis = hc.readTxtFile("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "DiagnosisHierarchy.txt");
+		String initQuestion = hc.readTxtFile("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "QuestionClassHierarchy.txt");
+		String decisionTree = hc.readTxtFile("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "QuestionTree.txt");
 		
 		kb = hc.createKnowledgeBase(diagnosis, initQuestion, decisionTree).getKnowledgeBase();
 		
@@ -49,9 +69,9 @@ public class AttributeTableExportTest extends TestCase {
 		URL url = null;
 		AttributeConfigReader attrReader = null;
 		try {
-			url = new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "decisionTable" + File.separator + "config_AT.txt").toURL();
+			url = new File("exampleFiles" + File.separator + "decisionTable" + File.separator + "config_AT.txt").toURL();
 			attrReader = new AttributeConfigReader(url);
-			url = new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls").toURL();
+			url = new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls").toURL();
 		} catch (MalformedURLException e) {
 			fail("beim Laden der Dateien ist ein Fehler aufgetreten");
 		}
@@ -81,14 +101,14 @@ public class AttributeTableExportTest extends TestCase {
 	public void testAttributeTabelExportByRows() {
 		setUp();
 		try {
-			writer.writeFile(new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"));
+			writer.writeFile(new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		double minRes = 0.5;
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByRowContent(
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls"), 
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"),
+				new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls"), 
+				new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"),
 				minRes));
 
 	}
@@ -96,14 +116,14 @@ public class AttributeTableExportTest extends TestCase {
 	public void testAttributeTabelExportByColumns() {
 		setUp();
 		try {
-			writer.writeFile(new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"));
+			writer.writeFile(new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		double minRes = 0.3;
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByColumnContent(
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls"), 
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"),
+				new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls"), 
+				new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"),
 				minRes));
 
 	}

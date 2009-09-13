@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.knowledgeExporter.txtWriters;
 
 import java.util.Collection;
@@ -12,6 +32,7 @@ import de.d3web.kernel.domainModel.RuleComplex;
 import de.d3web.kernel.domainModel.formula.FormulaExpression;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
+import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
 import de.d3web.kernel.psMethods.contraIndication.ActionContraIndication;
 import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
 import de.d3web.kernel.psMethods.nextQASet.ActionInstantIndication;
@@ -89,12 +110,14 @@ public class RuleWriter extends TxtKnowledgeWriter {
 
 	private void appendRule(RuleComplex r, StringBuffer s) {
 		StringBuffer ruleBuffer = new StringBuffer();
-		ruleBuffer.append("\n"+string_if+" ");
+		ruleBuffer.append("\n" + string_if + " ");
 		AbstractCondition cond = r.getCondition();
-		ruleBuffer.append("(" + verbalizer.verbalize(cond, RenderingFormat.PLAIN_TEXT, null) + ")");
+		ruleBuffer.append((cond instanceof TerminalCondition ? "" : "(") 
+				+ verbalizer.verbalize(cond, RenderingFormat.PLAIN_TEXT, null) 
+				+ (cond instanceof TerminalCondition ? "" : ")"));
 		appendException(r,ruleBuffer);
 		appendKontext(r,ruleBuffer);
-		ruleBuffer.append("\n"+string_then+" ");
+		ruleBuffer.append("\n" + string_then + " ");
 		boolean actionOK = appendAction(r.getAction(), ruleBuffer);
 		ruleBuffer.append("\n");
 		

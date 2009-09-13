@@ -1,0 +1,127 @@
+===== 20090913 SVN migration - alegler ======================
+
+build_20090901_1530 astriffler
+	* fixed order of Answers in the export of QuestionMC 
+	and QuestionNum
+
+build_20090809_1645 JoeD
+	* Hotfixed bug in KnowledgeManager
+
+build_20090523_0230 astriffler
+	* fixed bug concerning the export of CondNumIn in DecisionTrees
+	* some cleaning up
+
+build_20090511_1030 smark
+    * replaced KnOfficeMessage with Message from d3web-report project
+    
+build_20090427_1600 astriffler
+	* fix due to changes in d3web-Verbalizer
+	
+build_20090306_1545 astriffler
+	* small fix in the HeuristicDecisionTableWriter
+
+build_20090305_1600 astriffler
+	* implemented new HeuristicDecisionTableWriter
+	* minor fixes and optimizations in the DiagnosisScoresTableWriter
+	and QDTableWriter
+
+build_20090228_1525 astriffler
+	* all Writers now use the new ConditionVerbalizer instead of
+	having own methods for verbalizing conditions
+	* moved quoting to d3web-Verbalizer
+	* minor fixes and refactoring
+	
+build_20090213_1815 astriffler
+	* removed SCM dependencies
+
+build_20081211_1715 astriffler
+	* fixed bug with questionnaire indicators in the DecisionTreeWriter
+
+build_20081211_1340 astriffler
+	* completed array of special strings for the quoteIfNecessary method
+
+build_20081118_1800 reutelshoefer
+	* changed reference to junit-lib
+
+build_20081112_1620 astriffler
+	* fixed another issue with QuestionYN
+
+build_20081107_1830 astriffler
+	* fixed some issues with QuestionYN in the DecisionTreeWriter
+	* fixed some encoding problems in the JUnitTests for the TxtKnowledgeWriters 
+
+build_20081101_2115 astriffler
+	* new abstract class DiagnosisTableWriter for tables with Diagnoses in the header
+	and Questions/Answers in the first column(s)
+	* rewrote SetCoveringTableWriter including the new
+	abstract classes and using the JXL-API instead of the POI-HSSF-API
+	* XlsKnowledgeWriters now provide the method setExtraAnswerColumn(boolean b)
+	(so one can decide whether the Answers get written to an extra column or in the
+	same column as the Questions)
+	* renamed DiagnosisScoresWriter to DiagnsosScoresTableWriter
+	* adjusted some of the german names of the files, exported by the KnowledgeWriters
+	* moved old, unused XlsKnowledgeWriters to the package
+	de.d3web.knowledgeExporter.xlsWritersOld
+		
+
+build_20081030_1130 astriffler
+	* fixed paths in all JUnitTests to work with all OSs
+
+build_20081030_0220 astriffler
+	* minor improvements for the XCLWriter
+
+build_20081023_1830 astriffler
+	* set max column width to 50 chars
+	* completed AttributTableWriter
+	* included project d3web-KnowledgeExporter-Tests in the folder src-unitTests
+
+build_20080916_1630 astriffler
+	* introduced new abstract classes KnowledgeWriter, TxtKnowledgeWriter and
+	XlsKnowledgeWriter
+	* all KnowledgeWriters now inherit from the abstract classes TxtKnowledgeWriter
+	or XlsKnowledgeWriter, depending on which fromat they export. TxtKnowledgeWriter
+	and XlsKnowledgeWriter inherit from the abstract class KnowledgeWriter.
+	* introduced new class KnowledgeManager which provides the knowledge to the
+	KnowledgeWriters. Optionally the KnowledgeManager filters the Knowledge provided
+	to the KnowledgeWriters.
+	* lots of minor changes and fixes inside the individual KnowledgeWriters due to the 
+	new structure
+	* rewrote DiagnosisScoresWriter and AttributeTableWriter including the new
+	abstract classes and using the JXL-API instead of the POI-HSSF-API
+	(other XlsKnowledgeWriter will follow)
+	* deactivated unfinished XlsKnowledgeWriters
+	* renamed package de.d3web.knowledgeExporter.txtOutput to
+	de.d3web.knowledgeExporter.txtWriter
+	* renamed package de.d3web.knowledgeExporter.xlsOutput to
+	de.d3web.knowledgeExporter.xlsWriter
+	
+build_20080819_2115 astriffler
+	* fixed some minor bugs
+	* TxtKnowledgeWriters now use UTF-8 encoding
+
+build_20080730_1530 astriffler
+	* added XCLWriter to methods in KnowledgeExporter
+
+build_20080721_1840 astriffler
+	* added class KnowledgeExporterStatus to be able to track progress of export
+	* modified KnowledgeExporter to support KnowledgeExporterStatus
+	* some small bugfixes
+
+build_20080719_1210 astriffler
+	* internationalized RuleWriter
+	* internationalized DecisionTreeWriter
+	* added new XCLWriter
+
+
+build_20080703_0130 astriffler
+	* fixed bug concerning the order of the exported answers in the DecisionTree
+	in DecisionTreeWriter
+	* fixed double quotes in QClassHierarchyWriter
+	* in general, there are now a lot less quotes in the exported txt-files
+	* removed .0 from exported numbers (e.g.: 50.0 -> 50)
+
+build_20080701_1500 astriffler
+	* created project
+	* moved classes concerning knowledge export from KnowME-Plugin-KnOffice
+	into this project
+	* removed all dependencies to KnowME

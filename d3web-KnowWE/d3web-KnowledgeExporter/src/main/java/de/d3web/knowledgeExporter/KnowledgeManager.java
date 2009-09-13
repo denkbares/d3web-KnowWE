@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.knowledgeExporter;
 
 import java.util.Collection;
@@ -11,6 +31,8 @@ import java.util.Set;
 
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.KnowledgeBase;
+import de.d3web.kernel.domainModel.KnowledgeSlice;
+import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.QASet;
 import de.d3web.kernel.domainModel.RuleAction;
 import de.d3web.kernel.domainModel.RuleComplex;
@@ -44,14 +66,14 @@ public class KnowledgeManager {
 	private static Locale locale = Locale.ENGLISH;
 	private static ResourceBundle rb;
 
-	private Set allRules = new HashSet<RuleComplex>();
+	private Set<RuleComplex> allRules = new HashSet<RuleComplex>();
 	private Set<RuleComplex> doneRules = new HashSet<RuleComplex>();
 	private List<Diagnosis> diagnosisList = new LinkedList<Diagnosis>();
 	private Set<Question> questions = new HashSet<Question>();
 	private Set<QASet> qClasses = new HashSet<QASet>();
 	private boolean filterOn = false;
 	private KnowledgeBase kb;
-	private Set indicationRules = new HashSet();
+	private Set<RuleComplex> indicationRules = new HashSet<RuleComplex>();
 	
 	/**
 	 * If you dont want to export the complete KnowledgeBase, you
@@ -65,22 +87,22 @@ public class KnowledgeManager {
 	 */
 	public KnowledgeManager(KnowledgeBase kb, List<Diagnosis> diagnosesToExport) {
 		this.kb = kb;
-		Collection knowledge = kb.getAllKnowledgeSlices();
+		Collection<KnowledgeSlice> knowledge = kb.getAllKnowledgeSlices();
 
 		if (diagnosesToExport == null) {
-			diagnosisList = new LinkedList();
+			diagnosisList = new LinkedList<Diagnosis>();
 			diagnosisList.addAll(kb.getDiagnoses());
 		} else {
 			filterOn = true;
 			diagnosisList = calcDiagnosisSet(diagnosesToExport);
 		}
 
-		for (Iterator iter = knowledge.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
+			KnowledgeSlice element = iter.next();
 			if (element instanceof RuleComplex) {
 				if (matchesFilter((RuleComplex) element) || !filterOn) {
 
-					this.allRules.add(element);
+					this.allRules.add((RuleComplex) element);
 				}
 			}
 		}
@@ -100,14 +122,14 @@ public class KnowledgeManager {
 	 */
 	public KnowledgeManager(KnowledgeBase kb) {
 		this.kb = kb;
-		diagnosisList = new LinkedList();
+		diagnosisList = new LinkedList<Diagnosis>();
 		diagnosisList.addAll(kb.getDiagnoses());
 		
-		Collection knowledge = kb.getAllKnowledgeSlices();
-		for (Iterator iter = knowledge.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+		Collection<KnowledgeSlice> knowledge = kb.getAllKnowledgeSlices();
+		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
+			KnowledgeSlice element = iter.next();
 			if (element instanceof RuleComplex) {
-				this.allRules.add(element);
+				this.allRules.add((RuleComplex) element);
 			}
 		}
 	}
@@ -128,14 +150,14 @@ public class KnowledgeManager {
 			return;
 		}
 
-		Collection knowledge = kb.getAllKnowledgeSlices();
+		Collection<KnowledgeSlice> knowledge = kb.getAllKnowledgeSlices();
 		
-		this.allRules = new HashSet();
-		for (Iterator iter = knowledge.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+		this.allRules = new HashSet<RuleComplex>();
+		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
+			KnowledgeSlice element =  iter.next();
 			if (element instanceof RuleComplex) {
 				if (matchesFilter((RuleComplex) element)) {
-					this.allRules.add(element);
+					this.allRules.add((RuleComplex) element);
 				}
 			}
 		}
@@ -171,7 +193,7 @@ public class KnowledgeManager {
 	public Set<Question> getQuestions() {
 		
 		if (!filterOn) {
-			Set s = new HashSet();
+			Set<Question> s = new HashSet<Question>();
 			s.addAll(kb.getQuestions());
 			return s;
 		}
@@ -181,10 +203,10 @@ public class KnowledgeManager {
 	public Set<QASet> getQClasses() {
 		
 		if (!filterOn) {
-			Set s = new HashSet();
-			Iterator iter = kb.getQASetIterator();
-			for (Iterator iterator = iter; iterator.hasNext();) {
-				QASet element = (QASet) iterator.next();
+			Set<QASet> s = new HashSet<QASet>();
+			Iterator<QASet> iter = kb.getQASetIterator();
+			for (Iterator<QASet> iterator = iter; iterator.hasNext();) {
+				QASet element = iterator.next();
 				if (element != null && !(element instanceof Question)) {
 					s.add(element);
 				}
@@ -219,16 +241,19 @@ public class KnowledgeManager {
 	
 	private void checkIndicationRules() {
 
-		for (Iterator iter = indicationRules.iterator(); iter.hasNext();) {
+		for (Iterator<RuleComplex> iter = indicationRules.iterator(); iter.hasNext();) {
 			RuleComplex element = (RuleComplex) iter.next();
 			AbstractCondition cond = element.getCondition();
-			Set questions = new HashSet();
+			Set<Question> questions = new HashSet<Question>();
 			addAllAppearingQuestions(cond, questions);
 			ActionIndication ai = (ActionIndication) element.getAction();
-			questions.addAll(ai.getQASets());
+			for (QASet q:ai.getQASets()) {
+				if (q instanceof Question)
+				questions.add((Question) q);
+			}
 			boolean ok = true;
-			for (Iterator iterator = questions.iterator(); iterator.hasNext();) {
-				QASet q = (QASet) iterator.next();
+			for (Iterator<Question> iterator = questions.iterator(); iterator.hasNext();) {
+				QASet q = iterator.next();
 				if (!qClasses.contains(q) && !questions.contains(q)) {
 					ok = false;
 				}
@@ -243,28 +268,28 @@ public class KnowledgeManager {
 		QASet root = kb.getRootQASet();
 		searchRelQASets(root);
 
-		Set s = new HashSet();
-		for (Iterator iter = qClasses.iterator(); iter.hasNext();) {
-			QASet element = (QASet) iter.next();
+		Set<QASet> s = new HashSet<QASet>();
+		for (Iterator<QASet> iter = qClasses.iterator(); iter.hasNext();) {
+			QASet element = iter.next();
 			addQASetPath(element, s);
 		}
 		qClasses = s;
 	}
 
-	private void addQASetPath(QASet q, Set l) {
-		List fathers = q.getParents();
+	private void addQASetPath(QASet q, Set<QASet> l) {
+		List<? extends NamedObject> fathers = q.getParents();
 		l.add(q);
-		for (Iterator iter = fathers.iterator(); iter.hasNext();) {
+		for (Iterator<? extends NamedObject> iter = fathers.iterator(); iter.hasNext();) {
 			QASet element = (QASet) iter.next();
 			addQASetPath(element, l);
 		}
 
 	}
 
-	private void addQuestionPath(Question q, Set s) {
-		List fathers = q.getParents();
+	private void addQuestionPath(Question q, Set<QASet> s) {
+		List<? extends NamedObject> fathers = q.getParents();
 		s.add(q);
-		for (Iterator iter = fathers.iterator(); iter.hasNext();) {
+		for (Iterator<? extends NamedObject> iter = fathers.iterator(); iter.hasNext();) {
 			QASet element = (QASet) iter.next();
 			if (element instanceof Question) {
 				addQASetPath(element, s);
@@ -274,8 +299,8 @@ public class KnowledgeManager {
 
 	private void searchRelQASets(QASet q) {
 
-		List children = q.getChildren();
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
+		List<? extends NamedObject> children = q.getChildren();
+		for (Iterator<? extends NamedObject> iter = children.iterator(); iter.hasNext();) {
 			QASet element = (QASet) iter.next();
 			if (element instanceof Question) {
 				if (questions.contains(element)) {
@@ -289,17 +314,17 @@ public class KnowledgeManager {
 
 	private void calcRelevantQuestions() {
 
-		for (Iterator iter = allRules.iterator(); iter.hasNext();) {
+		for (Iterator<RuleComplex> iter = allRules.iterator(); iter.hasNext();) {
 			RuleComplex element = (RuleComplex) iter.next();
 			questions.addAll(getAllQuestions(element));
 		}
-		Set s = new HashSet();
-		for (Iterator iter = questions.iterator(); iter.hasNext();) {
-			Question element = (Question) iter.next();
+		Set<QASet> s = new HashSet<QASet>();
+		for (Iterator<Question> iter = questions.iterator(); iter.hasNext();) {
+			Question element = iter.next();
 			addQuestionPath(element, s);
 		}
 		Set<Question> q = new HashSet<Question>();
-		for (Iterator iter = s.iterator(); iter.hasNext();) {
+		for (Iterator<QASet> iter = s.iterator(); iter.hasNext();) {
 			Object element = iter.next();
 			if (element instanceof Question) {
 				q.add((Question) element);
@@ -309,19 +334,19 @@ public class KnowledgeManager {
 
 	}
 
-	private Set getAllQuestions(RuleComplex r) {
-		Set result = new HashSet();
+	private Set<Question> getAllQuestions(RuleComplex r) {
+		Set<Question> result = new HashSet<Question>();
 		RuleAction a = r.getAction();
 		if (a instanceof ActionHeuristicPS) {
 			AbstractCondition cond = r.getCondition();
 			addAllAppearingQuestions(cond, result);
 
 		} else if (a instanceof ActionIndication) {
-			List l = ((ActionIndication) a).getQASets();
-			for (Iterator iter = l.iterator(); iter.hasNext();) {
-				QASet element = (QASet) iter.next();
+			List<QASet> l = ((ActionIndication) a).getQASets();
+			for (Iterator<QASet> iter = l.iterator(); iter.hasNext();) {
+				QASet element = iter.next();
 				if (element instanceof Question) {
-					result.add(element);
+					result.add((Question) element);
 				}
 			}
 
@@ -329,39 +354,39 @@ public class KnowledgeManager {
 		return result;
 	}
 
-	private void addAllAppearingQuestions(AbstractCondition cond, Set s) {
+	private void addAllAppearingQuestions(AbstractCondition cond, Set<Question> s) {
 		if (cond instanceof TerminalCondition) {
 			if (cond instanceof CondQuestion) {
 				s.add(((CondQuestion) cond).getQuestion());
 			}
 		} else {
-			List terms = ((NonTerminalCondition) cond).getTerms();
-			for (Iterator iter = terms.iterator(); iter.hasNext();) {
-				AbstractCondition element = (AbstractCondition) iter.next();
+			List<AbstractCondition> terms = ((NonTerminalCondition) cond).getTerms();
+			for (Iterator<AbstractCondition> iter = terms.iterator(); iter.hasNext();) {
+				AbstractCondition element = iter.next();
 				addAllAppearingQuestions(element, s);
 
 			}
 		}
 	}
 
-	private List calcDiagnosisSet(List l) {
-		List result = new LinkedList();
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
-			Diagnosis element = (Diagnosis) iter.next();
+	private List<Diagnosis> calcDiagnosisSet(List<Diagnosis> l) {
+		List<Diagnosis> result = new LinkedList<Diagnosis>();
+		for (Iterator<Diagnosis> iter = l.iterator(); iter.hasNext();) {
+			Diagnosis element = iter.next();
 			addPathToList(element, result);
 		}
 
 		return result;
 	}
 
-	private void addPathToList(Diagnosis d, List l) {
-		List parents = d.getParents();
+	private void addPathToList(Diagnosis d, List<Diagnosis> l) {
+		List<Diagnosis> parents = (List<Diagnosis>) d.getParents();
 		if (!l.contains(d)) {
 			l.add(d);
 		} else {
 			return;
 		}
-		for (Iterator iter = parents.iterator(); iter.hasNext();) {
+		for (Iterator<Diagnosis> iter = parents.iterator(); iter.hasNext();) {
 			Diagnosis element = (Diagnosis) iter.next();
 			if (!l.contains(element)) {
 				l.add(element);
@@ -373,11 +398,11 @@ public class KnowledgeManager {
 	}
 	
 	private boolean matchesFilter(RuleComplex r) {
-		List l = diagnosisList;
+		List<Diagnosis> l = diagnosisList;
 		if (l == null) {
 			return true;
 		}
-		for (Iterator iter = l.iterator(); iter.hasNext();) {
+		for (Iterator<Diagnosis> iter = l.iterator(); iter.hasNext();) {
 			Object element = (Object) iter.next();
 			if (element instanceof Diagnosis) {
 				if (r.getAction() instanceof ActionHeuristicPS) {

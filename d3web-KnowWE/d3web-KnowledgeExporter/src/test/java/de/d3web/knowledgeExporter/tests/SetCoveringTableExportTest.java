@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.knowledgeExporter.tests;
 
 import java.io.ByteArrayInputStream;
@@ -34,10 +54,10 @@ public class SetCoveringTableExportTest extends TestCase {
 		//hole ressourcen
 		TextParserResource ressource;
 		
-		String diagnosis = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Loesungen.txt");
-		String initQuestion = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Frageklassen.txt");
-		String questions = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Fragebaum.txt");
-		String xcl = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "XCL.txt");
+		String diagnosis = hc.readTxtFile("exampleFiles" + File.separator + "xclTest" + File.separator + "Loesungen.txt");
+		String initQuestion = hc.readTxtFile("exampleFiles" + File.separator + "xclTest" + File.separator + "Frageklassen.txt");
+		String questions = hc.readTxtFile("exampleFiles" + File.separator + "xclTest" + File.separator + "Fragebaum.txt");
+		String xcl = hc.readTxtFile("exampleFiles" + File.separator + "xclTest" + File.separator + "XCL.txt");
 		
 
 		if (questions != null) {
@@ -65,7 +85,7 @@ public class SetCoveringTableExportTest extends TestCase {
 		manager = new KnowledgeManager(kb);
 		tableWriter = new SetCoveringTableWriter(manager);
 		try {
-			tableWriter.writeFile(new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "SetCoveringTable.xls"));
+			tableWriter.writeFile(new File("exampleFiles" + File.separator + "xclTest" + File.separator + "SetCoveringTable.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -75,8 +95,8 @@ public class SetCoveringTableExportTest extends TestCase {
 //		
 //		double minRes = 0.5;
 //		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByRowContent(
-//				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "BaumwissensbasisCoveringLists" + File.separator + "Ueberdeckungstabelle.xls"), 
-//				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "BaumwissensbasisCoveringLists" + File.separator + "UeberdeckungstabelleExport.xls"),
+//				new File("exampleFiles" + File.separator + "BaumwissensbasisCoveringLists" + File.separator + "Ueberdeckungstabelle.xls"), 
+//				new File("exampleFiles" + File.separator + "BaumwissensbasisCoveringLists" + File.separator + "UeberdeckungstabelleExport.xls"),
 //				minRes));
 //
 //	}
@@ -85,8 +105,8 @@ public class SetCoveringTableExportTest extends TestCase {
 //		
 //		double minRes = 0.3;
 //		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByColumnContent(
-//				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "BaumwissensbasisCoveringLists" + File.separator + "Ueberdeckungstabelle.xls"), 
-//				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "BaumwissensbasisCoveringLists" + File.separator + "UeberdeckungstabelleExport.xls"),
+//				new File("exampleFiles" + File.separator + "BaumwissensbasisCoveringLists" + File.separator + "Ueberdeckungstabelle.xls"), 
+//				new File("exampleFiles" + File.separator + "BaumwissensbasisCoveringLists" + File.separator + "UeberdeckungstabelleExport.xls"),
 //				minRes));
 //
 //	}
