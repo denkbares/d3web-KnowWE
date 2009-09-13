@@ -12,9 +12,6 @@
 		<version>0-SNAPSHOT</version>
 	</parent>
 
-	<build>
-		<defaultGoal>package</defaultGoal>
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
@@ -39,14 +36,14 @@
 			<groupId>tagger</groupId>
 			<artifactId>tagger</artifactId>
 			<version>0</version>
-                        <type>jar</type>
+            <type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.wchoen</groupId>
 			<artifactId>secondstring</artifactId>
 			<version>20060615</version>
-                        <type>jar</type>
+            <type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

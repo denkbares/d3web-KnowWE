@@ -1,3 +1,5 @@
+===== 20090913 SVN migration - alegler ======================
+
 build_20090513_1345 astriffler
 	* replaced hotfix in PartOfIDObjectStrategy with an
 	actual fix
