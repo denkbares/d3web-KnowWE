@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.action;
 
 import java.io.UnsupportedEncodingException;
@@ -13,6 +33,7 @@ import java.util.Set;
 
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.d3webModule.ProblemSolverType;
 import de.d3web.we.d3webModule.TerminologyAlignmentLinkFilter;
@@ -33,7 +54,7 @@ public class KnowWERenderUtils {
 	
 	
 	public static StringBuffer getTopicLink(String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
 		StringBuffer sb = new StringBuffer();
 		//String web = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.WEB, String.class, true);
 		String link = getLinkToTopic(term, web);
@@ -70,7 +91,7 @@ public class KnowWERenderUtils {
 	
 	
 	public static StringBuffer getKopicLinks(String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
 		StringBuffer sb = new StringBuffer();
 		DPSEnvironment dpse = DPSEnvironmentManager.getInstance().getEnvironments(web);
 		//DPSEnvironment dpse = KnowWEUtils.getEnvironment(model);
@@ -153,7 +174,7 @@ public class KnowWERenderUtils {
 
 
 	public static StringBuffer getDialogLinks(String user, String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
 		StringBuffer sb = new StringBuffer();
 		//String user = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.USER, String.class, true);
 		//String web = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.WEB, String.class, true);
@@ -228,7 +249,7 @@ public class KnowWERenderUtils {
 	
 	
 	public static StringBuffer getSolutionLogLinks(String user, String web, Term term, String iconURL, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
 		StringBuffer sb = new StringBuffer();
 		//String user = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.USER, String.class, true);
 		//String web = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.WEB, String.class, true);
@@ -262,7 +283,7 @@ public class KnowWERenderUtils {
 	}
 	
 	public static StringBuffer getExplanationLinks(String user, String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
 		StringBuffer sb = new StringBuffer();
 		//String user = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.USER, String.class, true);
 		//String web = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.WEB, String.class, true);
@@ -344,7 +365,7 @@ public class KnowWERenderUtils {
 	
 	
 	public static StringBuffer getClarificationLinks(String user, String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
 		StringBuffer sb = new StringBuffer();
 		//String user = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.USER, String.class, true);
 		//String web = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.WEB, String.class, true);

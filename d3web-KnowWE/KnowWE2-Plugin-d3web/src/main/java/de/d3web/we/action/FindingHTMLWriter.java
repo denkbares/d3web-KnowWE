@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.action;
 
 import java.io.UnsupportedEncodingException;
@@ -17,6 +37,7 @@ import de.d3web.kernel.domainModel.qasets.QuestionNum;
 import de.d3web.kernel.domainModel.qasets.QuestionOC;
 import de.d3web.kernel.domainModel.qasets.QuestionYN;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -35,7 +56,7 @@ public class FindingHTMLWriter {
 
 	public static final String ID = FindingXMLWriter.class.getName();
 
-	private ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+	private static ResourceBundle rb;
 
 	@SuppressWarnings("deprecation")
 	private void appendCAnswers(Question theQuestion, StringBuffer buffy,
@@ -226,6 +247,8 @@ public class FindingHTMLWriter {
 	}
 	public String getHTMLString(Question question, XPSCase theCase,
 			String namespace, String webname, String targetUrlPrefix) {
+		
+		rb = D3webModule.getKwikiBundle_d3web();
 		String retVal = null;		
 		if (question == null) {
 			Logger.getLogger(this.getClass().getName()).warning(

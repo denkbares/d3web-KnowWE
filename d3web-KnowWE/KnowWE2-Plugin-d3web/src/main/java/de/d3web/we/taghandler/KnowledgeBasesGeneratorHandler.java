@@ -1,30 +1,61 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.taghandler;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
+/**
+ * Renders the mask for Generating KnowledgeBases
+ * from jar-files into the Wiki
+ * See also: GenerateKBRenderer
+ * 
+ * @author Johannes Dienst
+ *
+ */
 public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 
 	private KnowWEWikiConnector wikiConnector;
 
 	public KnowledgeBasesGeneratorHandler () {
-		super("KnowledgeBasesUploader");
+		super("KnowledgeBasesUploader");		
+	}
+	
+	@Override
+	public String getDescription(KnowWEUserContext user) {
+		return D3webModule.getKwikiBundle_d3web(user).
+				getString("KnowWE.KnowledgeBasesGenerator.description");
+	}
+	
+	@Override
+	public String render(String topic, KnowWEUserContext user, Map<String,String> values, String web) {
 		
-	}
-	
-	@Override
-	public String getDescription() {
-		// TODO add description for this handler
-		return D3webModule.getInstance().getKwikiBundle_d3web().getString("KnowWE.KnowledgeBasesGeneratorHandler.description");
-	}
-	
-	@Override
-	public String render(String topic, KnowWEUserContext user, String value, String web) {
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 		
 		if(wikiConnector == null) {
 			wikiConnector = KnowWEEnvironment.getInstance().getWikiConnector();
@@ -36,7 +67,7 @@ public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 		StringBuffer html = new StringBuffer();
 		
 		html.append("<div id=\"KnowledgeBasesGenerator\" class=\"panel\"><h3>"
-				+ KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.knowledgebasesgenerator.topic")
+				+ rb.getString("KnowWE.KnowledgeBasesGenerator.topic")
 				+ "</h3>");
 		html.append("<form method='post' action=''>");
 		html.append("<fieldset>");
@@ -55,12 +86,12 @@ public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 				
 				html.append("<div>");
 				html.append("<p><img src='KnowWEExtension/images/arrow_right.png' border='0'/> "
-						+ KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.knowledgebasesgenerator.jarname") + a + "</p>");
+						+ rb.getString("KnowWE.KnowledgeBasesGenerator.jarname") + a + "</p>");
 				html.append("<label for='" + a + "'>" + "Neuer Name:" + "</label>");
 				html.append("<input id='" + a + "' type='text' name='nameTerm' class='field' title=''/>");
 				
 				html.append("<input type='button' value='"
-						+ KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.knowledgebasesgenerator.generateButton")
+						+ rb.getString("KnowWE.KnowledgeBasesGenerator.generateButton")
 						+ "' name='generate' class='button' title='' onclick='doKbGenerating(\"" + a + "\");'/>");
 				
 				html.append("</div> \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
@@ -69,7 +100,7 @@ public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 		} else {
 			html.append("<div>");
 			html.append("<p class='info box'>"
-			+ KnowWEEnvironment.getInstance().getKwikiBundle().getString("KnowWE.knowledgebasesgenerator.nokb")
+			+ rb.getString("KnowWE.KnowledgeBasesGenerator.nokb")
 			+ "</p>");
 			html.append("</div>");
 			

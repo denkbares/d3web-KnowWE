@@ -1,5 +1,26 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.taghandler;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -18,43 +39,51 @@ import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rules.Rule;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class KBRenderer extends AbstractTagHandler {
 
 	public KBRenderer() {
-		super("renderKnowledge");
+		super("renderKnowledge");		
+	}
+	
+	@Override
+	public String getDescription(KnowWEUserContext user) {
+		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.KBRenderer.description");
+	}
+	
+	@Override
+	public String render(String topic, KnowWEUserContext user,Map<String,String> values, String web) {
+		D3webKnowledgeService service = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);
 		
-	}
-	
-	@Override
-	public String getDescription() {
-		return D3webModule.getInstance().getKwikiBundle_d3web().getString("KnowWE.KBRenderer.description");
-	}
-	
-
-	@Override
-	public String render(String topic, KnowWEUserContext user, String value, String web) {
-		D3webKnowledgeService service = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);		
-		String text = "<div id=\"knowledge-panel\" class=\"panel\"><h3>Uebersicht Artikelwissen</h3>";
-		text += "<p>";
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
+		
+		StringBuilder text = new StringBuilder("<div id=\"knowledge-panel\" class=\"panel\"><h3>" + rb.getString("KnowWE.KBRenderer.header") + "</h3>");
+		text.append("<p>");
 		if (service != null) {
-//			text += "<h4>Knowledge of article:</h4>";
+//			text.append("<h4>Knowledge of article:</h4>";
 			KnowledgeBase kb = service.getBase();
-			text += "<strong>Solution(s):</strong><br />";
+			
 			List<Diagnosis> diagnosis = kb.getDiagnoses();
 			
+			boolean appendedSolutionsHeadline = false;
 			for (Diagnosis diagnosis2 : diagnosis) {
 				if (!diagnosis2.getText().equals("P000")) {
-					text += VerbalizationManager.getInstance().verbalize(
-							diagnosis2, RenderingFormat.HTML) + "; ";
+					if (!appendedSolutionsHeadline) {
+						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.solutions") + ":</strong><p/>");
+						appendedSolutionsHeadline = true;
+					}
+					text.append(VerbalizationManager.getInstance().verbalize(
+							diagnosis2, RenderingFormat.HTML) + "<br/>");
 				}
 			}
-			text += "<br />";
-
-//			text += "<br /><b>SCRelations: </b><br />";
+//			text.append("<br /><b>SCRelations: </b><br />");
 //
 //			Collection<KnowledgeSlice> scRels = kb
 //					.getAllKnowledgeSlicesFor(PSMethodSetCovering.class);
@@ -66,43 +95,73 @@ public class KBRenderer extends AbstractTagHandler {
 //						PredictedFinding finding = ((PredictedFinding) targetNode);
 //						AbstractCondition cond = finding.getCondition();
 //						// Verbalization of the condition
-//						text += VerbalizationManager.getInstance().verbalize(
+//						text.append(VerbalizationManager.getInstance().verbalize(
 //								cond, RenderingFormat.HTML)
-//								+ "<br>";
+//								+ "<br>");
 //					}
 //
 //					screl.getTargetNode().getNamedObject();
 //				}
 //			}
-			text += "<strong>Rules: </strong>";
+
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 			Collection<KnowledgeSlice> rules = kb
 					.getAllKnowledgeSlices();
+			
+			boolean appendedRulesHeadline = false;
+			Map<String, String> idMap = new HashMap<String, String>();
 			for (KnowledgeSlice knowledgeSlice : rules) {
 				if (knowledgeSlice instanceof RuleComplex) {
+					if (!appendedRulesHeadline) {
+						if (appendedSolutionsHeadline) {
+							text.append("<br/>");
+						}
+						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.rules") + ":</strong><p/>");
+						appendedRulesHeadline = true;
+						List<Section> allRules = new ArrayList<Section>();
+						KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
+								.getSection().findSuccessorsOfType(Rule.class, allRules);
+						for (Section rule:allRules) {
+							String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), rule.getTitle(), 
+									rule.getId(), Rule.KBID_KEY);
+							idMap.put(kbRuleId, rule.getId());
+						}
+					}
 					RuleComplex rule = ((RuleComplex) knowledgeSlice);
-					text += "Rule:" +VerbalizationManager.getInstance().verbalize(
-							rule.getCondition(), RenderingFormat.PLAIN_TEXT);
-					text += " --> ";
-					text += VerbalizationManager.getInstance().verbalize(
-							rule.getAction(), RenderingFormat.HTML,parameterMap);
-					text += "\n <br />"; // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
-				}else {
-					text += knowledgeSlice.toString();
-					text += "\n <br />"; // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
+						
+					String kdomid = idMap.get(rule.getId());
+		
+					if(kdomid != null) {
+						String button = ("<img src=KnowWEExtension/images/page_white_find.png onclick='highlightRule(\""
+								+ kdomid + "\",\""+topic+"\",\"0\",\"0\" );'/></img>");
+						text.append(button);
+					}
+					
+					text.append("Rule: " +VerbalizationManager.getInstance().verbalize(
+							rule.getCondition(), RenderingFormat.PLAIN_TEXT));
+					text.append(" --> ");
+					text.append(VerbalizationManager.getInstance().verbalize(
+							rule.getAction(), RenderingFormat.HTML,parameterMap));
+					text.append("\n <br />"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 				}
 			}
-			text += "<br /><br />";
-			text += "<strong>XCL Models:</strong>";
+			
 			Collection<KnowledgeSlice> xclRels = kb
 					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
-			
+			boolean appendedXCLHeadline = false;
 			for (KnowledgeSlice slice : xclRels) {
 				if (slice instanceof de.d3web.kernel.psMethods.xclPattern.XCLModel) {
+					if (!appendedXCLHeadline) {
+						if (appendedSolutionsHeadline || appendedRulesHeadline) {
+							text.append("<br/>");
+						}
+						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.xclModels") + ":</strong>");
+						appendedXCLHeadline = true;
+					}
 					de.d3web.kernel.psMethods.xclPattern.XCLModel model = ((de.d3web.kernel.psMethods.xclPattern.XCLModel) slice);
-					text += "<br />   " + model.getSolution().getText()
-							+ ": <br />";
+					text.append("<p /> " + model.getSolution().getText()
+							+ ": <br />");
 
 					Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
 							.getTypedRelations();
@@ -120,20 +179,20 @@ public class KBRenderer extends AbstractTagHandler {
 							}
 							
 							if(kdomid != null) {
-								String button = ("<img src=KnowWEExtension/images/page_white_find.png onclick='highlightNode(\""
-										+ kdomid + "\",\""+topic+"\");'/></img>");
-								text += button;
+								String button = ("<img src=KnowWEExtension/images/page_white_find.png onclick='highlightXCLRelation(\""
+										+ kdomid + "\",\""+topic+"\",\"0\",\"0\" );'/></img>");
+								text.append(button);
 							}
 							
-							text += type.getName()+weight+": ";
-							text += "&nbsp;&nbsp;&nbsp;"
+							text.append(type.getName()+weight+": ");
+							text.append("&nbsp;&nbsp;&nbsp;"
 									+ VerbalizationManager.getInstance()
 											.verbalize(cond,
-													RenderingFormat.PLAIN_TEXT, parameterMap);
+													RenderingFormat.PLAIN_TEXT, parameterMap));
 							
 							boolean id = false;
 							if(id) {
-								text += " (ID: "+rel.getId()+")";
+								text.append(" (ID: "+rel.getId()+")");
 							}
 							
 							
@@ -145,16 +204,15 @@ public class KBRenderer extends AbstractTagHandler {
 //										+ kdomid + "\",\""+topic+"\");'/>");
 //								text += button;
 //							}
-							text += " \n <br />"; // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
-							
+							text.append(" \n <br />"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)						
 							
 						}
 					}
 				}
 			}
 		} else {
-			text += "<p class=\"box error\">renderTag KB: Knowledge Service not found</p>";
+			text.append("<p class=\"box error\">" + rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
-		return text + "</p></div>";
+		return text.append("</p></div>").toString();
 	}
 }

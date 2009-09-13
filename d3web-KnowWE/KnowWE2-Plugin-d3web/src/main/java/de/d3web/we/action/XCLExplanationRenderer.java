@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.action;
 
 import java.util.Collection;
@@ -30,8 +50,6 @@ import de.d3web.we.javaEnv.KnowWEAttributes;
 import de.d3web.we.javaEnv.KnowWEParameterMap;
 
 public class XCLExplanationRenderer implements de.d3web.we.action.KnowWEAction {
-
-	private static ResourceBundle kwikiBundle = ResourceBundle.getBundle("KnowWE_messages");
 	
 	//properties only
 	private static final String SOLUTION = "SOLUTION";
@@ -60,6 +78,9 @@ public class XCLExplanationRenderer implements de.d3web.we.action.KnowWEAction {
 	private XPSCase currentCase;
 	
 	public String perform(KnowWEParameterMap parameterMap) {
+		
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(parameterMap.getRequest());
+		
 		String jumpId = parameterMap.get(KnowWEAttributes.JUMP_ID);
 		String id = parameterMap.get(KnowWEAttributes.SESSION_ID);
 		String solutionid = parameterMap.get(KnowWEAttributes.TERM);
@@ -86,10 +107,12 @@ public class XCLExplanationRenderer implements de.d3web.we.action.KnowWEAction {
 			this.currentCase = c;
 			this.kbId = c.getKnowledgeBase().getId();
 			
-			
+//			Question q;
+//			AbstractCondition c;
+//			c.eval(c);
 			Diagnosis solution = baseManagement.findDiagnosis(solutionid);
 			if (solution == null) {
-				return kwikiBundle.getString("xclrenderer.nosolution") + solutionid;
+				return rb.getString("xclrenderer.nosolution") + solutionid;
 			}
 
 			Collection<KnowledgeSlice> models = c.getKnowledgeBase()
@@ -101,7 +124,7 @@ public class XCLExplanationRenderer implements de.d3web.we.action.KnowWEAction {
 						XCLInferenceTrace trace = ((XCLModel) knowledgeSlice)
 								.getInferenceTrace(c);
 						if (trace == null) {
-							return kwikiBundle.getString("xclrenderer.notrace");
+							return rb.getString("xclrenderer.notrace");
 						}
 						return verbalizeTrace(trace, solution.getText());
 					}
@@ -109,7 +132,7 @@ public class XCLExplanationRenderer implements de.d3web.we.action.KnowWEAction {
 			}
 		}
 
-		return kwikiBundle.getString("xclrenderer.findingtrace");
+		return rb.getString("xclrenderer.findingtrace");
 	}
 
 

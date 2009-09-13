@@ -15,6 +15,239 @@
 *    `    `~'      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      `~'    '		*
 *****************************************************************************
 
+===== 20090913 SVN migration - alegler ======================================
+	* Not all tests run fine, they need some fixing
+
+build_20090911_2015 JoeD
+	* Removed old render Method from KnowWEDomRenderer
+	* Changed all remaining classes to the new method
+
+build_20090911_0240 furth
+    * redesigned TestSuite-Taghandler
+
+build_20090910_1410 JoeD
+	* d3webSectionFinderTests added
+	* Extracted TiRex to own Project
+
+build_20090908_2200 MFreiberg
+	* removed automatic rendering of abstraction questions in HTMLDialogRenderer
+
+build_20090907_1610 astriffler
+	* implemented ExtendedUpdatingMechanismTest (checks if old Sections and
+	KnowledgeBase-Objects get reused)
+	* some changes and fixes to make the Test possible
+	
+build_20090906_1350 furth
+	* improved displaying of detailed Test Suite result in TestSuiteRun-Taghandler
+
+build_20090826_1425 astriffler
+	* added icon and internationalized tooltip in title of
+	  Kopic Sections containing errors
+	
+build_20090826_0845 astriffler
+	* fixed and improved parser messages in Kopic Sections
+
+build_20090823_2300 MFreiberg
+	* adapted HTMLDialogRenderer.java to extend and enhance dialog behavior
+
+build_20090821_1630 reutelshoefer
+	* implemented new render-method for many renderers (others still to do)
+
+build_20090815_1450 JoeD
+	* refactored all SectionFinder derived classes
+	  to the ending ...SectionFinder
+
+build_20090814_1535 JoeD
+	* many changes in SectionFinder classes concerning:
+	  - Code formatting
+	  - changes due to tests
+	  - Refactoring
+
+build_20090811_ 1535 JoeD
+	* XCLRelation highlighting working again
+	* Some changes in KnowWE-Plugin-d3web due to that
+
+build_20090805_1350 astriffler
+	* some fixes and cleaning in the recycling mechanism
+	
+build_20090731_0245 astriffler
+	* excluded CoveringTables from recycling mechanism
+	-> CoveringTables work again
+	
+build_20090728_1220 astriffler
+	* refactoring
+
+build_20090727_1535 JoeD
+	* Some commenting
+
+build_20090725_2305 astriffler
+	* fixed NullPointer in CoveringTable
+	* still issues left with CoveringTables
+	
+build_20090725_1130 astriffler
+	* fixed several bugs concerning recycling mechanism
+	* there still are some issues with CoveringTables and Quickedit that
+	  hopefully get fixed soon
+	  
+build_20090723_1230 apreu
+	* don't save ResourceBundle anymore
+	
+build_20090723_1150 reutelshoefer
+	* fix for ResourceBundle Locale problem
+
+build_20090722_1845 apreu
+	* changed getKwikiBundle_d3web(.)
+	* import ResourceBundle in each action and taghandler with getKwikiBundle_d3web()
+	* added ResourceBundle to some taghandlers
+	* structured property-file -> put some translation from KnowWE2 to d3web
+
+build_20090722_1345 reutelshoefer
+	* added null-checks in EntryCellContentSubtreeHandler
+
+build_20090721_1745 reutelshoefer
+	* refactored parsing of covering-table
+
+build_20090720_1250 astriffler
+	* implemented algorithm for recycling knowledge when articles 
+	  get edited
+	  -> decreases time needed to rebuild an article after editing
+	* implemented D3webReviseSubTreeHandler providing methods for 
+	  ReviseSubTreeHandler revising knowledge
+	* beautification of the output of the KBRenderer 
+	  
+build_20090717_1800 reutelshoefer
+	* some refactoring of CoveringTable
+	* Covering table stuff in own package now
+
+
+build_20090715_1800 reutelshoefer
+	* small bugfix on QuestionCell Type (now overrides init())
+
+build_20090714_1900 reutelshoefer
+	* some beautification of covering-tables
+
+build_20090714_1600 reutelshoefer
+	* some beautification of tables  (line-header/col-header)
+
+build_20090630_1640 astriffler
+	* lots of changes and cleaning up due to the interface changes and
+	  refactoring in KnowWE2
+	* improved sectionizing of SetCoveringLists
+	* fixed rendering of SetCoveringLists (in <pre>-tags again)
+	* fixed rendering of Rules (in <pre>-tags again)
+	* fixed some sectionizing bugs in testsuite SectionFinders
+	* some code improvements for TxtAttributeTables
+	
+build_20090630_1400 smark
+    * new action: choosen answers from the dialog can be saved as XCL model
+
+build_20090626_1505 JoeD
+	* KnowWEUtils provides method for 
+	  getting a father of a section by class
+
+build_20090626_1500 JoeD
+	* Complete RuleHighlighting
+	* Changes due to that
+
+build_20090625_1205 furth
+	* introduced Testsuite-section
+	* introduced Testsuite-Taghandler
+	* added d3web-EmpiricalTesting project to build.xml (necessary for testsuite-section)
+
+build_20090624_1720 JoeD
+	* Some Refactoring for XCLRelation-Highlighting
+	* Introducing Highlighting for RulesSection
+	* Some changes in highlightNode in KnowWE.js
+
+build_20090617_1520 reutelshoefer
+	* refactoring of tagHandler.render() method
+	* parameter String value becomes Map<String,String> values
+
+build_20090617_1515 JoeD
+	* Improved Performance of XCLRelation Highlighting
+
+build_20090615_1400 reutelshoefer
+	* setCoveringListSection returns correct renderer again
+
+build_20090612_1240 astriffler
+	* TxtAttributeTable now uses the Renderer from kopic.table inheriting
+	  better looks, quickediting and other features
+	* moved method getMessages to AbstractKnowWEObjectType to be able to use
+	  it with non-kopic-sections 
+	* some refactoring
+	
+build_20090610_1700 reutelshoefer
+	* Kopic Subsections are now also allowed without Kopic
+	* -> Questions-, Solutions-, Rules-, SetCovering-,..etc. sections
+	* moved TagHandlerType from KnowWE2-Plugin-d3web to KnowWE2
+	
+build_20090610_1245 astriffler
+	* implemented Renderer for TxtAttributeTableCells that handles escape symbols
+
+build_20090610_0415 astriffler
+	* implemented support for attribute tables in txt format (TxtAttributeTables)
+	* moved functionality of reviseSubtree methods to ReviseSubTreeHandlers
+	* fixed sectionizing in SolutionsKDOMBuilder
+	* fixed some issues in the Rules-section (messages and storing of ids)
+	* prettified parser messages
+	* minor fixes and optimizations
+	* some refactoring (moved ObjectTypes from kopic to according packages)
+	
+build_20090605_1800 JoeD
+	* Some Refactoring concerning SetCoverlingLists and Highlighting
+
+build_20090529_1745 legler
+	* Making the ObjectInfoPage work
+	* Adding the ObjectInfoLinkRenderer to some KDOM objects
+
+build_20090528_1505 astriffler
+	* a Rule now also ends at an empty line
+	-> comments are possible in RuleSection
+
+build_20090528_1050 reutelshoefer
+ 	* fixed memory leak
+
+build_20090528_1020 reutelshoefer
+	* fixed message handling in RuleSubTreeHandler
+
+build_20090528_0900 reutelshoefer
+	* parser-message are now stored in SectionInfoStorage (to allow GCing)
+
+build_20090528_0834 friedrich
+	* changed UpperOntology2 to UpperOntology according to the update of KnowWE2
+
+build_20090527_1225 JoeD
+	* Some Code beautifying
+	* Removed Sysouts ;-)
+
+build_20090527_1135 reutelshoefer
+	* d3webModule holds reference to its d3webKnowledgeRepresentationHandler
+	* added get-method for it
+	* added getKBMs-Method to d3webKnowledgeRepresentationHandler
+
+build_20090526_1945 smark
+    * renamed KnOfficeUploadManger to KnOfficeUploadHandler, moved to KnowWE-Plugin-d3web 
+
+build_20090526_1520 haupt
+	* moved getComparatorCache to OwlHelper
+	
+build_20090526 JoeD
+	* Diagnosis now stored without quotation Marks
+
+build_20090525_0910 JoeD
+	* XCLRelations in CoveringLists now highlighted according
+	  to given answers. For this new Renderers created and classes changed.
+	* KnowWE.js: highlightNode() now general usable 
+	             with KDomSectionHighlighterRenderer
+	* FontColorBackgroundRenderer introduced. Can replace FontColorRenderer
+	  and preserves highlighting functionality.
+	* XCLRelation-id storage now over KnowWEUtils
+	* SetCoveringList now rendered with SetCoveringListSingleListRenderer.
+	  cause the <pre> tag from JSPWiki avoids inserting new html correctly
+
+build_20090525_0100 haupt
+	* moved some helper functions from UpperOntolgy to OwlHelper
+
 build_20090521_0400 astriffler
 	* implemented new DefaultLineNumberDeligateRenderer replacing the old
 	  LineNumberRenderers
@@ -271,7 +504,6 @@ build_20090206_0150 astriffler
 build_20090205_1245 reutelshoefer
 	* added types for rules
 	* added some Syntax-Highlighting to Rules and XCLs
-
 
 build_20090203_1645 astriffler
 	* removed code concerning the old highlighting mechanism for includes

@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.d3webModule;
 
 import java.io.File;
@@ -11,11 +31,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.ClearDPSSessionAction;
 import de.d3web.we.action.CodeCompletionRenderer;
@@ -31,11 +53,11 @@ import de.d3web.we.action.QuestionStateReportAction;
 import de.d3web.we.action.ReInitDPSEnvironmentRenderer;
 import de.d3web.we.action.RefreshHTMLDialogAction;
 import de.d3web.we.action.RequestDialogRenderer;
+import de.d3web.we.action.SaveDialogAsXCLAction;
 import de.d3web.we.action.SemanticAnnotationRenderer;
 import de.d3web.we.action.SetFindingAction;
 import de.d3web.we.action.SetSingleFindingAction;
 import de.d3web.we.action.SolutionLogRenderer;
-import de.d3web.we.action.TirexToXCLRenderer;
 import de.d3web.we.action.UserFindingsRenderer;
 import de.d3web.we.action.XCLExplanationRenderer;
 import de.d3web.we.core.DPSEnvironment;
@@ -46,25 +68,36 @@ import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.javaEnv.KnowWEAttributes;
 import de.d3web.we.javaEnv.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.Annotation.Annotation;
-import de.d3web.we.kdom.TiRex.TiRex;
+import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
+import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
+import de.d3web.we.kdom.decisionTree.QuestionsSection;
 import de.d3web.we.kdom.kopic.Kopic;
 import de.d3web.we.kdom.kopic.renderer.AnnotationInlineAnswerRenderer;
+import de.d3web.we.kdom.rules.RulesSection;
+import de.d3web.we.kdom.table.attributes.AttributeTableSection;
+import de.d3web.we.kdom.table.xcl.CoveringTableSection;
+import de.d3web.we.kdom.xcl.CoveringListSection;
 import de.d3web.we.kdom.xcl.XCL;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.renderer.xml.GraphMLOwlRenderer;
 import de.d3web.we.taghandler.DialogPaneTagHandler;
 import de.d3web.we.taghandler.KBRenderer;
+import de.d3web.we.taghandler.KnOfficeUploadHandler;
 import de.d3web.we.taghandler.ObjectInfoTagHandler;
 import de.d3web.we.taghandler.QuestionSheetHandler;
 import de.d3web.we.taghandler.ShowAllKBsHandler;
 import de.d3web.we.taghandler.SolutionStateViewHandler;
 import de.d3web.we.taghandler.TagHandler;
-import de.d3web.we.taghandler.TagHandlerType;
+import de.d3web.we.taghandler.TestsuiteTagHandler;
 import de.d3web.we.taghandler.WikiSolutionsTagHandler;
 import de.d3web.we.terminology.D3webTerminologyHandler;
+import de.d3web.we.testsuite.TestsuiteSection;
+import de.d3web.we.upload.UploadManager;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class D3webModule implements KnowWEModule {
 
@@ -75,22 +108,45 @@ public class D3webModule implements KnowWEModule {
 	private List<de.d3web.we.taghandler.TagHandler> tagHandlers = new ArrayList<de.d3web.we.taghandler.TagHandler>();
 
 	private static D3webModule instance;
-	
-	private static ResourceBundle kwikiBundle_d3web = ResourceBundle.getBundle("KnowWE2_plugin_d3web_messages");
 
+	private D3webTerminologyHandler handler = null;
 	
-	public ResourceBundle getKwikiBundle_d3web() {
-		return kwikiBundle_d3web;
+	public static ResourceBundle getKwikiBundle_d3web() {
+		
+		return ResourceBundle.getBundle("KnowWE2_plugin_d3web_messages");
 	}
-
+	
+	public static ResourceBundle getKwikiBundle_d3web(KnowWEUserContext user) {
+		
+		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector().getLocale(user.getHttpRequest()));
+		return getKwikiBundle_d3web();
+	}
+	
+	public static ResourceBundle getKwikiBundle_d3web(HttpServletRequest request) {
+		
+		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector().getLocale(request));
+		return getKwikiBundle_d3web();
+	}
+	
 	public List<KnowWEObjectType> getRootTypes() {
 		List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
 		rootTypes.add(new Kopic());
-		rootTypes.add(new TiRex());
+		rootTypes.add(new SolutionsSection());
+		rootTypes.add(new QuestionnairesSection());
+		rootTypes.add(new QuestionsSection());
+		rootTypes.add(new AttributeTableSection());
 		rootTypes.add(new XCL());
 		rootTypes.add(new Annotation());
-		rootTypes.add(new TagHandlerType());
+		rootTypes.add(new TestsuiteSection());
+		rootTypes.add(new CoveringTableSection());
+		rootTypes.add(new CoveringListSection());
+		rootTypes.add(new RulesSection());
 		return rootTypes;
+	}
+	
+	@Override
+	public List<TerminalType> getGlobalTypes() {
+		return null;
 	}
 
 	public static D3webModule getInstance() {
@@ -129,6 +185,7 @@ public class D3webModule implements KnowWEModule {
 		this.addTagHandler(new WikiSolutionsTagHandler());
 		this.addTagHandler(new DialogPaneTagHandler());
 		this.addTagHandler(new ObjectInfoTagHandler());
+		this.addTagHandler(new TestsuiteTagHandler());
 
 		boolean registerRenderer = KnowWEEnvironment.getInstance()
 				.registerConditionalRendererToType(Annotation.class,
@@ -145,6 +202,8 @@ public class D3webModule implements KnowWEModule {
 		this.addAction(actionMap);
 
 		loadData(context);
+		
+		UploadManager.getInstance().registerHandler( new KnOfficeUploadHandler());
 
 	}
 
@@ -196,7 +255,6 @@ public class D3webModule implements KnowWEModule {
 	public void addAction(
 			Map<Class<? extends KnowWEAction>, KnowWEAction> actionMap) {
 		actionMap.put(GenerateKBRenderer.class, new GenerateKBRenderer());
-		actionMap.put(TirexToXCLRenderer.class, new TirexToXCLRenderer());
 		actionMap.put(SemanticAnnotationRenderer.class,
 				new SemanticAnnotationRenderer());
 		actionMap.put(GraphMLOwlRenderer.class, new GraphMLOwlRenderer());
@@ -229,6 +287,7 @@ public class D3webModule implements KnowWEModule {
 		actionMap.put(RefreshHTMLDialogAction.class,
 				new RefreshHTMLDialogAction());
 		actionMap.put(SetFindingAction.class, new SetFindingAction());
+		actionMap.put(SaveDialogAsXCLAction.class, new SaveDialogAsXCLAction());
 	}
 
 	public String generateDialogLink(String user, String topic, String actualID) {
@@ -408,7 +467,7 @@ public class D3webModule implements KnowWEModule {
 	}
 
 	public static String getRealPath(ServletContext context, String varPath) {
-		if (varPath.indexOf("$webapp_path$") != -1) {
+		if (context != null && varPath.indexOf("$webapp_path$") != -1) {
 			String realPath = context.getRealPath("");
 			realPath = realPath.replace('\\', '/');
 			while (realPath.endsWith("/")) {
@@ -440,8 +499,13 @@ public class D3webModule implements KnowWEModule {
 
 	@Override
 	public void registerKnowledgeRepresentationHandler(KnowledgeRepresentationManager mgr) {
-		mgr.registerHandler("d3web", new D3webTerminologyHandler());
+		handler = new D3webTerminologyHandler();
+		mgr.registerHandler("d3web", handler);
 
+	}
+
+	public D3webTerminologyHandler getKnowledgeRepresentationHandler() {
+		return handler;
 	}
 
 	@Override

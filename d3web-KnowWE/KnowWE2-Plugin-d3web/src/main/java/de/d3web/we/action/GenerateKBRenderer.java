@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.action;
 
 import java.io.File;
@@ -21,19 +41,26 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KopicWriter;
 
+/**
+ * Creates/Appends KnowledgeBases from jar-files into the Wiki.
+ * See also: KnowledgeBasesGeneratorHandler
+ * 
+ * @author Johannes Dienst
+ *
+ */
 public class GenerateKBRenderer implements KnowWEAction {
-	
-	private static ResourceBundle kwikiBundle = ResourceBundle.getBundle("KnowWE_messages");
 	
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		
 		String kbString = KnowWEEnvironment.getInstance().getWikiConnector().getAttachmentPath(parameterMap.get(KnowWEAttributes.ATTACHMENT_NAME));
 		
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(parameterMap.getRequest());
+		
 		// If Nothing was Entered for new PageName.
 		if (!parameterMap.containsKey(KnowWEAttributes.NEWKB_NAME)) {
 			return "<p class='error box'>"
-				+ kwikiBundle.getString("KnowWE.knowledgebasesgenerator.nonameError")
+				+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.nonameError")
 				+ "</p>";
 		}
 		
@@ -41,11 +68,11 @@ public class GenerateKBRenderer implements KnowWEAction {
 		if (KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(parameterMap.get(KnowWEAttributes.NEWKB_NAME))) {
 			if (this.appendKnowledgeBase(KnowWEEnvironment.getInstance(), parameterMap.getWeb(), parameterMap.get(KnowWEAttributes.NEWKB_NAME), kbString, parameterMap.getUser())) {
 				return "<p class='info box'>"
-				+ kwikiBundle.getString("KnowWE.knowledgebasesgenerator.kbAppended")
+				+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.kbAppended")
 				+ "</p>";
 			}
 			return "<p class='error box'>"
-				+ kwikiBundle.getString("KnowWE.knowledgebasesgenerator.alreadyexistsError")
+				+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.alreadyexistsError")
 				+ "</p>";
 		}
 		
@@ -55,12 +82,12 @@ public class GenerateKBRenderer implements KnowWEAction {
 			KnowWEEnvironment.getInstance().processAndUpdateArticle(parameterMap.getUser(), updateContent, parameterMap.get(KnowWEAttributes.NEWKB_NAME), parameterMap.getWeb());
 			// Link zu neuer page...
 			return "<p class='info box'>"
-				+ kwikiBundle.getString("KnowWE.knowledgebasesgenerator.creationSuccess") +
+				+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.creationSuccess") +
 				parameterMap.get(KnowWEAttributes.NEWKB_NAME) + "</p>";
 		}
 		
 		return "<p class='error box'>"
-		+ kwikiBundle.getString("KnowWE.knowledgebasesgenerator.generatingError")
+		+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.generatingError")
 		+ "</p>";
 
 	}

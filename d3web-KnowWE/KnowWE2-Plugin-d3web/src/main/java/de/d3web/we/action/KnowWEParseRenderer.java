@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.action;
 
 import java.util.Collection;
@@ -15,14 +35,14 @@ import de.d3web.kernel.domainModel.qasets.QuestionNum;
 import de.d3web.kernel.domainModel.qasets.QuestionYN;
 import de.d3web.report.Message;
 import de.d3web.textParser.KBTextInterpreter;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEDomParseReport;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.webapp.preparser.KWikiReport;
 
 public class KnowWEParseRenderer {
 
-	private static ResourceBundle kwikiBundle = ResourceBundle
-			.getBundle("KnowWE_messages");
+	private static ResourceBundle kwikiBundle = D3webModule.getKwikiBundle_d3web();
 	private Map<String, String> headers = new HashMap<String, String>();
 
 	private String note = null;
@@ -250,43 +270,43 @@ public class KnowWEParseRenderer {
 	public static Map<String, String> initializeHeaderNames() {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("KWIKI_PARSER", kwikiBundle
-				.getString("KWiki.tagParser"));
+				.getString("KnowWE.header.tagParser"));
 		headers.put(KBTextInterpreter.COMPL_RULES, kwikiBundle
-				.getString("rules"));
+				.getString("KnowWE.header.rules"));
 		headers.put(KBTextInterpreter.ATTR_TABLE, kwikiBundle
-				.getString("attributeTable"));
+				.getString("KnowWE.header.attributeTable"));
 		headers.put(KBTextInterpreter.DH_HIERARCHY, kwikiBundle
-				.getString("diagnosisHierarchy"));
+				.getString("KnowWE.header.diagnosisHierarchy"));
 		headers.put(KBTextInterpreter.INDICATION_TABLE, kwikiBundle
-				.getString("indicationTable"));
+				.getString("KnowWE.header.indicationTable"));
 		headers.put(KBTextInterpreter.QCH_HIERARCHY, kwikiBundle
-				.getString("questionClassHierarchy"));
+				.getString("KnowWE.header.questionClassHierarchy"));
 		headers.put(KBTextInterpreter.QU_DEC_TREE, kwikiBundle
-				.getString("decisionTree"));
+				.getString("KnowWE.header.decisionTree"));
 		headers.put(KBTextInterpreter.QU_DIA_TABLE, kwikiBundle
-				.getString("diagnosticScores"));
+				.getString("KnowWE.header.diagnosticScores"));
 		headers.put(KBTextInterpreter.SET_COVERING_TABLE, kwikiBundle
-				.getString("setCoveringTable"));
+				.getString("KnowWE.header.setCoveringTable"));
 		headers.put(KBTextInterpreter.QU_RULE_DIA_TABLE, kwikiBundle
-				.getString("decisionTable"));
+				.getString("KnowWE.header.decisionTable"));
 		headers.put(KBTextInterpreter.QU_RULE_DIA_TABLE_NEW, kwikiBundle
-				.getString("decisionTableNew"));
+				.getString("KnowWE.header.decisionTableNew"));
 		headers.put(KBTextInterpreter.REPLACEMENT_TABLE, kwikiBundle
-				.getString("replacementTable"));
+				.getString("KnowWE.header.replacementTable"));
 		headers.put(KBTextInterpreter.CASES_TABLE, kwikiBundle
-				.getString("caseTable"));
+				.getString("KnowWE.header.caseTable"));
 		headers.put(KBTextInterpreter.SYM_ABSTRACTION_TABLE, kwikiBundle
-				.getString("symptomAbstractionTable"));
+				.getString("KnowWE.header.symptomAbstractionTable"));
 		headers.put(KBTextInterpreter.SIMILARITY_TABLE, kwikiBundle
-				.getString("similarityTable"));
+				.getString("KnowWE.header.similarityTable"));
 		headers.put(KBTextInterpreter.KNOWLEDGEBASE_CONFIG, kwikiBundle
-				.getString("KBconfig"));
+				.getString("KnowWE.header.KBconfig"));
 		headers.put(KBTextInterpreter.SET_COVERING_LIST, kwikiBundle
-				.getString("setCoveringList"));
+				.getString("KnowWE.header.setCoveringList"));
 		headers.put(KBTextInterpreter.ANNOTATED_TEXT, kwikiBundle
-				.getString("annotatedText"));
+				.getString("KnowWE.header.annotatedText"));
 		headers.put(KBTextInterpreter.CASE_LIST, kwikiBundle
-				.getString("caseList"));
+				.getString("KnowWE.header.caseList"));
 		return headers;
 	}
 
@@ -305,14 +325,14 @@ public class KnowWEParseRenderer {
 			boolean safeModeSolutions) {
 		boolean diagHeaderSet = false;
 		String diagText = kwikiBundle
-				.getString("report.no_diagnosis_generated");
+				.getString("KnowWE.report.no_diagnosis_generated");
 		for (Object object : generatedItems) {
 
 			if (object instanceof Diagnosis) {
 				if (!diagHeaderSet) {
 					diagHeaderSet = true;
 					diagText = kwikiBundle
-							.getString("report.generated_diagnoses")
+							.getString("KnowWE.report.generated_diagnoses")
 							+ ":<br>";
 				}
 				String name = ((Diagnosis) object).getText();
@@ -337,13 +357,13 @@ public class KnowWEParseRenderer {
 	private Message renderGeneratedQuestions(Collection generatedItems,
 			KnowledgeBaseManagement kbm, boolean safeMode) {
 		boolean qHeaderSet = false;
-		String qText = kwikiBundle.getString("report.no_questions_generated");
+		String qText = kwikiBundle.getString("KnowWE.report.no_questions_generated");
 		for (Object object : generatedItems) {
 
 			if (object instanceof Question) {
 				if (!qHeaderSet) {
 					qHeaderSet = true;
-					qText = kwikiBundle.getString("report.generated_questions")
+					qText = kwikiBundle.getString("KnowWE.report.generated_questions")
 							+ ":<br>";
 					;
 				}
@@ -398,7 +418,7 @@ public class KnowWEParseRenderer {
 	}
 
 	private String getHeadline(String element) {
-		String s = "not found(" + element + ")";
+		String s = kwikiBundle.getString("KnowWE.headers.notfound").replaceAll("{0}", element);
 		if (headers.containsKey(element)) {
 			s = headers.get(element);
 		}

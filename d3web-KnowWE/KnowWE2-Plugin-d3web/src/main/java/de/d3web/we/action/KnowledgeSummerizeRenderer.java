@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.action;
 
 import java.util.ArrayList;
@@ -18,14 +38,13 @@ import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.javaEnv.KnowWEAttributes;
 import de.d3web.we.javaEnv.KnowWEParameterMap;
 import de.d3web.we.taghandler.DialogLinkTagHandler;
 
 public class KnowledgeSummerizeRenderer implements de.d3web.we.action.KnowWEAction{
-
-	private static ResourceBundle kwikiBundle = ResourceBundle.getBundle("KnowWE_messages");
 
 //	public void render(Model model) throws Exception {
 //		List<KnowledgeService> ks = new ArrayList<KnowledgeService>(KnowWEUtils
@@ -71,12 +90,14 @@ public class KnowledgeSummerizeRenderer implements de.d3web.we.action.KnowWEActi
 		int cnt = ks.size();
 		int allSCcnt = 0;
 		int allRuleCnt = 0;
-				
-		String[] tblHeader = {kwikiBundle.getString("knowledge.th.name"),
-				kwikiBundle.getString("knowledge.th.xcl"),
-				kwikiBundle.getString("knowledge.th.rule"),
-				kwikiBundle.getString("knowledge.th.questions"),
-				kwikiBundle.getString("knowledge.th.start")};
+		
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(parameterMap.getRequest());
+		
+		String[] tblHeader = {rb.getString("KnowWE.KnowledgeSummerize.th.name"),
+				rb.getString("KnowWE.KnowledgeSummerize.th.xcl"),
+				rb.getString("KnowWE.KnowledgeSummerize.th.rule"),
+				rb.getString("KnowWE.KnowledgeSummerize.th.questions"),
+				rb.getString("KnowWE.KnowledgeSummerize.th.start")};
 		html.append("<table><thead><tr>");
 		for (String string : tblHeader) {
 			html.append("<td><strong>" + string + "<strong></td> \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
@@ -123,24 +144,24 @@ public class KnowledgeSummerizeRenderer implements de.d3web.we.action.KnowWEActi
 				}
 				
 				Object[] tblContent = {"<a href=\"Wiki.jsp?page=/"+parts[0]+"#"+parts[1]+"\">"+id+"</a>",
-						xclCount, ruleCount, qCount, KnowWEEnvironment.unmaskHTML(DialogLinkTagHandler.generateDialogLink(user, topic, id))};
+						xclCount, ruleCount, qCount, KnowWEEnvironment.unmaskHTML(DialogLinkTagHandler.generateDialogLink(user, parameterMap.getRequest(), topic, id))};
 				for (Object object : tblContent) {
 					html.append("<td>" + object + "</td>");
 				}
 				html.append("</tr>");
 				
 			}else {
-				html.append("<tr colspan=\"" + tblHeader.length + "\"><p class=\"error box\">" + kwikiBundle.getString("knowledge.error.service") + "</p></tr>");
+				html.append("<tr colspan=\"" + tblHeader.length + "\"><p class=\"error box\">" + rb.getString("KnowWE.KnowledgeSummerize.error.service") + "</p></tr>");
 			}
 			html.append(" \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 		}
 		html.append("</tbody></table>");
 		
 		//add summary
-		html.insert(0, "<div class=\"info box\"><a href=\"#\" onclick=\"clearInnerHTML('sumAll');\">" + kwikiBundle.getString("KnowWE.buttons.close") + "</a><br />"
-		    + "<a name=\"summarizer\"></a>" + kwikiBundle.getString("knowledge.count.kb")+ cnt + "<br />"
-		    + kwikiBundle.getString("knowledge.count.xcl") + allSCcnt + "<br />"
-		    + kwikiBundle.getString("knowledge.count.rules") + allRuleCnt + "<br />");
+		html.insert(0, "<div class=\"info box\"><a href=\"#\" onclick=\"clearInnerHTML('sumAll');\">" + rb.getString("KnowWE.buttons.close") + "</a><br />"
+		    + "<a name=\"summarizer\"></a>" + rb.getString("KnowWE.KnowledgeSummerize.count.kb")+ cnt + "<br />"
+		    + rb.getString("KnowWE.KnowledgeSummerize.count.xcl") + allSCcnt + "<br />"
+		    + rb.getString("KnowWE.KnowledgeSummerize.count.rules") + allRuleCnt + "<br />");
 		html.append("</div>");
 		return html.toString();
 	}

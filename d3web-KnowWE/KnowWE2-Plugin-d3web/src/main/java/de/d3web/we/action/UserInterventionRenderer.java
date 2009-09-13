@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.action;
 
 import java.util.ResourceBundle;
@@ -12,9 +32,10 @@ import de.d3web.we.javaEnv.KnowWEParameterMap;
 
 public class UserInterventionRenderer implements KnowWEAction {
 
+	private static ResourceBundle rb;
 
 	public String perform(KnowWEParameterMap map){
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
+		rb = D3webModule.getKwikiBundle_d3web(map.getRequest());
 		StringBuffer sb = new StringBuffer();
 		Broker broker = D3webModule.getBroker(map);
 		DialogControl dc = broker.getDialogControl();
@@ -26,7 +47,6 @@ public class UserInterventionRenderer implements KnowWEAction {
 		String renderer = map.get(KnowWEAttributes.STEP_RENDERER);
 		String action = KnowWEAttributes.ACTION_SWITCH_CASE;
 		String noAction = "KWiki_noDelegate";
-		
 		
 		sb.append("<div style='text-align:center'>");
 		if(reason != null) {
@@ -65,7 +85,6 @@ public class UserInterventionRenderer implements KnowWEAction {
 
 	private String getVerbalisation(KnowledgeServiceSession kss) {
 		String[] split = kss.getNamespace().split("\\.\\.");
-		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_messages");
 		String result = "";
 		if(split.length == 0) {
 			result = rb.getString("KnowWE.intervention.kss");
