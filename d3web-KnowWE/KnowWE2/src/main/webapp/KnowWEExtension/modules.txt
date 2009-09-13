@@ -1,7 +1,11 @@
 // List here all external modules to be used in KnowWE
 de.d3web.we.d3webModule.D3webModule
 
+de.d3web.we.plugin.comment.CommentModule
+
 // CC Extensions (does not matter if missing)
 cc.wiki.flow.FlowchartPlugin
 
 de.d3web.we.xclgenerator.XCLGeneratorModule
+de.d3web.we.plugin.TiRex.TiRexModule
+de.d3web.we.plugin.calendar.CalendarModule

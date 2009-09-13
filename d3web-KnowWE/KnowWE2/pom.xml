@@ -12,7 +12,6 @@
 	<name>KnowWE2</name>
 	<version>0-SNAPSHOT</version>
 	<build>
-		<defaultGoal>package</defaultGoal>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

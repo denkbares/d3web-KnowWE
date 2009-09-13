@@ -15,6 +15,425 @@
 *    `    `~'      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      `~'    '		*
 *****************************************************************************
 
+===== 20090913 SVN migration - alegler ======================
+	* Splitting off Java classes into KnowWE-core [This is the Webapp part]
+
+build_20090911_2015 JoeD
+	* Removed old render Method from KnowWEDomRenderer
+	* Changed all remaining classes to the new method
+
+build_20090911_1120 astriffler
+	* XMLSectionFinder now also finds single-tag XML like <include src="..." />
+
+build_20090911_0240 furth
+	* minor changes in general.css and KnowWE.js due to 
+	  changes in TestSuite-Taghandler
+
+build_20090910_1410 JoeD
+	* KnowWESectionfinderTests added
+
+build_20090910_1130 fhaupt
+    * fixed linkrendering in SPARQL-Defaultrenderer
+    
+build_20090907_1610 astriffler
+	* some fixes and changes in the UpdatingMechanismTest
+	* minor refactoring
+
+build_20090903_0915 astriffler
+	* implemented UpdatingMechanismTest (checks if old Sections get used in 
+	new article)
+	
+build_20090902_1200 MFreiberg
+	* changed HTMLdialog Button from "Dialog starten/Dialog schliessen" into
+	  "Interview"
+
+build_20090826_0845 astriffler
+	* some changes due to changes in KnowWE2-Plugin-d3web
+
+build_20090823_2300 MFreiberg
+	* refactored general.css to create a new dialog styling
+	* refactored HTMLdialog.js to adapt dialog behaviour
+
+build_20090821_1630 reutelshoefer
+	* introduced global types 
+	(global types are added artificially to any children-types list before KDOM parsing)
+	* introduced new render-method in KnowWEDomRenderer
+	(passing a StringBuilder object prevents creation of unnecessary String/StringBuffer/StringBuilder
+	object for every KDOM-node. => (only minor) speed-up of page rendering (~15%))
+	* old render-method is deprecated (but still working)
+	* implemented new rendering method on many types
+	* deleted DefaultDelegateRenderer
+	* renamed SpecialDelegateRenderer to DelegateRenderer
+	* added RegexSectionFinderWithIDs
+	* some refactoring on table types
+
+build_20090821_1200 astriffler
+	* fixed bug in class SectionID concerning includes
+
+build_20090815_1450 JoeD
+	* refactored all SectionFinder derived classes
+	  to the ending ...SectionFinder
+
+build_20090814_1535 JoeD
+	* many changes in SectionFinder classes concerning:
+	  - Code formatting
+	  - changes due to tests
+	  - Refactoring
+
+build_20090811_1535 JoeD
+	* XCLRelation highlighting working again
+	* some changes in KnowWE-Plugin-d3web due to that
+
+build_20090810_1730 JoeD
+	* added errorMessages to Tests
+
+build_20090803_1150 ziegler
+	* added simplified Logging class
+
+build_20090731_1405 JoeD
+	* RenamingToolTest rewritten
+
+build_20090731_1120 JoeD
+	* some Cleanup in TypeBrowser an Renaming-Tool
+
+build_20090731_1100 JoeD
+	* TypeBrowser now WordBased
+
+build_20090731_0245 astriffler
+	* implemented exclude mechanism for recycling
+	-> use objectType.setNotRecyclable(true) to exclude
+	   an ObjectType from recycling
+	   
+build_20090729_1235 JoeD
+	* Renaming-Tool now word based
+	* changes in Core-classes due to that
+	* Some changes in KnowWEObjectTypeUtils/-Set
+
+build_20090728_1520 JoeD
+	* Refactoring Concerning KnowWEObjectTypeUtils
+
+build_20090728_1220 astriffler
+	* some cleaning and changes to the recycling mechanism
+	-> fixed bug in QuickEdit
+	
+build_20090727_1515 JoeD
+	* Some Commenting in different Classes
+
+build_20090727_1440 JoeD
+	* Basic Renaming-Tool test
+	* Still to come: ContextTest for Renaming-Tool
+	* Some Commenting in KnowWEObjectTypeUtils
+	
+build_20090727_1345 JoeD
+	* Some Refactoring in KnowWEObjectTypeUtils
+	* changes due to that in KnowWEEnvironment
+
+build_20090727_1130 JoeD
+	* ReplaceKdomNodeTest now validates Article
+
+build_20090725_2305 astriffler
+	* Quickedit now should work with recycling mechanism
+
+build_20090725_1130 astriffler
+	* fixed several bugs concerning recycling mechanism
+	* there still are some issues with Quickedit that
+	  hopefully get fixed soon 
+	  
+build_20090723_1230 apreu
+	* fix for ResourceBundle Locale problem
+	* don't save ResourceBundle anymore
+
+build_20090722_1845 apreu
+	* added getLocale() to KnowWEWikiConnector
+	* changed getKwikiBundle(.)
+	* import ResourceBundle in each action and taghandler with getKwikiBundle(.)
+	* added ResourceBundle to some taghandlers
+	* structured properties-file -> put some translation from KnowWE2 to d3web
+
+build_20090721_1605 JoeD
+	* ReplaceKdomNodeTest
+	* some changes in classes needed for that
+
+build_20090721_1540 JoeD
+	* Fixed XMLSectionFinderTest
+	
+build_20090721_1415 JoeD
+	* Fixed NullPointer in SectionizerTest
+	
+build_20090721_1345 reutelshoefer
+	* fixed recursive methods on type-cycles:
+	* getAllChildrenTypesRecursive
+	* clearTypeStoreRecursivly
+
+build_20090720_1630 reutelshoefer
+	* added null-check in TableLineHandler (for lines with no cells)
+
+build_20090720_1300 smark
+    * fixed bug: TableCells containing squared brackets are now parsed correctly
+
+build_20090720_1250 astriffler
+	* implemented algorithm for recycling KDOM and SectionStores
+	  when articles get edited
+	  -> decreases time needed to rebuild an article after editing
+	* some refactoring based on the implementation of the algorithm
+	* new alternative findSuccessor methods in Section class
+	* some improvements in the include mechanism
+	
+build_20090727_1800 reutelshoefer
+	* some refactoring of ContextManager
+	* jobas style changes for link colors
+	* some refactoring at table types (+TableColumnContext)
+
+build_20090716_1600 JoeD
+	* XMLSectionFinder Test
+	* Due to that introducing
+		 new GenericXMLObjectType and GenericXMLContent
+	* Some Changes for Tests
+
+build_20090714_1900 reutelshoefer
+	* some refactoring: TableUtils & KnowWEObjectTypeUtils
+
+build_20090714_1600 reutelshoefer
+	* some beautification of tables  (line-header/col-header)
+
+build_20090707_1940 astriffler
+	* fixed bug in AllTextFinder concerning highlighting of includes
+
+build_20090707_1540 JoeD
+	* Classpath for tests
+
+build_20090706_1510 JoeD
+	* Test for Sectionizer
+
+build_20090706_1520 reutelshoefer
+	* some refactoring of sparql-tag-rendering
+
+build_20090630_1900 apreu
+	* changed interface:
+		- KnowWEUserContext: added getHttpRequest()
+		- KnowWEWikiConnector: added userCanEditPage(articlename, HttpRequest)
+
+build_20090630_1640 astriffler
+	* interface changes / refactoring:
+	  ~ SectionFinder:
+		- removed KnowWEObjectType from constructor
+		- removed arguments KnowledgeRepresentationManager, KnowWEDomReport 
+		  and  IDGenerator from method lookForSection(...)
+		- replaced argument Section tmp with String text. The new String
+		  text equals the old tmp.getOriginalText()
+		- the removed arguments are now available via the KnowWEArticle,
+		  which is available via the Section father
+		- changed return type from List<Section> to List<SectionFinderResult>
+		
+	  ~ SectionFinderResult:
+		- a List of these Objects are the new return type of the SectionFinders
+		- in most of the cases the SectionFinderResult just contains the 
+		  indices of the start and the end of the subsection inside the String 
+		  text, given in method lookForSection(...) inside the SectionFinder
+		- if a specific ID is needed for a new Section, there is an alternative
+		  constructor allowing the attribute SectionID (see below)
+		- for ANTLR generated KDOM subtrees there is an new class
+		  ExpandedSectionFinderResult. It allows declaration of ObjectTypes
+		  and Children to fit the needs of ANTLR builders
+		
+	  ~ KnowWEDomRenderer:
+		- removed arguments String web and String topic from method render(...)
+		- the removed arguments are available via the KnowWEArticle, which
+		  is available via the Section sec
+		  
+	  ~ Section: 
+		- constructor and createSection methods are now only visible
+		  inside the kdom-package
+		- removed KnowledgeRepresentationManager, KnowWEDomReport and 
+		  IDGenerator from constructor and instead added KnowWEArticle
+		  and SectionID
+		- the removed arguments are now available via the KnowWEArticle
+		
+	  ~ SectionID: 
+		- ID assignment now works with the new class SectionID. With the
+		  Article's SectionIDGen it guarantees unique IDs and now also
+		  handles ID suffixes like _XML or _content
+		
+	  ~ KnowledgeRepresentationManager:
+		- this class now is a singleton and must be called via .getInstance()
+	
+	* lots of changes and cleaning up due to the interface changes / refactoring
+	* improved performance of SectionIDGen (former IDGenerator)
+	* XMLSectionFinder is now able to find XML Sections without a specific
+	  tag name. The actual tag names get saved in the attribute map
+	* AbstractXMLObjectType comes with a new constructor without the argument
+	  String tagName (using the above described new functionality of the 
+	  XMLSectionFinder)
+	
+build_20090630_1400 smark
+    * new action: choosen answers from the dialog can be saved as XCL model
+
+build_20090626_1505 JoeD
+	* KnowWEUtils provides method for 
+	  getting a father of a section by class
+
+build_20090625_2130 apreu, mdiez
+	* added to modules: CalendarModule
+	* added to taghandler: CalendarHandler
+
+build_20090625_1840 reutelshoefer
+	* trimming attribute and value strings of taghandler
+	before inserting into map (often began with space)
+
+build_20090625_1205 furth
+	* Added Messages for Testsuite-Section and TestsuiteTaghandler
+	* Added CSS for TestsuiteTaghandler
+
+build_20090624_1720 JoeD
+	* Some Refactoring for XCLRelation-Highlighting
+	* Introducing Highlighting for RulesSection
+	* Some changes in highlightNode in KnowWE.js
+
+build_20090623_1415 reutelshoefer
+	* AbstractXMLObjectType.getAttributeMapFor(Section s) has become static
+
+build_20090622_1340 legler
+	* Fixed standalone ant task to work on *nix platforms
+	* Added 'nocvs' task for pulling a Tomcat zipfile from apache.org
+	* Added start/shutdown shellscripts, tested on Gentoo, Ubuntu, Fedora, 
+	  OpenSuse, OpenSolaris and OS X
+
+build_20090617_2015 mdiez
+	* corrected "tag not found" throw in TagRenderer
+
+build_20090617_1640 JoeD
+	* Some Code improvements
+
+build_20090617_1520 reutelshoefer
+	* refactoring of tagHandler.render() method
+	* parameter String value becomes Map<String,String> values
+
+build_20090617_1515 JoeD
+	* Improved Performance of XCLRelation Highlighting
+
+build_20090616_1115 smark
+    * fixed bug in KnowWE.js concerning quick editing of tables
+    * some changes at quick-edit mode:
+        * page is locked for other users, when mode is enabled
+        * page permissions are observed
+        * checks if page is worked on
+    
+build_20090615_1400 reutelshoefer
+	* updated core-pages for a default-knowwe installation
+
+build_200906 mdiez, apreu
+	* added Comment-Plugin to modules.txt
+
+build_20090612_1300 smark
+    * added new build script: produces stand-alone KnowWE version
+      (only windows, other os are still in work)
+
+build_20090612_1240 astriffler
+	* some changes in the package kdom.table to make Tables more inheritable
+	* moved method getMessages to AbstractKnowWEObjectType to be able to use
+	  it with non-kopic-sections 
+	* some refactoring
+	
+build_20090612_1020 reutelshoefer
+	* added quick fix in KnowWEFacade.performAction()
+	* that also searches the action-map
+
+build_20090611_2045 smark
+    * changed KnowWEArticleManger.appendTextReplaceNode() due the fact that a 
+      leaf of the KDOM is not necessarily PlainText
+
+build_20090610_1700 reutelshoefer
+	* moved TagHandlerType from KnowWE2-Plugin-d3web to KnowWE2
+
+build_20090610_0415 astriffler
+	* reviseSubtree in AbstractKnowWEObjectType is now final
+	-> forces use of ReviseSubTreeHandler
+	* moved functionality of reviseSubtree methods to ReviseSubTreeHandlers
+
+build_20090608_1030 reutelshoefer
+	* added ListInstalledModules tagHandler
+	* added DescribeModule tagHandler
+	* small modification of KnowWEObjectTypeBrowserHandler (can pre-select type)
+
+build_20090605_1800 JoeD
+	* Some Refactoring concerning SetCoverlingLists and Highlighting
+
+build_20090529_1740 legler
+	* Adding a little search engine, a link renderer, translated strings and
+	  some CSS for the ObjectInfoPage
+
+build_20090529_1500 reutelshoefer
+	* changed attachTextOrigin
+
+build_20090528_2015 reutelshoefer
+	* fixed KnowWEDownload.jsp
+
+build_20090528_1830 smark
+    * fixed missing url parameter in KnowWETable.onSave
+
+build_20090528_1615 haupt
+	* fixed directorylock warning at startup. 
+	* minor changes
+
+build_20090528_1050 reutelshoefer
+ 	* fixed memory leak
+
+build_20090528_0900 reutelshoefer
+	* ContextManager now uses SectionInfoStorage to allow GCing of old Contexts/Sections
+
+build_20090527_1650 haupt
+	* renamed UpperOntology2 -> UpperOntology
+	* some beautifying
+
+build_20090527_1800 reutelshoefer
+	* reorganized storing of contexts
+	* are hashed by article
+	* are reset when article is reparsed
+
+build_20090527_1610 reutelshoefer
+	* moved some helper methods from PropertyManager to OWLHelper
+
+build_20090527_1130 smark
+    * fixed ArrayindexOutOfBoundsException in UpdateTableKDOMNodes
+    * changed error message in SetQuickEditFlagAction
+    * fixed default value selection in TableEdit mode
+
+build_20090527_1045 smark
+    * some fixes in RenamingTool
+    * added description for RenamingTagHandler
+
+build_20090527_0845 smark
+    * hotfix for #28
+
+build_20090527_0050 mdiez
+	*added new entry in KnowWE_config
+
+build_20090526_2100 smark
+    * fixed logo bouncing
+
+build_20090526_1945 smark
+    * renamed KnOfficeUploadManger to KnOfficeUploadHandler, moved to KnowWE-Plugin-d3web 
+    * introduced UploadHandler, UploadManager
+
+build_20090526_1520 haupt
+	* moved getComparatorCache to OwlHelper
+
+build_20090525_0910 JoeD
+	* XCLRelations in CoveringLists now highlighted according
+	  to given answers. For this new Renderers created and classes changed.
+	* KnowWE.js: highlightNode() now general usable 
+	             with KDomSectionHighlighterRenderer
+	* FontColorBackgroundRenderer introduced. Can replace FontColorRenderer
+	  and preserves highlighting functionality.
+	* XCLRelation-id storage now over KnowWEUtils
+	* SetCoveringList now rendered with SetCoveringListSingleListRenderer.
+	  cause the <pre> tag from JSPWiki avoids inserting new html correctly
+
+build_20090525_0100 haupt
+	* moved some helper functions from UpperOntolgy to OwlHelper
+	* fixed instanceReasoning
+	* fixed owldownload.jsp
+
 build_20090521_0330 astriffler
 	* AbstractXMLObjectType now uses the new KnowWEUtils storage for
 	  XML attributes
@@ -53,7 +472,7 @@ build_20090519_1115 reutelshoefer
 build_20090513_1335 astriffler
 	* changed more Strings to StringBuilder
 
-build_20090513_1220
+build_20090513_1220 JoeD
 	* Getting of KnowledgeBase-Ids for XCLRelations now in
 		XCLRelation
 

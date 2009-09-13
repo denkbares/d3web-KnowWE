@@ -2,89 +2,103 @@
  * A "class" for handling Ajax requests. 
  */
 function KnowWEAjax( options ) {
-	var http = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-	var oDefault = {
-		method : 'get',
-		url : 'KnowWE.jsp',
+    var http = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    var oDefault = {
+        method : 'get',
+        url : 'KnowWE.jsp',
         headers : {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'text/javascript, text/html, application/xml, text/xml, */*'
         },
-		fn : handleResponse,
+        fn : handleResponse,
         encoding : 'utf-8',
-        urlEncoded : true,		
-		async : true,
-		response : {
-		    ids : [],
-		    action : 'insert' /* replace|insert|update|none|create */,
-		    fn : false	
-		},
-		create : {
-			id : '',
-			fn : false
-		}
-	}; 
-	oDefault = enrich( options, oDefault );
-	var headers = new Hash(oDefault.headers);
-	      
-	/* get max.length 512 byte, check and set post if bigger*/
-	if( oDefault.url.getBytes() > 512)
-	    oDefault.url = 'post';
-		
+        urlEncoded : true,      
+        async : true,
+        response : {
+            ids : [],
+            action : 'insert' /* replace|insert|update|none|create|string */,
+            fn : false  
+        },
+        create : {
+            id : '',
+            fn : false
+        }
+    }; 
+    oDefault = enrich( options, oDefault );
+    var headers = new Hash(oDefault.headers);
+          
+    /* get max.length 512 byte, check and set post if bigger*/
+    if( oDefault.url.getBytes() > 512)
+        oDefault.url = 'post';
+
     /* sends the request */
-	this.send = function() {
-		if( !http ) return;
-		
+    this.send = function() {
+        if( !http ) return;
+        
         if (oDefault.urlEncoded){
             var encoding = (oDefault.encoding) ? '; charset=' + oDefault.encoding : '';
             headers.set('Content-type', 'application/x-www-form-urlencoded' + encoding);
-        }		
-		
-		http.open( oDefault.method.toUpperCase(), oDefault.url, oDefault.async );
+        }       
+        
+        http.open( oDefault.method.toUpperCase(), oDefault.url, oDefault.async );
         
         headers.each(function(v,k){
             http.setRequestHeader(k, v);
         });
-		
+        
         /*http.setRequestHeader( 'Content-Type', oDefault.header );
         http.setRequestHeader( 'Content-length', oDefault.url.length );
         http.setRequestHeader( 'Connection', 'close' );*/
         http.onreadystatechange = handleResponse;
         http.send(oDefault.method);
-	}
-	
-	/* 
-	 * Handles the response from the Ajax request. If the Ajax request ended 
-	 * without errors the action defined in oDefault.response.action is executed.
-	 */
-	function handleResponse() {
-		if ((http.readyState == 4) && (http.status == 200)) {	
-			var ids = oDefault.response.ids;
-			var action = oDefault.response.action;
-			switch ( action ) {
-				case 'insert':
-				    var max = ids.length;
-				    for ( var i = 0; i < max; i++ ) {
-						    $(ids[i]).innerHTML = http.responseText;
-				    }
-					break;
-				case 'replace':
-				    replace( ids, http.responseText )
-				    break;
-				case 'create':
-				    if( oDefault.create ){
-				    	var el = oDefault.create.fn.call();
-				    	el.innerHTML = http.responseText;
-				        $( oDefault.create.id).insertBefore( el, $( oDefault.create.id ).getChildren()[0]);
-				    } 
-				    break;
-				default:
-					break;
-			}
-			if( !oDefault.response.fn ) return;
-			oDefault.response.fn.call();
-		}  
-	}
+    }
+    
+    this.getResponse = function() {
+        return http.responseText;
+    }
+    
+    /* 
+     * Handles the response from the Ajax request. If the Ajax request ended 
+     * without errors the action defined in oDefault.response.action is executed.
+     */
+    function handleResponse() {
+        if ((http.readyState == 4) && (http.status == 200)) {
+            var ids = oDefault.response.ids;
+            var action = oDefault.response.action;
+            switch ( action ) {
+                case 'insert':
+                    var max = ids.length;
+                    for ( var i = 0; i < max; i++ ) {
+                        $(ids[i]).innerHTML = http.responseText;
+                    }
+                    break;
+                case 'replace':
+                    replace( ids, http.responseText );
+                    break;
+                case 'create':
+                    if( oDefault.create ){
+                        var el = oDefault.create.fn.call();
+                        el.innerHTML = http.responseText;
+                        $( oDefault.create.id).insertBefore( el, $( oDefault.create.id ).getChildren()[0]);
+                    } 
+                    break;
+                case 'string':
+                    if( http.responseText.startsWith('@info@')){
+                         var info = new Element('p', { 'class' : 'box info' });
+                         info.setHTML( http.responseText.replace(/@info@/, '') );
+                         info.injectTop($( ids[0]));
+                    }
+                    if( http.responseText.startsWith('@replace@')){
+                         replace( ids, http.responseText.replace(/@replace@/, '') );	
+                    }
+                    break;
+                default:
+                    break;
+            }
+            if( !oDefault.response.fn ) return;
+            oDefault.response.fn.call();
+        }  
+    }
 }
 
 
@@ -105,43 +119,46 @@ var kwikiEvent;
  */
 var SolutionState = 
 {
-	update : function() 
+    update : function() 
     {
-    	var params = {
-    		renderer : 'KWiki_dpsSolutions',
-    		KWikiWeb : 'default_web'
-    	}
+        var params = {
+            renderer : 'KWiki_dpsSolutions',
+            KWikiWeb : 'default_web'
+        }
         SolutionState.execute( getURL( params ) );
     },
     clear : function()
     {
-    	var params = {
-    		action : 'KWiki_dpsClear',
-    		KWikiWeb : 'default_web'
-    	}
+        var params = {
+            action : 'KWiki_dpsClear',
+            KWikiWeb : 'default_web'
+        }
         SolutionState.execute( getURL( params ) );
     },
     findings : function()
     {
-    	var params = {
-    		renderer : 'KWiki_userFindings',
-    		KWikiWeb : 'default_web'
-    	}
+        var params = {
+            renderer : 'KWiki_userFindings',
+            KWikiWeb : 'default_web'
+        }
         kwiki_window( getURL(params) );
         /*SolutionState.execute( url );*/
     },
     execute : function( url )
     {
-    	var id = 'sstate-result';
-		var options = {
-			url : url,
-		    response : {
-			    ids : [ id ]
-			}
-    	}
+        var id = 'sstate-result';
+        var options = {
+            url : url,
+            response : {
+                ids : [ id ]
+            }
+        }
         if( $('sstate-result') ) {
             new KnowWEAjax( options ).send();
         }
+        
+        // Called to update the Relations in CoveringLists
+        ReRenderKnowWESectionContent.update();
     }
 }
 
@@ -149,9 +166,9 @@ var SolutionState =
  * Handles in view editable tables
  */
 var KnowWETable = {
-    map : "",	
+    map : "",   
     init : function(){
-    	this.map = new Hash();
+        this.map = new Hash();
         if( $$('.table-edit') )
         {
             var elements = $$(".table-edit input[type=submit]");
@@ -167,72 +184,72 @@ var KnowWETable = {
         }
     },
     onChange : function() {
-        KnowWETable.map.set(this.id, this.name + "-" + this.value);
+        KnowWETable.map.set(this.id, this.value);
     },
     onSave : function(){
         var id = this.id;
-    	var namespace = '';
+        var namespace = '';
         KnowWETable.map.each(function(value, key){
-            namespace += key + "-" + value + "::\n";
+            namespace += key + ";-;" + value + "::";
         });
         namespace = namespace.substring(0, namespace.lastIndexOf('::'));
 
-    	var params = {
-    		action : 'UpdateTableKDOMNodes',
-    		TargetNamespace : namespace,
-    		KWiki_Topic : gup('page')
-    	}
-    	var options = {
-        	url : getURL ( params ),
-        	response : {
-        		action : 'none',
-        		fn : function(){QuickEdit.enable(id, null);}
-        	}
+        var params = {
+            action : 'UpdateTableKDOMNodes',
+            TargetNamespace : encodeURIComponent(namespace),
+            KWiki_Topic : gup('page')
+        }
+        var options = {
+            url : getURL ( params ),
+            response : {
+                action : 'none',
+                fn : function(){QuickEdit.enable(id, null);}
+            }
         }
         new KnowWEAjax( options ).send();
     }
 }
 
 var QuickEdit = {
-	enable : function( nodeID, fn ){
-		var params = {
-			action : 'SetQuickEditFlagAction',
-			TargetNamespace : nodeID,
-			KWiki_Topic : gup('page')
-		}	
-		
-		var options = {
-			url : getURL( params ),
-		    response : {
-		    	action : 'replace',
-			    ids : [nodeID],
-			    fn : fn
-			}
-		}
-		new KnowWEAjax( options ).send();
-	},
-	doTable : function( nodeID ){
-	    QuickEdit.enable( nodeID, function(){KnowWETable.init()} );	
-	}
+    enable : function( nodeID, fn ){
+        var params = {
+            action : 'SetQuickEditFlagAction',
+            TargetNamespace : nodeID,
+            KWiki_Topic : gup('page')
+        }   
+        
+        var options = {
+            url : getURL( params ),
+            response : {
+                action : 'string',
+                ids : [nodeID],
+                fn : fn
+            }
+        }
+        new KnowWEAjax( options ).send();
+    },
+    doTable : function( nodeID ){
+        QuickEdit.enable( nodeID, function(){KnowWETable.init()} ); 
+    }
 }
 
 
 
 
 function doKbGenerating( jarfile ) {
-	var params = {
-		renderer : 'GenerateKBRenderer',
-		NewKBName : $( jarfile ).value,
-		AttachmentName : jarfile
-	}
-	
-	var options = {
-		url : getURL( params ),
-		response : {
-			ids : ['GeneratingInfo']
-		}
-	}
-	new KnowWEAjax( options ).send();
+    var params = {
+        renderer : 'GenerateKBRenderer',
+        NewKBName : $( jarfile ).value,
+        AttachmentName : jarfile
+    }
+    
+    var options = {
+        url : getURL( params ),
+        response : {
+            ids : ['GeneratingInfo']
+        }
+    }
+    new KnowWEAjax( options ).send();
 }
 
 
@@ -251,7 +268,7 @@ function setQuickEditFlag( nodeID , topic ) {
 }
     
 function setQuickEditFlagDone() {
-	document.location.reload();
+    document.location.reload();
 }
     
     function cellChanged(nodeID,topic) {
@@ -276,55 +293,94 @@ function setQuickEditFlagDone() {
         //alert(kBUpload_xmlhttp.responseText);
     }
     
-	function doTiRexToXCL(topicname) {
-	
-		var params = {
-			renderer : 'TirexToXCLRenderer',
-			TopicForXCL : topicname
-		}
-	
-		var options = {
-			url : getURL( params ),
-			response : {
-				ids : ['GeneratingTiRexToXCLInfo']
-			}
-		}
-		new KnowWEAjax( options ).send();
-	}
+    function doTiRexToXCL(topicname) {
     
-    function highlightNode(node,topic) {
-    	
-    	var params = {
-    		action : 'HighlightNodeAction',
-    		Kwiki_Topic : topic,
-    		KWikiJumpId : node
-    	}
-    	
-    	var options = {
-    		url : getURL( params ),
-    		response : {
-    			action : 'update',
-    			ids : [],// test if it works without ids
-    			fn : (function() {
-    					// get the uniqueMarker marking the last marked element
-    					var curMark = document.getElementById("uniqueMarker");
-    					
-    					// remove the last marker
-    					if (curMark != null) {
-    						curMark.id = "";
-    						curMark.style.backgroundColor = "";
-    					}
-    					
-    					// set the new Marker
-			    	 	var element = document.getElementById(node);
-			    	 	if (element != null) {
-			    	 		element.firstChild.style.backgroundColor = "yellow";
-			    	 		element.firstChild.id = "uniqueMarker";	
-			    	 	}		    	 	
-					 })()
-    		}
-    	}
-    	new KnowWEAjax( options ).send();
+        var params = {
+            renderer : 'TirexToXCLRenderer',
+            TopicForXCL : topicname
+        }
+    
+        var options = {
+            url : getURL( params ),
+            response : {
+                ids : ['GeneratingTiRexToXCLInfo']
+            }
+        }
+        new KnowWEAjax( options ).send();
+    }
+    
+    function highlightXCLRelation(node, topic, depth, breadth) {
+    	ReRenderKnowWESectionContent.updateForXCLRelation(node, topic, depth, breadth);		
+    }
+    
+    function highlightRule(node, topic, depth, breadth) {
+        
+        // Restore the Highlighting that was before
+        var restore = document.getElementById('uniqueMarker');
+        if (restore != null) {
+            ReRenderKnowWESectionContent.updateNode(restore.className, topic);
+        }
+		highlightNode(node, topic, depth, breadth);
+    }
+    
+    /*
+     * You need a span with an id to use this.
+     * there the uniqueMarker is located.
+     * node is the tag that has the marker under it.
+     * depth means the tag that has the marker as firstchild.
+     * Note: if a node has more than 1 element this function.
+     * will not work because it cannot foresee how the html-tree
+     * is build
+     */
+    function highlightNode(node, topic, depth, breadth) {
+        
+        var params = {
+            action : 'HighlightNodeAction',
+            Kwiki_Topic : topic,
+            KWikiJumpId : node
+        }
+        
+        var options = {
+            url : getURL( params ),
+            response : {
+                action : 'update',
+                ids : [],
+                fn : (function() {
+//                        // get the uniqueMarker marking the last marked element
+//                        var curMark = document.getElementById("uniqueMarker");
+//                        
+//                        // remove the last marker
+//                        if (curMark != null) {
+//                            curMark.id = "";
+//                            curMark.style.backgroundColor = "";
+//                        }
+                        
+                        // set the new Marker: Get the root node
+                        var element = document.getElementById(node);
+                        
+                        // get to the depth given.
+                        for (var i = 0; i < depth; i++) {
+                            element = element.firstChild;
+                        }
+                        
+                        // get to the given breadth
+                        for (var j = 0; j < breadth; j++) {
+                        	var test = element.nextSibling;                       	
+                        	if (test != null)
+                        		element = element.nextSibling;
+                        }
+                                              
+                        if (element != null) {
+                            element.firstChild.style.backgroundColor = "yellow";
+                            element.firstChild.id = "uniqueMarker";
+                            element.firstChild.className = node;
+                            element.scrollIntoView(true);
+                        }
+                        
+                     })()
+            }
+        }
+        new KnowWEAjax( options ).send();
     }
 //        try {  
 //            tiRexToXCL_xmlhttp = window.XMLHttpRequest 
@@ -335,8 +391,8 @@ function setQuickEditFlagDone() {
 //            tiRexToXCL_xmlhttp.open("Get", tiRexToXCL_poll_url); 
 //            tiRexToXCL_xmlhttp.send(null);
 //        } catch (e) {
-//        	alert(e);
-//       	}
+//          alert(e);
+//          }
 //    }
 //    
 //    function nodeHighlightRendererSet() {
@@ -563,103 +619,103 @@ var ns4=document.layers;
 var canhide=false;
 
 function setCorrectPositionAndShow(menuobj, e) {
- 	menuobj.thestyle=(ie4||ns6)? menuobj.style : menuobj;
- 	eventX = e.layerX;
- 	eventY = e.layerY;
- 	menuobj.thestyle.left=(eventX - menuobj.contentwidth) + "px";
- 	menuobj.thestyle.top = eventY + "px";
+    menuobj.thestyle=(ie4||ns6)? menuobj.style : menuobj;
+    eventX = e.layerX;
+    eventY = e.layerY;
+    menuobj.thestyle.left=(eventX - menuobj.contentwidth) + "px";
+    menuobj.thestyle.top = eventY + "px";
     menuobj.thestyle.visibility="visible";
  }
 
 function switchTypeActivation(size) {
-	try {
-		var j = null;
-		var params = {
-			renderer : 'KnowWEObjectTypeActivationRenderer',
-			KnowWeObjectType : (function () {
-				var test = "";
-				for (i=0;i<size;i++) {
-					if (document.typeactivator.Auswahl.options[i].selected) {
-						test += document.typeactivator.Auswahl.options[i].value;
-						j = i;
-					}			
-				}
-				return test;
-			})()
-    	}
-		
-    	var options = {
-        	url : getURL ( params ),
-		    response : {
-		    	action : 'update',
-			    ids : [],
-			    fn : (function() {
-			    	 	var element = document.typeactivator.Auswahl.options[j];
-			    	 	if (element.style.color == "red") {
-			    	 		element.style.color = "green";
-			    	 	} else {
-			    	 		element.style.color = "red";
-			    	 	}
-					 })()
-		    }
-    	}
-		new KnowWEAjax( options ).send();
-	} catch (e) {alert(e);}
+    try {
+        var j = null;
+        var params = {
+            renderer : 'KnowWEObjectTypeActivationRenderer',
+            KnowWeObjectType : (function () {
+                var test = "";
+                for (i=0;i<size;i++) {
+                    if (document.typeactivator.Auswahl.options[i].selected) {
+                        test += document.typeactivator.Auswahl.options[i].value;
+                        j = i;
+                    }           
+                }
+                return test;
+            })()
+        }
+        
+        var options = {
+            url : getURL ( params ),
+            response : {
+                action : 'update',
+                ids : [],
+                fn : (function() {
+                        var element = document.typeactivator.Auswahl.options[j];
+                        if (element.style.color == "red") {
+                            element.style.color = "green";
+                        } else {
+                            element.style.color = "red";
+                        }
+                     })()
+            }
+        }
+        new KnowWEAjax( options ).send();
+    } catch (e) {alert(e);}
 }
 
 function searchTypes(size) {
-	try {
+    try {
 
-		var params = {
-			renderer : 'KnowWEObjectTypeBrowserRenderer',
-			TypeBrowserParams : (function () {
-				var test = "";
-				for (i=0;i<size;i++) {
-					if (document.typebrowser.Auswahl.options[i].selected) {
-						test += document.typebrowser.Auswahl.options[i].value;
-					}			
-				}
-				return test;
-			})()
-    	}
-    	
-    	/*for (i=0;i<size;i++) {
-			if (document.typebrowser.Auswahl.options[i].selected) {
-				params += "&TypeBrowserParams"+"="+document.typebrowser.Auswahl.options[i].value;
-			}			
-		}*/
-		console.log( getURL(params));
-    	var options = {
-        	url : getURL ( params ),
-		    response : {
-		    	action : 'insert',
-			    ids : ['TypeSearchResult']
-			}
+        var params = {
+            renderer : 'KnowWEObjectTypeBrowserRenderer',
+            TypeBrowserParams : (function () {
+                var test = "";
+                for (i=0;i<size;i++) {
+                    if (document.typebrowser.Auswahl.options[i].selected) {
+                        test += document.typebrowser.Auswahl.options[i].value;
+                    }           
+                }
+                return test;
+            })(),
+        }
+        
+        /*for (i=0;i<size;i++) {
+            if (document.typebrowser.Auswahl.options[i].selected) {
+                params += "&TypeBrowserParams"+"="+document.typebrowser.Auswahl.options[i].value;
+            }           
+        }*/
+//        console.log( getURL(params));
+        var options = {
+            url : getURL ( params ),
+            response : {
+                action : 'insert',
+                ids : ['TypeSearchResult']
+            }
         }
         new KnowWEAjax( options ).send();
-		
-	} catch (e) {alert(e);}
+        
+    } catch (e) {alert(e);}
 }
 
 function sendRenameRequest() {
-	
-	var params = {
-		action : 'RenamingRenderer',
-		TargetNamespace : $('renameInputField').value,
-		KWikiFocusedTerm : $('replaceInputField').value,
-		ContextPrevious : $('renamePreviousInputContext').value,
-		ContextAfter : $('renameAfterInputContext').value,
-		CaseSensitive :$('search-sensitive').checked
-	}
-	
-	var options = {
-		url : getURL(params),
-		response : {
-			ids : ['rename-result']
-		}
-	}
-	new KnowWEAjax( options ).send();
-	/*
+    
+    var params = {
+        action : 'RenamingRenderer',
+        TargetNamespace : $('renameInputField').value,
+        KWikiFocusedTerm : $('replaceInputField').value,
+        ContextPrevious : $('renamePreviousInputContext').value,
+        ContextAfter : $('renameAfterInputContext').value,
+        CaseSensitive :$('search-sensitive').checked
+    }
+    
+    var options = {
+        url : getURL(params),
+        response : {
+            ids : ['rename-result']
+        }
+    }
+    new KnowWEAjax( options ).send();
+    /*
      try {        
          var renameText = document.getElementById("renameInputField").value; 
          var replacementText = document.getElementById("replaceInputField").value;
@@ -681,71 +737,52 @@ function sendRenameRequest() {
 
 // gets the additional text, displayed in the match column of the TypeBrowser. 
 function getAdditionalMatchTextTypeBrowser(atmUrl, query){
-    try{
-        kwiki_xmlhttp2 = window.XMLHttpRequest ? new XMLHttpRequest()
-            : new ActiveXObject("Microsoft.XMLHTTP");
-
-        var kwiki_poll_url = "KnowWE.jsp";
-        var params = 'TypeBrowserQuery='+query
-        	 + "&action=KnowWEObjectTypeBrowserRenderer"
-             +'&ATMUrl='+atmUrl;
-        
-        kwiki_xmlhttp2.open("POST", kwiki_poll_url,false);
-        kwiki_xmlhttp2.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-        kwiki_xmlhttp2.setRequestHeader("Content-length", params.length);
-        kwiki_xmlhttp2.setRequestHeader("Connection", "close");
-        kwiki_xmlhttp2.send(params);
-        
-        kwiki_xmlhttp2.onreadystatechange = insertAdditionalMatchText(atmUrl);
-    }catch(e){alert(e);}
+	
+	var params = {
+        action : 'KnowWEObjectTypeBrowserRenderer',
+        ATMUrl : atmUrl,
+        kwiki_poll_url : "KnowWE.jsp",
+        TypeBrowserQuery : query
+    }
+    
+    var options = {
+        url : getURL( params ),
+        method : 'get',
+        response : {
+            action : 'insert',
+            ids : [(atmUrl.split(":")[4] + atmUrl.split(":")[2])]
+        }
+    }
+    new KnowWEAjax( options ).send();
 }
 
 // gets the additional text, displayed in the match column of the renaming tool. 
-function getAdditionalMatchText(atmUrl){
-    try{
-        kwiki_xmlhttp2 = window.XMLHttpRequest ? new XMLHttpRequest()
-            : new ActiveXObject("Microsoft.XMLHTTP");
-        
-        var renameText = document.getElementById("renameInputField").value; 
-        var replacementText = document.getElementById("replaceInputField").value;
-        var renameContextPrevious = document.getElementById("renamePreviousInputContext").value;
-        var renameContextAfter = document.getElementById("renameAfterInputContext").value;
-        var caseSensitive = document.getElementById("search-sensitive").checked;
-
-        var kwiki_poll_url = "KnowWE.jsp";
-        var params = 'TargetNamespace='+encodeURIComponent(encodeUmlauts(renameText))
-             +'&action=RenamingRenderer&KWikiFocusedTerm='+replacementText
-             +'&ContextPrevious='+encodeURIComponent(encodeUmlauts(renameContextPrevious))
-             +'&ContextAfter='+encodeURIComponent(encodeUmlauts(renameContextAfter))
-             +'&CaseSensitive='+caseSensitive
-             +'&ATMUrl='+atmUrl;
-        
-        kwiki_xmlhttp2.open("POST", kwiki_poll_url,false);
-        kwiki_xmlhttp2.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-        kwiki_xmlhttp2.setRequestHeader("Content-length", params.length);
-        kwiki_xmlhttp2.setRequestHeader("Connection", "close");
-        kwiki_xmlhttp2.send(params);
-        
-        kwiki_xmlhttp2.onreadystatechange = insertAdditionalMatchText(atmUrl);
-    }catch(e){alert(e);}
-}
-
-//inserts an additional text into a certain preview column. 
-function insertAdditionalMatchText(atmUrl){
-
-    var id = atmUrl.split("#")[2];
-    var direction = atmUrl.split("#")[4];
-    var text = "";
-
-    id = direction + id;
-
-    if((kwiki_xmlhttp2.readyState == 4) && (kwiki_xmlhttp2.status == 200)){
-        if(document.getElementById(id) != null){
-            text = kwiki_xmlhttp2.responseText;
-            document.getElementById(id).innerHTML = text;
+function getAdditionalMatchText(atmUrl)
+{   
+    var params = {
+        action : 'RenamingRenderer',
+        ATMUrl : atmUrl,
+        KWikiFocusedTerm : $('replaceInputField').getValue(),
+        TargetNamespace : $('renameInputField').getValue(),
+        ContextAfter : $('renameAfterInputContext').getValue(),
+        ContextPrevious : $('renamePreviousInputContext').getValue(),
+        CaseSensitive : $('search-sensitive').getValue()
+    }
+    
+    var options = {
+        url : getURL( params ),
+        method : 'post',
+        response : {
+            action : 'none',
+            fn : function(){ 
+                var id = atmUrl.split(":")[4] + atmUrl.split(":")[2];
+                $(id).setHTML( request.getResponse() );
+                response = null;
+            }
         }
     }
-    //document.getElementById("rename-result").scrollIntoView(true);
+    var request = new KnowWEAjax( options );
+    request.send();
 }
 
 function insertRenamingMask() {
@@ -765,59 +802,38 @@ function insertRenamingMask() {
  } 
 
 
- function replaceAll() {
- try {
- kwiki_xmlhttp2 = window.XMLHttpRequest
- ? new XMLHttpRequest()
- : new ActiveXObject("Microsoft.XMLHTTP");
- kwiki_xmlhttp2.onreadystatechange = showReplaceReport;
-var renameText = document.getElementById("renameInputField").value; 
-var replacementText = document.getElementById("replaceInputField").value;
-var codedReplacements = '';
-var inputs = document.getElementsByTagName("input");
-for(var i = 0; i < inputs.length; i++) {
-    var inputID = inputs[i].id;
-    if(inputID.substring(0,11) == 'replaceBox_') {
-        if(inputs[i].checked) {
-            var code = inputID.substring(11);
-            codedReplacements += "__"+code;
+ function replaceAll() 
+ {
+    var codeReplacements = '';
+    var inputs = $ES('input');
+    for(var i = 0; i < inputs.length; i++) {
+        var inputID = inputs[i].id;
+        if(inputID.substring(0,11) == 'replaceBox_') {
+            if(inputs[i].checked) {
+                var code = inputID.substring(11);
+                codeReplacements += "__" + code;
+            }
         }
+    } 
+ 
+    var params = {
+        TargetNamespace : encodeURIComponent(encodeUmlauts( $('renameInputField').getValue() )),
+        action : 'GlobalReplaceAction',
+        KWikitext : codeReplacements,
+        KWikiFocusedTerm : $('replaceInputField').getValue()
     }
+     
+    var options = {
+        url : getURL( params ),
+        method : 'post',
+        response : {
+            action : 'insert',
+            ids : [ 'rename-result' ],
+            fn : function(){ setTimeout ( 'document.location.reload()', 5000 ); }
+        }
+    }    
+    new KnowWEAjax( options ).send();
 }
- var kwiki_poll_url = "KnowWE.jsp";
- var params = 'TargetNamespace='+encodeURIComponent(encodeUmlauts(renameText))+'&action=GlobalReplaceAction&KWikitext='+codedReplacements+'&KWikiFocusedTerm='+replacementText+'&page=blubb';
- kwiki_xmlhttp2.open("POST", kwiki_poll_url,false);
- kwiki_xmlhttp2.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
- kwiki_xmlhttp2.setRequestHeader("Content-length", params.length);
- kwiki_xmlhttp2.setRequestHeader("Connection", "close");
- kwiki_xmlhttp2.send(params);
- //kwiki_xmlhttp2.send(encodeURI('KWikitext='+kopictext.substring(0,20)));
-
- } catch (e) {alert(e);}
- }
-
-function showReplaceReport() {
- if ((kwiki_xmlhttp2.readyState == 4) && (kwiki_xmlhttp2.status == 200)) {
- if(document.getElementById("rename-result") != null) {
- //alert("hab was bekommen!");
- var text = kwiki_xmlhttp2.responseText;
- if(text.length == 0) {
- text = "no response for request";
- }
- 
- document.location.reload();
- document.getElementById("rename-result").innerHTML = text;
- }
- document.getElementById("rename-result").scrollIntoView(true);
- 
-   var els = document.getElementById("rename-panel").getElementsByTagName("input");
-   for(var i in els){
-      if(els[i].type == "text")
-          els[i].value = "";
-   }
- 
- }
- } 
 
 function kwiki_pollSyntax(article) {
  try {
@@ -965,17 +981,17 @@ function addPanelToggle()
         span.injectTop( el );
         
         el.addEvent( 'click', function(){
-        	var style = this.getNext().getStyle('display');
-        	style = (style == 'block') ? 'none' : ((style == '') ? 'none' : 'block');
-        	
-        	var children = this.getParent().getChildren();       	
-		    for(var i = 0; i < children.length;i++){
-		        if(children[i].getTag() == "h3"){
-		        	children[i].getChildren()[0].setText( (style == 'block')? '- ' : '+ ' );
-		        } else {
-		            children[i].setStyle('display', style);
-		        }
-		    } 
+            var style = this.getNext().getStyle('display');
+            style = (style == 'block') ? 'none' : ((style == '') ? 'none' : 'block');
+            
+            var children = this.getParent().getChildren();          
+            for(var i = 0; i < children.length;i++){
+                if(children[i].getTag() == "h3"){
+                    children[i].getChildren()[0].setText( (style == 'block')? '- ' : '+ ' );
+                } else {
+                    children[i].setStyle('display', style);
+                }
+            } 
         });
     }
 }
@@ -1005,7 +1021,7 @@ function formHint(event){
     
     for (var i = 0; i < els.length; i++){
       if(els[i].nextSibling.tagName.toLowerCase() == 'span'){
-      	els[i].addEvent('focus', function (event) {
+        els[i].addEvent('focus', function (event) {
            var evt = event || window.event;
            var el = evt.target || evt.srcElement;
            el.nextSibling.style.display = "inline";});
@@ -1049,15 +1065,15 @@ function loadCheck( pages ){
  * Returns an URL that is createt out of the given parameters. 
  */
 function getURL( params ) {
-	var baseURL = 'KnowWE.jsp';
-	var tokens = []
+    var baseURL = 'KnowWE.jsp';
+    var tokens = []
 
-	if( !params && typeof params != 'object') return baseURL;
-	
-	for( keys in params ){
-		tokens.push(keys + "=" + params[keys]);
-	};	
-	return baseURL + '?' + tokens.join('&');
+    if( !params && typeof params != 'object') return baseURL;
+    
+    for( keys in params ){
+        tokens.push(keys + "=" + params[keys]);
+    };  
+    return baseURL + '?' + tokens.join('&');
 }
 
 /* ############################################################### */
@@ -1091,7 +1107,7 @@ function getURL( params ) {
 //                    $(token[i]).innerHTML = response;
 //                }  
 //            } else if( response.contains( KnowWEAjax.id) ){
-//            	replace(KnowWEAjax.id, response)
+//              replace(KnowWEAjax.id, response)
 //            } else {
 //                $(KnowWEAjax.id).innerHTML = response;
 //            }
@@ -1102,14 +1118,14 @@ function getURL( params ) {
 //        if ((http.readyState == 4) && (http.status == 200)) {  
 //            if(KnowWEAjax.ext && KnowWEAjax.ext.id)
 //            {          
-//	            if(!KnowWEAjax.ext.div || KnowWEAjax.ext.div === ''){
-//	                $(KnowWEAjax.ext.id).innerHTML = http.responseText;
-//	            } else {
-//	                var div = document.createElement('div');
-//	                div.setAttribute('id', KnowWEAjax.ext.div);
-//	                div.innerHTML = http.responseText;
-//	                $(KnowWEAjax.ext.id).insertBefore(div, $(KnowWEAjax.ext.id).getChildren()[0]);; 
-//	            }
+//              if(!KnowWEAjax.ext.div || KnowWEAjax.ext.div === ''){
+//                  $(KnowWEAjax.ext.id).innerHTML = http.responseText;
+//              } else {
+//                  var div = document.createElement('div');
+//                  div.setAttribute('id', KnowWEAjax.ext.div);
+//                  div.innerHTML = http.responseText;
+//                  $(KnowWEAjax.ext.id).insertBefore(div, $(KnowWEAjax.ext.id).getChildren()[0]);; 
+//              }
 //            }
 //            if(!KnowWEAjax.ext.fn) return;
 //            console.log("handle_response:"+KnowWEAjax.ext.fn);
@@ -1119,20 +1135,20 @@ function getURL( params ) {
 //        
 //            if((KnowWEAjax.ext || KnowWEAjax.ext.id) && KnowWEAjax.ext.id != '')
 //            {          
-//	            if(!KnowWEAjax.ext.div || KnowWEAjax.ext.div === ''){
-//	            	var response = http.responseText;
-//		            if( response.contains( KnowWEAjax.ext.id) ){
-//		            	replace(KnowWEAjax.ext.id, response)
-//		                console.log("replace: " + response );
-//		            } else {
-//	                    $(KnowWEAjax.ext.id).innerHTML = response;
-//		            }
-//	            } else {
-//	                var div = document.createElement('div');
-//	                div.setAttribute('id', KnowWEAjax.ext.div);
-//	                div.innerHTML = http.responseText;
-//	                $(KnowWEAjax.ext.id).insertBefore(div, $(KnowWEAjax.ext.id).getChildren()[0]);; 
-//	            }
+//              if(!KnowWEAjax.ext.div || KnowWEAjax.ext.div === ''){
+//                  var response = http.responseText;
+//                  if( response.contains( KnowWEAjax.ext.id) ){
+//                      replace(KnowWEAjax.ext.id, response)
+//                      console.log("replace: " + response );
+//                  } else {
+//                      $(KnowWEAjax.ext.id).innerHTML = response;
+//                  }
+//              } else {
+//                  var div = document.createElement('div');
+//                  div.setAttribute('id', KnowWEAjax.ext.div);
+//                  div.innerHTML = http.responseText;
+//                  $(KnowWEAjax.ext.id).insertBefore(div, $(KnowWEAjax.ext.id).getChildren()[0]);; 
+//              }
 //            }
 //            if(!KnowWEAjax.ext.fn || KnowWEAjax.ext.fn == '') return;
 //            eval(KnowWEAjax.ext.fn);  
@@ -1143,46 +1159,162 @@ function getURL( params ) {
 
 function replace(ids, text)
 {
-	for (var i in ids ) {
-		if( typeof ids[i] != 'string' ) return;
-		div = new Element('div', {
-		    'styles': {
-		        'display': 'hidden'	
-		    },
-		    'id' : 'KnowWE-temp'
-		});
-		div.injectBefore($( ids[i] ));
-		$( ids[i] ).remove();
-	    div.innerHTML = text;
-	    $( ids[i] ).injectAfter( $('KnowWE-temp') );
-	    $('KnowWE-temp').remove();
-	}
+    for (var i in ids ) {
+        if( typeof ids[i] != 'string' ) return;
+        div = new Element('div', {
+            'styles': {
+                'display': 'hidden' 
+            },
+            'id' : 'KnowWE-temp'
+        });
+        div.injectBefore($( ids[i] ));
+        $( ids[i] ).remove();
+        div.innerHTML = text;
+        $( ids[i] ).injectAfter( $('KnowWE-temp') );
+        $('KnowWE-temp').remove();
+    }
 }
 
 /*
- *  
+ * Some string helper functions  
  */
 String.prototype.getBytes = function() {
     return encodeURIComponent(this).replace(/%../g, 'x').length;
 };
+String.prototype.startsWith = function( str ) {
+	return (this.match("^"+str)==str);
+};
+String.prototype.endsWith = function(str){
+  return (this.match(str+"$")==str);
+};
 
+/*
+ * Used to ReRender the updated CoveringLists.
+ * Called by SolutionState.execute()
+ */
+var ReRenderKnowWESectionContent  = {
+    
+    updateNode : function(node, topic) {
+        var params = {
+            action : 'ReRenderContentPartAction',
+            KWikiWeb : 'default_web',
+            KdomNodeId : node,
+            ArticleTopic : topic
+        }
+        var url = getURL( params );
+        ReRenderKnowWESectionContent.execute(url, node);
+    },
+    
+    update : function() {
+        
+   		// get the current topic
+		var topic = gup('page');
+		
+		// get all CoveringLists
+		var classlist = getElementsByClass(null, 'ReRenderSectionMarker', null);             
+        
+        // Rerender the CoveringLists
+        if (classlist != null) {
+            for (var i = 0; i < classlist.length; i++) {
+                var kdomnodeid = classlist[i].id;
+                var params = {
+                    action : 'ReRenderContentPartAction',
+                    KWikiWeb : 'default_web',
+                    KdomNodeId : kdomnodeid,
+                    ArticleTopic : topic
+                }           
+                var url = getURL( params );
+                ReRenderKnowWESectionContent.execute(url, kdomnodeid);
+            }
+        }
+    },
+    
+    execute : function( url, id ) {
+        var options = {
+            url : url,
+            action : 'replace',
+            response : {
+                ids : [ id ],
+            }
+        }
+
+        new KnowWEAjax( options ).send();
+    },
+    
+    updateForXCLRelation : function (node, topic, depth, breadth) {
+    	// get the current topic
+		var topic = gup('page');
+		
+		// get all CoveringLists
+		var classlist = getElementsByClass(null, 'ReRenderSectionMarker', null);             
+        
+        // Rerender the CoveringLists
+        if (classlist != null) {
+            for (var i = 0; i < classlist.length; i++) {
+                var kdomnodeid = classlist[i].id;
+                var params = {
+                    action : 'ReRenderContentPartAction',
+                    KWikiWeb : 'default_web',
+                    KdomNodeId : kdomnodeid,
+                    ArticleTopic : topic
+                }           
+                var url = getURL( params );
+                ReRenderKnowWESectionContent.
+                		executeForXCLRelation
+                			(url, kdomnodeid, node, topic, depth, breadth);
+            }
+        }   	
+    },
+    
+    executeForXCLRelation : function(url, id, node, topic, depth, breadth) {
+    	var options = {
+            url : url,
+            action : 'replace',
+            response : {
+                ids : [ id ]
+            }
+        }
+        new KnowWEAjax( options ).send();
+		setTimeout(function () {ReRenderKnowWESectionContent.sleepForXCLRelation(node, topic, depth, breadth)}, 500);
+    },
+    
+    sleepForXCLRelation : function(node, topic, depth, breadth) {
+
+    	if (document.getElementById('uniqueMarker') != null) {
+    		setTimeout(function () {ReRenderKnowWESectionContent.sleepForXCLRelation(node, topic, depth, breadth)}, 500);
+    	} else {
+    		
+    		if (document.getElementById(node) != null) {
+    			// Restore the Highlighting that was before
+       			var restore = document.getElementById('uniqueMarker');
+        		if (restore != null) {
+            		ReRenderKnowWESectionContent.updateNode(restore.className, topic);
+        		}
+        		highlightNode(node, topic, depth, breadth);
+    			} else {
+					setTimeout(function () {ReRenderKnowWESectionContent.sleepForXCLRelation(node, topic, depth, breadth)}, 100);
+    			}
+    	}
+
+    }
+}
 
 function log( msg ){
-	if(console.log) console.log(msg);
-	else alert(msg);
+    if(console.log) console.log(msg);
+    else alert(msg);
 }
 
 function echo( object ){
-	if( typeof object == 'object'){
-		
-		for (var i in object ){
-			if( typeof object[i] == 'object') {
-				console.log(i);
-				echo (object[i]);
-			}
-			else console.log( i + ":" + object[i]);
-		}
-	}
+    if( typeof object == 'object'){
+        
+        for (var i in object ){
+            if( typeof object[i] == 'object') {
+                console.log(i);
+                echo (object[i]);
+            }
+            else console.log( i + ":" + object[i]);
+        }
+    }
 }
 
 /*
@@ -1192,10 +1324,10 @@ function echo( object ){
  */
 function enrich (oNew, oDefault) {
     if( typeof(oNew) != 'undefined' && oNew != null) {
-    	for( var i in oNew ) {
-    		if( oNew[i] != null && typeof oNew[i] != 'object' ) oDefault[i] = oNew[i];
-    		if(typeof oNew[i] == 'object') enrich( oNew[i], oDefault[i]);
-    	}
+        for( var i in oNew ) {
+            if( oNew[i] != null && typeof oNew[i] != 'object' ) oDefault[i] = oNew[i];
+            if(typeof oNew[i] == 'object') enrich( oNew[i], oDefault[i]);
+        }
     }
     return oDefault;
 }
@@ -1207,32 +1339,38 @@ function enrich (oNew, oDefault) {
 /* ------------- Onload Events  ---------------------------------- */
 /* ############################################################### */
 (function init(){
-	if( loadCheck( ['Wiki.jsp'] )) {
-		window.addEvent( 'domready', function(){
-			addPanelToggle();
-			formHint();
-			KnowWETable.init();
-			SolutionState.update();
-			
-			if($('rename-show-extend')){
+    if( loadCheck( ['Wiki.jsp'] )) {
+        window.addEvent( 'domready', function(){
+            addPanelToggle();
+            formHint();
+            KnowWETable.init();
+            SolutionState.update();
+            
+            if($('rename-show-extend')){
             $('rename-show-extend').addEvent( 'click', showExtendedPanel);
-	        }
-	        if($('knoffice-show-extend')){
-	            $('knoffice-show-extend').addEvent( 'click', showExtendedPanel);
-	        }
-		});
-	};
-	//CodeCompletion
-	if(loadCheck( ['Edit.jsp'] ))
-	{
-	    window.addEvent('domready', function(){
-	        if($('autoCompleteMenu')) return false;
-	        
-	        var span = new Element('span', { 'id' : 'autoCompleteMenu' });
-	        span.inject($('submitbuttons'));
-	    });
-	    window.addEvent('domready', function(){
-	        $('editorarea').addEvent( 'keydown', handleKeyDown );
-	    });
-	}
+            }
+            if($('knoffice-show-extend')){
+                $('knoffice-show-extend').addEvent( 'click', showExtendedPanel);
+            }
+			if($('testsuite-show-extend')){
+                $('testsuite-show-extend').addEvent( 'click', showExtendedPanel);
+            }
+            if($('testsuite2-show-extend')){
+                $('testsuite2-show-extend').addEvent( 'click', showExtendedPanel);
+            }
+        });
+    };
+    //CodeCompletion
+    if(loadCheck( ['Edit.jsp'] ))
+    {
+        window.addEvent('domready', function(){
+            if($('autoCompleteMenu')) return false;
+            
+            var span = new Element('span', { 'id' : 'autoCompleteMenu' });
+            span.inject($('submitbuttons'));
+        });
+        window.addEvent('domready', function(){
+            $('editorarea').addEvent( 'keydown', handleKeyDown );
+        });
+    }
 }());

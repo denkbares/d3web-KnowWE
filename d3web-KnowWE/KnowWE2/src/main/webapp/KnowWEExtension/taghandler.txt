@@ -5,3 +5,6 @@ de.d3web.we.taghandler.AdminPanelHandler
 de.d3web.we.taghandler.DialogLinkTagHandler
 de.d3web.we.taghandler.KnowledgeBasesGeneratorHandler
 de.d3web.we.taghandler.TagHandlerListHandler
+de.d3web.we.taghandler.ListInstalledModulesHandler
+de.d3web.we.taghandler.DescribeModuleTagHandler
+de.d3web.we.plugin.calendar.CalendarHandler
