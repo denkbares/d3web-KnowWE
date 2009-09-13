@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.Annotation;
 
 import java.util.ArrayList;
@@ -5,19 +25,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.IDGenerator;
-import de.d3web.we.kdom.KnowWEDomParseReport;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionFinder;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class FindingComparator extends
-DefaultAbstractKnowWEObjectType {
-	private HashMap<Section, String> operatorstore;
+public class FindingComparator extends DefaultAbstractKnowWEObjectType {
+	private HashMap<String, String> operatorstore;
 
 	public FindingComparator() {
-		operatorstore = new HashMap<Section, String>();
+		operatorstore = new HashMap<String, String>();
 	}
 
 	public static final String[] operators = { "<=", ">=", "=", "<", ">" };
@@ -28,18 +44,11 @@ DefaultAbstractKnowWEObjectType {
 //		return new XCLComparatorEditorRenderer();
 //	}
 
-	class AnnotationKnowledgeSliceObjectComparatorSectionFinder extends
+	public class AnnotationKnowledgeSliceObjectComparatorSectionFinder extends
 			SectionFinder {
-		public AnnotationKnowledgeSliceObjectComparatorSectionFinder(
-				KnowWEObjectType type) {
-			super(type);
-		}
 
 		@Override
-		public List<Section> lookForSections(Section tmp, Section father,
-				KnowledgeRepresentationManager mgn, KnowWEDomParseReport rep,
-				IDGenerator idg) {
-			String text = tmp.getOriginalText();
+		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			int index = -1;
 			String foundOperator = "";
 			for (String operator : operators) {
@@ -50,13 +59,13 @@ DefaultAbstractKnowWEObjectType {
 				}
 			}
 
-			List<Section> result = new ArrayList<Section>();
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			if (index != -1) {
-				Section createdSection = Section.createSection(this.getType(),
-						father, tmp, index, index + foundOperator.length(),
-						mgn, rep, idg);
-				operatorstore.put(createdSection, foundOperator);
-				result.add(createdSection);
+				operatorstore.put(
+						text.substring(index, index + foundOperator.length()),
+						foundOperator);
+				result.add(new SectionFinderResult(
+						index, index + foundOperator.length()));
 
 			}
 			return result;
@@ -69,8 +78,8 @@ DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		this.sectionFinder = new AnnotationKnowledgeSliceObjectComparatorSectionFinder(this);
-		
+		this.sectionFinder = 
+			new AnnotationKnowledgeSliceObjectComparatorSectionFinder();		
 	}
 
 }
