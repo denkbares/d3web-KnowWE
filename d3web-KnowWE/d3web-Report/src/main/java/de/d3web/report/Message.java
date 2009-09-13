@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.report;
 
 /**
@@ -18,9 +38,9 @@ public class Message {
      */
     private static final String UNKNOWN_ERROR = "An unknow error occurred.";
 
-    public static final String ERROR = "error";
-    public static final String WARNING = "warning";
-    public static final String NOTE = "note";
+    public static final String ERROR = "Error";
+    public static final String WARNING = "Warning";
+    public static final String NOTE = "Note";
        
     /** type of the message. */
     private String messageType;
@@ -40,7 +60,10 @@ public class Message {
     
     /** Row in which the error occurred. */
     private String line;
-
+    
+    /** Counter for everything else */
+    private int count;
+    
     /**
      * Creates a message with unknown error.
      */
@@ -131,6 +154,12 @@ public class Message {
     
     public static Message createNote(String messageText, String file, int lineNo, int column, String line) {
     	return new Message(NOTE, messageText, file, lineNo, column, line);
+    }
+    
+    public static Message createNoteWithCount(String messageText, String file, int lineNo, String line, int count) {
+    	Message msg = new Message(NOTE, messageText, file, lineNo, line);
+    	msg.setCount(count);
+    	return msg;
     }
       
     /**
@@ -296,4 +325,12 @@ public class Message {
 		this.lineNo = lineNo;
 	}
 
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+	
 }

@@ -11,8 +11,4 @@
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0-SNAPSHOT</version>
 	</parent>
-
-	<build>
-		<defaultGoal>package</defaultGoal>
-	</build>
 </project>

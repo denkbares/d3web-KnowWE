@@ -1,2 +1,8 @@
+===== 20090913 SVN migration - alegler ======================
+
+build_20090610_0415 astriffler
+	* added additional counter that can be used in a Message
+	* capitalized Strings of MessageTypes
+
 build_20090507_1230 smark
     * initial commit
