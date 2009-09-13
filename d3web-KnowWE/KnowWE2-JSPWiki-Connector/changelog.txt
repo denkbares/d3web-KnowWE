@@ -19,6 +19,52 @@
 history of the changes:
 +---------------------------------------------------------------------------+
 
+===== 20090913 SVN migration - alegler ======================================
+
+build_20090822_1400 reutelshoefer
+	* calling new render method to render article
+
+build_20090722_1845 apreu
+	* changes due to interface:
+		added getLocale()
+
+build_20090716_1600 JoeD
+	* XMLSectionFinder Test
+	* Due to that introducing
+		 new GenericXMLObjectType and GenericXMLContent
+	* Some Changes for Tests
+
+build_20090630_1845 apreu
+	* added Getter for HttpRequest
+	* changed JSPWikiKnowWEConnector due to changes in interface
+
+build_20090630_1640 astriffler
+	* changes due to changes in KnowWE2
+	
+build_20090630_1400 smark
+    * new action: choosen answers from the dialog can be saved as XCL model
+
+
+build_20090617_1630 friedrich/reutelshoefer
+	* made getAttachmentPath working for any file-suffixes
+
+build_20090616_1115 smark
+    * some WikiConnector changes due changes at quick-edit mode
+        
+build_20090529_1735 legler
+	* Fixed processing of urlRequestParameters
+
+build_20090525_0910 JoeD
+	* XCLRelations in CoveringLists now highlighted according
+	  to given answers. For this new Renderers created and classes changed.
+	* KnowWE.js: highlightNode() now general usable 
+	             with KDomSectionHighlighterRenderer
+	* FontColorBackgroundRenderer introduced. Can replace FontColorRenderer
+	  and preserves highlighting functionality.
+	* XCLRelation-id storage now over KnowWEUtils
+	* SetCoveringList now rendered with SetCoveringListSingleListRenderer.
+	  cause the <pre> tag from JSPWiki avoids inserting new html correctly
+	  
 build_20090519_1050 reutelshoefer
 	* added web parameter to costructor calls of KnowWEArticle
 
