@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.KnOfficeParser.util;
 
 import java.text.MessageFormat;
@@ -16,6 +36,10 @@ import de.d3web.report.Message;
  */
 public class MessageKnOfficeGenerator {
 	private static ResourceBundle rb = ResourceBundle.getBundle("errors");
+	
+	public static ResourceBundle getResourceBundle() {
+		return rb;
+	}
 	
 	public static Message createLexerNVAE(String file, RecognitionException re) {
 		return createErrorMSG("lexernvae", file, re.line, "", ErrorMsg.getCharString(re.c));
@@ -305,6 +329,10 @@ public class MessageKnOfficeGenerator {
 		return createNoteMSG("qcontainersparsed", file, line, linetext, i);
 	}
 	
+	public static Message createTestsuiteParsedNote(String file, int line, String linetext, int i) {
+		return createNoteMSG("testsuiteparsed", file, line, linetext, i);
+	}
+	
 	public static Message createNameNotAllowedWarning(String file, int line, String linetext, String name) {
 		return createWarningMSG("nna", file, line, linetext, name);
 	}
@@ -362,6 +390,14 @@ public class MessageKnOfficeGenerator {
 	public static Message createNoteMSG(String key, String file, int line, String linetext, Object... adds ) {
 		return Message.createNote(generateText(key, adds), file, line, linetext);
 	}
+	
+	public static Message createNoteMSGWithCount(String key, String file, int line, String linetext, Object... adds) {
+		int count = 0;
+		if (adds.length == 1 && adds[0] instanceof Integer) {
+			count = (Integer) adds[0];
+		}
+		return Message.createNoteWithCount(generateText(key, adds), file, line, linetext, count);
+	}
 
 	private static String generateText(String key, Object... adds) {
 		String result = rb.getString("unknownError") + ": " + key;
@@ -374,7 +410,7 @@ public class MessageKnOfficeGenerator {
 	}
 
 	public static Message createRulesFinishedNote(String file, int rulecount) {
-		return createNoteMSG("rule", file, 0, "", rulecount);
+		return createNoteMSGWithCount("rule", file, 0, "", rulecount);
 	}
 	
 	public static Message createXCLFinishedNote(String file, int i, String countfindings) {

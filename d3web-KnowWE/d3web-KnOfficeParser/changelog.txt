@@ -1,3 +1,39 @@
+===== 20090913 SVN migration - alegler ======================
+
+build_20090728_1605 astriffler
+	* some refactoring for the txt tables
+
+build_20090722_1020 reutelshoefer
+	* XCLRelationBuilder now returns a message in case of success instead of null
+
+build_20090630_1640 astriffler
+	* TxtAttributeTableBuilder now also stores the DCElement.SOURCE to
+	  the created DCMarkup respectively MMInfoObject
+	* With TxtAttributeTables it is now possible to add Attributes to Answers
+	  - Syntax: Question.Answer
+	  - If there are other dots inside Question or Answer, they must be escaped
+	     (right now, # is the escape symbol).
+
+build_20090625_1205 furth
+	* added Messages for Testsuite-Section
+
+build_20090612_1240 astriffler
+	* adapted TxtTableParser to JSPWiki-syntax
+	
+build_20090610_1400 astriffler
+	* fixed bug in TxtAttributeTableBuilder concerning reading of input
+
+build_20090610_1245 astriffler
+	* fixed issue with changing input in TxtAttributeTableBuilder
+
+build_20090610_0415 astriffler
+	* implemented parser and builder for attribute tables in txt format 
+	* changed return type in KnOfficeParser from Collection to List
+	* D3ruleBuilder now remembers IDs of created rules
+
+build_20090525_1407 dr.krabbe
+	* allow all types text subjects in decision-tree
+
 build_20090519_2100 legler
 	* taught QuestionnaireBuilder to process descriptions
 

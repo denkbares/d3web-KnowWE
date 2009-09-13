@@ -1,9 +1,28 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.KnOfficeParser.scmcbr;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.antlr.runtime.ANTLRInputStream;
@@ -18,15 +37,14 @@ import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
-import de.d3web.report.Message;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.kernel.domainModel.qasets.QContainer;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
+import de.d3web.report.Message;
 /**
  * Builder für d3web und den SCMCBR Parser
  * @author Markus Friedrich
@@ -50,7 +68,7 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 	}
 	
 	@Override
-	public Collection<Message> addKnowledge(Reader r,
+	public List<Message> addKnowledge(Reader r,
 			IDObjectManagement idom, KnOfficeParameterSet s) {
 		this.idom=idom;
 		cb.setIdom(idom);
@@ -74,7 +92,7 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 	}
 
 	@Override
-	public Collection<Message> checkKnowledge() {
+	public List<Message> checkKnowledge() {
 		return errors;
 	}
 

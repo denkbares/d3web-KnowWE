@@ -1,9 +1,28 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.KnOfficeParser.decisiontree;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
@@ -278,12 +297,23 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			errors.add(MessageKnOfficeGenerator.createNameNotAllowedWarning(
 					file, line, linetext, des));
 		}
-		if (!(type.equals("info")||type.equals("prompt") || type.equals("url")
-				|| type.equals("info.therapy") || type.equals("synonyms"))) {
+		
+		// check if the subject is allowed
+		// (if the type is a defined subject)
+		boolean isTypeAllowed = false;
+		for (MMInfoSubject subject : MMInfoSubject.getSubjects()) {
+			if (subject.getName().equalsIgnoreCase(type)) {
+				type = subject.getName(); // revert upper/lower case
+				isTypeAllowed = true;
+				break;
+			}
+		}
+		if (!isTypeAllowed) {
 			errors.add(MessageKnOfficeGenerator.createTypeNotAllowed(file,
 					line, linetext, type));
 			return;
 		}
+		
 		for (Tupel<String, Object> t : descriptionlinks) {
 			if (t.first.equals(id)) {
 				t.used=true;
@@ -299,7 +329,6 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				}
 			}
 		}
-		// TODO Language usage
 	}
 
 	/*
@@ -674,8 +703,13 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	 */
 	private void addMMInfo(NamedObject o, String title, String subject,
 			String content, String language) {
-		if (o == null)
-			return;
+		if (o == null) return;
+		if (content == null) return;
+		
+		if (content.startsWith("\"") && content.endsWith("\"") && content.length()>1) {
+			content = content.substring(1, content.length()-1);
+		}
+		
 		MMInfoStorage mmis;
 		DCMarkup dcm = new DCMarkup();
 		dcm.setContent(DCElement.TITLE, title);
@@ -758,7 +792,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	}
 
 	@Override
-	public Collection<Message> addKnowledge(Reader r,
+	public List<Message> addKnowledge(Reader r,
 			IDObjectManagement idom, KnOfficeParameterSet s) {
 		this.idom = idom;
 		ReaderInputStream input = new ReaderInputStream(r);
@@ -784,7 +818,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	}
 
 	@Override
-	public Collection<Message> checkKnowledge() {
+	public List<Message> checkKnowledge() {
 		return getErrors();
 	}
 

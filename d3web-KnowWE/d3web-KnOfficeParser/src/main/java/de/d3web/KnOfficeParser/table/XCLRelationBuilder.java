@@ -1,5 +1,24 @@
-package de.d3web.KnOfficeParser.table;
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
+package de.d3web.KnOfficeParser.table;
 
 import java.util.ResourceBundle;
 
@@ -10,16 +29,18 @@ import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
+
 /**
  * Erstellt XCL Relationen aus einer Tabellenzelle
+ * 
  * @author Markus Friedrich
- *
+ * 
  */
 public class XCLRelationBuilder implements CellKnowledgeBuilder {
 
 	private ResourceBundle properties;
 	private boolean createUncompleteFindings = true;
-	
+
 	public boolean isCreateUncompleteFindings() {
 		return createUncompleteFindings;
 	}
@@ -28,13 +49,17 @@ public class XCLRelationBuilder implements CellKnowledgeBuilder {
 		this.createUncompleteFindings = createUncompleteFindings;
 	}
 
-	public XCLRelationBuilder (String file) {
-		properties = ResourceBundle.getBundle(file);
+	public XCLRelationBuilder(String file) {
+		if (file != null) {
+			properties = ResourceBundle.getBundle(file);
+		}
 	}
-	
+
 	@Override
 	public Message add(IDObjectManagement idom, int line, int column,
-			String file, AbstractCondition cond, String text, Diagnosis diag, boolean errorOccured) {
+			String file, AbstractCondition cond, String text, Diagnosis diag,
+			boolean errorOccured) {
+		
 		if (!createUncompleteFindings) {
 			if (errorOccured) {
 				System.out.println(text);
@@ -45,25 +70,32 @@ public class XCLRelationBuilder implements CellKnowledgeBuilder {
 		try {
 			s = properties.getString(text);
 		} catch (Exception e1) {
-			s=text;
+			s = text;
 		}
+		String relationID;
+		
 		if (s.equals("--")) {
-			XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag, XCLRelationType.contradicted);
+			relationID = XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag,
+					XCLRelationType.contradicted, file);
 		} else if (s.equals("!")) {
-			XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag, XCLRelationType.requires);
+			relationID = XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag,
+					XCLRelationType.requires, file);
 		} else if (s.equals("++")) {
-			XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag, XCLRelationType.sufficiently);
+			relationID = XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag,
+					XCLRelationType.sufficiently, file);
 		} else {
 			Double value;
 			try {
 				value = Double.parseDouble(s);
 			} catch (NumberFormatException e) {
-				return MessageKnOfficeGenerator.createNoValidWeightException(file, line, column, "", text);
+				return MessageKnOfficeGenerator.createNoValidWeightException(
+						file, line, column, "", text);
 			}
-			XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag, XCLRelationType.explains, value);
-			
+			relationID = XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, diag,
+					XCLRelationType.explains, value, file);
+
 		}
-		return null;
+		return new Message("relID:"+relationID);
 	}
 
 }
