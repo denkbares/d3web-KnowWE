@@ -32,6 +32,13 @@
 							</excludes>
 						</overlay>
 					</overlays>
+					<webResources>
+						<!-- Comment plugin -->
+						<resource>
+							<directory>../KnowWE2-Plugin-Comment/src/main/webapp</directory>
+							<targetPath>KnowWEExtension</targetPath>
+						</resource>
+					</webResources>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -60,7 +67,7 @@
 			</build>
 		</profile>
 	</profiles>
-	
+
 	<dependencies>
 		<!--
 			Short explanation for JSPWiki: They don't really use Maven, so, the
@@ -221,6 +228,12 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE2-JSPWiki-Connector</artifactId>
+			<version>0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE2-Plugin-Comment</artifactId>
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
