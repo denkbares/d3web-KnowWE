@@ -7,13 +7,13 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE2-JSPWiki-Connector</artifactId>
-	<name>KnowWE2-JSPWiki-Connector</name>
+	<artifactId>KnowWE-JSPWiki-Connector</artifactId>
+	<name>KnowWE-JSPWiki-Connector</name>
 	<version>0-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE2-core</artifactId>
+			<artifactId>KnowWE-core</artifactId>
 			<version>0-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>

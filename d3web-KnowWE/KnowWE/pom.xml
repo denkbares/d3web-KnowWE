@@ -7,9 +7,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE2</artifactId>
+	<artifactId>KnowWE</artifactId>
 	<packaging>war</packaging>
-	<name>KnowWE2</name>
+	<name>KnowWE</name>
 	<version>0-SNAPSHOT</version>
 	<build>
 		<plugins>

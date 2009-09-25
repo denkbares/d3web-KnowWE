@@ -6,8 +6,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.uniwue.d3web</groupId>
-  <artifactId>KnowWE2-Plugin-d3web</artifactId>
-  <name>KnowWE2-Plugin-d3webs</name>
+  <artifactId>KnowWE-Plugin-d3web</artifactId>
+  <name>KnowWE-Plugin-d3webs</name>
   <version>0-SNAPSHOT</version>
   <build>
 	<defaultGoal>package</defaultGoal>
@@ -129,7 +129,7 @@
   	</dependency>
   	<dependency>
   		<groupId>de.uniwue.d3web</groupId>
-  		<artifactId>KnowWE2-core</artifactId>
+  		<artifactId>KnowWE-core</artifactId>
   		<version>0-SNAPSHOT</version>
   		<type>jar</type>
   		<scope>compile</scope>

@@ -13,7 +13,7 @@
 	</issueManagement>
 	<ciManagement>
 		<system>Hudson</system>
-		<url>http://win6154.informatik.uni-wuerzburg.de:8080/hudson/</url>
+		<url>http://isci.informatik.uni-wuerzburg.de:8080/hudson/</url>
 	</ciManagement>
 	<licenses>
 		<license>
@@ -58,20 +58,20 @@
 		<module>d3web-TiRex</module>
 		<module>d3web-KnowledgeExporter</module>
 		<module>d3web-Distributed</module>
-		<module>KnowWE2</module>
-		<module>KnowWE2-core</module>
-		<module>KnowWE2-JSPWiki-Connector</module>
-		<module>KnowWE2-Plugin-d3web</module>		
-		<module>KnowWE2-Plugin-Comment</module>
+		<module>KnowWE</module>
+		<module>KnowWE-core</module>
+		<module>KnowWE-JSPWiki-Connector</module>
+		<module>KnowWE-Plugin-d3web</module>		
+		<module>KnowWE-Plugin-Comment</module>
 	</modules>
 	<repositories>
 		<repository>
 			<id>infoVI-public</id>
-			<url>http://win6154.informatik.uni-wuerzburg.de:8080/nexus/content/groups/public/</url>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/nexus/content/groups/public/</url>
 		</repository>
 		<repository>
 			<id>snapshots</id>
-			<url>http://win6154.informatik.uni-wuerzburg.de:8080/nexus/content/repositories/snapshots/</url>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/nexus/content/repositories/snapshots/</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -86,7 +86,7 @@
 		<snapshotRepository>
 			<id>snapshots</id>
 			<name>d3web Snapshots</name>
-			<url>http://win6154.informatik.uni-wuerzburg.de:8080/nexus/content/repositories/snapshots/</url>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -108,7 +108,7 @@
 	<pluginRepositories>
 		<pluginRepository>
 			<id>contrib</id>
-			<url>http://win6154.informatik.uni-wuerzburg.de:8080/nexus/content/repositories/contrib/</url>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/nexus/content/repositories/contrib/</url>
 		</pluginRepository>
 	</pluginRepositories>
 	<dependencies>

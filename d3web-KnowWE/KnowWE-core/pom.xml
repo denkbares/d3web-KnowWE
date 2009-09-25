@@ -7,9 +7,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE2-core</artifactId>
+	<artifactId>KnowWE-core</artifactId>
 	<packaging>jar</packaging>
-	<name>KnowWE2-core</name>
+	<name>KnowWE-core</name>
 	<version>0-SNAPSHOT</version>
 
 	<build>
