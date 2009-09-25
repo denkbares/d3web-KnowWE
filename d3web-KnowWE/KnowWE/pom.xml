@@ -35,7 +35,7 @@
 					<webResources>
 						<!-- Comment plugin -->
 						<resource>
-							<directory>../KnowWE2-Plugin-Comment/src/main/webapp</directory>
+							<directory>../KnowWE-Plugin-Comment/src/main/webapp</directory>
 							<targetPath>KnowWEExtension</targetPath>
 						</resource>
 					</webResources>
