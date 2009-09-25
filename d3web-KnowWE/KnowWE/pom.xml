@@ -215,26 +215,26 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE2-core</artifactId>
+			<artifactId>KnowWE-core</artifactId>
 			<version>0-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE2-Plugin-d3web</artifactId>
+			<artifactId>KnowWE-Plugin-d3web</artifactId>
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE2-JSPWiki-Connector</artifactId>
+			<artifactId>KnowWE-JSPWiki-Connector</artifactId>
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE2-Plugin-Comment</artifactId>
+			<artifactId>KnowWE-Plugin-Comment</artifactId>
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
