@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tomcatProjectProperties>
-    <rootDir>target/KnowWE2-0-SNAPSHOT/</rootDir>
+    <rootDir>target/KnowWE-0-SNAPSHOT/</rootDir>
     <exportSource>false</exportSource>
     <reloadable>true</reloadable>
     <redirectLogger>true</redirectLogger>
