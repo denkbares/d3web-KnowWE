@@ -38,14 +38,12 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
-import de.d3web.we.javaEnv.KnowWETopicLoader;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.TerminalType;
-import de.d3web.we.kdom.VerbatimType;
+import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.css.CSS;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -887,9 +885,9 @@ public class KnowWEEnvironment {
 		for (KnowWEObjectType type : this.rootTypes) {
 			type.findTypeInstances(clazz, instances);
 		}
-		for (KnowWEModule mod : this.modules) {
-			mod.findTypeInstances(clazz, instances);
-		}
+//		for (KnowWEModule mod : this.modules) {
+//			mod.findTypeInstances(clazz, instances);
+//		}
 		return instances;
 	}
 }

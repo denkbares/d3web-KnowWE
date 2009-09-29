@@ -18,9 +18,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom;
+/**
+ * 
+ */
+package de.d3web.we.kdom.basic;
 
-public class Space extends DefaultAbstractKnowWEObjectType{
+import java.util.regex.Pattern;
 
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+
+/**
+ * @author kazamatzuri
+ * 
+ */
+public class VerbatimType extends DefaultAbstractKnowWEObjectType {
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.d3web.we.dom.AbstractKnowWEObjectType#init()
+     */
+    @Override
+    protected void init() {
+	this.sectionFinder = new RegexSectionFinder(
+		"\\{\\{\\{\\s*(.+?)\\s*\\}\\}\\}", Pattern.DOTALL);
+    }
 
 }

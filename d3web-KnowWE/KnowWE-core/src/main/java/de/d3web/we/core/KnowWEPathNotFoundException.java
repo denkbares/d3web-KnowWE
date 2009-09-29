@@ -18,17 +18,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom;
+package de.d3web.we.core;
 
-import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
-
-public class TextLine extends DefaultAbstractKnowWEObjectType {	
+public class KnowWEPathNotFoundException extends Exception  {
 	
-	public TextLine() {
-		this.setNumberedType(true);
-		childrenTypes.add(new LineBreak());
-		childrenTypes.add(new LineContent());
-		sectionFinder = new LineSectionFinder();
+	public KnowWEPathNotFoundException(String text) {
+		super(text);
 	}
-	
+
 }

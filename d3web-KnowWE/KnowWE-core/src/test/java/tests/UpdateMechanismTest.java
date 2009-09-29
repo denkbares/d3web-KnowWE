@@ -26,10 +26,10 @@ import java.util.List;
 import junit.framework.TestCase;
 import utils.Utils;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.GenericXMLObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.xml.GenericXMLObjectType;
 import de.d3web.we.module.DefaultTextType;
 import dummies.KnowWETestWikiConnector;
 

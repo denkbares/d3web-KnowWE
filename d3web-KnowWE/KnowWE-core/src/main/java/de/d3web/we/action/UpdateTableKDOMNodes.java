@@ -21,9 +21,9 @@
 package de.d3web.we.action;
 
 import de.d3web.we.core.KnowWEArticleManager;
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
+import de.d3web.we.core.KnowWEParameterMap;
 
 /**
  * <p>UpdateTableKDOMNodes class.</p>

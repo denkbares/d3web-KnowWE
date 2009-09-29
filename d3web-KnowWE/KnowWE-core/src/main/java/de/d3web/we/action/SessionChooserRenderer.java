@@ -24,9 +24,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ResourceBundle;
 
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class SessionChooserRenderer implements KnowWEAction {

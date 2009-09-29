@@ -27,8 +27,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
-import de.d3web.we.javaEnv.KnowWETopicLoader;
+import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.core.KnowWETopicLoader;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 

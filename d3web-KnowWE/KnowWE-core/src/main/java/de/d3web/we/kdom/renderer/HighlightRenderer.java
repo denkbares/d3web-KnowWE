@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.renderer;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.ColorRenderer;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;

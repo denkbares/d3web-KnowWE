@@ -34,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.core.KnowWEArticleManager;
+import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.SolutionContext;
@@ -55,11 +56,9 @@ import de.d3web.we.module.KnowWEModule;
  * @author Jochen
  * 
  *         This class is the representation of one wiki article in KnowWE. It is
- *         a KnowWEObjectType that always builds the root node and only the root
- *         node of each KDOM.
+ *         a KnowWEObjectType that always forms the root node and only the root
+ *         node of each KDOM document-parse-tree.
  * 
- *         It manages the report of the parsing process. When a new object is
- *         created its parsed and the knowledge-base is updated if necessary.
  * 
  * 
  */

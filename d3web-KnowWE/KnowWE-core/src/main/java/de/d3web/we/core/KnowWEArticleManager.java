@@ -27,9 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEDomParseReport;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.utils.KnowWEUtils;

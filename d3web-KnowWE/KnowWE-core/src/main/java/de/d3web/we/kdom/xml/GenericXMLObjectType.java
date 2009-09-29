@@ -18,12 +18,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.javaEnv;
+package de.d3web.we.kdom.xml;
 
-public class KnowWEPathNotFoundException extends Exception  {
+import java.util.List;
+
+import de.d3web.we.kdom.KnowWEObjectType;
+
+public class GenericXMLObjectType extends AbstractXMLObjectType {
+
+	/**
+	 * <p>Constructor.</p>
+	 */
+	public GenericXMLObjectType() {
+		super();
+	}
 	
-	public KnowWEPathNotFoundException(String text) {
-		super(text);
+	@Override
+	public List<KnowWEObjectType> getAllowedChildrenTypes() {
+		childrenTypes.add(new GenericXMLContent());
+		return childrenTypes;
 	}
 
 }

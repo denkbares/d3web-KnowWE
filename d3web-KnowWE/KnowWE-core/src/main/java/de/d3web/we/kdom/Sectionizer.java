@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -34,7 +35,7 @@ import de.d3web.we.utils.PairOfInts;
  * @author Jochen
  * 
  * This singleton contains the algorithm which parses the KDOM. The algorithm
- * searches occorrences that match certain types.
+ * searches occorrences that match the current type structure.
  * @see splitToSections
  * 
  */

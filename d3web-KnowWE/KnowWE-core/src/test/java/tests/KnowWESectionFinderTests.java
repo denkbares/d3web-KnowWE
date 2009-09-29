@@ -22,7 +22,7 @@ package tests;
 
 import java.util.List;
 
-import de.d3web.we.kdom.LineBreak;
+import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.owlextension.Extension;
 import de.d3web.we.kdom.owlextension.ExtensionSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;

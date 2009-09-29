@@ -26,7 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.IncludedFromType;
 import de.d3web.we.kdom.include.IncludedFromTypeHead;
@@ -720,6 +722,7 @@ public class Section implements Visitable, Comparable<Section> {
 			sec.findSuccessorsOfType(class1, found);
 		}
 	}
+	
 	
 	/**
 	 * Finds all successors of type <code>class1</code> in the KDOM below this

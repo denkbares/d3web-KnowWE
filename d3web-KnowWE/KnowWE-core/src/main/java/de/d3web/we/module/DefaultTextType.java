@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import de.d3web.we.action.KnowWEAction;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
+import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.owlextension.Extension;

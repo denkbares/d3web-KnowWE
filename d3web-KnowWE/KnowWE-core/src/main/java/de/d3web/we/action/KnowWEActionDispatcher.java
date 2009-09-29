@@ -20,7 +20,7 @@
 
 package de.d3web.we.action;
 
-import de.d3web.we.javaEnv.KnowWEParameterMap;
+import de.d3web.we.core.KnowWEParameterMap;
 
 public abstract class KnowWEActionDispatcher {
 	

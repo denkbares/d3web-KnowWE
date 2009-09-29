@@ -36,8 +36,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.SemanticCore;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 
 /**
  * @author kazamatzuri

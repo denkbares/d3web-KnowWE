@@ -18,25 +18,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom;
+package de.d3web.we.core;
 
-import java.util.List;
-
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-
-public class GenericXMLObjectType extends AbstractXMLObjectType {
-
-	/**
-	 * <p>Constructor.</p>
-	 */
-	public GenericXMLObjectType() {
-		super();
+public class NoParseResultException extends Exception {
+	
+	public NoParseResultException(String message) {
+		super(message);
+	}
+	public NoParseResultException() {
+		super("Article not (yet) parsed!");
 	}
 	
-	@Override
-	public List<KnowWEObjectType> getAllowedChildrenTypes() {
-		childrenTypes.add(new GenericXMLContent());
-		return childrenTypes;
-	}
+	
 
 }

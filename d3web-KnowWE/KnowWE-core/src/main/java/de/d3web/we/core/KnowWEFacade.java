@@ -41,8 +41,6 @@ import de.d3web.we.action.ReplaceKDOMNodeAction;
 import de.d3web.we.action.SetQuickEditFlagAction;
 import de.d3web.we.action.UpdateTableKDOMNodes;
 import de.d3web.we.action.WordBasedRenamingAction;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.WordBasedRenameFinding;
 import de.d3web.we.module.KnowWEModule;

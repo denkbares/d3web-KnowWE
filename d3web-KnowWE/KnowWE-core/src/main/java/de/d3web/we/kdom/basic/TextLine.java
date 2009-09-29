@@ -18,17 +18,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.javaEnv;
+package de.d3web.we.kdom.basic;
 
-public class NoParseResultException extends Exception {
-	
-	public NoParseResultException(String message) {
-		super(message);
-	}
-	public NoParseResultException() {
-		super("Article not (yet) parsed!");
-	}
-	
-	
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
 
+public class TextLine extends DefaultAbstractKnowWEObjectType {	
+	
+	public TextLine() {
+		this.setNumberedType(true);
+		childrenTypes.add(new LineBreak());
+		childrenTypes.add(new LineContent());
+		sectionFinder = new LineSectionFinder();
+	}
+	
 }

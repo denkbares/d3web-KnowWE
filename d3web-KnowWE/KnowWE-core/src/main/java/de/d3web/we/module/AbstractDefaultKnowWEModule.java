@@ -39,10 +39,10 @@ public abstract class AbstractDefaultKnowWEModule implements KnowWEModule{
 		
 	}
 
-	@Override
-	public void findTypeInstances(Class clazz, List<KnowWEObjectType> instances) {
-		
-	}
+//	@Override
+//	public void findTypeInstances(Class clazz, List<KnowWEObjectType> instances) {
+//		
+//	}
 	
 
 	@Override

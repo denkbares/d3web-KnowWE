@@ -18,19 +18,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom;
+package de.d3web.we.kdom.renderer;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public abstract class ColorRenderer extends KnowWEDomRenderer {
+public class DefaultTextLineRenderer extends KnowWEDomRenderer {
+
 	
-	public String spanColorTitle(String text, String color, String title) {
-		return KnowWEEnvironment.HTML_ST + "span title='" + title
-					+ "' style='background-color:" + color
-					+ ";'" + KnowWEEnvironment.HTML_GT + text 
-					+ KnowWEEnvironment.HTML_ST + "/span"
-					+ KnowWEEnvironment.HTML_GT;
+	@Override
+	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {	
+		/*generateQuickEditLink(topic, sec.getId(), web, user)+*/
+		DelegateRenderer.getInstance().render(sec, user, string);
+		string.append(generateTextField(sec));
+	}
+	
+	private String generateTextField(Section sec) {
+		
+		return "";
+		// OFF by now
+		//return KnowWEEnvironment
+		//.maskHTML("<span><textarea cols=\"30\" rows=\"1\">"+sec.getOriginalText()+"</textarea></span>");
+	}
+
+	private String generateQuickEditLink(String topic, String id, String web2, String user) {
+		String icon = " <img src=KnowWEExtension/images/pencil.png title='Set QuickEdit-Mode' onclick=setQuickEditFlag('"+id+"','"+topic+"'); ></img>";
+
+		return KnowWEEnvironment.maskHTML("<a>" + icon + "</a>");		
 	}
 
 }

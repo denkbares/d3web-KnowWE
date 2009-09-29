@@ -23,7 +23,7 @@ package de.d3web.we.action;
 import java.util.List;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEObjectType;
 
 /**

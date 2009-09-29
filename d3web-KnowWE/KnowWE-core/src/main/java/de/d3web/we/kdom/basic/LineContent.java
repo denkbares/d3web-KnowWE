@@ -18,33 +18,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom;
+package de.d3web.we.kdom.basic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.renderer.DefaultTextLineRenderer;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-
-public class LineBreak extends DefaultAbstractKnowWEObjectType {
+public class LineContent extends DefaultAbstractKnowWEObjectType{
 
 	@Override
 	protected void init() {
-		this.sectionFinder = new LineBreakSectionFinder();
-	}
-	
-	public class LineBreakSectionFinder extends SectionFinder{
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			Matcher m = Pattern.compile(" *[\\r\\n]+").matcher(text);
-			while (m.find()) {
-				result.add(new SectionFinderResult(m.start(), m.end()));
-			}
-			return result;
-		}
+		this.sectionFinder = new AllTextSectionFinder();
+		this.setCustomRenderer(new DefaultTextLineRenderer());
+		
 	}
 }

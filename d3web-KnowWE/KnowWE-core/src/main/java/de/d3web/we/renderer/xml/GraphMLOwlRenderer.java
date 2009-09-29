@@ -27,9 +27,9 @@ import java.util.List;
 import org.openrdf.model.Statement;
 
 import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.SemanticCore;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 
 public class GraphMLOwlRenderer implements KnowWEAction {
 	private int id;

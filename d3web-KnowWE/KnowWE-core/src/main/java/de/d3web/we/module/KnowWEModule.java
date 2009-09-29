@@ -33,31 +33,18 @@ import de.d3web.we.taghandler.TagHandler;
 
 /**
  * @author Jochen
+ *
+ * A KnowWEMdule is a (heavy-weight) functional unit that can be added to KnowWE as 
+ * a plugin. To add a module it to KnowWE this interface needs to be implemented (or 
+ * one of its abstract implementations). The module class needs to be registered
+ * in the modules.txt file to allow KnowWE to initialize the module on system startup.
+ * (Of course the necessary class files need to be made available to class-loader by 
+ * a suitable build-process.) All the methods of this interface are called on initialization
+ * of KnowWE. 
+ * All the methods are OPTIONAL, thus can be implemented empty. 
+ *   
  * 
- * All modules are called in the order, that is defined in the initModules() method
- * in KnowWEEnvironment initialization. The article source text is cut-up in disjoint sections by 
- * the SectionFinder of the Modules. The SectionFinder will only receive text parts, that had not been 
- * allocated by a SectionFinder of another Module that is registered earlier (higher priority).
  * 
- * WORKFLOW:
- * Init of KnowWEEnvironment calls:
- * <ol>
- * <li>init(KnowWETopicLoader loader);</li>
- * </ol>
- * 
- * Saving of a Wiki article:
- * <ol>
- * <li>preCacheModifications(String text);</li> 
- * <li>insertKnowledge(String topic, String web, String text, KnowledgeBaseManagement kbm);</li>
- * </ol>
- * 
- * Rendering/View of an article:
- * (If no preCacheModifications is found in the system, this is headed by preCacheModifications
- * and insertKnowledge)
- * <ol>
- * <li>renderPreTranslate(String output, String topic);</li>
- * <li>renderPostTranslateToHTML(String output, String topic, String user, String id);</li>
- * </ol>
  */
 public interface KnowWEModule {
 
@@ -114,15 +101,24 @@ public interface KnowWEModule {
 	 */
 	List<KnowWEObjectType> getRootTypes();
 	
+	/**
+	 * Here global types can be added to the system. Global types are always active
+	 * at any level of the KDOM parsing process. Global types need to be TerminalTypes, thus
+	 * cannot have children in the parse-tree.
+	 * 
+	 * DANGER: This can invade the markups/parsing of other modules!
+	 * 
+	 * @return
+	 */
 	List<TerminalType> getGlobalTypes();
 
 
-	void findTypeInstances(Class clazz,
-			List<KnowWEObjectType> instances);
+//	void findTypeInstances(Class clazz,
+//			List<KnowWEObjectType> instances);
 
 
 	/**
-	 * A KnowWE module can carry tagHandlers with it and register them by this method.
+	 * A KnowWE module can bring in tagHandlers and register them by this method.
 	 * 
 	 * COMMENT: Alternatively, those taghandlers can also be introduced separately using the taghandler.text file.
 	 * There the class of the taghandler is listed and will be loaded on KnowWE initialization.
