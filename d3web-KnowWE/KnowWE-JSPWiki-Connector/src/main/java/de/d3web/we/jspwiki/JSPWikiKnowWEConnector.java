@@ -45,8 +45,8 @@ import com.ecyrd.jspwiki.providers.AbstractFileProvider;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
-import de.d3web.we.javaEnv.KnowWETopicLoader;
+import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.core.KnowWETopicLoader;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {

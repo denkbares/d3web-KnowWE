@@ -23,7 +23,7 @@ package de.d3web.we.jspwiki;
 
 import java.io.File;
 
-import de.d3web.we.javaEnv.KnowWETopicLoader;
+import de.d3web.we.core.KnowWETopicLoader;
 
 public class JSPWikiLoader extends KnowWETopicLoader{
 	

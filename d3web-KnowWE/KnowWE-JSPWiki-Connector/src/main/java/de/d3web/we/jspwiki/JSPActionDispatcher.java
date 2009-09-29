@@ -24,10 +24,10 @@ package de.d3web.we.jspwiki;
 import com.ecyrd.jspwiki.WikiEngine;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEFacade;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
+import de.d3web.we.core.KnowWEParameterMap;
 
 public class JSPActionDispatcher extends KnowWEActionDispatcher {
 	
