@@ -23,8 +23,8 @@ package de.d3web.we.plugin.forum;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.PlainText;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;

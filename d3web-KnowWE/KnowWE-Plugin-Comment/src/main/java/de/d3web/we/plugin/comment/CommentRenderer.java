@@ -22,11 +22,11 @@ package de.d3web.we.plugin.comment;
 
 import java.util.Map;
 
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
-import de.d3web.we.kdom.PlainText;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.plugin.forum.ForumRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
