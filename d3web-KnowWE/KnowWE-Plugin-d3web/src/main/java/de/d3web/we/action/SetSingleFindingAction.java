@@ -33,13 +33,13 @@ import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webUtils;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 import de.d3web.we.terminology.term.Term;
 
 public class SetSingleFindingAction implements KnowWEAction {

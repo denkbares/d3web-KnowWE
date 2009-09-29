@@ -61,12 +61,12 @@ import de.d3web.we.action.SolutionLogRenderer;
 import de.d3web.we.action.UserFindingsRenderer;
 import de.d3web.we.action.XCLExplanationRenderer;
 import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.Annotation.Annotation;
@@ -290,16 +290,6 @@ public class D3webModule implements KnowWEModule {
 		actionMap.put(SaveDialogAsXCLAction.class, new SaveDialogAsXCLAction());
 	}
 
-	public String generateDialogLink(String user, String topic, String actualID) {
-		return "<a target=\"kwiki-dialog\" href=\"KnowWE.jsp?renderer=KWiki_dialog&KWikisessionid="
-				+ topic
-				+ ".."
-				+ actualID
-				+ "&KWikiWeb=default_web&KWikiUser="
-				+ user
-				+ "\"><img src=\"KnowWEExtension/images/run.gif\" title=\"Fall im d3web-Dialog starten \"/></a>";
-	}
-
 	/**
 	 * returns a knowledge-service from the distributed reasoing engine for a
 	 * given web and knowledge-service id
@@ -404,55 +394,6 @@ public class D3webModule implements KnowWEModule {
 		return sessionDir;
 	}
 
-	private static void backupFile(String filestr) throws Exception {
-
-		FileInputStream in = new FileInputStream(filestr);
-		FileOutputStream out = new FileOutputStream(filestr + ".bak");
-
-		FileChannel fcIn = in.getChannel();
-		FileChannel fcOut = out.getChannel();
-
-		MappedByteBuffer buf = fcIn.map(FileChannel.MapMode.READ_ONLY, 0, fcIn
-				.size());
-		fcOut.write(buf);
-
-		fcIn.close();
-		fcOut.close();
-
-		File fin = new File(filestr);
-		fin.delete();
-
-	}
-
-	public static boolean backupFile(String url, String type) {
-		try {
-
-			if (type.equals("jar")) {
-				String realUrl = url.substring(4, url.length() - 2);
-				System.out.println(realUrl);
-
-				URL u = new URL(realUrl);
-				backupFile(u.getFile());
-				return true;
-			} else if (type.equals("xml")) {
-				backupFile(url);
-				return true;
-			} else
-				return false;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-
-	}
-
-	public static String getVariablePath(ServletContext context, String realPath) {
-		String varPath = context.getRealPath("");
-		varPath = varPath.replace('\\', '/');
-		realPath = realPath.replaceAll(varPath, "\\$webapp_path\\$");
-		return realPath;
-	}
 
 	public static String getSessionPath(KnowWEParameterMap parameterMap) {
 		String user = parameterMap.get(KnowWEAttributes.USER);
@@ -484,18 +425,6 @@ public class D3webModule implements KnowWEModule {
 
 	}
 
-//	@Override
-//	public String renderTags(Map<String, String> params, String topic,
-//			String user, String web) {
-//
-//		String tag = params.get("_cmdline");
-//		if (this.tagHandlers.containsKey(tag.toLowerCase())) {
-//			return tagHandlers.get(tag.toLowerCase()).render(topic, user,
-//					params.get(tag.toLowerCase()), web);
-//		}
-//
-//		return null;
-//	}
 
 	@Override
 	public void registerKnowledgeRepresentationHandler(KnowledgeRepresentationManager mgr) {
@@ -508,30 +437,11 @@ public class D3webModule implements KnowWEModule {
 		return handler;
 	}
 
-	@Override
-	public void findTypeInstances(Class clazz, List<KnowWEObjectType> instances) {
-		for (KnowWEObjectType type : this.getRootTypes()) {
-			type.findTypeInstances(clazz, instances);
-		}
-
-	}
 
 	@Override
 	public List<TagHandler> getTagHandlers() {
 		return this.tagHandlers;
 	}
 
-	// private String generateReportLink(String topicname, String web) {
-	// return "<a
-	// href=\"KnowWE.jsp?action=getParseReport&topic="+topicname+"&KWiki_Topic="+topicname+"&web="+web+"\"
-	// target=_blank><img src='KnowWEExtension/images/statistics.gif'
-	// title='Report'/></a>";
-	// }
-
-	// @Override
-	// public String preCacheModifications(String text, KnowledgeBase kb, String
-	// topicname) {
-	// return text;
-	// }
 
 }

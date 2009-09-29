@@ -28,7 +28,7 @@ import de.d3web.KnOfficeParser.dashtree.SolutionsBuilder;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
-import de.d3web.we.javaEnv.KnowWEParseResult;
+import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;

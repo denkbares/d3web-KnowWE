@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.decisionTree;
 
-import de.d3web.we.kdom.TextLine;
+import de.d3web.we.kdom.basic.TextLine;
 
 public class DescriptionLine extends TextLine {
 	

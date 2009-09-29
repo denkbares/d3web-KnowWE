@@ -42,12 +42,12 @@ import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
+import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 
 public class XCLExplanationRenderer implements de.d3web.we.action.KnowWEAction {
 	

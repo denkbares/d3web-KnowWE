@@ -35,13 +35,13 @@ import de.d3web.kernel.domainModel.RuleComplex;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 import de.d3web.we.taghandler.DialogLinkTagHandler;
 
 public class KnowledgeSummerizeRenderer implements de.d3web.we.action.KnowWEAction{

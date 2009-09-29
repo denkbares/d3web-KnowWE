@@ -23,8 +23,8 @@ package de.d3web.we.kdom.dashTree.questionnaires;
 import java.util.List;
 import java.util.Stack;
 
-import de.d3web.we.kdom.LineBreak;
-import de.d3web.we.kdom.TextLine;
+import de.d3web.we.kdom.basic.LineBreak;
+import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.dashTree.DashTreeKDOMBuilder;
 import de.d3web.we.kdom.dashTree.Dashes;
 import de.d3web.we.kdom.dashTree.Tilde;

@@ -35,8 +35,8 @@ import de.d3web.kernel.domainModel.qasets.QuestionNum;
 import de.d3web.kernel.domainModel.qasets.QuestionYN;
 import de.d3web.report.Message;
 import de.d3web.textParser.KBTextInterpreter;
+import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.kdom.KnowWEDomParseReport;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.webapp.preparser.KWikiReport;
 

@@ -29,12 +29,12 @@ import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.psMethods.MethodKind;
 import de.d3web.kernel.psMethods.heuristic.PSMethodHeuristic;
 import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.ProblemSolverType;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 
 public class ExplanationRenderer2 implements KnowWEAction {
 

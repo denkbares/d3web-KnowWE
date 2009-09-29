@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.dashTree.solutions;
 
-import de.d3web.we.kdom.TextLine;
+import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.dashTree.Tilde;
 import de.d3web.we.kdom.decisionTree.SolutionID;
 

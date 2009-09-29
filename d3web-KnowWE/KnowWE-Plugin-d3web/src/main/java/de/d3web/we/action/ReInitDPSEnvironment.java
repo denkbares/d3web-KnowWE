@@ -21,8 +21,8 @@
 package de.d3web.we.action;
 
 import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 
 @Deprecated
 public class ReInitDPSEnvironment implements KnowWEAction {

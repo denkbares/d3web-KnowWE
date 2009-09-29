@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom.decisionTree;
 
-import de.d3web.we.kdom.LineContent;
+import de.d3web.we.kdom.basic.LineContent;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 
 public class NumericCond extends LineContent {

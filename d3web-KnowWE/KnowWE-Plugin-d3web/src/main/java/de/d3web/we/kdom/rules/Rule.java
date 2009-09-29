@@ -34,7 +34,7 @@ import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.javaEnv.KnowWEParseResult;
+import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.include.IncludedFromType;

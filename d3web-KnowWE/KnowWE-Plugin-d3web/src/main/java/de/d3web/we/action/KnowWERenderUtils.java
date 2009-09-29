@@ -33,11 +33,11 @@ import java.util.Set;
 
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.d3webModule.ProblemSolverType;
 import de.d3web.we.d3webModule.TerminologyAlignmentLinkFilter;
-import de.d3web.we.javaEnv.KnowWEAttributes;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 import de.d3web.we.utils.KnowWEUtils;

@@ -20,8 +20,8 @@
 
 package de.d3web.we.kdom.dashTree.questionnaires;
 
-import de.d3web.we.kdom.LineBreak;
-import de.d3web.we.kdom.TextLine;
+import de.d3web.we.kdom.basic.LineBreak;
+import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.dashTree.Tilde;
 import de.d3web.we.kdom.decisionTree.QClassID;
 

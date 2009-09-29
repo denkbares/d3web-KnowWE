@@ -28,7 +28,7 @@ import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.TextLine;
+import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rules.Rule;

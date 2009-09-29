@@ -26,10 +26,10 @@ import de.d3web.kernel.domainModel.answers.AnswerChoice;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.qasets.QuestionChoice;
 import de.d3web.we.core.DPSEnvironment;
+import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.javaEnv.KnowWEAttributes;
-import de.d3web.we.javaEnv.KnowWEParameterMap;
 
 public class SCListEditorRenderer implements KnowWEAction {
 

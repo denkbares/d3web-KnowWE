@@ -20,8 +20,8 @@
 
 package de.d3web.we.kdom.kopic.renderer;
 
-import de.d3web.we.kdom.ColorRenderer;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.renderer.ColorRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
