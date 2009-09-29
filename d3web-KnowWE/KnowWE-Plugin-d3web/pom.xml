@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-d3web</artifactId>
-  <name>KnowWE-Plugin-d3webs</name>
+  <name>KnowWE-Plugin-d3web</name>
   <version>0-SNAPSHOT</version>
   <build>
 	<defaultGoal>package</defaultGoal>
