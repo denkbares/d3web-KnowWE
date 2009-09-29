@@ -38,6 +38,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
 import de.d3web.we.kdom.semanticFactSheet.Info;
 import de.d3web.we.kdom.sparql.Sparql;
+import de.d3web.we.kdom.tagging.Tags;
 
 public class DefaultTextType extends DefaultAbstractKnowWEObjectType {
 
@@ -129,7 +130,8 @@ public class DefaultTextType extends DefaultAbstractKnowWEObjectType {
 			childrenTypes.add(new Extension());
 			childrenTypes.add(new OwlProperties());
 			childrenTypes.add(new SemanticAnnotation());
-			childrenTypes.add(new Info());			
+			childrenTypes.add(new Info());
+			childrenTypes.add(new Tags());
 			sectionFinder = new AllTextSectionFinder();
 			initialzed = true;
 		}

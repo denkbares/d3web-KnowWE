@@ -18,37 +18,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.renderer;
+package de.d3web.we.action;
 
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.core.KnowWEArticleManager;
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.TaggingMangler;
+import de.d3web.we.javaEnv.KnowWEAttributes;
+import de.d3web.we.javaEnv.KnowWEParameterMap;
 
-public class NothingRenderer extends KnowWEDomRenderer{
+public class TagHandlingAction implements KnowWEAction {
 
-	private NothingRenderer(){
+	@Override
+	public String perform(KnowWEParameterMap parameterMap) {
+		String web = parameterMap.getWeb();		
+		String topic = parameterMap.getTopic();
+		String tagaction = parameterMap.get(KnowWEAttributes.TAGGING_ACTION);
+		String tag=parameterMap.get(KnowWEAttributes.TAGGING_TAG);				
 		
-	}
-	
-	private static NothingRenderer instance ;
-	
-	public static synchronized  NothingRenderer getInstance() {
-		if (instance == null)
-			instance = new NothingRenderer();
-		return instance;
-	}
-	
-	/**
-	 * prevent cloning
-	 */
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-	    throw new CloneNotSupportedException();
+		TaggingMangler tm=TaggingMangler.getInstance();
+		if (tagaction.equals("add")){
+			tm.addTag(topic, tag,parameterMap);
+		} else if (tagaction.equals("del")){
+			tm.removeTag(topic, tag,parameterMap);
+		} else if (tagaction.equals("set")){
+			tm.setTags(topic,tag,parameterMap);
+		}
+		
+		
+		return tag;
 	}
 
-	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
-		// nothing
-	}
-	
 }

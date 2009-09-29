@@ -88,7 +88,10 @@ public class KnowWEAttributes {
 	public static final String SEMANO_VALUE_ID = "ValueID";
 	public static final String SEMANO_VALUE_IDS = "ValueIDS";
 	public static final String SEMANO_VALUE_NUM = "ValueNum";
-	public static final String SEMANO_TERM_TYPE = "TermType";		
+	public static final String SEMANO_TERM_TYPE = "TermType";
+	
+	public static final String TAGGING_ACTION= "tagaction";
+	public static final String TAGGING_TAG="tagtag";
 	
 	public static String getBrokerConstant(String web) {
 		if(web != null) {

@@ -85,7 +85,8 @@ public class PropertyManager {
      */   
     public boolean isValid(URI property) {
 	boolean result=false;
-	if (property.getLocalName().contains("subClassOf")||property.getLocalName().contains("type")||property.getLocalName().contains("subPropertyOf"))
+	//TODO evil hack, to get going
+	if (property.getLocalName().contains("subClassOf")||property.getLocalName().contains("type")||property.getLocalName().contains("subPropertyOf")||property.getLocalName().contains("hasTag"))
 	    return true;
 	String querystring="PREFIX ns: <"+uo.getBaseNS()+"> \n";
 	querystring+="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";

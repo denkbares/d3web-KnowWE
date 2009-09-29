@@ -249,9 +249,30 @@ public class OwlHelper {
 	/**
 	 * @param cur
 	 */
-	public IntermediateOwlObject createProperty(String cur) {
+	public IntermediateOwlObject createlocalProperty(String cur) {
 		UpperOntology uo = UpperOntology.getInstance();
 		URI prop = uo.getHelper().createlocalURI(cur);
+		URI naryprop = uo.getHelper().createURI("NaryProperty");
+		IntermediateOwlObject io = new IntermediateOwlObject();
+		if (!PropertyManager.getInstance().isValid(prop)) {
+			try {
+				io.addStatement(uo.getHelper().createStatement(prop,
+						RDFS.SUBCLASSOF, naryprop));
+			} catch (RepositoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return io;
+
+	}
+	
+	/**
+	 * @param cur
+	 */
+	public IntermediateOwlObject createProperty(String cur) {
+		UpperOntology uo = UpperOntology.getInstance();
+		URI prop = uo.getHelper().createURI(cur);
 		URI naryprop = uo.getHelper().createURI("NaryProperty");
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		if (!PropertyManager.getInstance().isValid(prop)) {

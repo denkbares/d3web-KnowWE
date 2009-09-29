@@ -39,6 +39,7 @@ import de.d3web.we.action.KnowWEObjectTypeBrowserRenderer;
 import de.d3web.we.action.ParseWebOfflineRenderer;
 import de.d3web.we.action.ReplaceKDOMNodeAction;
 import de.d3web.we.action.SetQuickEditFlagAction;
+import de.d3web.we.action.TagHandlingAction;
 import de.d3web.we.action.UpdateTableKDOMNodes;
 import de.d3web.we.action.WordBasedRenamingAction;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -114,6 +115,8 @@ public class KnowWEFacade {
 		actionMap.put(UpdateTableKDOMNodes.class, new UpdateTableKDOMNodes());
 		actionMap.put(KnowWEObjectTypeBrowserRenderer.class, new KnowWEObjectTypeBrowserRenderer());
 		actionMap.put(KnowWEObjectTypeActivationRenderer.class, new KnowWEObjectTypeActivationRenderer());
+		
+		actionMap.put(TagHandlingAction.class, new TagHandlingAction());
 		
 		List<KnowWEModule> modules = KnowWEEnvironment.getInstance()
 				.getModules();

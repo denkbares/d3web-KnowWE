@@ -38,7 +38,7 @@ public class IncludedFromTypeHead extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public KnowWEDomRenderer getRenderer() {
-		return new NothingRenderer();
+		return NothingRenderer.getInstance();
 	}
 	
 	

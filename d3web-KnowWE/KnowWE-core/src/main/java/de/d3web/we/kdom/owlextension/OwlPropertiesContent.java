@@ -54,7 +54,7 @@ public class OwlPropertiesContent extends XMLContent {
 	    String text=s.getOriginalText();	    
 	    for (String cur:text.split("\r\n|\r|\n")){
 		if (cur.trim().length()>0)
-		    io.merge(UpperOntology.getInstance().getHelper().createProperty(cur.trim()));		
+		    io.merge(UpperOntology.getInstance().getHelper().createlocalProperty(cur.trim()));		
 	    }
 	    return io;	    
 	}
