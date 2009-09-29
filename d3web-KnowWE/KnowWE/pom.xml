@@ -24,7 +24,7 @@
 							<excludes>
 								<exclude>META-INF/**</exclude>
 								<exclude>WEB-INF/web.xml</exclude>
-								<exclude>WEB-INF/d3web*</exclude>
+								<exclude>WEB-INF/d3web*.jar</exclude>
 								<exclude>WEB-INF/lib/commons-fileupload*</exclude>
 								<exclude>WEB-INF/lib/commons-io*</exclude>
 								<exclude>WEB-INF/lib/commons-lang*</exclude>
