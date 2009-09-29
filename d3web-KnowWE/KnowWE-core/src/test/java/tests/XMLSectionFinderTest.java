@@ -170,7 +170,7 @@ public class XMLSectionFinderTest extends TestCase {
 	 */
 	private String readXMLFile(String number) {
 		File f = new File(
-				"test-resources/testXML" +number + ".txt");
+				"src/test/resources/testXML" +number + ".txt");
 		FileInputStream s;
 		try {
 			s = new FileInputStream(f);
