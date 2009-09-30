@@ -328,6 +328,10 @@ code.box {
 	/*background-color: #37435B;*/
 }
 
+#dialog span {
+	cursor: pointer;
+}
+
 /*.dialogstyle h4 a{
 	color: #fff;
 }*/
