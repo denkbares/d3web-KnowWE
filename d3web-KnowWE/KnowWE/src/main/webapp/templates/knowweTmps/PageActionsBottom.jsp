@@ -2,7 +2,7 @@
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<fmt:setLocale value="${prefs['Language']}" />
+<fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%
   WikiContext c = WikiContext.findContext(pageContext);
@@ -31,15 +31,8 @@
       </fmt:message>
     </wiki:CheckVersion>
 
-    <a href="<wiki:Link format='url' jsp='rss.jsp'>
-               <wiki:Param name='page' value='<%=wikipage.getName()%>'/>
-               <wiki:Param name='mode' value='wiki'/>
-             </wiki:Link>"
-      class="feed"
-      title="<fmt:message key='info.rsspagefeed.title'>
-               <fmt:param><wiki:PageName /></fmt:param>
-             </fmt:message>" >&nbsp;</a>
-  
+   <wiki:RSSImageLink/>
+
   </wiki:PageExists>
 
   <wiki:NoSuchPage><fmt:message key="actions.notcreated"/></wiki:NoSuchPage> 

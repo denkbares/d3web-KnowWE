@@ -3,11 +3,12 @@
 <%@ page import="com.ecyrd.jspwiki.auth.*" %>
 <%@ page import="com.ecyrd.jspwiki.auth.permissions.*" %>
 <%@ page import="com.ecyrd.jspwiki.attachment.*" %>
+<%@ page import="com.ecyrd.jspwiki.i18n.InternationalizationManager" %>
 <%@ page import="java.security.Permission" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<fmt:setLocale value="${prefs['Language']}" />
+<fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%
   WikiContext c = WikiContext.findContext(pageContext);
@@ -16,6 +17,9 @@
   String attTitle = LocaleSupport.getLocalizedMessage(pageContext, "attach.tab");
   if( attCount != 0 ) attTitle += " (" + attCount + ")";
 
+  String parm_renameto = (String)request.getParameter( "renameto" );
+  if( parm_renameto == null ) parm_renameto = wikiPage.getName();
+
   String creationAuthor ="";
 
   //FIXME -- seems not to work correctly for attachments !!
@@ -23,6 +27,15 @@
   if( firstPage != null )
   {
     creationAuthor = firstPage.getAuthor();
+
+    if( creationAuthor != null && creationAuthor.length() > 0 )
+    {
+      creationAuthor = TextUtil.replaceEntities(creationAuthor);
+    }
+    else
+    {
+      creationAuthor = c.getBundle( InternationalizationManager.CORE_BUNDLE ).getString( "common.unknownauthor" );
+    }
   }
 
   int itemcount = 0;  //number of page versions
@@ -33,12 +46,16 @@
   catch( Exception  e )  { /* dont care */ }
 
   int pagesize = 20;
-  int startitem = itemcount;
+  int startitem = itemcount-1; /* itemcount==1-20 -> startitem=0-19 ... */
+
   String parm_start = (String)request.getParameter( "start" );
   if( parm_start != null ) startitem = Integer.parseInt( parm_start ) ;
-  /*round to start of a pagination block */
-  if( startitem > -1 ) startitem = ( (startitem/pagesize) * pagesize );
 
+  /* round to start of block: 0-19 becomes 0; 20-39 becomes 20 ... */
+  if( startitem > -1 ) startitem = ((startitem)/pagesize) * pagesize;
+
+  /* startitem drives the pagination logic */
+  /* startitem=-1:show all; startitem=0:show block 1-20; startitem=20:block 21-40 ... */
 %>
 <wiki:PageExists>
 
@@ -72,14 +89,7 @@
     <fmt:param><wiki:Author /></fmt:param>
   </fmt:message>
 
-  <a href="<wiki:Link format='url' jsp='rss.jsp'>
-             <wiki:Param name='page' value='<%=wikiPage.getName()%>'/>
-             <wiki:Param name='mode' value='wiki'/>
-           </wiki:Link>"
-    class="feed"
-    title="<fmt:message key='info.rsspagefeed.title'>
-             <fmt:param><wiki:PageName /></fmt:param>
-           </fmt:message>" >&nbsp;</a>
+  <wiki:RSSImageLink mode="wiki"/>
   </p>
 
   <wiki:CheckVersion mode="notfirst">
@@ -96,6 +106,11 @@
   </wiki:CheckVersion>
 
   <wiki:Permission permission="rename">
+
+    <div class="formhelp">
+      <wiki:Messages div="error" topic="rename" prefix='<%=LocaleSupport.getLocalizedMessage(pageContext,"prefs.errorprefix.rename")%>'/>
+    </div>
+
     <form action="<wiki:Link format='url' jsp='Rename.jsp'/>"
            class="wikiform"
               id="renameform"
@@ -104,7 +119,7 @@
       <p>
       <input type="hidden" name="page" value="<wiki:Variable var='pagename' />" />
       <input type="submit" name="rename" value="<fmt:message key='info.rename.submit' />" />
-      <input type="text" name="renameto" value="<wiki:Variable var='pagename' />" size="40" />
+      <input type="text" name="renameto" value="<%= parm_renameto %>" size="40" />
       &nbsp;&nbsp;
       <input type="checkbox" name="references" checked="checked" />
       <fmt:message key="info.updatereferrers"/>
@@ -123,7 +138,7 @@
         onsubmit="return( confirm('<fmt:message key="info.confirmdelete"/>') && Wiki.submitOnce(this) );">
       <p>
       <input type="submit" name="delete-all" id="delete-all"
-            value="<fmt:message key='info.delete.submit'/>" >
+            value="<fmt:message key='info.delete.submit'/>" />
       </p>
     </form>
   </wiki:Permission>
@@ -172,8 +187,8 @@
 
       <wiki:HistoryIterator id="currentPage">
       <% if( ( startitem == -1 ) ||
-             (  ( currentPage.getVersion() >= startitem )
-             && ( currentPage.getVersion() < startitem + pagesize ) ) )
+             (  ( currentPage.getVersion() > startitem )
+             && ( currentPage.getVersion() <= startitem + pagesize ) ) )
          {
        %>
       <tr>
@@ -184,9 +199,9 @@
         </td>
 
         <td><fmt:formatDate value="<%= currentPage.getLastModified() %>" pattern="${prefs.DateFormat}" timeZone="${prefs.TimeZone}" /></td>
-        <td>
-          <%--<fmt:formatNumber value='<%=Double.toString(currentPage.getSize()/1000.0)%>' groupingUsed='false' maxFractionDigits='1' minFractionDigits='1'/>&nbsp;Kb--%>
-          <wiki:PageSize />
+        <td style="white-space:nowrap;text-align:right;">
+          <c:set var="ff"><wiki:PageSize /></c:set>
+          <fmt:formatNumber value='${ff/1000}' maxFractionDigits='3' minFractionDigits='1'/>&nbsp;<fmt:message key="info.kilobytes"/>
         </td>
         <td><wiki:Author /></td>
 
@@ -215,7 +230,7 @@
 
     </table>
     </div>
-     ${pagination}
+    ${pagination}
     <%-- } /* itemcount > 1 */ --%>
     </wiki:CheckVersion>
   </wiki:Tab>
@@ -323,7 +338,7 @@
     <%
       String name = att.getName(); //att.getFileName();
       int dot = name.lastIndexOf(".");
-      String attachtype = ( dot != -1 ) ? name.substring(dot+1) : "";
+      String attachtype = ( dot != -1 ) ? name.substring(dot+1) : "&nbsp;";
 
       String sname = name;
       if( sname.length() > MAXATTACHNAMELENGTH ) sname = sname.substring(0,MAXATTACHNAMELENGTH) + "...";

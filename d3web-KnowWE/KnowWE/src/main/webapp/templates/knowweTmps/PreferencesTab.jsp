@@ -24,6 +24,7 @@
   pageContext.setAttribute( "timeformats", t.listTimeFormats(pageContext) );
   pageContext.setAttribute( "timezones", t.listTimeZones(pageContext) );
 %>
+
 <h3><fmt:message key="prefs.heading"><fmt:param><wiki:Variable var="applicationname"/></fmt:param></fmt:message></h3>
 
 <c:if test="${param.tab eq 'prefs'}" >
@@ -36,7 +37,7 @@
        class="wikiform" 
           id="setCookie"
       method="post" accept-charset="<wiki:ContentEncoding />"
-    onsubmit="Wiki.savePrefs(); return Wiki.submitOnce(this);" >
+    onsubmit="WikiPreferences.savePrefs(); return Wiki.submitOnce(this);" >
 <table>
 
   <tr>
@@ -76,14 +77,22 @@
   </select>
   </td>
   </tr>
-
+  
+  <tr>
+  <td><label for="prefSectionEditing"><fmt:message key="prefs.user.sectionediting"/></label></td>
+  <td>
+  <input id="prefSectionEditing" name="prefSectionEditing" 
+       type="checkbox" <c:if test='${"on" == prefs.SectionEditing}'>checked="checked"</c:if> ></input>
+  <fmt:message key="prefs.user.sectionediting.text"/>
+  </td>
+  </tr>
   
   <tr>
   <td><label for="prefSkin"><fmt:message key="prefs.user.skin"/></label></td>
   <td>
   <select id="prefSkin" name="prefSkin">
     <c:forEach items="${skins}" var="i">
-      <option value='<c:out value='${i}'/>' <c:if test='${i == prefs["SkinName"]}'>selected="selected"</c:if> ><c:out value="${i}"/></option>
+      <option value='<c:out value='${i}'/>' <c:if test='${i == prefs.SkinName}'>selected="selected"</c:if> ><c:out value="${i}"/></option>
     </c:forEach>
   </select>
   </td>
@@ -141,7 +150,7 @@
   <td><label for="prefShowQuickLinks">Show Quick Links</label></td>
   <td>
   <input class='checkbox' type='checkbox' id='prefShowQuickLinks' name='prefShowQuickLinks' 
-         <c:if test='${"on" == prefs["SectionEdit"]}'>selected="selected"</c:if> />
+         <c:if test='${"on" == prefs.SectionEdit}'>selected="selected"</c:if> />
          <span class="quicklinks"><span 
                class='quick2Top'><a href='#wikibody' title='Go to Top' >&laquo;</a></span><span 
                class='quick2Prev'><a href='#' title='Go to Previous Section'>&lsaquo;</a></span><span 
@@ -178,7 +187,7 @@
 
 <h3><fmt:message key='prefs.clear.heading'/></h3>
 
-<form action="<wiki:Link format='url' jsp='UserPreferences.jsp'><wiki:Param name='tab' value='prefs'/></wiki:Link>"
+<form action="<wiki:Link jsp='UserPreferences.jsp' format='url'><wiki:Param name='tab' value='prefs'/></wiki:Link>"
           id="clearCookie"
     onsubmit="Wiki.prefs.empty(); return Wiki.submitOnce( this );" 
       method="post" accept-charset="<wiki:ContentEncoding />" >
