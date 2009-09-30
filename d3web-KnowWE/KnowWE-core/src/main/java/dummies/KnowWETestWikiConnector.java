@@ -19,6 +19,7 @@
  */
 
 package dummies;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
@@ -161,6 +162,12 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
 	@Override
 	public Locale getLocale(HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection findPages(String query) {
 		// TODO Auto-generated method stub
 		return null;
 	}

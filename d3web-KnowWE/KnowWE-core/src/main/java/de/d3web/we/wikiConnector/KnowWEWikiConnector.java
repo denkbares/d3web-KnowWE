@@ -20,6 +20,7 @@
 
 package de.d3web.we.wikiConnector;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
@@ -76,5 +77,8 @@ public interface KnowWEWikiConnector {
 	public Locale getLocale();
 	
 	public Locale getLocale( HttpServletRequest request );
+	
+	@SuppressWarnings("unchecked")
+	public Collection findPages(String query);
 
 }

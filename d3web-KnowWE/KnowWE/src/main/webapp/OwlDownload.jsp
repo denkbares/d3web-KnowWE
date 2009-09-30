@@ -1,5 +1,4 @@
-<%@ page import="com.ecyrd.jspwiki.*"%>
-<%@ page import="de.d3web.we.javaEnv.*"%>
+<%@page import="de.d3web.we.core.KnowWEFacade"%><%@ page import="com.ecyrd.jspwiki.*"%>
 <%@ page import="java.util.*,java.io.*"%>
 <%!
 String findParam( PageContext ctx, String key )

@@ -40,8 +40,9 @@ public class TagCloud extends AbstractTagHandler {
 			Map<String, String> values, String web) {
 		HashMap<String,Integer> weightedlist=TaggingMangler.getInstance().getCloudList(8, 20);
 		String output="<p>";
+		//TagSearch.jsp?query=test+auto&ok=Find!&start=0&maxitems=20
 		for (Entry<String,Integer> cur:weightedlist.entrySet()){
-			output+=" <a href =\"\" style=\"font-size:"+cur.getValue()+"px\">"+cur.getKey()+"</a>";		
+			output+=" <a href =\"TagSearch.jsp?query="+cur.getKey()+"&ok=Find!&start=0&maxitems=20\" style=\"font-size:"+cur.getValue()+"px\">"+cur.getKey()+"</a>";		
 			}
 		return KnowWEEnvironment.maskHTML(output+"</p>");
 	}

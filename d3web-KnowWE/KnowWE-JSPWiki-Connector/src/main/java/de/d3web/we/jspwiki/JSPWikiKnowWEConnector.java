@@ -20,6 +20,7 @@
 
 package de.d3web.we.jspwiki;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ecyrd.jspwiki.NoRequiredPropertyException;
 import com.ecyrd.jspwiki.PageLock;
 import com.ecyrd.jspwiki.PageManager;
+import com.ecyrd.jspwiki.SearchResult;
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
@@ -47,6 +49,8 @@ import com.ecyrd.jspwiki.providers.ProviderException;
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.KnowWETopicLoader;
+import de.d3web.we.core.TaggingMangler;
+import de.d3web.we.wikiConnector.GenericSearchResult;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
@@ -448,5 +452,21 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		WikiContext wikiContext = new WikiContext(this.engine, this.engine.getPage("Main"));
 		
 		return Preferences.getLocale(wikiContext);
+	}
+
+	@Override
+	public Collection findPages(String query) {
+		ArrayList<SearchResult> result=new ArrayList<SearchResult>();
+		if (query.contains("#")){
+			return null;
+		}
+		
+		for (GenericSearchResult cur:TaggingMangler.getInstance().searchPages(query.trim())){						
+			WikiPage page=this.engine.getPage(cur.getPagename());
+			result.add(new SearchResultImpl(page, cur.getContexts(), cur.getScore()));
+		}
+	        
+		
+		return result;
 	}
 }

@@ -536,6 +536,15 @@ public class SemanticCore {
 					
 						e.printStackTrace();
 					}
+					if (tag.contains("=")){
+						tag=tag.split("=")[1];
+					}
+					if (tag.startsWith("\"")){
+						tag=tag.substring(1);
+					}
+					if (tag.endsWith("\"")){
+						tag=tag.substring(0, tag.length()-1);
+					}
 					resultlist.add(tag);
 				}
 			} catch (QueryEvaluationException e) {

@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.tagging.TagsContent;
+import de.d3web.we.wikiConnector.GenericSearchResult;
 
 /**
  * Centralised management of tags. Takes care of adding/removing tags. And
@@ -148,10 +149,12 @@ public class TaggingMangler {
 	 */
 	public ArrayList<String> getPages(String tag) {
 		String querystring = "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object \""
-				+ tag + "\" .\n" + "?t rdf:predicate ns:hasTag .\n"
+				+ tag + "\" .\n" + "?t rdf:predicate lns:hasTag .\n"
 				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
 		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
 	}
+	
+	
 
 	/**
 	 * Creates a list of tags this page is associated with. Always returns a
@@ -297,5 +300,31 @@ public class TaggingMangler {
 		text+="<tags>"+content+"</tags>";
 		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
 		.replaceKDOMNode(params, topic, asection.getId(), text);
+	}
+
+	public ArrayList<GenericSearchResult> searchPages(String querytags) {		String[] tags=querytags.split(" ");
+		ArrayList<GenericSearchResult> result=new ArrayList<GenericSearchResult>();
+		String querystring="";
+		int i=0;
+		if (tags.length==1){
+			querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object lns:"
+			+ tags[0] + " .\n" + "?t rdf:predicate lns:hasTag .\n"
+			+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
+		} else {
+			querystring= "SELECT ?q \n" + "WHERE {\n";
+			for (String cur:tags){
+				querystring+="?t"+i+" rdf:object lns:" + cur + " .\n";			
+				querystring+= "?t"+i+" rdf:predicate lns:hasTag .\n";
+				querystring+= "?t"+i+" rdfs:isDefinedBy ?o"+i+" .\n ?o"+i+" ns:hasTopic ?q . \n";				
+				i++;
+			}
+			querystring +="}"; 			
+		}
+		ArrayList<String> pages=SemanticCore.getInstance().simpleQueryToList(querystring, "q");
+		for (String cur:pages){
+			//TODO better search? better contexts..
+			result.add(new GenericSearchResult(cur, null, 1));
+		}
+		return result;
 	}
 } 
