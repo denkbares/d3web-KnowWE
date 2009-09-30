@@ -5,7 +5,7 @@
 <%@ page import="com.ecyrd.jspwiki.filters.*" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<fmt:setLocale value="${prefs['Language']}" />
+<fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%--
         This is a special editor component for JSPWiki preview storage.
@@ -31,6 +31,7 @@
     <input type="hidden" name="author" value="<c:out value='${author}' />" />
     <input type="hidden" name="link" value="<c:out value='${link}' />" />
     <input type="hidden" name="remember" value="<c:out value='${remember}' />" />
+    <input type="hidden" name="changenote" value="<c:out value='${changenote}' />" />
 
     <input type="hidden" name="page" value="<wiki:Variable var='pagename' />" />
     <input type="hidden" name="action" value="save" />

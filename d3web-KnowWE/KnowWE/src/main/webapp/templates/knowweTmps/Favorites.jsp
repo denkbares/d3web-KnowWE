@@ -1,7 +1,7 @@
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<fmt:setLocale value="${prefs['Language']}" />
+<fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 
@@ -82,6 +82,8 @@
   </wiki:Translate>
   </wiki:UserCheck>
 
+  <wiki:Permission permission="view">
+
   <%-- LeftMenu is automatically generated from a Wiki page called "LeftMenu" --%>
   <div class="leftmenu">
     <wiki:InsertPage page="LeftMenu" />
@@ -104,6 +106,8 @@
       </div>
     </wiki:NoSuchPage>
   </div>
+
+  </wiki:Permission>
 
   </wiki:CheckRequestContext>
   

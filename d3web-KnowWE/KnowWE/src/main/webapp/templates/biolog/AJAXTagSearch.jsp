@@ -12,7 +12,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<fmt:setLocale value="${prefs.Language}" />
+
+<%@page import="de.d3web.we.jspwiki.JSPWikiKnowWEConnector"%><fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%! 
   public void jspInit()
@@ -26,7 +27,7 @@
   /* ********************* actual start ********************* */
   /* FIXME: too much hackin on this level -- should better happen in toplevel jsp's */
   /* Create wiki context and check for authorization */
-  WikiContext wikiContext = wiki.createContext( request, WikiContext.FIND );
+  WikiContext wikiContext = wiki.createContext( request, WikiContext.TAGFIND );
   if(!wikiContext.hasAccess( response )) return;
  
   String query = request.getParameter( "query");
@@ -35,7 +36,8 @@
   {
     try
     { 
-      Collection list = wiki.findPages( query );
+    	JSPWikiKnowWEConnector conn =new JSPWikiKnowWEConnector(wiki);
+        Collection list = conn.findPages( query );
 
       //  Filter down to only those that we actually have a permission to view
       AuthorizationManager mgr = wiki.getAuthorizationManager();

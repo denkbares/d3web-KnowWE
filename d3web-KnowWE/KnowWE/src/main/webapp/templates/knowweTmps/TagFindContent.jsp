@@ -13,19 +13,19 @@
 <wiki:TabbedSection>
 <wiki:Tab id="findcontent" title='<%=LocaleSupport.getLocalizedMessage(pageContext, "find.tab")%>' accesskey="s">
 
-<form action="<wiki:Link format='url' jsp='Search.jsp'/>"
+<form action="<wiki:Link format='url' jsp='TagSearch.jsp'/>"
        class="wikiform"
           id="searchform2"
          accept-charset="<wiki:ContentEncoding/>">
 
-  <h4><fmt:message key="find.input" /></h4>
+  <h4>Enter searchtags here:</h4>
   <p>
     <input type="text"
-           name="query" id="query2" 
+           name="query" id="tagquery" 
           value="<c:out value='${query}'/>" 
            size="32" />
 
-    <input type="checkbox" name="details" id="details" <c:if test='${param.details == "on"}'>checked='checked'</c:if> />
+<!--      <input type="checkbox" name="details" id="details" <c:if test='${param.details == "on"}'>checked='checked'</c:if> />
     <fmt:message key="find.details" />
 
     <select name="scope" id="scope" > 
@@ -35,7 +35,7 @@
       <option value="contents:" <c:if test='${param.scope eq "contents:"}'>selected="selected"</c:if> ><fmt:message key='find.scope.content' /></option>
       <option value="attachment:" <c:if test='${param.scope eq "attachment:"}'>selected="selected"</c:if> ><fmt:message key='find.scope.attach' /></option>       
     </select>
-
+-->
 	<input type="submit" name="ok" id="ok" value="<fmt:message key="find.submit.find"/>" />
 	<input type="submit" name="go" id="go" value="<fmt:message key="find.submit.go"/>" />
     <input type="hidden" name="start" id="start" value="0" />
@@ -45,7 +45,7 @@
   </p>
 </form>
 
-<div id="searchResult2" ><wiki:Include page="AJAXSearch.jsp"/></div>
+<div id="searchResult2" ><wiki:Include page="AJAXTagSearch.jsp"/></div>
 
 </wiki:Tab>
 

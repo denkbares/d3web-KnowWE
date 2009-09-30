@@ -8,7 +8,7 @@
 <%@ page import="org.apache.log4j.*" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
 <%@ page errorPage="/Error.jsp" %>
-<fmt:setLocale value="${prefs['Language']}" />
+<fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%!
     Logger log = Logger.getLogger("JSPWiki");
@@ -92,7 +92,8 @@
   <form action="<wiki:Link format='url' jsp='DeleteGroup.jsp'/>"
          class="wikiform"
             id="deleteGroup"
-        onsubmit="return( confirm('<fmt:message key="group.areyousure"><fmt:param>${param.group}</fmt:param></fmt:message>') && Wiki.submitOnce(this) );"
+        onsubmit="return( confirm('<fmt:message key="grp.deletegroup.confirm"/>') 
+        && Wiki.submitOnce(this) );"
         method="POST" accept-charset="UTF-8">
       <input type="submit" name="ok" value="<fmt:message key="actions.deletegroup"/>" />
       <input type="hidden" name="group" value="${param.group}" />

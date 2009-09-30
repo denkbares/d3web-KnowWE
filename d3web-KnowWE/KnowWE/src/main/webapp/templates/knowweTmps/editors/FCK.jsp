@@ -2,6 +2,8 @@
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki"%>
 <%@ page import="java.util.Properties"%>
 <%@ page import="com.ecyrd.jspwiki.*" %>
+<%@ page import="com.ecyrd.jspwiki.auth.*" %>
+<%@ page import="com.ecyrd.jspwiki.auth.permissions.*" %>
 <%@ page import="com.ecyrd.jspwiki.render.*" %>
 <%@ page import="com.ecyrd.jspwiki.parser.JSPWikiMarkupParser" %>
 <%@ page import="com.ecyrd.jspwiki.ui.*" %>
@@ -9,12 +11,13 @@
 <%@ page import="org.apache.commons.lang.*" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<fmt:setLocale value="${prefs['Language']}" />
+<fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%--
     This provides the FCK editor for JSPWiki.
 --%>
 <%  WikiContext context = WikiContext.findContext( pageContext );
+    WikiEngine engine = context.getEngine();
     context.setVariable( RenderingManager.WYSIWYG_EDITOR_MODE, Boolean.TRUE );
     context.setVariable( WikiEngine.PROP_RUNFILTERS,  "false" );
 
@@ -25,15 +28,38 @@
     String usertext = EditorManager.getEditedText(pageContext);
     TemplateManager.addResourceRequest( context, "script", "scripts/fckeditor/fckeditor.js" );
  %>   
-<wiki:CheckRequestContext context="edit"><%
+<wiki:CheckRequestContext context="edit">
+<wiki:NoSuchPage> <%-- this is a new page, check if we're cloning --%>
+<%
+  String clone = request.getParameter( "clone" ); 
+  if( clone != null )
+  {
+    WikiPage p = engine.getPage( clone );
+    if( p != null )
+    {
+        AuthorizationManager mgr = engine.getAuthorizationManager();
+        PagePermission pp = new PagePermission( p, PagePermission.VIEW_ACTION );
+
+        try
+        {            
+          if( mgr.checkPermission( context.getWikiSession(), pp ) )
+          {
+            usertext = engine.getPureText( p );
+          }
+        }
+        catch( Exception e ) {  /*log.error( "Accessing clone page "+clone, e );*/ }
+    }
+  }
+%>
+</wiki:NoSuchPage>
+<%
     if( usertext == null )
     {
-        usertext = context.getEngine().getPureText( context.getPage() );
+        usertext = engine.getPureText( context.getPage() );
     }%>
 </wiki:CheckRequestContext>
 <% if( usertext == null ) usertext = "";
 
-   WikiEngine engine = context.getEngine();
    RenderingManager renderingManager = new RenderingManager();
    
    // since the WikiProperties are shared, we'll want to make our own copy of it for modifying.
@@ -93,19 +119,17 @@
   <div class="error"><fmt:message key="editor.fck.noscript" /></div>
 </noscript>
 
-   <wiki:CheckRequestContext context="edit">
-    <p>
-    <label for="changenote"><fmt:message key='editor.plain.changenote'/></label>
-    <input type="text" id="changenote" name="changenote" size="80" maxlength="80" value="<c:out value='${changenote}'/>"/>
-    </p>
-   </wiki:CheckRequestContext>
+   <p>
+     <label for="changenote"><fmt:message key='editor.plain.changenote'/></label>
+     <input type="text" id="changenote" name="changenote" size="80" maxlength="80" value="<c:out value='${changenote}'/>"/>
+   </p>
    <wiki:CheckRequestContext context="comment">
     <fieldset>
 	<legend><fmt:message key="editor.commentsignature"/></legend>
     <p>
-    <label for="authorname" accesskey="n"><fmt:message key="editor.plain.name"/></label></td>
+    <label for="authorname" accesskey="n"><fmt:message key="editor.plain.name"/></label>
     <input type="text" name="author" id="authorname" value="<c:out value='${sessionScope.author}' />" />
-    <input type="checkbox" name="remember" id="rememberme" <%=TextUtil.isPositive((String)session.getAttribute("remember")) ? "checked='checked'" : ""%>"/>
+    <input type="checkbox" name="remember" id="rememberme" <%=TextUtil.isPositive((String)session.getAttribute("remember")) ? "checked='checked'" : ""%> />
     <label for="rememberme"><fmt:message key="editor.plain.remember"/></label>
     </p>
 	<%--FIXME: seems not to read the email of the user, but some odd previously cached value --%>
@@ -117,9 +141,9 @@
   </wiki:CheckRequestContext>
 
   <p>
-        <input name='ok' type='submit' value='<fmt:message key="editor.plain.save.submit"/>' />
-        <input name='preview' type='submit' value='<fmt:message key="editor.plain.preview.submit"/>' />
-        <input name='cancel' type='submit' value='<fmt:message key="editor.plain.cancel.submit"/>' />
+    <input name='ok' type='submit' value='<fmt:message key="editor.plain.save.submit"/>' />
+    <input name='preview' type='submit' value='<fmt:message key="editor.plain.preview.submit"/>' />
+    <input name='cancel' type='submit' value='<fmt:message key="editor.plain.cancel.submit"/>' />
   </p>
 </div>
 </form>
