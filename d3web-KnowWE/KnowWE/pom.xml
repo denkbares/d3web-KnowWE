@@ -31,6 +31,13 @@
 								<exclude>WEB-INF/lib/commons-logging*</exclude>
 							</excludes>
 						</overlay>
+						<overlay>
+							<groupId>com.ecryd.jspwiki</groupId>
+							<artifactId>jspwiki-knowwe</artifactId>
+							<excludes>
+								<exclude>WEB-INF/lib/commons-*.jar</exclude>
+							</excludes>
+						</overlay>						
 					</overlays>
 					<webResources>
 						<!-- Comment plugin -->
@@ -114,13 +121,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>1.0</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
@@ -153,35 +153,35 @@
 			<artifactId>annotations-api</artifactId>
 			<version>6.0.20</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>el-api</artifactId>
 			<version>6.0.20</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>jasper</artifactId>
 			<version>6.0.20</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>6.0.20</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>6.0.20</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -236,6 +236,13 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Comment</artifactId>
 			<version>0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
