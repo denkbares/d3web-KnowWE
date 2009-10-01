@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     07.05.2009 17:06:09                                                        
+
+     KnowWE2-Plugin-PosTaggerDemo    
+     Generator for XCLs out of markups
+                   
+     reha                                                                
+     ====================================================================== -->
+<project name="project" >
+
+	<property name="jarFileName" value="hermes.jar"/>	
+	<property name="project" value="KnowWE2-Plugin-HermesModule"/>
+	
+    <target name="deploy">
+   
+    	<echo>Building Plugin-project: ${project}</echo>
+    	
+    	<jar jarfile="${opened}/WEB-INF/lib/${jarFileName}" update="yes">
+    		<fileset dir="${workspace}/${project}/bin" defaultexcludes="yes" />
+    	</jar>
+    	
+    </target>
+
+</project>

@@ -1,0 +1,6 @@
+// List here all modules to be used in KnowWE2
+
+//de.d3web.we.module.TiRexModule
+//de.d3web.we.module.XCLModule
+//de.d3web.guideline.module.GuidelineModule
+de.d3web.we.hermes.HermesModule

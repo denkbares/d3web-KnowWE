@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="de/d3web/we/hermes/imports/SQLReaderForTimelineEvents.java|de/d3web/we/hermes/timeline/|de/d3web/we/hermes/HermesModule.java|de/d3web/we/hermes/CompleteParser.java" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/d3web-Kernel"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/d3web-TextParser"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.6-bin.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/KnowWE-core"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
