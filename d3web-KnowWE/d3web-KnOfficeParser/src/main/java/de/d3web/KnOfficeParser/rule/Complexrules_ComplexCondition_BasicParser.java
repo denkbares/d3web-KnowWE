@@ -1,49 +1,26 @@
-/*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
-// $ANTLR 3.1 BasicParser.g 2009-03-14 18:18:20
+// $ANTLR 3.1 BasicParser.g 2009-09-30 15:26:05
 
 package de.d3web.KnOfficeParser.rule;
-import org.antlr.runtime.BitSet;
-import org.antlr.runtime.MismatchedSetException;
-import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.Parser;
-import org.antlr.runtime.ParserRuleReturnScope;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.RecognizerSharedState;
-import org.antlr.runtime.Token;
-import org.antlr.runtime.TokenStream;
-
 import de.d3web.KnOfficeParser.ParserErrorHandler;
+import de.d3web.KnOfficeParser.ConditionBuilder;
+
+
+import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Complexrules_ComplexCondition_BasicParser extends Parser {
     public static final int HIDE=38;
     public static final int RP=16;
     public static final int ORS=12;
     public static final int LP=15;
-    public static final int FUZZY=53;
-    public static final int ABSTRACT=50;
+    public static final int FUZZY=54;
+    public static final int ABSTRACT=51;
     public static final int NOT=37;
     public static final int EXCEPT=39;
     public static final int AND=35;
-    public static final int ID=56;
+    public static final int ID=57;
     public static final int DD=7;
     public static final int EOF=-1;
     public static final int IF=33;
@@ -74,20 +51,21 @@ public class Complexrules_ComplexCondition_BasicParser extends Parser {
     public static final int DEFAULT=49;
     public static final int INTER=45;
     public static final int KNOWN=41;
-    public static final int SET=51;
+    public static final int SET=52;
     public static final int INT=5;
     public static final int MINUS=27;
-    public static final int DIVNORM=55;
-    public static final int Tokens=58;
+    public static final int DIVNORM=56;
+    public static final int Tokens=59;
     public static final int SEMI=9;
-    public static final int REF=52;
+    public static final int REF=53;
     public static final int WS=30;
-    public static final int BLUB=57;
+    public static final int BLUB=58;
     public static final int OR=36;
     public static final int CBC=18;
     public static final int SBO=19;
-    public static final int DIVTEXT=54;
+    public static final int DIVTEXT=55;
     public static final int DIV=29;
+    public static final int INIT=50;
     public static final int CBO=17;
     public static final int LE=21;
 
@@ -169,11 +147,11 @@ public class Complexrules_ComplexCondition_BasicParser extends Parser {
             if ( (LA3_0==String) ) {
                 int LA3_1 = input.LA(2);
 
-                if ( (LA3_1==EOF||(LA3_1>=COMMA && LA3_1<=SEMI)||LA3_1==RP||(LA3_1>=CBC && LA3_1<=DIV)||(LA3_1>=NL && LA3_1<=OR)||LA3_1==EXCEPT||LA3_1==IN||LA3_1==ALL) ) {
-                    alt3=2;
-                }
-                else if ( ((LA3_1>=String && LA3_1<=INT)||LA3_1==ID) ) {
+                if ( ((LA3_1>=String && LA3_1<=INT)||LA3_1==ID) ) {
                     alt3=1;
+                }
+                else if ( (LA3_1==EOF||(LA3_1>=COMMA && LA3_1<=SEMI)||LA3_1==RP||(LA3_1>=CBC && LA3_1<=DIV)||(LA3_1>=NL && LA3_1<=OR)||LA3_1==EXCEPT||LA3_1==IN||LA3_1==ALL) ) {
+                    alt3=2;
                 }
                 else {
                     NoViableAltException nvae =
@@ -521,11 +499,11 @@ public class Complexrules_ComplexCondition_BasicParser extends Parser {
 
  
 
-    public static final BitSet FOLLOW_String_in_name33 = new BitSet(new long[]{0x0100000000000030L});
-    public static final BitSet FOLLOW_set_in_name36 = new BitSet(new long[]{0x0100000000000032L});
-    public static final BitSet FOLLOW_set_in_name42 = new BitSet(new long[]{0x0100000000000032L});
+    public static final BitSet FOLLOW_String_in_name33 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_set_in_name36 = new BitSet(new long[]{0x0200000000000032L});
+    public static final BitSet FOLLOW_set_in_name42 = new BitSet(new long[]{0x0200000000000032L});
     public static final BitSet FOLLOW_String_in_name55 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SBO_in_type69 = new BitSet(new long[]{0x0100000000000000L});
+    public static final BitSet FOLLOW_SBO_in_type69 = new BitSet(new long[]{0x0200000000000000L});
     public static final BitSet FOLLOW_ID_in_type71 = new BitSet(new long[]{0x0000000000100000L});
     public static final BitSet FOLLOW_SBC_in_type73 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_eq0 = new BitSet(new long[]{0x0000000000000002L});

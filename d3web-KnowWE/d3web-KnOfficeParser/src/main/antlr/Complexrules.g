@@ -1,5 +1,5 @@
 /**
- * Grammatik für komplexe Regeln
+ * Grammatik fÃ¼r komplexe Regeln
  * @author Markus Friedrich
  *
  */
@@ -74,6 +74,7 @@ formula
 
 formulawithoutP
 : name {builder.formula($name.start.getLine(), $text, $name.value);}
+| (MINUS INT | INT DOT)=> d3double {builder.formula($start.getLine(), $text, $d3double.value.toString());}
 | formulaOrName (PLUS formulaOrName {builder.formulaAdd();}
 |MINUS formulaOrName {builder.formulaSub();}
 | PROD formulaOrName {builder.formulaMult();}
@@ -81,7 +82,7 @@ formulawithoutP
 );
 
 formulaOrName
-:formula|(INT DOT)=> d3double {builder.formula($start.getLine(), $text, $d3double.value.toString());}|name {builder.formula($name.start.getLine(), $text, $name.value);};
+:formula|(MINUS INT | INT DOT)=> d3double {builder.formula($start.getLine(), $text, $d3double.value.toString());}|name {builder.formula($name.start.getLine(), $text, $name.value);};
 
 names returns[List<String> nlist, List<String> tlist]
 @init {$nlist = new ArrayList<String>(); $tlist = new ArrayList<String>();}
