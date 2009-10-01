@@ -96,7 +96,7 @@ public class KnOfficeUploadManager {
 				String text = fileItem.getString();
 
 				String path = KnowWEEnvironment.getInstance()
-						.getDefaultModulesTxtPath();
+						.getKnowWEExtensionPath();
 				if (text != null && text.length() > 0) {
 					File file = new File(path + File.separatorChar
 							+ "owlincludes", fileItem.getName());

@@ -37,15 +37,8 @@
 							<excludes>
 								<exclude>WEB-INF/lib/commons-*.jar</exclude>
 							</excludes>
-						</overlay>						
+						</overlay>
 					</overlays>
-					<webResources>
-						<!-- Comment plugin -->
-						<resource>
-							<directory>../KnowWE-Plugin-Comment/src/main/webapp</directory>
-							<targetPath>KnowWEExtension</targetPath>
-						</resource>
-					</webResources>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -64,12 +57,56 @@
 								<resource>
 									<directory>src/resources/local</directory>
 									<targetPath>/</targetPath>
-									<excludes>
-										<exclude>**/README</exclude>
-									</excludes>
 								</resource>
 							</webResources>
 						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- ======= WIKI PLUGINS ======= -->
+		<!-- Comment plugin -->
+		<profile>
+			<id>comment-plugin</id>
+			<activation>
+				<property>
+					<name>comment-plugin</name>
+				</property>
+			</activation>
+			
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Comment</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>comment-plugin</id>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<phase>process-resources</phase>
+
+								<configuration>
+									<tasks>
+										<copy todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension">
+											<fileset dir="../KnowWE-Plugin-Comment/src/main/webapp" />
+										</copy>
+										<copy file="../KnowWE-Plugin-Comment/src/main/wikiplugin/de.d3web.we.plugin.comment.CommentModule.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
@@ -229,12 +266,6 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-JSPWiki-Connector</artifactId>
-			<version>0-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-Comment</artifactId>
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

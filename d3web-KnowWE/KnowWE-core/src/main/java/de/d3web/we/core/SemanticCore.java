@@ -76,7 +76,7 @@ public class SemanticCore {
 		this.knowWEEnvironment = ke;
 		contextmap = new HashMap<String, BNode>();
 		statementcache = new HashMap<String, List<Statement>>();
-		String path = ke.getDefaultModulesTxtPath();
+		String path = ke.getKnowWEExtensionPath();
 		settingsbundle = ResourceBundle.getBundle("semanticdefaults");
 		settings = new HashMap<String, String>();
 		for (String cur : settingsbundle.keySet()) {
@@ -451,7 +451,7 @@ public class SemanticCore {
 	 * @return
 	 */
 	public File[] getImportList() {
-		String inpath = knowWEEnvironment.getDefaultModulesTxtPath()
+		String inpath = knowWEEnvironment.getKnowWEExtensionPath()
 				+ File.separatorChar + "owlincludes";
 		File includes = new File(inpath);
 		if (includes.exists()) {
@@ -469,7 +469,7 @@ public class SemanticCore {
 	 * @param filename
 	 */
 	public void removeFile(String filename) {
-		String inpath = knowWEEnvironment.getDefaultModulesTxtPath()
+		String inpath = knowWEEnvironment.getKnowWEExtensionPath()
 				+ File.separatorChar + "owlincludes";
 		File includes = new File(inpath);
 		File file = new File(includes, filename);

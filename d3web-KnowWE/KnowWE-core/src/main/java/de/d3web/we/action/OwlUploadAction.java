@@ -69,7 +69,7 @@ public class OwlUploadAction implements KnowWEAction{
 	while (iter.hasNext()) {
 	    FileItem item = iter.next();
 	    String filename=item.hashCode()+"";
-	    uploadfile=new File(KnowWEEnvironment.getInstance().getDefaultModulesTxtPath()+File.separatorChar+"owlincludes"+File.separatorChar+filename);
+	    uploadfile=new File(KnowWEEnvironment.getInstance().getKnowWEExtensionPath()+File.separatorChar+"owlincludes"+File.separatorChar+filename);
 	    try {
 		if (uploadfile.createNewFile()){
 		    if (uploadfile.canWrite()){

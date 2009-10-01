@@ -23,6 +23,7 @@ package de.d3web.we.core;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -96,14 +97,15 @@ public class KnowWEEnvironment {
 	 * should NOT BE USED, path a read from the KnowWE_config properties file.
 	 */
 	private String defaultReportPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/reports/";
-	private String defaultModulesTxtPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/";
+	private String knowweExtensionPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/";
+	
 	private String pathPrefix = "";
 
 	/**
-	 * @return the defaultModulesTxtPath
+	 * @return the defaultModulesPath
 	 */
-	public String getDefaultModulesTxtPath() {
-		return defaultModulesTxtPath;
+	public String getKnowWEExtensionPath() {
+		return knowweExtensionPath;
 	}
 
 	/**
@@ -305,7 +307,7 @@ public class KnowWEEnvironment {
 //						.getString("path_to_jars"));
 				defaultReportPath = KnowWEUtils.getRealPath(wikiConnector.getServletContext(), bundle
 						.getString("path_to_reports"));
-				defaultModulesTxtPath = KnowWEUtils.getRealPath(wikiConnector.getServletContext(), bundle
+				knowweExtensionPath = KnowWEUtils.getRealPath(wikiConnector.getServletContext(), bundle
 						.getString("path_to_knowweextension"));
 
 			}
@@ -356,7 +358,6 @@ public class KnowWEEnvironment {
 	private void writeNewSolutionsPage() {
 		getWikiConnector().createWikiPage("WikiSolutions",
 				"[{KnowWEPlugin WikiSolutions}]", "engine");
-
 	}
 
 	/**
@@ -402,9 +403,10 @@ public class KnowWEEnvironment {
 		
 		// read ModuleNames from taghandler.txt:
 		ArrayList<String> handlerStrings = new ArrayList<String>();
+		
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(
-					defaultModulesTxtPath + File.separator + "taghandler.txt"));
+					knowweExtensionPath + File.separator + "taghandler.txt"));
 			String line = null;
 			while ((line = in.readLine()) != null) {
 				// eliminate ending whitespaces
@@ -440,24 +442,43 @@ public class KnowWEEnvironment {
 				Logger.getLogger(this.getClass().getName()).warning(
 						"Module Class for " + handlerName + " not found");
 			}
-
 		}
 	}
 
 	/**
-	 * initializes the Knowwemodules:
-	 * 
+	 * Initializes the KnowWE modules
 	 */
 	private void initModules(ServletContext context) {
 		// add the default modules
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
-	        this.rootTypes.add(new VerbatimType());
+		this.rootTypes.add(new VerbatimType());
+		
+		// Loading modules from the single files in modules/
+		ArrayList<String> moduleStrings = new ArrayList<String>();    
+	    File modulesDir = new File(knowweExtensionPath + "/modules");
 	    
+	    if (!modulesDir.isDirectory()) {
+	    	Logger.getLogger(this.getClass().getName()).warning(
+	    			"Could not read modules directory"
+	    	);
+	    }
+	    
+	    FilenameFilter ffilter = new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".module");
+			}
+		};
+		
+	    for (String module : modulesDir.list(ffilter)) {
+	    	moduleStrings.add(module.replace("\\.module$", ""));
+	    }
+	    
+	    // DEPRECATED! DO NOT USE FOR NEW PLUG-INS
 		// read ModuleNames from modules txt:
-		ArrayList<String> moduleStrings = new ArrayList<String>();
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(
-					defaultModulesTxtPath + "/modules.txt"));
+					knowweExtensionPath + "/modules.txt"));
 			String line = null;
 			while ((line = in.readLine()) != null) {
 				// eliminate ending whitespaces
@@ -528,7 +549,6 @@ public class KnowWEEnvironment {
 		// add the default TextType (as this type takes all non-claimed
 		// sections, this type has to be last!
 		
-		
 		this.rootTypes.add(defaultTextType);
 		this.rootTypes.add( new Table() );
 		this.rootTypes.add( new CSS() );
@@ -556,10 +576,8 @@ public class KnowWEEnvironment {
 										+ "' had already been added.");
 					} else {
 						this.tagHandlers.put(tagName, tagHandler);
-					}
-					
+					}	
 				}
-			
 			}
 
 			// ADD ROOT TYPES
@@ -573,16 +591,13 @@ public class KnowWEEnvironment {
 			if (moduleGlobals != null) {
 				this.globalTypes.addAll(moduleGlobals);
 			}
-
-		}			
-		
+		}
 		
 		// ensuring it is last in list
 		this.rootTypes.remove(defaultTextType);
 		this.rootTypes.add(defaultTextType);
 
 	}
-	
 
 	/**
 	 * Getter for KnowWEWikiConnector
@@ -712,7 +727,6 @@ public class KnowWEEnvironment {
 			String topic, String web) {	
 		return this.articleManagers.get(web).saveUpdatedArticle(new KnowWEArticle(content, topic, KnowWEEnvironment
 				.getInstance().getRootTypes(),web)).getHTML();
-
 	}
 
 	/**
