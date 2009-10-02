@@ -48,13 +48,16 @@ import de.d3web.kernel.domainModel.ruleCondition.CondOr;
 import de.d3web.kernel.domainModel.ruleCondition.CondUnknown;
 import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
 import de.d3web.kernel.psMethods.heuristic.PSMethodHeuristic;
+
 /**
  * Klasse um Conditionen in d3web zu erstellen
+ * 
  * @author Markus Friedrich
- *
+ * 
  */
-public class D3webConditionBuilder implements ConditionBuilder{
+public class D3webConditionBuilder implements ConditionBuilder {
 	private String file;
+
 	public String getFile() {
 		return file;
 	}
@@ -65,13 +68,12 @@ public class D3webConditionBuilder implements ConditionBuilder{
 
 	private Stack<AbstractCondition> condstack = new Stack<AbstractCondition>();
 	private List<Message> errors = new ArrayList<Message>();
-	private boolean lazy=false;
+	private boolean lazy = false;
 	private IDObjectManagement idom;
-	
+
 	private Map<String, Question> questions = new HashMap<String, Question>();
 	private boolean useQuestionmap = true;
-	
-	
+
 	public boolean isUseQuestionmap() {
 		return useQuestionmap;
 	}
@@ -88,12 +90,13 @@ public class D3webConditionBuilder implements ConditionBuilder{
 		this.lazy = lazy;
 	}
 
-	public D3webConditionBuilder(String file, List<Message> errors, IDObjectManagement idom) {
-		this.file=file;
-		this.errors=errors;
-		this.idom=idom;
+	public D3webConditionBuilder(String file, List<Message> errors,
+			IDObjectManagement idom) {
+		this.file = file;
+		this.errors = errors;
+		this.idom = idom;
 	}
-	
+
 	public IDObjectManagement getIdom() {
 		return idom;
 	}
@@ -109,57 +112,83 @@ public class D3webConditionBuilder implements ConditionBuilder{
 			return null;
 		}
 	}
-	
+
 	@Override
-	public void condition(int line, String linetext, String qname, String type, String op, String value) {
+	public void condition(int line, String linetext, String qname, String type,
+			String op, String value) {
+		if (value == null) {
+			errors.add(MessageKnOfficeGenerator.createNaNException(file, line,
+					linetext, "no value passed to condition_builder"));
+			condstack.push(null);
+			return;
+		}
 		Diagnosis diag = idom.findDiagnosis(qname);
-		if (diag!=null) {
-			if (value.equalsIgnoreCase("established")||value.equalsIgnoreCase("etabliert")) {
-				condstack.push(new CondDState(diag, DiagnosisState.ESTABLISHED, PSMethodHeuristic.class));
-			} else  if (value.equalsIgnoreCase("excluded")||value.equalsIgnoreCase("ausgeschlossen")){
-				condstack.push(new CondDState(diag, DiagnosisState.EXCLUDED, PSMethodHeuristic.class));
-			} else  if (value.equalsIgnoreCase("suggested")||value.equalsIgnoreCase("verdächtigt")){
-				condstack.push(new CondDState(diag, DiagnosisState.SUGGESTED, PSMethodHeuristic.class));
-			} 
-//			else if (value.equalsIgnoreCase("unclear")||value.equalsIgnoreCase("unklar")){
-//				condstack.push(new CondDState(diag, DiagnosisState.UNCLEAR, null));
-//			}
+		if (diag != null) {
+			if (value.equalsIgnoreCase("established")
+					|| value.equalsIgnoreCase("etabliert")) {
+				condstack.push(new CondDState(diag, DiagnosisState.ESTABLISHED,
+						PSMethodHeuristic.class));
+			} else if (value.equalsIgnoreCase("excluded")
+					|| value.equalsIgnoreCase("ausgeschlossen")) {
+				condstack.push(new CondDState(diag, DiagnosisState.EXCLUDED,
+						PSMethodHeuristic.class));
+			} else if (value.equalsIgnoreCase("suggested")
+					|| value.equalsIgnoreCase("verdächtigt")) {
+				condstack.push(new CondDState(diag, DiagnosisState.SUGGESTED,
+						PSMethodHeuristic.class));
+			}
+			// else if
+			// (value.equalsIgnoreCase("unclear")||value.equalsIgnoreCase("unklar")){
+			// condstack.push(new CondDState(diag, DiagnosisState.UNCLEAR,
+			// null));
+			// }
 			else {
 				condstack.push(null);
-				errors.add(MessageKnOfficeGenerator.createWrongDiagState(file, line, linetext, value));
+				errors.add(MessageKnOfficeGenerator.createWrongDiagState(file,
+						line, linetext, value));
 			}
 			return;
 		}
 		Question question = null;
-		if (useQuestionmap) question = this.questions.get(qname); 
-		if(question == null) {
+		if (useQuestionmap)
+			question = this.questions.get(qname);
+		if (question == null) {
 			question = idom.findQuestion(qname);
-			if(question != null) {
+			if (question != null) {
 				this.questions.put(qname, question);
 			}
 		}
 		if (question == null) {
 			if (lazy) {
-				if (type!=null) {
-					question=D3webQuestionFactory.createQuestion(qname, type, idom);
-					if (question==null) {
-						errors.add(MessageKnOfficeGenerator.createTypeRecognitionError(file, line, linetext, qname, type));
+				if (type != null) {
+					question = D3webQuestionFactory.createQuestion(qname, type,
+							idom);
+					if (question == null) {
+						errors.add(MessageKnOfficeGenerator
+								.createTypeRecognitionError(file, line,
+										linetext, qname, type));
 						condstack.push(null);
 						return;
 					}
 				} else if (op.equals("=")) {
-					question = idom.createQuestionOC(qname, idom.getKnowledgeBase().getRootQASet(), new AnswerChoice[0]);
+					question = idom.createQuestionOC(qname, idom
+							.getKnowledgeBase().getRootQASet(),
+							new AnswerChoice[0]);
 				} else {
-					question = idom.createQuestionNum(qname, idom.getKnowledgeBase().getRootQASet());
+					question = idom.createQuestionNum(qname, idom
+							.getKnowledgeBase().getRootQASet());
 				}
 			} else {
-				errors.add(MessageKnOfficeGenerator.createQuestionNotFoundException(file, line, linetext, qname));
+				errors.add(MessageKnOfficeGenerator
+						.createQuestionNotFoundException(file, line, linetext,
+								qname));
 				condstack.push(null);
 				return;
 			}
 		}
 		if (!D3webQuestionFactory.checkType(question, type)) {
-			errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file, line, linetext, qname, type));
+			errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file,
+					line, linetext, qname, type));
 		}
 		TerminalCondition c;
 		if (question instanceof QuestionNum) {
@@ -168,136 +197,160 @@ public class D3webConditionBuilder implements ConditionBuilder{
 			try {
 				d = Double.parseDouble(value);
 			} catch (NumberFormatException e) {
-				errors.add(MessageKnOfficeGenerator.createNaNException(file, line, linetext, value));
+				errors.add(MessageKnOfficeGenerator.createNaNException(file,
+						line, linetext, value));
 				condstack.push(null);
 				return;
 			}
-			c = ConditionGenerator.condNum(qnum, op, d, errors, line, value, file);
+			c = ConditionGenerator.condNum(qnum, op, d, errors, line, value,
+					file);
 		} else if (question instanceof QuestionChoice) {
 			AnswerChoice answer = null;
 			QuestionChoice qc = (QuestionChoice) question;
 			if (qc instanceof QuestionYN) {
 				QuestionYN qyn = (QuestionYN) qc;
-				if ((value.equals("ja"))||(value.equals("yes"))) {
+				if ((value.equals("ja")) || (value.equals("yes"))) {
 					answer = qyn.yes;
-				} else if ((value.equals("nein"))||(value.equals("no"))) {
+				} else if ((value.equals("nein")) || (value.equals("no"))) {
 					answer = qyn.no;
 				} else {
-					errors.add(MessageKnOfficeGenerator.createWrongYNAnswer(file, line, linetext, qyn.getText()));
+					errors.add(MessageKnOfficeGenerator.createWrongYNAnswer(
+							file, line, linetext, qyn.getText()));
 				}
-			} else  {
+			} else {
 				answer = idom.findAnswerChoice(qc, value);
 			}
-			if (answer==null) {
+			if (answer == null) {
 				if (lazy) {
-					answer=(AnswerChoice) idom.addChoiceAnswer(qc, value);
+					answer = (AnswerChoice) idom.addChoiceAnswer(qc, value);
 					c = new CondEqual(qc, answer);
 				} else {
-					errors.add(MessageKnOfficeGenerator.createAnswerNotFoundException(file, line, linetext, value, qc.getText()));
+					errors.add(MessageKnOfficeGenerator
+							.createAnswerNotFoundException(file, line,
+									linetext, value, qc.getText()));
 					c = null;
 				}
 			} else {
 				c = new CondEqual(qc, answer);
 			}
 		} else {
-			errors.add(MessageKnOfficeGenerator.createNoAnswerAllowedException(file, line, linetext));
-			c=null;
+			errors.add(MessageKnOfficeGenerator.createNoAnswerAllowedException(
+					file, line, linetext));
+			c = null;
 		}
 		condstack.push(c);
 	}
-	
+
 	@Override
-	public void condition(int line, String linetext, String qname, String type, double left, double right, boolean in) {
+	public void condition(int line, String linetext, String qname, String type,
+			double left, double right, boolean in) {
 		Question question = null;
-		if (useQuestionmap) question = this.questions.get(qname);
-		if(question == null) {
+		if (useQuestionmap)
+			question = this.questions.get(qname);
+		if (question == null) {
 			question = idom.findQuestion(qname);
-			if(question != null) {
+			if (question != null) {
 				this.questions.put(qname, question);
 			}
 		}
 		if (question == null) {
 			if (lazy) {
-				if (type!=null) {
-					question=D3webQuestionFactory.createQuestion(qname, type, idom);
-					if (question==null) {
-						errors.add(MessageKnOfficeGenerator.createTypeRecognitionError(file, line, linetext, qname, type));
+				if (type != null) {
+					question = D3webQuestionFactory.createQuestion(qname, type,
+							idom);
+					if (question == null) {
+						errors.add(MessageKnOfficeGenerator
+								.createTypeRecognitionError(file, line,
+										linetext, qname, type));
 						condstack.push(null);
 						return;
 					}
 				} else {
-					question = idom.createQuestionNum(qname, idom.getKnowledgeBase().getRootQASet());
+					question = idom.createQuestionNum(qname, idom
+							.getKnowledgeBase().getRootQASet());
 				}
 			} else {
-				errors.add(MessageKnOfficeGenerator.createQuestionNotFoundException(file, line, linetext, qname));
+				errors.add(MessageKnOfficeGenerator
+						.createQuestionNotFoundException(file, line, linetext,
+								qname));
 				condstack.push(null);
 				return;
 			}
 		}
 		if (!D3webQuestionFactory.checkType(question, type)) {
-			errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file, line, linetext, qname, type));
+			errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file,
+					line, linetext, qname, type));
 		}
 		TerminalCondition c;
 		if (question instanceof QuestionNum) {
 			QuestionNum qnum = (QuestionNum) question;
-			c=ConditionGenerator.condNum(qnum, left, right, errors, line, linetext, file);
+			c = ConditionGenerator.condNum(qnum, left, right, errors, line,
+					linetext, file);
 		} else {
-			errors.add(MessageKnOfficeGenerator.createIntervallQuestionError(file, line, linetext));
-			c= null;
+			errors.add(MessageKnOfficeGenerator.createIntervallQuestionError(
+					file, line, linetext));
+			c = null;
 		}
 		condstack.push(c);
 	}
-	
+
 	@Override
-	public void knowncondition(int line, String linetext, String name, String type, boolean unknown) {
+	public void knowncondition(int line, String linetext, String name,
+			String type, boolean unknown) {
 		Question q = idom.findQuestion(name);
-		if (q==null) {
+		if (q == null) {
 			if (lazy) {
-				if (type!=null) {
-					q=D3webQuestionFactory.createQuestion(name, type, idom);
-					if (q==null) {
-						errors.add(MessageKnOfficeGenerator.createTypeRecognitionError(file, line, linetext, name, type));
+				if (type != null) {
+					q = D3webQuestionFactory.createQuestion(name, type, idom);
+					if (q == null) {
+						errors.add(MessageKnOfficeGenerator
+								.createTypeRecognitionError(file, line,
+										linetext, name, type));
 						condstack.push(null);
 						return;
 					}
 				} else {
-					q = idom.createQuestionOC(name, idom.getKnowledgeBase().getRootQASet(), new AnswerChoice[0]);
+					q = idom.createQuestionOC(name, idom.getKnowledgeBase()
+							.getRootQASet(), new AnswerChoice[0]);
 				}
 			} else {
-				errors.add(MessageKnOfficeGenerator.createQuestionNotFoundException(file, line, linetext, name));
+				errors.add(MessageKnOfficeGenerator
+						.createQuestionNotFoundException(file, line, linetext,
+								name));
 			}
 		}
 		if (!D3webQuestionFactory.checkType(q, type)) {
-			errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file, line, linetext, name, type));
+			errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file,
+					line, linetext, name, type));
 		}
 		TerminalCondition c;
 		if (unknown) {
-			c=new CondUnknown(q);
+			c = new CondUnknown(q);
 		} else {
-			c=new CondKnown(q);
+			c = new CondKnown(q);
 		}
 		condstack.add(c);
 	}
-	
+
 	@Override
 	public void notcond(String text) {
 		if (!condstack.isEmpty()) {
 			AbstractCondition cond = condstack.pop();
-			if (cond!=null) {
+			if (cond != null) {
 				condstack.push(new CondNot(cond));
 			} else {
 				condstack.push(null);
 			}
 		}
 	}
-	
+
 	@Override
 	public void andcond(String text) {
-		if (condstack.size()>1) {
+		if (condstack.size() > 1) {
 			List<AbstractCondition> clist = new ArrayList<AbstractCondition>();
 			AbstractCondition cond = condstack.pop();
 			AbstractCondition cond2 = condstack.pop();
-			if (cond!=null&&cond2!=null) {
+			if (cond != null && cond2 != null) {
 				clist.add(cond);
 				clist.add(cond2);
 				condstack.push(new CondAnd(clist));
@@ -306,14 +359,14 @@ public class D3webConditionBuilder implements ConditionBuilder{
 			}
 		}
 	}
-	
+
 	@Override
 	public void orcond(String text) {
-		if (condstack.size()>1) {
+		if (condstack.size() > 1) {
 			List<AbstractCondition> clist = new ArrayList<AbstractCondition>();
 			AbstractCondition cond = condstack.pop();
 			AbstractCondition cond2 = condstack.pop();
-			if (cond!=null&&cond2!=null) {
+			if (cond != null && cond2 != null) {
 				clist.add(cond);
 				clist.add(cond2);
 				condstack.push(new CondOr(clist));
@@ -322,16 +375,16 @@ public class D3webConditionBuilder implements ConditionBuilder{
 			}
 		}
 	}
-	
-	
+
 	@Override
-	public void minmax(int line, String linetext, int min, int max, int anzahlcond) {
+	public void minmax(int line, String linetext, int min, int max,
+			int anzahlcond) {
 		List<AbstractCondition> condlist = new ArrayList<AbstractCondition>();
 		boolean failure = false;
-		for (int i=0; i<anzahlcond; i++) {
+		for (int i = 0; i < anzahlcond; i++) {
 			AbstractCondition cond = condstack.pop();
 			condlist.add(cond);
-			if (cond==null) {
+			if (cond == null) {
 				failure = true;
 			}
 		}
@@ -342,26 +395,29 @@ public class D3webConditionBuilder implements ConditionBuilder{
 				condstack.push(new CondMofN(condlist, min, max));
 			}
 		} else {
-			errors.add(MessageKnOfficeGenerator.createNoValidCondsException(file, line, linetext));
+			errors.add(MessageKnOfficeGenerator.createNoValidCondsException(
+					file, line, linetext));
 			condstack.push(null);
 		}
 	}
-	
+
 	@Override
-	public void in(int line, String linetext, String question, String type, List<String> answers) {
-		List<AbstractCondition> conds = condList(line, linetext, question, type,
-				answers);
+	public void in(int line, String linetext, String question, String type,
+			List<String> answers) {
+		List<AbstractCondition> conds = condList(line, linetext, question,
+				type, answers);
 		if (conds.contains(null)) {
 			condstack.push(null);
 		} else {
 			condstack.push(new CondOr(conds));
 		}
 	}
-	
+
 	@Override
-	public void all(int line, String linetext, String question, String type, List<String> answers) {
-		List<AbstractCondition> conds = condList(line, linetext, question, type,
-				answers);
+	public void all(int line, String linetext, String question, String type,
+			List<String> answers) {
+		List<AbstractCondition> conds = condList(line, linetext, question,
+				type, answers);
 		if (conds.contains(null)) {
 			condstack.push(null);
 		} else {
@@ -372,7 +428,7 @@ public class D3webConditionBuilder implements ConditionBuilder{
 	private List<AbstractCondition> condList(int line, String linetext,
 			String question, String type, List<String> answers) {
 		List<AbstractCondition> conds = new ArrayList<AbstractCondition>();
-		for (String s: answers) {
+		for (String s : answers) {
 			condition(line, linetext, question, type, "=", s);
 			conds.add(condstack.pop());
 		}
