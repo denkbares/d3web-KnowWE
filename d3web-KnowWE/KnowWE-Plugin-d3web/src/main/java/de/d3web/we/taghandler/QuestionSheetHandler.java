@@ -20,12 +20,16 @@
 
 package de.d3web.we.taghandler;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeBase;
+import de.d3web.kernel.domainModel.KnowledgeSlice;
+import de.d3web.kernel.domainModel.RuleComplex;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.supportknowledge.DCElement;
 import de.d3web.kernel.supportknowledge.DCMarkup;
@@ -33,12 +37,26 @@ import de.d3web.kernel.supportknowledge.MMInfoObject;
 import de.d3web.kernel.supportknowledge.MMInfoStorage;
 import de.d3web.kernel.supportknowledge.MMInfoSubject;
 import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
+import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
+import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuestionSheetHandler  extends AbstractTagHandler{
+	
+	public static QuestionSheetHandler instance= null;
+	
+	public static QuestionSheetHandler getInstance() {
+		if(instance == null) {
+			instance = new QuestionSheetHandler();
+		}
+		
+		return instance;
+	}
 
 	public QuestionSheetHandler() {
 		super("QuestionSheet");
@@ -51,6 +69,21 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String,String> values, String web) {
+		String xpsCaseId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
+		Broker broker = D3webModule.getBroker(user.getUsername(), web);
+		KnowledgeServiceSession kss = broker.getSession().getServiceSession(xpsCaseId);
+		
+		XPSCase xpsCase = null;
+		
+		if (kss instanceof D3webKnowledgeServiceSession) {
+			
+			// Get the XPSCase
+			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) kss;
+			xpsCase = d3webKSS.getXpsCase();
+			
+			
+		}
+		
 		D3webKnowledgeService service = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);
 		
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
@@ -68,6 +101,18 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 					//dont show abstract questions
 					continue;
 				}
+				
+				String answerstring = "";
+				
+				if(xpsCase != null) {
+					answerstring += " : ";
+					List answers = question.getValue(xpsCase);
+					for (Object object : answers) {
+						answerstring += object.toString()+", ";
+					}
+					answerstring = answerstring.substring(0, answerstring.length()-2);
+				}
+				
 				MMInfoStorage storage = (MMInfoStorage)question.getProperties().getProperty(Property.MMINFO);
 				DCMarkup markup = new DCMarkup();
 		        markup.setContent(DCElement.SOURCE, question.getId());
@@ -76,7 +121,7 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 		        	Set<MMInfoObject> o = storage.getMMInfo(markup);
 		        }
 				String rendered = DefaultTextType.getRenderedInput(question.getId(), question.getText(), service.getId(), user.getUsername(), "Question", question.getText(),"");
-				html.append("<li><img src=\"KnowWEExtension/images/arrow_right.png\" border=\"0\"/>" + rendered + "</li> \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
+				html.append("<img src=\"KnowWEExtension/images/arrow_right.png\" border=\"0\"/>" +" "+ rendered + answerstring+" \n<br>"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 			}
 			html.append("</ul>");
 		} else {

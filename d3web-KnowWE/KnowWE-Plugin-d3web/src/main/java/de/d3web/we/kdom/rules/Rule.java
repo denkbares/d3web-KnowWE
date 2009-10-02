@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +43,7 @@ import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.terminology.KnowledgeRecyclingObjectType;
 import de.d3web.we.utils.KnowWEUtils;
@@ -131,12 +133,24 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 		@Override
 		public void reviseSubtree(Section s) {
 			
+			boolean lazy = false ;
+			
+			Map<String,String> attributes = AbstractXMLObjectType.getAttributeMapFor(s);
+			if(attributes != null && attributes.containsKey("lazy")) {
+				String l = attributes.get("lazy");
+				if(l != null) {
+					if(l.equals("1") | l.equals("on") | l.equals("true") | l.equals("an") ) {
+						lazy = true;
+					}
+				}
+			}
+			
 			KnowledgeBaseManagement kbm = getKBM(s);
 			
 			if (kbm != null) {
 				
 				D3ruleBuilder builder = 
-					new D3ruleBuilder(s.getId(), true,
+					new D3ruleBuilder(s.getId(), lazy,
 							new SingleKBMIDObjectManager(kbm));
 				
 				if (s != null) {
