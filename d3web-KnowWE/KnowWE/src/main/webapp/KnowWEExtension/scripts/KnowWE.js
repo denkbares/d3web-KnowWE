@@ -159,7 +159,40 @@ var SolutionState =
         
         // Called to update the Relations in CoveringLists
         ReRenderKnowWESectionContent.update();
+        
+        //Calls an update of QuestionSheetRenderer
+        ReRenderQuestionSheet.update();
     }
+}
+
+
+var ReRenderQuestionSheet  = {
+		
+		update : function(node) {
+	// get the current topic
+	var topic = gup('page');
+    var params = {
+        action : 'ReRenderQuestionSheetAction',
+        KWikiWeb : 'default_web',
+        KdomNodeId : node,
+        ArticleTopic : topic
+    }
+    var url = getURL( params );
+    ReRenderQuestionSheet.execute(url, 'questionsheet');
+},
+
+
+execute : function( url, id ) {
+    var options = {
+        url : url,
+        action : 'insert',
+        response : {
+            ids : [ id ],
+        }
+    }
+
+    new KnowWEAjax( options ).send();
+},
 }
 
 /*
