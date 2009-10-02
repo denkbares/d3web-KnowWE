@@ -471,7 +471,7 @@ public class KnowWEEnvironment {
 		};
 		
 	    for (String module : modulesDir.list(ffilter)) {
-	    	moduleStrings.add(module.replace("\\.module$", ""));
+	    	moduleStrings.add(module.replaceAll("\\.module$", ""));
 	    }
 	    
 	    // DEPRECATED! DO NOT USE FOR NEW PLUG-INS
