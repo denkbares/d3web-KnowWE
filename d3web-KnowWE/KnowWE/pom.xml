@@ -156,7 +156,51 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		
+		<!-- Hermes Module -->
+		<profile>
+			<id>hermes-plugin</id>
+			<activation>
+				<property>
+					<name>hermes-plugin</name>
+				</property>
+			</activation>
+			
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-HermesModule</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>hermes-plugin</id>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<phase>process-resources</phase>
+
+								<configuration>
+									<tasks>
+										<copy file="../KnowWE-Plugin-HermesModule/src/main/wikiplugin/de.d3web.we.hermes.HermesPlugin.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>		
+
 	</profiles>
 
 	<dependencies>
