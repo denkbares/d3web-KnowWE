@@ -1,0 +1,104 @@
+*****************************************************************************
+* 																			*
+*     ,/|    y               /|    /(_)\    |\               y    |\		*
+*   ,/  \   ,OGmm          /' `\   \`,'/   /' `\          mm3O,   / `\		*
+*  /     \_//            /' / | `\_/\~/\_/' | \ `\            \\_/    `\	*
+* /    |   ||           O  |   \/'   V   `\/   |  O           ||   |    \	*
+*|  |  |  /||          O   |,-,|   ,_;_,   |,-,|   O          ||\  |  |  |	*
+*|  |   \ | \\        oO    \  \\ '\ I /` //  /    Oo        // | /   |  |	*
+*|  \   /\|  M        oO     \ \`\  \ /  /'/ /     Oo        M  |/\   /  |	*
+*|   \ |  ` //         O    /~\ \,\  |  /,/ /~\    O         \\ '  | /   |	*
+*|  /'\|    M      _____O  /__/ /__| I |__\ \__\  O____       M    |/`\  |	*
+* \ |  `    \\     |     \|  '''  ''' ```  ```  |/     |     //    '  | /	*
+*  \|    |   M     |         KnowWE2 - Calendar        |     M   |    |/	*
+*   \    \\_//     |         Because time flies        |     \\_//    /		*
+*    `    `~'      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      `~'    '		*
+*****************************************************************************
+
++---------------------------------------------------------------------------+
+history of the changes:
++---------------------------------------------------------------------------+
+build_20090911_2015 JoeD
+	* Removed old render Method from KnowWEDomRenderer
+	* Changed all remaining classes to the new method
+
+build_20090812_1955 JoeD
+	* Changes due to refactoring SectionFinders
+
+build_20090723_1230 apreu
+	* fix for ResourceBundle Locale problem
+	* don't save ResourceBundle anymore
+	
+build_20090722_1845 apreu
+	* added getCalendarBundle()
+	
+build_20090720_1345 reutelshoefer
+	* changes due to refactoring of KnowWE
+
+build 20090706_1612 apreu
+	* changed render-method
+	
+build 20090701_1600 apreu
+	* load Action once after server restart (javascript-failure)
+
+build 20090701_1100 apreu
+	* added anchor
+
+build 20090630_1840 apreu
+	* changes due to changes in KnowWE2
+
+build 20090630_1800 apreu
+	* added renderWeekWide
+
+build 20090628_1730 apreu
+	* changed getAppointments()
+
+build 20090625_2130 mdiez
+	* added properties file
+
+build 20090625_1836 apreu
+	* added calendar.css
+
+build 20090625_1350 apreu, mdiez
+	* added author-restriction in getAppointments()
+
+build 20090624_2250 apreu
+	* changed navigation:
+	* added getAbsoluteWeek
+	* added navigation-restriction
+
+build 20090624_1620 apreu
+	* implemented renderWeek
+	* added buttons to navigate
+	* added CalendarPlugin.js
+	* changed DateType
+
+build 20090624_00:55 mdiez
+	* CalendarEntry now implements Comparable
+	* changes in CalendarHandler for getting the Appointments
+
+build 20090623_15:45 mdiez
+	* persons import per ResourceBundle
+	* some changes in DateType, CalendarEntry
+	* CalendarHandler with seperate render-Methods
+
+build 20090619_1400 apreu
+	* added Calendar-Tree
+	* added DateType
+	* added possibility to show appointments sorted
+	* added possibility to show appointments from one person
+	
+build 20090617_1510 mdiez
+	* changed CalendarRenderer to CalendarHandler
+
+build 20090616_1620 apreu, mdiez
+	* added calendar
+	
+build 20090615_1714 apreu
+	* created module
+	* added appointment
+	* added import from text-file
+
+build 20090615_1600 apreu
+	* created Project KnowWE2-Plugin-Calendar
+	* created build.xml
