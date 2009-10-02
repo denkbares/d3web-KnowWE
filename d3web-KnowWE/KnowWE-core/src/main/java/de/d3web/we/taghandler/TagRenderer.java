@@ -50,8 +50,10 @@ public class TagRenderer extends KnowWEDomRenderer{
 			if (attValues != null) {
 				for (String elem: attValues.keySet()) {
 					HashMap<String, TagHandler> defaultTagHandlers = KnowWEEnvironment.getInstance().getDefaultTagHandlers();
-					if (defaultTagHandlers.containsKey(elem.toLowerCase())) {			
+					if (defaultTagHandlers.containsKey(elem.toLowerCase())) {		
+						buffi.append(KnowWEEnvironment.maskHTML("<div id=\""+elem.toLowerCase()+"\">"));
 						buffi.append(defaultTagHandlers.get(elem.toLowerCase()).render(sec.getTitle(), user, attValues, sec.getWeb()) + " \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
+						buffi.append(KnowWEEnvironment.maskHTML("</div>"));
 					}
 				}
 				if (buffi.length() == 0) {

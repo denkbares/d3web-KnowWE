@@ -45,6 +45,10 @@ public class ListInstalledModulesHandler extends AbstractTagHandler{
 		StringBuffer html = new StringBuffer();
 		
 		html.append("<div id=\"rename-panel\" class=\"panel\"><h3>" + KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.ListInstalledModules.headline") + "</h3>");
+		
+		if(modules.size() == 0) {
+			html.append("<b>(no modules installed)</b>");
+		}
 				
 		for (KnowWEModule module : modules) {
 			html.append("<div class='left'>");
