@@ -23,7 +23,9 @@ package de.d3web.we.hermes.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TimeStringInterpreter {
+import de.d3web.we.hermes.TimeStamp;
+
+public class TimeStringInterpreter extends TimeStamp{
 
     private String timeString;
     private final String startString;
@@ -164,5 +166,13 @@ public class TimeStringInterpreter {
 	}
 	return endTime;
     }
+
+
+
+	@Override
+	public int compareTo(Object o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }

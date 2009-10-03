@@ -75,7 +75,7 @@ public class TimeEventRenderer extends KnowWEDomRenderer {
 		sec.findSuccessorsOfType(TimeEventSourceType.class, sources);
 
 		//StringBuilder result = new StringBuilder();
-		result.append("%%collapsebox-closed \n");
+		
 		String titleHeader = "";
 		String style = "color:rgb(20, 200, 102)";
 		if (importance.contains("1")) {
@@ -89,6 +89,8 @@ public class TimeEventRenderer extends KnowWEDomRenderer {
 		titleHeader = title + "   :   ";
 		titleHeader += date;
 		// titleHeader += " " + importance;
+		result.append("%%collapsebox-closed \n");
+		
 		result.append("! " + titleHeader + " \n");
 
 		result.append(description);

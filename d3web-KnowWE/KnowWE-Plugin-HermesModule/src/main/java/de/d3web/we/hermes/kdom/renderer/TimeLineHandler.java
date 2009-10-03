@@ -56,7 +56,7 @@ public class TimeLineHandler extends AbstractTagHandler {
 	private static ResourceBundle kwikiBundle = ResourceBundle
 			.getBundle("KnowWE_messages");
 
-	private static final String TIME_SPARQL = "SELECT ?t WHERE { ?t lns:hasImportance ?x . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEAR\" ^^xsd:double) .}";
+	private static final String TIME_SPARQL = "SELECT ?a WHERE { ?t lns:hasTitle ?a . ?t lns:hasImportance ?x . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEAR\" ^^xsd:double) .}";
 	private static final String TIME_AFTER = "nach";
 
 	@Override

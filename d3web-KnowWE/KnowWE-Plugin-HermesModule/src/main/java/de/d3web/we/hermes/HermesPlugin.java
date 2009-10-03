@@ -22,7 +22,10 @@ package de.d3web.we.hermes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.hermes.action.SearchTimeEventsAction;
 import de.d3web.we.hermes.kdom.TimeEventType;
 import de.d3web.we.hermes.kdom.renderer.TimeLineHandler;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -56,6 +59,14 @@ public class HermesPlugin extends AbstractDefaultKnowWEModule {
 	public List<TagHandler> getTagHandlers() {
 		List<TagHandler> list = new ArrayList<TagHandler>();
 		list.add(new TimeLineHandler());
+		list.add(new TimeEventSearchHandler());
 		return list;
 	} 
+	
+	
+	@Override
+	public void addAction(
+			Map<Class<? extends KnowWEAction>, KnowWEAction> map) {
+		map.put(SearchTimeEventsAction.class, new SearchTimeEventsAction());
+	}
 }
