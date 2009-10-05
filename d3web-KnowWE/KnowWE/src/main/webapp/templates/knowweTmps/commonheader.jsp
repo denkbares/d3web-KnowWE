@@ -49,6 +49,8 @@
 <script type="text/javascript" src="KnowWEExtension/scripts/lib/ajaxcontentmws.js"></script>
 <script type="text/javascript" src="KnowWEExtension/scripts/TableSort.js"></script>
 <script type="text/javascript" src="KnowWEExtension/scripts/RenamingTool.js"></script>
+<script type="text/javascript" src="KnowWEExtension/scripts/silveripe.0.2.js"></script>
+
 
 <wiki:IncludeResources type="script"/>
 
