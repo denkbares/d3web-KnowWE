@@ -31,7 +31,7 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
 public class TagsContent extends XMLContent {
 
 	@Override
-	protected void init() {		
+	protected void init() {
 		this.setCustomRenderer(NothingRenderer.getInstance());
 	}
 
@@ -40,11 +40,14 @@ public class TagsContent extends XMLContent {
 		String text = s.getOriginalText();
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		for (String cur : text.split(" |,")) {
-			UpperOntology uo = UpperOntology.getInstance();
-			URI suri = uo.getHelper().createlocalURI(s.getTitle());
-			URI puri = uo.getHelper().createlocalURI("hasTag");
-			URI ouri = uo.getHelper().createlocalURI(cur);
-			io.merge(uo.getHelper().createProperty(suri, puri, ouri, s));
+
+			if (cur.trim().length() > 0) {
+				UpperOntology uo = UpperOntology.getInstance();
+				URI suri = uo.getHelper().createlocalURI(s.getTitle());
+				URI puri = uo.getHelper().createlocalURI("hasTag");
+				URI ouri = uo.getHelper().createlocalURI(cur.trim());
+				io.merge(uo.getHelper().createProperty(suri, puri, ouri, s));
+			}
 		}
 		return io;
 	}

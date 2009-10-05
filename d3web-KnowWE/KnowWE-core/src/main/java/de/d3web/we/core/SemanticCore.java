@@ -545,7 +545,7 @@ public class SemanticCore {
 					if (tag.endsWith("\"")){
 						tag=tag.substring(0, tag.length()-1);
 					}
-					resultlist.add(tag);
+					resultlist.add(tag.trim());
 				}
 			} catch (QueryEvaluationException e) {
 				return resultlist;

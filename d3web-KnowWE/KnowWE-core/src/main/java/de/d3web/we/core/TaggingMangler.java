@@ -85,12 +85,13 @@ public class TaggingMangler {
 				}
 			}
 			if (!tags.contains(tag)) {
-				tags.add(tag);
+				tags.add(tag.trim());
 			}
 			String output = "";
 			for (String temptag : tags) {
 				output += temptag + " ";
 			}
+			output=output.trim();
 			Section keep = tagslist.get(0);
 			if (multiple) {
 				for (int i = 1; i < tagslist.size(); i++) {
@@ -124,14 +125,12 @@ public class TaggingMangler {
 				tags.add(temptag.trim());
 			}
 		}
-		if (!tags.contains(tag)) {
-			tags.add(tag);
-		}
 		String output = "";
 		for (String temptag : tags) {
 			if (!temptag.equals(tag))
-				output += temptag + " ";
+				output += temptag.trim() + " ";
 		}
+		output=output.trim();
 		Section keep = tagslist.get(0);
 		if (multiple) {
 			for (int i = 1; i < tagslist.size(); i++) {
@@ -271,7 +270,9 @@ public class TaggingMangler {
 		boolean multiple = tagslist.size() > 1;
 		String output = "";
 		for (String temptag : tag.split(" |,")) {
-			output += temptag + " ";
+			if (temptag.trim().length()>0){
+				output += temptag.trim() + " ";
+			}
 		}
 
 		if (tagslist.size() > 0) {
@@ -298,7 +299,13 @@ public class TaggingMangler {
 				topic);
 		Section asection=article.getSection();
 		String text=asection.getOriginalText();
-		text+="<tags>"+content+"</tags>";
+		String output = "";
+		for (String temptag : content.split(" |,")) {
+			if (temptag.trim().length()>0){
+				output += temptag.trim() + " ";
+			}
+		}
+		text+="<tags>"+output+"</tags>";
 		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
 		.replaceKDOMNode(params, topic, asection.getId(), text);
 	}
