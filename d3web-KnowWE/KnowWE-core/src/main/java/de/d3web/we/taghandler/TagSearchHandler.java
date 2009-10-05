@@ -30,9 +30,10 @@ import de.d3web.we.wikiConnector.GenericSearchResult;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TagSearchHandler extends AbstractTagHandler {
-
+	private ResourceBundle rb;
 	public TagSearchHandler() {
 		super("tagsearch");
+
 	}
 
 	private String getForm(String baseurl) {
@@ -41,7 +42,7 @@ public class TagSearchHandler extends AbstractTagHandler {
 				+ baseurl
 				+ "Wiki.jsp"+ "?page=TagSearch\" "
 				+ "class=\"wikiform\" "
-				+ "id=\"searchform2\" accept-charset=\"UTF-8\">"
+				+ "id=\"searchform2\" name=\"searchform2\" accept-charset=\"UTF-8\">"
 				+ "<p>" + "<input type=\"hidden\" name=\"page\" id=\"page\" value=\"TagSearch\" />"+
 						"<input type=\"text\" name=\"query\" id=\"tagquery\" value=\"\" size=\"32\" />"
 				+ "<input type=\"submit\" name=\"ok\" id=\"ok\" value=\"Find!\" />"
@@ -60,7 +61,7 @@ public class TagSearchHandler extends AbstractTagHandler {
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
-		ResourceBundle rb = KnowWEEnvironment.getInstance()
+		rb = KnowWEEnvironment.getInstance()
 				.getKwikiBundle(user);
 		String baseurl = KnowWEEnvironment.getInstance().getWikiConnector()
 		.getBaseUrl();
@@ -80,27 +81,13 @@ public class TagSearchHandler extends AbstractTagHandler {
 				+ (querystring==null?"none":querystring) + "</h3>");
 		html.append(getForm(baseurl));
 		html.append("<div id=\"searchResult2\" >");
+		html.append(TaggingMangler.getInstance().getResultPanel(querystring));
 
-		if (querystring != null) {
-			ArrayList<GenericSearchResult> pages = TaggingMangler.getInstance()
-					.searchPages(querystring);
-
-			for (GenericSearchResult cur : pages) {
-				String link = "<a href=\"Wiki.jsp?page=" + cur.getPagename()
-						+ "\">" + cur.getPagename() + "</a>";
-				String score = cur.getScore() + "";
-				html.append("<div class='left'>");
-				html.append("<b>" + link + "</b>" + " (Score:" + score + ")");
-				html.append("</div><br>");
-
-			}
-		} else {
-			html.append(rb.getString("KnowWE.TagSearch.nosearch"));
-		}
 		html.append("</div>");
 		html.append("</div>");
 		return html.toString();
 
 	}
+
 
 }

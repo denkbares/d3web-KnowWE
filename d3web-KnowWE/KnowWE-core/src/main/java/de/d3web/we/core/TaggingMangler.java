@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -326,5 +327,25 @@ public class TaggingMangler {
 			result.add(new GenericSearchResult(cur, null, 1));
 		}
 		return result;
+	}
+	public String getResultPanel(String querystring){
+		StringBuffer html=new StringBuffer();
+		if (querystring != null) {
+			ArrayList<GenericSearchResult> pages = TaggingMangler.getInstance()
+					.searchPages(querystring);
+
+			for (GenericSearchResult cur : pages) {
+				String link = "<a href=\"Wiki.jsp?page=" + cur.getPagename()
+						+ "\">" + cur.getPagename() + "</a>";
+				String score = cur.getScore() + "";
+				html.append("<div class='left'>");
+				html.append("<b>" + link + "</b>" + " (Score:" + score + ")");
+				html.append("</div><br>");
+
+			}
+		} else {	
+			html.append("no query");
+		}
+		return html.toString();
 	}
 } 

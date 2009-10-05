@@ -40,6 +40,9 @@ public class TagHandlingAction implements KnowWEAction {
 			tm.removeTag(topic, tag,parameterMap);
 		} else if (tagaction.equals("set")){
 			tm.setTags(topic,tag,parameterMap);
+		} else if (tagaction.equals("pagesearch")){
+			String query=parameterMap.get(KnowWEAttributes.TAGGING_QUERY);
+			return TaggingMangler.getInstance().getResultPanel(query);
 		}
 		
 		

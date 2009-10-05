@@ -23,6 +23,7 @@ package de.d3web.we.module.semantic.owl;
 import java.io.File;
 import java.io.FileReader;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import org.openrdf.OpenRDFException;
 import org.openrdf.model.BNode;
@@ -80,33 +81,34 @@ public class UpperOntology {
 
 	private String config_file;
 
-	private EvaluationStrategyImpl Evaluator;
 	private String localens;
-
-	private RepositoryManager man;
 
 	private org.openrdf.repository.Repository myRepository;
 	private String ontfile = "file:resources/knowwe.owl";
 	private OwlHelper owlhelper;
+	private HashMap<String, String> settings;
 	private File persistencedir;
 	private SailRepository persistentRepository;
 	protected RepositoryConfig repConfig;
-
-	private Repository repository;
 
 	private RepositoryConnection repositoryConn;
 
 	private String reppath;
 
 	private UpperOntology(String path) {
+		settings = new HashMap<String, String>();
 		ontfile = path + File.separatorChar + "knowwe.owl";
+		settings.put("ontfile", ontfile);
 		reppath = path + File.separatorChar + "repository";
+		settings.put("reppath", reppath);
 		config_file = path + File.separatorChar + "owlim.ttl";
+		settings.put("config_file", config_file);
 		File rfile = new File(reppath);
 		delete(rfile);
 		rfile.mkdir();
 		// setLocaleNS(path);
 		localens = basens;
+		settings.put("basens",basens);
 		readOntology();
 		owlhelper = new OwlHelper(repositoryConn);
 	}
@@ -188,48 +190,14 @@ public class UpperOntology {
 		return repositoryConn.getValueFactory();
 	}
 
-	private void readOntology() {
-
-		File file = new File(ontfile);	
-
+	private void readOntology() {		
+		myRepository=RepositoryFactory.getInstance().createRepository(RepositoryFactory.DEFAULTREPOSITORY, settings);
 		try {
-
-			Repository systemRepo = null;
-
-			man = new LocalRepositoryManager(new File(reppath));
-			man.initialize();
-			systemRepo = man.getSystemRepository();
-			ValueFactory vf = systemRepo.getValueFactory();
-			Graph graph = new GraphImpl(vf);
-
-			RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE, vf);
-			rdfParser.setRDFHandler(new StatementCollector(graph));
-			rdfParser.parse(new FileReader(config_file),
-					RepositoryConfigSchema.NAMESPACE);
-
-			Resource repositoryNode = GraphUtil.getUniqueSubject(graph,
-					RDF.TYPE, RepositoryConfigSchema.REPOSITORY);
-			RepositoryConfig repConfig = RepositoryConfig.create(graph,
-					repositoryNode);
-
-			repConfig.validate();
-			RepositoryConfigUtil.updateRepositoryConfigs(systemRepo, repConfig);
-			Literal _id = GraphUtil.getUniqueObjectLiteral(graph,
-					repositoryNode, RepositoryConfigSchema.REPOSITORYID);
-			repository = man.getRepository(_id.getLabel());
-			myRepository = repository;
-			repositoryConn = repository.getConnection();
-			repositoryConn.setAutoCommit(false);
-			BNode context = repositoryConn.getValueFactory().createBNode(
-					"rootontology");
-			repositoryConn.add(file, basens, RDFFormat.RDFXML, context);
-			Evaluator = new EvaluationStrategyImpl(new TripleSourceImpl(
-					repositoryConn, new ValueFactoryImpl()));
-
-		} catch (Exception ex) {
-			// throw new RuntimeException(ex);
+			repositoryConn=myRepository.getConnection();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
 	}
 
 	/**

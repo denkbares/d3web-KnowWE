@@ -31,7 +31,8 @@ var TagSearchBox = {
 		$('start').value='0';
 		this.runfullsearch();
 	},
-
+	
+	
 	runfullsearch: function(e){
 		var q2 = this.query2.value;
 		if( !q2 || (q2.trim()=='')) {
@@ -40,16 +41,31 @@ var TagSearchBox = {
 		}
 		$('spin').show();
 
-		new Ajax(Wiki.TemplateUrl+'AJAXTagSearch.jsp', {
-			postBody: $('searchform2').toQueryString(),
-			update: 'searchResult2',
-			method: 'post',
-			onComplete: function() {
-				$('spin').hide();
-				GraphBar.render($('searchResult2'));				
+		var xmlHttpReq=false;
+		var self=this;
+		if (window.XMLHttpRequest) {
+			self.xmlHttpReq=new XMLHttpRequest();
+			} else if (window.ActiveXObject) {
+				self.xmlHttpReq=new ActiveXObject("Microsoft.XMLHTTP");
 			}
-		}).request();	
+		var form=document.forms['searchform2'];
+		
+		var data="action=TagHandlingAction&tagaction=pagesearch&tagquery="+form.query.value;
+		self.xmlHttpReq.open('POST','KnowWE.jsp',true);
+		self.xmlHttpReq.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+		self.xmlHttpReq.setRequestHeader('Content-length',data.length);
+		self.xmlHttpReq.setRequestHeader('Connection','close');
+		self.xmlHttpReq.onreadystatechange=function() {
+			if (self.xmlHttpReq.readyState==4) {				
+				document.getElementById('searchResult2').innerHTML=self.xmlHttpReq.responseText;
+				$('spin').hide();
+			}
+		}
+		
+		self.xmlHttpReq.send(data);				
 	}
+	
+	
 
 }
 

@@ -92,6 +92,7 @@ public class KnowWEAttributes {
 	
 	public static final String TAGGING_ACTION= "tagaction";
 	public static final String TAGGING_TAG="tagtag";
+	public static final String TAGGING_QUERY="tagquery";
 	
 	public static String getBrokerConstant(String web) {
 		if(web != null) {
