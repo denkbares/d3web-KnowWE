@@ -46,9 +46,15 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.css.CSS;
+import de.d3web.we.kdom.owlextension.Extension;
+import de.d3web.we.kdom.owlextension.OwlProperties;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
+import de.d3web.we.kdom.semanticFactSheet.Info;
+import de.d3web.we.kdom.sparql.Sparql;
 import de.d3web.we.kdom.table.Table;
+import de.d3web.we.kdom.tagging.Tags;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.module.KnowWEModule;
@@ -553,6 +559,12 @@ public class KnowWEEnvironment {
 		this.rootTypes.add( new Table() );
 		this.rootTypes.add( new CSS() );
 		this.rootTypes.add( new TagHandlerType());
+		this.rootTypes.add(new Sparql());
+		this.rootTypes.add(new Extension());
+		this.rootTypes.add(new OwlProperties());
+		this.rootTypes.add(new SemanticAnnotation());
+		this.rootTypes.add(new Info());
+		this.rootTypes.add(new Tags());
 
 		// init modules and add root types
 		for (KnowWEModule modul : modules) {

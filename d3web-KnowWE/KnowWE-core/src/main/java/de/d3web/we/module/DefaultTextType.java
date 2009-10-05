@@ -126,12 +126,7 @@ public class DefaultTextType extends DefaultAbstractKnowWEObjectType {
 	@Override
 	public void init() {
 		if (!initialzed) {		        		
-			childrenTypes.add(new Sparql());
-			childrenTypes.add(new Extension());
-			childrenTypes.add(new OwlProperties());
-			childrenTypes.add(new SemanticAnnotation());
-			childrenTypes.add(new Info());
-			childrenTypes.add(new Tags());
+
 			sectionFinder = new AllTextSectionFinder();
 			initialzed = true;
 		}
