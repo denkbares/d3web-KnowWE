@@ -21,6 +21,7 @@
 package de.d3web.we.action;
 
 import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.TaggingMangler;
 
@@ -31,7 +32,13 @@ public class TagHandlingAction implements KnowWEAction {
 		String web = parameterMap.getWeb();		
 		String topic = parameterMap.getTopic();
 		String tagaction = parameterMap.get(KnowWEAttributes.TAGGING_ACTION);
-		String tag=parameterMap.get(KnowWEAttributes.TAGGING_TAG);				
+		String tag=parameterMap.get(KnowWEAttributes.TAGGING_TAG);	
+		
+		boolean b = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(topic, parameterMap.getRequest());
+		
+		if(b == false) {
+			return "Your are not allowed to edit page";
+		}
 		
 		TaggingMangler tm=TaggingMangler.getInstance();
 		if (tagaction.equals("add")){

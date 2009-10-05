@@ -49,6 +49,7 @@ public class TagEditPanel extends AbstractTagHandler {
 			output+="none";
 		}
 		output += "</span>";
+		output += "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/silveripe.0.2.js\"></script>";
 		output += "<script type=\"text/javascript\">";
 		output += "var myIPE=new SilverIPE('tagspan','KnowWE.jsp',{parameterName:'tagtag',highlightColor: '#ffff77',"
 				+ "additionalParameters:{tagaction:\"set\",action:\"TagHandlingAction\","
