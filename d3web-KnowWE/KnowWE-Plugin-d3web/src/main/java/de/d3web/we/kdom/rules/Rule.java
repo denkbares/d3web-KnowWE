@@ -46,6 +46,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.terminology.KnowledgeRecyclingObjectType;
+import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -134,8 +135,8 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 		public void reviseSubtree(Section s) {
 			
 			boolean lazy = false ;
-			
-			Map<String,String> attributes = AbstractXMLObjectType.getAttributeMapFor(s);
+			Section xml = KnowWEObjectTypeUtils.getAncestorOfType(s, AbstractXMLObjectType.class);
+			Map<String,String> attributes = AbstractXMLObjectType.getAttributeMapFor(xml);
 			if(attributes != null && attributes.containsKey("lazy")) {
 				String l = attributes.get("lazy");
 				if(l != null) {
