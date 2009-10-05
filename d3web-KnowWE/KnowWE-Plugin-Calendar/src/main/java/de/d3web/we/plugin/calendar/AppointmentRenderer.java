@@ -56,8 +56,9 @@ public class AppointmentRenderer extends KnowWEDomRenderer{
 		StringBuilder b = new StringBuilder();
 		b.append("<table class=wikitable width=95% border=0>\n");
 		b.append("<tr><th align=left width=80>" + dateSec.getOriginalText() + "</th><th align=left>" + timeSec.getOriginalText() + "</th><th align=right width=250><i>" + name + "</i></th></tr>\n");
-		string.append("<tr><td colspan=3>" + text + "</td></tr>\n</table>\n");
+		b.append("<tr><td colspan=3>" + text + "</td></tr>\n</table>\n");
 		
 		string.append(KnowWEEnvironment.maskHTML(b.toString()));
+		
 	}
 }

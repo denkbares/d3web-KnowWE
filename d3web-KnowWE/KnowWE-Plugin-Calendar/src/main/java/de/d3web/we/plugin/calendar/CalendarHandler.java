@@ -94,11 +94,14 @@ public class CalendarHandler extends AbstractTagHandler{
 				}
 				
 				CalendarEntry addEntry = new CalendarEntry(entry);
+				DateType date = addEntry.getDate();
 				
 				if((author == null || addEntry.getAuthor().equals(author)) 
-						&& (intervall == null || (addEntry.getDate().after(intervall[0])
-								&& addEntry.getDate().before(intervall[1])))) {
-					result.add(new CalendarEntry(entry));
+						&& (intervall == null || date.equals(intervall[0])
+								|| date.equals(intervall[1])
+								|| (date.after(intervall[0])
+								   && date.before(intervall[1])))) {
+					result.add(addEntry);
 				}
 			}
 		}
