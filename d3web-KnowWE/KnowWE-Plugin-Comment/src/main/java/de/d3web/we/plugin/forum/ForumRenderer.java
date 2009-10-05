@@ -93,15 +93,13 @@ public class ForumRenderer extends KnowWEDomRenderer {
 		
 		String web = sec.getWeb();
 		
-		StringBuffer toHTML = new StringBuffer();
-		
 		Map<String, String> forumMap = AbstractXMLObjectType.getAttributeMapFor(sec);
 		
 		// load sort-parameter from URL:
 		setSortUpwards(user.getUrlParameterMap().get("sort"));
 		
 		//load javascript-file:
-		toHTML.append(maskHTML("<script type=text/javascript src=KnowWEExtension/scripts/ForumPlugin.js></script>\n"));
+		string.append(maskHTML("<script type=text/javascript src=KnowWEExtension/scripts/ForumPlugin.js></script>\n"));
 		
 		boolean canEditPage = false;
 		if(user.getUsername() != "Guest") { // causes endless loop
@@ -111,50 +109,48 @@ public class ForumRenderer extends KnowWEDomRenderer {
 		
 			//load action once after server restart (javascript-failure)
 			if(canEditPage && firstStart) {
-				toHTML.append(maskHTML("<script>loadAction('" + topic + "')</script>\n"));
+				string.append(maskHTML("<script>loadAction('" + topic + "')</script>\n"));
 				firstStart = false;
 			}	
 		}
 		
 		// back link:
 		String link = forumMap.get("ref");
-		if(link != null) toHTML.append(maskHTML("<a href=" + link + "><< back</a><br><br>\n"));
+		if(link != null) string.append(maskHTML("<a href=" + link + "><< back</a><br><br>\n"));
 		
 		// title:
 		String title = forumMap.get("name");
-		if(title != null) toHTML.append(maskHTML("<h2>" + title + "</h2><br><hr>\n"));
+		if(title != null) string.append(maskHTML("<h2>" + title + "</h2><br><hr>\n"));
 		
 		List<Section> contentSectionList = new ArrayList<Section>();
 		sec.findSuccessorsOfType(ForumBox.class, contentSectionList);
 		
+		//add first-comment
 		Section section0 = contentSectionList.get(0);
-		string.append(toHTML);
-		toHTML.setLength(0);
 		section0.getObjectType().getRenderer().render(section0, user, string);
 		
-		//if user is logged in: tool to add easily a post:
+		//if user is logged in: tool (textbox) to add easily a post:
 		if (canEditPage) {
-			toHTML.append(maskHTML("<br><form name=answer method=post action=Wiki.jsp?page=" + topic + "&sort=" + (sortUpwards?"up":"down") + " accept-charset=UTF-8>"));
+			string.append(maskHTML("<br><form name=answer method=post action=Wiki.jsp?page=" + topic + "&sort=" + (sortUpwards?"up":"down") + " accept-charset=UTF-8>"));
 		}
 		
-		toHTML.append(maskHTML("<table width=95% border=0>\n"));
-		toHTML.append(maskHTML("<tr><th align=left></th><th align=right width=150>\n"));
+		string.append(maskHTML("<table width=95% border=0>\n"));
+		string.append(maskHTML("<tr><th align=left></th><th align=right width=150>\n"));
 		
 		//sort posts up- or downwards
-		toHTML.append(maskHTML("<a href=Wiki.jsp?page=" + topic + "&sort=up title='" + rb.getString("Forum.sort.up") + "'><img src=KnowWEExtension/images/ct_up.gif title='" + rb.getString("Forum.sort.up") + "'></a>\n"));
-		toHTML.append(maskHTML("<a href=Wiki.jsp?page=" + topic + "&sort=down title='" + rb.getString("Forum.sort.down") + "'><img src=KnowWEExtension/images/ct_down.gif title='" + rb.getString("Forum.sort.down") + "'></a>\n</th></tr>\n"));
+		string.append(maskHTML("<a href=Wiki.jsp?page=" + topic + "&sort=up title='" + rb.getString("Forum.sort.up") + "'><img src=KnowWEExtension/images/ct_up.gif title='" + rb.getString("Forum.sort.up") + "'></a>\n"));
+		string.append(maskHTML("<a href=Wiki.jsp?page=" + topic + "&sort=down title='" + rb.getString("Forum.sort.down") + "'><img src=KnowWEExtension/images/ct_down.gif title='" + rb.getString("Forum.sort.down") + "'></a>\n</th></tr>\n"));
 		
 		if(canEditPage) {
-			toHTML.append(maskHTML("<tr><td colspan=2><p align=right><textarea name=text cols=68 rows=8></textarea><br>\n"));
-			toHTML.append(maskHTML("<input type=hidden name=topic value='" + topic + "'>"));
-			toHTML.append(maskHTML("<input type=submit name=Submit value='" + rb.getString("Forum.button.postMessage") + "' onclick=saveForumBox()></p></td></tr>"));
-			toHTML.append(maskHTML("</table></form><hr><br>\n"));
+			string.append(maskHTML("<tr><td colspan=2><p align=right><textarea name=text cols=68 rows=8></textarea><br>\n"));
+			string.append(maskHTML("<input type=hidden name=topic value='" + topic + "'>"));
+			string.append(maskHTML("<input type=submit name=Submit value='" + rb.getString("Forum.button.postMessage") + "' onclick=saveForumBox()></p></td></tr>"));
+			string.append(maskHTML("</table></form><hr><br>\n"));
 		} else {
-			toHTML.append(maskHTML("</table><hr><br>\n"));
+			string.append(maskHTML("</table><hr><br>\n"));
 		}
 	    
-		string.append(toHTML);
-		
+		//render posts
 	    if(sortUpwards) {
 			for(int i = 1; i < contentSectionList.size(); i++) {	
 				Section sectionI = contentSectionList.get(i);
@@ -179,7 +175,5 @@ public class ForumRenderer extends KnowWEDomRenderer {
 			
 			change = false;
 		}
-		
-		string.append(toHTML);
 	}
 }
