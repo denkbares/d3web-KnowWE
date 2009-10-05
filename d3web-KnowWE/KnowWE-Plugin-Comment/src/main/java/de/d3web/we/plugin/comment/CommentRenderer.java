@@ -69,7 +69,9 @@ public class CommentRenderer extends KnowWEDomRenderer{
 				CommentTypeTagID.setID(newId + 1);
 				
 				pageName += newId;
-				
+				if (title.length() > 0) {
+					pageName = title;
+				}
 				// create new wikipage:
 				if(!wikiConnector.doesPageExist(pageName)) {
 					
@@ -91,6 +93,9 @@ public class CommentRenderer extends KnowWEDomRenderer{
 				if(newId >= CommentTypeTagID.getID()) CommentTypeTagID.setID(newId + 1);
 					
 				pageName += id.trim();
+				if (title.length() > 0) {
+					pageName = title;
+				}
 				// create new wikipage with failure message caused by changing manually the id
 				if(!wikiConnector.doesPageExist(pageName)) {
 					StringBuffer saveContent = new StringBuffer();
@@ -113,7 +118,7 @@ public class CommentRenderer extends KnowWEDomRenderer{
 			}
 
 			String imageDir = "KnowWEExtension/" + commentTypes.get(commentTag);
-			toHTML = "<a name=" + pageName + "></a><a target=_blank href=Wiki.jsp?page=" + pageName + "><img src=" + imageDir + " title='" + commentContent + "'></a>";
+			toHTML = "<a name='" + pageName + "'></a><a target=_blank href=Wiki.jsp?page=" + pageName + "><img src=" + imageDir + " title='" + commentContent + "'></a>";
 		}
 		
 		string.append(KnowWEEnvironment.maskHTML(toHTML));	

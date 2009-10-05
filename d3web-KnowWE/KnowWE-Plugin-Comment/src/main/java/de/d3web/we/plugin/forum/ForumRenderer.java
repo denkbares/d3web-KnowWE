@@ -118,9 +118,10 @@ public class ForumRenderer extends KnowWEDomRenderer {
 		String link = forumMap.get("ref");
 		if(link != null) string.append(maskHTML("<a href=" + link + "><< back</a><br><br>\n"));
 		
-		// title:
-		String title = forumMap.get("name");
-		if(title != null) string.append(maskHTML("<h2>" + title + "</h2><br><hr>\n"));
+		// title is now used for pagename
+//		// title:
+//		String title = forumMap.get("name");
+//		if(title != null) string.append(maskHTML("<h2>" + title + "</h2><br><hr>\n"));
 		
 		List<Section> contentSectionList = new ArrayList<Section>();
 		sec.findSuccessorsOfType(ForumBox.class, contentSectionList);
