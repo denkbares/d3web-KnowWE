@@ -39,6 +39,7 @@ import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.include.IncludedFromType;
+import de.d3web.we.kdom.renderer.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -107,8 +108,8 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 			string.append(KnowWEEnvironment.maskHTML("<pre><span id='"+sec.getId()
 					+"' class = 'XCLRelationInList'><span id=\"\">"));
 			
+			boolean empty = true;
 			if (messages != null) {
-				boolean empty = true;
 				for (Message m : messages) {
 					if (!m.getMessageText().equals(
 							MessageKnOfficeGenerator.getResourceBundle().
@@ -124,7 +125,11 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 			}
 			
 			StringBuilder b = new StringBuilder();
-			DelegateRenderer.getInstance().render(sec, user, b);
+			if (!empty) {
+				DefaultTextRenderer.getInstance().render(sec, user, b);
+			} else {
+				DelegateRenderer.getInstance().render(sec, user, b);
+			}
 			string.append(b.toString() + KnowWEEnvironment.maskHTML("</pre></span></span>\n"));
 		}
 	}
