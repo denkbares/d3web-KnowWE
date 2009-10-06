@@ -40,12 +40,12 @@ public class TagEditPanel extends AbstractTagHandler {
 		TaggingMangler tm = TaggingMangler.getInstance();
 		ArrayList<String> tags = tm.getPageTags(topic);
 		String output = "<p>";
-		output += "current tags(click to edit):";
+		output += "Tags (edit):";
 		output += "<span id=\"tagspan\">";
 		for (String cur : tags) {
 			output += cur + " ";
 		}
-		if (tags.size()==0){
+		if (output.trim().length()==0){
 			output+="none";
 		}
 		output += "</span>";
