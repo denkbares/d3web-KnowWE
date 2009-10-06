@@ -82,6 +82,7 @@ import de.d3web.we.kdom.xcl.CoveringListSection;
 import de.d3web.we.kdom.xcl.XCL;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.KnowWEModule;
+import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.renderer.xml.GraphMLOwlRenderer;
 import de.d3web.we.taghandler.DialogPaneTagHandler;
 import de.d3web.we.taghandler.KBRenderer;
@@ -441,6 +442,11 @@ public class D3webModule implements KnowWEModule {
 	@Override
 	public List<TagHandler> getTagHandlers() {
 		return this.tagHandlers;
+	}
+
+	@Override
+	public List<PageAppendHandler> getPageAppendHandlers() {
+		return new ArrayList<PageAppendHandler>();
 	}
 
 
