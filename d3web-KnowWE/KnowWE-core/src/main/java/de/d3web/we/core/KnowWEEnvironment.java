@@ -58,6 +58,7 @@ import de.d3web.we.kdom.tagging.Tags;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.module.KnowWEModule;
+import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.taghandler.FactSheet;
 import de.d3web.we.taghandler.ImportKnOfficeHandler;
 import de.d3web.we.taghandler.KDOMRenderer;
@@ -92,6 +93,11 @@ public class KnowWEEnvironment {
 
 	private List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
 	private List<KnowWEObjectType> globalTypes = new ArrayList<KnowWEObjectType>();
+	private List<PageAppendHandler> appendHandlers = new ArrayList<PageAppendHandler>();
+
+	public List<PageAppendHandler> getAppendHandlers() {
+		return appendHandlers;
+	}
 
 	public List<KnowWEObjectType> getGlobalTypes() {
 		return globalTypes;
@@ -601,6 +607,12 @@ public class KnowWEEnvironment {
 					}
 				}
 			}
+			
+			
+			
+			
+			// ADD PageAppendHandlers
+			this.appendHandlers.addAll(modul.getPageAppendHandlers());
 
 			// ADD ROOT TYPES
 			List<? extends KnowWEObjectType> moduleRoots = modul.getRootTypes();

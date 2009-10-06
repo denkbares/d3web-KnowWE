@@ -20,6 +20,7 @@
 
 package de.d3web.we.module;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,8 +61,13 @@ public abstract class AbstractDefaultKnowWEModule implements KnowWEModule{
 	
 	@Override
 	public List<TagHandler> getTagHandlers() {
-		return null;
+		return new ArrayList<TagHandler>();
 	} 
+	@Override
+	public List<PageAppendHandler> getPageAppendHandlers() {
+		return new ArrayList<PageAppendHandler>();
+	}
+	
 	@Override
 	public void onSave(String topic) {
 		

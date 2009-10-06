@@ -126,5 +126,17 @@ public interface KnowWEModule {
 	 * @return
 	 */
 	List<TagHandler> getTagHandlers();
+	
+	
+	/**
+	 * A KnowWE module can bring in PageAppendHandlers and register them by this method.
+	 * 
+	 * These handlers allow a module to append some content to the wiki-page content
+	 * There are 2 kinds of appendHandlers one append content at top of the page,
+	 * the other appends at the bottom
+	 * 
+	 * @return
+	 */
+	List<PageAppendHandler> getPageAppendHandlers();
 
 }
