@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +38,7 @@ import com.ecyrd.jspwiki.plugin.WikiPlugin;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.module.PageAppendHandler;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 
@@ -54,14 +56,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 		String result = "tag not found or error";
 
 		try {
-			JSPWikiUserContext userContext = new JSPWikiUserContext(context, parseRequestVariables(context));
-			
+			JSPWikiUserContext userContext = new JSPWikiUserContext(context,
+					parseRequestVariables(context));
+
 			String topic = context.getPage().getName();
 			if (context.getCommand().getRequestContext().equals(
 					WikiContext.VIEW)) {
 				initKnowWEEnvironmentIfNeeded(context.getEngine());
-				result = KnowWEEnvironment.getInstance().renderTags(params, topic, userContext,
-						KnowWEEnvironment.DEFAULT_WEB);
+				result = KnowWEEnvironment.getInstance().renderTags(params,
+						topic, userContext, KnowWEEnvironment.DEFAULT_WEB);
 			}
 		} catch (Throwable t) {
 			System.out.println("****Exception EXECUTE***");
@@ -86,8 +89,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 		initKnowWEEnvironmentIfNeeded(wikiContext.getEngine());
 
 		// process this article in KnowWE
-		KnowWEEnvironment.getInstance().processAndUpdateArticle(user, content, topic,
-				"default_web");
+		KnowWEEnvironment.getInstance().processAndUpdateArticle(user, content,
+				topic, "default_web");
 	}
 
 	@Override
@@ -126,12 +129,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 				return content;
 		}
 		try {
-			
+
 			/* creating KnowWEUserContext with username and requestParamteters */
-			JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext, parseRequestVariables(wikiContext));
-			
+			JSPWikiUserContext userContext = new JSPWikiUserContext(
+					wikiContext, parseRequestVariables(wikiContext));
+
 			topicName = wikiContext.getPage().getName();
-			
+
 			initKnowWEEnvironmentIfNeeded(engine);
 
 			String newContent = "articleContent";
@@ -142,11 +146,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 				String originalText = article.getSection().getOriginalText();
 				if (!originalText.equals(content)) {
 					article = new KnowWEArticle(content, topicName,
-							KnowWEEnvironment.getInstance().getRootTypes(),KnowWEEnvironment.DEFAULT_WEB);
+							KnowWEEnvironment.getInstance().getRootTypes(),
+							KnowWEEnvironment.DEFAULT_WEB);
 				}
 			} else {
 				article = new KnowWEArticle(content, topicName,
-						KnowWEEnvironment.getInstance().getRootTypes(),KnowWEEnvironment.DEFAULT_WEB);
+						KnowWEEnvironment.getInstance().getRootTypes(),
+						KnowWEEnvironment.DEFAULT_WEB);
 				if (pagedata.endsWith(content)) {
 					// INITIALISATION PHASE: when page is first requested
 					// after
@@ -155,21 +161,45 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 							"default_web").saveUpdatedArticle(article);
 				}
 			}
-			
+
 			StringBuilder articleString = new StringBuilder();
+
+			// long timeStart = System.currentTimeMillis();
+
 			
-			//long timeStart = System.currentTimeMillis();
+			// Render Pre-PageAppendHandlers
+			List<PageAppendHandler> ap = KnowWEEnvironment.getInstance()
+					.getAppendHandlers();
+			for (PageAppendHandler pageAppendHandler : ap) {
+				if (pageAppendHandler.isPre()) {
+					articleString.append(pageAppendHandler.getDataToAppend(
+							topicName, KnowWEEnvironment.DEFAULT_WEB,
+							userContext));
+				}
+			}
+
+			// RENDER PAGE
+			article.getRenderer().render(article.getSection(), userContext,
+					articleString);
 			
-			article.getRenderer().render(article.getSection(),
-					userContext,articleString);
-			
-			//long timeEnde = System.currentTimeMillis();
-			
-			//long time = timeEnde - timeStart;
-			
-			//double seconds = ((double) time) / 1000; 
-			
-			//System.out.println("Rendered "+article.getTitle() +" in "+seconds+" seconds");
+			// Render Post-PageAppendHandlers
+			for (PageAppendHandler pageAppendHandler : ap) {
+				if (!pageAppendHandler.isPre()) {
+					articleString.append(pageAppendHandler.getDataToAppend(
+							topicName, KnowWEEnvironment.DEFAULT_WEB,
+							userContext));
+				}
+			}
+
+
+			// long timeEnde = System.currentTimeMillis();
+
+			// long time = timeEnde - timeStart;
+
+			// double seconds = ((double) time) / 1000;
+
+			// System.out.println("Rendered "+article.getTitle()
+			// +" in "+seconds+" seconds");
 
 			return articleString.toString();
 		} catch (Exception e) {
@@ -180,32 +210,36 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Parses the request variables (GET and POST) using a wiki context object.
-	 * @param context WikiContext to be used
+	 * 
+	 * @param context
+	 *            WikiContext to be used
 	 * @return A Map containing all request variables
 	 */
 	private Map<String, String> parseRequestVariables(WikiContext context) {
 		HttpServletRequest req = context.getHttpRequest();
-		
+
 		Map<String, String> parameter = new HashMap<String, String>();
-		
+
 		if (req == null)
 			return parameter;
-		
+
 		Enumeration p = req.getParameterNames();
-		
+
 		while (p.hasMoreElements()) {
 			String param = (String) p.nextElement();
 			try {
-				parameter.put(param, URLDecoder.decode((String) req.getParameter(param), "UTF-8"));
+				parameter.put(param, URLDecoder.decode((String) req
+						.getParameter(param), "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				parameter.put(param, URLDecoder.decode((String) req.getParameter(param)));
-			} 
+				parameter.put(param, URLDecoder.decode((String) req
+						.getParameter(param)));
+			}
 		}
-		
-		return parameter;				
+
+		return parameter;
 	}
 
 }
