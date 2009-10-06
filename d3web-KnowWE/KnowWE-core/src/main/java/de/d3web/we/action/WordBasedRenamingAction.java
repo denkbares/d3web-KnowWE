@@ -260,9 +260,9 @@ public class WordBasedRenamingAction implements KnowWEAction {
 		
 		Pattern p;
 		if (getCaseSensitive()) {
-			p = Pattern.compile(query);
+			p = Pattern.compile(Pattern.quote(query));
 		} else {
-			p = Pattern.compile(query, Pattern.CASE_INSENSITIVE);
+			p = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
 		}
 		
 		while (iter.hasNext()) {
