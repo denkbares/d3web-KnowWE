@@ -31,21 +31,21 @@ var SilverIPE = function (eb,el, url, options) {
 	this.options = this.mergeObjects(this.options, options || {});
 	this.options.method = this.options.method.toUpperCase();
 	this.el.onmouseover = function () {
-		that.el.style.backgroundColor = that.options.highlightColor;
+		//that.el.style.backgroundColor = that.options.highlightColor;
 	};
 	this.eb.onmouseover = function () {
 		that.el.style.backgroundColor = that.options.highlightColor;
 	};
 
 	this.el.onmouseout = function () {
-		that.el.style.backgroundColor = that.originalBg;
+		//that.el.style.backgroundColor = that.originalBg;
 	};
 	this.eb.onmouseout = function () {
 		that.el.style.backgroundColor = that.originalBg;
 	};
 	
 	this.el.onclick = function () {	
-		that.elClicked.call(that);
+		//that.elClicked.call(that);
 	};
 	this.eb.onclick = function () {	
 		that.elClicked.call(that);
@@ -163,9 +163,15 @@ SilverIPE.prototype.setCommonStyles = function (el) {
 	el.style.margin = '0 4px';
 };
 
+function stripHTML(string) {
+	return string.replace(/<(.|\n)*?>/g, '');
+}
+
 SilverIPE.prototype.elClicked = function (test) {
 	var strValue = this.trimString(this.el.innerHTML);
+	strValue = stripHTML(strValue);
 	this.inputEl.value = strValue;
+	
 	this.lastValue = this.inputEl.value;
 	this.showIpe();
 	this.inputEl.focus();
