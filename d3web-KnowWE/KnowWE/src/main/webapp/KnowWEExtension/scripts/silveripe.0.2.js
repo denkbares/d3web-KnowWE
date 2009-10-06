@@ -3,12 +3,13 @@
 // Released under the MIT License
 // Version: 0.2
 
-var SilverIPE = function (el, url, options) {
+var SilverIPE = function (eb,el, url, options) {
 	this.url = url;
 	var that = this;
 	
 	// If el is a string, we get the element by this id, if not, assume it's an element
 	this.el = (typeof el === 'string') ? document.getElementById(el) : el;
+	this.eb = (typeof eb === 'string') ? document.getElementById(eb) : eb;
 	this.el.title = (this.el.title === '') ? 'Click to edit...' : this.el.title;
 	// Remember the original BG color if it's not set, default to transparent
 	this.originalBg = (this.el.style.backgroundColor === '') ? 'transparent' : this.el.style.backgroundColor;
@@ -32,14 +33,24 @@ var SilverIPE = function (el, url, options) {
 	this.el.onmouseover = function () {
 		that.el.style.backgroundColor = that.options.highlightColor;
 	};
-	
+	this.eb.onmouseover = function () {
+		that.el.style.backgroundColor = that.options.highlightColor;
+	};
+
 	this.el.onmouseout = function () {
+		that.el.style.backgroundColor = that.originalBg;
+	};
+	this.eb.onmouseout = function () {
 		that.el.style.backgroundColor = that.originalBg;
 	};
 	
 	this.el.onclick = function () {	
 		that.elClicked.call(that);
 	};
+	this.eb.onclick = function () {	
+		that.elClicked.call(that);
+	};
+
 	this.buildElements();
 };
 
