@@ -40,10 +40,12 @@ public class TagEditPanel extends AbstractTagHandler {
 		TaggingMangler tm = TaggingMangler.getInstance();
 		ArrayList<String> tags = tm.getPageTags(topic);
 		String output = "<p>";
-		output += "Tags (<span id=\"tagpanedit\">edit</span>):";
+		output += "Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):";
 		output += "<span id=\"tagspan\">";
 		for (String cur : tags) {
-			output += cur + " ";
+			//output += cur + " ";
+			output+=" <a href =\"Wiki.jsp?page=TagSearch&query="+cur+"&ok=Find!&start=0&maxitems=20\" >"+cur+"</a>";		
+			
 		}
 		if (output.trim().length()==0){
 			output+="none";
