@@ -74,7 +74,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	@Override
 	public String getAttachmentPath(String JarName) {
 		// TODO Auto-generated method stub
-		return null;
+		return "some-path";
 	}
 
 	@Override
@@ -85,8 +85,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
 	@Override
 	public String getBaseUrl() {
-		// TODO Auto-generated method stub
-		return null;
+		return "some-base-URL";
 	}
 
 	@Override
@@ -98,7 +97,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	@Override
 	public String getPagePath() {
 		// TODO Auto-generated method stub
-		return null;
+		return "some-path";
 	}
 
 	@Override
@@ -151,7 +150,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
 	@Override
 	public String getRealPath() {
-		return "";
+		return "some-path";
 	}
 
 	@Override

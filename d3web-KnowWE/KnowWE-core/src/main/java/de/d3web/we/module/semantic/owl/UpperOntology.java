@@ -21,10 +21,12 @@
 package de.d3web.we.module.semantic.owl;
 
 import java.io.File;
+
 import java.io.FileReader;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import org.junit.rules.TestWatchman;
 import org.openrdf.OpenRDFException;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Graph;
@@ -56,7 +58,9 @@ import org.openrdf.sail.memory.MemoryStore;
 
 import com.ontotext.trree.owlim_ext.TripleSourceImpl;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
+import dummies.KnowWETestWikiConnector;
 
 public class UpperOntology {
 	private static String basens = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
@@ -86,12 +90,11 @@ public class UpperOntology {
 	private org.openrdf.repository.Repository myRepository;
 	private String ontfile = "file:resources/knowwe.owl";
 	private OwlHelper owlhelper;
+	private RepositoryConnection repositoryConn;
 	private HashMap<String, String> settings;
 	private File persistencedir;
 	private SailRepository persistentRepository;
 	protected RepositoryConfig repConfig;
-
-	private RepositoryConnection repositoryConn;
 
 	private String reppath;
 
@@ -108,8 +111,14 @@ public class UpperOntology {
 		rfile.mkdir();
 		// setLocaleNS(path);
 		localens = basens;
-		settings.put("basens",basens);
-		readOntology();
+		settings.put("basens", basens);
+		
+		//ON JUnit test running no ontology is read
+		try {
+			readOntology();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		owlhelper = new OwlHelper(repositoryConn);
 	}
 
@@ -190,10 +199,11 @@ public class UpperOntology {
 		return repositoryConn.getValueFactory();
 	}
 
-	private void readOntology() {		
-		myRepository=RepositoryFactory.getInstance().createRepository(RepositoryFactory.DEFAULTREPOSITORY, settings);
+	private void readOntology() {
+		myRepository = RepositoryFactory.getInstance().createRepository(
+				RepositoryFactory.DEFAULTREPOSITORY, settings);
 		try {
-			repositoryConn=myRepository.getConnection();
+			repositoryConn = myRepository.getConnection();
 		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
