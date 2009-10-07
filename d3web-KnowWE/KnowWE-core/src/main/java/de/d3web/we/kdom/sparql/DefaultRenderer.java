@@ -34,76 +34,86 @@ import de.d3web.we.core.KnowWEEnvironment;
 
 public class DefaultRenderer implements SparqlRenderer {
 
-    public String render(TupleQueryResult result, Map<String, String> params) {
-	
-    ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle();
-    boolean empty = true;
-	String table = "";
-	String output = "";
-	boolean links = false;
-	if (params.containsKey("render")) {
-	    links = params.get("render").equals("links");
-	}
-	boolean tablemode = false;
-	try {
-	    while (result.hasNext()) {
-		BindingSet b = result.next();
-		empty = false;
-		Set<String> names = b.getBindingNames();
+	public String render(TupleQueryResult result, Map<String, String> params) {
+
+		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle();
+		boolean empty = true;
+		StringBuffer table = new StringBuffer();
+		String output = "";
+		boolean links = false;
+		if (params.containsKey("render")) {
+			links = params.get("render").equals("links");
+		}
+		boolean tablemode = false;
+
+		table.append(KnowWEEnvironment.maskHTML("<ul>"));
+
+		try {
+			while (result.hasNext()) {
+				BindingSet b = result.next();
+				empty = false;
+				Set<String> names = b.getBindingNames();
+				if (!tablemode) {
+					tablemode = names.size() > 1;
+				}
+				if (tablemode) {
+					table.append(KnowWEEnvironment.maskHTML("<tr>"));
+				}
+
+				for (String cur : names) {
+					String erg = b.getBinding(cur).toString();
+					if (erg.split("#").length == 2)
+						erg = erg.split("#")[1];
+					if (links) {
+						erg = "[" + KnowWEEnvironment.maskHTML(erg) + "]";
+					}
+					try {
+						erg = URLDecoder.decode(erg, "UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if (tablemode) {
+						table.append(KnowWEEnvironment.maskHTML("<td>") + erg
+								+ KnowWEEnvironment.maskHTML("</td>"));
+					} else {
+						table.append(KnowWEEnvironment.maskHTML("<li>") + erg
+								+ KnowWEEnvironment.maskHTML("</li>\n"));
+					}
+
+				}
+
+				if (tablemode) {
+					table.append(KnowWEEnvironment.maskHTML("</tr>\n"));
+				}
+			}
+		} catch (QueryEvaluationException e) {
+			return rb.getString("KnowWE.owl.query.evalualtion.error") + ":"
+					+ e.getMessage();
+		} finally {
+			try {
+				result.close();
+			} catch (QueryEvaluationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		if (!tablemode) {
-		    tablemode = names.size() > 1;
+			table.append(KnowWEEnvironment.maskHTML("</ul>"));
 		}
-		if (tablemode) {
-		    table += KnowWEEnvironment.maskHTML("<tr>");
+
+		if (empty) {
+			output += rb.getString("KnowWE.owl.query.no_result");
+			return KnowWEEnvironment.maskHTML(output);
 		} else {
-		    table += KnowWEEnvironment.maskHTML("<ul>");
+			if (tablemode) {
+				output += KnowWEEnvironment.maskHTML("<table>") + table
+						+ KnowWEEnvironment.maskHTML("</table>");
+			} else {
+				output += table.toString();
+			}
 		}
-
-		for (String cur : names) {
-		    String erg = b.getBinding(cur).toString();
-		    if (erg.split("#").length == 2)
-			erg = erg.split("#")[1];
-		    if (links) {
-			erg = "[" + KnowWEEnvironment.maskHTML(erg) + "]";
-		    }
-		    try {
-			erg = URLDecoder.decode(erg, "UTF-8");
-		    } catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		    }
-		    if (tablemode) {
-			table += KnowWEEnvironment.maskHTML("<td>") + erg + KnowWEEnvironment.maskHTML("</td>");
-		    } else {
-			table += KnowWEEnvironment.maskHTML("<li>") + erg + KnowWEEnvironment.maskHTML("</li>");
-		    }
-
-		}
-
-		if (tablemode) {
-		    table += KnowWEEnvironment.maskHTML("</tr>");
-		} else {
-		    table += KnowWEEnvironment.maskHTML("</ul>");
-		}
-
-	    }
-	} catch (QueryEvaluationException e) {
-	    return rb.getString("KnowWE.owl.query.evalualtion.error")
-		    + ":" + e.getMessage();
-	} finally {
-	    try {
-		result.close();
-	    } catch (QueryEvaluationException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
+		return output;
 	}
-	if (empty) {
-	    output += rb.getString("KnowWE.owl.query.no_result");
-	    return KnowWEEnvironment.maskHTML(output);
-	} else {
-	    output += KnowWEEnvironment.maskHTML("<table>") + table + KnowWEEnvironment.maskHTML("</table>");
-	}
-	return output;
-    }
 }
