@@ -34,6 +34,15 @@ public class TagHandlingAction implements KnowWEAction {
 		String tagaction = parameterMap.get(KnowWEAttributes.TAGGING_ACTION);
 		String tag=parameterMap.get(KnowWEAttributes.TAGGING_TAG);	
 		
+		if (tagaction.equals("pagesearch")){
+			String query=parameterMap.get(KnowWEAttributes.TAGGING_QUERY);
+			return TaggingMangler.getInstance().getResultPanel(query);
+		}
+		
+		
+		if (topic==null){
+			return "error! null topic";
+		}
 		boolean b = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(topic, parameterMap.getRequest());
 		
 		if(b == false) {
@@ -47,10 +56,7 @@ public class TagHandlingAction implements KnowWEAction {
 			tm.removeTag(topic, tag,parameterMap);
 		} else if (tagaction.equals("set")){
 			tm.setTags(topic,tag,parameterMap);
-		} else if (tagaction.equals("pagesearch")){
-			String query=parameterMap.get(KnowWEAttributes.TAGGING_QUERY);
-			return TaggingMangler.getInstance().getResultPanel(query);
-		}
+		} 
 		
 		
 		return tag;
