@@ -438,16 +438,7 @@ public class KnowWEFacade {
 		return performAction("RefreshHTMLDialogAction", parameterMap);
 	}
 
-	/**
-	 * Returns the last parse-report of a specified article
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String getParseReport(String topic, String web) {
-		return KnowWEEnvironment.getInstance().loadReport(topic, web);
 
-	}
 	
 	/**
 	 * Saves the choosen answers in the dialog as an XCLModel.

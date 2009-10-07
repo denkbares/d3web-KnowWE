@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.KnowWETopicLoader;
 
 public interface KnowWEWikiConnector {
 	
@@ -40,7 +39,6 @@ public interface KnowWEWikiConnector {
 	
 	public String getPagePath();	
 
-	public KnowWETopicLoader getLoader();
 
 	public KnowWEActionDispatcher getActionDispatcher();
 	

@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.KnowWETopicLoader;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 
@@ -88,11 +87,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		return "some-base-URL";
 	}
 
-	@Override
-	public KnowWETopicLoader getLoader() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	@Override
 	public String getPagePath() {

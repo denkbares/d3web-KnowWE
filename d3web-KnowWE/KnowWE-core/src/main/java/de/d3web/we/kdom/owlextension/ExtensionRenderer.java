@@ -41,9 +41,13 @@ public class ExtensionRenderer extends KnowWEDomRenderer {
 		
 		ExtensionObject eo = 
 			((Extension) sec.getObjectType()).getExtensionObject(sec.getOriginalText());
-		content += eo.getErrorreport();
+		if(eo != null) {
+			content += eo.getErrorreport();
+		} else {
+			content += "render error: extension object not found";
+		}
 		
-		if (eo.isError()) {
+		if (eo != null && eo.isError() ) {
 			header = "<p class=\"box error\">";
 		} else {
 			header = "<p class=\"box ok\">";

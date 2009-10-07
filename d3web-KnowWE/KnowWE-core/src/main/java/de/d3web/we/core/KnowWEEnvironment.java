@@ -89,7 +89,7 @@ import dummies.KnowWETestWikiConnector;
 
 public class KnowWEEnvironment {
 
-	private KnowWETopicLoader topicLoader;
+	//private KnowWETopicLoader topicLoader;
 
 	private List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
 	private List<KnowWEObjectType> globalTypes = new ArrayList<KnowWEObjectType>();
@@ -330,7 +330,7 @@ public class KnowWEEnvironment {
 			// TODO: warn me, if any of these == null
 
 			// set topic Loader & dispatcher
-			this.topicLoader = wiki.getLoader(); //
+			//this.topicLoader = wiki.getLoader(); //
 
 			// this.dispatcher = wiki.getActionDispatcher(); //
 			// dispatcher.setEnv(KnowWEFacade.getInstance());
@@ -359,9 +359,8 @@ public class KnowWEEnvironment {
 	 * Initialises the WikiSolutionPage --> creates it if not existing
 	 */
 	private void initWikiSolutionsPage() {
-		String solutions = this.topicLoader.loadTopic(DEFAULT_WEB,
-				"WikiSolutions");
-		if (solutions == null || solutions.trim().length() == 0) {
+
+		if (this.wikiConnector.doesPageExist("WikiSolutions")) {
 			writeNewSolutionsPage();
 		}
 	}
@@ -714,16 +713,7 @@ public class KnowWEEnvironment {
 	//
 	// }
 
-	/**
-	 * Loads a parse report for a article from the file system
-	 * 
-	 * @param topic
-	 * @param web
-	 * @return
-	 */
-	public String loadReport(String topic, String web) {
-		return topicLoader.loadFile(defaultReportPath + topic + ".html");
-	}
+
 
 	/**
 	 * Replaced with introduction of DOM. Delete when DOM established
