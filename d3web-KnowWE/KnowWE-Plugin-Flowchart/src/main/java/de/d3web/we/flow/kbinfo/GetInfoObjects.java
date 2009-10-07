@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.flow.kbinfo;
 
 import java.util.LinkedList;
@@ -36,12 +56,12 @@ public class GetInfoObjects implements KnowWEAction {
 	public String perform(KnowWEParameterMap parameterMap) {
 		/** 
 		 * KnowWEEnvironment:
-		 * Allgemeines Semantic Wiki auf OWL als Repr�sentation KDOM Engine.
+		 * Allgemeines Semantic Wiki auf OWL als Reprï¿½sentation KDOM Engine.
 		 * Verwaltet alle technischen Aspekte der Umgebung (z.B. Plugins).
 		 * Dieser hat noch nichts mit d3web zu tun.
 		 * 
 		 * ArticeManager:
-		 * Verwaltung der Wiki-Artikel. F�r jedes Web kann es einen 
+		 * Verwaltung der Wiki-Artikel. Fï¿½r jedes Web kann es einen 
 		 * Article-Manager geben. Dieser kann vom KnowWEEnvironment
 		 * angefragt werden. Dieser hat noch nichts mit d3web zu tun.
 		 * Ein Article besteht im wesentlichen aus dem KDOM-Baum
@@ -50,23 +70,23 @@ public class GetInfoObjects implements KnowWEAction {
 		 * Baumstruktur des Wiki-Textes ohne Semantik
 		 * 
 		 * WebEnvironmentManager:
-		 * Verwaltet die DSPEnvironments, eines f�r jedes Web des Wiki.
+		 * Verwaltet die DSPEnvironments, eines fï¿½r jedes Web des Wiki.
 		 * 
 		 * DSPEnvironment:
-		 * Verwaltung f�r diagnostischen Probleml�sungsservices, f�r alle 
+		 * Verwaltung fï¿½r diagnostischen Problemlï¿½sungsservices, fï¿½r alle 
 		 * Wissensbasen dieses Webs (z.B. unter anderem d3web-Services 
 		 * (D3webKnowledgeService)).  Ein Service entspricht einer Wissensbasis 
 		 * der jeweiligen Engine (z.B. unter anderem d3web).
 		 * 
 		 * KnowledgeService 
-		 * Service f�r eine Wissensbasis f�r eine Wiki-Seite. Der Zugriff erfolgt
-		 * �ber das DSPEnvironment�ber eine Wissensbasis-ID, die aktuell aber 
-		 * eindeutig aus dem Wiki-Seiten-Namen erzeugt wird). Das bedeutet, f�r jede 
-		 * Wiki-Seite gibt es aktuell genau (maximal) eine Wissenbasis f�r genau 
+		 * Service fï¿½r eine Wissensbasis fï¿½r eine Wiki-Seite. Der Zugriff erfolgt
+		 * ï¿½ber das DSPEnvironmentï¿½ber eine Wissensbasis-ID, die aktuell aber 
+		 * eindeutig aus dem Wiki-Seiten-Namen erzeugt wird). Das bedeutet, fï¿½r jede 
+		 * Wiki-Seite gibt es aktuell genau (maximal) eine Wissenbasis fï¿½r genau 
 		 * (maximal) eine Engine.
 		 * 
 		 * D3webKnowledgeService:
-		 * Implementierung des KnowledgeServices f�r d3web. Hier�ber erh�lt man
+		 * Implementierung des KnowledgeServices fï¿½r d3web. Hierï¿½ber erhï¿½lt man
 		 * Zugriff auf die d3web Wissensbasis der jeweiligen Wiki-Seite.
 		 */
 
