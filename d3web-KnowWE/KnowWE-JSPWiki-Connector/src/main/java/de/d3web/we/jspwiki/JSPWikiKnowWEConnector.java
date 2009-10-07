@@ -48,7 +48,6 @@ import com.ecyrd.jspwiki.providers.ProviderException;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.KnowWETopicLoader;
 import de.d3web.we.core.TaggingMangler;
 import de.d3web.we.wikiConnector.GenericSearchResult;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
@@ -86,11 +85,6 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		return new JSPActionDispatcher();
 	}
 
-	@Override
-	public KnowWETopicLoader getLoader() {
-		// TODO Auto-generated method stub
-		return new JSPWikiLoader(getPagePath());
-	}
 
 	@Override
 	public boolean saveArticle(String name, String text, KnowWEParameterMap map) {

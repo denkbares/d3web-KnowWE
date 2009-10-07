@@ -85,9 +85,7 @@ public class JSPActionDispatcher extends KnowWEActionDispatcher {
 			return KnowWEEnvironment.getInstance().processAndUpdateArticle(parameterMap.getUser(),parameterMap.get(KnowWEAttributes.TEXT), parameterMap.get(KnowWEAttributes.TOPIC), parameterMap.get(KnowWEAttributes.WEB));			
 			
 		}
-		if(action != null && action.equals("getParseReport")) {
-			return env.getParseReport( parameterMap.get(KnowWEAttributes.TOPIC), parameterMap.get(KnowWEAttributes.WEB));
-		}
+
 		if(action != null && action.equals("ReplaceKDOMNode")) {
 			return env.replaceKDOMNode(parameterMap);
 		}
