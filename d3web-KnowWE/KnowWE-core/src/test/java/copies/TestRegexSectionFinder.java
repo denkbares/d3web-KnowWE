@@ -44,10 +44,10 @@ public class TestRegexSectionFinder extends SectionFinder {
 		this.patternmod=0;
 	}
 	
-//	public TestRegexSectionFinder(String p, int patternmod) {
-//		this.pattern = p;
-//		this.patternmod = patternmod;
-//	}
+	public TestRegexSectionFinder(String p, int patternmod) {
+		this.pattern = p;
+		this.patternmod = patternmod;
+	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
