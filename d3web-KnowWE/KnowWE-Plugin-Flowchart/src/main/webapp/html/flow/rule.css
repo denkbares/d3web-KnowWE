@@ -1,0 +1,76 @@
+
+.Rule .guard, .Rule .guard {
+	font-family: Arial, Helvetica;
+	font-size: 8pt;
+	white-space: nowrap;
+}
+
+.Rule .guard .warning {
+	background-color: #ff8;
+}
+
+.Rule .guard optgroup {
+	color: gray;
+	font-family: Arial,Helvetica;
+	font-size: 8pt;
+	font-weight: normal;
+	text-align: center;
+	padding-top: 4px;
+}
+
+.Rule .h_line, .Rule .v_line {
+	position: absolute;
+	overflow: hidden;
+	background-color: black;
+	z-index: 80;
+}
+
+.Rule .h_line_highlight, .Rule .v_line_highlight {
+	background-color: red;
+	z-index: 0;
+}
+
+.Rule .arrow_up {
+	position: absolute;
+	overflow: hidden;
+	left: -2px;
+	top: 0px;
+	width: 5px;
+	height: 6px;
+	background-image: url(../image/arrow_up.gif); 
+}
+.Rule .arrow_down {
+	position: absolute;
+	overflow: hidden;
+	left: -2px;
+	bottom: 0px;
+	width: 5px;
+	height: 6px;
+	background-image: url(../image/arrow_down.gif); 
+}
+.Rule .arrow_left {
+	position: absolute;
+	overflow: hidden;
+	left: 0px;
+	top: -2px;
+	width: 6px;
+	height: 5px;
+	background-image: url(../image/arrow_left.gif); 
+}
+.Rule .arrow_right {
+	position: absolute;
+	overflow: hidden;
+	right: 0px;
+	top: -2px;
+	width: 6px;
+	height: 5px;
+	background-image: url(../image/arrow_right.gif); 
+}
+
+.Rule .no_arrow {
+	position: absolute;
+	overflow: hidden;
+	width: 0px;
+	height: 0px;
+}
+

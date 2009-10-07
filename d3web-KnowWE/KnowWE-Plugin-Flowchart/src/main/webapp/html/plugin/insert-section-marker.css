@@ -1,0 +1,12 @@
+.InsertSectionMarker {
+	position: absolute;
+	top: -1px;
+	left: -30px;
+	width: 288px;
+	height: 2px;
+	background-color: black;
+}
+
+.draggingInsertSectionMenuItem {
+	background-color: #eeeeee;
+}

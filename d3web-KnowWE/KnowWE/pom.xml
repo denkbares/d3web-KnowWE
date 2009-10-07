@@ -200,6 +200,69 @@
 				</plugins>
 			</build>
 		</profile>		
+		
+		<!-- Flowchart Module -->
+		<profile>
+			<id>flowchart-plugin</id>
+			<activation>
+				<property>
+					<name>flowchart-plugin</name>
+				</property>
+			</activation>
+			
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Flowchart</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>flowchart-plugin</id>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<phase>process-resources</phase>
+
+								<configuration>
+									<tasks>
+										<copy file="../KnowWE-Plugin-Flowchart/src/main/wikiplugin/de.d3web.we.flow.FlowchartPlugin.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
+										
+										<property name="flowchartDir" value="${basedir}/../KnowWE-Plugin-Flowchart" />
+										<mkdir dir="${project.build.directory}/${pom.name}-${pom.version}/cc"/>
+										<copy todir="${project.build.directory}/${pom.name}-${pom.version}/cc">
+											<fileset dir="../KnowWE-Plugin-Flowchart/src/main/webapp/html">
+												<include name="**/*.js"/>
+												<include name="**/*.css"/>
+												<include name="**/*.html"/>
+												<include name="**/*.gif"/>
+												<include name="**/*.png"/>
+												<include name="**/*.jpg"/>
+											</fileset>
+										</copy>
+										<copy todir="${project.build.directory}/${pom.name}-${pom.version}">
+											<fileset dir="../KnowWE-Plugin-Flowchart/src/main/webapp/jsp"/>
+											<!-- fileset dir="${flowchartDir}/src/main/webapp/jsp"/-->
+										</copy>		
+										
+										
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>		
+		
 
 	</profiles>
 

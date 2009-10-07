@@ -1,0 +1,120 @@
+
+.NodeEditor {
+	font-family: Arial,Helvetica;
+	font-size: 10pt;
+	position: absolute;
+	margin-top: 20px;
+	z-index: 300;
+}
+
+.NodeEditor .background {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	margin: -25px 0px 0px -5px;
+	padding: 25px 5px 5px 5px;
+	background-color: black;
+	opacity: 0.30; 
+	filter: alpha(opacity=30);
+}
+
+.NodeEditor optgroup {
+	color: gray;
+	font-family: Arial,Helvetica;
+	font-size: 8pt;
+	font-weight: 100;
+	text-align: center;
+	padding-top: 4px;
+}
+
+.NodeEditor .tabGroup {
+	position: relative;
+	font-size: 1px;
+	white-space: nowrap;
+}
+
+.NodeEditor .actionTab, .NodeEditor .startTab, .NodeEditor .exitTab {
+	position: relative;
+	display: inline-block;
+	border-top:   1px solid gray;
+	border-left:  1px solid gray;
+	border-right: 1px solid gray;
+	width: 32px;
+	height: 18px;
+	z-index: 0;
+}
+
+.NodeEditor .actionTab_selected, .NodeEditor .startTab_selected, .NodeEditor .exitTab_selected {
+	position: relative;
+	display: inline-block;
+	border-top:   1px solid gray;
+	border-left:  1px solid gray;
+	border-right: 1px solid gray;
+	width: 32px;
+	height: 20px;
+	z-index: 100;
+}
+
+.NodeEditor .actionTab, .NodeEditor .actionTab_selected {
+	background-color: #ffb;
+	background-image: url(../image/node_decorators/question.gif);
+	background-repeat: no-repeat;
+}
+
+.NodeEditor .startTab, .NodeEditor .startTab_selected {
+	background-color: #bfb;
+	background-image: url(../image/node_decorators/start.gif);
+	background-repeat: no-repeat;
+}
+
+.NodeEditor .exitTab, .NodeEditor .exitTab_selected {
+	background-color: #fbb;
+	background-image: url(../image/node_decorators/done.png);
+	background-position: -3px 0px;
+	background-repeat: no-repeat;
+}
+
+.NodeEditor .paneGroup {
+	position: relative;
+	top: -1px;
+	z-index: 50
+}
+
+.NodeEditor .actionPane {
+	padding: 5px;
+	background-color: #ffb;
+	border: 1px gray solid;
+	z-index: 50;
+}
+
+.NodeEditor .startPane {
+	padding: 5px;
+	background-color: #bfb;
+	border: 1px gray solid;
+	z-index: 50;
+}
+
+.NodeEditor .exitPane {
+	padding: 5px;
+	background-color: #fbb;
+	border: 1px gray solid;
+	z-index: 50;
+}
+
+
+.NodeEditor .buttonGroup {
+	position:relative;
+	text-align: right;
+	width: 100%;
+	z-index: 30;
+}
+
+.NodeEditor button {
+}
+
+.NodeEditor button.ok {
+	min-width: 60px;
+}
+
+.NodeEditor button.cancel {
+}

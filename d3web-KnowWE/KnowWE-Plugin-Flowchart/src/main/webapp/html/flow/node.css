@@ -1,0 +1,188 @@
+.Node {
+	position: absolute;
+	overflow: visible;
+	cursor: move;
+	font-family: Arial, Helvetica;
+	font-size:	10pt;
+	background-color: black;
+	padding: 1px;
+	z-index: 100;
+}
+
+.Node_hover {
+	position: absolute;
+	overflow: visible;
+	z-index: 100;
+	background-color: black;
+	padding: 1px;
+	border: 2px solid red;
+}
+
+.Node .node_highlight {
+	position: absolute;
+	top: -2px;
+	bottom: -2px;
+	left: -2px;
+	right: -2px;
+	z-index: 10;
+	border: 2px solid red;
+}
+
+.Node .action, .Node .question, .Node .decision, .Node .flowchart {
+	min-width:	80px;
+	max-width:	120px;
+	min-height: 40px;
+	padding-left: 10px;
+	padding-right: 4px;
+	overflow:	hidden;
+	z-index: 100;
+}
+
+.Node .start, .Node .exit, .Node .fork {
+	min-width:	60px;
+	max-width:	120px;
+	min-height: 18px;
+	padding-left: 10px;
+	padding-right: 4px;
+	overflow:	hidden;
+	z-index: 100;
+}
+
+.Node .action {
+	background-color: #bcf; /* #80aeff; */
+}
+
+.Node .question {
+	background-color: #ffb; /* #ffffaa; */
+}
+
+.Node .decision, .Node .flowchart  {
+	background-color: #eee; /* #dddddd; */
+}
+
+.Node .exit {
+	background-color: #fbb; /* #ff9999; */
+	padding-left: 8px;
+}
+
+.Node .fork{
+	background-color: #aaa; /* #ff9999; */
+	padding-left: 8px;
+}
+
+.Node .start {
+	background-color: #bfb; /* #99ff99; */
+	padding-left: 6px;
+}
+
+.Node .action .decorator {
+	position: absolute;
+	top: -5px;
+	left: -4px;
+	width: 15px;
+	height: 18px;
+	z-index: 200;
+	background-image: url(../image/node_decorators/action.gif);
+}
+
+.Node .question .decorator {
+	position: absolute;
+	top: -5px;
+	left: -4px;
+	width: 15px;
+	height: 18px;
+	z-index: 200;
+	background-image: url(../image/node_decorators/question.gif);
+}
+
+.Node .decision .decorator {
+	position: absolute;
+	top: -5px;
+	left: -4px;
+	width: 17px;
+	height: 18px;
+	z-index: 200;
+	background-image: url(../image/node_decorators/decision.gif);
+}
+
+.Node .flowchart .decorator {
+	position: absolute;
+	top: -3px;
+	left: -3px;
+	width: 14px;
+	height: 14px;
+	z-index: 200;
+	background-image: url(../image/node_decorators/flowchart.gif);
+}
+
+.Node .exit .decorator {
+	position: absolute;
+	top: -7px;
+	left: -5px;
+	width: 25px;
+	height: 25px;
+	z-index: 200;
+	background-image: url(../image/node_decorators/done.png);
+}
+
+.Node .start .decorator {
+	position: absolute;
+	top: -8px;
+	left: -5px;
+	width: 25px;
+	height: 25px;
+	z-index: 200;
+	background-image: url(../image/node_decorators/start.gif);
+}
+
+.Node .fork .decorator {
+	position: absolute;
+	top: -5px;
+	left: -3px;
+	width: 16px;
+	height: 16px;
+	z-index: 200;
+	background-image: url(../image/node_decorators/fork.gif);
+}
+
+.Node .ActionPane .object {
+	max-height: 36px;
+	overflow: hidden;
+}
+
+.Node .title {
+	font-weight: bold;
+	padding-left: 10px;
+	padding-right: 3px;
+}
+
+.Node .text {
+	font-size:	8pt;
+	white-space: normal;
+}
+
+.Node .ActionPane .object {
+	font-weight: bold;
+}
+
+.Node .ActionPane .value {
+	padding-top: 4px;
+}
+
+.Node .ActionPane .error {
+	color: red;
+	padding-left: 16px;
+	background-image: url(../image/warning.gif);
+	background-repeat: no-repeat;
+	background-position: 0px 4px;
+}
+
+.Node .ActionPane .icon {
+	position: relative;
+	top: 2px;
+}
+
+.ArrowTool {
+	z-index: 200; 
+	cursor: crosshair;
+}

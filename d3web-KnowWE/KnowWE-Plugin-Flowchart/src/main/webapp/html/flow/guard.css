@@ -1,0 +1,25 @@
+
+.GuardEditor {
+	font-family: Arial, Helvetica;
+	font-size: 8pt;
+	white-space: nowrap;
+}
+
+.GuardEditor .value {
+}
+
+.GuardEditor input {
+	width: 40px;
+	margin-right: 4px;
+}
+
+.FlowchartGroup .inputFocus {
+	position:	absolute;
+	overflow:	hidden;
+	width: 0px;
+	height: 0px;
+	top: 0px;
+	left: 0px;
+	z-index: -100;
+}
+

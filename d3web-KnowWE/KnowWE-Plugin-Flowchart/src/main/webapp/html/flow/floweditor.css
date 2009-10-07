@@ -1,0 +1,26 @@
+
+div.rollup_title {
+	font-family: Arial,Helvetica;
+	font-size: 10pt;
+	font-weight: bold;
+	overflow: hidden;
+	width: 222px;
+	background-image: url(../image/rollup_title.png);
+	padding-left: 10px;
+	padding-top: 5px;
+}
+
+div.rollup_content {
+	font-family: Arial,Helvetica;
+	font-size: 10pt;
+	width: 217px;
+	background-image: url(../image/rollup_content.png);
+	padding-left: 7px;
+	padding-right: 8px;
+}
+div.rollup_bottom {
+	overflow: hidden;
+	width: 232px;
+	height: 7px;
+	background-image: url(../image/rollup_bottom.png);
+}

@@ -65,6 +65,8 @@
 		<module>KnowWE-Plugin-Comment</module>
 		<module>KnowWE-Plugin-Calendar</module>
 		<module>KnowWE-Plugin-HermesModule</module>
+		<module>KnowWE-Plugin-Flowchart</module>
+		<module>KnowWE-Plugin-Todo</module>
 	</modules>
 	<repositories>
 		<repository>
