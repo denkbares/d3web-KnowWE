@@ -41,10 +41,10 @@ public class TestStringSectionFinder extends SectionFinder {
 		this.string = s;
 	}
 	
-	public TestStringSectionFinder(String s, boolean last) {
-		this.string = s;
-		this.last = last;
-	}
+//	public TestStringSectionFinder(String s, boolean last) {
+//		this.string = s;
+//		this.last = last;
+//	}
 	
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
