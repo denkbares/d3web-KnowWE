@@ -1,0 +1,808 @@
+
+WENN Blütenblätteranzahl <= 6.0
+DANN "Margerite (Chrysanthemum leucanthemum)" = N6
+
+WENN Blattfingeranzahl >= 4.0
+DANN "Echter Steinklee (Melilotus officinalis)" = N5
+
+WENN Blütenblätteranzahl <= 2.0
+Ausser Blütenblätteranzahl >= 1.0
+DANN "Gem. Hirtentäschel (Capsella bursa-pastoris)" = N5
+
+WENN Blütenblätteranzahl = 3.0
+DANN "Wiesen-Schaumkraut (Cardamine pratense)" = N3
+
+WENN Blattfiederpaare >= 3.0
+DANN "Bach-Nelkenwurz (Geum rivale)" = N3
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Scharfer Hahnenfuß (Ranunculus acris)" = N6
+
+WENN Blütenblätteranzahl in "[6.0, 20.0]"
+DANN "Fam. Primelgewächse (Primulaceae)" = N4
+
+WENN Blattfiederpaare in "[4.0, 8.0]"
+DANN "Zaun-Wicke (Vicia sepium)" = P2
+
+WENN Blattfiederpaare in "[3.0, 6.0]"
+DANN "Wiesen-Schaumkraut (Cardamine pratense)" = P2
+
+WENN Blütenblätteranzahl in "[7.0, 9.0]"
+DANN "Vogelmiere (Stellaria media)" = N5
+
+WENN Blattfingeranzahl in "[3.0, 7.0]"
+DANN "Scharfer Hahnenfuß (Ranunculus acris)" = P2
+
+WENN Blütenblätteranzahl >= 5.0
+DANN "Echtes Labkraut (Galium verum)" = N6
+
+WENN (Blattunterteilung = einfache Form, ohne regelmässige Gliederung oder Blattunterteilung = einfach gefiedert oder Blattunterteilung = gefingert )
+DANN Blattform  
+
+WENN Blattfiederpaare >= 3.0
+DANN "Ruprechtskraut (Geranium robertianum)" = N3
+
+WENN Blütenblätteranzahl in "[1.0, 4.0]"
+DANN "Fam. Veilchengewächse (Violaceae)" = N3
+
+WENN Blütenblätteranzahl in "[1.0, 3.0]"
+DANN "Fam. Schmetterlingsblütler (Fabaceae)" = N4
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Sumpf-Dotterblume (Caltha palustris)" = N5
+
+WENN Blattfiederpaare in "[11.0, 12.0]"
+DANN "Bunte Kronwicke (Coronilla varia)" = N1
+
+WENN Blütenblätteranzahl = 6.0
+DANN "Rotes Leimkraut (Silene dioica)" = N3
+
+WENN Blattfiederpaare >= 5.0
+DANN "Echte Nelkenwurz (Geum urbanum)" = N5
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Acker-Vergißmeinnicht (Myosotis arvensis)" = N5
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Fam. Kreuzblütler (Brassicaceae)" = P3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Echte Nelkenwurz (Geum urbanum)" = P3
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Waldmeister (Galium odoratum)" = N6
+
+WENN (Stengelhaare = deutlich behaart oder Stengelhaare = stark bis dicht behaart )
+DANN Stengelhaare Besonderheiten  
+
+WENN Blütenblätteranzahl >= 5.0
+DANN "Gem. Kreuzlabkraut (Crucita laevipes)" = N6
+
+WENN Blütenblätteranzahl in "[7.0, 15.0]"
+DANN "Gänseblümchen (Bellis perennis)" = N3
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Wiesen-Schaumkraut (Cardamine pratense)" = N5
+
+WENN (Blütenblätter gespalten = "etwa bis zu 1/4 gespalten" oder Blütenblätter gespalten = "etwa bis zu 1/2 gespalten" )
+DANN Blütenblattspaltenanzahl  
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Acker-Ehrenpreis (Veronica persica)" = N5
+
+WENN Blattfingeranzahl >= 4.0
+DANN "Wiesen-Klee (Trifolium pratense)" = N5
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Hopfenklee (Medicago lupulina)" = N5
+
+WENN Blütenblätteranzahl <= 6.0
+DANN "Gänseblümchen (Bellis perennis)" = N5
+
+WENN Blütenblätteranzahl in "[1.0, 3.0]"
+DANN "Fam. Kreuzblütler (Brassicaceae)" = N4
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Echtes Labkraut (Galium verum)" = P3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Schierlings-Reiherschnabel (Erodium cicutarium)" = P3
+
+WENN Blütenblätteranzahl <= 15.0
+DANN "Wiesen-Löwenzahn (Taraxacum officinalis)" = N5
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Wilde Möhre (Daucus carota)" = N4
+
+WENN Blattfiederpaare = 1.0
+DANN "Gelber Acker-Klee (Trifolium campestre)" = P1
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Kahle Gänsekresse (Arabis glabra)" = N3
+
+WENN Blattfingeranzahl in "[5.0, 9.0]"
+DANN "Wiesen-Storchschnabel (Geranium pratense)" = P2
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Ruprechtskraut (Geranium robertianum)" = N3
+
+WENN Döldchenanzahl >= 30.0
+DANN "Wiesen-Kerbel (Anthriscus sylvestris)" = N3
+
+WENN Blattfiederpaare = 1.0
+DANN "Ruprechtskraut (Geranium robertianum)" = P2
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Schierlings-Reiherschnabel (Erodium cicutarium)" = N3
+
+WENN Blattfingeranzahl = 3.0
+DANN "Weiß-Klee (Trifolium repens)" = P3
+
+WENN Blütenblätteranzahl = 6.0
+DANN "Schierlings-Reiherschnabel (Erodium cicutarium)" = N3
+
+WENN Blütenblätteranzahl in "[6.0, 6.0]"
+DANN "Fam. Liliengewächse (Liliaceae)" = P2
+
+WENN Döldchenanzahl in "[30.0, 60.0]"
+DANN "Wilde Möhre (Daucus carota)" = P2
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Echte Nelkenwurz (Geum urbanum)" = N5
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Gem. Schafgarbe (Achillea millefolium)" = N3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Fam. Veilchengewächse (Violaceae)" = P2
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Gem. Stiefmütterchen (Viola tricolor)" = N5
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Vogelmiere (Stellaria media)" = P3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Wiesen-Kerbel (Anthriscus sylvestris)" = P3
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Weißes Leimkraut (Silene alba)" = N5
+
+WENN nicht ((Blütentyp grob = strahlig, sternförmig oder Blütentyp grob = Schmetterlingsblüte oder Blütentyp grob = Lippenblüte, Rachenblüte oder Blütentyp grob = glockenförmig, trichterförmig, becherförmig oder Blütentyp grob = gespornt oder Blütentyp grob = andere Blüten )) 
+DANN Blütentyp Schmetterlingsblüte  
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Scharfer Hahnenfuß (Ranunculus acris)" = P3
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Wiesen-Hornklee (Lotus corniculatus)" = N5
+
+WENN Blattfingeranzahl >= 4.0
+DANN "Weiß-Klee (Trifolium repens)" = N5
+
+WENN Blütenblätteranzahl = 6.0
+DANN "Acker-Hornkraut (Cerastium arvense)" = N2
+
+WENN Blattfiederpaare >= 2.0
+DANN "Weißer Steinklee (Melilotus alba)" = N6
+
+WENN Blattfiederpaare >= 2.0
+DANN "Echter Steinklee (Melilotus officinalis)" = N6
+
+WENN Blütenblätteranzahl = 6.0
+DANN "Vogelmiere (Stellaria media)" = N2
+
+WENN Blattfingeranzahl <= 4.0
+DANN "Kleiner Storchenschnabel (Geranium pusillum)" = N4
+
+WENN Blütenblätteranzahl = 3.0
+DANN "Kahle Gänsekresse (Arabis glabra)" = N3
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Gem. Kreuzlabkraut (Crucita laevipes)" = N6
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Kleiner Storchenschnabel (Geranium pusillum)" = N5
+
+WENN Blütenblätteranzahl in "[6.0, 20.0]"
+DANN "Fam. Veilchengewächse (Violaceae)" = N3
+
+WENN Blattfiederpaare in "[4.0, 7.0]"
+DANN "Schopf-Hufeisenklee (Hippocrepis comosa)" = P2
+
+WENN Blütenblätteranzahl in "[6.0, 8.0]"
+DANN "Busch-Windröschen (Anemone Nemorosa)" = P3
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Acker-Hornkraut (Cerastium arvense)" = N5
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Scharfer Hahnenfuß (Ranunculus acris)" = N3
+
+WENN Blattfiederpaare >= 3.0
+DANN "Wiesen-Hornklee (Lotus corniculatus)" = N5
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Wiesen-Klee (Trifolium pratense)" = N5
+
+WENN Blattfiederpaare in "[1.0, 2.0]"
+DANN "Echte Nelkenwurz (Geum urbanum)" = P2
+
+WENN Blattfiederpaare >= 5.0
+DANN "Bach-Nelkenwurz (Geum rivale)" = N5
+
+WENN Blattfingeranzahl >= 4.0
+DANN "Gelber Acker-Klee (Trifolium campestre)" = N5
+
+WENN Blattfingeranzahl = 5.0
+DANN "Kriech. Fingerkraut (Potentilla reptans)" = P2
+
+WENN Blattfiederpaare = 1.0
+DANN "Weiß-Klee (Trifolium repens)" = P2
+
+WENN Blattfiederpaare >= 5.0
+DANN "Großes Schöllkraut  (Chelidonium majus)" = N3
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Vogelmiere (Stellaria media)" = N2
+
+WENN Blütenblätteranzahl >= 11.0
+DANN "Vogelmiere (Stellaria media)" = N4
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Wohlriech. Veilchen (Viola odorata)" = P2
+
+WENN Blattfiederpaare >= 3.0
+DANN "Wiesen-Platterbse (Lathyrus pratensis)" = N5
+
+WENN Blattfiederpaare in "[3.0, 4.0]"
+DANN "Klatschmohn (Papaver rhoeas)" = P2
+
+WENN Blattfiederpaare <= 3.0
+DANN "Bunte Kronwicke (Coronilla varia)" = N4
+
+WENN Blütenblätteranzahl <= 6.0
+DANN "Scharbockskraut (Ranunculus ficaria)" = N5
+
+WENN Blütenblätteranzahl in "[6.0, 6.0]"
+DANN "Fam. Primelgewächse (Primulaceae)" = N2
+
+WENN Blütenblätteranzahl >= 5.0
+DANN "Gem. Labkraut (Galium mollugo)" = N6
+
+WENN Blattfiederpaare <= 2.0
+DANN "Wiesen-Schaumkraut (Cardamine pratense)" = N2
+
+WENN Blattfingeranzahl = 3.0
+DANN "Ruprechtskraut (Geranium robertianum)" = P2
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Fam. Mohngewächse (Papaveraceae)" = P2
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Gem. Hirtentäschel (Capsella bursa-pastoris)" = N3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Acker-Senf (Sinapis arvensis)" = N3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Rotes Leimkraut (Silene dioica)" = P3
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Gem. Hirtentäschel (Capsella bursa-pastoris)" = N5
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Gamander-Ehrenpreis (Veronica chamaedrys)" = P3
+
+WENN Blattfiederpaare = 1.0
+DANN "Bach-Nelkenwurz (Geum rivale)" = P2
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Weißes Leimkraut (Silene alba)" = P3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Knoblauchsrauke (Alliaria petiolata)" = N5
+
+WENN Blattfiederpaare <= 3.0
+DANN "Schopf-Hufeisenklee (Hippocrepis comosa)" = N3
+
+WENN Blütenblätteranzahl = 13.0
+DANN "Scharbockskraut (Ranunculus ficaria)" = N1
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Klatschmohn (Papaver rhoeas)" = N4
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Gem. Hirtentäschel (Capsella bursa-pastoris)" = P3
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Ruprechtskraut (Geranium robertianum)" = N5
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Busch-Windröschen (Anemone Nemorosa)" = N4
+
+WENN Blattfiederpaare = 1.0
+DANN "Echter Steinklee (Melilotus officinalis)" = P2
+
+WENN Blattfiederpaare = 1.0
+DANN "Weißer Steinklee (Melilotus alba)" = P2
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Gem. Stiefmütterchen (Viola tricolor)" = N5
+
+WENN Blütenblätteranzahl <= 6.0
+DANN "Wiesen-Pippau (Crepis biennis)" = N6
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Gem. Stiefmütterchen (Viola tricolor)" = P3
+
+WENN (Blattunterteilung = handförmig eingeschnitten oder Blattunterteilung = gefingert )
+DANN Blattfingeranzahl  
+
+WENN Blattfingeranzahl = 3.0
+DANN "Weißer Steinklee (Melilotus alba)" = P2
+
+WENN Blattfingeranzahl >= 4.0
+DANN "Ruprechtskraut (Geranium robertianum)" = N2
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Sumpf-Dotterblume (Caltha palustris)" = N6
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Acker-Hornkraut (Cerastium arvense)" = N2
+
+WENN Döldchenanzahl <= 15.0
+DANN "Wilde Möhre (Daucus carota)" = N3
+
+WENN Blattfiederpaare in "[1.0, 2.0]"
+DANN "Wiesen-Hornklee (Lotus corniculatus)" = P2
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Schierlings-Reiherschnabel (Erodium cicutarium)" = N6
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Gem. Labkraut (Galium mollugo)" = P3
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Kahle Gänsekresse (Arabis glabra)" = N5
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Großes Schöllkraut  (Chelidonium majus)" = N5
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Große Sternmiere (Stellaria holostea)" = N6
+
+WENN Blattfiederpaare <= 3.0
+DANN "Schierlings-Reiherschnabel (Erodium cicutarium)" = N3
+
+WENN Blattfiederpaare = 1.0
+DANN "Wiesen-Platterbse (Lathyrus pratensis)" = P3
+
+WENN Blattfiederpaare in "[9.0, 10.0]"
+DANN "Zaun-Wicke (Vicia sepium)" = N2
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Kriech. Fingerkraut (Potentilla reptans)" = N5
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Fam. Hahnenfußgewächse (Ranunculaceae)" = P2
+
+WENN Blütenblätteranzahl <= 6.0
+DANN "Duftlose Kamille (Matricaria inodora)" = N6
+
+WENN Blattfiederpaare > 9.0
+DANN "Schmalblättrige Wicke (Vicia angustifolia)" = N3
+
+WENN Blütenblätteranzahl >= 9.0
+DANN "Busch-Windröschen (Anemone Nemorosa)" = N4
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Große Sternmiere (Stellaria holostea)" = N2
+
+WENN Blattfingeranzahl in "[3.0, 7.0]"
+DANN "Busch-Windröschen (Anemone Nemorosa)" = P2
+
+WENN Blattfiederpaare in "[1.0, 2.0]"
+DANN "Hopfenklee (Medicago lupulina)" = P2
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Wald-Vergißmeinnicht (Myosotis sylvatica)" = N5
+
+WENN Blattfiederpaare >= 13.0
+DANN "Bunte Kronwicke (Coronilla varia)" = N3
+
+WENN Blütenblätteranzahl <= 5.0
+DANN "Busch-Windröschen (Anemone Nemorosa)" = N4
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Bach-Nelkenwurz (Geum rivale)" = N5
+
+WENN Blütenblätteranzahl in "[1.0, 3.0]"
+DANN "Fam. Primelgewächse (Primulaceae)" = N3
+
+WENN Blütenblätteranzahl <= 2.0
+DANN "Kahle Gänsekresse (Arabis glabra)" = N5
+
+WENN Blütenblätteranzahl in "[5.0, 6.0]"
+DANN "Fam. Doldenblütler (Apiaceae)" = P2
+
+WENN Blattfiederpaare >= 7.0
+DANN "Klatschmohn (Papaver rhoeas)" = N3
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Acker-Senf (Sinapis arvensis)" = P3
+
+WENN Blattfingeranzahl >= 8.0
+DANN "Busch-Windröschen (Anemone Nemorosa)" = N4
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Waldmeister (Galium odoratum)" = P3
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Kahle Gänsekresse (Arabis glabra)" = P3
+
+WENN Blattfiederpaare >= 7.0
+DANN "Schierlings-Reiherschnabel (Erodium cicutarium)" = N3
+
+WENN Blattfiederpaare <= 2.0
+DANN "Schmalblättrige Wicke (Vicia angustifolia)" = N5
+
+WENN Blattfiederpaare >= 3.0
+DANN "Gelber Acker-Klee (Trifolium campestre)" = N6
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Echte Nelkenwurz (Geum urbanum)" = N5
+
+WENN Blattfingeranzahl >= 10.0
+DANN "Kleiner Storchenschnabel (Geranium pusillum)" = N3
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Wiesen-Storchschnabel (Geranium pratense)" = N5
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Wald-Vergißmeinnicht (Myosotis sylvatica)" = N5
+
+WENN Blattfiederpaare in "[7.0, 10.0]"
+DANN "Bunte Kronwicke (Coronilla varia)" = P2
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Vogelmiere (Stellaria media)" = N6
+
+WENN Blütenblätteranzahl <= 6.0
+DANN "Wiesen-Bocksbart (Tragopogon pratensis)" = N6
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Scharfer Hahnenfuß (Ranunculus acris)" = N3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Große Sternmiere (Stellaria holostea)" = P3
+
+WENN Blattfiederpaare in "[4.0, 6.0]"
+DANN "Bunte Kronwicke (Coronilla varia)" = N1
+
+WENN Blattfingeranzahl = 3.0
+DANN "Hopfenklee (Medicago lupulina)" = P2
+
+WENN Blütenblätteranzahl >= 5.0
+DANN "Gamander-Ehrenpreis (Veronica chamaedrys)" = N5
+
+WENN Blattfingeranzahl >= 4.0
+DANN "Weißer Steinklee (Melilotus alba)" = N5
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Echter Steinklee (Melilotus officinalis)" = N5
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Knoblauchsrauke (Alliaria petiolata)" = N6
+
+WENN Blattfiederpaare >= 11.0
+DANN "Zaun-Wicke (Vicia sepium)" = N5
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Fam. Nelkengewächse (Cariophyllaceae)" = P2
+
+WENN Blattfiederpaare in "[3.0, 4.0]"
+DANN "Bach-Nelkenwurz (Geum rivale)" = N3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Acker-Hornkraut (Cerastium arvense)" = P3
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Wiesen-Schlüsselblume (Primula veris)" = N5
+
+WENN Blütenblätteranzahl <= 6.0
+DANN "Kornblume (Centaurea cyanus)" = N3
+
+WENN Blattfingeranzahl >= 4.0
+DANN "Wiesen-Hornklee (Lotus corniculatus)" = N5
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Wilde Möhre (Daucus carota)" = N4
+
+WENN Blattfingeranzahl = 3.0
+DANN "Gelber Acker-Klee (Trifolium campestre)" = P3
+
+WENN Blütenblätteranzahl >= 5.0
+DANN "Acker-Ehrenpreis (Veronica persica)" = N5
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Acker-Vergißmeinnicht (Myosotis arvensis)" = P3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Wiesen-Schaumkraut (Cardamine pratense)" = N3
+
+WENN Blattfingeranzahl <= 4.0
+DANN "Wiesen-Storchschnabel (Geranium pratense)" = N4
+
+WENN Blattfingeranzahl >= 4.0
+DANN "Hopfenklee (Medicago lupulina)" = N5
+
+WENN Blütenblätteranzahl in "[6.0, 20.0]"
+DANN "Fam. Rachenblütler (Scrophulariaceae)" = N4
+
+WENN Blütenblätteranzahl >= 5.0
+DANN "Waldmeister (Galium odoratum)" = N6
+
+WENN Blattfiederpaare in "[2.0, 3.0]"
+DANN "Großes Schöllkraut  (Chelidonium majus)" = P2
+
+WENN Blütenblätteranzahl in "[5.0, 20.0]"
+DANN "Fam. Kreuzblütler (Brassicaceae)" = N4
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Gem. Schafgarbe (Achillea millefolium)" = P3
+
+WENN Blütenblätteranzahl <= 2.0
+DANN "Wiesen-Schaumkraut (Cardamine pratense)" = N5
+
+WENN Blattfiederpaare >= 2.0
+DANN "Wiesen-Klee (Trifolium pratense)" = N5
+
+WENN Blattfingeranzahl in "[5.0, 9.0]"
+DANN "Kleiner Storchenschnabel (Geranium pusillum)" = P2
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Wiesen-Kerbel (Anthriscus sylvestris)" = N4
+
+WENN Blattfingeranzahl = 3.0
+DANN "Wiesen-Hornklee (Lotus corniculatus)" = P2
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Rotes Leimkraut (Silene dioica)" = N6
+
+WENN Blütenblätteranzahl = 6.0
+DANN "Gelbstern (Gagea lutea)" = P3
+
+WENN Blütenblätteranzahl = 6.0
+DANN "Sumpf-Dotterblume (Caltha palustris)" = N3
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Weiß-Klee (Trifolium repens)" = N5
+
+WENN Blütenblätteranzahl <= 6.0
+DANN "Gem. Wegwarte (Cichorium intybus)" = N6
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Gelber Acker-Klee (Trifolium campestre)" = N5
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Sumpf-Dotterblume (Caltha palustris)" = N6
+
+WENN Blattfiederpaare in "[4.0, 5.0]"
+DANN "Schmalblättrige Wicke (Vicia angustifolia)" = P2
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Gem. Kreuzlabkraut (Crucita laevipes)" = P3
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Schierlings-Reiherschnabel (Erodium cicutarium)" = N5
+
+WENN Blattfiederpaare in "[4.0, 6.0]"
+DANN "Schierlings-Reiherschnabel (Erodium cicutarium)" = P2
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Acker-Ehrenpreis (Veronica persica)" = P3
+
+WENN Blattfiederpaare >= 3.0
+DANN "Echte Nelkenwurz (Geum urbanum)" = N3
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Schierlings-Reiherschnabel (Erodium cicutarium)" = N6
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Wohlriech. Veilchen (Viola odorata)" = N5
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Wiesen-Storchschnabel (Geranium pratense)" = P3
+
+WENN Blütenblätteranzahl in "[4.0, 4.0]"
+DANN "Fam. Primelgewächse (Primulaceae)" = N2
+
+WENN Blattfiederpaare >= 3.0
+DANN "Wiesen-Klee (Trifolium pratense)" = N7
+
+WENN Blattfiederpaare = 2.0
+DANN "Gelber Acker-Klee (Trifolium campestre)" = N2
+
+WENN Blattfingeranzahl = 3.0
+DANN "Echter Steinklee (Melilotus officinalis)" = P3
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Wiesen-Schaumkraut (Cardamine pratense)" = P3
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Scharfer Hahnenfuß (Ranunculus acris)" = N6
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Gem. Labkraut (Galium mollugo)" = N6
+
+WENN Blütenblätteranzahl = 3.0
+DANN "Gem. Hirtentäschel (Capsella bursa-pastoris)" = N3
+
+WENN Blütenblätteranzahl = 3.0
+DANN "Acker-Senf (Sinapis arvensis)" = N3
+
+WENN Blattfiederpaare = 3.0
+DANN "Zaun-Wicke (Vicia sepium)" = N3
+
+WENN Blattfingeranzahl = 3.0
+DANN "Wiesen-Klee (Trifolium pratense)" = P3
+
+WENN Blütenblätteranzahl >= 7.0
+DANN "Rotes Leimkraut (Silene dioica)" = N6
+
+WENN Blütenblätteranzahl = 6.0
+DANN "Weißes Leimkraut (Silene alba)" = N2
+
+WENN Blütenblätteranzahl >= 5.0
+DANN "Großes Schöllkraut  (Chelidonium majus)" = N5
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Sumpf-Dotterblume (Caltha palustris)" = P3
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Acker-Senf (Sinapis arvensis)" = N5
+
+WENN Blattfiederpaare >= 3.0
+DANN "Hopfenklee (Medicago lupulina)" = N6
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Kriech. Fingerkraut (Potentilla reptans)" = P3
+
+WENN Blütenblätteranzahl = 7.0
+DANN "Scharbockskraut (Ranunculus ficaria)" = N1
+
+WENN Blütenblätteranzahl in "[5.0, 6.0]"
+DANN "Wilde Möhre (Daucus carota)" = P3
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Acker-Vergißmeinnicht (Myosotis arvensis)" = N5
+
+WENN Blütenblätteranzahl = 6.0
+DANN "Scharfer Hahnenfuß (Ranunculus acris)" = N1
+
+WENN (nicht (Blütenkelch = "fehlend (nur angeben wenn ganz sicher)")  und Blütenkelch = "fehlend (nur angeben wenn ganz sicher)" )
+DANN Kelchfarbe  
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Gem. Schafgarbe (Achillea millefolium)" = N5
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Knoblauchsrauke (Alliaria petiolata)" = P3
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Wohlriech. Veilchen (Viola odorata)" = N5
+
+WENN Blattfiederpaare >= 10.0
+DANN "Wiesen-Schaumkraut (Cardamine pratense)" = N2
+
+WENN Blütenblätteranzahl >= 14.0
+DANN "Scharbockskraut (Ranunculus ficaria)" = N5
+
+WENN Blattfiederpaare <= 2.0
+DANN "Zaun-Wicke (Vicia sepium)" = N6
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Gamander-Ehrenpreis (Veronica chamaedrys)" = N5
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Weißes Leimkraut (Silene alba)" = N2
+
+WENN Blütenblätteranzahl = 3.0
+DANN "Knoblauchsrauke (Alliaria petiolata)" = N5
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Kleiner Storchenschnabel (Geranium pusillum)" = P3
+
+WENN Blattfiederpaare >= 8.0
+DANN "Schopf-Hufeisenklee (Hippocrepis comosa)" = N3
+
+WENN Blattfiederpaare = 1.0
+DANN "Wiesen-Klee (Trifolium pratense)" = P2
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Acker-Hornkraut (Cerastium arvense)" = N5
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Ruprechtskraut (Geranium robertianum)" = N5
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Bach-Nelkenwurz (Geum rivale)" = P3
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Wiesen-Schlüsselblume (Primula veris)" = N5
+
+WENN Blütenblätteranzahl >= 5.0
+DANN "Klatschmohn (Papaver rhoeas)" = N4
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Kriech. Fingerkraut (Potentilla reptans)" = N5
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Rotes Leimkraut (Silene dioica)" = N3
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Fam. Rötegewächse (Rubiaceae)" = P3
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Wiesen-Kerbel (Anthriscus sylvestris)" = N4
+
+WENN Blütenblätteranzahl in "[8.0, 12.0]"
+DANN "Scharbockskraut (Ranunculus ficaria)" = P3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Ruprechtskraut (Geranium robertianum)" = P3
+
+WENN Blütenblätteranzahl = 6.0
+DANN "Große Sternmiere (Stellaria holostea)" = N2
+
+WENN Blütenblätteranzahl <= 4.0
+DANN "Kleiner Storchenschnabel (Geranium pusillum)" = N5
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Wiesen-Storchschnabel (Geranium pratense)" = N5
+
+WENN Blütenblätteranzahl in "[6.0, 20.0]"
+DANN "Fam. Lippenblütler (Lamiaceae)" = N4
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Weißes Leimkraut (Silene alba)" = N5
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Klatschmohn (Papaver rhoeas)" = P3
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Wiesen-Schlüsselblume (Primula veris)" = P3
+
+WENN Blütenblätteranzahl >= 6.0
+DANN "Bach-Nelkenwurz (Geum rivale)" = N5
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Große Sternmiere (Stellaria holostea)" = N6
+
+WENN Blütenblätteranzahl <= 3.0
+DANN "Echtes Labkraut (Galium verum)" = N6
+
+WENN Blütenblätteranzahl = 4.0
+DANN "Großes Schöllkraut  (Chelidonium majus)" = P3
+
+WENN Blütenblätteranzahl <= 2.0
+DANN "Knoblauchsrauke (Alliaria petiolata)" = N6
+
+WENN Blattfiederpaare >= 2.0
+DANN "Weiß-Klee (Trifolium repens)" = N5
+
+WENN Blütenblätteranzahl in "[6.0, 20.0]"
+DANN "Fam. Schmetterlingsblütler (Fabaceae)" = N4
+
+WENN Döldchenanzahl in "[8.0, 16.0]"
+DANN "Wiesen-Kerbel (Anthriscus sylvestris)" = P2
+
+WENN Blütenblätteranzahl <= 2.0
+DANN "Acker-Senf (Sinapis arvensis)" = N5
+
+WENN Blütenblätteranzahl = 5.0
+DANN "Wald-Vergißmeinnicht (Myosotis sylvatica)" = P3
+
+WENN Blattfingeranzahl <= 2.0
+DANN "Weißer Steinklee (Melilotus alba)" = N5

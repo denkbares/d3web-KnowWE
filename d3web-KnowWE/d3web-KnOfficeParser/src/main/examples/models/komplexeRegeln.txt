@@ -1,0 +1,67 @@
+WENN BMI>25
+DANN Uebergewicht = P7
+
+WENN BMI [18.5 25]
+DANN Normalgewicht = P7
+
+WENN BEKANNT[Geschlecht]
+AUSSER UNBEKANNT[Groesse]
+DANN Grobdiagnose
+
+WENN Geschlecht = "weiblich" UND Sind Sie schwanger? = ja
+DANN Schwangerschaftsfragen
+
+WENN Geschlecht = maennlich ODER Sind Sie schwanger? = nein
+DANN Schwanger = N7
+
+WENN NICHT BMI>25
+DANN Uebergewicht = N7
+
+WENN NICHT Geschlecht = maennlich UND UNBEKANNT[Sind Sie schwanger?]
+ODER Geschlecht = weiblich UND NICHT BEKANNT[Sind Sie schwanger?]
+DANN Schwanger = P1
+
+WENN ((NICHT (Geschlecht = maennlich) UND UNBEKANNT[Sind Sie schwanger?])
+ODER (Geschlecht = weiblich UND NICHT (BEKANNT[Sind Sie schwanger?])))
+DANN Schwanger = P1
+
+WENN Wo haben Sie Schmerzen? IN {Arme, Beine}
+DANN Gliederschmerzen = !
+
+WENN Wo haben Sie Schmerzen? = Arme OR Wo haben Sie Schmerzen? = Beine
+DANN Gliederschmerzen = !
+
+WENN Wo haben Sie Schmerzen? ALLE {Arme, Beine, Kopf}
+DANN Verteilte Schmerzen = !
+
+WENN Wo haben Sie Schmerzen? = Arme AND Wo haben Sie Schmerzen? = Beine
+AND Wo haben Sie Schmerzen? = Kopf
+DANN Verteilte Schmerzen = !
+
+WENN MINMAX (1 2) {Wo haben Sie Schmerzen? = Arme;
+Wo haben Sie Schmerzen? = Beine}
+DANN Gliederschmerzen = ?
+
+WENN Sind Sie schwanger? [jn] = ja
+DANN Schwangerschaftsfragen
+
+WENN Sind Sie schwanger? = ja
+DANN SOFORT [Schwangerschaftsfragen]
+
+WENN Sind Sie schwanger? [jn] = ja
+DANN Schwangerschaftsfragen; Grobdiagnose
+
+WENN Sind Sie schwanger? = ja
+DANN SOFORT [Schwangerschaftsfragen; Grobdiagnose]
+
+WENN Sind Sie schwanger? = nein
+DANN NICHT[Schwangerschaftsfragen]
+
+WENN Geschlecht = maennlich
+DANN VERBERGE Wo haben Sie Schmerzen? = [Kopf]
+
+WENN Gewicht >0 UND Groesse >0
+DANN BMI = (Gewicht/(Groesse*Groesse))
+
+WENN Schwanger = etabliert
+DANN Schwangerschaftsfragen

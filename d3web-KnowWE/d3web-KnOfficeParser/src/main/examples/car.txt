@@ -1,0 +1,104 @@
+Allgemeines
+- Automarke [oc]
+-- VW
+-- Opel
+-- Mercedes Benz
+-- BMW
+-- Porsche
+-- Fiat
+-- Toyota
+-- Mazda
+-- sonstige
+- Baujahr [num]
+
+Beobachtungen
+- Abgase [oc]
+-- schwarz
+--- Luftfiltereinsatz verschmutzt (P5)
+--- Untersuchung Luftfiltereinsatz
+-- bläulich
+-- farblos
+- Auspuffrohrfarbe [oc]
+-- braun
+-- grau
+-- hellgrau
+-- schwarzverrußt
+-- Bewertung Auspuffrohrfarbe [oc]<abstrakt>
+--- abnorm
+---- Luftfiltereinsatz verschmutzt (P5)
+--- normal
+- Benzinart [oc]
+-- Diesel
+-- Normal oder Super
+- "Üblicher Kraftstoffverbrauch/100km" [num]
+-- "Num. Bewertung Kraftstoffverbrauch" [num]<abstrakt>
+--- Bewertung Kraftstoffverbrauch [oc]<abstrakt>
+---- leicht erhöht
+----- Ansaugsystem undicht (P3)
+----- Untersuchung Ansaugsystem
+----- Luftfiltereinsatz verschmutzt (P3)
+---- normal
+----- Ansaugsystem undicht (N4)
+----- Luftfiltereinsatz verschmutzt (N4)
+---- erhöht
+----- Luftfiltereinsatz verschmutzt (P4)
+----- Ansaugsystem undicht (P4)
+- "Tatsächlicher Kraftstoffverbrauch/100km" [num]
+- Motorgeräusche [mc]
+-- klopfen
+-- klingeln
+-- "Nein/Sonstiges"
+- Verhalten bei Motorstart [oc]
+-- springt schlecht an
+--- Leerlaufsystem defekt (P5)
+--- Untersuchung Leerlaufsystem
+-- springt normal an
+-- springt überhaupt nicht an
+-- Anlasser [oc]
+--- dreht nicht richtig durch
+---- Batterie leer (P5)
+---- Untersuchung Batterie
+--- dreht durch
+---- Batterie leer (N4)
+- Fahrverhalten [mc]
+-- zu wenig Leistung bei Teillast
+--- Ansaugsystem undicht (P3)
+-- Leerlauf ist unregelmäßig
+--- Ansaugsystem undicht (P1)
+--- Leerlaufsystem defekt (P1)
+--- Zündeinstellung falsch (P1)
+--- Untersuchung Zündeinstellung
+--- Luftfiltereinsatz verschmutzt (P4)
+-- Leerlauf ist zu niedrig
+--- Leerlaufsystem defekt (P4)
+-- verzögertes Anfahren
+--- Zündeinstellung falsch (P3)
+-- schlechte Beschleunigung
+-- zu wenig Leistung bei Volllast
+-- "Nein/Sonstiges"
+
+
+Untersuchung Leerlaufsystem
+- Leerlaufsystem [yn]
+-- ja
+-- nein
+
+Untersuchung Ansaugsystem
+- Ansaugsystem [yn]
+-- ja
+-- nein
+
+Untersuchung Luftfiltereinsatz
+- Luftfiltereinsatz [yn]
+-- ja
+-- nein
+
+Untersuchung Zündeinstellung
+- Zündeinstellung [yn]
+-- ja
+-- nein
+
+Untersuchung Batterie
+- Batterie [yn]
+-- ja
+-- nein

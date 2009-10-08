@@ -1,0 +1,299 @@
+default (@currentQuestionBackground: "#eee")
+Fragebaume1 (@rows: "10"; @columns: "4";)
+-Frage1 [num] (@currentQuestionBackground: "#eee")
+
+Allgemeines
+- Automarke [oc]
+-- VW
+-- Opel #Opel
+-- Mercedes Benz
+-- BMW
+-- Porsche
+-- Fiat
+-- Toyota
+-- Mazda
+-- sonstige
+- Baujahr [num] (100-300)
+-- [100-300]
+
+Beobachtungen
+- Abgase [oc]
+-- schwarz
+--- Untersuchung Luftfiltereinsatz
+--- Luftfiltereinsatz verschmutzt (P5)
+-- bläulich
+-- farblos
+- Auspuffrohrfarbe [oc]
+-- braun
+-- grau
+-- hellgrau
+-- schwarzverrußt
+-- Bewertung Auspuffrohrfarbe [oc]<abstract>
+--- abnorm
+---- Luftfiltereinsatz verschmutzt (P5)
+--- normal
+- Benzinart [oc]
+-- Diesel
+-- Normal oder Super
+- "Üblicher Kraftstoffverbrauch/100km" [num]
+-- "Num. Bewertung Kraftstoffverbrauch" [num]<abstract>
+--- Bewertung Kraftstoffverbrauch [oc]<abstract>
+---- leicht erhöht
+----- Untersuchung Ansaugsystem
+----- Ansaugsystem undicht (P3)
+----- Luftfiltereinsatz verschmutzt (P3)
+---- normal
+----- Ansaugsystem undicht (N4)
+----- Luftfiltereinsatz verschmutzt (N4)
+---- erhöht
+----- Ansaugsystem undicht # Luftfiltereinsatz verschmutzt # Testdiagnose (P4)
+- "Tatsächlicher Kraftstoffverbrauch/100km" [num]
+- Motorgeräusche [mc]
+-- klopfen
+-- klingeln
+-- "Nein/Sonstiges"
+- Verhalten bei Motorstart [oc]
+-- springt schlecht an
+--- Untersuchung Leerlaufsystem
+--- Leerlaufsystem defekt (P5)
+-- springt normal an
+-- springt überhaupt nicht an
+-- Anlasser [oc]
+--- dreht nicht richtig durch
+---- Untersuchung Batterie
+---- Batterie leer (P5)
+--- dreht durch
+---- Batterie leer (N4)
+- Fahrverhalten [mc]
+-- Leerlauf ist unregelmäßig
+--- Untersuchung Zündeinstellung
+--- Zündeinstellung falsch (P1)
+--- Luftfiltereinsatz verschmutzt (P4)
+--- Ansaugsystem undicht (P1)
+--- Leerlaufsystem defekt (P1)
+-- verzögertes Anfahren
+--- Zündeinstellung falsch (P3)
+-- Leerlauf ist zu niedrig
+--- Leerlaufsystem defekt (P4)
+-- zu wenig Leistung bei Teillast
+--- Ansaugsystem undicht (P3)
+-- schlechte Beschleunigung
+-- zu wenig Leistung bei Volllast
+-- "Nein/Sonstiges"
+
+
+Untersuchung Leerlaufsystem
+- Leerlaufsystem [yn]
+-- yes
+-- no
+
+Untersuchung Ansaugsystem
+- Ansaugsystem [yn]
+-- yes
+-- no
+
+Untersuchung Luftfiltereinsatz
+- Luftfiltereinsatz [yn]
+-- yes
+-- no
+
+Untersuchung Zündeinstellung
+- Zündeinstellung [yn]
+-- yes
+-- no
+
+Untersuchung Batterie
+- Batterie [yn]
+-- yes
+-- no 
+
+Allgemein
+- Körperliche Einschränkungen [mc]
+-- massives Uebergewicht
+-- Atembescherden
+-- Kreislaufprobleme
+-- Verletzungen an den Armen
+-- Verletzungen an den Beinen
+-- Rückenprobleme
+
+- Allgemeine Fitness [mc]
+-- untrainiert
+-- durchschnittlich trainiert
+-- gut trainiert
+-- Trainingszustand nicht wichtig
+
+- Verletzungsanfälligkeit [mc]
+-- geringe Verletzungsanfälligkeit
+-- durchschnittliche Verletzungsanfälligkeit
+-- hohe Verletzungsanfälligkeit
+
+- Numtest [num] (40 50)
+-- >10
+-- <5
+-- =40
+-- >=50
+-- [20 30]
+
+Rahmenbedingungen
+- "Outdoor-Sportart" [yn]
+- Medium [mc]
+-- Wasser
+-- Schnee
+-- Eis
+-- Rasen
+-- Halle
+
+- Jahreszeit [mc]
+-- Frühjahr
+-- Sommer
+-- Herbst
+-- Winter
+-- jahreszeitunabhängig
+
+- Tageszeit [mc]
+-- morgens
+-- "nachmittags / abends"
+-- jederzeit
+
+- Flexibilitaet [mc]
+-- spontan
+-- geplant
+
+Kosten
+- Anfangskosten [oc]
+-- "niedrig(<100€)"
+-- "mittel(100€ - 250€)"
+-- "hoch(>250€)"
+
+- "Laufende Kosten (im Monat)" [oc]
+-- "niedrig (<20€)"
+-- "mittel (20€ - 50€)"
+-- "hoch (>50€)"
+
+
+
+
+Trainingsintensitaet
+- "Trainingsdauer (kein Leistungssport)" [mc]
+-- "kurz (<45 min)"
+-- "mittel (45 min - 1h 30 min)"
+-- "lang (> 1h 30 min)"
+-- beliebig
+
+- "Trainingshaefigkeit"  [mc]
+-- Nach Belieben
+-- "selten (1-2 Mal pro Woche)"
+-- "durchschnittlich (3-4 Mal pro Woche)"
+-- "häufig (>4 Mal pro Woche)"
+
+
+- Verletzungsrisiko [oc]
+-- niedrig
+-- mittel
+-- hoch
+
+- "Kalorienverbrauch (30min, 75kg)" [oc]
+-- "niedrig (<250cal)"
+-- "mittel (250cal-400cal)"
+-- "hoch(>400cal)"
+
+Trainingserwartungen
+- Mannschaftssportart [yn]
+- Wettbewerbssportart [yn]
+
+- Trainierte Muskelgruppen [mc]
+-- Oberkörper
+-- Arme
+-- Bauch
+-- Beine
+-- Gesäß
+-- Rücken
+-- alle
+
+- Trainingsziele [mc]
+-- "Ausdauer / Kreislauf"
+-- Gewichtsabnahme
+-- Selbsverteidigung
+-- Koordination
+-- "Fit werden/bleiben"
+-- Erholung oder Rehabilitation 
+Testbogen
+- "Aszites: \"pH-Wert\"" [oc]
+-- "<7,3"
+-- "7,3 bis 7,45"
+-- ">7,45"
+- lala [oc]
+-- "blub" vla "blub" [oc]
+-- das
+--- ba [MC]
+---- asd [OC]
+----- dd
+------ dd [OC]
+------- "Inkonsistenz: Obstruktive Cholestase sonographisch" [oc]
+-------- "widersprüchliche Angaben zur Gallestauung; die Eingabe bei \"Sonographie Leber\" gilt"
+----- Korpus
+----- Schwanz
+-- "Verschlechterung des Allgemeinbefindens, Beginn" [oc]
+--- vor Stunden
+---- "Beginn der Verschlechterung (Stunden)" [num]
+--- vor über 1 Tag
+---- "Beginn der Verschlechterung (Tage)" [num]
+--- vor über 1 Woche
+---- "Beginn der Verschlechterung (Wochen)" [num]
+--- vor über 1 Monat
+---- "Beginn der Verschlechterung (Monate)" [num]
+--- vor über 1 Jahr
+---- "Beginn der Verschlechterung (Jahre)" [num]
+Inverview for what to do
+- Are you tired from work? [oc]
+-- Can hardly keep the eyes open
+--- A little bit
+---- No 
+- Are you tired from work? [oc]
+- Can hardly keep the eyes open
+-- A little bit
+-- No 
+- Are you tired from work? [oc]
+-- Can hardly keep the eyes open
+-- A little bit
+-- No
+- Is your fridge empty? [oc
+-- Yes
+-- No
+- Are you hungry? [oc] (50 250)
+-- Very very hungry
+-- Yes
+-- No
+- Do you have a date? [Oc]
+-- Yes
+-- No
+- What do you like? [MC]
+-- Sports
+-- Movies
+-- Books
+-- Relaxing
+-- Meeting people
+-- Shopping
+- "How much time (in hours) do you have to spend?" [num]
+- Do your legs hurt? [oc]
+-- Yes
+-- No
+- Is there a friend to hang out with? [oc]
+-- Yes
+-- No
+- Are the stores still open? [oc]
+-- Yes @4
+-- No
+- Bilirubin direkt [oc]
+-- ">50%" @2
+-- <50
+- Bilirubin direkt [jn]
+-- ja @1
+--- Diag2 (P6)
+-- nein
+--- Diag (P7)
+
+| @1 | info | en::Erläuterung | The following Questioncontainer... |
+| @1 | info | de::Erläuterung | Die folgenden Fragebögen sind gedacht für Personen, die auf Grund von Beschwerden erstmalig vor die Frage gestellt sind, ob sie eine entzündliche Rheumaerkrankung haben könnten. Sie sind also nicht für Personen gedacht, die schon von Ihrer Rheumaerkrankung wissen, sie sind nicht als Fragebögen erstellt, die den Verlauf einer bekannten Rheumaerkrankung beschreiben. Beachten Sie bitte, dass eine entzündliche Rheumaerkrankung meist ohne erkennbaren Anlass beginnt, es sind mit dem Fragenkatalog somit keine Probleme angesprochen, die z.B. nach einer Verletzung, nach einer Überanstrengung aufgetreten sind. <br /><br />Die anschließenden Fragen werden in 3 unterschiedlichen Fragebögen gestellt. Sie allerdings wissen, dass die Diagnose einer entzündlichen Rheumaerkrankung nicht nur über Fragen zu Ihren Beschwerden, sondern auch durch die Untersuchung eines Arztes und  weitere technische Untersuchungen gestellt werden muss. Wenn wir hier im Netz Ihnen nur Fragen stellen können, so sind wir mit allen daraus abgeleiteten Entscheidungen auf den Wahrheitsgehalt Ihrer Antworten angewiesen. Wir werden somit immer schlechter sein als ein genau fragender und untersuchender Arzt. Andererseits haben Ärzte heutzutage kaum noch Zeit, durch viele Fragen mögliche Rheumaerkrankungen (von denen es über 100 gibt) einzugrenzen, viele vertrauen deshalb mehr auf Labortests und hoch aufwendige Verfahren zur Darstellung von Gelenken und Organen. Dieses erhöht einerseits den Aufwand pro Patient beträchtlich und trägt das Risiko in sich, dass Dinge entdeckt werden, die für die  bestehende Diagnose keine Bedeutung haben. <br /><br /> Es hängt somit von Ihnen ab, wie genau und wie korrekt Sie die gestellten Fragen beantworten, ob das Ergebnis dieses Tests dem später behandelnden Arzt, der letztlich nur eine Diagnose stellen kann, helfen wird oder nicht. Wie oben schon angedeutet, ersetzt ein Fragebogen nicht das Wissen und die Genauigkeit der Untersuchungstechnik eines Arztes, wenn er Sie vor sich sitzen hat und damit deutlich mehr Hinweise auf mögliche Erkrankungen bekommt. <br /><br />Der erste Fragebogen soll die Frage klären, ob bei Ihnen überhaupt eine entzündliche Rheumaerkrankung wahrscheinlich ist. Der zweite Fragebogen stellt sehr genaue und ausführliche Fragen zu möglichen Organbeteiligungen nur dann, wenn aus dem ersten Fragebogen abgeleitet werden kann, dass eine entzündliche Rheumaerkrankung vorliegt. Er verlangt von Ihnen die eigene Untersuchung zum Beispiel Ihrer Gelenke, aus denen die Entscheidung zusammen mit den Fragen zum ersten Fragebogen besser abgeleitet werden kann, ob bei Ihnen eine Rheumaerkrankung vorliegt und welche der über 100 möglichen Rheumaerkrankungen wahrscheinlich ist. Der dritte Fragebogen erfragt schon bekannte Labortests und sonstige Untersuchungsergebnisse, die normalerweise dem Arzt zur Verfügung stehen bzw. von ihm schon veranlasst wurden bzw. noch veranlasst werden sollten. Selbst wenn wir alle Informationen aus allen 3 Fragebögen haben, werden wir immer nur mit einer gewissen Wahrscheinlichkeit, nie mit Sicherheit darauf hinweisen können, ob es für Sie Sinn macht, einen Arzt (internistischer Rheumatologe, orthopädischer Rheumatologe oder andere Ärzte) aufzusuchen. Abhängig von Ihren Antworten kann die Empfehlung falsch sein, da wir uns hier nur auf Antworten zu Fragen verlassen müssen. Noch einmal, diese Fragen ersetzen niemals das Wissen eines Arztes, den Sie im Zweifelsfall immer aufsuchen sollten. |
+| @2 | boesertyp | Erläuterung | Mit Gelenkschwellung ist die auch von anderen erkennbare schmerzhafte Schwellung eines Gelenks gemeint. Viele Menschen haben das Gefühl, dass ein schmerzhaftes Gelenk sich auch geschwollen anfühlt, obwohl es nicht wirklich geschwollen ist, deshalb wird diese Frage oftmals falsch gedeutet und beantwortet, sie ist aber wesentlich für eine entzündliche Rheumaerkrankung. Es geht hier also nur um die eindeutige, auch von anderen klar zu erkennende Gelenkschwellung, dabei kann ein Gelenk auch vor Jahren oder Monaten geschwollen gewesen sein. Ausgenommen sind die Gelenkschwellungen, die direkt nach eine Verletzung des fraglichen Gelenks aufgetreten sind. |
+| @3 | info | en::Erläuterung | Not used... |

@@ -1,0 +1,21 @@
+
+WENN Num. Bewertung Kraftstoffverbrauch < 110.0
+DANN Bewertung Kraftstoffverbrauch = normal  
+
+WENN (Num. Bewertung Kraftstoffverbrauch >= 110.0 und Num. Bewertung Kraftstoffverbrauch <= 130.0)
+DANN Bewertung Kraftstoffverbrauch = leicht erhöht  
+
+WENN (Üblicher Kraftstoffverbrauch pro 100km > 0.0 und bekannt [ Tatsächlicher Kraftstoffverbrauch pro 100km ] )
+DANN Num. Bewertung Kraftstoffverbrauch = "((Tatsächlicher Kraftstoffverbrauch pro 100km / Üblicher Kraftstoffverbrauch pro 100km) * 100.0)"  
+
+WENN (Auspuffrohrfarbe = braun oder Auspuffrohrfarbe = grau oder Auspuffrohrfarbe = hellgrau)
+DANN Bewertung Auspuffrohrfarbe += normal  
+
+WENN (Auspuffrohrfarbe = schwarzverrußt und Benzinart = Diesel)
+DANN Bewertung Auspuffrohrfarbe += normal  
+
+WENN Num. Bewertung Kraftstoffverbrauch > 130.0
+DANN Bewertung Kraftstoffverbrauch = erhöht  
+
+WENN (Benzinart = "Normal oder Super" und Auspuffrohrfarbe = schwarzverrußt)
+DANN Bewertung Auspuffrohrfarbe += abnorm  
