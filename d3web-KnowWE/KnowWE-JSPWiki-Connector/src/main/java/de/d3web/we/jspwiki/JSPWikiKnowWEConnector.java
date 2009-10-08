@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -462,5 +463,27 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	        
 		
 		return result;
+	}
+
+	@Override
+	public List<String> getAttachmentFilenamesForPage(String pageName) {
+		try {
+			List<String> attachmentList = new LinkedList<String>();
+			
+			Collection<Attachment> attList = (Collection<Attachment>) this.engine
+					.getAttachmentManager().getAllAttachments();
+
+			// This is damn inefficient - How can I grab all Attachment for a specific page???
+			for (Attachment p : attList) {
+
+				if (p.getParentName().equals(pageName)) {
+					attachmentList.add(p.getFileName());
+				}
+
+			}
+			return attachmentList;
+		} catch (ProviderException e) {
+			return null;
+		}
 	}
 }
