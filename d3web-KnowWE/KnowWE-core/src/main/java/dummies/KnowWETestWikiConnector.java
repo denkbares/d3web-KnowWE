@@ -115,8 +115,8 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
 	@Override
 	public boolean saveArticle(String name, String text, KnowWEParameterMap map) {
-		// TODO Auto-generated method stub
-		return false;
+		//pretend so save article for KnowWEEnvironment Sandbox testing
+		return true;
 	}
 
 	@Override
