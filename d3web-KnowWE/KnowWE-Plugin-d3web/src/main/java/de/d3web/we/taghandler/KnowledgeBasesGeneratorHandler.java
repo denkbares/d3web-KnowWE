@@ -21,6 +21,7 @@
 package de.d3web.we.taghandler;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -62,7 +63,7 @@ public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 		}
 		
 		// update attachments
-		LinkedList <String> attchmnts = wikiConnector.getAttachments();
+		List <String> attchmnts = wikiConnector.getAttachments();
 		
 		StringBuffer html = new StringBuffer();
 		
