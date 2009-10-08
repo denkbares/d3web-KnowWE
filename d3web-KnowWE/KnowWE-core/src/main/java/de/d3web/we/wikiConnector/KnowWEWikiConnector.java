@@ -21,7 +21,7 @@
 package de.d3web.we.wikiConnector;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -44,7 +44,9 @@ public interface KnowWEWikiConnector {
 	
 	public boolean saveArticle(String name, String text, KnowWEParameterMap map);
 	
-	public LinkedList<String> getAttachments();
+	public List<String> getAttachments();
+	
+	public List<String> getAttachmentFilenamesForPage(String pageName);
 	
 	public String getBaseUrl();
 	

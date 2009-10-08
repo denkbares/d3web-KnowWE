@@ -19,8 +19,10 @@
  */
 
 package dummies;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -164,6 +166,11 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	public Collection findPages(String query) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<String> getAttachmentFilenamesForPage(String pageName) {
+		return new ArrayList<String>();
 	}
 
 }
