@@ -30,9 +30,13 @@ import java.util.Locale;
 
 import org.antlr.runtime.RecognitionException;
 
+import de.d3web.KnOfficeParser.IDObjectManagement;
+import de.d3web.KnOfficeParser.RestrictedIDObjectManager;
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.persistence.xml.PersistenceManager;
 import de.d3web.report.Message;
+import de.d3web.kernel.domainModel.KnowledgeBase;
+import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 
 /**
  * Einfache Testklasse für den SCMCBR Parser
@@ -47,15 +51,36 @@ public class Tester {
 	public static void main(String[] args) throws IOException,
 			RecognitionException {
 		Locale.setDefault(Locale.GERMAN);
-		File file = new File("examples\\coveringnew.txt");
+		File file = new File("src\\main\\examples\\coveringnew.txt");
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();
-		D3SCMCBRBuilder builder = new D3SCMCBRBuilder(file.toString(), new SingleKBMIDObjectManager(kbm));
+		IDObjectManagement idom;
+			
+		RestrictedIDObjectManager man = new RestrictedIDObjectManager(kbm);
+		man.setLazyAnswers(true);
+		man.setLazyQuestions(true);
+		
+		
+		idom = man;
+		
+		D3SCMCBRBuilder builder = new D3SCMCBRBuilder(file.toString(), idom);
 		Reader r = new FileReader(file);
-		Collection<Message> col = builder.addKnowledge(r, new SingleKBMIDObjectManager(kbm), null);
+		
+		Collection<Message> col = builder.addKnowledge(r, idom, null);
 		List<Message> errors = (List<Message>) col;
+		
+		System.out.println("Fehler: " + errors.size());
+		
 		for (Message m : errors) {
 			System.out.println(m);
 		}
+		
+		KnowledgeBase base = kbm.getKnowledgeBase();
+		PersistenceManager.getInstance().save(base, new File("testkb.zip").toURL());
+		
+		
+		
+		
+		
 	}
 
 }

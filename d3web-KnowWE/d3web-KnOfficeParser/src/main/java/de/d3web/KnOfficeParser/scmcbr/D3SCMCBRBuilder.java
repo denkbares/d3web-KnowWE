@@ -42,7 +42,7 @@ import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.qasets.QContainer;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
+import de.d3web.kernel.psMethods.SCMCBR.SCMCBRModel;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
 import de.d3web.report.Message;
 /**
@@ -60,6 +60,7 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 	private D3webConditionBuilder cb;
 	private int countfindings;
 	private IDObjectManagement idom;
+	
 	
 	public D3SCMCBRBuilder(String file, IDObjectManagement idom) {
 		this.file=file;
@@ -98,7 +99,7 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 
 	@Override
 	public void solution(int line, String text, String name) {
-		currentdiag=idom.findDiagnosis(name);
+		currentdiag=idom.createDiagnosis(name, null);
 		if (currentdiag==null) {
 			errors.add(MessageKnOfficeGenerator.createDiagnosisNotFoundException(file, line, text, name));
 		}
@@ -136,9 +137,9 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 		AbstractCondition cond = cb.pop();
 		if (cond==null) return;
 		if (weight==null||weight.equals("")) {
-			weight="[1.0]";
+			weight="[1]";
 		}
-		weight=weight.substring(1, weight.length()-1);
+
 		XCLRelationType type;
 		if (currentdiag!=null) {
 			if (weight.startsWith("-")) {
@@ -160,7 +161,7 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 				//Tritt nur bei einem Parserfehler auf, dieser setzt die Fehlermelung
 				value = 1.0;
 			}
-			XCLModel.insertXCLRelation(idom.getKnowledgeBase(), cond, currentdiag, type, value);
+			SCMCBRModel.insertSCMCBRRelation(idom.getKnowledgeBase(), cond, currentdiag, type, value);
 			
 		}
 		countfindings++;
@@ -209,14 +210,22 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 
 	@Override
 	public void setAmount(int line, String text, String name, Double value) {
-		// TODO Auto-generated method stub
+
+		if (name.equals("frequency"))
+			;//TODO
+		else 
+			throw new IllegalArgumentException();
+		
 		
 	}
 
 	@Override
 	public void threshold(int line, String text, String name, Double value1,
 			Double value2) {
-		// TODO Auto-generated method stub Gemeinsame Methode wie XCL?
+		
+		if (name.equals("covering")) {
+			
+		}
 		
 	}
 
