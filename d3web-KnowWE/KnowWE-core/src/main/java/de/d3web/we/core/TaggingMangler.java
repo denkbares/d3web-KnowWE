@@ -147,9 +147,9 @@ public class TaggingMangler {
 	 * @return
 	 */
 	public ArrayList<String> getPages(String tag) {
-		String querystring = "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object \""
-				+ tag + "\" .\n" + "?t rdf:predicate lns:hasTag .\n"
-				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
+		String querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object lns:"
+		+ tag + " .\n" + "?t rdf:predicate lns:hasTag .\n"
+		+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
 		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
 	}
 	
@@ -334,6 +334,7 @@ public class TaggingMangler {
 		}
 		return result;
 	}
+	
 	public String getResultPanel(String querystring){
 		StringBuffer html=new StringBuffer();
 		if (querystring != null) {
