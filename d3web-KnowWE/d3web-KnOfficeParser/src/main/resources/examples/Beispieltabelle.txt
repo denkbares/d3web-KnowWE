@@ -1,4 +1,0 @@
-|                   |Spalte 1           |Spalte 2           |
-|''__Kursiv&Fett__''|                   |                   |
-|__Fett__           |ja                 |nein               |
-|normal             |10                 |5                  |

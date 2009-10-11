@@ -1,6 +1,0 @@
-WENN bekannt[Groesse] UND bekannt[Gewicht] DANN BMI = (Gewicht * 10000 / (Groesse * Groesse)) 
-Wenn Nicht(Gelenkstatus = "Halswirbelsäule (Nacken)") DANN NICHT[HWSProblem]
-Wenn Nicht(Gelenkstatus = "Brustwirbelsäule (Rücken)") DANN Nicht[BWSProblem]
-Wenn Nicht(Gelenkstatus = "Lendenwirbelsäule (Kreuz)") DANN Nicht[LWSProblem]
-Wenn Hauterkrankungen = "Wanderröte (Borreliose) vor Monaten" UND AnzahlGelenke = immer nur ein Gelenk war geschwollen DANN Rheumazaehler += (20)
-Wenn Hauterkrankungen = "Wanderröte (Borreliose) vor Monaten" UND AnzahlGelenke = ein bis 3 Gelenke waren gleichzeitig geschwollen DANN Rheumazaehler += (20)
