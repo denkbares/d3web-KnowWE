@@ -30,6 +30,7 @@ import de.d3web.we.hermes.kdom.TimeEventType;
 import de.d3web.we.hermes.kdom.renderer.TimeLineHandler;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.module.AbstractDefaultKnowWEModule;
+import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.taghandler.TagHandler;
 
 public class HermesPlugin extends AbstractDefaultKnowWEModule {
@@ -62,6 +63,13 @@ public class HermesPlugin extends AbstractDefaultKnowWEModule {
 		list.add(new TimeEventSearchHandler());
 		return list;
 	} 
+	
+	@Override
+	public List<PageAppendHandler> getPageAppendHandlers() {
+		List<PageAppendHandler> handlers = new ArrayList<PageAppendHandler>();
+		handlers.add(new AppendTagEditHandler());
+		return handlers;
+	}
 	
 	
 	@Override
