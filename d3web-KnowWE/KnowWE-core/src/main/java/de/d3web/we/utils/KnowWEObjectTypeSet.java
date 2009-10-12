@@ -68,6 +68,16 @@ public class KnowWEObjectTypeSet{
 		return r;
 	}
 	
+	public KnowWEObjectType getInstanceOf(Class<?extends KnowWEObjectType> cl ) {
+		for (KnowWEObjectType o : types.values()) {
+			if(cl.isAssignableFrom(o.getClass())) {
+				return o;
+			}
+		}
+		
+		return null;
+	}
+	
 	public List<KnowWEObjectType> toLexicographicalList() {
 		ArrayList<KnowWEObjectType> r = new ArrayList<KnowWEObjectType>(types.size());
 		for (String s : types.keySet()) {
