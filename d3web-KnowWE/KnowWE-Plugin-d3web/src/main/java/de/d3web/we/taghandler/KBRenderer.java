@@ -43,6 +43,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.bulletLists.BulletContentType;
 import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -122,6 +123,8 @@ public class KBRenderer extends AbstractTagHandler {
 						List<Section> allRules = new ArrayList<Section>();
 						KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
 								.getSection().findSuccessorsOfType(Rule.class, allRules);
+						KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
+						.getSection().findSuccessorsOfType(BulletContentType.class, allRules);
 						for (Section rule:allRules) {
 							String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), rule.getTitle(), 
 									rule.getId(), Rule.KBID_KEY);

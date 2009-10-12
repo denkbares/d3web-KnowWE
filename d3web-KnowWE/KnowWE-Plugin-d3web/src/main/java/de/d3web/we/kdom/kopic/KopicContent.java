@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.kopic;
 
+import de.d3web.we.kdom.bulletLists.scoring.ScoringListType;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
 import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
@@ -42,6 +43,7 @@ public class KopicContent extends XMLContent {
 		childrenTypes.add(new CoveringTableSection());
 		childrenTypes.add(new CoveringListSection());
 		childrenTypes.add(new RulesSection());
+		childrenTypes.add(new ScoringListType());
 	}
 
 }
