@@ -1,80 +1,53 @@
-/*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
-// $ANTLR 3.1 D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g 2009-01-10 19:06:19
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2009-10-09 16:50:21
 
 package de.d3web.KnOfficeParser.visio;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.antlr.runtime.BaseRecognizer;
-import org.antlr.runtime.BitSet;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.DFA;
-import org.antlr.runtime.FailedPredicateException;
-import org.antlr.runtime.Parser;
-import org.antlr.runtime.ParserRuleReturnScope;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.RecognizerSharedState;
-import org.antlr.runtime.Token;
-import org.antlr.runtime.TokenStream;
-import org.antlr.runtime.tree.CommonTreeAdaptor;
-import org.antlr.runtime.tree.RewriteRuleSubtreeStream;
-import org.antlr.runtime.tree.RewriteRuleTokenStream;
-import org.antlr.runtime.tree.TreeAdaptor;
-
 import de.d3web.KnOfficeParser.ParserErrorHandler;
+import de.d3web.KnOfficeParser.ConditionBuilder;
+
+
+import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
+
+
+import org.antlr.runtime.tree.*;
 
 /**
- * Grammatik zum Einlesen von Visiofiles und überführen selbiger in die Standard ANTLR-Baumrepräsenation
+ * Grammatik zum Einlesen von Visiofiles und �berf�hren selbiger in die Standard ANTLR-Baumrepr�senation
  * @author Markus Friedrich
  *
  */
 public class VisioParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "String", "INT", "DOT", "DD", "COMMA", "SEMI", "EX", "AT", "ORS", "NS", "TILDE", "LP", "RP", "CBO", "CBC", "SBO", "SBC", "LE", "L", "GE", "G", "EQ", "PLUS", "MINUS", "PROD", "DIV", "WS", "COMMENT", "NL", "IF", "THEN", "AND", "OR", "NOT", "HIDE", "EXCEPT", "UNKNOWN", "KNOWN", "INSTANT", "MINMAX", "IN", "ALL", "ALLOWEDNAMES", "INCLUDE", "DEFAULT", "ABSTRACT", "SET", "REF", "ID", "Page", "Shape", "Xcoord", "Ycoord", "Width", "Height", "Text", "MyDouble", "Shapetext", "Picture", "Box", "QID", "Textboxtext", "Popup", "Aidtext", "Knowledge", "Start", "End", "Pagestart", "Pagesheet", "Shapestart", "YtoWith", "HeighttoText", "Misc", "Misc2", "Misc3", "'</Pages>'", "'</Page>'", "'<Shapes>'", "'</Shapes>'", "'</PinX>'", "'<PinY>'", "'</Width>'", "'<Height>'", "'</Text></Shape>'", "'Bildname:'", "'Größe:'", "'x'", "'Frage:'", "'Folgefragen:'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "String", "INT", "DOT", "DD", "COMMA", "SEMI", "EX", "AT", "ORS", "NS", "TILDE", "LP", "RP", "CBO", "CBC", "SBO", "SBC", "LE", "L", "GE", "G", "EQ", "PLUS", "MINUS", "PROD", "DIV", "WS", "COMMENT", "NL", "IF", "THEN", "AND", "OR", "NOT", "HIDE", "EXCEPT", "UNKNOWN", "KNOWN", "INSTANT", "MINMAX", "IN", "INTER", "ALL", "ALLOWEDNAMES", "INCLUDE", "DEFAULT", "INIT", "ABSTRACT", "SET", "REF", "FUZZY", "DIVTEXT", "DIVNORM", "ID", "Page", "Shape", "Xcoord", "Ycoord", "Width", "Height", "Text", "MyDouble", "Shapetext", "Picture", "Box", "QID", "Textboxtext", "Popup", "Aidtext", "Knowledge", "Start", "End", "Pagestart", "Pagesheet", "Shapestart", "YtoWith", "HeighttoText", "Misc", "Misc2", "Misc3", "'</Pages>'", "'</Page>'", "'<Shapes>'", "'</Shapes>'", "'</PinX>'", "'<PinY>'", "'</Width>'", "'<Height>'", "'</Text></Shape>'", "'Bildname:'", "'Gr��e:'", "'x'", "'Frage:'", "'Folgefragen:'"
     };
-    public static final int Aidtext=67;
+    public static final int Aidtext=72;
     public static final int LP=15;
-    public static final int Textboxtext=65;
+    public static final int FUZZY=54;
+    public static final int Textboxtext=70;
     public static final int NOT=37;
-    public static final int Page=53;
+    public static final int Page=58;
     public static final int EXCEPT=39;
     public static final int DD=7;
     public static final int EOF=-1;
+    public static final int T__93=93;
+    public static final int T__94=94;
     public static final int T__91=91;
     public static final int T__92=92;
     public static final int T__90=90;
     public static final int EX=10;
-    public static final int INCLUDE=47;
+    public static final int INCLUDE=48;
     public static final int NL=32;
     public static final int EQ=25;
     public static final int COMMENT=31;
-    public static final int Shapestart=73;
+    public static final int T__97=97;
+    public static final int Shapestart=78;
+    public static final int T__96=96;
+    public static final int T__95=95;
     public static final int GE=23;
     public static final int G=24;
     public static final int SBC=20;
-    public static final int T__80=80;
-    public static final int T__81=81;
-    public static final int T__82=82;
-    public static final int T__83=83;
     public static final int L=22;
     public static final int NS=13;
     public static final int KNOWN=41;
@@ -85,62 +58,65 @@ public class VisioParser extends Parser {
     public static final int T__86=86;
     public static final int T__89=89;
     public static final int T__88=88;
-    public static final int Picture=62;
-    public static final int Xcoord=55;
+    public static final int Picture=67;
+    public static final int Xcoord=60;
     public static final int WS=30;
     public static final int OR=36;
     public static final int SBO=19;
-    public static final int Misc2=77;
-    public static final int Misc3=78;
-    public static final int Popup=66;
-    public static final int YtoWith=74;
-    public static final int T__79=79;
-    public static final int End=70;
-    public static final int Ycoord=56;
-    public static final int Shapetext=61;
+    public static final int Misc2=82;
+    public static final int Misc3=83;
+    public static final int Popup=71;
+    public static final int YtoWith=79;
+    public static final int INIT=50;
+    public static final int End=75;
+    public static final int Ycoord=61;
+    public static final int Shapetext=66;
     public static final int HIDE=38;
     public static final int RP=16;
     public static final int ORS=12;
-    public static final int MyDouble=60;
-    public static final int ABSTRACT=49;
+    public static final int MyDouble=65;
+    public static final int ABSTRACT=51;
     public static final int AND=35;
-    public static final int ID=52;
-    public static final int Width=57;
+    public static final int ID=57;
+    public static final int Width=62;
     public static final int IF=33;
     public static final int AT=11;
     public static final int THEN=34;
     public static final int IN=44;
     public static final int UNKNOWN=40;
     public static final int COMMA=8;
-    public static final int Height=58;
-    public static final int ALL=45;
+    public static final int Height=63;
+    public static final int ALL=46;
     public static final int PROD=28;
-    public static final int Knowledge=68;
+    public static final int Knowledge=73;
     public static final int TILDE=14;
     public static final int PLUS=26;
     public static final int String=4;
     public static final int DOT=6;
-    public static final int HeighttoText=75;
-    public static final int Start=69;
-    public static final int Pagesheet=72;
-    public static final int ALLOWEDNAMES=46;
-    public static final int Misc=76;
+    public static final int HeighttoText=80;
+    public static final int Start=74;
+    public static final int Pagesheet=77;
+    public static final int Misc=81;
+    public static final int ALLOWEDNAMES=47;
     public static final int INSTANT=42;
     public static final int MINMAX=43;
-    public static final int DEFAULT=48;
-    public static final int SET=50;
+    public static final int DEFAULT=49;
+    public static final int INTER=45;
+    public static final int SET=52;
     public static final int MINUS=27;
+    public static final int DIVNORM=56;
     public static final int SEMI=9;
-    public static final int REF=51;
-    public static final int QID=64;
-    public static final int Box=63;
+    public static final int REF=53;
+    public static final int QID=69;
+    public static final int Box=68;
     public static final int CBC=18;
-    public static final int Shape=54;
-    public static final int Text=59;
+    public static final int Shape=59;
+    public static final int Text=64;
+    public static final int DIVTEXT=55;
     public static final int DIV=29;
     public static final int CBO=17;
     public static final int LE=21;
-    public static final int Pagestart=71;
+    public static final int Pagestart=76;
 
     // delegates
     public Visio_BasicParser gBasicParser;
@@ -166,7 +142,7 @@ public class VisioParser extends Parser {
     }
 
     public String[] getTokenNames() { return VisioParser.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g"; }
+    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g"; }
 
 
       private ParserErrorHandler eh;
@@ -194,7 +170,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "knowledge"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:82:1: knowledge : Start ( page )* '</Pages>' End -> ^( Knowledge ( page )* ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:82:1: knowledge : Start ( page )* '</Pages>' End -> ^( Knowledge ( page )* ) ;
     public final VisioParser.knowledge_return knowledge() throws RecognitionException {
         VisioParser.knowledge_return retval = new VisioParser.knowledge_return();
         retval.start = input.LT(1);
@@ -210,18 +186,18 @@ public class VisioParser extends Parser {
         Object Start1_tree=null;
         Object string_literal3_tree=null;
         Object End4_tree=null;
-        RewriteRuleTokenStream stream_79=new RewriteRuleTokenStream(adaptor,"token 79");
         RewriteRuleTokenStream stream_End=new RewriteRuleTokenStream(adaptor,"token End");
         RewriteRuleTokenStream stream_Start=new RewriteRuleTokenStream(adaptor,"token Start");
+        RewriteRuleTokenStream stream_84=new RewriteRuleTokenStream(adaptor,"token 84");
         RewriteRuleSubtreeStream stream_page=new RewriteRuleSubtreeStream(adaptor,"rule page");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:82:11: ( Start ( page )* '</Pages>' End -> ^( Knowledge ( page )* ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:82:13: Start ( page )* '</Pages>' End
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:82:11: ( Start ( page )* '</Pages>' End -> ^( Knowledge ( page )* ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:82:13: Start ( page )* '</Pages>' End
             {
             Start1=(Token)match(input,Start,FOLLOW_Start_in_knowledge150);  
             stream_Start.add(Start1);
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:82:20: ( page )*
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:82:20: ( page )*
             loop1:
             do {
                 int alt1=2;
@@ -234,7 +210,7 @@ public class VisioParser extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:82:20: page
+            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:82:20: page
             	    {
             	    pushFollow(FOLLOW_page_in_knowledge153);
             	    page2=page();
@@ -251,8 +227,8 @@ public class VisioParser extends Parser {
                 }
             } while (true);
 
-            string_literal3=(Token)match(input,79,FOLLOW_79_in_knowledge156);  
-            stream_79.add(string_literal3);
+            string_literal3=(Token)match(input,84,FOLLOW_84_in_knowledge156);  
+            stream_84.add(string_literal3);
 
             End4=(Token)match(input,End,FOLLOW_End_in_knowledge158);  
             stream_End.add(End4);
@@ -271,12 +247,12 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 82:41: -> ^( Knowledge ( page )* )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:82:44: ^( Knowledge ( page )* )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:82:44: ^( Knowledge ( page )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Knowledge, "Knowledge"), root_1);
 
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:82:56: ( page )*
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:82:56: ( page )*
                 while ( stream_page.hasNext() ) {
                     adaptor.addChild(root_1, stream_page.nextTree());
 
@@ -315,7 +291,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "page"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:83:1: page : Pagestart Pagesheet shapes '</Page>' -> ^( Page shapes ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:83:1: page : Pagestart Pagesheet shapes '</Page>' -> ^( Page shapes ) ;
     public final VisioParser.page_return page() throws RecognitionException {
         VisioParser.page_return retval = new VisioParser.page_return();
         retval.start = input.LT(1);
@@ -332,12 +308,12 @@ public class VisioParser extends Parser {
         Object Pagesheet6_tree=null;
         Object string_literal8_tree=null;
         RewriteRuleTokenStream stream_Pagesheet=new RewriteRuleTokenStream(adaptor,"token Pagesheet");
-        RewriteRuleTokenStream stream_80=new RewriteRuleTokenStream(adaptor,"token 80");
         RewriteRuleTokenStream stream_Pagestart=new RewriteRuleTokenStream(adaptor,"token Pagestart");
+        RewriteRuleTokenStream stream_85=new RewriteRuleTokenStream(adaptor,"token 85");
         RewriteRuleSubtreeStream stream_shapes=new RewriteRuleSubtreeStream(adaptor,"rule shapes");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:83:5: ( Pagestart Pagesheet shapes '</Page>' -> ^( Page shapes ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:83:7: Pagestart Pagesheet shapes '</Page>'
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:83:5: ( Pagestart Pagesheet shapes '</Page>' -> ^( Page shapes ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:83:7: Pagestart Pagesheet shapes '</Page>'
             {
             Pagestart5=(Token)match(input,Pagestart,FOLLOW_Pagestart_in_page173);  
             stream_Pagestart.add(Pagestart5);
@@ -351,8 +327,8 @@ public class VisioParser extends Parser {
             state._fsp--;
 
             stream_shapes.add(shapes7.getTree());
-            string_literal8=(Token)match(input,80,FOLLOW_80_in_page179);  
-            stream_80.add(string_literal8);
+            string_literal8=(Token)match(input,85,FOLLOW_85_in_page179);  
+            stream_85.add(string_literal8);
 
 
 
@@ -368,7 +344,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 83:44: -> ^( Page shapes )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:83:47: ^( Page shapes )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:83:47: ^( Page shapes )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Page, "Page"), root_1);
@@ -407,7 +383,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "shapes"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:1: shapes : '<Shapes>' (pic+= picture | shape | tex+= textbox )* '</Shapes>' {...}? -> ( textbox )* ( picture )* ( shape )* ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:1: shapes : '<Shapes>' (pic+= picture | shape | tex+= textbox )* '</Shapes>' {...}? -> ( textbox )* ( picture )* ( shape )* ;
     public final VisioParser.shapes_return shapes() throws RecognitionException {
         VisioParser.shapes_return retval = new VisioParser.shapes_return();
         retval.start = input.LT(1);
@@ -420,30 +396,30 @@ public class VisioParser extends Parser {
         List list_tex=null;
         VisioParser.shape_return shape10 = null;
 
-        VisioParser.picture_return pic = null;
-        VisioParser.textbox_return tex = null;
+        RuleReturnScope pic = null;
+        RuleReturnScope tex = null;
         Object string_literal9_tree=null;
         Object string_literal11_tree=null;
-        RewriteRuleTokenStream stream_82=new RewriteRuleTokenStream(adaptor,"token 82");
-        RewriteRuleTokenStream stream_81=new RewriteRuleTokenStream(adaptor,"token 81");
+        RewriteRuleTokenStream stream_86=new RewriteRuleTokenStream(adaptor,"token 86");
+        RewriteRuleTokenStream stream_87=new RewriteRuleTokenStream(adaptor,"token 87");
         RewriteRuleSubtreeStream stream_picture=new RewriteRuleSubtreeStream(adaptor,"rule picture");
         RewriteRuleSubtreeStream stream_textbox=new RewriteRuleSubtreeStream(adaptor,"rule textbox");
         RewriteRuleSubtreeStream stream_shape=new RewriteRuleSubtreeStream(adaptor,"rule shape");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:7: ( '<Shapes>' (pic+= picture | shape | tex+= textbox )* '</Shapes>' {...}? -> ( textbox )* ( picture )* ( shape )* )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:9: '<Shapes>' (pic+= picture | shape | tex+= textbox )* '</Shapes>' {...}?
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:7: ( '<Shapes>' (pic+= picture | shape | tex+= textbox )* '</Shapes>' {...}? -> ( textbox )* ( picture )* ( shape )* )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:9: '<Shapes>' (pic+= picture | shape | tex+= textbox )* '</Shapes>' {...}?
             {
-            string_literal9=(Token)match(input,81,FOLLOW_81_in_shapes193);  
-            stream_81.add(string_literal9);
+            string_literal9=(Token)match(input,86,FOLLOW_86_in_shapes193);  
+            stream_86.add(string_literal9);
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:20: (pic+= picture | shape | tex+= textbox )*
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:20: (pic+= picture | shape | tex+= textbox )*
             loop2:
             do {
                 int alt2=4;
                 alt2 = dfa2.predict(input);
                 switch (alt2) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:21: pic+= picture
+            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:21: pic+= picture
             	    {
             	    pushFollow(FOLLOW_picture_in_shapes198);
             	    pic=picture();
@@ -458,7 +434,7 @@ public class VisioParser extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:34: shape
+            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:34: shape
             	    {
             	    pushFollow(FOLLOW_shape_in_shapes200);
             	    shape10=shape();
@@ -470,7 +446,7 @@ public class VisioParser extends Parser {
             	    }
             	    break;
             	case 3 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:40: tex+= textbox
+            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:40: tex+= textbox
             	    {
             	    pushFollow(FOLLOW_textbox_in_shapes204);
             	    tex=textbox();
@@ -490,8 +466,8 @@ public class VisioParser extends Parser {
                 }
             } while (true);
 
-            string_literal11=(Token)match(input,82,FOLLOW_82_in_shapes208);  
-            stream_82.add(string_literal11);
+            string_literal11=(Token)match(input,87,FOLLOW_87_in_shapes208);  
+            stream_87.add(string_literal11);
 
             if ( !(((list_tex.size()==1)&&(list_pic.size()==1))) ) {
                 throw new FailedPredicateException(input, "shapes", "($tex.size()==1)&&($pic.size()==1)");
@@ -510,19 +486,19 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 84:105: -> ( textbox )* ( picture )* ( shape )*
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:108: ( textbox )*
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:108: ( textbox )*
                 while ( stream_textbox.hasNext() ) {
                     adaptor.addChild(root_0, stream_textbox.nextTree());
 
                 }
                 stream_textbox.reset();
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:117: ( picture )*
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:117: ( picture )*
                 while ( stream_picture.hasNext() ) {
                     adaptor.addChild(root_0, stream_picture.nextTree());
 
                 }
                 stream_picture.reset();
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:84:126: ( shape )*
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:84:126: ( shape )*
                 while ( stream_shape.hasNext() ) {
                     adaptor.addChild(root_0, stream_shape.nextTree());
 
@@ -558,7 +534,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "shape"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:85:1: shape : x y width height shapetext -> ^( Shape x y width height shapetext ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:85:1: shape : x y width height shapetext -> ^( Shape x y width height shapetext ) ;
     public final VisioParser.shape_return shape() throws RecognitionException {
         VisioParser.shape_return retval = new VisioParser.shape_return();
         retval.start = input.LT(1);
@@ -582,8 +558,8 @@ public class VisioParser extends Parser {
         RewriteRuleSubtreeStream stream_y=new RewriteRuleSubtreeStream(adaptor,"rule y");
         RewriteRuleSubtreeStream stream_x=new RewriteRuleSubtreeStream(adaptor,"rule x");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:85:7: ( x y width height shapetext -> ^( Shape x y width height shapetext ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:85:9: x y width height shapetext
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:85:7: ( x y width height shapetext -> ^( Shape x y width height shapetext ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:85:9: x y width height shapetext
             {
             pushFollow(FOLLOW_x_in_shape228);
             x12=x();
@@ -618,7 +594,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: width, y, x, shapetext, height
+            // elements: x, height, y, shapetext, width
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -629,7 +605,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 85:36: -> ^( Shape x y width height shapetext )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:85:39: ^( Shape x y width height shapetext )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:85:39: ^( Shape x y width height shapetext )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Shape, "Shape"), root_1);
@@ -672,7 +648,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "picture"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:86:1: picture : x y width height -> ^( Picture x y width height ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:86:1: picture : x y width height -> ^( Picture x y width height ) ;
     public final VisioParser.picture_return picture() throws RecognitionException {
         VisioParser.picture_return retval = new VisioParser.picture_return();
         retval.start = input.LT(1);
@@ -693,8 +669,8 @@ public class VisioParser extends Parser {
         RewriteRuleSubtreeStream stream_y=new RewriteRuleSubtreeStream(adaptor,"rule y");
         RewriteRuleSubtreeStream stream_x=new RewriteRuleSubtreeStream(adaptor,"rule x");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:86:9: ( x y width height -> ^( Picture x y width height ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:86:11: x y width height
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:86:9: ( x y width height -> ^( Picture x y width height ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:86:11: x y width height
             {
             pushFollow(FOLLOW_x_in_picture259);
             x17=x();
@@ -723,7 +699,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: width, x, y, height
+            // elements: y, height, width, x
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -734,7 +710,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 86:28: -> ^( Picture x y width height )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:86:31: ^( Picture x y width height )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:86:31: ^( Picture x y width height )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Picture, "Picture"), root_1);
@@ -776,7 +752,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "textbox"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:87:1: textbox : x y width height textboxtext -> ^( Box x y width height textboxtext ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:87:1: textbox : x y width height textboxtext -> ^( Box x y width height textboxtext ) ;
     public final VisioParser.textbox_return textbox() throws RecognitionException {
         VisioParser.textbox_return retval = new VisioParser.textbox_return();
         retval.start = input.LT(1);
@@ -800,8 +776,8 @@ public class VisioParser extends Parser {
         RewriteRuleSubtreeStream stream_y=new RewriteRuleSubtreeStream(adaptor,"rule y");
         RewriteRuleSubtreeStream stream_x=new RewriteRuleSubtreeStream(adaptor,"rule x");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:87:9: ( x y width height textboxtext -> ^( Box x y width height textboxtext ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:87:11: x y width height textboxtext
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:87:9: ( x y width height textboxtext -> ^( Box x y width height textboxtext ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:87:11: x y width height textboxtext
             {
             pushFollow(FOLLOW_x_in_textbox286);
             x21=x();
@@ -836,7 +812,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: width, x, textboxtext, height, y
+            // elements: width, y, height, x, textboxtext
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -847,7 +823,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 87:40: -> ^( Box x y width height textboxtext )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:87:43: ^( Box x y width height textboxtext )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:87:43: ^( Box x y width height textboxtext )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Box, "Box"), root_1);
@@ -890,7 +866,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "x"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:88:1: x : Shapestart mydouble '</PinX>' -> ^( Xcoord mydouble ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:88:1: x : Shapestart mydouble '</PinX>' -> ^( Xcoord mydouble ) ;
     public final VisioParser.x_return x() throws RecognitionException {
         VisioParser.x_return retval = new VisioParser.x_return();
         retval.start = input.LT(1);
@@ -904,12 +880,12 @@ public class VisioParser extends Parser {
 
         Object Shapestart26_tree=null;
         Object string_literal28_tree=null;
-        RewriteRuleTokenStream stream_83=new RewriteRuleTokenStream(adaptor,"token 83");
         RewriteRuleTokenStream stream_Shapestart=new RewriteRuleTokenStream(adaptor,"token Shapestart");
+        RewriteRuleTokenStream stream_88=new RewriteRuleTokenStream(adaptor,"token 88");
         RewriteRuleSubtreeStream stream_mydouble=new RewriteRuleSubtreeStream(adaptor,"rule mydouble");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:88:3: ( Shapestart mydouble '</PinX>' -> ^( Xcoord mydouble ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:88:5: Shapestart mydouble '</PinX>'
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:88:3: ( Shapestart mydouble '</PinX>' -> ^( Xcoord mydouble ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:88:5: Shapestart mydouble '</PinX>'
             {
             Shapestart26=(Token)match(input,Shapestart,FOLLOW_Shapestart_in_x317);  
             stream_Shapestart.add(Shapestart26);
@@ -920,8 +896,8 @@ public class VisioParser extends Parser {
             state._fsp--;
 
             stream_mydouble.add(mydouble27.getTree());
-            string_literal28=(Token)match(input,83,FOLLOW_83_in_x321);  
-            stream_83.add(string_literal28);
+            string_literal28=(Token)match(input,88,FOLLOW_88_in_x321);  
+            stream_88.add(string_literal28);
 
 
 
@@ -937,7 +913,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 88:35: -> ^( Xcoord mydouble )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:88:38: ^( Xcoord mydouble )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:88:38: ^( Xcoord mydouble )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Xcoord, "Xcoord"), root_1);
@@ -976,7 +952,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "y"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:89:1: y : '<PinY>' mydouble -> ^( Ycoord mydouble ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:89:1: y : '<PinY>' mydouble -> ^( Ycoord mydouble ) ;
     public final VisioParser.y_return y() throws RecognitionException {
         VisioParser.y_return retval = new VisioParser.y_return();
         retval.start = input.LT(1);
@@ -988,14 +964,14 @@ public class VisioParser extends Parser {
 
 
         Object string_literal29_tree=null;
-        RewriteRuleTokenStream stream_84=new RewriteRuleTokenStream(adaptor,"token 84");
+        RewriteRuleTokenStream stream_89=new RewriteRuleTokenStream(adaptor,"token 89");
         RewriteRuleSubtreeStream stream_mydouble=new RewriteRuleSubtreeStream(adaptor,"rule mydouble");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:89:3: ( '<PinY>' mydouble -> ^( Ycoord mydouble ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:89:5: '<PinY>' mydouble
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:89:3: ( '<PinY>' mydouble -> ^( Ycoord mydouble ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:89:5: '<PinY>' mydouble
             {
-            string_literal29=(Token)match(input,84,FOLLOW_84_in_y336);  
-            stream_84.add(string_literal29);
+            string_literal29=(Token)match(input,89,FOLLOW_89_in_y336);  
+            stream_89.add(string_literal29);
 
             pushFollow(FOLLOW_mydouble_in_y338);
             mydouble30=mydouble();
@@ -1017,7 +993,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 89:23: -> ^( Ycoord mydouble )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:89:26: ^( Ycoord mydouble )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:89:26: ^( Ycoord mydouble )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Ycoord, "Ycoord"), root_1);
@@ -1056,7 +1032,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "width"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:90:1: width : YtoWith c= mydouble '</Width>' -> ^( Width mydouble ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:90:1: width : YtoWith c= mydouble '</Width>' -> ^( Width mydouble ) ;
     public final VisioParser.width_return width() throws RecognitionException {
         VisioParser.width_return retval = new VisioParser.width_return();
         retval.start = input.LT(1);
@@ -1070,12 +1046,12 @@ public class VisioParser extends Parser {
 
         Object YtoWith31_tree=null;
         Object string_literal32_tree=null;
+        RewriteRuleTokenStream stream_90=new RewriteRuleTokenStream(adaptor,"token 90");
         RewriteRuleTokenStream stream_YtoWith=new RewriteRuleTokenStream(adaptor,"token YtoWith");
-        RewriteRuleTokenStream stream_85=new RewriteRuleTokenStream(adaptor,"token 85");
         RewriteRuleSubtreeStream stream_mydouble=new RewriteRuleSubtreeStream(adaptor,"rule mydouble");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:90:6: ( YtoWith c= mydouble '</Width>' -> ^( Width mydouble ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:90:8: YtoWith c= mydouble '</Width>'
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:90:6: ( YtoWith c= mydouble '</Width>' -> ^( Width mydouble ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:90:8: YtoWith c= mydouble '</Width>'
             {
             YtoWith31=(Token)match(input,YtoWith,FOLLOW_YtoWith_in_width352);  
             stream_YtoWith.add(YtoWith31);
@@ -1086,8 +1062,8 @@ public class VisioParser extends Parser {
             state._fsp--;
 
             stream_mydouble.add(c.getTree());
-            string_literal32=(Token)match(input,85,FOLLOW_85_in_width358);  
-            stream_85.add(string_literal32);
+            string_literal32=(Token)match(input,90,FOLLOW_90_in_width358);  
+            stream_90.add(string_literal32);
 
 
 
@@ -1103,7 +1079,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 90:38: -> ^( Width mydouble )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:90:41: ^( Width mydouble )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:90:41: ^( Width mydouble )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Width, "Width"), root_1);
@@ -1142,7 +1118,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "height"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:91:1: height : '<Height>' d= mydouble HeighttoText -> ^( Height mydouble ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:91:1: height : '<Height>' d= mydouble HeighttoText -> ^( Height mydouble ) ;
     public final VisioParser.height_return height() throws RecognitionException {
         VisioParser.height_return retval = new VisioParser.height_return();
         retval.start = input.LT(1);
@@ -1157,14 +1133,14 @@ public class VisioParser extends Parser {
         Object string_literal33_tree=null;
         Object HeighttoText34_tree=null;
         RewriteRuleTokenStream stream_HeighttoText=new RewriteRuleTokenStream(adaptor,"token HeighttoText");
-        RewriteRuleTokenStream stream_86=new RewriteRuleTokenStream(adaptor,"token 86");
+        RewriteRuleTokenStream stream_91=new RewriteRuleTokenStream(adaptor,"token 91");
         RewriteRuleSubtreeStream stream_mydouble=new RewriteRuleSubtreeStream(adaptor,"rule mydouble");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:91:7: ( '<Height>' d= mydouble HeighttoText -> ^( Height mydouble ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:91:9: '<Height>' d= mydouble HeighttoText
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:91:7: ( '<Height>' d= mydouble HeighttoText -> ^( Height mydouble ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:91:9: '<Height>' d= mydouble HeighttoText
             {
-            string_literal33=(Token)match(input,86,FOLLOW_86_in_height372);  
-            stream_86.add(string_literal33);
+            string_literal33=(Token)match(input,91,FOLLOW_91_in_height372);  
+            stream_91.add(string_literal33);
 
             pushFollow(FOLLOW_mydouble_in_height376);
             d=mydouble();
@@ -1189,7 +1165,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 91:44: -> ^( Height mydouble )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:91:47: ^( Height mydouble )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:91:47: ^( Height mydouble )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Height, "Height"), root_1);
@@ -1228,7 +1204,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "shapetext"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:92:1: shapetext : text '</Text></Shape>' -> ^( Shapetext text ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:92:1: shapetext : text '</Text></Shape>' -> ^( Shapetext text ) ;
     public final VisioParser.shapetext_return shapetext() throws RecognitionException {
         VisioParser.shapetext_return retval = new VisioParser.shapetext_return();
         retval.start = input.LT(1);
@@ -1240,11 +1216,11 @@ public class VisioParser extends Parser {
 
 
         Object string_literal36_tree=null;
-        RewriteRuleTokenStream stream_87=new RewriteRuleTokenStream(adaptor,"token 87");
+        RewriteRuleTokenStream stream_92=new RewriteRuleTokenStream(adaptor,"token 92");
         RewriteRuleSubtreeStream stream_text=new RewriteRuleSubtreeStream(adaptor,"rule text");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:92:10: ( text '</Text></Shape>' -> ^( Shapetext text ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:92:12: text '</Text></Shape>'
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:92:10: ( text '</Text></Shape>' -> ^( Shapetext text ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:92:12: text '</Text></Shape>'
             {
             pushFollow(FOLLOW_text_in_shapetext392);
             text35=text();
@@ -1252,8 +1228,8 @@ public class VisioParser extends Parser {
             state._fsp--;
 
             stream_text.add(text35.getTree());
-            string_literal36=(Token)match(input,87,FOLLOW_87_in_shapetext394);  
-            stream_87.add(string_literal36);
+            string_literal36=(Token)match(input,92,FOLLOW_92_in_shapetext394);  
+            stream_92.add(string_literal36);
 
 
 
@@ -1269,7 +1245,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 92:35: -> ^( Shapetext text )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:92:38: ^( Shapetext text )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:92:38: ^( Shapetext text )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Shapetext, "Shapetext"), root_1);
@@ -1308,7 +1284,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "textboxtext"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:93:1: textboxtext : 'Bildname:' file 'Größe:' a= INT 'x' b= INT 'Frage:' questionid 'Folgefragen:' ( popup )* '</Text></Shape>' -> ^( Textboxtext file INT INT questionid ( popup )* ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:93:1: textboxtext : 'Bildname:' file 'Gr��e:' a= INT 'x' b= INT 'Frage:' questionid 'Folgefragen:' ( popup )* '</Text></Shape>' -> ^( Textboxtext file INT INT questionid ( popup )* ) ;
     public final VisioParser.textboxtext_return textboxtext() throws RecognitionException {
         VisioParser.textboxtext_return retval = new VisioParser.textboxtext_return();
         retval.start = input.LT(1);
@@ -1338,22 +1314,22 @@ public class VisioParser extends Parser {
         Object string_literal41_tree=null;
         Object string_literal43_tree=null;
         Object string_literal45_tree=null;
+        RewriteRuleTokenStream stream_97=new RewriteRuleTokenStream(adaptor,"token 97");
+        RewriteRuleTokenStream stream_96=new RewriteRuleTokenStream(adaptor,"token 96");
+        RewriteRuleTokenStream stream_95=new RewriteRuleTokenStream(adaptor,"token 95");
         RewriteRuleTokenStream stream_INT=new RewriteRuleTokenStream(adaptor,"token INT");
+        RewriteRuleTokenStream stream_94=new RewriteRuleTokenStream(adaptor,"token 94");
+        RewriteRuleTokenStream stream_93=new RewriteRuleTokenStream(adaptor,"token 93");
         RewriteRuleTokenStream stream_92=new RewriteRuleTokenStream(adaptor,"token 92");
-        RewriteRuleTokenStream stream_91=new RewriteRuleTokenStream(adaptor,"token 91");
-        RewriteRuleTokenStream stream_90=new RewriteRuleTokenStream(adaptor,"token 90");
-        RewriteRuleTokenStream stream_87=new RewriteRuleTokenStream(adaptor,"token 87");
-        RewriteRuleTokenStream stream_88=new RewriteRuleTokenStream(adaptor,"token 88");
-        RewriteRuleTokenStream stream_89=new RewriteRuleTokenStream(adaptor,"token 89");
         RewriteRuleSubtreeStream stream_file=new RewriteRuleSubtreeStream(adaptor,"rule file");
         RewriteRuleSubtreeStream stream_popup=new RewriteRuleSubtreeStream(adaptor,"rule popup");
         RewriteRuleSubtreeStream stream_questionid=new RewriteRuleSubtreeStream(adaptor,"rule questionid");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:93:12: ( 'Bildname:' file 'Größe:' a= INT 'x' b= INT 'Frage:' questionid 'Folgefragen:' ( popup )* '</Text></Shape>' -> ^( Textboxtext file INT INT questionid ( popup )* ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:93:14: 'Bildname:' file 'Größe:' a= INT 'x' b= INT 'Frage:' questionid 'Folgefragen:' ( popup )* '</Text></Shape>'
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:93:12: ( 'Bildname:' file 'Gr��e:' a= INT 'x' b= INT 'Frage:' questionid 'Folgefragen:' ( popup )* '</Text></Shape>' -> ^( Textboxtext file INT INT questionid ( popup )* ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:93:14: 'Bildname:' file 'Gr��e:' a= INT 'x' b= INT 'Frage:' questionid 'Folgefragen:' ( popup )* '</Text></Shape>'
             {
-            string_literal37=(Token)match(input,88,FOLLOW_88_in_textboxtext408);  
-            stream_88.add(string_literal37);
+            string_literal37=(Token)match(input,93,FOLLOW_93_in_textboxtext408);  
+            stream_93.add(string_literal37);
 
             pushFollow(FOLLOW_file_in_textboxtext410);
             file38=file();
@@ -1361,20 +1337,20 @@ public class VisioParser extends Parser {
             state._fsp--;
 
             stream_file.add(file38.getTree());
-            string_literal39=(Token)match(input,89,FOLLOW_89_in_textboxtext412);  
-            stream_89.add(string_literal39);
+            string_literal39=(Token)match(input,94,FOLLOW_94_in_textboxtext412);  
+            stream_94.add(string_literal39);
 
             a=(Token)match(input,INT,FOLLOW_INT_in_textboxtext416);  
             stream_INT.add(a);
 
-            char_literal40=(Token)match(input,90,FOLLOW_90_in_textboxtext418);  
-            stream_90.add(char_literal40);
+            char_literal40=(Token)match(input,95,FOLLOW_95_in_textboxtext418);  
+            stream_95.add(char_literal40);
 
             b=(Token)match(input,INT,FOLLOW_INT_in_textboxtext422);  
             stream_INT.add(b);
 
-            string_literal41=(Token)match(input,91,FOLLOW_91_in_textboxtext424);  
-            stream_91.add(string_literal41);
+            string_literal41=(Token)match(input,96,FOLLOW_96_in_textboxtext424);  
+            stream_96.add(string_literal41);
 
             pushFollow(FOLLOW_questionid_in_textboxtext426);
             questionid42=questionid();
@@ -1382,10 +1358,10 @@ public class VisioParser extends Parser {
             state._fsp--;
 
             stream_questionid.add(questionid42.getTree());
-            string_literal43=(Token)match(input,92,FOLLOW_92_in_textboxtext428);  
-            stream_92.add(string_literal43);
+            string_literal43=(Token)match(input,97,FOLLOW_97_in_textboxtext428);  
+            stream_97.add(string_literal43);
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:93:91: ( popup )*
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:93:95: ( popup )*
             loop3:
             do {
                 int alt3=2;
@@ -1398,7 +1374,7 @@ public class VisioParser extends Parser {
 
                 switch (alt3) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:93:91: popup
+            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:93:95: popup
             	    {
             	    pushFollow(FOLLOW_popup_in_textboxtext430);
             	    popup44=popup();
@@ -1415,13 +1391,13 @@ public class VisioParser extends Parser {
                 }
             } while (true);
 
-            string_literal45=(Token)match(input,87,FOLLOW_87_in_textboxtext433);  
-            stream_87.add(string_literal45);
+            string_literal45=(Token)match(input,92,FOLLOW_92_in_textboxtext433);  
+            stream_92.add(string_literal45);
 
 
 
             // AST REWRITE
-            // elements: questionid, INT, popup, INT, file
+            // elements: popup, INT, INT, file, questionid
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1430,9 +1406,9 @@ public class VisioParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 93:116: -> ^( Textboxtext file INT INT questionid ( popup )* )
+            // 93:120: -> ^( Textboxtext file INT INT questionid ( popup )* )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:93:119: ^( Textboxtext file INT INT questionid ( popup )* )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:93:123: ^( Textboxtext file INT INT questionid ( popup )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Textboxtext, "Textboxtext"), root_1);
@@ -1441,7 +1417,7 @@ public class VisioParser extends Parser {
                 adaptor.addChild(root_1, stream_INT.nextNode());
                 adaptor.addChild(root_1, stream_INT.nextNode());
                 adaptor.addChild(root_1, stream_questionid.nextTree());
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:93:157: ( popup )*
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:93:161: ( popup )*
                 while ( stream_popup.hasNext() ) {
                     adaptor.addChild(root_1, stream_popup.nextTree());
 
@@ -1480,7 +1456,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "questionid"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:94:1: questionid : name -> ^( QID name ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:94:1: questionid : name -> ^( QID name ) ;
     public final VisioParser.questionid_return questionid() throws RecognitionException {
         VisioParser.questionid_return retval = new VisioParser.questionid_return();
         retval.start = input.LT(1);
@@ -1492,8 +1468,8 @@ public class VisioParser extends Parser {
 
         RewriteRuleSubtreeStream stream_name=new RewriteRuleSubtreeStream(adaptor,"rule name");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:94:12: ( name -> ^( QID name ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:94:14: name
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:94:12: ( name -> ^( QID name ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:94:14: name
             {
             pushFollow(FOLLOW_name_in_questionid457);
             name46=name();
@@ -1515,7 +1491,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 94:19: -> ^( QID name )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:94:22: ^( QID name )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:94:22: ^( QID name )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(QID, "QID"), root_1);
@@ -1554,7 +1530,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "popup"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:95:1: popup : ( text ':' text ';' ) -> ^( Popup text text ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:95:1: popup : ( text ':' text ';' ) -> ^( Popup text text ) ;
     public final VisioParser.popup_return popup() throws RecognitionException {
         VisioParser.popup_return retval = new VisioParser.popup_return();
         retval.start = input.LT(1);
@@ -1574,11 +1550,11 @@ public class VisioParser extends Parser {
         RewriteRuleTokenStream stream_SEMI=new RewriteRuleTokenStream(adaptor,"token SEMI");
         RewriteRuleSubtreeStream stream_text=new RewriteRuleSubtreeStream(adaptor,"rule text");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:95:7: ( ( text ':' text ';' ) -> ^( Popup text text ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:95:9: ( text ':' text ';' )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:95:7: ( ( text ':' text ';' ) -> ^( Popup text text ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:95:9: ( text ':' text ';' )
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:95:9: ( text ':' text ';' )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:95:10: text ':' text ';'
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:95:9: ( text ':' text ';' )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:95:10: text ':' text ';'
             {
             pushFollow(FOLLOW_text_in_popup473);
             text47=text();
@@ -1615,7 +1591,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 95:29: -> ^( Popup text text )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:95:32: ^( Popup text text )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:95:32: ^( Popup text text )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Popup, "Popup"), root_1);
@@ -1655,7 +1631,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "text"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:96:1: text : name -> ^( Text name ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:96:1: text : name -> ^( Text name ) ;
     public final VisioParser.text_return text() throws RecognitionException {
         VisioParser.text_return retval = new VisioParser.text_return();
         retval.start = input.LT(1);
@@ -1667,8 +1643,8 @@ public class VisioParser extends Parser {
 
         RewriteRuleSubtreeStream stream_name=new RewriteRuleSubtreeStream(adaptor,"rule name");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:96:6: ( name -> ^( Text name ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:96:8: name
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:96:6: ( name -> ^( Text name ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:96:8: name
             {
             pushFollow(FOLLOW_name_in_text497);
             name51=name();
@@ -1690,7 +1666,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 96:13: -> ^( Text name )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:96:16: ^( Text name )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:96:16: ^( Text name )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Text, "Text"), root_1);
@@ -1729,7 +1705,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "file"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:97:1: file : name DOT name -> ^( Text name DOT name ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:97:1: file : name DOT name -> ^( Text name DOT name ) ;
     public final VisioParser.file_return file() throws RecognitionException {
         VisioParser.file_return retval = new VisioParser.file_return();
         retval.start = input.LT(1);
@@ -1746,8 +1722,8 @@ public class VisioParser extends Parser {
         RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
         RewriteRuleSubtreeStream stream_name=new RewriteRuleSubtreeStream(adaptor,"rule name");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:97:6: ( name DOT name -> ^( Text name DOT name ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:97:8: name DOT name
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:97:6: ( name DOT name -> ^( Text name DOT name ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:97:8: name DOT name
             {
             pushFollow(FOLLOW_name_in_file512);
             name52=name();
@@ -1767,7 +1743,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: name, DOT, name
+            // elements: name, name, DOT
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1778,7 +1754,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 97:22: -> ^( Text name DOT name )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:97:25: ^( Text name DOT name )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:97:25: ^( Text name DOT name )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(Text, "Text"), root_1);
@@ -1819,7 +1795,7 @@ public class VisioParser extends Parser {
     };
 
     // $ANTLR start "mydouble"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:98:1: mydouble : d3double -> ^( MyDouble d3double ) ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:98:1: mydouble : d3double -> ^( MyDouble d3double ) ;
     public final VisioParser.mydouble_return mydouble() throws RecognitionException {
         VisioParser.mydouble_return retval = new VisioParser.mydouble_return();
         retval.start = input.LT(1);
@@ -1831,8 +1807,8 @@ public class VisioParser extends Parser {
 
         RewriteRuleSubtreeStream stream_d3double=new RewriteRuleSubtreeStream(adaptor,"rule d3double");
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:98:10: ( d3double -> ^( MyDouble d3double ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:98:12: d3double
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:98:10: ( d3double -> ^( MyDouble d3double ) )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:98:12: d3double
             {
             pushFollow(FOLLOW_d3double_in_mydouble535);
             d3double55=d3double();
@@ -1854,7 +1830,7 @@ public class VisioParser extends Parser {
             root_0 = (Object)adaptor.nil();
             // 98:21: -> ^( MyDouble d3double )
             {
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\Visio.g:98:24: ^( MyDouble d3double )
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:98:24: ^( MyDouble d3double )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(MyDouble, "MyDouble"), root_1);
@@ -1888,10 +1864,11 @@ public class VisioParser extends Parser {
     // $ANTLR end "mydouble"
 
     // Delegated rules
+    public Visio_BasicParser.type_return type() throws RecognitionException { return gBasicParser.type(); }
+    public Visio_BasicParser.eqncalc_return eqncalc() throws RecognitionException { return gBasicParser.eqncalc(); }
+    public Visio_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
     public Visio_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
     public Visio_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
-    public Visio_BasicParser.eqncalc_return eqncalc() throws RecognitionException { return gBasicParser.eqncalc(); }
-    public Visio_BasicParser.type_return type() throws RecognitionException { return gBasicParser.type(); }
     public Visio_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
 
 
@@ -1901,12 +1878,12 @@ public class VisioParser extends Parser {
     static final String DFA2_eofS =
         "\34\uffff";
     static final String DFA2_minS =
-        "\1\111\1\uffff\2\5\1\6\1\5\1\124\1\123\2\5\1\6\2\5\1\112\1\5\1"+
-        "\6\1\5\1\126\1\125\2\5\1\6\1\5\1\4\1\113\3\uffff";
+        "\1\116\1\uffff\2\5\1\6\1\5\1\131\1\130\2\5\1\6\2\5\1\117\1\5\1"+
+        "\6\1\5\1\133\1\132\2\5\1\6\1\5\1\4\1\120\3\uffff";
     static final String DFA2_maxS =
-        "\1\122\1\uffff\1\33\1\5\1\123\1\5\1\124\1\123\1\33\1\5\1\112\1"+
-        "\5\1\33\1\112\1\5\1\125\1\5\1\126\1\125\1\33\1\5\1\113\1\5\1\130"+
-        "\1\113\3\uffff";
+        "\1\127\1\uffff\1\33\1\5\1\130\1\5\1\131\1\130\1\33\1\5\1\117\1"+
+        "\5\1\33\1\117\1\5\1\132\1\5\1\133\1\132\1\33\1\5\1\120\1\5\1\135"+
+        "\1\120\3\uffff";
     static final String DFA2_acceptS =
         "\1\uffff\1\4\27\uffff\1\3\1\1\1\2";
     static final String DFA2_specialS =
@@ -1916,26 +1893,26 @@ public class VisioParser extends Parser {
             "",
             "\1\4\25\uffff\1\3",
             "\1\4",
-            "\1\5\1\uffff\1\5\112\uffff\1\6",
+            "\1\5\1\uffff\1\5\117\uffff\1\6",
             "\1\7",
             "\1\10",
             "\1\6",
             "\1\12\25\uffff\1\11",
             "\1\12",
-            "\1\13\1\uffff\1\13\101\uffff\1\14",
+            "\1\13\1\uffff\1\13\106\uffff\1\14",
             "\1\15",
             "\1\17\25\uffff\1\16",
             "\1\14",
             "\1\17",
-            "\1\20\1\uffff\1\20\114\uffff\1\21",
+            "\1\20\1\uffff\1\20\121\uffff\1\21",
             "\1\22",
             "\1\23",
             "\1\21",
             "\1\25\25\uffff\1\24",
             "\1\25",
-            "\1\26\1\uffff\1\26\102\uffff\1\27",
+            "\1\26\1\uffff\1\26\107\uffff\1\27",
             "\1\30",
-            "\2\33\56\uffff\1\33\24\uffff\1\32\10\uffff\1\32\5\uffff\1"+
+            "\2\33\63\uffff\1\33\24\uffff\1\32\10\uffff\1\32\5\uffff\1"+
             "\31",
             "\1\27",
             "",
@@ -1978,65 +1955,65 @@ public class VisioParser extends Parser {
     }
  
 
-    public static final BitSet FOLLOW_Start_in_knowledge150 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008080L});
-    public static final BitSet FOLLOW_page_in_knowledge153 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008080L});
-    public static final BitSet FOLLOW_79_in_knowledge156 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_Start_in_knowledge150 = new BitSet(new long[]{0x0000000000000000L,0x0000000000101000L});
+    public static final BitSet FOLLOW_page_in_knowledge153 = new BitSet(new long[]{0x0000000000000000L,0x0000000000101000L});
+    public static final BitSet FOLLOW_84_in_knowledge156 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
     public static final BitSet FOLLOW_End_in_knowledge158 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_Pagestart_in_page173 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000100L});
-    public static final BitSet FOLLOW_Pagesheet_in_page175 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_shapes_in_page177 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
-    public static final BitSet FOLLOW_80_in_page179 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_81_in_shapes193 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040200L});
-    public static final BitSet FOLLOW_picture_in_shapes198 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040200L});
-    public static final BitSet FOLLOW_shape_in_shapes200 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040200L});
-    public static final BitSet FOLLOW_textbox_in_shapes204 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040200L});
-    public static final BitSet FOLLOW_82_in_shapes208 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_x_in_shape228 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
-    public static final BitSet FOLLOW_y_in_shape230 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_width_in_shape232 = new BitSet(new long[]{0x0000000000000000L,0x0000000000400000L});
-    public static final BitSet FOLLOW_height_in_shape234 = new BitSet(new long[]{0x0010000000000030L,0x0000000000800000L});
+    public static final BitSet FOLLOW_Pagestart_in_page173 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_Pagesheet_in_page175 = new BitSet(new long[]{0x0000000000000000L,0x0000000000400000L});
+    public static final BitSet FOLLOW_shapes_in_page177 = new BitSet(new long[]{0x0000000000000000L,0x0000000000200000L});
+    public static final BitSet FOLLOW_85_in_page179 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_86_in_shapes193 = new BitSet(new long[]{0x0000000000000000L,0x0000000000804000L});
+    public static final BitSet FOLLOW_picture_in_shapes198 = new BitSet(new long[]{0x0000000000000000L,0x0000000000804000L});
+    public static final BitSet FOLLOW_shape_in_shapes200 = new BitSet(new long[]{0x0000000000000000L,0x0000000000804000L});
+    public static final BitSet FOLLOW_textbox_in_shapes204 = new BitSet(new long[]{0x0000000000000000L,0x0000000000804000L});
+    public static final BitSet FOLLOW_87_in_shapes208 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_x_in_shape228 = new BitSet(new long[]{0x0000000000000000L,0x0000000002000000L});
+    public static final BitSet FOLLOW_y_in_shape230 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_width_in_shape232 = new BitSet(new long[]{0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_height_in_shape234 = new BitSet(new long[]{0x0200000000000030L});
     public static final BitSet FOLLOW_shapetext_in_shape236 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_x_in_picture259 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
-    public static final BitSet FOLLOW_y_in_picture261 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_width_in_picture263 = new BitSet(new long[]{0x0000000000000000L,0x0000000000400000L});
+    public static final BitSet FOLLOW_x_in_picture259 = new BitSet(new long[]{0x0000000000000000L,0x0000000002000000L});
+    public static final BitSet FOLLOW_y_in_picture261 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_width_in_picture263 = new BitSet(new long[]{0x0000000000000000L,0x0000000008000000L});
     public static final BitSet FOLLOW_height_in_picture265 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_x_in_textbox286 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
-    public static final BitSet FOLLOW_y_in_textbox288 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_width_in_textbox290 = new BitSet(new long[]{0x0000000000000000L,0x0000000000400000L});
-    public static final BitSet FOLLOW_height_in_textbox292 = new BitSet(new long[]{0x0000000000000000L,0x0000000001000000L});
+    public static final BitSet FOLLOW_x_in_textbox286 = new BitSet(new long[]{0x0000000000000000L,0x0000000002000000L});
+    public static final BitSet FOLLOW_y_in_textbox288 = new BitSet(new long[]{0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_width_in_textbox290 = new BitSet(new long[]{0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_height_in_textbox292 = new BitSet(new long[]{0x0000000000000000L,0x0000000020000000L});
     public static final BitSet FOLLOW_textboxtext_in_textbox294 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_Shapestart_in_x317 = new BitSet(new long[]{0x0000000008000020L});
-    public static final BitSet FOLLOW_mydouble_in_x319 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_83_in_x321 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_84_in_y336 = new BitSet(new long[]{0x0000000008000020L});
+    public static final BitSet FOLLOW_mydouble_in_x319 = new BitSet(new long[]{0x0000000000000000L,0x0000000001000000L});
+    public static final BitSet FOLLOW_88_in_x321 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_89_in_y336 = new BitSet(new long[]{0x0000000008000020L});
     public static final BitSet FOLLOW_mydouble_in_y338 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_YtoWith_in_width352 = new BitSet(new long[]{0x0000000008000020L});
-    public static final BitSet FOLLOW_mydouble_in_width356 = new BitSet(new long[]{0x0000000000000000L,0x0000000000200000L});
-    public static final BitSet FOLLOW_85_in_width358 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_86_in_height372 = new BitSet(new long[]{0x0000000008000020L});
-    public static final BitSet FOLLOW_mydouble_in_height376 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_mydouble_in_width356 = new BitSet(new long[]{0x0000000000000000L,0x0000000004000000L});
+    public static final BitSet FOLLOW_90_in_width358 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_91_in_height372 = new BitSet(new long[]{0x0000000008000020L});
+    public static final BitSet FOLLOW_mydouble_in_height376 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
     public static final BitSet FOLLOW_HeighttoText_in_height378 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_text_in_shapetext392 = new BitSet(new long[]{0x0000000000000000L,0x0000000000800000L});
-    public static final BitSet FOLLOW_87_in_shapetext394 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_88_in_textboxtext408 = new BitSet(new long[]{0x0010000000000030L,0x0000000000800000L});
-    public static final BitSet FOLLOW_file_in_textboxtext410 = new BitSet(new long[]{0x0000000000000000L,0x0000000002000000L});
-    public static final BitSet FOLLOW_89_in_textboxtext412 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_textboxtext416 = new BitSet(new long[]{0x0000000000000000L,0x0000000004000000L});
-    public static final BitSet FOLLOW_90_in_textboxtext418 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_textboxtext422 = new BitSet(new long[]{0x0000000000000000L,0x0000000008000000L});
-    public static final BitSet FOLLOW_91_in_textboxtext424 = new BitSet(new long[]{0x0010000000000030L,0x0000000000800000L});
-    public static final BitSet FOLLOW_questionid_in_textboxtext426 = new BitSet(new long[]{0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_92_in_textboxtext428 = new BitSet(new long[]{0x0010000000000030L,0x0000000000800000L});
-    public static final BitSet FOLLOW_popup_in_textboxtext430 = new BitSet(new long[]{0x0010000000000030L,0x0000000000800000L});
-    public static final BitSet FOLLOW_87_in_textboxtext433 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_text_in_shapetext392 = new BitSet(new long[]{0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_92_in_shapetext394 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_93_in_textboxtext408 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_file_in_textboxtext410 = new BitSet(new long[]{0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_94_in_textboxtext412 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_textboxtext416 = new BitSet(new long[]{0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_95_in_textboxtext418 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_textboxtext422 = new BitSet(new long[]{0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_96_in_textboxtext424 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_questionid_in_textboxtext426 = new BitSet(new long[]{0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_97_in_textboxtext428 = new BitSet(new long[]{0x0200000000000030L,0x0000000010000000L});
+    public static final BitSet FOLLOW_popup_in_textboxtext430 = new BitSet(new long[]{0x0200000000000030L,0x0000000010000000L});
+    public static final BitSet FOLLOW_92_in_textboxtext433 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_name_in_questionid457 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_text_in_popup473 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DD_in_popup475 = new BitSet(new long[]{0x0010000000000030L,0x0000000000800000L});
+    public static final BitSet FOLLOW_DD_in_popup475 = new BitSet(new long[]{0x0200000000000030L});
     public static final BitSet FOLLOW_text_in_popup477 = new BitSet(new long[]{0x0000000000000200L});
     public static final BitSet FOLLOW_SEMI_in_popup479 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_name_in_text497 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_name_in_file512 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_file514 = new BitSet(new long[]{0x0010000000000030L,0x0000000000800000L});
+    public static final BitSet FOLLOW_DOT_in_file514 = new BitSet(new long[]{0x0200000000000030L});
     public static final BitSet FOLLOW_name_in_file516 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_d3double_in_mydouble535 = new BitSet(new long[]{0x0000000000000002L});
 

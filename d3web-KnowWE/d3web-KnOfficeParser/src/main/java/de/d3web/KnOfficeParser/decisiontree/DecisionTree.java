@@ -1,64 +1,34 @@
-/*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
-// $ANTLR 3.1 D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g 2009-05-14 23:15:11
+// $ANTLR 3.1 D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g 2009-10-09 16:33:56
 
 package de.d3web.KnOfficeParser.decisiontree;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.antlr.runtime.BaseRecognizer;
-import org.antlr.runtime.BitSet;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.DFA;
-import org.antlr.runtime.EarlyExitException;
-import org.antlr.runtime.FailedPredicateException;
-import org.antlr.runtime.MismatchedSetException;
-import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.Parser;
-import org.antlr.runtime.ParserRuleReturnScope;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.RecognizerSharedState;
-import org.antlr.runtime.Token;
-import org.antlr.runtime.TokenStream;
-
 import de.d3web.KnOfficeParser.ParserErrorHandler;
+
+
+import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 /**
- * Grammatik für Entscheidungsbäume
+ * Grammatik f�r Entscheidungsb�ume
  * @author Markus Friedrich
  *
  */
 public class DecisionTree extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "String", "INT", "DOT", "DD", "COMMA", "SEMI", "EX", "AT", "ORS", "NS", "TILDE", "LP", "RP", "CBO", "CBC", "SBO", "SBC", "LE", "L", "GE", "G", "EQ", "PLUS", "MINUS", "PROD", "DIV", "WS", "COMMENT", "NL", "IF", "THEN", "AND", "OR", "NOT", "HIDE", "EXCEPT", "UNKNOWN", "KNOWN", "INSTANT", "MINMAX", "IN", "INTER", "ALL", "ALLOWEDNAMES", "INCLUDE", "DEFAULT", "ABSTRACT", "SET", "REF", "FUZZY", "DIVTEXT", "DIVNORM", "ID", "BLUB", "Tokens", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "String", "INT", "DOT", "DD", "COMMA", "SEMI", "EX", "AT", "ORS", "NS", "TILDE", "LP", "RP", "CBO", "CBC", "SBO", "SBC", "LE", "L", "GE", "G", "EQ", "PLUS", "MINUS", "PROD", "DIV", "WS", "COMMENT", "NL", "IF", "THEN", "AND", "OR", "NOT", "HIDE", "EXCEPT", "UNKNOWN", "KNOWN", "INSTANT", "MINMAX", "IN", "INTER", "ALL", "ALLOWEDNAMES", "INCLUDE", "DEFAULT", "INIT", "ABSTRACT", "SET", "REF", "FUZZY", "DIVTEXT", "DIVNORM", "ID", "BLUB", "Tokens", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74"
     };
     public static final int HIDE=38;
     public static final int RP=16;
     public static final int ORS=12;
     public static final int LP=15;
-    public static final int FUZZY=53;
-    public static final int ABSTRACT=50;
+    public static final int FUZZY=54;
+    public static final int ABSTRACT=51;
     public static final int NOT=37;
     public static final int EXCEPT=39;
     public static final int AND=35;
-    public static final int ID=56;
+    public static final int ID=57;
     public static final int DD=7;
     public static final int EOF=-1;
     public static final int IF=33;
@@ -89,20 +59,21 @@ public class DecisionTree extends Parser {
     public static final int DEFAULT=49;
     public static final int INTER=45;
     public static final int KNOWN=41;
-    public static final int SET=51;
+    public static final int SET=52;
     public static final int INT=5;
     public static final int MINUS=27;
-    public static final int DIVNORM=55;
-    public static final int Tokens=58;
+    public static final int DIVNORM=56;
+    public static final int Tokens=59;
     public static final int SEMI=9;
-    public static final int REF=52;
+    public static final int REF=53;
     public static final int WS=30;
-    public static final int BLUB=57;
+    public static final int BLUB=58;
     public static final int OR=36;
     public static final int CBC=18;
     public static final int SBO=19;
-    public static final int DIVTEXT=54;
+    public static final int DIVTEXT=55;
     public static final int DIV=29;
+    public static final int INIT=50;
     public static final int CBO=17;
     public static final int LE=21;
 
@@ -121,7 +92,7 @@ public class DecisionTree extends Parser {
         
 
     public String[] getTokenNames() { return DecisionTree.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g"; }
+    public String getGrammarFileName() { return "D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g"; }
 
 
       private int dashcount = 0;
@@ -167,13 +138,13 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "knowledge"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:59:1: knowledge : ( line | NL )* ( deslimit )? ( description NL )* ( description )? ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:59:1: knowledge : ( line | NL )* ( deslimit )? ( description NL )* ( description )? ;
     public final void knowledge() throws RecognitionException {
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:1: ( ( line | NL )* ( deslimit )? ( description NL )* ( description )? )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:3: ( line | NL )* ( deslimit )? ( description NL )* ( description )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:1: ( ( line | NL )* ( deslimit )? ( description NL )* ( description )? )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:3: ( line | NL )* ( deslimit )? ( description NL )* ( description )?
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:3: ( line | NL )*
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:3: ( line | NL )*
             loop1:
             do {
                 int alt1=3;
@@ -189,7 +160,7 @@ public class DecisionTree extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:4: line
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:4: line
             	    {
             	    pushFollow(FOLLOW_line_in_knowledge54);
             	    line();
@@ -200,7 +171,7 @@ public class DecisionTree extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:10: NL
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:10: NL
             	    {
             	    match(input,NL,FOLLOW_NL_in_knowledge57); if (state.failed) return ;
             	    if ( state.backtracking==0 ) {
@@ -215,7 +186,7 @@ public class DecisionTree extends Parser {
                 }
             } while (true);
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:35: ( deslimit )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:35: ( deslimit )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -224,7 +195,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt2) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:35: deslimit
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:35: deslimit
                     {
                     pushFollow(FOLLOW_deslimit_in_knowledge62);
                     deslimit();
@@ -237,14 +208,14 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:45: ( description NL )*
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:45: ( description NL )*
             loop3:
             do {
                 int alt3=2;
                 alt3 = dfa3.predict(input);
                 switch (alt3) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:46: description NL
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:46: description NL
             	    {
             	    pushFollow(FOLLOW_description_in_knowledge66);
             	    description();
@@ -261,7 +232,7 @@ public class DecisionTree extends Parser {
                 }
             } while (true);
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:63: ( description )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:63: ( description )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -270,7 +241,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt4) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:63: description
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:60:63: description
                     {
                     pushFollow(FOLLOW_description_in_knowledge72);
                     description();
@@ -299,17 +270,17 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "line"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:62:1: line : ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:62:1: line : ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL ;
     public final void line() throws RecognitionException {
         int dashes1 = 0;
 
 
         int i=0;
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:64:1: ( ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:64:3: ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:64:1: ( ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:64:3: ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) ) NL
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:64:3: ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:64:3: ( questionclass | include | dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] ) )
             int alt6=3;
             switch ( input.LA(1) ) {
             case String:
@@ -339,7 +310,7 @@ public class DecisionTree extends Parser {
 
             switch (alt6) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:64:4: questionclass
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:64:4: questionclass
                     {
                     pushFollow(FOLLOW_questionclass_in_line86);
                     questionclass();
@@ -353,7 +324,7 @@ public class DecisionTree extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:65:2: include
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:65:2: include
                     {
                     pushFollow(FOLLOW_include_in_line91);
                     include();
@@ -364,7 +335,7 @@ public class DecisionTree extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:2: dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:2: dashes {...}? ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )
                     {
                     pushFollow(FOLLOW_dashes_in_line94);
                     dashes1=dashes();
@@ -381,12 +352,12 @@ public class DecisionTree extends Parser {
                     if ( state.backtracking==0 ) {
                       builder.finishOldQuestionsandConditions(i);
                     }
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:88: ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:88: ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )
                     int alt5=5;
                     alt5 = dfa5.predict(input);
                     switch (alt5) {
                         case 1 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:89: numeric[i]
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:89: numeric[i]
                             {
                             pushFollow(FOLLOW_numeric_in_line101);
                             numeric(i);
@@ -397,7 +368,7 @@ public class DecisionTree extends Parser {
                             }
                             break;
                         case 2 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:100: answer[i]
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:100: answer[i]
                             {
                             pushFollow(FOLLOW_answer_in_line104);
                             answer(i);
@@ -408,7 +379,7 @@ public class DecisionTree extends Parser {
                             }
                             break;
                         case 3 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:110: question[i]
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:110: question[i]
                             {
                             pushFollow(FOLLOW_question_in_line107);
                             question(i);
@@ -419,7 +390,7 @@ public class DecisionTree extends Parser {
                             }
                             break;
                         case 4 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:122: diagnosis[i]
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:122: diagnosis[i]
                             {
                             pushFollow(FOLLOW_diagnosis_in_line110);
                             diagnosis(i);
@@ -430,7 +401,7 @@ public class DecisionTree extends Parser {
                             }
                             break;
                         case 5 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:135: manyQCLinks[i]
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:66:135: manyQCLinks[i]
                             {
                             pushFollow(FOLLOW_manyQCLinks_in_line113);
                             manyQCLinks(i);
@@ -468,7 +439,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "questionclass"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:68:1: questionclass : name ( dialogannotations )? ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:68:1: questionclass : name ( dialogannotations )? ;
     public final DecisionTree.questionclass_return questionclass() throws RecognitionException {
         DecisionTree.questionclass_return retval = new DecisionTree.questionclass_return();
         retval.start = input.LT(1);
@@ -479,15 +450,15 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:69:1: ( name ( dialogannotations )? )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:69:3: name ( dialogannotations )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:69:1: ( name ( dialogannotations )? )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:69:3: name ( dialogannotations )?
             {
             pushFollow(FOLLOW_name_in_questionclass127);
             name2=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:69:8: ( dialogannotations )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:69:8: ( dialogannotations )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -496,7 +467,7 @@ public class DecisionTree extends Parser {
             }
             switch (alt7) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:69:8: dialogannotations
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:69:8: dialogannotations
                     {
                     pushFollow(FOLLOW_dialogannotations_in_questionclass129);
                     dialogannotations3=dialogannotations();
@@ -535,13 +506,15 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "question"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:71:1: question[int Dashes] : ( REF name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? ) ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:71:1: question[int Dashes] : ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? ) ;
     public final DecisionTree.question_return question(int Dashes) throws RecognitionException {
         DecisionTree.question_return retval = new DecisionTree.question_return();
         retval.start = input.LT(1);
 
         Token c=null;
-        Token ID5=null;
+        Token ID4=null;
+        DecisionTree_BasicParser.name_return h = null;
+
         DecisionTree_BasicParser.name_return a = null;
 
         DecisionTree_BasicParser.name_return b = null;
@@ -552,22 +525,20 @@ public class DecisionTree extends Parser {
 
         DecisionTree_BasicParser.d3double_return g = null;
 
-        DecisionTree_BasicParser.name_return name4 = null;
+        DecisionTree.manualref_return manualref5 = null;
 
-        DecisionTree.manualref_return manualref6 = null;
+        List<String> synonyms6 = null;
 
-        List<String> synonyms7 = null;
+        String idlink7 = null;
 
-        String idlink8 = null;
-
-        DecisionTree.dialogannotations_return dialogannotations9 = null;
+        DecisionTree.dialogannotations_return dialogannotations8 = null;
 
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:72:1: ( ( REF name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:72:3: ( REF name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:72:1: ( ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? ) )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:72:3: ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? )
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:72:3: ( REF name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:72:3: ( REF h= name | a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )? )
             int alt16=2;
             int LA16_0 = input.LA(1);
 
@@ -586,29 +557,29 @@ public class DecisionTree extends Parser {
             }
             switch (alt16) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:72:4: REF name
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:72:4: REF h= name
                     {
                     match(input,REF,FOLLOW_REF_in_question145); if (state.failed) return retval;
-                    pushFollow(FOLLOW_name_in_question147);
-                    name4=name();
+                    pushFollow(FOLLOW_name_in_question149);
+                    h=name();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                      builder.addQuestionLink(Dashes, (name4!=null?name4.value:null), (name4!=null?((Token)name4.start):null).getLine(), input.toString(retval.start,input.LT(-1)));
+                      builder.addQuestionLink(Dashes, (h!=null?h.value:null), (h!=null?((Token)h.start):null).getLine(), input.toString(retval.start,input.LT(-1)));
                     }
 
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:3: a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )?
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:3: a= name ( synonyms )? ( TILDE b= name )? SBO ID SBC ( CBO e= name CBC )? ( LP f= d3double g= d3double RP )? (c= ABSTRACT )? ( idlink )? ( dialogannotations )? ( NS manualref )?
                     {
-                    pushFollow(FOLLOW_name_in_question156);
+                    pushFollow(FOLLOW_name_in_question158);
                     a=name();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:10: ( synonyms )?
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:10: ( synonyms )?
                     int alt8=2;
                     int LA8_0 = input.LA(1);
 
@@ -617,10 +588,10 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt8) {
                         case 1 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:10: synonyms
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:10: synonyms
                             {
-                            pushFollow(FOLLOW_synonyms_in_question158);
-                            synonyms7=synonyms();
+                            pushFollow(FOLLOW_synonyms_in_question160);
+                            synonyms6=synonyms();
 
                             state._fsp--;
                             if (state.failed) return retval;
@@ -630,7 +601,7 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:20: ( TILDE b= name )?
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:20: ( TILDE b= name )?
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -639,10 +610,10 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt9) {
                         case 1 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:21: TILDE b= name
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:21: TILDE b= name
                             {
-                            match(input,TILDE,FOLLOW_TILDE_in_question162); if (state.failed) return retval;
-                            pushFollow(FOLLOW_name_in_question166);
+                            match(input,TILDE,FOLLOW_TILDE_in_question164); if (state.failed) return retval;
+                            pushFollow(FOLLOW_name_in_question168);
                             b=name();
 
                             state._fsp--;
@@ -653,10 +624,10 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    match(input,SBO,FOLLOW_SBO_in_question170); if (state.failed) return retval;
-                    ID5=(Token)match(input,ID,FOLLOW_ID_in_question172); if (state.failed) return retval;
-                    match(input,SBC,FOLLOW_SBC_in_question174); if (state.failed) return retval;
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:47: ( CBO e= name CBC )?
+                    match(input,SBO,FOLLOW_SBO_in_question172); if (state.failed) return retval;
+                    ID4=(Token)match(input,ID,FOLLOW_ID_in_question174); if (state.failed) return retval;
+                    match(input,SBC,FOLLOW_SBC_in_question176); if (state.failed) return retval;
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:47: ( CBO e= name CBC )?
                     int alt10=2;
                     int LA10_0 = input.LA(1);
 
@@ -665,22 +636,22 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt10) {
                         case 1 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:48: CBO e= name CBC
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:48: CBO e= name CBC
                             {
-                            match(input,CBO,FOLLOW_CBO_in_question177); if (state.failed) return retval;
-                            pushFollow(FOLLOW_name_in_question181);
+                            match(input,CBO,FOLLOW_CBO_in_question179); if (state.failed) return retval;
+                            pushFollow(FOLLOW_name_in_question183);
                             e=name();
 
                             state._fsp--;
                             if (state.failed) return retval;
-                            match(input,CBC,FOLLOW_CBC_in_question183); if (state.failed) return retval;
+                            match(input,CBC,FOLLOW_CBC_in_question185); if (state.failed) return retval;
 
                             }
                             break;
 
                     }
 
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:65: ( LP f= d3double g= d3double RP )?
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:65: ( LP f= d3double g= d3double RP )?
                     int alt11=2;
                     int LA11_0 = input.LA(1);
 
@@ -693,27 +664,27 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt11) {
                         case 1 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:66: LP f= d3double g= d3double RP
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:66: LP f= d3double g= d3double RP
                             {
-                            match(input,LP,FOLLOW_LP_in_question188); if (state.failed) return retval;
-                            pushFollow(FOLLOW_d3double_in_question192);
+                            match(input,LP,FOLLOW_LP_in_question190); if (state.failed) return retval;
+                            pushFollow(FOLLOW_d3double_in_question194);
                             f=d3double();
 
                             state._fsp--;
                             if (state.failed) return retval;
-                            pushFollow(FOLLOW_d3double_in_question196);
+                            pushFollow(FOLLOW_d3double_in_question198);
                             g=d3double();
 
                             state._fsp--;
                             if (state.failed) return retval;
-                            match(input,RP,FOLLOW_RP_in_question198); if (state.failed) return retval;
+                            match(input,RP,FOLLOW_RP_in_question200); if (state.failed) return retval;
 
                             }
                             break;
 
                     }
 
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:97: (c= ABSTRACT )?
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:97: (c= ABSTRACT )?
                     int alt12=2;
                     int LA12_0 = input.LA(1);
 
@@ -722,16 +693,16 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt12) {
                         case 1 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:97: c= ABSTRACT
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:97: c= ABSTRACT
                             {
-                            c=(Token)match(input,ABSTRACT,FOLLOW_ABSTRACT_in_question204); if (state.failed) return retval;
+                            c=(Token)match(input,ABSTRACT,FOLLOW_ABSTRACT_in_question206); if (state.failed) return retval;
 
                             }
                             break;
 
                     }
 
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:108: ( idlink )?
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:108: ( idlink )?
                     int alt13=2;
                     int LA13_0 = input.LA(1);
 
@@ -740,10 +711,10 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt13) {
                         case 1 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:108: idlink
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:108: idlink
                             {
-                            pushFollow(FOLLOW_idlink_in_question207);
-                            idlink8=idlink();
+                            pushFollow(FOLLOW_idlink_in_question209);
+                            idlink7=idlink();
 
                             state._fsp--;
                             if (state.failed) return retval;
@@ -753,7 +724,7 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:116: ( dialogannotations )?
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:116: ( dialogannotations )?
                     int alt14=2;
                     int LA14_0 = input.LA(1);
 
@@ -762,10 +733,10 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt14) {
                         case 1 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:116: dialogannotations
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:116: dialogannotations
                             {
-                            pushFollow(FOLLOW_dialogannotations_in_question210);
-                            dialogannotations9=dialogannotations();
+                            pushFollow(FOLLOW_dialogannotations_in_question212);
+                            dialogannotations8=dialogannotations();
 
                             state._fsp--;
                             if (state.failed) return retval;
@@ -775,7 +746,7 @@ public class DecisionTree extends Parser {
 
                     }
 
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:135: ( NS manualref )?
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:135: ( NS manualref )?
                     int alt15=2;
                     int LA15_0 = input.LA(1);
 
@@ -784,11 +755,11 @@ public class DecisionTree extends Parser {
                     }
                     switch (alt15) {
                         case 1 :
-                            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:136: NS manualref
+                            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:74:136: NS manualref
                             {
-                            match(input,NS,FOLLOW_NS_in_question214); if (state.failed) return retval;
-                            pushFollow(FOLLOW_manualref_in_question216);
-                            manualref6=manualref();
+                            match(input,NS,FOLLOW_NS_in_question216); if (state.failed) return retval;
+                            pushFollow(FOLLOW_manualref_in_question218);
+                            manualref5=manualref();
 
                             state._fsp--;
                             if (state.failed) return retval;
@@ -799,7 +770,7 @@ public class DecisionTree extends Parser {
                     }
 
                     if ( state.backtracking==0 ) {
-                      builder.addQuestion(Dashes, (a!=null?a.value:null), (b!=null?b.value:null), (c!=null), (ID5!=null?ID5.getText():null), (manualref6!=null?input.toString(manualref6.start,manualref6.stop):null), (f!=null?f.value:null), (g!=null?g.value:null), (e!=null?e.value:null), synonyms7, (a!=null?((Token)a.start):null).getLine(), input.toString(retval.start,input.LT(-1)), idlink8, (dialogannotations9!=null?dialogannotations9.attribute:null), (dialogannotations9!=null?dialogannotations9.value:null));
+                      builder.addQuestion(Dashes, (a!=null?a.value:null), (b!=null?b.value:null), (c!=null), (ID4!=null?ID4.getText():null), (manualref5!=null?input.toString(manualref5.start,manualref5.stop):null), (f!=null?f.value:null), (g!=null?g.value:null), (e!=null?e.value:null), synonyms6, (a!=null?((Token)a.start):null).getLine(), input.toString(retval.start,input.LT(-1)), idlink7, (dialogannotations8!=null?dialogannotations8.attribute:null), (dialogannotations8!=null?dialogannotations8.value:null));
                     }
 
                     }
@@ -830,31 +801,32 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "answer"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:77:1: answer[int Dashes] : name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:77:1: answer[int Dashes] : name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? (b= INIT )? ;
     public final DecisionTree.answer_return answer(int Dashes) throws RecognitionException {
         DecisionTree.answer_return retval = new DecisionTree.answer_return();
         retval.start = input.LT(1);
 
         Token a=null;
-        DecisionTree_BasicParser.name_return name10 = null;
+        Token b=null;
+        DecisionTree_BasicParser.name_return name9 = null;
 
-        DecisionTree.manualref_return manualref11 = null;
+        DecisionTree.manualref_return manualref10 = null;
 
-        List<String> synonyms12 = null;
+        List<String> synonyms11 = null;
 
-        String idlink13 = null;
+        String idlink12 = null;
 
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:1: ( name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:3: name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:1: ( name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? (b= INIT )? )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:3: name ( synonyms )? ( idlink )? ( NS manualref )? (a= DEFAULT )? (b= INIT )?
             {
-            pushFollow(FOLLOW_name_in_answer234);
-            name10=name();
+            pushFollow(FOLLOW_name_in_answer236);
+            name9=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:8: ( synonyms )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:8: ( synonyms )?
             int alt17=2;
             int LA17_0 = input.LA(1);
 
@@ -863,10 +835,10 @@ public class DecisionTree extends Parser {
             }
             switch (alt17) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:8: synonyms
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:8: synonyms
                     {
-                    pushFollow(FOLLOW_synonyms_in_answer236);
-                    synonyms12=synonyms();
+                    pushFollow(FOLLOW_synonyms_in_answer238);
+                    synonyms11=synonyms();
 
                     state._fsp--;
                     if (state.failed) return retval;
@@ -876,7 +848,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:18: ( idlink )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:18: ( idlink )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
@@ -885,10 +857,10 @@ public class DecisionTree extends Parser {
             }
             switch (alt18) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:18: idlink
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:18: idlink
                     {
-                    pushFollow(FOLLOW_idlink_in_answer239);
-                    idlink13=idlink();
+                    pushFollow(FOLLOW_idlink_in_answer241);
+                    idlink12=idlink();
 
                     state._fsp--;
                     if (state.failed) return retval;
@@ -898,7 +870,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:26: ( NS manualref )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:26: ( NS manualref )?
             int alt19=2;
             int LA19_0 = input.LA(1);
 
@@ -907,11 +879,11 @@ public class DecisionTree extends Parser {
             }
             switch (alt19) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:27: NS manualref
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:27: NS manualref
                     {
-                    match(input,NS,FOLLOW_NS_in_answer243); if (state.failed) return retval;
-                    pushFollow(FOLLOW_manualref_in_answer245);
-                    manualref11=manualref();
+                    match(input,NS,FOLLOW_NS_in_answer245); if (state.failed) return retval;
+                    pushFollow(FOLLOW_manualref_in_answer247);
+                    manualref10=manualref();
 
                     state._fsp--;
                     if (state.failed) return retval;
@@ -921,7 +893,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:43: (a= DEFAULT )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:43: (a= DEFAULT )?
             int alt20=2;
             int LA20_0 = input.LA(1);
 
@@ -930,9 +902,27 @@ public class DecisionTree extends Parser {
             }
             switch (alt20) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:43: a= DEFAULT
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:43: a= DEFAULT
                     {
-                    a=(Token)match(input,DEFAULT,FOLLOW_DEFAULT_in_answer251); if (state.failed) return retval;
+                    a=(Token)match(input,DEFAULT,FOLLOW_DEFAULT_in_answer253); if (state.failed) return retval;
+
+                    }
+                    break;
+
+            }
+
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:54: (b= INIT )?
+            int alt21=2;
+            int LA21_0 = input.LA(1);
+
+            if ( (LA21_0==INIT) ) {
+                alt21=1;
+            }
+            switch (alt21) {
+                case 1 :
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:78:54: b= INIT
+                    {
+                    b=(Token)match(input,INIT,FOLLOW_INIT_in_answer259); if (state.failed) return retval;
 
                     }
                     break;
@@ -940,7 +930,7 @@ public class DecisionTree extends Parser {
             }
 
             if ( state.backtracking==0 ) {
-              dashcount = Dashes; builder.addAnswerOrQuestionLink(Dashes, (name10!=null?name10.value:null), (manualref11!=null?input.toString(manualref11.start,manualref11.stop):null), synonyms12, (a!=null), (name10!=null?((Token)name10.start):null).getLine(), input.toString(retval.start,input.LT(-1)), idlink13);
+              dashcount = Dashes; builder.addAnswerOrQuestionLink(Dashes, (name9!=null?name9.value:null), (manualref10!=null?input.toString(manualref10.start,manualref10.stop):null), synonyms11, (a!=null), (b!=null), (name9!=null?((Token)name9.start):null).getLine(), input.toString(retval.start,input.LT(-1)), idlink12);
             }
 
             }
@@ -962,7 +952,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "diagnosis"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:80:1: diagnosis[int Dashes] : a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )? ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:80:1: diagnosis[int Dashes] : a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )? ;
     public final DecisionTree.diagnosis_return diagnosis(int Dashes) throws RecognitionException {
         DecisionTree.diagnosis_return retval = new DecisionTree.diagnosis_return();
         retval.start = input.LT(1);
@@ -970,19 +960,19 @@ public class DecisionTree extends Parser {
         Token b=null;
         DecisionTree_BasicParser.name_return a = null;
 
-        String diagvalue14 = null;
+        String diagvalue13 = null;
 
-        DecisionTree.link_return link15 = null;
+        DecisionTree.link_return link14 = null;
 
-        String idlink16 = null;
+        String idlink15 = null;
 
 
         List<String> diags = new ArrayList<String>();
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:1: (a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )? )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:3: a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )?
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:1: (a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )? )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:3: a= name ( NS a= name )* (b= SET )? diagvalue ( link )? ( idlink )?
             {
-            pushFollow(FOLLOW_name_in_diagnosis271);
+            pushFollow(FOLLOW_name_in_diagnosis279);
             a=name();
 
             state._fsp--;
@@ -990,23 +980,23 @@ public class DecisionTree extends Parser {
             if ( state.backtracking==0 ) {
               diags.add((a!=null?a.value:null));
             }
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:33: ( NS a= name )*
-            loop21:
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:33: ( NS a= name )*
+            loop22:
             do {
-                int alt21=2;
-                int LA21_0 = input.LA(1);
+                int alt22=2;
+                int LA22_0 = input.LA(1);
 
-                if ( (LA21_0==NS) ) {
-                    alt21=1;
+                if ( (LA22_0==NS) ) {
+                    alt22=1;
                 }
 
 
-                switch (alt21) {
+                switch (alt22) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:34: NS a= name
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:34: NS a= name
             	    {
-            	    match(input,NS,FOLLOW_NS_in_diagnosis276); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_name_in_diagnosis280);
+            	    match(input,NS,FOLLOW_NS_in_diagnosis284); if (state.failed) return retval;
+            	    pushFollow(FOLLOW_name_in_diagnosis288);
             	    a=name();
 
             	    state._fsp--;
@@ -1019,46 +1009,46 @@ public class DecisionTree extends Parser {
             	    break;
 
             	default :
-            	    break loop21;
+            	    break loop22;
                 }
             } while (true);
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:70: (b= SET )?
-            int alt22=2;
-            int LA22_0 = input.LA(1);
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:70: (b= SET )?
+            int alt23=2;
+            int LA23_0 = input.LA(1);
 
-            if ( (LA22_0==SET) ) {
-                alt22=1;
+            if ( (LA23_0==SET) ) {
+                alt23=1;
             }
-            switch (alt22) {
+            switch (alt23) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:70: b= SET
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:70: b= SET
                     {
-                    b=(Token)match(input,SET,FOLLOW_SET_in_diagnosis288); if (state.failed) return retval;
+                    b=(Token)match(input,SET,FOLLOW_SET_in_diagnosis296); if (state.failed) return retval;
 
                     }
                     break;
 
             }
 
-            pushFollow(FOLLOW_diagvalue_in_diagnosis291);
-            diagvalue14=diagvalue();
+            pushFollow(FOLLOW_diagvalue_in_diagnosis299);
+            diagvalue13=diagvalue();
 
             state._fsp--;
             if (state.failed) return retval;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:86: ( link )?
-            int alt23=2;
-            int LA23_0 = input.LA(1);
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:86: ( link )?
+            int alt24=2;
+            int LA24_0 = input.LA(1);
 
-            if ( (LA23_0==SBO) ) {
-                alt23=1;
+            if ( (LA24_0==SBO) ) {
+                alt24=1;
             }
-            switch (alt23) {
+            switch (alt24) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:86: link
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:86: link
                     {
-                    pushFollow(FOLLOW_link_in_diagnosis293);
-                    link15=link();
+                    pushFollow(FOLLOW_link_in_diagnosis301);
+                    link14=link();
 
                     state._fsp--;
                     if (state.failed) return retval;
@@ -1068,19 +1058,19 @@ public class DecisionTree extends Parser {
 
             }
 
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:92: ( idlink )?
-            int alt24=2;
-            int LA24_0 = input.LA(1);
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:92: ( idlink )?
+            int alt25=2;
+            int LA25_0 = input.LA(1);
 
-            if ( (LA24_0==AT) ) {
-                alt24=1;
+            if ( (LA25_0==AT) ) {
+                alt25=1;
             }
-            switch (alt24) {
+            switch (alt25) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:92: idlink
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:82:92: idlink
                     {
-                    pushFollow(FOLLOW_idlink_in_diagnosis296);
-                    idlink16=idlink();
+                    pushFollow(FOLLOW_idlink_in_diagnosis304);
+                    idlink15=idlink();
 
                     state._fsp--;
                     if (state.failed) return retval;
@@ -1091,7 +1081,7 @@ public class DecisionTree extends Parser {
             }
 
             if ( state.backtracking==0 ) {
-              dashcount = Dashes; builder.addDiagnosis(Dashes, diags, (b!=null), diagvalue14, (link15!=null?link15.s1:null), (link15!=null?link15.s2:null) ,(a!=null?((Token)a.start):null).getLine(), input.toString(retval.start,input.LT(-1)), idlink16);
+              dashcount = Dashes; builder.addDiagnosis(Dashes, diags, (b!=null), diagvalue13, (link14!=null?link14.s1:null), (link14!=null?link14.s2:null) ,(a!=null?((Token)a.start):null).getLine(), input.toString(retval.start,input.LT(-1)), idlink15);
             }
 
             }
@@ -1113,7 +1103,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "numeric"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:84:1: numeric[int Dashes] : (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC ) ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:84:1: numeric[int Dashes] : (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC ) ;
     public final DecisionTree.numeric_return numeric(int Dashes) throws RecognitionException {
         DecisionTree.numeric_return retval = new DecisionTree.numeric_return();
         retval.start = input.LT(1);
@@ -1126,36 +1116,36 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:1: ( (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:3: (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:1: ( (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC ) )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:3: (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC )
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:3: (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC )
-            int alt25=2;
-            int LA25_0 = input.LA(1);
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:3: (op= eq d1= d3double | SBO d1= d3double d2= d3double SBC )
+            int alt26=2;
+            int LA26_0 = input.LA(1);
 
-            if ( ((LA25_0>=LE && LA25_0<=EQ)) ) {
-                alt25=1;
+            if ( ((LA26_0>=LE && LA26_0<=EQ)) ) {
+                alt26=1;
             }
-            else if ( (LA25_0==SBO) ) {
-                alt25=2;
+            else if ( (LA26_0==SBO) ) {
+                alt26=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 25, 0, input);
+                    new NoViableAltException("", 26, 0, input);
 
                 throw nvae;
             }
-            switch (alt25) {
+            switch (alt26) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:4: op= eq d1= d3double
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:4: op= eq d1= d3double
                     {
-                    pushFollow(FOLLOW_eq_in_numeric312);
+                    pushFollow(FOLLOW_eq_in_numeric320);
                     op=eq();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    pushFollow(FOLLOW_d3double_in_numeric316);
+                    pushFollow(FOLLOW_d3double_in_numeric324);
                     d1=d3double();
 
                     state._fsp--;
@@ -1164,20 +1154,20 @@ public class DecisionTree extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:22: SBO d1= d3double d2= d3double SBC
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:85:22: SBO d1= d3double d2= d3double SBC
                     {
-                    match(input,SBO,FOLLOW_SBO_in_numeric318); if (state.failed) return retval;
-                    pushFollow(FOLLOW_d3double_in_numeric322);
+                    match(input,SBO,FOLLOW_SBO_in_numeric326); if (state.failed) return retval;
+                    pushFollow(FOLLOW_d3double_in_numeric330);
                     d1=d3double();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    pushFollow(FOLLOW_d3double_in_numeric326);
+                    pushFollow(FOLLOW_d3double_in_numeric334);
                     d2=d3double();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    match(input,SBC,FOLLOW_SBC_in_numeric328); if (state.failed) return retval;
+                    match(input,SBC,FOLLOW_SBC_in_numeric336); if (state.failed) return retval;
 
                     }
                     break;
@@ -1207,7 +1197,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "manyQCLinks"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:87:1: manyQCLinks[int Dashes] : (a= name SEMI )+ a= name ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:87:1: manyQCLinks[int Dashes] : (a= name SEMI )+ a= name ;
     public final DecisionTree.manyQCLinks_return manyQCLinks(int Dashes) throws RecognitionException {
         DecisionTree.manyQCLinks_return retval = new DecisionTree.manyQCLinks_return();
         retval.start = input.LT(1);
@@ -1217,20 +1207,20 @@ public class DecisionTree extends Parser {
 
         List<String> qcs = new ArrayList<String>();
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:89:1: ( (a= name SEMI )+ a= name )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:89:3: (a= name SEMI )+ a= name
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:89:1: ( (a= name SEMI )+ a= name )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:89:3: (a= name SEMI )+ a= name
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:89:3: (a= name SEMI )+
-            int cnt26=0;
-            loop26:
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:89:3: (a= name SEMI )+
+            int cnt27=0;
+            loop27:
             do {
-                int alt26=2;
-                alt26 = dfa26.predict(input);
-                switch (alt26) {
+                int alt27=2;
+                alt27 = dfa27.predict(input);
+                switch (alt27) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:89:4: a= name SEMI
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:89:4: a= name SEMI
             	    {
-            	    pushFollow(FOLLOW_name_in_manyQCLinks349);
+            	    pushFollow(FOLLOW_name_in_manyQCLinks357);
             	    a=name();
 
             	    state._fsp--;
@@ -1238,22 +1228,22 @@ public class DecisionTree extends Parser {
             	    if ( state.backtracking==0 ) {
             	      qcs.add((a!=null?a.value:null));
             	    }
-            	    match(input,SEMI,FOLLOW_SEMI_in_manyQCLinks353); if (state.failed) return retval;
+            	    match(input,SEMI,FOLLOW_SEMI_in_manyQCLinks361); if (state.failed) return retval;
 
             	    }
             	    break;
 
             	default :
-            	    if ( cnt26 >= 1 ) break loop26;
+            	    if ( cnt27 >= 1 ) break loop27;
             	    if (state.backtracking>0) {state.failed=true; return retval;}
                         EarlyExitException eee =
-                            new EarlyExitException(26, input);
+                            new EarlyExitException(27, input);
                         throw eee;
                 }
-                cnt26++;
+                cnt27++;
             } while (true);
 
-            pushFollow(FOLLOW_name_in_manyQCLinks359);
+            pushFollow(FOLLOW_name_in_manyQCLinks367);
             a=name();
 
             state._fsp--;
@@ -1281,23 +1271,23 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "include"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:91:1: include : INCLUDE EQ String G ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:91:1: include : INCLUDE EQ String G ;
     public final DecisionTree.include_return include() throws RecognitionException {
         DecisionTree.include_return retval = new DecisionTree.include_return();
         retval.start = input.LT(1);
 
-        Token String17=null;
+        Token String16=null;
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:92:1: ( INCLUDE EQ String G )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:92:3: INCLUDE EQ String G
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:92:1: ( INCLUDE EQ String G )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:92:3: INCLUDE EQ String G
             {
-            match(input,INCLUDE,FOLLOW_INCLUDE_in_include369); if (state.failed) return retval;
-            match(input,EQ,FOLLOW_EQ_in_include371); if (state.failed) return retval;
-            String17=(Token)match(input,String,FOLLOW_String_in_include373); if (state.failed) return retval;
-            match(input,G,FOLLOW_G_in_include375); if (state.failed) return retval;
+            match(input,INCLUDE,FOLLOW_INCLUDE_in_include377); if (state.failed) return retval;
+            match(input,EQ,FOLLOW_EQ_in_include379); if (state.failed) return retval;
+            String16=(Token)match(input,String,FOLLOW_String_in_include381); if (state.failed) return retval;
+            match(input,G,FOLLOW_G_in_include383); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-              builder.addInclude(delQuotes((String17!=null?String17.getText():null)), String17.getLine(), input.toString(retval.start,input.LT(-1)));
+              builder.addInclude(delQuotes((String16!=null?String16.getText():null)), String16.getLine(), input.toString(retval.start,input.LT(-1)));
             }
 
             }
@@ -1319,7 +1309,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "deslimit"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:94:1: deslimit : ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:94:1: deslimit : ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL ;
     public final DecisionTree.deslimit_return deslimit() throws RecognitionException {
         DecisionTree.deslimit_return retval = new DecisionTree.deslimit_return();
         retval.start = input.LT(1);
@@ -1331,22 +1321,22 @@ public class DecisionTree extends Parser {
 
         List<String> allowedNames = new ArrayList<String>();
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:96:1: ( ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:96:3: ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:96:1: ( ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:96:3: ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL
             {
-            match(input,ALLOWEDNAMES,FOLLOW_ALLOWEDNAMES_in_deslimit390); if (state.failed) return retval;
-            match(input,EQ,FOLLOW_EQ_in_deslimit392); if (state.failed) return retval;
-            match(input,CBO,FOLLOW_CBO_in_deslimit394); if (state.failed) return retval;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:96:23: (a= ids COMMA )*
-            loop27:
+            match(input,ALLOWEDNAMES,FOLLOW_ALLOWEDNAMES_in_deslimit398); if (state.failed) return retval;
+            match(input,EQ,FOLLOW_EQ_in_deslimit400); if (state.failed) return retval;
+            match(input,CBO,FOLLOW_CBO_in_deslimit402); if (state.failed) return retval;
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:96:23: (a= ids COMMA )*
+            loop28:
             do {
-                int alt27=2;
-                alt27 = dfa27.predict(input);
-                switch (alt27) {
+                int alt28=2;
+                alt28 = dfa28.predict(input);
+                switch (alt28) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:96:24: a= ids COMMA
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:96:24: a= ids COMMA
             	    {
-            	    pushFollow(FOLLOW_ids_in_deslimit399);
+            	    pushFollow(FOLLOW_ids_in_deslimit407);
             	    a=ids();
 
             	    state._fsp--;
@@ -1354,17 +1344,17 @@ public class DecisionTree extends Parser {
             	    if ( state.backtracking==0 ) {
             	      allowedNames.add((a!=null?input.toString(a.start,a.stop):null));
             	    }
-            	    match(input,COMMA,FOLLOW_COMMA_in_deslimit402); if (state.failed) return retval;
+            	    match(input,COMMA,FOLLOW_COMMA_in_deslimit410); if (state.failed) return retval;
 
             	    }
             	    break;
 
             	default :
-            	    break loop27;
+            	    break loop28;
                 }
             } while (true);
 
-            pushFollow(FOLLOW_ids_in_deslimit408);
+            pushFollow(FOLLOW_ids_in_deslimit416);
             b=ids();
 
             state._fsp--;
@@ -1372,8 +1362,8 @@ public class DecisionTree extends Parser {
             if ( state.backtracking==0 ) {
               allowedNames.add((b!=null?input.toString(b.start,b.stop):null));
             }
-            match(input,CBC,FOLLOW_CBC_in_deslimit411); if (state.failed) return retval;
-            match(input,NL,FOLLOW_NL_in_deslimit413); if (state.failed) return retval;
+            match(input,CBC,FOLLOW_CBC_in_deslimit419); if (state.failed) return retval;
+            match(input,NL,FOLLOW_NL_in_deslimit421); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
               builder.setallowedNames(allowedNames, ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)));
             }
@@ -1397,44 +1387,44 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "ids"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:98:1: ids : ( ID )+ ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:98:1: ids : ( ID )+ ;
     public final DecisionTree.ids_return ids() throws RecognitionException {
         DecisionTree.ids_return retval = new DecisionTree.ids_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:99:1: ( ( ID )+ )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:99:3: ( ID )+
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:99:1: ( ( ID )+ )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:99:3: ( ID )+
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:99:3: ( ID )+
-            int cnt28=0;
-            loop28:
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:99:3: ( ID )+
+            int cnt29=0;
+            loop29:
             do {
-                int alt28=2;
-                int LA28_0 = input.LA(1);
+                int alt29=2;
+                int LA29_0 = input.LA(1);
 
-                if ( (LA28_0==ID) ) {
-                    alt28=1;
+                if ( (LA29_0==ID) ) {
+                    alt29=1;
                 }
 
 
-                switch (alt28) {
+                switch (alt29) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:99:3: ID
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:99:3: ID
             	    {
-            	    match(input,ID,FOLLOW_ID_in_ids423); if (state.failed) return retval;
+            	    match(input,ID,FOLLOW_ID_in_ids431); if (state.failed) return retval;
 
             	    }
             	    break;
 
             	default :
-            	    if ( cnt28 >= 1 ) break loop28;
+            	    if ( cnt29 >= 1 ) break loop29;
             	    if (state.backtracking>0) {state.failed=true; return retval;}
                         EarlyExitException eee =
-                            new EarlyExitException(28, input);
+                            new EarlyExitException(29, input);
                         throw eee;
                 }
-                cnt28++;
+                cnt29++;
             } while (true);
 
 
@@ -1457,77 +1447,77 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "description"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:101:1: description : ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:101:1: description : ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS ;
     public final DecisionTree.description_return description() throws RecognitionException {
         DecisionTree.description_return retval = new DecisionTree.description_return();
         retval.start = input.LT(1);
 
-        Token ID19=null;
+        Token ID18=null;
         DecisionTree_BasicParser.name_return a = null;
 
         DecisionTree_BasicParser.name_return c = null;
 
         DecisionTree_BasicParser.name_return b = null;
 
-        DecisionTree.destext_return destext18 = null;
+        DecisionTree.destext_return destext17 = null;
 
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:102:1: ( ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:102:3: ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:102:1: ( ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:102:3: ORS AT a= name ORS c= name ORS ( ID DD DD )? b= name ORS destext ORS
             {
-            match(input,ORS,FOLLOW_ORS_in_description432); if (state.failed) return retval;
-            match(input,AT,FOLLOW_AT_in_description434); if (state.failed) return retval;
-            pushFollow(FOLLOW_name_in_description438);
+            match(input,ORS,FOLLOW_ORS_in_description440); if (state.failed) return retval;
+            match(input,AT,FOLLOW_AT_in_description442); if (state.failed) return retval;
+            pushFollow(FOLLOW_name_in_description446);
             a=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,ORS,FOLLOW_ORS_in_description440); if (state.failed) return retval;
-            pushFollow(FOLLOW_name_in_description444);
+            match(input,ORS,FOLLOW_ORS_in_description448); if (state.failed) return retval;
+            pushFollow(FOLLOW_name_in_description452);
             c=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,ORS,FOLLOW_ORS_in_description446); if (state.failed) return retval;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:102:32: ( ID DD DD )?
-            int alt29=2;
-            int LA29_0 = input.LA(1);
+            match(input,ORS,FOLLOW_ORS_in_description454); if (state.failed) return retval;
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:102:32: ( ID DD DD )?
+            int alt30=2;
+            int LA30_0 = input.LA(1);
 
-            if ( (LA29_0==ID) ) {
-                int LA29_1 = input.LA(2);
+            if ( (LA30_0==ID) ) {
+                int LA30_1 = input.LA(2);
 
-                if ( (LA29_1==DD) ) {
-                    alt29=1;
+                if ( (LA30_1==DD) ) {
+                    alt30=1;
                 }
             }
-            switch (alt29) {
+            switch (alt30) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:102:33: ID DD DD
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:102:33: ID DD DD
                     {
-                    ID19=(Token)match(input,ID,FOLLOW_ID_in_description449); if (state.failed) return retval;
-                    match(input,DD,FOLLOW_DD_in_description451); if (state.failed) return retval;
-                    match(input,DD,FOLLOW_DD_in_description453); if (state.failed) return retval;
+                    ID18=(Token)match(input,ID,FOLLOW_ID_in_description457); if (state.failed) return retval;
+                    match(input,DD,FOLLOW_DD_in_description459); if (state.failed) return retval;
+                    match(input,DD,FOLLOW_DD_in_description461); if (state.failed) return retval;
 
                     }
                     break;
 
             }
 
-            pushFollow(FOLLOW_name_in_description459);
+            pushFollow(FOLLOW_name_in_description467);
             b=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,ORS,FOLLOW_ORS_in_description461); if (state.failed) return retval;
-            pushFollow(FOLLOW_destext_in_description463);
-            destext18=destext();
+            match(input,ORS,FOLLOW_ORS_in_description469); if (state.failed) return retval;
+            pushFollow(FOLLOW_destext_in_description471);
+            destext17=destext();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,ORS,FOLLOW_ORS_in_description465); if (state.failed) return retval;
+            match(input,ORS,FOLLOW_ORS_in_description473); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-              builder.addDescription((a!=null?a.value:null), (c!=null?input.toString(c.start,c.stop):null), (b!=null?b.value:null), (destext18!=null?input.toString(destext18.start,destext18.stop):null), (a!=null?((Token)a.start):null).getLine(), input.toString(retval.start,input.LT(-1)), (ID19!=null?ID19.getText():null));
+              builder.addDescription((a!=null?a.value:null), (c!=null?input.toString(c.start,c.stop):null), (b!=null?b.value:null), (destext17!=null?input.toString(destext17.start,destext17.stop):null), (a!=null?((Token)a.start):null).getLine(), input.toString(retval.start,input.LT(-1)), (ID18!=null?ID18.getText():null));
             }
 
             }
@@ -1547,7 +1537,7 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "synonyms"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:104:1: synonyms returns [List<String> syn] : ( CBO (a= name SEMI )* b= name CBC ) ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:104:1: synonyms returns [List<String> syn] : ( CBO (a= name SEMI )* b= name CBC ) ;
     public final List<String> synonyms() throws RecognitionException {
         List<String> syn = null;
 
@@ -1558,28 +1548,28 @@ public class DecisionTree extends Parser {
 
         syn = new ArrayList<String>();
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:1: ( ( CBO (a= name SEMI )* b= name CBC ) )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:4: ( CBO (a= name SEMI )* b= name CBC )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:1: ( ( CBO (a= name SEMI )* b= name CBC ) )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:4: ( CBO (a= name SEMI )* b= name CBC )
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:4: ( CBO (a= name SEMI )* b= name CBC )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:5: CBO (a= name SEMI )* b= name CBC
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:4: ( CBO (a= name SEMI )* b= name CBC )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:5: CBO (a= name SEMI )* b= name CBC
             {
-            match(input,CBO,FOLLOW_CBO_in_synonyms486); if (state.failed) return syn;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:8: (a= name SEMI )*
-            loop30:
+            match(input,CBO,FOLLOW_CBO_in_synonyms494); if (state.failed) return syn;
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:8: (a= name SEMI )*
+            loop31:
             do {
-                int alt30=2;
-                alt30 = dfa30.predict(input);
-                switch (alt30) {
+                int alt31=2;
+                alt31 = dfa31.predict(input);
+                switch (alt31) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:9: a= name SEMI
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:106:9: a= name SEMI
             	    {
-            	    pushFollow(FOLLOW_name_in_synonyms490);
+            	    pushFollow(FOLLOW_name_in_synonyms498);
             	    a=name();
 
             	    state._fsp--;
             	    if (state.failed) return syn;
-            	    match(input,SEMI,FOLLOW_SEMI_in_synonyms492); if (state.failed) return syn;
+            	    match(input,SEMI,FOLLOW_SEMI_in_synonyms500); if (state.failed) return syn;
             	    if ( state.backtracking==0 ) {
             	      syn.add((a!=null?input.toString(a.start,a.stop):null));
             	    }
@@ -1588,11 +1578,11 @@ public class DecisionTree extends Parser {
             	    break;
 
             	default :
-            	    break loop30;
+            	    break loop31;
                 }
             } while (true);
 
-            pushFollow(FOLLOW_name_in_synonyms500);
+            pushFollow(FOLLOW_name_in_synonyms508);
             b=name();
 
             state._fsp--;
@@ -1600,7 +1590,7 @@ public class DecisionTree extends Parser {
             if ( state.backtracking==0 ) {
               syn.add((b!=null?input.toString(b.start,b.stop):null));
             }
-            match(input,CBC,FOLLOW_CBC_in_synonyms503); if (state.failed) return syn;
+            match(input,CBC,FOLLOW_CBC_in_synonyms511); if (state.failed) return syn;
 
             }
 
@@ -1620,90 +1610,90 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "diagvalue"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:108:1: diagvalue returns [String value] : LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:108:1: diagvalue returns [String value] : LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP ;
     public final String diagvalue() throws RecognitionException {
         String value = null;
 
-        DecisionTree_BasicParser.d3double_return d3double20 = null;
+        DecisionTree_BasicParser.d3double_return d3double19 = null;
 
-        DecisionTree_BasicParser.name_return name21 = null;
+        DecisionTree_BasicParser.name_return name20 = null;
 
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:1: ( LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:3: LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:1: ( LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:3: LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP
             {
-            match(input,LP,FOLLOW_LP_in_diagvalue516); if (state.failed) return value;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:6: ( ( MINUS INT | INT DOT )=> d3double | name | EX )
-            int alt31=3;
-            int LA31_0 = input.LA(1);
+            match(input,LP,FOLLOW_LP_in_diagvalue524); if (state.failed) return value;
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:6: ( ( MINUS INT | INT DOT )=> d3double | name | EX )
+            int alt32=3;
+            int LA32_0 = input.LA(1);
 
-            if ( (LA31_0==MINUS) && (synpred1_DecisionTree())) {
-                alt31=1;
+            if ( (LA32_0==MINUS) && (synpred1_DecisionTree())) {
+                alt32=1;
             }
-            else if ( (LA31_0==INT) ) {
-                int LA31_2 = input.LA(2);
+            else if ( (LA32_0==INT) ) {
+                int LA32_2 = input.LA(2);
 
                 if ( (synpred1_DecisionTree()) ) {
-                    alt31=1;
+                    alt32=1;
                 }
                 else if ( (true) ) {
-                    alt31=2;
+                    alt32=2;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return value;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 31, 2, input);
+                        new NoViableAltException("", 32, 2, input);
 
                     throw nvae;
                 }
             }
-            else if ( (LA31_0==String||LA31_0==ID) ) {
-                alt31=2;
+            else if ( (LA32_0==String||LA32_0==ID) ) {
+                alt32=2;
             }
-            else if ( (LA31_0==EX) ) {
-                alt31=3;
+            else if ( (LA32_0==EX) ) {
+                alt32=3;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return value;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 31, 0, input);
+                    new NoViableAltException("", 32, 0, input);
 
                 throw nvae;
             }
-            switch (alt31) {
+            switch (alt32) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:7: ( MINUS INT | INT DOT )=> d3double
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:7: ( MINUS INT | INT DOT )=> d3double
                     {
-                    pushFollow(FOLLOW_d3double_in_diagvalue532);
-                    d3double20=d3double();
+                    pushFollow(FOLLOW_d3double_in_diagvalue540);
+                    d3double19=d3double();
 
                     state._fsp--;
                     if (state.failed) return value;
                     if ( state.backtracking==0 ) {
-                      value =(d3double20!=null?d3double20.value:null).toString();
+                      value =(d3double19!=null?d3double19.value:null).toString();
                     }
 
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:78: name
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:78: name
                     {
-                    pushFollow(FOLLOW_name_in_diagvalue537);
-                    name21=name();
+                    pushFollow(FOLLOW_name_in_diagvalue545);
+                    name20=name();
 
                     state._fsp--;
                     if (state.failed) return value;
                     if ( state.backtracking==0 ) {
-                      value =(name21!=null?name21.value:null);
+                      value =(name20!=null?name20.value:null);
                     }
 
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:107: EX
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:107: EX
                     {
-                    match(input,EX,FOLLOW_EX_in_diagvalue543); if (state.failed) return value;
+                    match(input,EX,FOLLOW_EX_in_diagvalue551); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
                       value ="!";
                     }
@@ -1713,7 +1703,7 @@ public class DecisionTree extends Parser {
 
             }
 
-            match(input,RP,FOLLOW_RP_in_diagvalue549); if (state.failed) return value;
+            match(input,RP,FOLLOW_RP_in_diagvalue557); if (state.failed) return value;
 
             }
 
@@ -1732,34 +1722,34 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "destext"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:111:1: destext : ( options {greedy=false; } : ~ ORS )* ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:111:1: destext : ( options {greedy=false; } : ~ ORS )* ;
     public final DecisionTree.destext_return destext() throws RecognitionException {
         DecisionTree.destext_return retval = new DecisionTree.destext_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:112:1: ( ( options {greedy=false; } : ~ ORS )* )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:112:3: ( options {greedy=false; } : ~ ORS )*
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:112:1: ( ( options {greedy=false; } : ~ ORS )* )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:112:3: ( options {greedy=false; } : ~ ORS )*
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:112:3: ( options {greedy=false; } : ~ ORS )*
-            loop32:
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:112:3: ( options {greedy=false; } : ~ ORS )*
+            loop33:
             do {
-                int alt32=2;
-                int LA32_0 = input.LA(1);
+                int alt33=2;
+                int LA33_0 = input.LA(1);
 
-                if ( ((LA32_0>=String && LA32_0<=AT)||(LA32_0>=NS && LA32_0<=72)) ) {
-                    alt32=1;
+                if ( ((LA33_0>=String && LA33_0<=AT)||(LA33_0>=NS && LA33_0<=74)) ) {
+                    alt33=1;
                 }
-                else if ( (LA32_0==ORS) ) {
-                    alt32=2;
+                else if ( (LA33_0==ORS) ) {
+                    alt33=2;
                 }
 
 
-                switch (alt32) {
+                switch (alt33) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:112:31: ~ ORS
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:112:31: ~ ORS
             	    {
-            	    if ( (input.LA(1)>=String && input.LA(1)<=AT)||(input.LA(1)>=NS && input.LA(1)<=72) ) {
+            	    if ( (input.LA(1)>=String && input.LA(1)<=AT)||(input.LA(1)>=NS && input.LA(1)<=74) ) {
             	        input.consume();
             	        state.errorRecovery=false;state.failed=false;
             	    }
@@ -1774,7 +1764,7 @@ public class DecisionTree extends Parser {
             	    break;
 
             	default :
-            	    break loop32;
+            	    break loop33;
                 }
             } while (true);
 
@@ -1800,7 +1790,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "link"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:116:1: link returns [String s1, String s2] : SBO SBO a= name SBC ( SBO b= name SBC )? SBC ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:116:1: link returns [String s1, String s2] : SBO SBO a= name SBC ( SBO b= name SBC )? SBC ;
     public final DecisionTree.link_return link() throws RecognitionException {
         DecisionTree.link_return retval = new DecisionTree.link_return();
         retval.start = input.LT(1);
@@ -1811,42 +1801,42 @@ public class DecisionTree extends Parser {
 
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:117:1: ( SBO SBO a= name SBC ( SBO b= name SBC )? SBC )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:117:3: SBO SBO a= name SBC ( SBO b= name SBC )? SBC
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:117:1: ( SBO SBO a= name SBC ( SBO b= name SBC )? SBC )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:117:3: SBO SBO a= name SBC ( SBO b= name SBC )? SBC
             {
-            match(input,SBO,FOLLOW_SBO_in_link586); if (state.failed) return retval;
-            match(input,SBO,FOLLOW_SBO_in_link588); if (state.failed) return retval;
-            pushFollow(FOLLOW_name_in_link592);
+            match(input,SBO,FOLLOW_SBO_in_link594); if (state.failed) return retval;
+            match(input,SBO,FOLLOW_SBO_in_link596); if (state.failed) return retval;
+            pushFollow(FOLLOW_name_in_link600);
             a=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,SBC,FOLLOW_SBC_in_link594); if (state.failed) return retval;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:117:22: ( SBO b= name SBC )?
-            int alt33=2;
-            int LA33_0 = input.LA(1);
+            match(input,SBC,FOLLOW_SBC_in_link602); if (state.failed) return retval;
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:117:22: ( SBO b= name SBC )?
+            int alt34=2;
+            int LA34_0 = input.LA(1);
 
-            if ( (LA33_0==SBO) ) {
-                alt33=1;
+            if ( (LA34_0==SBO) ) {
+                alt34=1;
             }
-            switch (alt33) {
+            switch (alt34) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:117:23: SBO b= name SBC
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:117:23: SBO b= name SBC
                     {
-                    match(input,SBO,FOLLOW_SBO_in_link597); if (state.failed) return retval;
-                    pushFollow(FOLLOW_name_in_link601);
+                    match(input,SBO,FOLLOW_SBO_in_link605); if (state.failed) return retval;
+                    pushFollow(FOLLOW_name_in_link609);
                     b=name();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    match(input,SBC,FOLLOW_SBC_in_link603); if (state.failed) return retval;
+                    match(input,SBC,FOLLOW_SBC_in_link611); if (state.failed) return retval;
 
                     }
                     break;
 
             }
 
-            match(input,SBC,FOLLOW_SBC_in_link607); if (state.failed) return retval;
+            match(input,SBC,FOLLOW_SBC_in_link615); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
               retval.s1 =(a!=null?input.toString(a.start,a.stop):null); retval.s2 =(b!=null?input.toString(b.start,b.stop):null);
             }
@@ -1868,15 +1858,15 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "type"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:119:1: type : SBO ID SBC ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:119:1: type : SBO ID SBC ;
     public final void type() throws RecognitionException {
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:120:1: ( SBO ID SBC )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:120:3: SBO ID SBC
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:120:1: ( SBO ID SBC )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:120:3: SBO ID SBC
             {
-            match(input,SBO,FOLLOW_SBO_in_type617); if (state.failed) return ;
-            match(input,ID,FOLLOW_ID_in_type619); if (state.failed) return ;
-            match(input,SBC,FOLLOW_SBC_in_type621); if (state.failed) return ;
+            match(input,SBO,FOLLOW_SBO_in_type625); if (state.failed) return ;
+            match(input,ID,FOLLOW_ID_in_type627); if (state.failed) return ;
+            match(input,SBC,FOLLOW_SBC_in_type629); if (state.failed) return ;
 
             }
 
@@ -1893,34 +1883,34 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "dashes"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:123:1: dashes returns [int i] : ( MINUS )+ ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:123:1: dashes returns [int i] : ( MINUS )+ ;
     public final int dashes() throws RecognitionException {
         int i = 0;
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:124:1: ( ( MINUS )+ )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:124:3: ( MINUS )+
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:124:1: ( ( MINUS )+ )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:124:3: ( MINUS )+
             {
             if ( state.backtracking==0 ) {
               i=0;
             }
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:124:10: ( MINUS )+
-            int cnt34=0;
-            loop34:
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:124:10: ( MINUS )+
+            int cnt35=0;
+            loop35:
             do {
-                int alt34=2;
-                int LA34_0 = input.LA(1);
+                int alt35=2;
+                int LA35_0 = input.LA(1);
 
-                if ( (LA34_0==MINUS) ) {
-                    alt34=1;
+                if ( (LA35_0==MINUS) ) {
+                    alt35=1;
                 }
 
 
-                switch (alt34) {
+                switch (alt35) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:124:11: MINUS
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:124:11: MINUS
             	    {
-            	    match(input,MINUS,FOLLOW_MINUS_in_dashes637); if (state.failed) return i;
+            	    match(input,MINUS,FOLLOW_MINUS_in_dashes645); if (state.failed) return i;
             	    if ( state.backtracking==0 ) {
             	      i++;
             	    }
@@ -1929,13 +1919,13 @@ public class DecisionTree extends Parser {
             	    break;
 
             	default :
-            	    if ( cnt34 >= 1 ) break loop34;
+            	    if ( cnt35 >= 1 ) break loop35;
             	    if (state.backtracking>0) {state.failed=true; return i;}
                         EarlyExitException eee =
-                            new EarlyExitException(34, input);
+                            new EarlyExitException(35, input);
                         throw eee;
                 }
-                cnt34++;
+                cnt35++;
             } while (true);
 
 
@@ -1956,29 +1946,29 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "manualref"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:126:1: manualref : ( ID | INT )* ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:126:1: manualref : ( ID | INT )* ;
     public final DecisionTree.manualref_return manualref() throws RecognitionException {
         DecisionTree.manualref_return retval = new DecisionTree.manualref_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:126:10: ( ( ID | INT )* )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:127:1: ( ID | INT )*
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:126:10: ( ( ID | INT )* )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:127:1: ( ID | INT )*
             {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:127:1: ( ID | INT )*
-            loop35:
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:127:1: ( ID | INT )*
+            loop36:
             do {
-                int alt35=2;
-                int LA35_0 = input.LA(1);
+                int alt36=2;
+                int LA36_0 = input.LA(1);
 
-                if ( (LA35_0==INT||LA35_0==ID) ) {
-                    alt35=1;
+                if ( (LA36_0==INT||LA36_0==ID) ) {
+                    alt36=1;
                 }
 
 
-                switch (alt35) {
+                switch (alt36) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:
             	    {
             	    if ( input.LA(1)==INT||input.LA(1)==ID ) {
             	        input.consume();
@@ -1995,7 +1985,7 @@ public class DecisionTree extends Parser {
             	    break;
 
             	default :
-            	    break loop35;
+            	    break loop36;
                 }
             } while (true);
 
@@ -2017,25 +2007,25 @@ public class DecisionTree extends Parser {
 
 
     // $ANTLR start "idlink"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:129:1: idlink returns [String s] : AT name ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:129:1: idlink returns [String s] : AT name ;
     public final String idlink() throws RecognitionException {
         String s = null;
 
-        DecisionTree_BasicParser.name_return name22 = null;
+        DecisionTree_BasicParser.name_return name21 = null;
 
 
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:129:26: ( AT name )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:130:1: AT name
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:129:26: ( AT name )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:130:1: AT name
             {
-            match(input,AT,FOLLOW_AT_in_idlink665); if (state.failed) return s;
-            pushFollow(FOLLOW_name_in_idlink667);
-            name22=name();
+            match(input,AT,FOLLOW_AT_in_idlink673); if (state.failed) return s;
+            pushFollow(FOLLOW_name_in_idlink675);
+            name21=name();
 
             state._fsp--;
             if (state.failed) return s;
             if ( state.backtracking==0 ) {
-              s =(name22!=null?input.toString(name22.start,name22.stop):null);
+              s =(name21!=null?input.toString(name21.start,name21.stop):null);
             }
 
             }
@@ -2057,7 +2047,7 @@ public class DecisionTree extends Parser {
     };
 
     // $ANTLR start "dialogannotations"
-    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:132:1: dialogannotations returns [List<String> attribute, List<String> value] : LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP ;
+    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:132:1: dialogannotations returns [List<String> attribute, List<String> value] : LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP ;
     public final DecisionTree.dialogannotations_return dialogannotations() throws RecognitionException {
         DecisionTree.dialogannotations_return retval = new DecisionTree.dialogannotations_return();
         retval.start = input.LT(1);
@@ -2068,28 +2058,28 @@ public class DecisionTree extends Parser {
 
         retval.attribute = new ArrayList<String>(); retval.value = new ArrayList<String>();
         try {
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:1: ( LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP )
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:3: LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:1: ( LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP )
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:3: LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP
             {
-            match(input,LP,FOLLOW_LP_in_dialogannotations686); if (state.failed) return retval;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:6: ( AT a= name DD b= String SEMI )*
-            loop36:
+            match(input,LP,FOLLOW_LP_in_dialogannotations694); if (state.failed) return retval;
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:6: ( AT a= name DD b= String SEMI )*
+            loop37:
             do {
-                int alt36=2;
-                alt36 = dfa36.predict(input);
-                switch (alt36) {
+                int alt37=2;
+                alt37 = dfa37.predict(input);
+                switch (alt37) {
             	case 1 :
-            	    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:7: AT a= name DD b= String SEMI
+            	    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:7: AT a= name DD b= String SEMI
             	    {
-            	    match(input,AT,FOLLOW_AT_in_dialogannotations689); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_name_in_dialogannotations693);
+            	    match(input,AT,FOLLOW_AT_in_dialogannotations697); if (state.failed) return retval;
+            	    pushFollow(FOLLOW_name_in_dialogannotations701);
             	    a=name();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    match(input,DD,FOLLOW_DD_in_dialogannotations695); if (state.failed) return retval;
-            	    b=(Token)match(input,String,FOLLOW_String_in_dialogannotations699); if (state.failed) return retval;
-            	    match(input,SEMI,FOLLOW_SEMI_in_dialogannotations701); if (state.failed) return retval;
+            	    match(input,DD,FOLLOW_DD_in_dialogannotations703); if (state.failed) return retval;
+            	    b=(Token)match(input,String,FOLLOW_String_in_dialogannotations707); if (state.failed) return retval;
+            	    match(input,SEMI,FOLLOW_SEMI_in_dialogannotations709); if (state.failed) return retval;
             	    if ( state.backtracking==0 ) {
             	      retval.attribute.add((a!=null?input.toString(a.start,a.stop):null)); retval.value.add(delQuotes((b!=null?b.getText():null)));
             	    }
@@ -2098,37 +2088,37 @@ public class DecisionTree extends Parser {
             	    break;
 
             	default :
-            	    break loop36;
+            	    break loop37;
                 }
             } while (true);
 
-            match(input,AT,FOLLOW_AT_in_dialogannotations707); if (state.failed) return retval;
-            pushFollow(FOLLOW_name_in_dialogannotations711);
+            match(input,AT,FOLLOW_AT_in_dialogannotations715); if (state.failed) return retval;
+            pushFollow(FOLLOW_name_in_dialogannotations719);
             a=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,DD,FOLLOW_DD_in_dialogannotations713); if (state.failed) return retval;
-            b=(Token)match(input,String,FOLLOW_String_in_dialogannotations717); if (state.failed) return retval;
-            // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:117: ( SEMI )?
-            int alt37=2;
-            int LA37_0 = input.LA(1);
+            match(input,DD,FOLLOW_DD_in_dialogannotations721); if (state.failed) return retval;
+            b=(Token)match(input,String,FOLLOW_String_in_dialogannotations725); if (state.failed) return retval;
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:117: ( SEMI )?
+            int alt38=2;
+            int LA38_0 = input.LA(1);
 
-            if ( (LA37_0==SEMI) ) {
-                alt37=1;
+            if ( (LA38_0==SEMI) ) {
+                alt38=1;
             }
-            switch (alt37) {
+            switch (alt38) {
                 case 1 :
-                    // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:117: SEMI
+                    // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:134:117: SEMI
                     {
-                    match(input,SEMI,FOLLOW_SEMI_in_dialogannotations719); if (state.failed) return retval;
+                    match(input,SEMI,FOLLOW_SEMI_in_dialogannotations727); if (state.failed) return retval;
 
                     }
                     break;
 
             }
 
-            match(input,RP,FOLLOW_RP_in_dialogannotations722); if (state.failed) return retval;
+            match(input,RP,FOLLOW_RP_in_dialogannotations730); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
               retval.attribute.add((a!=null?input.toString(a.start,a.stop):null)); retval.value.add(delQuotes((b!=null?b.getText():null)));
             }
@@ -2150,37 +2140,37 @@ public class DecisionTree extends Parser {
 
     // $ANTLR start synpred1_DecisionTree
     public final void synpred1_DecisionTree_fragment() throws RecognitionException {   
-        // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:7: ( MINUS INT | INT DOT )
-        int alt38=2;
-        int LA38_0 = input.LA(1);
+        // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:7: ( MINUS INT | INT DOT )
+        int alt39=2;
+        int LA39_0 = input.LA(1);
 
-        if ( (LA38_0==MINUS) ) {
-            alt38=1;
+        if ( (LA39_0==MINUS) ) {
+            alt39=1;
         }
-        else if ( (LA38_0==INT) ) {
-            alt38=2;
+        else if ( (LA39_0==INT) ) {
+            alt39=2;
         }
         else {
             if (state.backtracking>0) {state.failed=true; return ;}
             NoViableAltException nvae =
-                new NoViableAltException("", 38, 0, input);
+                new NoViableAltException("", 39, 0, input);
 
             throw nvae;
         }
-        switch (alt38) {
+        switch (alt39) {
             case 1 :
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:8: MINUS INT
+                // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:8: MINUS INT
                 {
-                match(input,MINUS,FOLLOW_MINUS_in_synpred1_DecisionTree520); if (state.failed) return ;
-                match(input,INT,FOLLOW_INT_in_synpred1_DecisionTree522); if (state.failed) return ;
+                match(input,MINUS,FOLLOW_MINUS_in_synpred1_DecisionTree528); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_DecisionTree530); if (state.failed) return ;
 
                 }
                 break;
             case 2 :
-                // D:\\eclipse Workspace\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:20: INT DOT
+                // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DecisionTree.g:109:20: INT DOT
                 {
-                match(input,INT,FOLLOW_INT_in_synpred1_DecisionTree526); if (state.failed) return ;
-                match(input,DOT,FOLLOW_DOT_in_synpred1_DecisionTree528); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_DecisionTree534); if (state.failed) return ;
+                match(input,DOT,FOLLOW_DOT_in_synpred1_DecisionTree536); if (state.failed) return ;
 
                 }
                 break;
@@ -2189,10 +2179,11 @@ public class DecisionTree extends Parser {
     // $ANTLR end synpred1_DecisionTree
 
     // Delegated rules
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
-    public DecisionTree_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
-    public DecisionTree_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
     public DecisionTree_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
+    public DecisionTree_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
+    public DecisionTree_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
+    public DecisionTree_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
 
     public final boolean synpred1_DecisionTree() {
         state.backtracking++;
@@ -2212,10 +2203,10 @@ public class DecisionTree extends Parser {
 
     protected DFA3 dfa3 = new DFA3(this);
     protected DFA5 dfa5 = new DFA5(this);
-    protected DFA26 dfa26 = new DFA26(this);
     protected DFA27 dfa27 = new DFA27(this);
-    protected DFA30 dfa30 = new DFA30(this);
-    protected DFA36 dfa36 = new DFA36(this);
+    protected DFA28 dfa28 = new DFA28(this);
+    protected DFA31 dfa31 = new DFA31(this);
+    protected DFA37 dfa37 = new DFA37(this);
     static final String DFA3_eotS =
         "\31\uffff";
     static final String DFA3_eofS =
@@ -2223,7 +2214,7 @@ public class DecisionTree extends Parser {
     static final String DFA3_minS =
         "\1\14\1\13\1\uffff\16\4\1\7\5\4\1\40\1\uffff";
     static final String DFA3_maxS =
-        "\1\14\1\13\1\uffff\16\70\1\7\1\70\1\110\2\70\1\110\1\40\1\uffff";
+        "\1\14\1\13\1\uffff\16\71\1\7\1\71\1\112\2\71\1\112\1\40\1\uffff";
     static final String DFA3_acceptS =
         "\2\uffff\1\2\25\uffff\1\1";
     static final String DFA3_specialS =
@@ -2232,26 +2223,26 @@ public class DecisionTree extends Parser {
             "\1\1",
             "\1\3",
             "",
-            "\1\4\1\5\62\uffff\1\5",
-            "\1\6\1\5\6\uffff\1\7\53\uffff\1\5",
-            "\2\10\6\uffff\1\7\53\uffff\1\10",
-            "\1\6\1\5\62\uffff\1\5",
-            "\1\11\1\12\62\uffff\1\12",
-            "\2\10\6\uffff\1\7\53\uffff\1\10",
-            "\1\14\1\12\6\uffff\1\13\53\uffff\1\12",
-            "\2\15\6\uffff\1\13\53\uffff\1\15",
-            "\1\17\1\20\62\uffff\1\16",
-            "\1\14\1\12\62\uffff\1\12",
-            "\2\15\6\uffff\1\13\53\uffff\1\15",
-            "\2\22\1\uffff\1\21\4\uffff\1\23\53\uffff\1\22",
-            "\1\24\1\20\6\uffff\1\23\53\uffff\1\20",
-            "\2\22\6\uffff\1\23\53\uffff\1\22",
+            "\1\4\1\5\63\uffff\1\5",
+            "\1\7\1\5\6\uffff\1\6\54\uffff\1\5",
+            "\2\10\6\uffff\1\6\54\uffff\1\10",
+            "\1\11\1\12\63\uffff\1\12",
+            "\1\7\1\5\63\uffff\1\5",
+            "\2\10\6\uffff\1\6\54\uffff\1\10",
+            "\1\14\1\12\6\uffff\1\13\54\uffff\1\12",
+            "\2\15\6\uffff\1\13\54\uffff\1\15",
+            "\1\17\1\20\63\uffff\1\16",
+            "\1\14\1\12\63\uffff\1\12",
+            "\2\15\6\uffff\1\13\54\uffff\1\15",
+            "\2\22\1\uffff\1\21\4\uffff\1\23\54\uffff\1\22",
+            "\1\24\1\20\6\uffff\1\23\54\uffff\1\20",
+            "\2\22\6\uffff\1\23\54\uffff\1\22",
             "\1\25",
-            "\2\22\6\uffff\1\23\53\uffff\1\22",
-            "\10\26\1\27\74\26",
-            "\1\24\1\20\62\uffff\1\20",
-            "\1\17\1\20\62\uffff\1\20",
-            "\10\26\1\27\74\26",
+            "\2\22\6\uffff\1\23\54\uffff\1\22",
+            "\10\26\1\27\76\26",
+            "\1\24\1\20\63\uffff\1\20",
+            "\1\17\1\20\63\uffff\1\20",
+            "\10\26\1\27\76\26",
             "\1\30",
             ""
     };
@@ -2296,41 +2287,41 @@ public class DecisionTree extends Parser {
     static final String DFA5_minS =
         "\1\4\1\uffff\2\4\1\uffff\2\4\1\uffff\1\4\2\uffff\6\4\1\13\2\4";
     static final String DFA5_maxS =
-        "\1\70\1\uffff\2\70\1\uffff\2\70\1\uffff\1\70\2\uffff\6\70\1\61"+
-        "\2\70";
+        "\1\71\1\uffff\2\71\1\uffff\2\71\1\uffff\1\71\2\uffff\6\71\1\62"+
+        "\2\71";
     static final String DFA5_acceptS =
         "\1\uffff\1\1\2\uffff\1\3\2\uffff\1\2\1\uffff\1\5\1\4\11\uffff";
     static final String DFA5_specialS =
         "\24\uffff}>";
     static final String[] DFA5_transitionS = {
-            "\1\2\1\3\15\uffff\1\1\1\uffff\5\1\32\uffff\1\4\3\uffff\1\3",
+            "\1\2\1\3\15\uffff\1\1\1\uffff\5\1\33\uffff\1\4\3\uffff\1\3",
             "",
-            "\1\6\1\3\3\uffff\1\11\1\uffff\1\7\1\uffff\1\10\1\4\1\12\1"+
-            "\uffff\1\5\1\uffff\1\4\14\uffff\1\7\20\uffff\1\7\1\uffff\1\12"+
+            "\1\5\1\3\3\uffff\1\11\1\uffff\1\7\1\uffff\1\10\1\4\1\12\1"+
+            "\uffff\1\6\1\uffff\1\4\14\uffff\1\7\20\uffff\2\7\1\uffff\1\12"+
             "\4\uffff\1\3",
             "\2\13\3\uffff\1\11\1\uffff\1\7\1\uffff\1\10\1\4\1\12\1\uffff"+
-            "\1\5\1\uffff\1\4\14\uffff\1\7\20\uffff\1\7\1\uffff\1\12\4\uffff"+
+            "\1\6\1\uffff\1\4\14\uffff\1\7\20\uffff\2\7\1\uffff\1\12\4\uffff"+
             "\1\13",
             "",
-            "\1\14\1\15\62\uffff\1\15",
-            "\1\6\1\3\62\uffff\1\3",
+            "\1\5\1\3\63\uffff\1\3",
+            "\1\14\1\15\63\uffff\1\15",
             "",
-            "\1\12\1\16\32\uffff\1\7\20\uffff\1\7\6\uffff\1\16",
+            "\1\12\1\16\32\uffff\1\7\20\uffff\2\7\6\uffff\1\16",
             "",
             "",
             "\2\13\3\uffff\1\11\1\uffff\1\7\1\uffff\1\10\1\4\1\12\1\uffff"+
-            "\1\5\1\uffff\1\4\14\uffff\1\7\20\uffff\1\7\1\uffff\1\12\4\uffff"+
+            "\1\6\1\uffff\1\4\14\uffff\1\7\20\uffff\2\7\1\uffff\1\12\4\uffff"+
             "\1\13",
-            "\1\20\1\15\3\uffff\1\17\10\uffff\1\21\45\uffff\1\15",
-            "\2\22\3\uffff\1\17\10\uffff\1\21\45\uffff\1\22",
+            "\1\17\1\15\3\uffff\1\20\10\uffff\1\21\46\uffff\1\15",
+            "\2\22\3\uffff\1\20\10\uffff\1\21\46\uffff\1\22",
             "\1\12\1\23\7\uffff\1\12\1\uffff\1\12\20\uffff\1\7\20\uffff"+
-            "\1\7\1\uffff\1\12\4\uffff\1\23",
-            "\1\14\1\15\62\uffff\1\15",
-            "\1\20\1\15\62\uffff\1\15",
-            "\1\7\1\uffff\1\7\1\4\4\uffff\1\4\14\uffff\1\7\20\uffff\1\7",
-            "\2\22\3\uffff\1\17\10\uffff\1\21\45\uffff\1\22",
+            "\2\7\1\uffff\1\12\4\uffff\1\23",
+            "\1\17\1\15\63\uffff\1\15",
+            "\1\14\1\15\63\uffff\1\15",
+            "\1\7\1\uffff\1\7\1\4\4\uffff\1\4\14\uffff\1\7\20\uffff\2\7",
+            "\2\22\3\uffff\1\20\10\uffff\1\21\46\uffff\1\22",
             "\1\12\1\23\7\uffff\1\12\1\uffff\1\12\20\uffff\1\7\20\uffff"+
-            "\1\7\1\uffff\1\12\4\uffff\1\23"
+            "\2\7\1\uffff\1\12\4\uffff\1\23"
     };
 
     static final short[] DFA5_eot = DFA.unpackEncodedString(DFA5_eotS);
@@ -2366,78 +2357,26 @@ public class DecisionTree extends Parser {
             return "66:88: ( numeric[i] | answer[i] | question[i] | diagnosis[i] | manyQCLinks[i] )";
         }
     }
-    static final String DFA26_eotS =
-        "\7\uffff";
-    static final String DFA26_eofS =
-        "\7\uffff";
-    static final String DFA26_minS =
-        "\3\4\1\uffff\1\4\1\uffff\1\4";
-    static final String DFA26_maxS =
-        "\3\70\1\uffff\1\70\1\uffff\1\70";
-    static final String DFA26_acceptS =
-        "\3\uffff\1\2\1\uffff\1\1\1\uffff";
-    static final String DFA26_specialS =
-        "\7\uffff}>";
-    static final String[] DFA26_transitionS = {
-            "\1\1\1\2\62\uffff\1\2",
-            "\1\4\1\2\3\uffff\1\5\26\uffff\1\3\27\uffff\1\2",
-            "\2\6\3\uffff\1\5\26\uffff\1\3\27\uffff\1\6",
-            "",
-            "\1\4\1\2\62\uffff\1\2",
-            "",
-            "\2\6\3\uffff\1\5\26\uffff\1\3\27\uffff\1\6"
-    };
-
-    static final short[] DFA26_eot = DFA.unpackEncodedString(DFA26_eotS);
-    static final short[] DFA26_eof = DFA.unpackEncodedString(DFA26_eofS);
-    static final char[] DFA26_min = DFA.unpackEncodedStringToUnsignedChars(DFA26_minS);
-    static final char[] DFA26_max = DFA.unpackEncodedStringToUnsignedChars(DFA26_maxS);
-    static final short[] DFA26_accept = DFA.unpackEncodedString(DFA26_acceptS);
-    static final short[] DFA26_special = DFA.unpackEncodedString(DFA26_specialS);
-    static final short[][] DFA26_transition;
-
-    static {
-        int numStates = DFA26_transitionS.length;
-        DFA26_transition = new short[numStates][];
-        for (int i=0; i<numStates; i++) {
-            DFA26_transition[i] = DFA.unpackEncodedString(DFA26_transitionS[i]);
-        }
-    }
-
-    class DFA26 extends DFA {
-
-        public DFA26(BaseRecognizer recognizer) {
-            this.recognizer = recognizer;
-            this.decisionNumber = 26;
-            this.eot = DFA26_eot;
-            this.eof = DFA26_eof;
-            this.min = DFA26_min;
-            this.max = DFA26_max;
-            this.accept = DFA26_accept;
-            this.special = DFA26_special;
-            this.transition = DFA26_transition;
-        }
-        public String getDescription() {
-            return "()+ loopback of 89:3: (a= name SEMI )+";
-        }
-    }
     static final String DFA27_eotS =
-        "\4\uffff";
+        "\7\uffff";
     static final String DFA27_eofS =
-        "\4\uffff";
+        "\7\uffff";
     static final String DFA27_minS =
-        "\1\70\1\10\2\uffff";
+        "\3\4\1\uffff\1\4\1\uffff\1\4";
     static final String DFA27_maxS =
-        "\2\70\2\uffff";
+        "\3\71\1\uffff\1\71\1\uffff\1\71";
     static final String DFA27_acceptS =
-        "\2\uffff\1\1\1\2";
+        "\3\uffff\1\2\1\uffff\1\1\1\uffff";
     static final String DFA27_specialS =
-        "\4\uffff}>";
+        "\7\uffff}>";
     static final String[] DFA27_transitionS = {
-            "\1\1",
-            "\1\2\11\uffff\1\3\45\uffff\1\1",
+            "\1\1\1\2\63\uffff\1\2",
+            "\1\4\1\2\3\uffff\1\5\26\uffff\1\3\30\uffff\1\2",
+            "\2\6\3\uffff\1\5\26\uffff\1\3\30\uffff\1\6",
             "",
-            ""
+            "\1\4\1\2\63\uffff\1\2",
+            "",
+            "\2\6\3\uffff\1\5\26\uffff\1\3\30\uffff\1\6"
     };
 
     static final short[] DFA27_eot = DFA.unpackEncodedString(DFA27_eotS);
@@ -2470,118 +2409,170 @@ public class DecisionTree extends Parser {
             this.transition = DFA27_transition;
         }
         public String getDescription() {
+            return "()+ loopback of 89:3: (a= name SEMI )+";
+        }
+    }
+    static final String DFA28_eotS =
+        "\4\uffff";
+    static final String DFA28_eofS =
+        "\4\uffff";
+    static final String DFA28_minS =
+        "\1\71\1\10\2\uffff";
+    static final String DFA28_maxS =
+        "\2\71\2\uffff";
+    static final String DFA28_acceptS =
+        "\2\uffff\1\1\1\2";
+    static final String DFA28_specialS =
+        "\4\uffff}>";
+    static final String[] DFA28_transitionS = {
+            "\1\1",
+            "\1\2\11\uffff\1\3\46\uffff\1\1",
+            "",
+            ""
+    };
+
+    static final short[] DFA28_eot = DFA.unpackEncodedString(DFA28_eotS);
+    static final short[] DFA28_eof = DFA.unpackEncodedString(DFA28_eofS);
+    static final char[] DFA28_min = DFA.unpackEncodedStringToUnsignedChars(DFA28_minS);
+    static final char[] DFA28_max = DFA.unpackEncodedStringToUnsignedChars(DFA28_maxS);
+    static final short[] DFA28_accept = DFA.unpackEncodedString(DFA28_acceptS);
+    static final short[] DFA28_special = DFA.unpackEncodedString(DFA28_specialS);
+    static final short[][] DFA28_transition;
+
+    static {
+        int numStates = DFA28_transitionS.length;
+        DFA28_transition = new short[numStates][];
+        for (int i=0; i<numStates; i++) {
+            DFA28_transition[i] = DFA.unpackEncodedString(DFA28_transitionS[i]);
+        }
+    }
+
+    class DFA28 extends DFA {
+
+        public DFA28(BaseRecognizer recognizer) {
+            this.recognizer = recognizer;
+            this.decisionNumber = 28;
+            this.eot = DFA28_eot;
+            this.eof = DFA28_eof;
+            this.min = DFA28_min;
+            this.max = DFA28_max;
+            this.accept = DFA28_accept;
+            this.special = DFA28_special;
+            this.transition = DFA28_transition;
+        }
+        public String getDescription() {
             return "()* loopback of 96:23: (a= ids COMMA )*";
         }
     }
-    static final String DFA30_eotS =
+    static final String DFA31_eotS =
         "\7\uffff";
-    static final String DFA30_eofS =
+    static final String DFA31_eofS =
         "\7\uffff";
-    static final String DFA30_minS =
+    static final String DFA31_minS =
         "\4\4\2\uffff\1\4";
-    static final String DFA30_maxS =
-        "\4\70\2\uffff\1\70";
-    static final String DFA30_acceptS =
+    static final String DFA31_maxS =
+        "\4\71\2\uffff\1\71";
+    static final String DFA31_acceptS =
         "\4\uffff\1\1\1\2\1\uffff";
-    static final String DFA30_specialS =
+    static final String DFA31_specialS =
         "\7\uffff}>";
-    static final String[] DFA30_transitionS = {
-            "\1\1\1\2\62\uffff\1\2",
-            "\1\3\1\2\3\uffff\1\4\10\uffff\1\5\45\uffff\1\2",
-            "\2\6\3\uffff\1\4\10\uffff\1\5\45\uffff\1\6",
-            "\1\3\1\2\62\uffff\1\2",
+    static final String[] DFA31_transitionS = {
+            "\1\1\1\2\63\uffff\1\2",
+            "\1\3\1\2\3\uffff\1\4\10\uffff\1\5\46\uffff\1\2",
+            "\2\6\3\uffff\1\4\10\uffff\1\5\46\uffff\1\6",
+            "\1\3\1\2\63\uffff\1\2",
             "",
             "",
-            "\2\6\3\uffff\1\4\10\uffff\1\5\45\uffff\1\6"
+            "\2\6\3\uffff\1\4\10\uffff\1\5\46\uffff\1\6"
     };
 
-    static final short[] DFA30_eot = DFA.unpackEncodedString(DFA30_eotS);
-    static final short[] DFA30_eof = DFA.unpackEncodedString(DFA30_eofS);
-    static final char[] DFA30_min = DFA.unpackEncodedStringToUnsignedChars(DFA30_minS);
-    static final char[] DFA30_max = DFA.unpackEncodedStringToUnsignedChars(DFA30_maxS);
-    static final short[] DFA30_accept = DFA.unpackEncodedString(DFA30_acceptS);
-    static final short[] DFA30_special = DFA.unpackEncodedString(DFA30_specialS);
-    static final short[][] DFA30_transition;
+    static final short[] DFA31_eot = DFA.unpackEncodedString(DFA31_eotS);
+    static final short[] DFA31_eof = DFA.unpackEncodedString(DFA31_eofS);
+    static final char[] DFA31_min = DFA.unpackEncodedStringToUnsignedChars(DFA31_minS);
+    static final char[] DFA31_max = DFA.unpackEncodedStringToUnsignedChars(DFA31_maxS);
+    static final short[] DFA31_accept = DFA.unpackEncodedString(DFA31_acceptS);
+    static final short[] DFA31_special = DFA.unpackEncodedString(DFA31_specialS);
+    static final short[][] DFA31_transition;
 
     static {
-        int numStates = DFA30_transitionS.length;
-        DFA30_transition = new short[numStates][];
+        int numStates = DFA31_transitionS.length;
+        DFA31_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA30_transition[i] = DFA.unpackEncodedString(DFA30_transitionS[i]);
+            DFA31_transition[i] = DFA.unpackEncodedString(DFA31_transitionS[i]);
         }
     }
 
-    class DFA30 extends DFA {
+    class DFA31 extends DFA {
 
-        public DFA30(BaseRecognizer recognizer) {
+        public DFA31(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 30;
-            this.eot = DFA30_eot;
-            this.eof = DFA30_eof;
-            this.min = DFA30_min;
-            this.max = DFA30_max;
-            this.accept = DFA30_accept;
-            this.special = DFA30_special;
-            this.transition = DFA30_transition;
+            this.decisionNumber = 31;
+            this.eot = DFA31_eot;
+            this.eof = DFA31_eof;
+            this.min = DFA31_min;
+            this.max = DFA31_max;
+            this.accept = DFA31_accept;
+            this.special = DFA31_special;
+            this.transition = DFA31_transition;
         }
         public String getDescription() {
             return "()* loopback of 106:8: (a= name SEMI )*";
         }
     }
-    static final String DFA36_eotS =
+    static final String DFA37_eotS =
         "\13\uffff";
-    static final String DFA36_eofS =
+    static final String DFA37_eofS =
         "\13\uffff";
-    static final String DFA36_minS =
+    static final String DFA37_minS =
         "\1\13\6\4\1\11\1\13\2\uffff";
-    static final String DFA36_maxS =
-        "\1\13\3\70\1\4\2\70\2\20\2\uffff";
-    static final String DFA36_acceptS =
+    static final String DFA37_maxS =
+        "\1\13\3\71\1\4\2\71\2\20\2\uffff";
+    static final String DFA37_acceptS =
         "\11\uffff\1\2\1\1";
-    static final String DFA36_specialS =
+    static final String DFA37_specialS =
         "\13\uffff}>";
-    static final String[] DFA36_transitionS = {
+    static final String[] DFA37_transitionS = {
             "\1\1",
-            "\1\2\1\3\62\uffff\1\3",
-            "\1\5\1\3\1\uffff\1\4\60\uffff\1\3",
-            "\2\6\1\uffff\1\4\60\uffff\1\6",
+            "\1\2\1\3\63\uffff\1\3",
+            "\1\5\1\3\1\uffff\1\4\61\uffff\1\3",
+            "\2\6\1\uffff\1\4\61\uffff\1\6",
             "\1\7",
-            "\1\5\1\3\62\uffff\1\3",
-            "\2\6\1\uffff\1\4\60\uffff\1\6",
+            "\1\5\1\3\63\uffff\1\3",
+            "\2\6\1\uffff\1\4\61\uffff\1\6",
             "\1\10\6\uffff\1\11",
             "\1\12\4\uffff\1\11",
             "",
             ""
     };
 
-    static final short[] DFA36_eot = DFA.unpackEncodedString(DFA36_eotS);
-    static final short[] DFA36_eof = DFA.unpackEncodedString(DFA36_eofS);
-    static final char[] DFA36_min = DFA.unpackEncodedStringToUnsignedChars(DFA36_minS);
-    static final char[] DFA36_max = DFA.unpackEncodedStringToUnsignedChars(DFA36_maxS);
-    static final short[] DFA36_accept = DFA.unpackEncodedString(DFA36_acceptS);
-    static final short[] DFA36_special = DFA.unpackEncodedString(DFA36_specialS);
-    static final short[][] DFA36_transition;
+    static final short[] DFA37_eot = DFA.unpackEncodedString(DFA37_eotS);
+    static final short[] DFA37_eof = DFA.unpackEncodedString(DFA37_eofS);
+    static final char[] DFA37_min = DFA.unpackEncodedStringToUnsignedChars(DFA37_minS);
+    static final char[] DFA37_max = DFA.unpackEncodedStringToUnsignedChars(DFA37_maxS);
+    static final short[] DFA37_accept = DFA.unpackEncodedString(DFA37_acceptS);
+    static final short[] DFA37_special = DFA.unpackEncodedString(DFA37_specialS);
+    static final short[][] DFA37_transition;
 
     static {
-        int numStates = DFA36_transitionS.length;
-        DFA36_transition = new short[numStates][];
+        int numStates = DFA37_transitionS.length;
+        DFA37_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA36_transition[i] = DFA.unpackEncodedString(DFA36_transitionS[i]);
+            DFA37_transition[i] = DFA.unpackEncodedString(DFA37_transitionS[i]);
         }
     }
 
-    class DFA36 extends DFA {
+    class DFA37 extends DFA {
 
-        public DFA36(BaseRecognizer recognizer) {
+        public DFA37(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 36;
-            this.eot = DFA36_eot;
-            this.eof = DFA36_eof;
-            this.min = DFA36_min;
-            this.max = DFA36_max;
-            this.accept = DFA36_accept;
-            this.special = DFA36_special;
-            this.transition = DFA36_transition;
+            this.decisionNumber = 37;
+            this.eot = DFA37_eot;
+            this.eof = DFA37_eof;
+            this.min = DFA37_min;
+            this.max = DFA37_max;
+            this.accept = DFA37_accept;
+            this.special = DFA37_special;
+            this.transition = DFA37_transition;
         }
         public String getDescription() {
             return "()* loopback of 134:6: ( AT a= name DD b= String SEMI )*";
@@ -2589,15 +2580,15 @@ public class DecisionTree extends Parser {
     }
  
 
-    public static final BitSet FOLLOW_line_in_knowledge54 = new BitSet(new long[]{0x0101800108001032L});
-    public static final BitSet FOLLOW_NL_in_knowledge57 = new BitSet(new long[]{0x0101800108001032L});
+    public static final BitSet FOLLOW_line_in_knowledge54 = new BitSet(new long[]{0x0201800108001032L});
+    public static final BitSet FOLLOW_NL_in_knowledge57 = new BitSet(new long[]{0x0201800108001032L});
     public static final BitSet FOLLOW_deslimit_in_knowledge62 = new BitSet(new long[]{0x0000000000001002L});
     public static final BitSet FOLLOW_description_in_knowledge66 = new BitSet(new long[]{0x0000000100000000L});
     public static final BitSet FOLLOW_NL_in_knowledge68 = new BitSet(new long[]{0x0000000000001002L});
     public static final BitSet FOLLOW_description_in_knowledge72 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_questionclass_in_line86 = new BitSet(new long[]{0x0000000100000000L});
     public static final BitSet FOLLOW_include_in_line91 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_dashes_in_line94 = new BitSet(new long[]{0x0110000003E80030L});
+    public static final BitSet FOLLOW_dashes_in_line94 = new BitSet(new long[]{0x0220000003E80030L});
     public static final BitSet FOLLOW_numeric_in_line101 = new BitSet(new long[]{0x0000000100000000L});
     public static final BitSet FOLLOW_answer_in_line104 = new BitSet(new long[]{0x0000000100000000L});
     public static final BitSet FOLLOW_question_in_line107 = new BitSet(new long[]{0x0000000100000000L});
@@ -2606,116 +2597,117 @@ public class DecisionTree extends Parser {
     public static final BitSet FOLLOW_NL_in_line118 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_name_in_questionclass127 = new BitSet(new long[]{0x0000000000008002L});
     public static final BitSet FOLLOW_dialogannotations_in_questionclass129 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_REF_in_question145 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_question147 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_question156 = new BitSet(new long[]{0x00000000000A4000L});
-    public static final BitSet FOLLOW_synonyms_in_question158 = new BitSet(new long[]{0x0000000000084000L});
-    public static final BitSet FOLLOW_TILDE_in_question162 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_question166 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_SBO_in_question170 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_ID_in_question172 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_question174 = new BitSet(new long[]{0x000400000002A802L});
-    public static final BitSet FOLLOW_CBO_in_question177 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_question181 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_CBC_in_question183 = new BitSet(new long[]{0x000400000000A802L});
-    public static final BitSet FOLLOW_LP_in_question188 = new BitSet(new long[]{0x0000000008000020L});
-    public static final BitSet FOLLOW_d3double_in_question192 = new BitSet(new long[]{0x0000000008000020L});
-    public static final BitSet FOLLOW_d3double_in_question196 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_RP_in_question198 = new BitSet(new long[]{0x000400000000A802L});
-    public static final BitSet FOLLOW_ABSTRACT_in_question204 = new BitSet(new long[]{0x000000000000A802L});
-    public static final BitSet FOLLOW_idlink_in_question207 = new BitSet(new long[]{0x000000000000A002L});
-    public static final BitSet FOLLOW_dialogannotations_in_question210 = new BitSet(new long[]{0x0000000000002002L});
-    public static final BitSet FOLLOW_NS_in_question214 = new BitSet(new long[]{0x0100000000000020L});
-    public static final BitSet FOLLOW_manualref_in_question216 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_answer234 = new BitSet(new long[]{0x0002000000022802L});
-    public static final BitSet FOLLOW_synonyms_in_answer236 = new BitSet(new long[]{0x0002000000002802L});
-    public static final BitSet FOLLOW_idlink_in_answer239 = new BitSet(new long[]{0x0002000000002002L});
-    public static final BitSet FOLLOW_NS_in_answer243 = new BitSet(new long[]{0x0102000000000020L});
-    public static final BitSet FOLLOW_manualref_in_answer245 = new BitSet(new long[]{0x0002000000000002L});
-    public static final BitSet FOLLOW_DEFAULT_in_answer251 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_diagnosis271 = new BitSet(new long[]{0x000800000000A000L});
-    public static final BitSet FOLLOW_NS_in_diagnosis276 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_diagnosis280 = new BitSet(new long[]{0x000800000000A000L});
-    public static final BitSet FOLLOW_SET_in_diagnosis288 = new BitSet(new long[]{0x000800000000A000L});
-    public static final BitSet FOLLOW_diagvalue_in_diagnosis291 = new BitSet(new long[]{0x0000000000080802L});
-    public static final BitSet FOLLOW_link_in_diagnosis293 = new BitSet(new long[]{0x0000000000000802L});
-    public static final BitSet FOLLOW_idlink_in_diagnosis296 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_eq_in_numeric312 = new BitSet(new long[]{0x0000000008000020L});
-    public static final BitSet FOLLOW_d3double_in_numeric316 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SBO_in_numeric318 = new BitSet(new long[]{0x0000000008000020L});
-    public static final BitSet FOLLOW_d3double_in_numeric322 = new BitSet(new long[]{0x0000000008000020L});
-    public static final BitSet FOLLOW_d3double_in_numeric326 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_numeric328 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_manyQCLinks349 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_SEMI_in_manyQCLinks353 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_manyQCLinks359 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INCLUDE_in_include369 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_EQ_in_include371 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_String_in_include373 = new BitSet(new long[]{0x0000000001000000L});
-    public static final BitSet FOLLOW_G_in_include375 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ALLOWEDNAMES_in_deslimit390 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_EQ_in_deslimit392 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_CBO_in_deslimit394 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_ids_in_deslimit399 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_COMMA_in_deslimit402 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_ids_in_deslimit408 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_CBC_in_deslimit411 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_NL_in_deslimit413 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_ids423 = new BitSet(new long[]{0x0100000000000002L});
-    public static final BitSet FOLLOW_ORS_in_description432 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_AT_in_description434 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_description438 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_ORS_in_description440 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_description444 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_ORS_in_description446 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_ID_in_description449 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DD_in_description451 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DD_in_description453 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_description459 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_ORS_in_description461 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00000000000001FFL});
-    public static final BitSet FOLLOW_destext_in_description463 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_ORS_in_description465 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CBO_in_synonyms486 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_synonyms490 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_SEMI_in_synonyms492 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_synonyms500 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_CBC_in_synonyms503 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LP_in_diagvalue516 = new BitSet(new long[]{0x011000000BE80430L});
-    public static final BitSet FOLLOW_d3double_in_diagvalue532 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_name_in_diagvalue537 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_EX_in_diagvalue543 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_RP_in_diagvalue549 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_destext569 = new BitSet(new long[]{0xFFFFFFFFFFFFEFF2L,0x00000000000001FFL});
-    public static final BitSet FOLLOW_SBO_in_link586 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_SBO_in_link588 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_link592 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_link594 = new BitSet(new long[]{0x0000000000180000L});
-    public static final BitSet FOLLOW_SBO_in_link597 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_link601 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_link603 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_link607 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SBO_in_type617 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_ID_in_type619 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_type621 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_dashes637 = new BitSet(new long[]{0x0000000008000002L});
-    public static final BitSet FOLLOW_set_in_manualref649 = new BitSet(new long[]{0x0100000000000022L});
-    public static final BitSet FOLLOW_AT_in_idlink665 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_idlink667 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LP_in_dialogannotations686 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_AT_in_dialogannotations689 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_dialogannotations693 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DD_in_dialogannotations695 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_String_in_dialogannotations699 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_SEMI_in_dialogannotations701 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_AT_in_dialogannotations707 = new BitSet(new long[]{0x0110000003E80030L});
-    public static final BitSet FOLLOW_name_in_dialogannotations711 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DD_in_dialogannotations713 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_String_in_dialogannotations717 = new BitSet(new long[]{0x0000000000010200L});
-    public static final BitSet FOLLOW_SEMI_in_dialogannotations719 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_RP_in_dialogannotations722 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_synpred1_DecisionTree520 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_synpred1_DecisionTree522 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_synpred1_DecisionTree526 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_synpred1_DecisionTree528 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_REF_in_question145 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_question149 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_question158 = new BitSet(new long[]{0x00000000000A4000L});
+    public static final BitSet FOLLOW_synonyms_in_question160 = new BitSet(new long[]{0x0000000000084000L});
+    public static final BitSet FOLLOW_TILDE_in_question164 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_question168 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_SBO_in_question172 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_ID_in_question174 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_question176 = new BitSet(new long[]{0x000800000002A802L});
+    public static final BitSet FOLLOW_CBO_in_question179 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_question183 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_CBC_in_question185 = new BitSet(new long[]{0x000800000000A802L});
+    public static final BitSet FOLLOW_LP_in_question190 = new BitSet(new long[]{0x0000000008000020L});
+    public static final BitSet FOLLOW_d3double_in_question194 = new BitSet(new long[]{0x0000000008000020L});
+    public static final BitSet FOLLOW_d3double_in_question198 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_RP_in_question200 = new BitSet(new long[]{0x000800000000A802L});
+    public static final BitSet FOLLOW_ABSTRACT_in_question206 = new BitSet(new long[]{0x000000000000A802L});
+    public static final BitSet FOLLOW_idlink_in_question209 = new BitSet(new long[]{0x000000000000A002L});
+    public static final BitSet FOLLOW_dialogannotations_in_question212 = new BitSet(new long[]{0x0000000000002002L});
+    public static final BitSet FOLLOW_NS_in_question216 = new BitSet(new long[]{0x0200000000000020L});
+    public static final BitSet FOLLOW_manualref_in_question218 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_answer236 = new BitSet(new long[]{0x0006000000022802L});
+    public static final BitSet FOLLOW_synonyms_in_answer238 = new BitSet(new long[]{0x0006000000002802L});
+    public static final BitSet FOLLOW_idlink_in_answer241 = new BitSet(new long[]{0x0006000000002002L});
+    public static final BitSet FOLLOW_NS_in_answer245 = new BitSet(new long[]{0x0206000000000020L});
+    public static final BitSet FOLLOW_manualref_in_answer247 = new BitSet(new long[]{0x0006000000000002L});
+    public static final BitSet FOLLOW_DEFAULT_in_answer253 = new BitSet(new long[]{0x0004000000000002L});
+    public static final BitSet FOLLOW_INIT_in_answer259 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_diagnosis279 = new BitSet(new long[]{0x001000000000A000L});
+    public static final BitSet FOLLOW_NS_in_diagnosis284 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_diagnosis288 = new BitSet(new long[]{0x001000000000A000L});
+    public static final BitSet FOLLOW_SET_in_diagnosis296 = new BitSet(new long[]{0x001000000000A000L});
+    public static final BitSet FOLLOW_diagvalue_in_diagnosis299 = new BitSet(new long[]{0x0000000000080802L});
+    public static final BitSet FOLLOW_link_in_diagnosis301 = new BitSet(new long[]{0x0000000000000802L});
+    public static final BitSet FOLLOW_idlink_in_diagnosis304 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_eq_in_numeric320 = new BitSet(new long[]{0x0000000008000020L});
+    public static final BitSet FOLLOW_d3double_in_numeric324 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SBO_in_numeric326 = new BitSet(new long[]{0x0000000008000020L});
+    public static final BitSet FOLLOW_d3double_in_numeric330 = new BitSet(new long[]{0x0000000008000020L});
+    public static final BitSet FOLLOW_d3double_in_numeric334 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_numeric336 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_manyQCLinks357 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_SEMI_in_manyQCLinks361 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_manyQCLinks367 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INCLUDE_in_include377 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_EQ_in_include379 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_String_in_include381 = new BitSet(new long[]{0x0000000001000000L});
+    public static final BitSet FOLLOW_G_in_include383 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ALLOWEDNAMES_in_deslimit398 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_EQ_in_deslimit400 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_CBO_in_deslimit402 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_ids_in_deslimit407 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_COMMA_in_deslimit410 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_ids_in_deslimit416 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_CBC_in_deslimit419 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_NL_in_deslimit421 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_ids431 = new BitSet(new long[]{0x0200000000000002L});
+    public static final BitSet FOLLOW_ORS_in_description440 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_AT_in_description442 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_description446 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_ORS_in_description448 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_description452 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_ORS_in_description454 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_ID_in_description457 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DD_in_description459 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DD_in_description461 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_description467 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_ORS_in_description469 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00000000000007FFL});
+    public static final BitSet FOLLOW_destext_in_description471 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_ORS_in_description473 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CBO_in_synonyms494 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_synonyms498 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_SEMI_in_synonyms500 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_synonyms508 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_CBC_in_synonyms511 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LP_in_diagvalue524 = new BitSet(new long[]{0x022000000BE80430L});
+    public static final BitSet FOLLOW_d3double_in_diagvalue540 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_name_in_diagvalue545 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_EX_in_diagvalue551 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_RP_in_diagvalue557 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_destext577 = new BitSet(new long[]{0xFFFFFFFFFFFFEFF2L,0x00000000000007FFL});
+    public static final BitSet FOLLOW_SBO_in_link594 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_SBO_in_link596 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_link600 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_link602 = new BitSet(new long[]{0x0000000000180000L});
+    public static final BitSet FOLLOW_SBO_in_link605 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_link609 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_link611 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_link615 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SBO_in_type625 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_ID_in_type627 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_type629 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_dashes645 = new BitSet(new long[]{0x0000000008000002L});
+    public static final BitSet FOLLOW_set_in_manualref657 = new BitSet(new long[]{0x0200000000000022L});
+    public static final BitSet FOLLOW_AT_in_idlink673 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_idlink675 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LP_in_dialogannotations694 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_AT_in_dialogannotations697 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_dialogannotations701 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DD_in_dialogannotations703 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_String_in_dialogannotations707 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_SEMI_in_dialogannotations709 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_AT_in_dialogannotations715 = new BitSet(new long[]{0x0220000003E80030L});
+    public static final BitSet FOLLOW_name_in_dialogannotations719 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DD_in_dialogannotations721 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_String_in_dialogannotations725 = new BitSet(new long[]{0x0000000000010200L});
+    public static final BitSet FOLLOW_SEMI_in_dialogannotations727 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_RP_in_dialogannotations730 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_synpred1_DecisionTree528 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_synpred1_DecisionTree530 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_synpred1_DecisionTree534 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_synpred1_DecisionTree536 = new BitSet(new long[]{0x0000000000000002L});
 
 }

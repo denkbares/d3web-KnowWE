@@ -1,49 +1,27 @@
-/*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
-// $ANTLR 3.1 BasicParser.g 2009-03-14 18:59:14
+// $ANTLR 3.1.1 BasicParser.g 2009-10-09 16:50:17
 
 package de.d3web.KnOfficeParser.complexcondition;
-import org.antlr.runtime.BitSet;
-import org.antlr.runtime.MismatchedSetException;
-import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.Parser;
-import org.antlr.runtime.ParserRuleReturnScope;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.RecognizerSharedState;
-import org.antlr.runtime.Token;
-import org.antlr.runtime.TokenStream;
-
 import de.d3web.KnOfficeParser.ParserErrorHandler;
+import de.d3web.KnOfficeParser.ConditionBuilder;
 
+
+import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
     public static final int HIDE=38;
     public static final int RP=16;
     public static final int ORS=12;
     public static final int LP=15;
-    public static final int FUZZY=53;
-    public static final int ABSTRACT=50;
+    public static final int FUZZY=54;
+    public static final int ABSTRACT=51;
     public static final int NOT=37;
     public static final int EXCEPT=39;
     public static final int AND=35;
-    public static final int ID=56;
+    public static final int ID=57;
     public static final int DD=7;
     public static final int EOF=-1;
     public static final int IF=33;
@@ -74,20 +52,21 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
     public static final int DEFAULT=49;
     public static final int INTER=45;
     public static final int KNOWN=41;
-    public static final int SET=51;
+    public static final int SET=52;
     public static final int INT=5;
     public static final int MINUS=27;
-    public static final int DIVNORM=55;
-    public static final int Tokens=58;
+    public static final int DIVNORM=56;
+    public static final int Tokens=59;
     public static final int SEMI=9;
-    public static final int REF=52;
+    public static final int REF=53;
     public static final int WS=30;
-    public static final int BLUB=57;
+    public static final int BLUB=58;
     public static final int OR=36;
     public static final int CBC=18;
     public static final int SBO=19;
-    public static final int DIVTEXT=54;
+    public static final int DIVTEXT=55;
     public static final int DIV=29;
+    public static final int INIT=50;
     public static final int CBO=17;
     public static final int LE=21;
 
@@ -169,13 +148,14 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
             if ( (LA3_0==String) ) {
                 int LA3_1 = input.LA(2);
 
-                if ( ((LA3_1>=String && LA3_1<=INT)||LA3_1==ID) ) {
-                    alt3=1;
-                }
-                else if ( (LA3_1==EOF||(LA3_1>=COMMA && LA3_1<=SEMI)||LA3_1==RP||(LA3_1>=CBC && LA3_1<=EQ)||(LA3_1>=AND && LA3_1<=OR)||LA3_1==IN||LA3_1==ALL) ) {
+                if ( (LA3_1==EOF||(LA3_1>=COMMA && LA3_1<=SEMI)||LA3_1==RP||(LA3_1>=CBC && LA3_1<=EQ)||(LA3_1>=AND && LA3_1<=OR)||LA3_1==IN||LA3_1==ALL) ) {
                     alt3=2;
                 }
+                else if ( ((LA3_1>=String && LA3_1<=INT)||LA3_1==ID) ) {
+                    alt3=1;
+                }
                 else {
+                    if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
                         new NoViableAltException("", 3, 1, input);
 
@@ -186,6 +166,7 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
                 alt3=1;
             }
             else {
+                if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
                     new NoViableAltException("", 3, 0, input);
 
@@ -210,7 +191,7 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
                     	case 1 :
                     	    // BasicParser.g:43:3: String
                     	    {
-                    	    match(input,String,FOLLOW_String_in_name33); 
+                    	    match(input,String,FOLLOW_String_in_name33); if (state.failed) return retval;
 
                     	    }
                     	    break;
@@ -222,9 +203,10 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
 
                     if ( input.LA(1)==INT||input.LA(1)==ID ) {
                         input.consume();
-                        state.errorRecovery=false;
+                        state.errorRecovery=false;state.failed=false;
                     }
                     else {
+                        if (state.backtracking>0) {state.failed=true; return retval;}
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         throw mse;
                     }
@@ -246,9 +228,10 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
                     	    {
                     	    if ( (input.LA(1)>=String && input.LA(1)<=INT)||input.LA(1)==ID ) {
                     	        input.consume();
-                    	        state.errorRecovery=false;
+                    	        state.errorRecovery=false;state.failed=false;
                     	    }
                     	    else {
+                    	        if (state.backtracking>0) {state.failed=true; return retval;}
                     	        MismatchedSetException mse = new MismatchedSetException(null,input);
                     	        throw mse;
                     	    }
@@ -262,15 +245,19 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
                         }
                     } while (true);
 
-                    retval.value =input.toString(retval.start,input.LT(-1));
+                    if ( state.backtracking==0 ) {
+                      retval.value =input.toString(retval.start,input.LT(-1));
+                    }
 
                     }
                     break;
                 case 2 :
                     // BasicParser.g:44:3: String
                     {
-                    String1=(Token)match(input,String,FOLLOW_String_in_name55); 
-                    retval.value =delQuotes((String1!=null?String1.getText():null));
+                    String1=(Token)match(input,String,FOLLOW_String_in_name55); if (state.failed) return retval;
+                    if ( state.backtracking==0 ) {
+                      retval.value =delQuotes((String1!=null?String1.getText():null));
+                    }
 
                     }
                     break;
@@ -301,10 +288,12 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
             // BasicParser.g:47:1: ( SBO ID SBC )
             // BasicParser.g:47:3: SBO ID SBC
             {
-            match(input,SBO,FOLLOW_SBO_in_type69); 
-            ID2=(Token)match(input,ID,FOLLOW_ID_in_type71); 
-            match(input,SBC,FOLLOW_SBC_in_type73); 
-            value =(ID2!=null?ID2.getText():null);
+            match(input,SBO,FOLLOW_SBO_in_type69); if (state.failed) return value;
+            ID2=(Token)match(input,ID,FOLLOW_ID_in_type71); if (state.failed) return value;
+            match(input,SBC,FOLLOW_SBC_in_type73); if (state.failed) return value;
+            if ( state.backtracking==0 ) {
+              value =(ID2!=null?ID2.getText():null);
+            }
 
             }
 
@@ -334,9 +323,10 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
             {
             if ( (input.LA(1)>=LE && input.LA(1)<=EQ) ) {
                 input.consume();
-                state.errorRecovery=false;
+                state.errorRecovery=false;state.failed=false;
             }
             else {
+                if (state.backtracking>0) {state.failed=true; return retval;}
                 MismatchedSetException mse = new MismatchedSetException(null,input);
                 throw mse;
             }
@@ -385,6 +375,7 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
                 }
                 break;
             default:
+                if (state.backtracking>0) {state.failed=true; return ;}
                 NoViableAltException nvae =
                     new NoViableAltException("", 4, 0, input);
 
@@ -399,23 +390,23 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
                     eq();
 
                     state._fsp--;
-
+                    if (state.failed) return ;
 
                     }
                     break;
                 case 2 :
                     // BasicParser.g:50:14: PLUS EQ
                     {
-                    match(input,PLUS,FOLLOW_PLUS_in_eqncalc101); 
-                    match(input,EQ,FOLLOW_EQ_in_eqncalc103); 
+                    match(input,PLUS,FOLLOW_PLUS_in_eqncalc101); if (state.failed) return ;
+                    match(input,EQ,FOLLOW_EQ_in_eqncalc103); if (state.failed) return ;
 
                     }
                     break;
                 case 3 :
                     // BasicParser.g:50:22: MINUS EQ
                     {
-                    match(input,MINUS,FOLLOW_MINUS_in_eqncalc105); 
-                    match(input,EQ,FOLLOW_EQ_in_eqncalc107); 
+                    match(input,MINUS,FOLLOW_MINUS_in_eqncalc105); if (state.failed) return ;
+                    match(input,EQ,FOLLOW_EQ_in_eqncalc107); if (state.failed) return ;
 
                     }
                     break;
@@ -457,14 +448,14 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
                 case 1 :
                     // BasicParser.g:53:3: MINUS
                     {
-                    match(input,MINUS,FOLLOW_MINUS_in_d3double119); 
+                    match(input,MINUS,FOLLOW_MINUS_in_d3double119); if (state.failed) return retval;
 
                     }
                     break;
 
             }
 
-            match(input,INT,FOLLOW_INT_in_d3double122); 
+            match(input,INT,FOLLOW_INT_in_d3double122); if (state.failed) return retval;
             // BasicParser.g:53:14: ( ( COMMA | DOT ) INT )?
             int alt6=2;
             int LA6_0 = input.LA(1);
@@ -478,21 +469,24 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
                     {
                     if ( input.LA(1)==DOT||input.LA(1)==COMMA ) {
                         input.consume();
-                        state.errorRecovery=false;
+                        state.errorRecovery=false;state.failed=false;
                     }
                     else {
+                        if (state.backtracking>0) {state.failed=true; return retval;}
                         MismatchedSetException mse = new MismatchedSetException(null,input);
                         throw mse;
                     }
 
-                    match(input,INT,FOLLOW_INT_in_d3double131); 
+                    match(input,INT,FOLLOW_INT_in_d3double131); if (state.failed) return retval;
 
                     }
                     break;
 
             }
 
-            retval.value =parseDouble(input.toString(retval.start,input.LT(-1)));
+            if ( state.backtracking==0 ) {
+              retval.value =parseDouble(input.toString(retval.start,input.LT(-1)));
+            }
 
             }
 
@@ -509,16 +503,200 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
     }
     // $ANTLR end "d3double"
 
+    public static class nameOrDouble_return extends ParserRuleReturnScope {
+        public String value;
+    };
+
+    // $ANTLR start "nameOrDouble"
+    // BasicParser.g:55:1: nameOrDouble returns [String value] : ( ( MINUS INT | INT DOT | INT COMMA )=> d3double | name | EX );
+    public final ComplexConditionSOLO_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException {
+        ComplexConditionSOLO_ComplexCondition_BasicParser.nameOrDouble_return retval = new ComplexConditionSOLO_ComplexCondition_BasicParser.nameOrDouble_return();
+        retval.start = input.LT(1);
+
+        ComplexConditionSOLO_ComplexCondition_BasicParser.d3double_return d3double3 = null;
+
+        ComplexConditionSOLO_ComplexCondition_BasicParser.name_return name4 = null;
+
+
+        try {
+            // BasicParser.g:56:1: ( ( MINUS INT | INT DOT | INT COMMA )=> d3double | name | EX )
+            int alt7=3;
+            int LA7_0 = input.LA(1);
+
+            if ( (LA7_0==MINUS) && (synpred1_BasicParser())) {
+                alt7=1;
+            }
+            else if ( (LA7_0==INT) ) {
+                int LA7_2 = input.LA(2);
+
+                if ( (synpred1_BasicParser()) ) {
+                    alt7=1;
+                }
+                else if ( (true) ) {
+                    alt7=2;
+                }
+                else {
+                    if (state.backtracking>0) {state.failed=true; return retval;}
+                    NoViableAltException nvae =
+                        new NoViableAltException("", 7, 2, input);
+
+                    throw nvae;
+                }
+            }
+            else if ( (LA7_0==String||LA7_0==ID) ) {
+                alt7=2;
+            }
+            else if ( (LA7_0==EX) ) {
+                alt7=3;
+            }
+            else {
+                if (state.backtracking>0) {state.failed=true; return retval;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 7, 0, input);
+
+                throw nvae;
+            }
+            switch (alt7) {
+                case 1 :
+                    // BasicParser.g:56:2: ( MINUS INT | INT DOT | INT COMMA )=> d3double
+                    {
+                    pushFollow(FOLLOW_d3double_in_nameOrDouble165);
+                    d3double3=d3double();
+
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) {
+                      retval.value =(d3double3!=null?d3double3.value:null).toString();
+                    }
+
+                    }
+                    break;
+                case 2 :
+                    // BasicParser.g:56:85: name
+                    {
+                    pushFollow(FOLLOW_name_in_nameOrDouble170);
+                    name4=name();
+
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) {
+                      retval.value =(name4!=null?name4.value:null);
+                    }
+
+                    }
+                    break;
+                case 3 :
+                    // BasicParser.g:56:114: EX
+                    {
+                    match(input,EX,FOLLOW_EX_in_nameOrDouble176); if (state.failed) return retval;
+                    if ( state.backtracking==0 ) {
+                      retval.value =input.toString(retval.start,input.LT(-1));
+                    }
+
+                    }
+                    break;
+
+            }
+            retval.stop = input.LT(-1);
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+        }
+        return retval;
+    }
+    // $ANTLR end "nameOrDouble"
+
+    // $ANTLR start synpred1_BasicParser
+    public final void synpred1_BasicParser_fragment() throws RecognitionException {   
+        // BasicParser.g:56:2: ( MINUS INT | INT DOT | INT COMMA )
+        int alt8=3;
+        int LA8_0 = input.LA(1);
+
+        if ( (LA8_0==MINUS) ) {
+            alt8=1;
+        }
+        else if ( (LA8_0==INT) ) {
+            int LA8_2 = input.LA(2);
+
+            if ( (LA8_2==DOT) ) {
+                alt8=2;
+            }
+            else if ( (LA8_2==COMMA) ) {
+                alt8=3;
+            }
+            else {
+                if (state.backtracking>0) {state.failed=true; return ;}
+                NoViableAltException nvae =
+                    new NoViableAltException("", 8, 2, input);
+
+                throw nvae;
+            }
+        }
+        else {
+            if (state.backtracking>0) {state.failed=true; return ;}
+            NoViableAltException nvae =
+                new NoViableAltException("", 8, 0, input);
+
+            throw nvae;
+        }
+        switch (alt8) {
+            case 1 :
+                // BasicParser.g:56:3: MINUS INT
+                {
+                match(input,MINUS,FOLLOW_MINUS_in_synpred1_BasicParser147); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser149); if (state.failed) return ;
+
+                }
+                break;
+            case 2 :
+                // BasicParser.g:56:15: INT DOT
+                {
+                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser153); if (state.failed) return ;
+                match(input,DOT,FOLLOW_DOT_in_synpred1_BasicParser155); if (state.failed) return ;
+
+                }
+                break;
+            case 3 :
+                // BasicParser.g:56:25: INT COMMA
+                {
+                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser159); if (state.failed) return ;
+                match(input,COMMA,FOLLOW_COMMA_in_synpred1_BasicParser161); if (state.failed) return ;
+
+                }
+                break;
+
+        }}
+    // $ANTLR end synpred1_BasicParser
+
     // Delegated rules
+
+    public final boolean synpred1_BasicParser() {
+        state.backtracking++;
+        int start = input.mark();
+        try {
+            synpred1_BasicParser_fragment(); // can never throw exception
+        } catch (RecognitionException re) {
+            System.err.println("impossible: "+re);
+        }
+        boolean success = !state.failed;
+        input.rewind(start);
+        state.backtracking--;
+        state.failed=false;
+        return success;
+    }
 
 
  
 
-    public static final BitSet FOLLOW_String_in_name33 = new BitSet(new long[]{0x0100000000000030L});
-    public static final BitSet FOLLOW_set_in_name36 = new BitSet(new long[]{0x0100000000000032L});
-    public static final BitSet FOLLOW_set_in_name42 = new BitSet(new long[]{0x0100000000000032L});
+    public static final BitSet FOLLOW_String_in_name33 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_set_in_name36 = new BitSet(new long[]{0x0200000000000032L});
+    public static final BitSet FOLLOW_set_in_name42 = new BitSet(new long[]{0x0200000000000032L});
     public static final BitSet FOLLOW_String_in_name55 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SBO_in_type69 = new BitSet(new long[]{0x0100000000000000L});
+    public static final BitSet FOLLOW_SBO_in_type69 = new BitSet(new long[]{0x0200000000000000L});
     public static final BitSet FOLLOW_ID_in_type71 = new BitSet(new long[]{0x0000000000100000L});
     public static final BitSet FOLLOW_SBC_in_type73 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_eq0 = new BitSet(new long[]{0x0000000000000002L});
@@ -531,5 +709,14 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
     public static final BitSet FOLLOW_INT_in_d3double122 = new BitSet(new long[]{0x0000000000000142L});
     public static final BitSet FOLLOW_set_in_d3double125 = new BitSet(new long[]{0x0000000000000020L});
     public static final BitSet FOLLOW_INT_in_d3double131 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_d3double_in_nameOrDouble165 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_nameOrDouble170 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EX_in_nameOrDouble176 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_synpred1_BasicParser147 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser149 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser153 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_synpred1_BasicParser155 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser159 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_COMMA_in_synpred1_BasicParser161 = new BitSet(new long[]{0x0000000000000002L});
 
 }
