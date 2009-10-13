@@ -70,7 +70,7 @@ import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.Annotation.Annotation;
-import de.d3web.we.kdom.bulletLists.scoring.ScoringListType;
+import de.d3web.we.kdom.bulletLists.scoring.BulletScoring;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
 import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
@@ -143,7 +143,7 @@ public class D3webModule implements KnowWEModule {
 		rootTypes.add(new CoveringTableSection());
 		rootTypes.add(new CoveringListSection());
 		rootTypes.add(new RulesSection());
-		rootTypes.add(new ScoringListType());
+		rootTypes.add(new BulletScoring());
 		return rootTypes;
 	}
 	
