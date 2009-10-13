@@ -53,6 +53,13 @@ import de.d3web.we.core.TaggingMangler;
 import de.d3web.we.wikiConnector.GenericSearchResult;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
+
+/**
+ * For code documentation look at the KnowWEWikiConnector interface definition
+ * 
+ * @author Jochen
+ *
+ */
 public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	private ServletContext context = null;
@@ -66,18 +73,6 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	@Override
 	public ServletContext getServletContext() {
 		return context;
-	}
-
-	public String getPagePath() {
-		try {
-			return WikiEngine.getRequiredProperty(engine.getWikiProperties(),
-					AbstractFileProvider.PROP_PAGEDIR);
-		} catch (NoRequiredPropertyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "error reading Property: AbstractFileProvider.PROP_PAGEDIR";
-		}
-
 	}
 
 	@Override
