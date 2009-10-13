@@ -1,10 +1,8 @@
 package de.d3web.we.kdom.bulletLists.scoring;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -17,7 +15,7 @@ public class BulletScoring extends AbstractXMLObjectType{
 	
 	public void init() {
 		childrenTypes.add(new ScoringListContentType());
-		isNotRecyclable = true;
+		this.setNotRecyclable(true);
 	}
 	
 	public static final String TARGET_SCORING_DELIMITER = "[AND]";

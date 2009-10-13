@@ -75,7 +75,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	protected boolean isActivated = true;
 	protected boolean isNumberedType = false;
 	
-	protected boolean isNotRecyclable = false;
+	private boolean isNotRecyclable = false;
 	
 	public boolean isNumberedType() {
 		return isNumberedType;
