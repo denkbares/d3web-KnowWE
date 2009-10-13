@@ -64,13 +64,13 @@ MINUS : '-';
 PROD : '*';
 DIV : '/'; 
 
-//Leerzeichen, Zeilenumbrüche und Kommentare werden ignoriert
-//Zeilenumbrüche sind über Parameter aktivierbar
+//Leerzeichen, Zeilenumbrï¿½che und Kommentare werden ignoriert
+//Zeilenumbrï¿½che sind ï¿½ber Parameter aktivierbar
 WS  : (' '|'\t') {$channel=HIDDEN;};
 COMMENT : '//' ( options {greedy=false;} : .)*  '\n' {$channel=HIDDEN;}; 
 NL : '\r'? '\n' {if (!newline) $channel=HIDDEN;};
 
-//Schlüsselwörter
+//Schlï¿½sselwï¿½rter
 IF : 'WENN'|'IF';
 THEN : 'DANN'|'THEN';
 AND : 'UND'|'AND';
@@ -88,6 +88,7 @@ ALL: 'ALLE'|'ALL';
 ALLOWEDNAMES: '##allowedNames';
 INCLUDE: '<include src';
 DEFAULT: '<default>';
+INIT: '<init>';
 ABSTRACT: '<abstrakt>'|'<abstract>';
 SET: 'SET';
 REF: '&REF';

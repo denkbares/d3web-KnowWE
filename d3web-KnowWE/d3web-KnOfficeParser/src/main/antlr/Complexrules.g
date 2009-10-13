@@ -1,5 +1,5 @@
 /**
- * Grammatik fï¿½r komplexe Regeln
+ * Grammatik für komplexe Regeln
  * @author Markus Friedrich
  *
  */
@@ -40,6 +40,7 @@ import ComplexCondition;
     }
   }
 }
+
 @header {
 package de.d3web.KnOfficeParser.rule;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -73,15 +74,14 @@ formula
 : LP formulawithoutP RP;
 
 formulawithoutP
-: name {builder.formula($name.start.getLine(), $text, $name.value);}
-| formulaOrName (PLUS formulaOrName {builder.formulaAdd();}
+: formulaOrName (PLUS formulaOrName {builder.formulaAdd();}
 |MINUS formulaOrName {builder.formulaSub();}
 | PROD formulaOrName {builder.formulaMult();}
 | DIV formulaOrName {builder.formulaDiv();}
-);
+)?;
 
 formulaOrName
-:formula|(INT DOT)=> d3double {builder.formula($start.getLine(), $text, $d3double.value.toString());}|name {builder.formula($name.start.getLine(), $text, $name.value);};
+:formula | nameOrDouble {builder.formula($start.getLine(), $text, $nameOrDouble.value);};
 
 names returns[List<String> nlist, List<String> tlist]
 @init {$nlist = new ArrayList<String>(); $tlist = new ArrayList<String>();}

@@ -44,7 +44,7 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 
 	@Override
 	public void addAnswerOrQuestionLink(int dashes, String name, String ref,
-			List<String> syn, boolean def, int line, String linetext,
+			List<String> syn, boolean def, boolean init, int line, String linetext,
 			String idlink) {
 		if (linetext == null)
 			return;
@@ -222,5 +222,4 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 		sections.push(new ExpandedSectionFinderResult("\r\n", new TextLine(), sections.size() * (-1)));
 
 	}
-
 }

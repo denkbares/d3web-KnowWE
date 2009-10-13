@@ -1,43 +1,22 @@
-/*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
-// $ANTLR 3.1 C:\\workspaceKnowWE2\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g 2009-03-23 13:54:44
+// $ANTLR 3.1 D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g 2009-10-09 16:32:41
 
 package de.d3web.KnOfficeParser;
 
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.Lexer;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.RecognizerSharedState;
+import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 
 public class DefaultLexer extends Lexer {
     public static final int HIDE=38;
     public static final int RP=16;
     public static final int ORS=12;
-    public static final int FUZZY=53;
+    public static final int FUZZY=54;
     public static final int LP=15;
-    public static final int ABSTRACT=50;
+    public static final int ABSTRACT=51;
     public static final int NOT=37;
-    public static final int ID=56;
+    public static final int ID=57;
     public static final int AND=35;
     public static final int EXCEPT=39;
     public static final int EOF=-1;
@@ -70,20 +49,21 @@ public class DefaultLexer extends Lexer {
     public static final int DEFAULT=49;
     public static final int INTER=45;
     public static final int KNOWN=41;
-    public static final int SET=51;
+    public static final int SET=52;
     public static final int INT=5;
-    public static final int DIVNORM=55;
+    public static final int DIVNORM=56;
     public static final int MINUS=27;
-    public static final int Tokens=58;
+    public static final int Tokens=59;
     public static final int SEMI=9;
-    public static final int REF=52;
+    public static final int REF=53;
     public static final int WS=30;
-    public static final int BLUB=57;
+    public static final int BLUB=58;
     public static final int CBC=18;
     public static final int OR=36;
     public static final int SBO=19;
-    public static final int DIVTEXT=54;
+    public static final int DIVTEXT=55;
     public static final int DIV=29;
+    public static final int INIT=50;
     public static final int CBO=17;
     public static final int LE=21;
 
@@ -126,15 +106,15 @@ public class DefaultLexer extends Lexer {
         super(input,state);
         gBasicLexer = new DefaultLexer_BasicLexer(input, state, this);
     }
-    public String getGrammarFileName() { return "C:\\workspaceKnowWE2\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g"; }
+    public String getGrammarFileName() { return "D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g"; }
 
     // $ANTLR start "BLUB"
     public final void mBLUB() throws RecognitionException {
         try {
             int _type = BLUB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\workspaceKnowWE2\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:37:5: ()
-            // C:\\workspaceKnowWE2\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:37:6: 
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:37:5: ()
+            // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:37:6: 
             {
             }
 
@@ -147,7 +127,7 @@ public class DefaultLexer extends Lexer {
     // $ANTLR end "BLUB"
 
     public void mTokens() throws RecognitionException {
-        // C:\\workspaceKnowWE2\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:1:8: ( BLUB | BasicLexer. Tokens )
+        // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:1:8: ( BLUB | BasicLexer. Tokens )
         int alt1=2;
         int LA1_0 = input.LA(1);
 
@@ -158,14 +138,14 @@ public class DefaultLexer extends Lexer {
             alt1=1;}
         switch (alt1) {
             case 1 :
-                // C:\\workspaceKnowWE2\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:1:10: BLUB
+                // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:1:10: BLUB
                 {
                 mBLUB(); 
 
                 }
                 break;
             case 2 :
-                // C:\\workspaceKnowWE2\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:1:15: BasicLexer. Tokens
+                // D:\\eclipse workspaces\\2009-07\\d3web-KnOfficeParser\\Grammars\\DefaultLexer.g:1:15: BasicLexer. Tokens
                 {
                 gBasicLexer.mTokens(); 
 

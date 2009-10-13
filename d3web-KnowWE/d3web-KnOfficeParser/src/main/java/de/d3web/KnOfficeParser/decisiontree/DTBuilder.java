@@ -37,7 +37,7 @@ public interface DTBuilder {
 	
 	void addQuestion(int dashes, String name, String longname, boolean abs, String type, String ref, Double lowerbound, Double upperbound, String unit, List<String> syn, int line, String linetext, String idlink, List<String> attributes, List<String> values);
 	
-	void addAnswerOrQuestionLink(int dashes, String name, String ref, List<String> syn, boolean def, int line, String linetext, String idlink);
+	void addAnswerOrQuestionLink(int dashes, String name, String ref, List<String> syn, boolean def, boolean init, int line, String linetext, String idlink);
 	
 	void addDiagnosis(int dashes, List<String> diags, boolean set, String value, String link, String linkdes, int line, String linetext, String idlink);
 	

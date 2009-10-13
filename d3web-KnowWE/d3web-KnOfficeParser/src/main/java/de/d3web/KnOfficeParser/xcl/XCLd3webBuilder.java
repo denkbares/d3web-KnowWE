@@ -167,9 +167,13 @@ public class XCLd3webBuilder implements KnOfficeParser, XCLBuilder {
 	public void finding(String weight) {
 		// If XCLParsing for ANTLR is activated write XCLRelations 
 		// to KnowledgeBase via this method
-		ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
-		if (bundle.getString("knowwe2wiki.activateANTLRforXCL").equals("false")){
-			return;
+		try {
+			ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
+			if (bundle.getString("knowwe2wiki.activateANTLRforXCL").equals("false")){
+				return;
+			}
+		} catch (Exception e1) {
+			// TODO fixme
 		}
 		
 		if (!createUncompleteFindings) {

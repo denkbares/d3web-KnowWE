@@ -1,27 +1,27 @@
 WENN BMI>25
-DANN Uebergewicht = P7
+DANN Übergewicht = P7
 
 WENN BMI [18.5 25]
 DANN Normalgewicht = P7
 
 WENN BEKANNT[Geschlecht]
-AUSSER UNBEKANNT[Groesse]
+AUSSER UNBEKANNT[Größe]
 DANN Grobdiagnose
 
 WENN Geschlecht = "weiblich" UND Sind Sie schwanger? = ja
 DANN Schwangerschaftsfragen
 
-WENN Geschlecht = maennlich ODER Sind Sie schwanger? = nein
+WENN Geschlecht = männlich ODER Sind Sie schwanger? = nein
 DANN Schwanger = N7
 
 WENN NICHT BMI>25
-DANN Uebergewicht = N7
+DANN Übergewicht = N7
 
-WENN NICHT Geschlecht = maennlich UND UNBEKANNT[Sind Sie schwanger?]
+WENN NICHT Geschlecht = männlich UND UNBEKANNT[Sind Sie schwanger?]
 ODER Geschlecht = weiblich UND NICHT BEKANNT[Sind Sie schwanger?]
 DANN Schwanger = P1
 
-WENN ((NICHT (Geschlecht = maennlich) UND UNBEKANNT[Sind Sie schwanger?])
+WENN ((NICHT (Geschlecht = männlich) UND UNBEKANNT[Sind Sie schwanger?])
 ODER (Geschlecht = weiblich UND NICHT (BEKANNT[Sind Sie schwanger?])))
 DANN Schwanger = P1
 
@@ -57,11 +57,14 @@ DANN SOFORT [Schwangerschaftsfragen; Grobdiagnose]
 WENN Sind Sie schwanger? = nein
 DANN NICHT[Schwangerschaftsfragen]
 
-WENN Geschlecht = maennlich
+WENN Geschlecht = männlich
 DANN VERBERGE Wo haben Sie Schmerzen? = [Kopf]
 
-WENN Gewicht >0 UND Groesse >0
-DANN BMI = (Gewicht/(Groesse*Groesse))
+WENN Gewicht >0 UND Größe >0
+DANN BMI = (Gewicht/(Größe*Größe))
+
+WENN Gewicht = -5.0
+DANN Schwanger = P7 
 
 WENN Schwanger = etabliert
 DANN Schwangerschaftsfragen

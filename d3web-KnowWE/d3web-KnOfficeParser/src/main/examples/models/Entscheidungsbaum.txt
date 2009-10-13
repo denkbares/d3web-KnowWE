@@ -1,11 +1,11 @@
 Allgemeines
-- Name ~ Wie heiﬂen Sie? [text]
+- Name ~ Wie hei√üen Sie? [text]
 - Geburtsdatum [date]
 - Gewicht [num] {kg}
-- Grˆﬂe {L‰nge} [num] {cm} (0 250)
+- Gr√∂√üe {L√§nge} [num] {cm} (0 250)
 - BMI [num] <abstrakt>
 -- > 25
---- ‹bergewicht (P7)
+--- √úbergewicht (P7)
 - Geschlecht [oc]
 -- weiblich
 --- Sind Sie schwanger? [jn]
@@ -13,7 +13,7 @@ Allgemeines
 ----- Schwanger(!) [["http://de.wikipedia.org/wiki/Schwanger"][Wikipedia Eintrag]]
 ------ Schwangerschaftsfragen
 ---- "nein"
--- m‰nnlich
+-- m√§nnlich
 
 Grobdiagnose
 - Wo haben Sie Schmerzen? [mc]
@@ -21,7 +21,7 @@ Grobdiagnose
 --- Chronisch ~ Sind die Schmerzen chronisch? [jn]
 -- Arme
 --- &REF Chronisch
--- Oberkˆrper
+-- Oberk√∂rper
 -- Kopf
 -- Hals @hals
 
@@ -29,11 +29,11 @@ Schwangerschaftsfragen
 - Im wievielten Monat sind Sie? [num]
 
 Ausstattung
-- Sitzbez¸ge [oc] #F1
+- Sitzbez√ºge [oc] #F1
 -- Stoff
 --- Schwangerschaftsfragen
 -- Leder #A2
 
 
-##allowedNames = {Erl‰uterung}
-| @hals | info | Erl‰uterung | Zwischenst¸ck zwischen Kopf und Oberkˆrper |
+##allowedNames = {Erl√§uterung}
+| @hals | info | Erl√§uterung | Zwischenst√ºck zwischen Kopf und Oberk√∂rper |

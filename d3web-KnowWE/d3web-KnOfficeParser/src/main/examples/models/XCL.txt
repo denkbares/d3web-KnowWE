@@ -1,6 +1,6 @@
 Schwanger {
   Geschlecht = weiblich[!],
-  Geschlecht = maennlich[--],
+  Geschlecht = männlich[--],
   Sind Sie schwanger? = ja[++],
 } [establishedThreshold=0.7,
   suggestedThreshold=0.5,

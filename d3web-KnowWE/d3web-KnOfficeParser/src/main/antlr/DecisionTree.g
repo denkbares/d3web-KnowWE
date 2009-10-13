@@ -1,5 +1,5 @@
 /**
- * Grammatik für Entscheidungsbäume
+ * Grammatik fï¿½r Entscheidungsbï¿½ume
  * @author Markus Friedrich
  *
  */
@@ -69,13 +69,13 @@ questionclass
 : name dialogannotations? {dashcount = 0;} {builder.addQuestionclass($name.value, $start.getLine(), $text, $dialogannotations.attribute, $dialogannotations.value);};
 
 question [int Dashes]
-: (REF name {builder.addQuestionLink($Dashes, $name.value, $name.start.getLine(), $text);}
+: (REF h=name {builder.addQuestionLink($Dashes, $h.value, $h.start.getLine(), $text);}
 //referenzierte Frage oder neue Frage definiert
 | a=name synonyms? (TILDE b=name)? SBO ID SBC (CBO e=name CBC)? (LP f=d3double g=d3double RP)? c=ABSTRACT? idlink? dialogannotations? (NS manualref)? {builder.addQuestion($Dashes, $a.value, $b.value, ($c!=null), $ID.text, $manualref.text, (f!=null?f.value:null), (g!=null?g.value:null), $e.value, $synonyms.syn, $a.start.getLine(), $text, $idlink.s, $dialogannotations.attribute, $dialogannotations.value);}) {dashcount = $Dashes;};
 
-//ließt Antworten und Links zu weiteren Fragen
+//lieï¿½t Antworten und Links zu weiteren Fragen
 answer [int Dashes]
-: name synonyms? idlink? (NS manualref)? a=DEFAULT? {dashcount = $Dashes; builder.addAnswerOrQuestionLink($Dashes, $name.value, $manualref.text, $synonyms.syn, ($a!=null), $name.start.getLine(), $text, $idlink.s);};
+: name synonyms? idlink? (NS manualref)? a=DEFAULT? b= INIT? {dashcount = $Dashes; builder.addAnswerOrQuestionLink($Dashes, $name.value, $manualref.text, $synonyms.syn, ($a!=null), ($b!=null), $name.start.getLine(), $text, $idlink.s);};
 
 diagnosis [int Dashes]
 @init {List<String> diags = new ArrayList<String>();}

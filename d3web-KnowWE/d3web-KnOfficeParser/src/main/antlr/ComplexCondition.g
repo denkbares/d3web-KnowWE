@@ -51,11 +51,13 @@ conjunct
 | NOT conjunct {builder.notcond($text);};
 
 condition
-: a=name type? (eq b=name {builder.condition( $start.getLine(), $text, $a.value, $type.value, $eq.text, $b.value);}
+: a=name type? (eq nod=nameOrDouble {builder.condition( $start.getLine(), $text, $a.value, $type.value, $eq.text, $nod.value);}
 | in=IN? intervall  {builder.condition($start.getLine(), $text, $a.value, $type.value, $intervall.a, $intervall.b, (in!=null));}) 
 | (KNOWN|c=UNKNOWN) SBO a=name type? SBC {builder.knowncondition($start.getLine(), $text, $a.value, $type.value, c!=null);}
 | {List<String> answers= new ArrayList();} a=name type? IN CBO b=name {answers.add($b.value);} (COMMA d=name {answers.add($d.value);})* CBC {builder.in($start.getLine(), $text, $a.value, $type.value, answers);}
 | {List<String> answers= new ArrayList();} a=name type? ALL CBO b=name {answers.add($b.value);} (COMMA d=name {answers.add($d.value);})* CBC {builder.all($start.getLine(), $text, $a.value, $type.value, answers);};
+
+
 
 intervall returns[Double a, Double b]
 : SBO d1=d3double d2=d3double SBC {$a=$d1.value; $b=$d2.value;};

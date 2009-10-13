@@ -1,5 +1,5 @@
 /**
- * Grammatik zum Einlesen von Visiofiles und überführen selbiger in die Standard ANTLR-Baumrepräsenation
+ * Grammatik zum Einlesen von Visiofiles und ï¿½berfï¿½hren selbiger in die Standard ANTLR-Baumreprï¿½senation
  * @author Markus Friedrich
  *
  */
@@ -90,7 +90,7 @@ y : '<PinY>' mydouble -> ^(Ycoord mydouble);
 width: YtoWith c=mydouble '</Width>' -> ^(Width mydouble);
 height: '<Height>' d=mydouble HeighttoText -> ^(Height mydouble);
 shapetext: text '</Text></Shape>' -> ^(Shapetext text);
-textboxtext: 'Bildname:' file 'Größe:' a=INT 'x' b=INT 'Frage:' questionid 'Folgefragen:' popup* '</Text></Shape>' -> ^(Textboxtext file INT INT questionid popup*);
+textboxtext: 'Bildname:' file 'Grï¿½ï¿½e:' a=INT 'x' b=INT 'Frage:' questionid 'Folgefragen:' popup* '</Text></Shape>' -> ^(Textboxtext file INT INT questionid popup*);
 questionid : name -> ^(QID name);
 popup : (text ':' text ';') -> ^(Popup text text);
 text : name -> ^(Text name);

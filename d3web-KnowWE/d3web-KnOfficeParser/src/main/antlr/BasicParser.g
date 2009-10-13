@@ -51,3 +51,6 @@ eqncalc : eq|PLUS EQ|MINUS EQ;
 
 d3double returns [Double value]
 : MINUS? INT ((COMMA|DOT) INT)? {$value=parseDouble($text);};
+
+nameOrDouble returns [String value]
+:(MINUS INT | INT DOT | INT COMMA)=> d3double {$value=$d3double.value.toString();}| name {$value=$name.value;} | EX {$value=$text;} ;

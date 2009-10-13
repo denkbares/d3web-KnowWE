@@ -53,7 +53,7 @@ public class Modeltester {
 	public static void main(String[] args) throws IOException,
 			RecognitionException {
 		Locale.setDefault(Locale.GERMAN);
-		File file = new File("examples\\models\\Entscheidungsbaum.txt");
+		File file = new File("src\\main\\examples\\models\\Entscheidungsbaum.txt");
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();
 		SingleKBMIDObjectManager idom = new SingleKBMIDObjectManager(kbm);
 		D3DTBuilder builder = new D3DTBuilder(file.toString(), idom);
@@ -68,7 +68,7 @@ public class Modeltester {
 		for (Message m: errors) {
 			System.out.println(m);
 		}
-		file = new File("examples\\models\\komplexeRegeln.txt");
+		file = new File("src\\main\\examples\\models\\komplexeRegeln.txt");
 		D3ruleBuilder builder2 = new D3ruleBuilder(file.toString(), false, idom);
 //		builder2.setLazy(true);
 //		builder2.setBuildonlywith0Errors(true);
@@ -78,7 +78,7 @@ public class Modeltester {
 		for (Message m: errors) {
 			System.out.println(m);
 		}
-		file = new File("examples\\models\\XCL.txt");
+		file = new File("src\\main\\examples\\models\\XCL.txt");
 		XCLd3webBuilder builder3 = new XCLd3webBuilder(file.toString(),false, false, idom);
 		builder3.setCreateUncompleteFindings(false);
 		errors=(List<Message>) builder3.addKnowledge(new FileReader(file), idom, null);

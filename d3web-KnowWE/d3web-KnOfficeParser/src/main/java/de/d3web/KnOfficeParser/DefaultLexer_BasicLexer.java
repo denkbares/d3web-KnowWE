@@ -1,37 +1,12 @@
-/*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
-// $ANTLR 3.1 BasicLexer.g 2009-03-23 13:54:44
+// $ANTLR 3.1 BasicLexer.g 2009-10-09 16:32:41
 
 package de.d3web.KnOfficeParser;
 
 
-import org.antlr.runtime.BaseRecognizer;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.DFA;
-import org.antlr.runtime.EarlyExitException;
-import org.antlr.runtime.Lexer;
-import org.antlr.runtime.MismatchedSetException;
-import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.RecognizerSharedState;
+import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Lexer zum Import in andere Grammatiken, stellt grundlegende Token bereit
@@ -42,11 +17,11 @@ public class DefaultLexer_BasicLexer extends Lexer {
     public static final int HIDE=38;
     public static final int RP=16;
     public static final int ORS=12;
-    public static final int FUZZY=53;
+    public static final int FUZZY=54;
     public static final int LP=15;
-    public static final int ABSTRACT=50;
+    public static final int ABSTRACT=51;
     public static final int NOT=37;
-    public static final int ID=56;
+    public static final int ID=57;
     public static final int AND=35;
     public static final int EXCEPT=39;
     public static final int EOF=-1;
@@ -79,20 +54,21 @@ public class DefaultLexer_BasicLexer extends Lexer {
     public static final int DEFAULT=49;
     public static final int INTER=45;
     public static final int KNOWN=41;
-    public static final int SET=51;
+    public static final int SET=52;
     public static final int INT=5;
-    public static final int DIVNORM=55;
+    public static final int DIVNORM=56;
     public static final int MINUS=27;
-    public static final int Tokens=58;
+    public static final int Tokens=59;
     public static final int SEMI=9;
-    public static final int REF=52;
+    public static final int REF=53;
     public static final int WS=30;
-    public static final int BLUB=57;
+    public static final int BLUB=58;
     public static final int CBC=18;
     public static final int OR=36;
     public static final int SBO=19;
-    public static final int DIVTEXT=54;
+    public static final int DIVTEXT=55;
     public static final int DIV=29;
+    public static final int INIT=50;
     public static final int CBO=17;
     public static final int LE=21;
 
@@ -1568,17 +1544,38 @@ public class DefaultLexer_BasicLexer extends Lexer {
     }
     // $ANTLR end "DEFAULT"
 
+    // $ANTLR start "INIT"
+    public final void mINIT() throws RecognitionException {
+        try {
+            int _type = INIT;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // BasicLexer.g:91:5: ( '<init>' )
+            // BasicLexer.g:91:7: '<init>'
+            {
+            match("<init>"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "INIT"
+
     // $ANTLR start "ABSTRACT"
     public final void mABSTRACT() throws RecognitionException {
         try {
             int _type = ABSTRACT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:91:9: ( '<abstrakt>' | '<abstract>' )
+            // BasicLexer.g:92:9: ( '<abstrakt>' | '<abstract>' )
             int alt16=2;
             alt16 = dfa16.predict(input);
             switch (alt16) {
                 case 1 :
-                    // BasicLexer.g:91:11: '<abstrakt>'
+                    // BasicLexer.g:92:11: '<abstrakt>'
                     {
                     match("<abstrakt>"); 
 
@@ -1586,7 +1583,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:91:24: '<abstract>'
+                    // BasicLexer.g:92:24: '<abstract>'
                     {
                     match("<abstract>"); 
 
@@ -1608,8 +1605,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = SET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:92:4: ( 'SET' )
-            // BasicLexer.g:92:6: 'SET'
+            // BasicLexer.g:93:4: ( 'SET' )
+            // BasicLexer.g:93:6: 'SET'
             {
             match("SET"); 
 
@@ -1629,8 +1626,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = REF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:93:4: ( '&REF' )
-            // BasicLexer.g:93:6: '&REF'
+            // BasicLexer.g:94:4: ( '&REF' )
+            // BasicLexer.g:94:6: '&REF'
             {
             match("&REF"); 
 
@@ -1650,8 +1647,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = FUZZY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:94:6: ( 'FUZZY' )
-            // BasicLexer.g:94:8: 'FUZZY'
+            // BasicLexer.g:95:6: ( 'FUZZY' )
+            // BasicLexer.g:95:8: 'FUZZY'
             {
             match("FUZZY"); 
 
@@ -1671,8 +1668,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = DIVTEXT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:95:8: ( 'DIV' )
-            // BasicLexer.g:95:10: 'DIV'
+            // BasicLexer.g:96:8: ( 'DIV' )
+            // BasicLexer.g:96:10: 'DIV'
             {
             match("DIV"); 
 
@@ -1692,8 +1689,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = DIVNORM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:96:8: ( 'DIV-NORM' )
-            // BasicLexer.g:96:10: 'DIV-NORM'
+            // BasicLexer.g:97:8: ( 'DIV-NORM' )
+            // BasicLexer.g:97:10: 'DIV-NORM'
             {
             match("DIV-NORM"); 
 
@@ -1713,10 +1710,10 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:98:3: ( ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+ )
-            // BasicLexer.g:98:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
+            // BasicLexer.g:99:3: ( ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+ )
+            // BasicLexer.g:99:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
             {
-            // BasicLexer.g:98:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
+            // BasicLexer.g:99:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
             int cnt17=0;
             loop17:
             do {
@@ -1766,8 +1763,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
     // $ANTLR end "ID"
 
     public void mTokens() throws RecognitionException {
-        // BasicLexer.g:1:8: ( String | INT | DOT | DD | COMMA | SEMI | EX | AT | ORS | NS | TILDE | LP | RP | CBO | CBC | SBO | SBC | LE | L | GE | G | EQ | PLUS | MINUS | PROD | DIV | WS | COMMENT | NL | IF | THEN | AND | OR | NOT | HIDE | EXCEPT | UNKNOWN | KNOWN | INSTANT | MINMAX | IN | INTER | ALL | ALLOWEDNAMES | INCLUDE | DEFAULT | ABSTRACT | SET | REF | FUZZY | DIVTEXT | DIVNORM | ID )
-        int alt18=53;
+        // BasicLexer.g:1:8: ( String | INT | DOT | DD | COMMA | SEMI | EX | AT | ORS | NS | TILDE | LP | RP | CBO | CBC | SBO | SBC | LE | L | GE | G | EQ | PLUS | MINUS | PROD | DIV | WS | COMMENT | NL | IF | THEN | AND | OR | NOT | HIDE | EXCEPT | UNKNOWN | KNOWN | INSTANT | MINMAX | IN | INTER | ALL | ALLOWEDNAMES | INCLUDE | DEFAULT | INIT | ABSTRACT | SET | REF | FUZZY | DIVTEXT | DIVNORM | ID )
+        int alt18=54;
         alt18 = dfa18.predict(input);
         switch (alt18) {
             case 1 :
@@ -2093,49 +2090,56 @@ public class DefaultLexer_BasicLexer extends Lexer {
                 }
                 break;
             case 47 :
-                // BasicLexer.g:1:229: ABSTRACT
+                // BasicLexer.g:1:229: INIT
+                {
+                mINIT(); 
+
+                }
+                break;
+            case 48 :
+                // BasicLexer.g:1:234: ABSTRACT
                 {
                 mABSTRACT(); 
 
                 }
                 break;
-            case 48 :
-                // BasicLexer.g:1:238: SET
+            case 49 :
+                // BasicLexer.g:1:243: SET
                 {
                 mSET(); 
 
                 }
                 break;
-            case 49 :
-                // BasicLexer.g:1:242: REF
+            case 50 :
+                // BasicLexer.g:1:247: REF
                 {
                 mREF(); 
 
                 }
                 break;
-            case 50 :
-                // BasicLexer.g:1:246: FUZZY
+            case 51 :
+                // BasicLexer.g:1:251: FUZZY
                 {
                 mFUZZY(); 
 
                 }
                 break;
-            case 51 :
-                // BasicLexer.g:1:252: DIVTEXT
+            case 52 :
+                // BasicLexer.g:1:257: DIVTEXT
                 {
                 mDIVTEXT(); 
 
                 }
                 break;
-            case 52 :
-                // BasicLexer.g:1:260: DIVNORM
+            case 53 :
+                // BasicLexer.g:1:265: DIVNORM
                 {
                 mDIVNORM(); 
 
                 }
                 break;
-            case 53 :
-                // BasicLexer.g:1:268: ID
+            case 54 :
+                // BasicLexer.g:1:273: ID
                 {
                 mID(); 
 
@@ -2204,61 +2208,63 @@ public class DefaultLexer_BasicLexer extends Lexer {
             this.transition = DFA16_transition;
         }
         public String getDescription() {
-            return "91:1: ABSTRACT : ( '<abstrakt>' | '<abstract>' );";
+            return "92:1: ABSTRACT : ( '<abstrakt>' | '<abstract>' );";
         }
     }
     static final String DFA18_eotS =
         "\12\uffff\1\56\7\uffff\1\63\1\65\4\uffff\1\67\2\uffff\21\54\14"+
-        "\uffff\1\54\1\121\1\124\10\54\1\137\15\54\1\uffff\2\54\1\uffff\1"+
-        "\54\1\161\1\54\1\163\2\54\1\163\1\54\1\170\1\54\1\uffff\1\54\1\173"+
-        "\6\54\1\u0082\3\54\1\121\2\54\1\u0088\2\uffff\1\u0088\1\uffff\3"+
-        "\54\1\170\1\uffff\1\137\1\54\1\uffff\1\54\1\u008e\4\54\1\uffff\1"+
-        "\54\1\u0094\2\54\1\u0097\1\uffff\3\54\1\173\1\54\1\uffff\2\54\1"+
-        "\u009e\2\54\1\uffff\1\u00a1\1\54\1\uffff\2\54\1\u00a5\1\54\1\u00a5"+
-        "\1\54\1\uffff\1\u00a8\1\u00a9\1\uffff\1\u00a8\1\54\1\u00ab\1\uffff"+
-        "\1\54\1\u009e\2\uffff\1\54\1\uffff\1\u008e\1\u00ab";
+        "\uffff\1\54\1\122\1\125\10\54\1\140\14\54\1\uffff\1\54\1\uffff\2"+
+        "\54\1\uffff\1\54\1\164\1\54\1\166\2\54\1\166\1\54\1\173\1\54\1\uffff"+
+        "\1\54\1\176\6\54\1\u0085\3\54\2\uffff\1\122\2\54\1\u008b\2\uffff"+
+        "\1\u008b\1\uffff\3\54\1\173\1\uffff\1\140\1\54\1\uffff\1\54\1\u0091"+
+        "\4\54\1\uffff\1\54\1\u0097\2\54\1\u009a\1\uffff\3\54\1\176\1\54"+
+        "\1\uffff\2\54\1\u00a1\2\54\1\uffff\1\u00a4\1\54\1\uffff\2\54\1\u00a8"+
+        "\1\54\1\u00a8\1\54\1\uffff\1\u00ab\1\u00ac\1\uffff\1\u00ab\1\54"+
+        "\1\u00ae\1\uffff\1\54\1\u00a1\2\uffff\1\54\1\uffff\1\u0091\1\u00ae";
     static final String DFA18_eofS =
-        "\u00ae\uffff";
+        "\u00b1\uffff";
     static final String DFA18_minS =
         "\1\11\11\uffff\1\43\7\uffff\2\75\4\uffff\1\57\2\uffff\1\105\1\106"+
         "\1\101\1\110\1\116\1\114\1\104\1\111\1\105\1\111\1\130\1\105\1\116"+
-        "\1\105\1\111\1\122\1\125\14\uffff\1\116\2\44\1\116\1\126\1\105\1"+
-        "\102\1\104\1\123\1\114\1\105\1\44\1\103\1\124\1\122\1\104\1\103"+
-        "\1\113\1\117\1\106\1\124\1\116\1\105\1\132\1\116\1\uffff\1\124\1"+
-        "\105\1\uffff\1\116\1\44\1\116\1\44\1\105\1\116\1\44\1\123\1\44\1"+
-        "\122\1\uffff\1\110\1\44\1\102\2\105\1\101\1\127\1\117\1\44\1\115"+
-        "\1\106\1\132\1\44\1\101\1\122\1\44\2\uffff\1\44\1\uffff\1\113\1"+
-        "\117\1\105\1\44\1\uffff\1\44\1\124\1\uffff\1\105\1\44\1\120\2\116"+
-        "\1\122\1\uffff\1\101\1\44\1\131\1\116\1\44\1\uffff\1\101\1\127\1"+
-        "\122\1\44\1\122\1\uffff\1\124\1\116\1\44\1\124\1\130\1\uffff\1\44"+
-        "\1\124\1\uffff\2\116\1\44\1\107\1\44\1\124\1\uffff\2\44\1\uffff"+
-        "\1\44\1\116\1\44\1\uffff\1\105\1\44\2\uffff\1\124\1\uffff\2\44";
+        "\1\105\1\111\1\122\1\125\4\uffff\1\156\7\uffff\1\116\2\44\1\116"+
+        "\1\126\1\105\1\102\1\104\1\123\1\114\1\105\1\44\1\103\1\124\1\122"+
+        "\1\104\1\103\1\113\1\117\1\106\1\124\1\116\1\105\1\132\1\143\1\116"+
+        "\1\uffff\1\124\1\105\1\uffff\1\116\1\44\1\116\1\44\1\105\1\116\1"+
+        "\44\1\123\1\44\1\122\1\uffff\1\110\1\44\1\102\2\105\1\101\1\127"+
+        "\1\117\1\44\1\115\1\106\1\132\2\uffff\1\44\1\101\1\122\1\44\2\uffff"+
+        "\1\44\1\uffff\1\113\1\117\1\105\1\44\1\uffff\1\44\1\124\1\uffff"+
+        "\1\105\1\44\1\120\2\116\1\122\1\uffff\1\101\1\44\1\131\1\116\1\44"+
+        "\1\uffff\1\101\1\127\1\122\1\44\1\122\1\uffff\1\124\1\116\1\44\1"+
+        "\124\1\130\1\uffff\1\44\1\124\1\uffff\2\116\1\44\1\107\1\44\1\124"+
+        "\1\uffff\2\44\1\uffff\1\44\1\116\1\44\1\uffff\1\105\1\44\2\uffff"+
+        "\1\124\1\uffff\2\44";
     static final String DFA18_maxS =
         "\1\uefff\11\uffff\1\43\7\uffff\1\151\1\75\4\uffff\1\57\2\uffff"+
         "\1\105\1\116\1\111\1\110\1\116\1\125\1\122\1\117\1\105\1\111\1\130"+
-        "\1\105\1\116\1\117\1\111\1\122\1\125\14\uffff\1\116\2\uefff\1\116"+
-        "\1\126\1\105\1\113\1\104\1\123\1\114\1\105\1\uefff\1\103\1\124\1"+
-        "\122\1\104\1\103\1\113\1\117\1\106\1\124\1\116\1\105\1\132\1\116"+
-        "\1\uffff\1\124\1\105\1\uffff\1\116\1\uefff\1\116\1\uefff\1\105\1"+
-        "\116\1\uefff\1\123\1\uefff\1\122\1\uffff\1\110\1\uefff\1\102\2\105"+
-        "\1\101\1\127\1\117\1\uefff\1\115\1\106\1\132\1\uefff\1\101\1\122"+
-        "\1\uefff\2\uffff\1\uefff\1\uffff\1\113\1\117\1\105\1\uefff\1\uffff"+
-        "\1\uefff\1\124\1\uffff\1\105\1\uefff\1\120\2\116\1\122\1\uffff\1"+
-        "\101\1\uefff\1\131\1\116\1\uefff\1\uffff\1\101\1\127\1\122\1\uefff"+
-        "\1\122\1\uffff\1\124\1\116\1\uefff\1\124\1\130\1\uffff\1\uefff\1"+
-        "\124\1\uffff\2\116\1\uefff\1\107\1\uefff\1\124\1\uffff\2\uefff\1"+
-        "\uffff\1\uefff\1\116\1\uefff\1\uffff\1\105\1\uefff\2\uffff\1\124"+
-        "\1\uffff\2\uefff";
+        "\1\105\1\116\1\117\1\111\1\122\1\125\4\uffff\1\156\7\uffff\1\116"+
+        "\2\uefff\1\116\1\126\1\105\1\113\1\104\1\123\1\114\1\105\1\uefff"+
+        "\1\103\1\124\1\122\1\104\1\103\1\113\1\117\1\106\1\124\1\116\1\105"+
+        "\1\132\1\151\1\116\1\uffff\1\124\1\105\1\uffff\1\116\1\uefff\1\116"+
+        "\1\uefff\1\105\1\116\1\uefff\1\123\1\uefff\1\122\1\uffff\1\110\1"+
+        "\uefff\1\102\2\105\1\101\1\127\1\117\1\uefff\1\115\1\106\1\132\2"+
+        "\uffff\1\uefff\1\101\1\122\1\uefff\2\uffff\1\uefff\1\uffff\1\113"+
+        "\1\117\1\105\1\uefff\1\uffff\1\uefff\1\124\1\uffff\1\105\1\uefff"+
+        "\1\120\2\116\1\122\1\uffff\1\101\1\uefff\1\131\1\116\1\uefff\1\uffff"+
+        "\1\101\1\127\1\122\1\uefff\1\122\1\uffff\1\124\1\116\1\uefff\1\124"+
+        "\1\130\1\uffff\1\uefff\1\124\1\uffff\2\116\1\uefff\1\107\1\uefff"+
+        "\1\124\1\uffff\2\uefff\1\uffff\1\uefff\1\116\1\uefff\1\uffff\1\105"+
+        "\1\uefff\2\uffff\1\124\1\uffff\2\uefff";
     static final String DFA18_acceptS =
         "\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\uffff\1\13\1\14"+
         "\1\15\1\16\1\17\1\20\1\21\2\uffff\1\26\1\27\1\30\1\31\1\uffff\1"+
-        "\33\1\35\21\uffff\1\65\1\54\1\12\1\22\1\55\1\56\1\57\1\23\1\24\1"+
-        "\25\1\34\1\32\31\uffff\1\36\2\uffff\1\51\12\uffff\1\41\20\uffff"+
-        "\1\64\1\63\1\uffff\1\40\4\uffff\1\53\2\uffff\1\42\6\uffff\1\60\5"+
-        "\uffff\1\37\5\uffff\1\43\5\uffff\1\61\2\uffff\1\52\6\uffff\1\46"+
-        "\2\uffff\1\62\3\uffff\1\44\2\uffff\1\47\1\50\1\uffff\1\45\2\uffff";
+        "\33\1\35\21\uffff\1\66\1\54\1\12\1\22\1\uffff\1\56\1\60\1\23\1\24"+
+        "\1\25\1\34\1\32\32\uffff\1\36\2\uffff\1\51\12\uffff\1\41\14\uffff"+
+        "\1\55\1\57\4\uffff\1\65\1\64\1\uffff\1\40\4\uffff\1\53\2\uffff\1"+
+        "\42\6\uffff\1\61\5\uffff\1\37\5\uffff\1\43\5\uffff\1\62\2\uffff"+
+        "\1\52\6\uffff\1\46\2\uffff\1\63\3\uffff\1\44\2\uffff\1\47\1\50\1"+
+        "\uffff\1\45\2\uffff";
     static final String DFA18_specialS =
-        "\u00ae\uffff}>";
+        "\u00b1\uffff}>";
     static final String[] DFA18_transitionS = {
             "\1\31\1\32\2\uffff\1\32\22\uffff\1\31\1\7\1\1\1\12\2\54\1\52"+
             "\1\54\1\14\1\15\1\27\1\25\1\5\1\26\1\3\1\30\12\2\1\4\1\6\1\22"+
@@ -2313,30 +2319,29 @@ public class DefaultLexer_BasicLexer extends Lexer {
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\120",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\121",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
-            "\4\54\27\uffff\1\54\1\uffff\22\54\1\122\1\123\6\54\4\uffff"+
+            "\4\54\27\uffff\1\54\1\uffff\22\54\1\123\1\124\6\54\4\uffff"+
             "\1\54\1\uffff\32\54\46\uffff\uef5f\54",
-            "\1\125",
             "\1\126",
             "\1\127",
-            "\1\131\1\uffff\1\130\6\uffff\1\132",
-            "\1\133",
+            "\1\130",
+            "\1\132\1\uffff\1\131\6\uffff\1\133",
             "\1\134",
             "\1\135",
             "\1\136",
+            "\1\137",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
-            "\1\140",
             "\1\141",
             "\1\142",
             "\1\143",
@@ -2349,120 +2354,124 @@ public class DefaultLexer_BasicLexer extends Lexer {
             "\1\152",
             "\1\153",
             "\1\154",
-            "",
-            "\1\155",
-            "\1\156",
-            "",
+            "\1\155\5\uffff\1\156",
             "\1\157",
-            "\4\54\5\uffff\1\160\21\uffff\1\54\1\uffff\32\54\4\uffff\1"+
-            "\54\1\uffff\32\54\46\uffff\uef5f\54",
+            "",
+            "\1\160",
+            "\1\161",
+            "",
             "\1\162",
-            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
-            "\54\46\uffff\uef5f\54",
-            "\1\164",
+            "\4\54\5\uffff\1\163\21\uffff\1\54\1\uffff\32\54\4\uffff\1"+
+            "\54\1\uffff\32\54\46\uffff\uef5f\54",
             "\1\165",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
-            "\1\166",
-            "\4\54\27\uffff\1\54\1\uffff\4\54\1\167\25\54\4\uffff\1\54"+
-            "\1\uffff\32\54\46\uffff\uef5f\54",
-            "\1\171",
-            "",
-            "\1\172",
+            "\1\167",
+            "\1\170",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
+            "\1\171",
+            "\4\54\27\uffff\1\54\1\uffff\4\54\1\172\25\54\4\uffff\1\54"+
+            "\1\uffff\32\54\46\uffff\uef5f\54",
             "\1\174",
+            "",
             "\1\175",
-            "\1\176",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\1\177",
             "\1\u0080",
             "\1\u0081",
-            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
-            "\54\46\uffff\uef5f\54",
+            "\1\u0082",
             "\1\u0083",
             "\1\u0084",
-            "\1\u0085",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
             "\1\u0086",
             "\1\u0087",
-            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
-            "\54\46\uffff\uef5f\54",
+            "\1\u0088",
             "",
             "",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
-            "",
             "\1\u0089",
             "\1\u008a",
-            "\1\u008b",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
             "",
+            "",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
+            "",
             "\1\u008c",
-            "",
             "\1\u008d",
+            "\1\u008e",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
             "\1\u008f",
-            "\1\u0090",
-            "\1\u0091",
-            "\1\u0092",
             "",
-            "\1\u0093",
+            "\1\u0090",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
+            "\1\u0092",
+            "\1\u0093",
+            "\1\u0094",
             "\1\u0095",
+            "",
             "\1\u0096",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
-            "",
             "\1\u0098",
             "\1\u0099",
-            "\1\u009a",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
-            "\1\u009b",
             "",
+            "\1\u009b",
             "\1\u009c",
             "\1\u009d",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
+            "\1\u009e",
+            "",
             "\1\u009f",
             "\1\u00a0",
-            "",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
             "\1\u00a2",
-            "",
             "\1\u00a3",
-            "\1\u00a4",
+            "",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
+            "\1\u00a5",
+            "",
             "\1\u00a6",
-            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
-            "\54\46\uffff\uef5f\54",
             "\1\u00a7",
-            "",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
-            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
-            "\54\46\uffff\uef5f\54",
-            "",
+            "\1\u00a9",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
             "\1\u00aa",
+            "",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
             "",
-            "\1\u00ac",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
-            "",
-            "",
             "\1\u00ad",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "",
+            "\1\u00af",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "",
+            "",
+            "\1\u00b0",
             "",
             "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
             "\54\46\uffff\uef5f\54",
@@ -2500,7 +2509,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             this.transition = DFA18_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( String | INT | DOT | DD | COMMA | SEMI | EX | AT | ORS | NS | TILDE | LP | RP | CBO | CBC | SBO | SBC | LE | L | GE | G | EQ | PLUS | MINUS | PROD | DIV | WS | COMMENT | NL | IF | THEN | AND | OR | NOT | HIDE | EXCEPT | UNKNOWN | KNOWN | INSTANT | MINMAX | IN | INTER | ALL | ALLOWEDNAMES | INCLUDE | DEFAULT | ABSTRACT | SET | REF | FUZZY | DIVTEXT | DIVNORM | ID );";
+            return "1:1: Tokens : ( String | INT | DOT | DD | COMMA | SEMI | EX | AT | ORS | NS | TILDE | LP | RP | CBO | CBC | SBO | SBC | LE | L | GE | G | EQ | PLUS | MINUS | PROD | DIV | WS | COMMENT | NL | IF | THEN | AND | OR | NOT | HIDE | EXCEPT | UNKNOWN | KNOWN | INSTANT | MINMAX | IN | INTER | ALL | ALLOWEDNAMES | INCLUDE | DEFAULT | INIT | ABSTRACT | SET | REF | FUZZY | DIVTEXT | DIVNORM | ID );";
         }
     }
  

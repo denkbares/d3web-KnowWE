@@ -151,7 +151,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	 */
 	@Override
 	public void addAnswerOrQuestionLink(int dashes, String name, String ref,
-			List<String> syn, boolean def, int line, String linetext,
+			List<String> syn, boolean def, boolean init, int line, String linetext,
 			String idlink) {
 		if (questionStack.isEmpty()) {
 			errors.add(MessageKnOfficeGenerator.createNoQuestionOnStack(file,
@@ -206,6 +206,14 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 										.createDescriptionTextNotFoundError(
 												file, line, linetext, idlink)));
 			}
+			//answer is the default answer
+			if (def) {
+				setAnswerPropertytoCurrentQuestion(answer, Property.DEFAULT);
+			}
+			//the question is initialised with this answer
+			if (init) {
+				setAnswerPropertytoCurrentQuestion(answer, Property.INIT);
+			}
 		}
 		// Link
 		else if (dashes == questionStack.peek().first + 2) {
@@ -227,6 +235,23 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					linetext));
 		}
 
+	}
+
+	private void setAnswerPropertytoCurrentQuestion(AnswerChoice answer, Property property) {
+		Properties properties = currentQuestion.getProperties();
+		Object defproperty = properties.getProperty(property);
+		if (defproperty!=null) {
+			if (defproperty instanceof String) {
+				String s = (String) defproperty;
+				if (!s.contains(answer.getId())) {
+					s+=";"+answer.getId();
+					defproperty=s;
+				}
+			}
+		} else {
+			defproperty=answer.getId();
+		}
+		properties.setProperty(property, defproperty);
 	}
 
 	private void addQcontainerIndication(String name, String ref,
@@ -447,7 +472,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	 */
 	@Override
 	public void addInclude(String url, int line, String linetext) {
-		// wird atm nicht benötigt
+		// wird atm nicht ben�tigt
 	}
 
 	/*
@@ -474,6 +499,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			errors.add(MessageKnOfficeGenerator.createNoNumQuestionException(
 					file, line, linetext));
 		}
+		
 	}
 
 	/*
@@ -826,7 +852,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	public void addManyQuestionClassLink(int dashes, List<String> qcs,
 			int line, String string) {
 		for (String s : qcs) {
-			addAnswerOrQuestionLink(dashes, s, null, null, false, line, string,
+			addAnswerOrQuestionLink(dashes, s, null, null, false, false, line, string,
 					null);
 		}
 
