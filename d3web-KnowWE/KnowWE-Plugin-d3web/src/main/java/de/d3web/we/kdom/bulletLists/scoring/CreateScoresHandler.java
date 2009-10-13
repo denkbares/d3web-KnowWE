@@ -50,7 +50,9 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 					.getKnowledgeRepresentationHandler().getKBM(s);
 
 			boolean lazy = isLazy(s);
-
+			
+			if(kbm == null) return; //dirty hack for testing
+			
 			Diagnosis d = kbm.findDiagnosis(solution);
 			if (d == null && lazy) {
 				d = createSolution(solution, kbm);
