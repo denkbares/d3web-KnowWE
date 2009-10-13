@@ -9,9 +9,9 @@ import java.util.regex.Matcher;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
-public class ScoringListType extends AbstractXMLObjectType{
+public class BulletScoring extends AbstractXMLObjectType{
 	
-	public ScoringListType() {
+	public BulletScoring() {
 		super("BulletScoring");
 	}
 	

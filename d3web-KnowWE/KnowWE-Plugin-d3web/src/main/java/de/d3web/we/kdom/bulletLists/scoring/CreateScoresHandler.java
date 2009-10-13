@@ -28,11 +28,11 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 	public void reviseSubtree(Section s) {
 
 		Section scoringSection = KnowWEObjectTypeUtils.getAncestorOfType(s,
-				ScoringListType.class);
-		List<String> targets = ScoringListType
+				BulletScoring.class);
+		List<String> targets = BulletScoring
 				.getScoringTargets(scoringSection);
 
-		String defaultValue = ScoringListType.getDefaultValue(scoringSection);
+		String defaultValue = BulletScoring.getDefaultValue(scoringSection);
 
 		for (String string : targets) {
 			createScoringRule(string, defaultValue, s);
@@ -86,7 +86,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 
 	private boolean isLazy(Section s) {
 		Section scoringSection = KnowWEObjectTypeUtils.getAncestorOfType(s,
-				ScoringListType.class);
+				BulletScoring.class);
 		Map<String, String> attributes = AbstractXMLObjectType
 				.getAttributeMapFor(scoringSection);
 
