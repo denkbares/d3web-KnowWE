@@ -638,7 +638,6 @@ public class KnowWEEnvironment {
 	 * @return this.wikiConnector
 	 */
 	public KnowWEWikiConnector getWikiConnector() {
-		// TODO Auto-generated method stub
 		return this.wikiConnector;
 	}
 
