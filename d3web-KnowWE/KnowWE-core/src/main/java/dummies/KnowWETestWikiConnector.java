@@ -89,14 +89,6 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		return "some-base-URL";
 	}
 
-
-
-	@Override
-	public String getPagePath() {
-		// TODO Auto-generated method stub
-		return "some-path";
-	}
-
 	@Override
 	public ServletContext getServletContext() {
 		// TODO Auto-generated method stub
