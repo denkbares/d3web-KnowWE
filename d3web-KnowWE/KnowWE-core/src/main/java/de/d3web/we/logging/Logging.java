@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -41,34 +42,32 @@ public class Logging {
     private Map<String, FileHandler> handlerMap = new HashMap<String, FileHandler>();
     
     private Logging() {
-        this.logger = this.getLogger(this.getClass());
-        this.addHandlerToLogger(logger, "Logging.log");
-    }
+		this.logger = this.getLogger();
+	}
 
 
     public static Logging getInstance() {
         return instance;
     }
-    
-    
-    public void log(Class class1, Level level, String message) {
-        log(class1, level, message, null, null);
+        
+    public void log(Level level, String message) {
+        log(level, message, null, null);
     }
     
     
-    public void log(Class class1, Level level, String message, String plugin) {
-        log(class1, level, message, null, plugin);    
+    public void log(Level level, String message, String plugin) {
+        log(level, message, null, plugin);    
     }
-
+    
     /**
+     * !!!!!!! Way better than the simple log method !!!!!!
+     * Logs the correct class and method.
      * gets the Logger of the specified class, logs a message with the specified level
      * and an optional user or plugin. If user is null, only the message and the plugin
      * will be logged, if plugin is null only the message and the user will be logged.
      * If both are null only the message will be logged.
-     * It is recommended to add the class and the method to the message, as the call
-     * to the logger comes from this class and this method.
      */
-    public void log(Class class1, Level level, String message, String user,
+    public void log(Level level, String message, String user,
 			String plugin) {
     	
     	// build the "extended" message
@@ -81,14 +80,15 @@ public class Logging {
     	}
     	
     	// log the message
-    	getLogger(class1).log(level, message);   		
+		getLogger().logp(level, getClassName(),
+				getCurrentMethodName(), message);
 	}
 
     /**
      * gets the Logger of a specified class
      */
-    public Logger getLogger(Class class1) {
-        String name = class1.getCanonicalName();
+    public Logger getLogger() {
+        String name = getClassName();
         
         // if the logger is already in the map
         if (logMap.containsKey(name)) {
@@ -108,8 +108,19 @@ public class Logging {
      * with Level.SEVERE to the Logger log. Also disables parenthandlers.
      */
     public void addHandlerToLogger(Logger log, String filename) {
+    	boolean alreadyHasHandler = false;
+    	
+    	// check if the Logger already has that FileHandler
+    	if (handlerMap.containsKey(filename)) {
+    		for (Handler h : log.getHandlers()) {
+    			if (h.equals(handlerMap.get(filename))) {
+    				alreadyHasHandler = true;
+    			}
+    		}
+    	}
+    	
         // only add the logger if its needed
-        if (log.getHandlers().length == 0) {
+        if (!alreadyHasHandler) {
             
             // if a FileHandler with the filename is already in the map
             if (handlerMap.containsKey(filename)) {
@@ -133,11 +144,11 @@ public class Logging {
     }
     
     
-    public void addHandlerToMap(String filename) {
+    private void addHandlerToMap(String filename) {
     	
     	// if no FileHandler with the specified filename is in the map
     	// add a new one
-        if (handlerMap.get(filename) == null) {
+        if (!handlerMap.containsKey(filename)) {
             FileHandler fh = null;
             try {
                 fh = new FileHandler(filename);
@@ -150,8 +161,47 @@ public class Logging {
             // set the formatting of the filehandler
             fh.setFormatter(new SimpleFormatter());
             handlerMap.put(filename, fh);
+
         }
     }
+    
+    /**
+     * returns the name of the current method via stack trace
+     * @return
+     */
+	private String getCurrentMethodName() {
+
+		String methodName = "";
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		
+		for (int i = 2; i < stackTrace.length; i++) {
+			if (!stackTrace[i].getMethodName().equals("log")) {
+				methodName = stackTrace[i].getMethodName();
+
+				break;
+			}
+		}
+		return methodName;
+	}
+	
+    /**
+     * returns the name of the current class via stack trace
+     * @return
+     */
+	private String getClassName() {
+
+		String className = "";
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		
+		for (int i = 2; i < stackTrace.length; i++) {
+			if (!stackTrace[i].getClassName().equals(
+					"de.d3web.we.logging.Logging")) {
+				className = stackTrace[i].getClassName();
+				break;
+			}
+		}
+		return className;
+	}
     
 
 }
