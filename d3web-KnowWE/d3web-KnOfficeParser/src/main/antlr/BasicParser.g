@@ -1,8 +1,8 @@
-parser grammar BasicParser;
+parser grammar BasicParser; 
 
 options {
 	language = Java;
-}
+} 
 @members{
 
   private ParserErrorHandler eh;

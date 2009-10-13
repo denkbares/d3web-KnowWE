@@ -1,5 +1,6 @@
-/**
- * Grammatik zum Einlesen von Visiofiles und �berf�hren selbiger in die Standard ANTLR-Baumrepr�senation
+/** 
+ * Grammatik zum Einlesen von Visiofiles und ueberfuehren selbiger 
+ * in die Standard ANTLR-Baumrepraesenation
  * @author Markus Friedrich
  *
  */

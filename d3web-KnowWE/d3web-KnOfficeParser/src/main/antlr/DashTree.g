@@ -1,5 +1,5 @@
 /**
- * Grammatik für Entscheidungsbäume
+ * Grammatik fuer Entscheidungsbaeume
  * @author Markus Friedrich
  *
  */

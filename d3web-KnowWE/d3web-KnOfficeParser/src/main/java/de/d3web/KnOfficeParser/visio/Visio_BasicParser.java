@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2009-10-09 16:50:21
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 BasicParser.g 2009-10-13 18:09:02
 
 package de.d3web.KnOfficeParser.visio;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -252,7 +252,7 @@ public class Visio_BasicParser extends Parser {
                     	case 1 :
                     	    // BasicParser.g:43:3: String
                     	    {
-                    	    String1=(Token)match(input,String,FOLLOW_String_in_name33); if (state.failed) return retval;
+                    	    String1=(Token)match(input,String,FOLLOW_String_in_name34); if (state.failed) return retval;
                     	    if ( state.backtracking==0 ) {
                     	    String1_tree = (Object)adaptor.create(String1);
                     	    adaptor.addChild(root_0, String1_tree);
@@ -325,7 +325,7 @@ public class Visio_BasicParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    String4=(Token)match(input,String,FOLLOW_String_in_name55); if (state.failed) return retval;
+                    String4=(Token)match(input,String,FOLLOW_String_in_name56); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     String4_tree = (Object)adaptor.create(String4);
                     adaptor.addChild(root_0, String4_tree);
@@ -386,17 +386,17 @@ public class Visio_BasicParser extends Parser {
             {
             root_0 = (Object)adaptor.nil();
 
-            SBO5=(Token)match(input,SBO,FOLLOW_SBO_in_type69); if (state.failed) return retval;
+            SBO5=(Token)match(input,SBO,FOLLOW_SBO_in_type70); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             SBO5_tree = (Object)adaptor.create(SBO5);
             adaptor.addChild(root_0, SBO5_tree);
             }
-            ID6=(Token)match(input,ID,FOLLOW_ID_in_type71); if (state.failed) return retval;
+            ID6=(Token)match(input,ID,FOLLOW_ID_in_type72); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             ID6_tree = (Object)adaptor.create(ID6);
             adaptor.addChild(root_0, ID6_tree);
             }
-            SBC7=(Token)match(input,SBC,FOLLOW_SBC_in_type73); if (state.failed) return retval;
+            SBC7=(Token)match(input,SBC,FOLLOW_SBC_in_type74); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             SBC7_tree = (Object)adaptor.create(SBC7);
             adaptor.addChild(root_0, SBC7_tree);
@@ -547,7 +547,7 @@ public class Visio_BasicParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_eq_in_eqncalc99);
+                    pushFollow(FOLLOW_eq_in_eqncalc100);
                     eq9=eq();
 
                     state._fsp--;
@@ -561,12 +561,12 @@ public class Visio_BasicParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    PLUS10=(Token)match(input,PLUS,FOLLOW_PLUS_in_eqncalc101); if (state.failed) return retval;
+                    PLUS10=(Token)match(input,PLUS,FOLLOW_PLUS_in_eqncalc102); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     PLUS10_tree = (Object)adaptor.create(PLUS10);
                     adaptor.addChild(root_0, PLUS10_tree);
                     }
-                    EQ11=(Token)match(input,EQ,FOLLOW_EQ_in_eqncalc103); if (state.failed) return retval;
+                    EQ11=(Token)match(input,EQ,FOLLOW_EQ_in_eqncalc104); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     EQ11_tree = (Object)adaptor.create(EQ11);
                     adaptor.addChild(root_0, EQ11_tree);
@@ -579,12 +579,12 @@ public class Visio_BasicParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    MINUS12=(Token)match(input,MINUS,FOLLOW_MINUS_in_eqncalc105); if (state.failed) return retval;
+                    MINUS12=(Token)match(input,MINUS,FOLLOW_MINUS_in_eqncalc106); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MINUS12_tree = (Object)adaptor.create(MINUS12);
                     adaptor.addChild(root_0, MINUS12_tree);
                     }
-                    EQ13=(Token)match(input,EQ,FOLLOW_EQ_in_eqncalc107); if (state.failed) return retval;
+                    EQ13=(Token)match(input,EQ,FOLLOW_EQ_in_eqncalc108); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     EQ13_tree = (Object)adaptor.create(EQ13);
                     adaptor.addChild(root_0, EQ13_tree);
@@ -655,7 +655,7 @@ public class Visio_BasicParser extends Parser {
                 case 1 :
                     // BasicParser.g:53:3: MINUS
                     {
-                    MINUS14=(Token)match(input,MINUS,FOLLOW_MINUS_in_d3double119); if (state.failed) return retval;
+                    MINUS14=(Token)match(input,MINUS,FOLLOW_MINUS_in_d3double120); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MINUS14_tree = (Object)adaptor.create(MINUS14);
                     adaptor.addChild(root_0, MINUS14_tree);
@@ -666,7 +666,7 @@ public class Visio_BasicParser extends Parser {
 
             }
 
-            INT15=(Token)match(input,INT,FOLLOW_INT_in_d3double122); if (state.failed) return retval;
+            INT15=(Token)match(input,INT,FOLLOW_INT_in_d3double123); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             INT15_tree = (Object)adaptor.create(INT15);
             adaptor.addChild(root_0, INT15_tree);
@@ -694,7 +694,7 @@ public class Visio_BasicParser extends Parser {
                         throw mse;
                     }
 
-                    INT17=(Token)match(input,INT,FOLLOW_INT_in_d3double131); if (state.failed) return retval;
+                    INT17=(Token)match(input,INT,FOLLOW_INT_in_d3double132); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     INT17_tree = (Object)adaptor.create(INT17);
                     adaptor.addChild(root_0, INT17_tree);
@@ -797,7 +797,7 @@ public class Visio_BasicParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_d3double_in_nameOrDouble165);
+                    pushFollow(FOLLOW_d3double_in_nameOrDouble166);
                     d3double18=d3double();
 
                     state._fsp--;
@@ -814,7 +814,7 @@ public class Visio_BasicParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_name_in_nameOrDouble170);
+                    pushFollow(FOLLOW_name_in_nameOrDouble171);
                     name19=name();
 
                     state._fsp--;
@@ -831,7 +831,7 @@ public class Visio_BasicParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    EX20=(Token)match(input,EX,FOLLOW_EX_in_nameOrDouble176); if (state.failed) return retval;
+                    EX20=(Token)match(input,EX,FOLLOW_EX_in_nameOrDouble177); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     EX20_tree = (Object)adaptor.create(EX20);
                     adaptor.addChild(root_0, EX20_tree);
@@ -901,24 +901,24 @@ public class Visio_BasicParser extends Parser {
             case 1 :
                 // BasicParser.g:56:3: MINUS INT
                 {
-                match(input,MINUS,FOLLOW_MINUS_in_synpred1_BasicParser147); if (state.failed) return ;
-                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser149); if (state.failed) return ;
+                match(input,MINUS,FOLLOW_MINUS_in_synpred1_BasicParser148); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser150); if (state.failed) return ;
 
                 }
                 break;
             case 2 :
                 // BasicParser.g:56:15: INT DOT
                 {
-                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser153); if (state.failed) return ;
-                match(input,DOT,FOLLOW_DOT_in_synpred1_BasicParser155); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser154); if (state.failed) return ;
+                match(input,DOT,FOLLOW_DOT_in_synpred1_BasicParser156); if (state.failed) return ;
 
                 }
                 break;
             case 3 :
                 // BasicParser.g:56:25: INT COMMA
                 {
-                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser159); if (state.failed) return ;
-                match(input,COMMA,FOLLOW_COMMA_in_synpred1_BasicParser161); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser160); if (state.failed) return ;
+                match(input,COMMA,FOLLOW_COMMA_in_synpred1_BasicParser162); if (state.failed) return ;
 
                 }
                 break;
@@ -946,31 +946,31 @@ public class Visio_BasicParser extends Parser {
 
  
 
-    public static final BitSet FOLLOW_String_in_name33 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_set_in_name36 = new BitSet(new long[]{0x0200000000000032L});
-    public static final BitSet FOLLOW_set_in_name42 = new BitSet(new long[]{0x0200000000000032L});
-    public static final BitSet FOLLOW_String_in_name55 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SBO_in_type69 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_ID_in_type71 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_type73 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_String_in_name34 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_set_in_name37 = new BitSet(new long[]{0x0200000000000032L});
+    public static final BitSet FOLLOW_set_in_name43 = new BitSet(new long[]{0x0200000000000032L});
+    public static final BitSet FOLLOW_String_in_name56 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SBO_in_type70 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_ID_in_type72 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_type74 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_eq0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_eq_in_eqncalc99 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PLUS_in_eqncalc101 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_EQ_in_eqncalc103 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_eqncalc105 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_EQ_in_eqncalc107 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_d3double119 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_d3double122 = new BitSet(new long[]{0x0000000000000142L});
-    public static final BitSet FOLLOW_set_in_d3double125 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_d3double131 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_d3double_in_nameOrDouble165 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_nameOrDouble170 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EX_in_nameOrDouble176 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_synpred1_BasicParser147 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser149 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser153 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_synpred1_BasicParser155 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser159 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_COMMA_in_synpred1_BasicParser161 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_eq_in_eqncalc100 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PLUS_in_eqncalc102 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_EQ_in_eqncalc104 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_eqncalc106 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_EQ_in_eqncalc108 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_d3double120 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_d3double123 = new BitSet(new long[]{0x0000000000000142L});
+    public static final BitSet FOLLOW_set_in_d3double126 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_d3double132 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_d3double_in_nameOrDouble166 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_nameOrDouble171 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EX_in_nameOrDouble177 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_synpred1_BasicParser148 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser150 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser154 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_synpred1_BasicParser156 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser160 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_COMMA_in_synpred1_BasicParser162 = new BitSet(new long[]{0x0000000000000002L});
 
 }

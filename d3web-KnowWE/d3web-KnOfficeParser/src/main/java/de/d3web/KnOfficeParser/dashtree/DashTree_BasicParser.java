@@ -1,4 +1,4 @@
-// $ANTLR 3.1 BasicParser.g 2009-10-13 10:40:10
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 BasicParser.g 2009-10-13 18:05:25
 
 package de.d3web.KnOfficeParser.dashtree;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -15,12 +15,12 @@ public class DashTree_BasicParser extends Parser {
     public static final int RP=16;
     public static final int ORS=12;
     public static final int LP=15;
-    public static final int FUZZY=54;
-    public static final int ABSTRACT=51;
+    public static final int FUZZY=53;
+    public static final int ABSTRACT=50;
     public static final int NOT=37;
     public static final int EXCEPT=39;
     public static final int AND=35;
-    public static final int ID=57;
+    public static final int ID=56;
     public static final int DD=7;
     public static final int EOF=-1;
     public static final int IF=33;
@@ -51,21 +51,20 @@ public class DashTree_BasicParser extends Parser {
     public static final int DEFAULT=49;
     public static final int INTER=45;
     public static final int KNOWN=41;
-    public static final int SET=52;
+    public static final int SET=51;
     public static final int INT=5;
     public static final int MINUS=27;
-    public static final int DIVNORM=56;
-    public static final int Tokens=59;
+    public static final int DIVNORM=55;
+    public static final int Tokens=58;
     public static final int SEMI=9;
-    public static final int REF=53;
+    public static final int REF=52;
     public static final int WS=30;
-    public static final int BLUB=58;
+    public static final int BLUB=57;
     public static final int OR=36;
     public static final int CBC=18;
     public static final int SBO=19;
-    public static final int DIVTEXT=55;
+    public static final int DIVTEXT=54;
     public static final int DIV=29;
-    public static final int INIT=50;
     public static final int CBO=17;
     public static final int LE=21;
 
@@ -650,9 +649,9 @@ public class DashTree_BasicParser extends Parser {
 
  
 
-    public static final BitSet FOLLOW_String_in_name33 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_set_in_name36 = new BitSet(new long[]{0x0200000000000032L});
-    public static final BitSet FOLLOW_set_in_name42 = new BitSet(new long[]{0x0200000000000032L});
+    public static final BitSet FOLLOW_String_in_name33 = new BitSet(new long[]{0x0100000000000030L});
+    public static final BitSet FOLLOW_set_in_name36 = new BitSet(new long[]{0x0100000000000032L});
+    public static final BitSet FOLLOW_set_in_name42 = new BitSet(new long[]{0x0100000000000032L});
     public static final BitSet FOLLOW_String_in_name55 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_eq0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_eq_in_eqncalc99 = new BitSet(new long[]{0x0000000000000002L});

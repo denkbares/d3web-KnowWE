@@ -1,4 +1,4 @@
-// $ANTLR 3.1 BasicLexer.g 2009-10-09 16:32:41
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 BasicLexer.g 2009-10-13 18:05:36
 
 package de.d3web.KnOfficeParser;
 
@@ -125,13 +125,13 @@ public class DefaultLexer_BasicLexer extends Lexer {
                 int alt1=2;
                 int LA1_0 = input.LA(1);
 
-                if ( ((LA1_0>='\u0000' && LA1_0<='[')||(LA1_0>=']' && LA1_0<='\uFFFE')) ) {
+                if ( ((LA1_0>='\u0000' && LA1_0<='[')||(LA1_0>=']' && LA1_0<='\uFFFF')) ) {
                     int LA1_1 = input.LA(2);
 
                     if ( (LA1_1=='\"') ) {
                         alt1=2;
                     }
-                    else if ( ((LA1_1>='\u0000' && LA1_1<='!')||(LA1_1>='#' && LA1_1<='\uFFFE')) ) {
+                    else if ( ((LA1_1>='\u0000' && LA1_1<='!')||(LA1_1>='#' && LA1_1<='\uFFFF')) ) {
                         alt1=1;
                     }
 
@@ -156,7 +156,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                 }
             } while (true);
 
-            if ( (input.LA(1)>='\u0000' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFE') ) {
+            if ( (input.LA(1)>='\u0000' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                 input.consume();
 
             }
@@ -756,7 +756,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                 if ( (LA3_0=='\n') ) {
                     alt3=2;
                 }
-                else if ( ((LA3_0>='\u0000' && LA3_0<='\t')||(LA3_0>='\u000B' && LA3_0<='\uFFFE')) ) {
+                else if ( ((LA3_0>='\u0000' && LA3_0<='\t')||(LA3_0>='\u000B' && LA3_0<='\uFFFF')) ) {
                     alt3=1;
                 }
 

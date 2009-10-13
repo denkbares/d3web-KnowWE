@@ -1,5 +1,5 @@
 /**
- * Grammatik für XCL Grammatiken
+ * Grammatik fuer XCL Grammatiken
  * @author Markus Friedrich
  *
  */

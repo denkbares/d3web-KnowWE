@@ -1,4 +1,4 @@
-// $ANTLR 3.1 BasicParser.g 2009-10-09 16:33:57
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 BasicParser.g 2009-10-13 18:10:13
 
 package de.d3web.KnOfficeParser.decisiontree;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -188,7 +188,7 @@ public class DecisionTree_BasicParser extends Parser {
                     	case 1 :
                     	    // BasicParser.g:43:3: String
                     	    {
-                    	    match(input,String,FOLLOW_String_in_name33); if (state.failed) return retval;
+                    	    match(input,String,FOLLOW_String_in_name35); if (state.failed) return retval;
 
                     	    }
                     	    break;
@@ -251,7 +251,7 @@ public class DecisionTree_BasicParser extends Parser {
                 case 2 :
                     // BasicParser.g:44:3: String
                     {
-                    String1=(Token)match(input,String,FOLLOW_String_in_name55); if (state.failed) return retval;
+                    String1=(Token)match(input,String,FOLLOW_String_in_name57); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                       retval.value =delQuotes((String1!=null?String1.getText():null));
                     }
@@ -351,7 +351,7 @@ public class DecisionTree_BasicParser extends Parser {
                 case 1 :
                     // BasicParser.g:50:11: eq
                     {
-                    pushFollow(FOLLOW_eq_in_eqncalc99);
+                    pushFollow(FOLLOW_eq_in_eqncalc101);
                     eq();
 
                     state._fsp--;
@@ -362,16 +362,16 @@ public class DecisionTree_BasicParser extends Parser {
                 case 2 :
                     // BasicParser.g:50:14: PLUS EQ
                     {
-                    match(input,PLUS,FOLLOW_PLUS_in_eqncalc101); if (state.failed) return ;
-                    match(input,EQ,FOLLOW_EQ_in_eqncalc103); if (state.failed) return ;
+                    match(input,PLUS,FOLLOW_PLUS_in_eqncalc103); if (state.failed) return ;
+                    match(input,EQ,FOLLOW_EQ_in_eqncalc105); if (state.failed) return ;
 
                     }
                     break;
                 case 3 :
                     // BasicParser.g:50:22: MINUS EQ
                     {
-                    match(input,MINUS,FOLLOW_MINUS_in_eqncalc105); if (state.failed) return ;
-                    match(input,EQ,FOLLOW_EQ_in_eqncalc107); if (state.failed) return ;
+                    match(input,MINUS,FOLLOW_MINUS_in_eqncalc107); if (state.failed) return ;
+                    match(input,EQ,FOLLOW_EQ_in_eqncalc109); if (state.failed) return ;
 
                     }
                     break;
@@ -413,14 +413,14 @@ public class DecisionTree_BasicParser extends Parser {
                 case 1 :
                     // BasicParser.g:53:3: MINUS
                     {
-                    match(input,MINUS,FOLLOW_MINUS_in_d3double119); if (state.failed) return retval;
+                    match(input,MINUS,FOLLOW_MINUS_in_d3double121); if (state.failed) return retval;
 
                     }
                     break;
 
             }
 
-            match(input,INT,FOLLOW_INT_in_d3double122); if (state.failed) return retval;
+            match(input,INT,FOLLOW_INT_in_d3double124); if (state.failed) return retval;
             // BasicParser.g:53:14: ( ( COMMA | DOT ) INT )?
             int alt6=2;
             int LA6_0 = input.LA(1);
@@ -442,7 +442,7 @@ public class DecisionTree_BasicParser extends Parser {
                         throw mse;
                     }
 
-                    match(input,INT,FOLLOW_INT_in_d3double131); if (state.failed) return retval;
+                    match(input,INT,FOLLOW_INT_in_d3double133); if (state.failed) return retval;
 
                     }
                     break;
@@ -525,7 +525,7 @@ public class DecisionTree_BasicParser extends Parser {
                 case 1 :
                     // BasicParser.g:56:2: ( MINUS INT | INT DOT | INT COMMA )=> d3double
                     {
-                    pushFollow(FOLLOW_d3double_in_nameOrDouble165);
+                    pushFollow(FOLLOW_d3double_in_nameOrDouble167);
                     d3double2=d3double();
 
                     state._fsp--;
@@ -539,7 +539,7 @@ public class DecisionTree_BasicParser extends Parser {
                 case 2 :
                     // BasicParser.g:56:85: name
                     {
-                    pushFollow(FOLLOW_name_in_nameOrDouble170);
+                    pushFollow(FOLLOW_name_in_nameOrDouble172);
                     name3=name();
 
                     state._fsp--;
@@ -553,7 +553,7 @@ public class DecisionTree_BasicParser extends Parser {
                 case 3 :
                     // BasicParser.g:56:114: EX
                     {
-                    match(input,EX,FOLLOW_EX_in_nameOrDouble176); if (state.failed) return retval;
+                    match(input,EX,FOLLOW_EX_in_nameOrDouble178); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                       retval.value =input.toString(retval.start,input.LT(-1));
                     }
@@ -612,24 +612,24 @@ public class DecisionTree_BasicParser extends Parser {
             case 1 :
                 // BasicParser.g:56:3: MINUS INT
                 {
-                match(input,MINUS,FOLLOW_MINUS_in_synpred1_BasicParser147); if (state.failed) return ;
-                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser149); if (state.failed) return ;
+                match(input,MINUS,FOLLOW_MINUS_in_synpred1_BasicParser149); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser151); if (state.failed) return ;
 
                 }
                 break;
             case 2 :
                 // BasicParser.g:56:15: INT DOT
                 {
-                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser153); if (state.failed) return ;
-                match(input,DOT,FOLLOW_DOT_in_synpred1_BasicParser155); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser155); if (state.failed) return ;
+                match(input,DOT,FOLLOW_DOT_in_synpred1_BasicParser157); if (state.failed) return ;
 
                 }
                 break;
             case 3 :
                 // BasicParser.g:56:25: INT COMMA
                 {
-                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser159); if (state.failed) return ;
-                match(input,COMMA,FOLLOW_COMMA_in_synpred1_BasicParser161); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_BasicParser161); if (state.failed) return ;
+                match(input,COMMA,FOLLOW_COMMA_in_synpred1_BasicParser163); if (state.failed) return ;
 
                 }
                 break;
@@ -657,28 +657,28 @@ public class DecisionTree_BasicParser extends Parser {
 
  
 
-    public static final BitSet FOLLOW_String_in_name33 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_set_in_name36 = new BitSet(new long[]{0x0200000000000032L});
-    public static final BitSet FOLLOW_set_in_name42 = new BitSet(new long[]{0x0200000000000032L});
-    public static final BitSet FOLLOW_String_in_name55 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_String_in_name35 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_set_in_name38 = new BitSet(new long[]{0x0200000000000032L});
+    public static final BitSet FOLLOW_set_in_name44 = new BitSet(new long[]{0x0200000000000032L});
+    public static final BitSet FOLLOW_String_in_name57 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_eq0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_eq_in_eqncalc99 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PLUS_in_eqncalc101 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_EQ_in_eqncalc103 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_eqncalc105 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_EQ_in_eqncalc107 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_d3double119 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_d3double122 = new BitSet(new long[]{0x0000000000000142L});
-    public static final BitSet FOLLOW_set_in_d3double125 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_d3double131 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_d3double_in_nameOrDouble165 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_nameOrDouble170 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EX_in_nameOrDouble176 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_synpred1_BasicParser147 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser149 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser153 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_synpred1_BasicParser155 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser159 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_COMMA_in_synpred1_BasicParser161 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_eq_in_eqncalc101 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PLUS_in_eqncalc103 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_EQ_in_eqncalc105 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_eqncalc107 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_EQ_in_eqncalc109 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_d3double121 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_d3double124 = new BitSet(new long[]{0x0000000000000142L});
+    public static final BitSet FOLLOW_set_in_d3double127 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_d3double133 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_d3double_in_nameOrDouble167 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_nameOrDouble172 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EX_in_nameOrDouble178 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_synpred1_BasicParser149 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser151 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser155 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_synpred1_BasicParser157 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_synpred1_BasicParser161 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_COMMA_in_synpred1_BasicParser163 = new BitSet(new long[]{0x0000000000000002L});
 
 }

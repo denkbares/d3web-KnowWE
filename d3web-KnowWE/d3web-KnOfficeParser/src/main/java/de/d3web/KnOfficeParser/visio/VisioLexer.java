@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2009-10-09 16:50:21
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2009-10-13 18:09:02
 
 package de.d3web.KnOfficeParser.visio;
 import de.d3web.KnOfficeParser.LexerErrorHandler;
@@ -143,15 +143,15 @@ public class VisioLexer extends Lexer {
         super(input,state);
         gBasicLexer = new Visio_BasicLexer(input, state, this);
     }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g"; }
+    public String getGrammarFileName() { return "D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g"; }
 
     // $ANTLR start "T__84"
     public final void mT__84() throws RecognitionException {
         try {
             int _type = T__84;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:36:7: ( '</Pages>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:36:9: '</Pages>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:36:7: ( '</Pages>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:36:9: '</Pages>'
             {
             match("</Pages>"); 
 
@@ -171,8 +171,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__85;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:37:7: ( '</Page>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:37:9: '</Page>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:37:7: ( '</Page>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:37:9: '</Page>'
             {
             match("</Page>"); 
 
@@ -192,8 +192,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__86;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:38:7: ( '<Shapes>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:38:9: '<Shapes>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:38:7: ( '<Shapes>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:38:9: '<Shapes>'
             {
             match("<Shapes>"); 
 
@@ -213,8 +213,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__87;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:39:7: ( '</Shapes>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:39:9: '</Shapes>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:39:7: ( '</Shapes>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:39:9: '</Shapes>'
             {
             match("</Shapes>"); 
 
@@ -234,8 +234,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__88;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:40:7: ( '</PinX>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:40:9: '</PinX>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:40:7: ( '</PinX>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:40:9: '</PinX>'
             {
             match("</PinX>"); 
 
@@ -255,8 +255,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__89;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:41:7: ( '<PinY>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:41:9: '<PinY>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:41:7: ( '<PinY>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:41:9: '<PinY>'
             {
             match("<PinY>"); 
 
@@ -276,8 +276,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__90;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:42:7: ( '</Width>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:42:9: '</Width>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:42:7: ( '</Width>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:42:9: '</Width>'
             {
             match("</Width>"); 
 
@@ -297,8 +297,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__91;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:43:7: ( '<Height>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:43:9: '<Height>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:43:7: ( '<Height>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:43:9: '<Height>'
             {
             match("<Height>"); 
 
@@ -318,8 +318,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__92;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:44:7: ( '</Text></Shape>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:44:9: '</Text></Shape>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:44:7: ( '</Text></Shape>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:44:9: '</Text></Shape>'
             {
             match("</Text></Shape>"); 
 
@@ -339,8 +339,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__93;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:45:7: ( 'Bildname:' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:45:9: 'Bildname:'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:45:7: ( 'Bildname:' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:45:9: 'Bildname:'
             {
             match("Bildname:"); 
 
@@ -360,8 +360,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__94;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:46:7: ( 'Gr��e:' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:46:9: 'Gr��e:'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:46:7: ( 'Gr��e:' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:46:9: 'Gr��e:'
             {
             match("Gr��e:"); 
 
@@ -381,8 +381,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__95;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:47:7: ( 'x' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:47:9: 'x'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:47:7: ( 'x' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:47:9: 'x'
             {
             match('x'); 
 
@@ -401,8 +401,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__96;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:48:7: ( 'Frage:' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:48:9: 'Frage:'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:48:7: ( 'Frage:' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:48:9: 'Frage:'
             {
             match("Frage:"); 
 
@@ -422,8 +422,8 @@ public class VisioLexer extends Lexer {
         try {
             int _type = T__97;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:49:7: ( 'Folgefragen:' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:49:9: 'Folgefragen:'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:49:7: ( 'Folgefragen:' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:49:9: 'Folgefragen:'
             {
             match("Folgefragen:"); 
 
@@ -443,12 +443,12 @@ public class VisioLexer extends Lexer {
         try {
             int _type = Misc;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:100:6: ( '<cp IX=\\'' ( options {greedy=false; } : . )* '\\'/>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:100:8: '<cp IX=\\'' ( options {greedy=false; } : . )* '\\'/>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:101:6: ( '<cp IX=\\'' ( options {greedy=false; } : . )* '\\'/>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:101:8: '<cp IX=\\'' ( options {greedy=false; } : . )* '\\'/>'
             {
-            match("<cp IX=\'"); 
+            match("<cp IX='"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:100:20: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:101:20: ( options {greedy=false; } : . )*
             loop1:
             do {
                 int alt1=2;
@@ -482,7 +482,7 @@ public class VisioLexer extends Lexer {
 
                 switch (alt1) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:100:47: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:101:47: .
             	    {
             	    matchAny(); 
 
@@ -494,7 +494,7 @@ public class VisioLexer extends Lexer {
                 }
             } while (true);
 
-            match("\'/>"); 
+            match("'/>"); 
 
             _channel=HIDDEN;
 
@@ -513,12 +513,12 @@ public class VisioLexer extends Lexer {
         try {
             int _type = Misc2;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:101:7: ( '<tp IX=\\'' ( options {greedy=false; } : . )* '\\'/>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:101:9: '<tp IX=\\'' ( options {greedy=false; } : . )* '\\'/>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:102:7: ( '<tp IX=\\'' ( options {greedy=false; } : . )* '\\'/>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:102:9: '<tp IX=\\'' ( options {greedy=false; } : . )* '\\'/>'
             {
-            match("<tp IX=\'"); 
+            match("<tp IX='"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:101:21: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:102:21: ( options {greedy=false; } : . )*
             loop2:
             do {
                 int alt2=2;
@@ -552,7 +552,7 @@ public class VisioLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:101:48: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:102:48: .
             	    {
             	    matchAny(); 
 
@@ -564,7 +564,7 @@ public class VisioLexer extends Lexer {
                 }
             } while (true);
 
-            match("\'/>"); 
+            match("'/>"); 
 
             _channel=HIDDEN;
 
@@ -583,12 +583,12 @@ public class VisioLexer extends Lexer {
         try {
             int _type = Misc3;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:102:6: ( '<pp IX=\\'' ( options {greedy=false; } : . )* '\\'/>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:102:8: '<pp IX=\\'' ( options {greedy=false; } : . )* '\\'/>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:103:6: ( '<pp IX=\\'' ( options {greedy=false; } : . )* '\\'/>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:103:8: '<pp IX=\\'' ( options {greedy=false; } : . )* '\\'/>'
             {
-            match("<pp IX=\'"); 
+            match("<pp IX='"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:102:20: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:103:20: ( options {greedy=false; } : . )*
             loop3:
             do {
                 int alt3=2;
@@ -622,7 +622,7 @@ public class VisioLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:102:47: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:103:47: .
             	    {
             	    matchAny(); 
 
@@ -634,7 +634,7 @@ public class VisioLexer extends Lexer {
                 }
             } while (true);
 
-            match("\'/>"); 
+            match("'/>"); 
 
             _channel=HIDDEN;
 
@@ -653,12 +653,12 @@ public class VisioLexer extends Lexer {
         try {
             int _type = Start;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:104:7: ( '<?xml version=\\'1.0\\' encoding=\\'utf-8\\' ?>' ( options {greedy=false; } : . )* '<Pages>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:104:9: '<?xml version=\\'1.0\\' encoding=\\'utf-8\\' ?>' ( options {greedy=false; } : . )* '<Pages>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:105:7: ( '<?xml version=\\'1.0\\' encoding=\\'utf-8\\' ?>' ( options {greedy=false; } : . )* '<Pages>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:105:9: '<?xml version=\\'1.0\\' encoding=\\'utf-8\\' ?>' ( options {greedy=false; } : . )* '<Pages>'
             {
-            match("<?xml version=\'1.0\' encoding=\'utf-8\' ?>"); 
+            match("<?xml version='1.0' encoding='utf-8' ?>"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:104:55: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:105:55: ( options {greedy=false; } : . )*
             loop4:
             do {
                 int alt4=2;
@@ -728,7 +728,7 @@ public class VisioLexer extends Lexer {
 
                 switch (alt4) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:104:82: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:105:82: .
             	    {
             	    matchAny(); 
 
@@ -758,19 +758,19 @@ public class VisioLexer extends Lexer {
         try {
             int _type = Pagesheet;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:105:10: ( '<PageSheet' ( options {greedy=false; } : . )* '</PageSheet>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:105:12: '<PageSheet' ( options {greedy=false; } : . )* '</PageSheet>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:106:10: ( '<PageSheet' ( options {greedy=false; } : . )* '</PageSheet>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:106:12: '<PageSheet' ( options {greedy=false; } : . )* '</PageSheet>'
             {
             match("<PageSheet"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:105:25: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:106:25: ( options {greedy=false; } : . )*
             loop5:
             do {
                 int alt5=2;
                 alt5 = dfa5.predict(input);
                 switch (alt5) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:105:52: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:106:52: .
             	    {
             	    matchAny(); 
 
@@ -800,12 +800,12 @@ public class VisioLexer extends Lexer {
         try {
             int _type = Pagestart;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:106:10: ( '<Page ID' ( options {greedy=false; } : . )* '>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:106:12: '<Page ID' ( options {greedy=false; } : . )* '>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:107:10: ( '<Page ID' ( options {greedy=false; } : . )* '>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:107:12: '<Page ID' ( options {greedy=false; } : . )* '>'
             {
             match("<Page ID"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:106:23: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:107:23: ( options {greedy=false; } : . )*
             loop6:
             do {
                 int alt6=2;
@@ -821,7 +821,7 @@ public class VisioLexer extends Lexer {
 
                 switch (alt6) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:106:50: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:107:50: .
             	    {
             	    matchAny(); 
 
@@ -850,12 +850,12 @@ public class VisioLexer extends Lexer {
         try {
             int _type = Shapestart;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:108:11: ( '<Shape ID' ( options {greedy=false; } : . )* '<PinX>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:108:13: '<Shape ID' ( options {greedy=false; } : . )* '<PinX>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:109:11: ( '<Shape ID' ( options {greedy=false; } : . )* '<PinX>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:109:13: '<Shape ID' ( options {greedy=false; } : . )* '<PinX>'
             {
             match("<Shape ID"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:108:25: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:109:25: ( options {greedy=false; } : . )*
             loop7:
             do {
                 int alt7=2;
@@ -916,7 +916,7 @@ public class VisioLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:108:52: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:109:52: .
             	    {
             	    matchAny(); 
 
@@ -946,12 +946,12 @@ public class VisioLexer extends Lexer {
         try {
             int _type = YtoWith;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:110:8: ( '</PinY>' ( options {greedy=false; } : . )* '<Width>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:110:10: '</PinY>' ( options {greedy=false; } : . )* '<Width>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:111:8: ( '</PinY>' ( options {greedy=false; } : . )* '<Width>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:111:10: '</PinY>' ( options {greedy=false; } : . )* '<Width>'
             {
             match("</PinY>"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:110:20: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:111:20: ( options {greedy=false; } : . )*
             loop8:
             do {
                 int alt8=2;
@@ -1021,7 +1021,7 @@ public class VisioLexer extends Lexer {
 
                 switch (alt8) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:110:47: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:111:47: .
             	    {
             	    matchAny(); 
 
@@ -1051,19 +1051,19 @@ public class VisioLexer extends Lexer {
         try {
             int _type = HeighttoText;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:112:13: ( '</Height>' ( options {greedy=false; } : . )* ( '</Shape>' | '<Text>' ) )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:112:15: '</Height>' ( options {greedy=false; } : . )* ( '</Shape>' | '<Text>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:113:13: ( '</Height>' ( options {greedy=false; } : . )* ( '</Shape>' | '<Text>' ) )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:113:15: '</Height>' ( options {greedy=false; } : . )* ( '</Shape>' | '<Text>' )
             {
             match("</Height>"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:112:27: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:113:27: ( options {greedy=false; } : . )*
             loop9:
             do {
                 int alt9=2;
                 alt9 = dfa9.predict(input);
                 switch (alt9) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:112:54: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:113:54: .
             	    {
             	    matchAny(); 
 
@@ -1075,7 +1075,7 @@ public class VisioLexer extends Lexer {
                 }
             } while (true);
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:112:58: ( '</Shape>' | '<Text>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:113:58: ( '</Shape>' | '<Text>' )
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -1103,7 +1103,7 @@ public class VisioLexer extends Lexer {
             }
             switch (alt10) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:112:59: '</Shape>'
+                    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:113:59: '</Shape>'
                     {
                     match("</Shape>"); 
 
@@ -1111,7 +1111,7 @@ public class VisioLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:112:70: '<Text>'
+                    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:113:70: '<Text>'
                     {
                     match("<Text>"); 
 
@@ -1137,19 +1137,19 @@ public class VisioLexer extends Lexer {
         try {
             int _type = End;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:114:4: ( '<Windows' ( options {greedy=false; } : . )* '</VisioDocument>' )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:114:6: '<Windows' ( options {greedy=false; } : . )* '</VisioDocument>'
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:115:4: ( '<Windows' ( options {greedy=false; } : . )* '</VisioDocument>' )
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:115:6: '<Windows' ( options {greedy=false; } : . )* '</VisioDocument>'
             {
             match("<Windows"); 
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:114:17: ( options {greedy=false; } : . )*
+            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:115:17: ( options {greedy=false; } : . )*
             loop11:
             do {
                 int alt11=2;
                 alt11 = dfa11.predict(input);
                 switch (alt11) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:114:44: .
+            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:115:44: .
             	    {
             	    matchAny(); 
 
@@ -1175,180 +1175,180 @@ public class VisioLexer extends Lexer {
     // $ANTLR end "End"
 
     public void mTokens() throws RecognitionException {
-        // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:8: ( T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | Misc | Misc2 | Misc3 | Start | Pagesheet | Pagestart | Shapestart | YtoWith | HeighttoText | End | BasicLexer. Tokens )
+        // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:8: ( T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | Misc | Misc2 | Misc3 | Start | Pagesheet | Pagestart | Shapestart | YtoWith | HeighttoText | End | BasicLexer. Tokens )
         int alt12=25;
         alt12 = dfa12.predict(input);
         switch (alt12) {
             case 1 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:10: T__84
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:10: T__84
                 {
                 mT__84(); 
 
                 }
                 break;
             case 2 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:16: T__85
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:16: T__85
                 {
                 mT__85(); 
 
                 }
                 break;
             case 3 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:22: T__86
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:22: T__86
                 {
                 mT__86(); 
 
                 }
                 break;
             case 4 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:28: T__87
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:28: T__87
                 {
                 mT__87(); 
 
                 }
                 break;
             case 5 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:34: T__88
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:34: T__88
                 {
                 mT__88(); 
 
                 }
                 break;
             case 6 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:40: T__89
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:40: T__89
                 {
                 mT__89(); 
 
                 }
                 break;
             case 7 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:46: T__90
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:46: T__90
                 {
                 mT__90(); 
 
                 }
                 break;
             case 8 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:52: T__91
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:52: T__91
                 {
                 mT__91(); 
 
                 }
                 break;
             case 9 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:58: T__92
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:58: T__92
                 {
                 mT__92(); 
 
                 }
                 break;
             case 10 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:64: T__93
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:64: T__93
                 {
                 mT__93(); 
 
                 }
                 break;
             case 11 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:70: T__94
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:70: T__94
                 {
                 mT__94(); 
 
                 }
                 break;
             case 12 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:76: T__95
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:76: T__95
                 {
                 mT__95(); 
 
                 }
                 break;
             case 13 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:82: T__96
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:82: T__96
                 {
                 mT__96(); 
 
                 }
                 break;
             case 14 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:88: T__97
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:88: T__97
                 {
                 mT__97(); 
 
                 }
                 break;
             case 15 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:94: Misc
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:94: Misc
                 {
                 mMisc(); 
 
                 }
                 break;
             case 16 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:99: Misc2
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:99: Misc2
                 {
                 mMisc2(); 
 
                 }
                 break;
             case 17 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:105: Misc3
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:105: Misc3
                 {
                 mMisc3(); 
 
                 }
                 break;
             case 18 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:111: Start
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:111: Start
                 {
                 mStart(); 
 
                 }
                 break;
             case 19 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:117: Pagesheet
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:117: Pagesheet
                 {
                 mPagesheet(); 
 
                 }
                 break;
             case 20 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:127: Pagestart
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:127: Pagestart
                 {
                 mPagestart(); 
 
                 }
                 break;
             case 21 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:137: Shapestart
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:137: Shapestart
                 {
                 mShapestart(); 
 
                 }
                 break;
             case 22 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:148: YtoWith
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:148: YtoWith
                 {
                 mYtoWith(); 
 
                 }
                 break;
             case 23 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:156: HeighttoText
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:156: HeighttoText
                 {
                 mHeighttoText(); 
 
                 }
                 break;
             case 24 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:169: End
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:169: End
                 {
                 mEnd(); 
 
                 }
                 break;
             case 25 :
-                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:173: BasicLexer. Tokens
+                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g:1:173: BasicLexer. Tokens
                 {
                 gBasicLexer.mTokens(); 
 
@@ -1424,7 +1424,7 @@ public class VisioLexer extends Lexer {
             this.transition = DFA5_transition;
         }
         public String getDescription() {
-            return "()* loopback of 105:25: ( options {greedy=false; } : . )*";
+            return "()* loopback of 106:25: ( options {greedy=false; } : . )*";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;
@@ -1618,7 +1618,7 @@ public class VisioLexer extends Lexer {
             this.transition = DFA9_transition;
         }
         public String getDescription() {
-            return "()* loopback of 112:27: ( options {greedy=false; } : . )*";
+            return "()* loopback of 113:27: ( options {greedy=false; } : . )*";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;
@@ -1817,7 +1817,7 @@ public class VisioLexer extends Lexer {
             this.transition = DFA11_transition;
         }
         public String getDescription() {
-            return "()* loopback of 114:17: ( options {greedy=false; } : . )*";
+            return "()* loopback of 115:17: ( options {greedy=false; } : . )*";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;

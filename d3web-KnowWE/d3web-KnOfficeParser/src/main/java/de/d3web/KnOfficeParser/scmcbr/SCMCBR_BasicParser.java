@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2009-10-09 14:49:21
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 BasicParser.g 2009-10-13 18:05:29
 
 package de.d3web.KnOfficeParser.scmcbr;
 import de.d3web.KnOfficeParser.ParserErrorHandler;

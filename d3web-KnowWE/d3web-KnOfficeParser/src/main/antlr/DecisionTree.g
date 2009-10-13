@@ -1,7 +1,7 @@
 /**
- * Grammatik f�r Entscheidungsb�ume
+ * Grammatik fuer Entscheidungsbaeume
  * @author Markus Friedrich
- *
+ * 
  */
 parser grammar DecisionTree;
 

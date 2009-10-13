@@ -1,5 +1,5 @@
 /**
- * Grammatik für komplexe Regeln
+ * Grammatik fuer komplexe Regeln
  * @author Markus Friedrich
  *
  */

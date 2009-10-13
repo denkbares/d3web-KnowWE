@@ -1,5 +1,5 @@
 /**
- * Grammatik f�r SCMCBR Dateien
+ * Grammatik fuer SCMCBR Dateien
  * @author Markus Friedrich
  *
  */
