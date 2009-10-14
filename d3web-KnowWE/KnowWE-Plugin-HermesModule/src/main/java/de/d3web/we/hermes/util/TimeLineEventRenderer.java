@@ -52,18 +52,20 @@ public class TimeLineEventRenderer {
 						+ "</h4>");
 		
 		
-		sb.append("\n"+te.getDescription() + "\n\n");
+		sb.append("\n"+te.getDescription() + "<br>");
 		List<String> sources = te.getSources();
 		if (sources != null) {
 			if (sources.size() == 1) {
-				sb.append("<b>Quelle:</b>");
+				sb.append("<b>Quelle:</b><br>");
 			} else if (sources.size() > 1) {
-				sb.append("<b>Quellen:</b> ");
+				sb.append("<b>Quellen:</b><br> ");
 			}
 			for (String aSource : sources) {
-				sb.append(aSource + "\n\n");
+				sb.append(aSource + "<br>");
 			}
 		}
+		
+		sb.append("<br>textOrigin:"+te.getTextOrigin() + "<br>");
 
 		sb.append("</div>\n");
 

@@ -104,6 +104,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			/* creating all the URIs for the resources */
 			String localID = section.getTitle() + "_" + section.getId();
 			URI localURI = uo.getHelper().createlocalURI(localID);
+			
 			URI timeEventURI = uo.getHelper().createlocalURI("TimeEvent");
 
 			Literal descriptionURI = uo.getHelper().createLiteral(description);
@@ -120,9 +121,9 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			Literal dateTextURI = uo.getVf().createLiteral(
 					timeStringInterpreter.getTimeString());
 
-			List<URI> sourceURIs = new ArrayList<URI>();
+			List<Literal> sourceURIs = new ArrayList<Literal>();
 			for (String source : sourceStrings) {
-				sourceURIs.add(uo.getHelper().createlocalURI(source));
+				sourceURIs.add(uo.getVf().createLiteral(source));
 			}
 
 			uo.getHelper().attachTextOrigin(section, io, localURI);
@@ -149,7 +150,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			slist.add(uo.getHelper().createStatement(localURI,
 					uo.getHelper().createlocalURI("hasDateDescription"),
 					dateTextURI));
-			for (URI sURI : sourceURIs) {
+			for (Literal sURI : sourceURIs) {
 				slist.add(uo.getHelper().createStatement(localURI,
 						uo.getHelper().createlocalURI("hasSource"), sURI));
 			}

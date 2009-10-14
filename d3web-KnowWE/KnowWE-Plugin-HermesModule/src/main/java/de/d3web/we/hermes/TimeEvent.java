@@ -6,6 +6,10 @@ import de.d3web.we.hermes.util.TimeStringInterpreter;
 
 public class TimeEvent {
 
+	public String getTextOrigin() {
+		return textOrigin;
+	}
+
 	private int importance;
 	private String title;
 	private String description;

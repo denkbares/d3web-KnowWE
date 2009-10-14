@@ -2,8 +2,11 @@ package de.d3web.we.hermes.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openrdf.model.Value;
@@ -26,16 +29,23 @@ import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 
 public class TimeEventSPARQLUtils {
 
-	private static final String TIME_SPARQL = "SELECT ?title ?imp ?desc ?y WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
+	private static final String TIME_SPARQL = "SELECT  ?title ?imp ?desc ?y WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
 
-	public static Collection<TimeEvent> findTimeEventsFromTo(int yearFrom, int yearTo) {
+	public static Collection<TimeEvent> findTimeEventsFromTo(int yearFrom,
+			int yearTo) {
 
 		String querystring = null;
 
 		querystring = TIME_SPARQL.replaceAll("YEARFROM", Integer
 				.toString(yearFrom));
-		querystring = querystring.replaceAll("YEARTO", Integer.toString(yearTo));
+		querystring = querystring
+				.replaceAll("YEARTO", Integer.toString(yearTo));
 
+		TupleQueryResult result = executeQuery(querystring);
+		return buildTimeEvents(result);
+	}
+
+	public static TupleQueryResult executeQuery(String querystring) {
 		SemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		try {
@@ -56,7 +66,7 @@ public class TimeEventSPARQLUtils {
 		try {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
-				return buildTimeEvents(result);
+				return result;
 			} else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
 				// return "graphquery ouput implementation: TODO";
@@ -74,6 +84,9 @@ public class TimeEventSPARQLUtils {
 		return null;
 	}
 
+	private static final String SOURCE_SPARQL = "SELECT ?source WHERE { ?t lns:hasSource ?source .  ?t lns:hasTitle TITLE .}";
+	private static final String TEXTORIGIN_SPARQL = "SELECT ?textOrigin WHERE { ?t lns:hasNode ?textOrigin .  ?t lns:hasTitle TITLE .}";
+
 	private static Collection<TimeEvent> buildTimeEvents(TupleQueryResult result) {
 		// List<String> bindings = result.getBindingNames();
 
@@ -85,32 +98,81 @@ public class TimeEventSPARQLUtils {
 				BindingSet set = result.next();
 				Binding titleB = set.getBinding("title");
 				Binding impB = set.getBinding("imp");
-				
+				// Binding textOriginB = set.getBinding("textOrigin");
+
 				String time = set.getBinding("y").getValue().toString();
 				String desc = set.getBinding("desc").getValue().toString();
-				
+
 				String title = titleB.getValue().toString();
 				String imp = impB.getValue().toString();
+
+				Set<String> sources = new HashSet<String>();
+
+				TupleQueryResult sourcesResult = executeQuery(SOURCE_SPARQL
+						.replaceAll("TITLE", title));
+
+				TupleQueryResult textOriginResult = executeQuery(TEXTORIGIN_SPARQL
+						.replaceAll("TITLE", title));
+
+				// String textOrigin = textOriginB.getValue().toString();
+				String textOrigin = "TO";
+				if (textOriginResult.hasNext()) {
+					BindingSet toSet = textOriginResult.next();
+					if (toSet != null) {
+						textOrigin = toSet.getValue(textOrigin).toString();
+					}
+				}
+
+				while (sourcesResult.hasNext()) {
+					// for some reason every source appears twice in this loop
+					// ;p
+					// thus using a set
+					BindingSet set2 = sourcesResult.next();
+					Binding sourceBinding = set2.getBinding("source");
+					String aSource = sourceBinding.getValue().toString();
+					try {
+						aSource = URLDecoder.decode(aSource, "UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if (aSource != null) {
+						sources.add(aSource);
+					}
+				}
+
 				try {
-					title = URLDecoder.decode ( title, "UTF-8" );
-					imp = URLDecoder.decode (imp , "UTF-8" );
-					time = URLDecoder.decode ( time, "UTF-8" );
-					desc = URLDecoder.decode (desc , "UTF-8" );
+					textOrigin = URLDecoder.decode(textOrigin, "UTF-8");
+					title = URLDecoder.decode(title, "UTF-8");
+					imp = URLDecoder.decode(imp, "UTF-8");
+					time = URLDecoder.decode(time, "UTF-8");
+					desc = URLDecoder.decode(desc, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				imp = imp.substring(2, 3);
-				
-				events.add(new TimeEvent(title, desc, Integer.parseInt(imp), null, time,null));
 
+				imp = imp.substring(2, 3);
+
+				int parseInt = 3;
+
+				try {
+					parseInt = Integer.parseInt(imp);
+				} catch (NumberFormatException e) {
+					// TODO
+				}
+				List<String> resultSources = new ArrayList<String>();
+				resultSources.addAll(sources);
+
+				events.add(new TimeEvent(title, desc, parseInt, resultSources,
+						time, textOrigin));
 
 			}
 		} catch (QueryEvaluationException e) {
 			// return
 			// kwikiBundle.getString("KnowWE.owl.query.evalualtion.error")
 			// + ":" + e.getMessage();
-		} 
+		}
 
 		// return buffy.toString();
 
