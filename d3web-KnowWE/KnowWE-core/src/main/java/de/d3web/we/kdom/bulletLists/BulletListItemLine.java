@@ -27,7 +27,9 @@ public class BulletListItemLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {
-			String lineRegex = "\\r\\n";
+				
+				
+			String lineRegex = "\\r?\\n";
 			Pattern linePattern = Pattern.compile(lineRegex);
 
 			Matcher tagMatcher = linePattern.matcher(text);
