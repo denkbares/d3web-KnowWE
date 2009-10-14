@@ -84,7 +84,7 @@ public class XMLSectionFinder extends SectionFinder {
 		 * - The first sequence of '</Test> terminates the content part and the match
 		 */
 		Pattern tagPattern = 
-			Pattern.compile("<(/)?(" + tagNamePattern + ")\\s*([^>]*?)?(/)?> *\\r?\\n?");
+			Pattern.compile("<(/)?(" + tagNamePattern + ")((?:\\s+)[^>]*?)?(/)?> *\\r?\\n?");
 
 		/**
 		 * RegEx-Description 2:
@@ -97,7 +97,7 @@ public class XMLSectionFinder extends SectionFinder {
 		 *  - Around the '=' and before and after the attributeName and value, spaces
 		 *  are allowed
 		 */
-		Pattern attributePattern = Pattern.compile("([^=\"\\s]+) *= *\"([^\"]+)\"");
+		Pattern attributePattern = Pattern.compile("([^=\"\\s]+) *= *\"([^\"]*)\"");
 		
 		Matcher tagMatcher = tagPattern.matcher(text);
 		
@@ -184,13 +184,15 @@ public class XMLSectionFinder extends SectionFinder {
 
 	// Everything below this line is for testing only!
 	public static void main(String[] args) {
-		TestSectionFinder finder = new XMLSectionFinder().new TestSectionFinder();
+		TestSectionFinder finder = new XMLSectionFinder().new TestSectionFinder("include");
 		String text = readTxtFile("D:/KFZDemo1.txt");
 		List<SectionFinderResult> results= finder.lookForSections(text, null);
 		
 		for (SectionFinderResult result:results) {
 			System.out.println("#######+++++++");
 			System.out.println(text.substring(result.getStart(), result.getEnd()));
+			System.out.println("--------------");
+			System.out.println(finder.paras);
 			System.out.println("#######-------");
 		}
 		
@@ -199,8 +201,9 @@ public class XMLSectionFinder extends SectionFinder {
 	
 	private class TestSectionFinder extends XMLSectionFinder {
 		
+		public Map<String, String> paras;
+		
 		public TestSectionFinder() {
-			
 		}
 		
 		public TestSectionFinder(String tag) {
@@ -209,6 +212,7 @@ public class XMLSectionFinder extends SectionFinder {
 		
 		@Override
 		protected SectionFinderResult makeSectionFinderResult(Section father, String text, int start, int end, Map<String, String> parameterMap) {
+			paras = parameterMap;
 			return new SectionFinderResult(start, end);
 		}
 		
