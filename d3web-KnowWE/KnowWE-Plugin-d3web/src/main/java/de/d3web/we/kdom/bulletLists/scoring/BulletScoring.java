@@ -26,6 +26,8 @@ public class BulletScoring extends AbstractXMLObjectType{
 		
 		String values = map.get("scorings");
 		
+		if(values == null) return null;
+				
 		String [] targets = values.split(("\\Q"+TARGET_SCORING_DELIMITER+"\\E"));
 		
 		List<String> result = Arrays.asList(targets);

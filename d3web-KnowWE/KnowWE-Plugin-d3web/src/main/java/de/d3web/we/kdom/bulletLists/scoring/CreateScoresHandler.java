@@ -31,6 +31,8 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 				BulletScoring.class);
 		List<String> targets = BulletScoring
 				.getScoringTargets(scoringSection);
+		
+		if(targets == null) return; 
 
 		String defaultValue = BulletScoring.getDefaultValue(scoringSection);
 
