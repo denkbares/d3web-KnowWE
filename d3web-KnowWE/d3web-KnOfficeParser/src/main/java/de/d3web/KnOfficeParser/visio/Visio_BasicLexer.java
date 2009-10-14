@@ -1,37 +1,14 @@
-/*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
-// $ANTLR 3.1 BasicLexer.g 2009-01-10 19:06:21
+// $ANTLR 3.1.1 BasicLexer.g 2009-10-14 10:52:31
 
 package de.d3web.KnOfficeParser.visio;
-import org.antlr.runtime.BaseRecognizer;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.DFA;
-import org.antlr.runtime.EarlyExitException;
-import org.antlr.runtime.Lexer;
-import org.antlr.runtime.MismatchedSetException;
-import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.RecognizerSharedState;
-
 import de.d3web.KnOfficeParser.LexerErrorHandler;
+import de.d3web.KnOfficeParser.ConditionBuilder;
+
+
+import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Lexer zum Import in andere Grammatiken, stellt grundlegende Token bereit
@@ -39,30 +16,32 @@ import de.d3web.KnOfficeParser.LexerErrorHandler;
  *
  */
 public class Visio_BasicLexer extends Lexer {
-    public static final int Aidtext=67;
+    public static final int Aidtext=72;
+    public static final int FUZZY=54;
     public static final int LP=15;
-    public static final int Textboxtext=65;
+    public static final int Textboxtext=70;
     public static final int NOT=37;
-    public static final int Page=53;
+    public static final int Page=58;
     public static final int EXCEPT=39;
     public static final int EOF=-1;
     public static final int DD=7;
+    public static final int T__93=93;
+    public static final int T__94=94;
     public static final int T__91=91;
     public static final int T__92=92;
     public static final int T__90=90;
     public static final int EX=10;
-    public static final int INCLUDE=47;
+    public static final int INCLUDE=48;
     public static final int NL=32;
     public static final int EQ=25;
     public static final int COMMENT=31;
-    public static final int Shapestart=73;
+    public static final int T__97=97;
+    public static final int T__96=96;
+    public static final int Shapestart=78;
+    public static final int T__95=95;
     public static final int GE=23;
     public static final int G=24;
-    public static final int T__80=80;
     public static final int SBC=20;
-    public static final int T__81=81;
-    public static final int T__82=82;
-    public static final int T__83=83;
     public static final int L=22;
     public static final int NS=13;
     public static final int KNOWN=41;
@@ -73,63 +52,66 @@ public class Visio_BasicLexer extends Lexer {
     public static final int T__86=86;
     public static final int T__89=89;
     public static final int T__88=88;
-    public static final int Picture=62;
-    public static final int Xcoord=55;
+    public static final int Picture=67;
+    public static final int Xcoord=60;
     public static final int WS=30;
     public static final int OR=36;
     public static final int SBO=19;
-    public static final int Misc2=77;
-    public static final int Misc3=78;
-    public static final int Popup=66;
-    public static final int YtoWith=74;
-    public static final int T__79=79;
-    public static final int End=70;
-    public static final int Ycoord=56;
-    public static final int Shapetext=61;
+    public static final int Misc2=82;
+    public static final int Misc3=83;
+    public static final int Popup=71;
+    public static final int YtoWith=79;
+    public static final int INIT=50;
+    public static final int End=75;
+    public static final int Ycoord=61;
+    public static final int Shapetext=66;
     public static final int HIDE=38;
     public static final int RP=16;
     public static final int ORS=12;
-    public static final int MyDouble=60;
-    public static final int ABSTRACT=49;
+    public static final int MyDouble=65;
+    public static final int ABSTRACT=51;
     public static final int AND=35;
-    public static final int ID=52;
-    public static final int Width=57;
+    public static final int ID=57;
+    public static final int Width=62;
     public static final int IF=33;
     public static final int AT=11;
     public static final int THEN=34;
     public static final int IN=44;
     public static final int UNKNOWN=40;
     public static final int COMMA=8;
-    public static final int Height=58;
-    public static final int ALL=45;
+    public static final int Height=63;
+    public static final int ALL=46;
     public static final int PROD=28;
-    public static final int Knowledge=68;
+    public static final int Knowledge=73;
     public static final int TILDE=14;
     public static final int PLUS=26;
     public static final int String=4;
     public static final int DOT=6;
-    public static final int HeighttoText=75;
-    public static final int Start=69;
-    public static final int Pagesheet=72;
-    public static final int ALLOWEDNAMES=46;
-    public static final int Misc=76;
+    public static final int HeighttoText=80;
+    public static final int Start=74;
+    public static final int Pagesheet=77;
+    public static final int Misc=81;
+    public static final int ALLOWEDNAMES=47;
     public static final int INSTANT=42;
     public static final int MINMAX=43;
-    public static final int DEFAULT=48;
-    public static final int SET=50;
+    public static final int DEFAULT=49;
+    public static final int INTER=45;
+    public static final int SET=52;
     public static final int MINUS=27;
-    public static final int Tokens=93;
+    public static final int DIVNORM=56;
+    public static final int Tokens=98;
     public static final int SEMI=9;
-    public static final int REF=51;
-    public static final int QID=64;
-    public static final int Box=63;
+    public static final int REF=53;
+    public static final int QID=69;
+    public static final int Box=68;
     public static final int CBC=18;
-    public static final int Shape=54;
-    public static final int Text=59;
+    public static final int Text=64;
+    public static final int Shape=59;
+    public static final int DIVTEXT=55;
     public static final int DIV=29;
     public static final int CBO=17;
     public static final int LE=21;
-    public static final int Pagestart=71;
+    public static final int Pagestart=76;
 
       private LexerErrorHandler eh;
       private boolean newline=false;
@@ -174,23 +156,23 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = String;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:32:8: ( '\"' ( options {greedy=false; } : . )* ~ '\\\\' '\"' )
-            // BasicLexer.g:32:10: '\"' ( options {greedy=false; } : . )* ~ '\\\\' '\"'
+            // BasicLexer.g:52:8: ( '\"' ( options {greedy=false; } : . )* ~ '\\\\' '\"' )
+            // BasicLexer.g:52:10: '\"' ( options {greedy=false; } : . )* ~ '\\\\' '\"'
             {
             match('\"'); 
-            // BasicLexer.g:32:14: ( options {greedy=false; } : . )*
+            // BasicLexer.g:52:14: ( options {greedy=false; } : . )*
             loop1:
             do {
                 int alt1=2;
                 int LA1_0 = input.LA(1);
 
-                if ( ((LA1_0>='\u0000' && LA1_0<='[')||(LA1_0>=']' && LA1_0<='\uFFFE')) ) {
+                if ( ((LA1_0>='\u0000' && LA1_0<='[')||(LA1_0>=']' && LA1_0<='\uFFFF')) ) {
                     int LA1_1 = input.LA(2);
 
                     if ( (LA1_1=='\"') ) {
                         alt1=2;
                     }
-                    else if ( ((LA1_1>='\u0000' && LA1_1<='!')||(LA1_1>='#' && LA1_1<='\uFFFE')) ) {
+                    else if ( ((LA1_1>='\u0000' && LA1_1<='!')||(LA1_1>='#' && LA1_1<='\uFFFF')) ) {
                         alt1=1;
                     }
 
@@ -203,7 +185,7 @@ public class Visio_BasicLexer extends Lexer {
 
                 switch (alt1) {
             	case 1 :
-            	    // BasicLexer.g:32:41: .
+            	    // BasicLexer.g:52:41: .
             	    {
             	    matchAny(); 
 
@@ -215,7 +197,7 @@ public class Visio_BasicLexer extends Lexer {
                 }
             } while (true);
 
-            if ( (input.LA(1)>='\u0000' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFE') ) {
+            if ( (input.LA(1)>='\u0000' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                 input.consume();
 
             }
@@ -241,10 +223,10 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:34:5: ( ( '0' .. '9' )+ )
-            // BasicLexer.g:34:7: ( '0' .. '9' )+
+            // BasicLexer.g:54:5: ( ( '0' .. '9' )+ )
+            // BasicLexer.g:54:7: ( '0' .. '9' )+
             {
-            // BasicLexer.g:34:7: ( '0' .. '9' )+
+            // BasicLexer.g:54:7: ( '0' .. '9' )+
             int cnt2=0;
             loop2:
             do {
@@ -258,7 +240,7 @@ public class Visio_BasicLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // BasicLexer.g:34:7: '0' .. '9'
+            	    // BasicLexer.g:54:7: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -290,8 +272,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = DOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:36:5: ( '.' )
-            // BasicLexer.g:36:7: '.'
+            // BasicLexer.g:56:5: ( '.' )
+            // BasicLexer.g:56:7: '.'
             {
             match('.'); 
 
@@ -310,8 +292,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = DD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:37:4: ( ':' )
-            // BasicLexer.g:37:6: ':'
+            // BasicLexer.g:57:4: ( ':' )
+            // BasicLexer.g:57:6: ':'
             {
             match(':'); 
 
@@ -330,8 +312,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = COMMA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:38:7: ( ',' )
-            // BasicLexer.g:38:9: ','
+            // BasicLexer.g:58:7: ( ',' )
+            // BasicLexer.g:58:9: ','
             {
             match(','); 
 
@@ -350,8 +332,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = SEMI;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:39:6: ( ';' )
-            // BasicLexer.g:39:8: ';'
+            // BasicLexer.g:59:6: ( ';' )
+            // BasicLexer.g:59:8: ';'
             {
             match(';'); 
 
@@ -370,8 +352,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = EX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:40:4: ( '!' )
-            // BasicLexer.g:40:6: '!'
+            // BasicLexer.g:60:4: ( '!' )
+            // BasicLexer.g:60:6: '!'
             {
             match('!'); 
 
@@ -390,8 +372,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = AT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:41:4: ( '@' )
-            // BasicLexer.g:41:6: '@'
+            // BasicLexer.g:61:4: ( '@' )
+            // BasicLexer.g:61:6: '@'
             {
             match('@'); 
 
@@ -410,8 +392,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = ORS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:42:5: ( '|' )
-            // BasicLexer.g:42:7: '|'
+            // BasicLexer.g:62:5: ( '|' )
+            // BasicLexer.g:62:7: '|'
             {
             match('|'); 
 
@@ -430,8 +412,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = NS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:43:4: ( '#' )
-            // BasicLexer.g:43:6: '#'
+            // BasicLexer.g:63:4: ( '#' )
+            // BasicLexer.g:63:6: '#'
             {
             match('#'); 
 
@@ -450,8 +432,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = TILDE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:44:7: ( '~' )
-            // BasicLexer.g:44:9: '~'
+            // BasicLexer.g:64:7: ( '~' )
+            // BasicLexer.g:64:9: '~'
             {
             match('~'); 
 
@@ -470,8 +452,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = LP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:47:4: ( '(' )
-            // BasicLexer.g:47:6: '('
+            // BasicLexer.g:67:4: ( '(' )
+            // BasicLexer.g:67:6: '('
             {
             match('('); 
 
@@ -490,8 +472,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = RP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:48:4: ( ')' )
-            // BasicLexer.g:48:6: ')'
+            // BasicLexer.g:68:4: ( ')' )
+            // BasicLexer.g:68:6: ')'
             {
             match(')'); 
 
@@ -510,8 +492,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = CBO;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:49:5: ( '{' )
-            // BasicLexer.g:49:7: '{'
+            // BasicLexer.g:69:5: ( '{' )
+            // BasicLexer.g:69:7: '{'
             {
             match('{'); 
 
@@ -530,8 +512,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = CBC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:50:5: ( '}' )
-            // BasicLexer.g:50:7: '}'
+            // BasicLexer.g:70:5: ( '}' )
+            // BasicLexer.g:70:7: '}'
             {
             match('}'); 
 
@@ -550,8 +532,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = SBO;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:51:5: ( '[' )
-            // BasicLexer.g:51:7: '['
+            // BasicLexer.g:71:5: ( '[' )
+            // BasicLexer.g:71:7: '['
             {
             match('['); 
 
@@ -570,8 +552,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = SBC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:52:5: ( ']' )
-            // BasicLexer.g:52:7: ']'
+            // BasicLexer.g:72:5: ( ']' )
+            // BasicLexer.g:72:7: ']'
             {
             match(']'); 
 
@@ -590,8 +572,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = LE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:55:4: ( '<=' )
-            // BasicLexer.g:55:6: '<='
+            // BasicLexer.g:75:4: ( '<=' )
+            // BasicLexer.g:75:6: '<='
             {
             match("<="); 
 
@@ -611,8 +593,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = L;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:56:3: ( '<' )
-            // BasicLexer.g:56:5: '<'
+            // BasicLexer.g:76:3: ( '<' )
+            // BasicLexer.g:76:5: '<'
             {
             match('<'); 
 
@@ -631,8 +613,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = GE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:57:4: ( '>=' )
-            // BasicLexer.g:57:6: '>='
+            // BasicLexer.g:77:4: ( '>=' )
+            // BasicLexer.g:77:6: '>='
             {
             match(">="); 
 
@@ -652,8 +634,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = G;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:58:3: ( '>' )
-            // BasicLexer.g:58:5: '>'
+            // BasicLexer.g:78:3: ( '>' )
+            // BasicLexer.g:78:5: '>'
             {
             match('>'); 
 
@@ -672,8 +654,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = EQ;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:59:4: ( '=' )
-            // BasicLexer.g:59:6: '='
+            // BasicLexer.g:79:4: ( '=' )
+            // BasicLexer.g:79:6: '='
             {
             match('='); 
 
@@ -692,8 +674,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = PLUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:62:6: ( '+' )
-            // BasicLexer.g:62:8: '+'
+            // BasicLexer.g:82:6: ( '+' )
+            // BasicLexer.g:82:8: '+'
             {
             match('+'); 
 
@@ -712,8 +694,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = MINUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:63:7: ( '-' )
-            // BasicLexer.g:63:9: '-'
+            // BasicLexer.g:83:7: ( '-' )
+            // BasicLexer.g:83:9: '-'
             {
             match('-'); 
 
@@ -732,8 +714,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = PROD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:64:6: ( '*' )
-            // BasicLexer.g:64:8: '*'
+            // BasicLexer.g:84:6: ( '*' )
+            // BasicLexer.g:84:8: '*'
             {
             match('*'); 
 
@@ -752,8 +734,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = DIV;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:65:5: ( '/' )
-            // BasicLexer.g:65:7: '/'
+            // BasicLexer.g:85:5: ( '/' )
+            // BasicLexer.g:85:7: '/'
             {
             match('/'); 
 
@@ -772,8 +754,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:68:5: ( ( ' ' | '\\t' ) )
-            // BasicLexer.g:68:7: ( ' ' | '\\t' )
+            // BasicLexer.g:89:5: ( ( ' ' | '\\t' ) )
+            // BasicLexer.g:89:7: ( ' ' | '\\t' )
             {
             if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
                 input.consume();
@@ -801,12 +783,12 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:69:9: ( '//' ( options {greedy=false; } : . )* '\\n' )
-            // BasicLexer.g:69:11: '//' ( options {greedy=false; } : . )* '\\n'
+            // BasicLexer.g:90:9: ( '//' ( options {greedy=false; } : . )* '\\n' )
+            // BasicLexer.g:90:11: '//' ( options {greedy=false; } : . )* '\\n'
             {
             match("//"); 
 
-            // BasicLexer.g:69:16: ( options {greedy=false; } : . )*
+            // BasicLexer.g:90:16: ( options {greedy=false; } : . )*
             loop3:
             do {
                 int alt3=2;
@@ -815,14 +797,14 @@ public class Visio_BasicLexer extends Lexer {
                 if ( (LA3_0=='\n') ) {
                     alt3=2;
                 }
-                else if ( ((LA3_0>='\u0000' && LA3_0<='\t')||(LA3_0>='\u000B' && LA3_0<='\uFFFE')) ) {
+                else if ( ((LA3_0>='\u0000' && LA3_0<='\t')||(LA3_0>='\u000B' && LA3_0<='\uFFFF')) ) {
                     alt3=1;
                 }
 
 
                 switch (alt3) {
             	case 1 :
-            	    // BasicLexer.g:69:44: .
+            	    // BasicLexer.g:90:44: .
             	    {
             	    matchAny(); 
 
@@ -852,10 +834,10 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = NL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:70:4: ( ( '\\r' )? '\\n' )
-            // BasicLexer.g:70:6: ( '\\r' )? '\\n'
+            // BasicLexer.g:91:4: ( ( '\\r' )? '\\n' )
+            // BasicLexer.g:91:6: ( '\\r' )? '\\n'
             {
-            // BasicLexer.g:70:6: ( '\\r' )?
+            // BasicLexer.g:91:6: ( '\\r' )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -864,7 +846,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt4) {
                 case 1 :
-                    // BasicLexer.g:70:6: '\\r'
+                    // BasicLexer.g:91:6: '\\r'
                     {
                     match('\r'); 
 
@@ -891,7 +873,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = IF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:73:4: ( 'WENN' | 'IF' )
+            // BasicLexer.g:94:4: ( 'WENN' | 'IF' )
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -909,7 +891,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // BasicLexer.g:73:6: 'WENN'
+                    // BasicLexer.g:94:6: 'WENN'
                     {
                     match("WENN"); 
 
@@ -917,7 +899,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:73:13: 'IF'
+                    // BasicLexer.g:94:13: 'IF'
                     {
                     match("IF"); 
 
@@ -939,7 +921,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = THEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:74:6: ( 'DANN' | 'THEN' )
+            // BasicLexer.g:95:6: ( 'DANN' | 'THEN' )
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -957,7 +939,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt6) {
                 case 1 :
-                    // BasicLexer.g:74:8: 'DANN'
+                    // BasicLexer.g:95:8: 'DANN'
                     {
                     match("DANN"); 
 
@@ -965,7 +947,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:74:15: 'THEN'
+                    // BasicLexer.g:95:15: 'THEN'
                     {
                     match("THEN"); 
 
@@ -987,7 +969,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = AND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:75:5: ( 'UND' | 'AND' )
+            // BasicLexer.g:96:5: ( 'UND' | 'AND' )
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -1005,7 +987,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt7) {
                 case 1 :
-                    // BasicLexer.g:75:7: 'UND'
+                    // BasicLexer.g:96:7: 'UND'
                     {
                     match("UND"); 
 
@@ -1013,7 +995,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:75:13: 'AND'
+                    // BasicLexer.g:96:13: 'AND'
                     {
                     match("AND"); 
 
@@ -1035,7 +1017,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = OR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:76:4: ( 'ODER' | 'OR' )
+            // BasicLexer.g:97:4: ( 'ODER' | 'OR' )
             int alt8=2;
             int LA8_0 = input.LA(1);
 
@@ -1063,7 +1045,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt8) {
                 case 1 :
-                    // BasicLexer.g:76:6: 'ODER'
+                    // BasicLexer.g:97:6: 'ODER'
                     {
                     match("ODER"); 
 
@@ -1071,7 +1053,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:76:13: 'OR'
+                    // BasicLexer.g:97:13: 'OR'
                     {
                     match("OR"); 
 
@@ -1093,7 +1075,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = NOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:77:5: ( 'NICHT' | 'NOT' )
+            // BasicLexer.g:98:5: ( 'NICHT' | 'NOT' )
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -1121,7 +1103,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt9) {
                 case 1 :
-                    // BasicLexer.g:77:7: 'NICHT'
+                    // BasicLexer.g:98:7: 'NICHT'
                     {
                     match("NICHT"); 
 
@@ -1129,7 +1111,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:77:15: 'NOT'
+                    // BasicLexer.g:98:15: 'NOT'
                     {
                     match("NOT"); 
 
@@ -1151,7 +1133,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = HIDE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:78:6: ( 'VERBERGE' | 'HIDE' )
+            // BasicLexer.g:99:6: ( 'VERBERGE' | 'HIDE' )
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -1169,7 +1151,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt10) {
                 case 1 :
-                    // BasicLexer.g:78:8: 'VERBERGE'
+                    // BasicLexer.g:99:8: 'VERBERGE'
                     {
                     match("VERBERGE"); 
 
@@ -1177,7 +1159,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:78:19: 'HIDE'
+                    // BasicLexer.g:99:19: 'HIDE'
                     {
                     match("HIDE"); 
 
@@ -1199,7 +1181,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = EXCEPT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:79:7: ( 'AUSSER' | 'EXCEPT' )
+            // BasicLexer.g:100:7: ( 'AUSSER' | 'EXCEPT' )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -1217,7 +1199,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt11) {
                 case 1 :
-                    // BasicLexer.g:79:9: 'AUSSER'
+                    // BasicLexer.g:100:9: 'AUSSER'
                     {
                     match("AUSSER"); 
 
@@ -1225,7 +1207,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:79:18: 'EXCEPT'
+                    // BasicLexer.g:100:18: 'EXCEPT'
                     {
                     match("EXCEPT"); 
 
@@ -1247,7 +1229,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = UNKNOWN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:80:8: ( 'UNBEKANNT' | 'UNKNOWN' )
+            // BasicLexer.g:101:8: ( 'UNBEKANNT' | 'UNKNOWN' )
             int alt12=2;
             int LA12_0 = input.LA(1);
 
@@ -1285,7 +1267,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt12) {
                 case 1 :
-                    // BasicLexer.g:80:10: 'UNBEKANNT'
+                    // BasicLexer.g:101:10: 'UNBEKANNT'
                     {
                     match("UNBEKANNT"); 
 
@@ -1293,7 +1275,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:80:22: 'UNKNOWN'
+                    // BasicLexer.g:101:22: 'UNKNOWN'
                     {
                     match("UNKNOWN"); 
 
@@ -1315,7 +1297,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = KNOWN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:81:6: ( 'BEKANNT' | 'KNOWN' )
+            // BasicLexer.g:102:6: ( 'BEKANNT' | 'KNOWN' )
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -1333,7 +1315,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // BasicLexer.g:81:8: 'BEKANNT'
+                    // BasicLexer.g:102:8: 'BEKANNT'
                     {
                     match("BEKANNT"); 
 
@@ -1341,7 +1323,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:81:18: 'KNOWN'
+                    // BasicLexer.g:102:18: 'KNOWN'
                     {
                     match("KNOWN"); 
 
@@ -1363,7 +1345,7 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = INSTANT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:82:8: ( 'INSTANT' | 'SOFORT' )
+            // BasicLexer.g:103:8: ( 'INSTANT' | 'SOFORT' )
             int alt14=2;
             int LA14_0 = input.LA(1);
 
@@ -1381,7 +1363,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt14) {
                 case 1 :
-                    // BasicLexer.g:82:10: 'INSTANT'
+                    // BasicLexer.g:103:10: 'INSTANT'
                     {
                     match("INSTANT"); 
 
@@ -1389,7 +1371,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:82:20: 'SOFORT'
+                    // BasicLexer.g:103:20: 'SOFORT'
                     {
                     match("SOFORT"); 
 
@@ -1411,8 +1393,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = MINMAX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:83:7: ( 'MINMAX' )
-            // BasicLexer.g:83:9: 'MINMAX'
+            // BasicLexer.g:104:7: ( 'MINMAX' )
+            // BasicLexer.g:104:9: 'MINMAX'
             {
             match("MINMAX"); 
 
@@ -1432,8 +1414,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = IN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:84:3: ( 'IN' )
-            // BasicLexer.g:84:5: 'IN'
+            // BasicLexer.g:105:3: ( 'IN' )
+            // BasicLexer.g:105:5: 'IN'
             {
             match("IN"); 
 
@@ -1448,12 +1430,33 @@ public class Visio_BasicLexer extends Lexer {
     }
     // $ANTLR end "IN"
 
+    // $ANTLR start "INTER"
+    public final void mINTER() throws RecognitionException {
+        try {
+            int _type = INTER;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // BasicLexer.g:106:6: ( 'INTER' )
+            // BasicLexer.g:106:8: 'INTER'
+            {
+            match("INTER"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "INTER"
+
     // $ANTLR start "ALL"
     public final void mALL() throws RecognitionException {
         try {
             int _type = ALL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:85:4: ( 'ALLE' | 'ALL' )
+            // BasicLexer.g:107:4: ( 'ALLE' | 'ALL' )
             int alt15=2;
             int LA15_0 = input.LA(1);
 
@@ -1494,7 +1497,7 @@ public class Visio_BasicLexer extends Lexer {
             }
             switch (alt15) {
                 case 1 :
-                    // BasicLexer.g:85:6: 'ALLE'
+                    // BasicLexer.g:107:6: 'ALLE'
                     {
                     match("ALLE"); 
 
@@ -1502,7 +1505,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:85:13: 'ALL'
+                    // BasicLexer.g:107:13: 'ALL'
                     {
                     match("ALL"); 
 
@@ -1524,8 +1527,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = ALLOWEDNAMES;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:86:13: ( '##allowedNames' )
-            // BasicLexer.g:86:15: '##allowedNames'
+            // BasicLexer.g:108:13: ( '##allowedNames' )
+            // BasicLexer.g:108:15: '##allowedNames'
             {
             match("##allowedNames"); 
 
@@ -1545,8 +1548,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = INCLUDE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:87:8: ( '<include src' )
-            // BasicLexer.g:87:10: '<include src'
+            // BasicLexer.g:109:8: ( '<include src' )
+            // BasicLexer.g:109:10: '<include src'
             {
             match("<include src"); 
 
@@ -1566,8 +1569,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = DEFAULT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:88:8: ( '<default>' )
-            // BasicLexer.g:88:10: '<default>'
+            // BasicLexer.g:110:8: ( '<default>' )
+            // BasicLexer.g:110:10: '<default>'
             {
             match("<default>"); 
 
@@ -1582,17 +1585,38 @@ public class Visio_BasicLexer extends Lexer {
     }
     // $ANTLR end "DEFAULT"
 
+    // $ANTLR start "INIT"
+    public final void mINIT() throws RecognitionException {
+        try {
+            int _type = INIT;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // BasicLexer.g:111:5: ( '<init>' )
+            // BasicLexer.g:111:7: '<init>'
+            {
+            match("<init>"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "INIT"
+
     // $ANTLR start "ABSTRACT"
     public final void mABSTRACT() throws RecognitionException {
         try {
             int _type = ABSTRACT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:89:9: ( '<abstrakt>' | '<abstract>' )
+            // BasicLexer.g:112:9: ( '<abstrakt>' | '<abstract>' )
             int alt16=2;
             alt16 = dfa16.predict(input);
             switch (alt16) {
                 case 1 :
-                    // BasicLexer.g:89:11: '<abstrakt>'
+                    // BasicLexer.g:112:11: '<abstrakt>'
                     {
                     match("<abstrakt>"); 
 
@@ -1600,7 +1624,7 @@ public class Visio_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:89:24: '<abstract>'
+                    // BasicLexer.g:112:24: '<abstract>'
                     {
                     match("<abstract>"); 
 
@@ -1622,8 +1646,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = SET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:90:4: ( 'SET' )
-            // BasicLexer.g:90:6: 'SET'
+            // BasicLexer.g:113:4: ( 'SET' )
+            // BasicLexer.g:113:6: 'SET'
             {
             match("SET"); 
 
@@ -1643,8 +1667,8 @@ public class Visio_BasicLexer extends Lexer {
         try {
             int _type = REF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:91:4: ( '&REF' )
-            // BasicLexer.g:91:6: '&REF'
+            // BasicLexer.g:114:4: ( '&REF' )
+            // BasicLexer.g:114:6: '&REF'
             {
             match("&REF"); 
 
@@ -1659,15 +1683,78 @@ public class Visio_BasicLexer extends Lexer {
     }
     // $ANTLR end "REF"
 
+    // $ANTLR start "FUZZY"
+    public final void mFUZZY() throws RecognitionException {
+        try {
+            int _type = FUZZY;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // BasicLexer.g:115:6: ( 'FUZZY' )
+            // BasicLexer.g:115:8: 'FUZZY'
+            {
+            match("FUZZY"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "FUZZY"
+
+    // $ANTLR start "DIVTEXT"
+    public final void mDIVTEXT() throws RecognitionException {
+        try {
+            int _type = DIVTEXT;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // BasicLexer.g:116:8: ( 'DIV' )
+            // BasicLexer.g:116:10: 'DIV'
+            {
+            match("DIV"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "DIVTEXT"
+
+    // $ANTLR start "DIVNORM"
+    public final void mDIVNORM() throws RecognitionException {
+        try {
+            int _type = DIVNORM;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // BasicLexer.g:117:8: ( 'DIV-NORM' )
+            // BasicLexer.g:117:10: 'DIV-NORM'
+            {
+            match("DIV-NORM"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "DIVNORM"
+
     // $ANTLR start "ID"
     public final void mID() throws RecognitionException {
         try {
             int _type = ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:93:3: ( ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+ )
-            // BasicLexer.g:93:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
+            // BasicLexer.g:119:3: ( ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+ )
+            // BasicLexer.g:119:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
             {
-            // BasicLexer.g:93:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
+            // BasicLexer.g:119:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
             int cnt17=0;
             loop17:
             do {
@@ -1717,8 +1804,8 @@ public class Visio_BasicLexer extends Lexer {
     // $ANTLR end "ID"
 
     public void mTokens() throws RecognitionException {
-        // BasicLexer.g:1:8: ( String | INT | DOT | DD | COMMA | SEMI | EX | AT | ORS | NS | TILDE | LP | RP | CBO | CBC | SBO | SBC | LE | L | GE | G | EQ | PLUS | MINUS | PROD | DIV | WS | COMMENT | NL | IF | THEN | AND | OR | NOT | HIDE | EXCEPT | UNKNOWN | KNOWN | INSTANT | MINMAX | IN | ALL | ALLOWEDNAMES | INCLUDE | DEFAULT | ABSTRACT | SET | REF | ID )
-        int alt18=49;
+        // BasicLexer.g:1:8: ( String | INT | DOT | DD | COMMA | SEMI | EX | AT | ORS | NS | TILDE | LP | RP | CBO | CBC | SBO | SBC | LE | L | GE | G | EQ | PLUS | MINUS | PROD | DIV | WS | COMMENT | NL | IF | THEN | AND | OR | NOT | HIDE | EXCEPT | UNKNOWN | KNOWN | INSTANT | MINMAX | IN | INTER | ALL | ALLOWEDNAMES | INCLUDE | DEFAULT | INIT | ABSTRACT | SET | REF | FUZZY | DIVTEXT | DIVNORM | ID )
+        int alt18=54;
         alt18 = dfa18.predict(input);
         switch (alt18) {
             case 1 :
@@ -2009,56 +2096,91 @@ public class Visio_BasicLexer extends Lexer {
                 }
                 break;
             case 42 :
-                // BasicLexer.g:1:190: ALL
+                // BasicLexer.g:1:190: INTER
+                {
+                mINTER(); 
+
+                }
+                break;
+            case 43 :
+                // BasicLexer.g:1:196: ALL
                 {
                 mALL(); 
 
                 }
                 break;
-            case 43 :
-                // BasicLexer.g:1:194: ALLOWEDNAMES
+            case 44 :
+                // BasicLexer.g:1:200: ALLOWEDNAMES
                 {
                 mALLOWEDNAMES(); 
 
                 }
                 break;
-            case 44 :
-                // BasicLexer.g:1:207: INCLUDE
+            case 45 :
+                // BasicLexer.g:1:213: INCLUDE
                 {
                 mINCLUDE(); 
 
                 }
                 break;
-            case 45 :
-                // BasicLexer.g:1:215: DEFAULT
+            case 46 :
+                // BasicLexer.g:1:221: DEFAULT
                 {
                 mDEFAULT(); 
 
                 }
                 break;
-            case 46 :
-                // BasicLexer.g:1:223: ABSTRACT
+            case 47 :
+                // BasicLexer.g:1:229: INIT
+                {
+                mINIT(); 
+
+                }
+                break;
+            case 48 :
+                // BasicLexer.g:1:234: ABSTRACT
                 {
                 mABSTRACT(); 
 
                 }
                 break;
-            case 47 :
-                // BasicLexer.g:1:232: SET
+            case 49 :
+                // BasicLexer.g:1:243: SET
                 {
                 mSET(); 
 
                 }
                 break;
-            case 48 :
-                // BasicLexer.g:1:236: REF
+            case 50 :
+                // BasicLexer.g:1:247: REF
                 {
                 mREF(); 
 
                 }
                 break;
-            case 49 :
-                // BasicLexer.g:1:240: ID
+            case 51 :
+                // BasicLexer.g:1:251: FUZZY
+                {
+                mFUZZY(); 
+
+                }
+                break;
+            case 52 :
+                // BasicLexer.g:1:257: DIVTEXT
+                {
+                mDIVTEXT(); 
+
+                }
+                break;
+            case 53 :
+                // BasicLexer.g:1:265: DIVNORM
+                {
+                mDIVNORM(); 
+
+                }
+                break;
+            case 54 :
+                // BasicLexer.g:1:273: ID
                 {
                 mID(); 
 
@@ -2127,64 +2249,70 @@ public class Visio_BasicLexer extends Lexer {
             this.transition = DFA16_transition;
         }
         public String getDescription() {
-            return "89:1: ABSTRACT : ( '<abstrakt>' | '<abstract>' );";
+            return "112:1: ABSTRACT : ( '<abstrakt>' | '<abstract>' );";
         }
     }
     static final String DFA18_eotS =
-        "\12\uffff\1\55\7\uffff\1\62\1\64\4\uffff\1\66\2\uffff\20\53\14"+
-        "\uffff\1\53\1\116\1\120\7\53\1\132\14\53\1\uffff\1\53\1\uffff\2"+
-        "\53\1\152\2\53\1\152\1\53\1\157\1\53\1\uffff\1\53\1\162\6\53\1\171"+
-        "\2\53\1\116\1\53\2\175\1\uffff\3\53\1\157\1\uffff\1\132\1\53\1\uffff"+
-        "\1\53\1\u0083\4\53\1\uffff\1\53\1\u0089\1\53\1\uffff\3\53\1\162"+
-        "\1\53\1\uffff\2\53\1\u0091\2\53\1\uffff\3\53\1\u0097\1\53\1\u0097"+
-        "\1\53\1\uffff\1\u009a\1\u009b\1\u009a\1\53\1\u009d\1\uffff\1\53"+
-        "\1\u0091\2\uffff\1\53\1\uffff\1\u0083\1\u009d";
+        "\12\uffff\1\56\7\uffff\1\63\1\65\4\uffff\1\67\2\uffff\21\54\14"+
+        "\uffff\1\54\1\122\1\125\10\54\1\140\14\54\1\uffff\1\54\1\uffff\2"+
+        "\54\1\uffff\1\54\1\164\1\54\1\166\2\54\1\166\1\54\1\173\1\54\1\uffff"+
+        "\1\54\1\176\6\54\1\u0085\3\54\2\uffff\1\122\2\54\1\u008b\2\uffff"+
+        "\1\u008b\1\uffff\3\54\1\173\1\uffff\1\140\1\54\1\uffff\1\54\1\u0091"+
+        "\4\54\1\uffff\1\54\1\u0097\2\54\1\u009a\1\uffff\3\54\1\176\1\54"+
+        "\1\uffff\2\54\1\u00a1\2\54\1\uffff\1\u00a4\1\54\1\uffff\2\54\1\u00a8"+
+        "\1\54\1\u00a8\1\54\1\uffff\1\u00ab\1\u00ac\1\uffff\1\u00ab\1\54"+
+        "\1\u00ae\1\uffff\1\54\1\u00a1\2\uffff\1\54\1\uffff\1\u0091\1\u00ae";
     static final String DFA18_eofS =
-        "\u00a0\uffff";
+        "\u00b1\uffff";
     static final String DFA18_minS =
         "\1\11\11\uffff\1\43\7\uffff\2\75\4\uffff\1\57\2\uffff\1\105\1\106"+
         "\1\101\1\110\1\116\1\114\1\104\1\111\1\105\1\111\1\130\1\105\1\116"+
-        "\1\105\1\111\1\122\14\uffff\1\116\2\44\1\116\1\105\1\102\1\104\1"+
-        "\123\1\114\1\105\1\44\1\103\1\124\1\122\1\104\1\103\1\113\1\117"+
-        "\1\106\1\124\1\116\1\105\1\116\1\uffff\1\124\1\uffff\2\116\1\44"+
-        "\1\105\1\116\1\44\1\123\1\44\1\122\1\uffff\1\110\1\44\1\102\2\105"+
-        "\1\101\1\127\1\117\1\44\1\115\1\106\1\44\1\101\2\44\1\uffff\1\113"+
-        "\1\117\1\105\1\44\1\uffff\1\44\1\124\1\uffff\1\105\1\44\1\120\2"+
-        "\116\1\122\1\uffff\1\101\1\44\1\116\1\uffff\1\101\1\127\1\122\1"+
-        "\44\1\122\1\uffff\1\124\1\116\1\44\1\124\1\130\1\uffff\1\124\2\116"+
-        "\1\44\1\107\1\44\1\124\1\uffff\3\44\1\116\1\44\1\uffff\1\105\1\44"+
-        "\2\uffff\1\124\1\uffff\2\44";
+        "\1\105\1\111\1\122\1\125\4\uffff\1\156\7\uffff\1\116\2\44\1\116"+
+        "\1\126\1\105\1\102\1\104\1\123\1\114\1\105\1\44\1\103\1\124\1\122"+
+        "\1\104\1\103\1\113\1\117\1\106\1\124\1\116\1\105\1\132\1\143\1\116"+
+        "\1\uffff\1\124\1\105\1\uffff\1\116\1\44\1\116\1\44\1\105\1\116\1"+
+        "\44\1\123\1\44\1\122\1\uffff\1\110\1\44\1\102\2\105\1\101\1\127"+
+        "\1\117\1\44\1\115\1\106\1\132\2\uffff\1\44\1\101\1\122\1\44\2\uffff"+
+        "\1\44\1\uffff\1\113\1\117\1\105\1\44\1\uffff\1\44\1\124\1\uffff"+
+        "\1\105\1\44\1\120\2\116\1\122\1\uffff\1\101\1\44\1\131\1\116\1\44"+
+        "\1\uffff\1\101\1\127\1\122\1\44\1\122\1\uffff\1\124\1\116\1\44\1"+
+        "\124\1\130\1\uffff\1\44\1\124\1\uffff\2\116\1\44\1\107\1\44\1\124"+
+        "\1\uffff\2\44\1\uffff\1\44\1\116\1\44\1\uffff\1\105\1\44\2\uffff"+
+        "\1\124\1\uffff\2\44";
     static final String DFA18_maxS =
         "\1\uefff\11\uffff\1\43\7\uffff\1\151\1\75\4\uffff\1\57\2\uffff"+
-        "\1\105\1\116\1\101\1\110\1\116\1\125\1\122\1\117\1\105\1\111\1\130"+
-        "\1\105\1\116\1\117\1\111\1\122\14\uffff\1\116\2\uefff\1\116\1\105"+
-        "\1\113\1\104\1\123\1\114\1\105\1\uefff\1\103\1\124\1\122\1\104\1"+
-        "\103\1\113\1\117\1\106\1\124\1\116\1\105\1\116\1\uffff\1\124\1\uffff"+
-        "\2\116\1\uefff\1\105\1\116\1\uefff\1\123\1\uefff\1\122\1\uffff\1"+
-        "\110\1\uefff\1\102\2\105\1\101\1\127\1\117\1\uefff\1\115\1\106\1"+
-        "\uefff\1\101\2\uefff\1\uffff\1\113\1\117\1\105\1\uefff\1\uffff\1"+
-        "\uefff\1\124\1\uffff\1\105\1\uefff\1\120\2\116\1\122\1\uffff\1\101"+
-        "\1\uefff\1\116\1\uffff\1\101\1\127\1\122\1\uefff\1\122\1\uffff\1"+
-        "\124\1\116\1\uefff\1\124\1\130\1\uffff\1\124\2\116\1\uefff\1\107"+
-        "\1\uefff\1\124\1\uffff\3\uefff\1\116\1\uefff\1\uffff\1\105\1\uefff"+
-        "\2\uffff\1\124\1\uffff\2\uefff";
+        "\1\105\1\116\1\111\1\110\1\116\1\125\1\122\1\117\1\105\1\111\1\130"+
+        "\1\105\1\116\1\117\1\111\1\122\1\125\4\uffff\1\156\7\uffff\1\116"+
+        "\2\uefff\1\116\1\126\1\105\1\113\1\104\1\123\1\114\1\105\1\uefff"+
+        "\1\103\1\124\1\122\1\104\1\103\1\113\1\117\1\106\1\124\1\116\1\105"+
+        "\1\132\1\151\1\116\1\uffff\1\124\1\105\1\uffff\1\116\1\uefff\1\116"+
+        "\1\uefff\1\105\1\116\1\uefff\1\123\1\uefff\1\122\1\uffff\1\110\1"+
+        "\uefff\1\102\2\105\1\101\1\127\1\117\1\uefff\1\115\1\106\1\132\2"+
+        "\uffff\1\uefff\1\101\1\122\1\uefff\2\uffff\1\uefff\1\uffff\1\113"+
+        "\1\117\1\105\1\uefff\1\uffff\1\uefff\1\124\1\uffff\1\105\1\uefff"+
+        "\1\120\2\116\1\122\1\uffff\1\101\1\uefff\1\131\1\116\1\uefff\1\uffff"+
+        "\1\101\1\127\1\122\1\uefff\1\122\1\uffff\1\124\1\116\1\uefff\1\124"+
+        "\1\130\1\uffff\1\uefff\1\124\1\uffff\2\116\1\uefff\1\107\1\uefff"+
+        "\1\124\1\uffff\2\uefff\1\uffff\1\uefff\1\116\1\uefff\1\uffff\1\105"+
+        "\1\uefff\2\uffff\1\124\1\uffff\2\uefff";
     static final String DFA18_acceptS =
         "\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\uffff\1\13\1\14"+
         "\1\15\1\16\1\17\1\20\1\21\2\uffff\1\26\1\27\1\30\1\31\1\uffff\1"+
-        "\33\1\35\20\uffff\1\61\1\53\1\12\1\22\1\54\1\55\1\56\1\23\1\24\1"+
-        "\25\1\34\1\32\27\uffff\1\36\1\uffff\1\51\11\uffff\1\41\17\uffff"+
-        "\1\40\4\uffff\1\52\2\uffff\1\42\6\uffff\1\57\3\uffff\1\37\5\uffff"+
-        "\1\43\5\uffff\1\60\7\uffff\1\46\5\uffff\1\44\2\uffff\1\47\1\50\1"+
+        "\33\1\35\21\uffff\1\66\1\54\1\12\1\22\1\uffff\1\56\1\60\1\23\1\24"+
+        "\1\25\1\34\1\32\32\uffff\1\36\2\uffff\1\51\12\uffff\1\41\14\uffff"+
+        "\1\55\1\57\4\uffff\1\65\1\64\1\uffff\1\40\4\uffff\1\53\2\uffff\1"+
+        "\42\6\uffff\1\61\5\uffff\1\37\5\uffff\1\43\5\uffff\1\62\2\uffff"+
+        "\1\52\6\uffff\1\46\2\uffff\1\63\3\uffff\1\44\2\uffff\1\47\1\50\1"+
         "\uffff\1\45\2\uffff";
     static final String DFA18_specialS =
-        "\u00a0\uffff}>";
+        "\u00b1\uffff}>";
     static final String[] DFA18_transitionS = {
-            "\1\31\1\32\2\uffff\1\32\22\uffff\1\31\1\7\1\1\1\12\2\53\1\52"+
-            "\1\53\1\14\1\15\1\27\1\25\1\5\1\26\1\3\1\30\12\2\1\4\1\6\1\22"+
-            "\1\24\1\23\1\53\1\10\1\40\1\46\1\53\1\35\1\45\2\53\1\44\1\34"+
-            "\1\53\1\47\1\53\1\51\1\42\1\41\3\53\1\50\1\36\1\37\1\43\1\33"+
-            "\3\53\1\20\1\uffff\1\21\1\uffff\1\53\1\uffff\32\53\1\16\1\11"+
-            "\1\17\1\13\42\uffff\uef5f\53",
+            "\1\31\1\32\2\uffff\1\32\22\uffff\1\31\1\7\1\1\1\12\2\54\1\52"+
+            "\1\54\1\14\1\15\1\27\1\25\1\5\1\26\1\3\1\30\12\2\1\4\1\6\1\22"+
+            "\1\24\1\23\1\54\1\10\1\40\1\46\1\54\1\35\1\45\1\53\1\54\1\44"+
+            "\1\34\1\54\1\47\1\54\1\51\1\42\1\41\3\54\1\50\1\36\1\37\1\43"+
+            "\1\33\3\54\1\20\1\uffff\1\21\1\uffff\1\54\1\uffff\32\54\1\16"+
+            "\1\11\1\17\1\13\42\uffff\uef5f\54",
             "",
             "",
             "",
@@ -2194,7 +2322,7 @@ public class Visio_BasicLexer extends Lexer {
             "",
             "",
             "",
-            "\1\54",
+            "\1\55",
             "",
             "",
             "",
@@ -2202,174 +2330,194 @@ public class Visio_BasicLexer extends Lexer {
             "",
             "",
             "",
-            "\1\56\43\uffff\1\61\2\uffff\1\60\4\uffff\1\57",
-            "\1\63",
+            "\1\57\43\uffff\1\62\2\uffff\1\61\4\uffff\1\60",
+            "\1\64",
             "",
             "",
             "",
             "",
-            "\1\65",
+            "\1\66",
             "",
             "",
-            "\1\67",
-            "\1\70\7\uffff\1\71",
-            "\1\72",
-            "\1\73",
-            "\1\74",
-            "\1\77\1\uffff\1\75\6\uffff\1\76",
-            "\1\100\15\uffff\1\101",
-            "\1\102\5\uffff\1\103",
-            "\1\104",
-            "\1\105",
+            "\1\70",
+            "\1\71\7\uffff\1\72",
+            "\1\73\7\uffff\1\74",
+            "\1\75",
+            "\1\76",
+            "\1\101\1\uffff\1\77\6\uffff\1\100",
+            "\1\102\15\uffff\1\103",
+            "\1\104\5\uffff\1\105",
             "\1\106",
             "\1\107",
             "\1\110",
-            "\1\112\11\uffff\1\111",
-            "\1\113",
-            "\1\114",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
+            "\1\111",
+            "\1\112",
+            "\1\114\11\uffff\1\113",
             "\1\115",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\4\53\27\uffff\1\53\1\uffff\22\53\1\117\7\53\4\uffff\1\53"+
-            "\1\uffff\32\53\46\uffff\uef5f\53",
+            "\1\116",
+            "\1\117",
+            "",
+            "",
+            "",
+            "",
+            "\1\120",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "\1\121",
-            "\1\122",
-            "\1\124\1\uffff\1\123\6\uffff\1\125",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\4\54\27\uffff\1\54\1\uffff\22\54\1\123\1\124\6\54\4\uffff"+
+            "\1\54\1\uffff\32\54\46\uffff\uef5f\54",
             "\1\126",
             "\1\127",
             "\1\130",
-            "\1\131",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\1\133",
+            "\1\132\1\uffff\1\131\6\uffff\1\133",
             "\1\134",
             "\1\135",
             "\1\136",
             "\1\137",
-            "\1\140",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\1\141",
             "\1\142",
             "\1\143",
             "\1\144",
             "\1\145",
             "\1\146",
-            "",
             "\1\147",
-            "",
             "\1\150",
             "\1\151",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
+            "\1\152",
             "\1\153",
             "\1\154",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\1\155",
-            "\4\53\27\uffff\1\53\1\uffff\4\53\1\156\25\53\4\uffff\1\53"+
-            "\1\uffff\32\53\46\uffff\uef5f\53",
-            "\1\160",
+            "\1\155\5\uffff\1\156",
+            "\1\157",
             "",
+            "\1\160",
             "\1\161",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\1\163",
-            "\1\164",
+            "",
+            "\1\162",
+            "\4\54\5\uffff\1\163\21\uffff\1\54\1\uffff\32\54\4\uffff\1"+
+            "\54\1\uffff\32\54\46\uffff\uef5f\54",
             "\1\165",
-            "\1\166",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\1\167",
             "\1\170",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\1\172",
-            "\1\173",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\1\171",
+            "\4\54\27\uffff\1\54\1\uffff\4\54\1\172\25\54\4\uffff\1\54"+
+            "\1\uffff\32\54\46\uffff\uef5f\54",
             "\1\174",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
             "",
-            "\1\176",
+            "\1\175",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\1\177",
             "\1\u0080",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
             "\1\u0081",
-            "",
             "\1\u0082",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
+            "\1\u0083",
             "\1\u0084",
-            "\1\u0085",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\1\u0086",
             "\1\u0087",
-            "",
             "\1\u0088",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\1\u008a",
             "",
-            "\1\u008b",
+            "",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\1\u0089",
+            "\1\u008a",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "",
+            "",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "",
             "\1\u008c",
             "\1\u008d",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
             "\1\u008e",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\1\u008f",
+            "",
             "\1\u0090",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\1\u0092",
             "\1\u0093",
-            "",
             "\1\u0094",
             "\1\u0095",
+            "",
             "\1\u0096",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\1\u0098",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
             "\1\u0099",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
+            "\1\u009b",
             "\1\u009c",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "",
+            "\1\u009d",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
             "\1\u009e",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "",
             "",
             "\1\u009f",
+            "\1\u00a0",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\1\u00a2",
+            "\1\u00a3",
             "",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53",
-            "\4\53\27\uffff\1\53\1\uffff\32\53\4\uffff\1\53\1\uffff\32"+
-            "\53\46\uffff\uef5f\53"
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\1\u00a5",
+            "",
+            "\1\u00a6",
+            "\1\u00a7",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\1\u00a9",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\1\u00aa",
+            "",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\1\u00ad",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "",
+            "\1\u00af",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "",
+            "",
+            "\1\u00b0",
+            "",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54",
+            "\4\54\27\uffff\1\54\1\uffff\32\54\4\uffff\1\54\1\uffff\32"+
+            "\54\46\uffff\uef5f\54"
     };
 
     static final short[] DFA18_eot = DFA.unpackEncodedString(DFA18_eotS);
@@ -2402,7 +2550,7 @@ public class Visio_BasicLexer extends Lexer {
             this.transition = DFA18_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( String | INT | DOT | DD | COMMA | SEMI | EX | AT | ORS | NS | TILDE | LP | RP | CBO | CBC | SBO | SBC | LE | L | GE | G | EQ | PLUS | MINUS | PROD | DIV | WS | COMMENT | NL | IF | THEN | AND | OR | NOT | HIDE | EXCEPT | UNKNOWN | KNOWN | INSTANT | MINMAX | IN | ALL | ALLOWEDNAMES | INCLUDE | DEFAULT | ABSTRACT | SET | REF | ID );";
+            return "1:1: Tokens : ( String | INT | DOT | DD | COMMA | SEMI | EX | AT | ORS | NS | TILDE | LP | RP | CBO | CBC | SBO | SBC | LE | L | GE | G | EQ | PLUS | MINUS | PROD | DIV | WS | COMMENT | NL | IF | THEN | AND | OR | NOT | HIDE | EXCEPT | UNKNOWN | KNOWN | INSTANT | MINMAX | IN | INTER | ALL | ALLOWEDNAMES | INCLUDE | DEFAULT | INIT | ABSTRACT | SET | REF | FUZZY | DIVTEXT | DIVNORM | ID );";
         }
     }
  

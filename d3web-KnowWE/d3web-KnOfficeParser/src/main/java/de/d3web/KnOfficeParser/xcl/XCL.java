@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g 2009-10-13 18:05:38
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g 2009-10-14 10:10:52
 
 package de.d3web.KnOfficeParser.xcl;
 import de.d3web.KnOfficeParser.ConditionBuilder;
@@ -94,7 +94,7 @@ public class XCL extends Parser {
         
 
     public String[] getTokenNames() { return XCL.tokenNames; }
-    public String getGrammarFileName() { return "D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g"; }
+    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g"; }
 
 
       private XCLBuilder builder;
@@ -129,13 +129,13 @@ public class XCL extends Parser {
 
 
     // $ANTLR start "knowledge"
-    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:48:1: knowledge : ( solutiondescription )* ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:68:1: knowledge : ( solutiondescription )* ;
     public final void knowledge() throws RecognitionException {
         try {
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:49:1: ( ( solutiondescription )* )
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:49:3: ( solutiondescription )*
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:1: ( ( solutiondescription )* )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:3: ( solutiondescription )*
             {
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:49:3: ( solutiondescription )*
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:3: ( solutiondescription )*
             loop1:
             do {
                 int alt1=2;
@@ -148,9 +148,9 @@ public class XCL extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:49:3: solutiondescription
+            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:3: solutiondescription
             	    {
-            	    pushFollow(FOLLOW_solutiondescription_in_knowledge45);
+            	    pushFollow(FOLLOW_solutiondescription_in_knowledge48);
             	    solutiondescription();
 
             	    state._fsp--;
@@ -182,7 +182,7 @@ public class XCL extends Parser {
     };
 
     // $ANTLR start "solutiondescription"
-    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:51:1: solutiondescription : name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )? ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:71:1: solutiondescription : name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )? ;
     public final XCL.solutiondescription_return solutiondescription() throws RecognitionException {
         XCL.solutiondescription_return retval = new XCL.solutiondescription_return();
         retval.start = input.LT(1);
@@ -191,17 +191,17 @@ public class XCL extends Parser {
 
 
         try {
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:52:1: ( name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )? )
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:52:3: name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )?
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:1: ( name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )? )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:3: name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )?
             {
-            pushFollow(FOLLOW_name_in_solutiondescription54);
+            pushFollow(FOLLOW_name_in_solutiondescription57);
             name1=name();
 
             state._fsp--;
 
             builder.solution(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (name1!=null?name1.value:null));
-            match(input,CBO,FOLLOW_CBO_in_solutiondescription58); 
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:52:70: ( finding COMMA )+
+            match(input,CBO,FOLLOW_CBO_in_solutiondescription61); 
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:70: ( finding COMMA )+
             int cnt2=0;
             loop2:
             do {
@@ -215,14 +215,14 @@ public class XCL extends Parser {
 
                 switch (alt2) {
             	case 1 :
-            	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:52:72: finding COMMA
+            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:72: finding COMMA
             	    {
-            	    pushFollow(FOLLOW_finding_in_solutiondescription62);
+            	    pushFollow(FOLLOW_finding_in_solutiondescription65);
             	    finding();
 
             	    state._fsp--;
 
-            	    match(input,COMMA,FOLLOW_COMMA_in_solutiondescription64); 
+            	    match(input,COMMA,FOLLOW_COMMA_in_solutiondescription67); 
 
             	    }
             	    break;
@@ -236,8 +236,8 @@ public class XCL extends Parser {
                 cnt2++;
             } while (true);
 
-            match(input,CBC,FOLLOW_CBC_in_solutiondescription68); 
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:52:92: ( SBO thr ( COMMA thr )* SBC )?
+            match(input,CBC,FOLLOW_CBC_in_solutiondescription71); 
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:92: ( SBO thr ( COMMA thr )* SBC )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -246,15 +246,15 @@ public class XCL extends Parser {
             }
             switch (alt4) {
                 case 1 :
-                    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:52:93: SBO thr ( COMMA thr )* SBC
+                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:93: SBO thr ( COMMA thr )* SBC
                     {
-                    match(input,SBO,FOLLOW_SBO_in_solutiondescription71); 
-                    pushFollow(FOLLOW_thr_in_solutiondescription73);
+                    match(input,SBO,FOLLOW_SBO_in_solutiondescription74); 
+                    pushFollow(FOLLOW_thr_in_solutiondescription76);
                     thr();
 
                     state._fsp--;
 
-                    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:52:101: ( COMMA thr )*
+                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:101: ( COMMA thr )*
                     loop3:
                     do {
                         int alt3=2;
@@ -267,10 +267,10 @@ public class XCL extends Parser {
 
                         switch (alt3) {
                     	case 1 :
-                    	    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:52:102: COMMA thr
+                    	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:102: COMMA thr
                     	    {
-                    	    match(input,COMMA,FOLLOW_COMMA_in_solutiondescription76); 
-                    	    pushFollow(FOLLOW_thr_in_solutiondescription78);
+                    	    match(input,COMMA,FOLLOW_COMMA_in_solutiondescription79); 
+                    	    pushFollow(FOLLOW_thr_in_solutiondescription81);
                     	    thr();
 
                     	    state._fsp--;
@@ -284,7 +284,7 @@ public class XCL extends Parser {
                         }
                     } while (true);
 
-                    match(input,SBC,FOLLOW_SBC_in_solutiondescription82); 
+                    match(input,SBC,FOLLOW_SBC_in_solutiondescription85); 
 
                     }
                     break;
@@ -309,21 +309,21 @@ public class XCL extends Parser {
 
 
     // $ANTLR start "finding"
-    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:54:1: finding : complexcondition ( weight )? ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:1: finding : complexcondition ( weight )? ;
     public final void finding() throws RecognitionException {
         XCL.weight_return weight2 = null;
 
 
         try {
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:54:9: ( complexcondition ( weight )? )
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:54:11: complexcondition ( weight )?
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:9: ( complexcondition ( weight )? )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:11: complexcondition ( weight )?
             {
-            pushFollow(FOLLOW_complexcondition_in_finding92);
+            pushFollow(FOLLOW_complexcondition_in_finding95);
             complexcondition();
 
             state._fsp--;
 
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:54:28: ( weight )?
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:28: ( weight )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -332,9 +332,9 @@ public class XCL extends Parser {
             }
             switch (alt5) {
                 case 1 :
-                    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:54:28: weight
+                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:28: weight
                     {
-                    pushFollow(FOLLOW_weight_in_finding94);
+                    pushFollow(FOLLOW_weight_in_finding97);
                     weight2=weight();
 
                     state._fsp--;
@@ -364,17 +364,17 @@ public class XCL extends Parser {
     };
 
     // $ANTLR start "weight"
-    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:56:1: weight : SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:76:1: weight : SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC ;
     public final XCL.weight_return weight() throws RecognitionException {
         XCL.weight_return retval = new XCL.weight_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:57:1: ( SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC )
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:57:3: SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:1: ( SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:3: SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC
             {
-            match(input,SBO,FOLLOW_SBO_in_weight105); 
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:57:7: ( PLUS PLUS | MINUS MINUS | EX | INT )
+            match(input,SBO,FOLLOW_SBO_in_weight108); 
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:7: ( PLUS PLUS | MINUS MINUS | EX | INT )
             int alt6=4;
             switch ( input.LA(1) ) {
             case PLUS:
@@ -406,39 +406,39 @@ public class XCL extends Parser {
 
             switch (alt6) {
                 case 1 :
-                    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:57:8: PLUS PLUS
+                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:8: PLUS PLUS
                     {
-                    match(input,PLUS,FOLLOW_PLUS_in_weight108); 
-                    match(input,PLUS,FOLLOW_PLUS_in_weight110); 
+                    match(input,PLUS,FOLLOW_PLUS_in_weight111); 
+                    match(input,PLUS,FOLLOW_PLUS_in_weight113); 
 
                     }
                     break;
                 case 2 :
-                    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:57:18: MINUS MINUS
+                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:18: MINUS MINUS
                     {
-                    match(input,MINUS,FOLLOW_MINUS_in_weight112); 
-                    match(input,MINUS,FOLLOW_MINUS_in_weight114); 
+                    match(input,MINUS,FOLLOW_MINUS_in_weight115); 
+                    match(input,MINUS,FOLLOW_MINUS_in_weight117); 
 
                     }
                     break;
                 case 3 :
-                    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:57:30: EX
+                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:30: EX
                     {
-                    match(input,EX,FOLLOW_EX_in_weight116); 
+                    match(input,EX,FOLLOW_EX_in_weight119); 
 
                     }
                     break;
                 case 4 :
-                    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:57:33: INT
+                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:33: INT
                     {
-                    match(input,INT,FOLLOW_INT_in_weight118); 
+                    match(input,INT,FOLLOW_INT_in_weight121); 
 
                     }
                     break;
 
             }
 
-            match(input,SBC,FOLLOW_SBC_in_weight121); 
+            match(input,SBC,FOLLOW_SBC_in_weight124); 
 
             }
 
@@ -459,7 +459,7 @@ public class XCL extends Parser {
     };
 
     // $ANTLR start "thr"
-    // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:59:1: thr : name EQ d3double ;
+    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:79:1: thr : name EQ d3double ;
     public final XCL.thr_return thr() throws RecognitionException {
         XCL.thr_return retval = new XCL.thr_return();
         retval.start = input.LT(1);
@@ -470,16 +470,16 @@ public class XCL extends Parser {
 
 
         try {
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:59:4: ( name EQ d3double )
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:59:6: name EQ d3double
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:79:4: ( name EQ d3double )
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:79:6: name EQ d3double
             {
-            pushFollow(FOLLOW_name_in_thr128);
+            pushFollow(FOLLOW_name_in_thr131);
             name3=name();
 
             state._fsp--;
 
-            match(input,EQ,FOLLOW_EQ_in_thr130); 
-            pushFollow(FOLLOW_d3double_in_thr132);
+            match(input,EQ,FOLLOW_EQ_in_thr133); 
+            pushFollow(FOLLOW_d3double_in_thr135);
             d3double4=d3double();
 
             state._fsp--;
@@ -502,46 +502,46 @@ public class XCL extends Parser {
     // $ANTLR end "thr"
 
     // Delegated rules
-    public void startruleComplexCondition() throws RecognitionException { gComplexCondition.startruleComplexCondition(); }
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
-    public XCL_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
-    public XCL_ComplexCondition.disjunct_return disjunct() throws RecognitionException { return gComplexCondition.disjunct(); }
-    public XCL_ComplexCondition_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
     public XCL_ComplexCondition.complexcondition_return complexcondition() throws RecognitionException { return gComplexCondition.complexcondition(); }
-    public XCL_ComplexCondition.conjunct_return conjunct() throws RecognitionException { return gComplexCondition.conjunct(); }
     public String type() throws RecognitionException { return gBasicParser.type(); }
+    public XCL_ComplexCondition.conjunct_return conjunct() throws RecognitionException { return gComplexCondition.conjunct(); }
+    public XCL_ComplexCondition_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
     public XCL_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
+    public XCL_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
     public XCL_ComplexCondition.dnf_return dnf() throws RecognitionException { return gComplexCondition.dnf(); }
     public XCL_ComplexCondition.intervall_return intervall() throws RecognitionException { return gComplexCondition.intervall(); }
+    public XCL_ComplexCondition.disjunct_return disjunct() throws RecognitionException { return gComplexCondition.disjunct(); }
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
+    public void startruleComplexCondition() throws RecognitionException { gComplexCondition.startruleComplexCondition(); }
     public XCL_ComplexCondition_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
-    public XCL_ComplexCondition_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
+    public XCL_ComplexCondition_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
 
 
  
 
-    public static final BitSet FOLLOW_solutiondescription_in_knowledge45 = new BitSet(new long[]{0x0200000000000032L});
-    public static final BitSet FOLLOW_name_in_solutiondescription54 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_CBO_in_solutiondescription58 = new BitSet(new long[]{0x02005B2003E88030L});
-    public static final BitSet FOLLOW_finding_in_solutiondescription62 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_COMMA_in_solutiondescription64 = new BitSet(new long[]{0x02005B2003EC8030L});
-    public static final BitSet FOLLOW_CBC_in_solutiondescription68 = new BitSet(new long[]{0x0000000000080002L});
-    public static final BitSet FOLLOW_SBO_in_solutiondescription71 = new BitSet(new long[]{0x0200000002000030L});
-    public static final BitSet FOLLOW_thr_in_solutiondescription73 = new BitSet(new long[]{0x0000000000100100L});
-    public static final BitSet FOLLOW_COMMA_in_solutiondescription76 = new BitSet(new long[]{0x0200000002000030L});
-    public static final BitSet FOLLOW_thr_in_solutiondescription78 = new BitSet(new long[]{0x0000000000100100L});
-    public static final BitSet FOLLOW_SBC_in_solutiondescription82 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_complexcondition_in_finding92 = new BitSet(new long[]{0x0000000000080002L});
-    public static final BitSet FOLLOW_weight_in_finding94 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SBO_in_weight105 = new BitSet(new long[]{0x000000000C000420L});
-    public static final BitSet FOLLOW_PLUS_in_weight108 = new BitSet(new long[]{0x0000000004000000L});
-    public static final BitSet FOLLOW_PLUS_in_weight110 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_MINUS_in_weight112 = new BitSet(new long[]{0x0000000008000000L});
-    public static final BitSet FOLLOW_MINUS_in_weight114 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_EX_in_weight116 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_INT_in_weight118 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_weight121 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_thr128 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_EQ_in_thr130 = new BitSet(new long[]{0x0000000008000020L});
-    public static final BitSet FOLLOW_d3double_in_thr132 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_solutiondescription_in_knowledge48 = new BitSet(new long[]{0x0200000000000032L});
+    public static final BitSet FOLLOW_name_in_solutiondescription57 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_CBO_in_solutiondescription61 = new BitSet(new long[]{0x02005B2003E88030L});
+    public static final BitSet FOLLOW_finding_in_solutiondescription65 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_COMMA_in_solutiondescription67 = new BitSet(new long[]{0x02005B2003EC8030L});
+    public static final BitSet FOLLOW_CBC_in_solutiondescription71 = new BitSet(new long[]{0x0000000000080002L});
+    public static final BitSet FOLLOW_SBO_in_solutiondescription74 = new BitSet(new long[]{0x0200000002000030L});
+    public static final BitSet FOLLOW_thr_in_solutiondescription76 = new BitSet(new long[]{0x0000000000100100L});
+    public static final BitSet FOLLOW_COMMA_in_solutiondescription79 = new BitSet(new long[]{0x0200000002000030L});
+    public static final BitSet FOLLOW_thr_in_solutiondescription81 = new BitSet(new long[]{0x0000000000100100L});
+    public static final BitSet FOLLOW_SBC_in_solutiondescription85 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_complexcondition_in_finding95 = new BitSet(new long[]{0x0000000000080002L});
+    public static final BitSet FOLLOW_weight_in_finding97 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SBO_in_weight108 = new BitSet(new long[]{0x000000000C000420L});
+    public static final BitSet FOLLOW_PLUS_in_weight111 = new BitSet(new long[]{0x0000000004000000L});
+    public static final BitSet FOLLOW_PLUS_in_weight113 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_MINUS_in_weight115 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_MINUS_in_weight117 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_EX_in_weight119 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_INT_in_weight121 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_weight124 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_thr131 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_EQ_in_thr133 = new BitSet(new long[]{0x0000000008000020L});
+    public static final BitSet FOLLOW_d3double_in_thr135 = new BitSet(new long[]{0x0000000000000002L});
 
 }

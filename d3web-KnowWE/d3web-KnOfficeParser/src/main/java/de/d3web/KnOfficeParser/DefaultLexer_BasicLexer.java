@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 BasicLexer.g 2009-10-13 18:05:36
+// $ANTLR 3.1.1 BasicLexer.g 2009-10-14 10:09:28
 
 package de.d3web.KnOfficeParser;
 
@@ -115,11 +115,11 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = String;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:32:8: ( '\"' ( options {greedy=false; } : . )* ~ '\\\\' '\"' )
-            // BasicLexer.g:32:10: '\"' ( options {greedy=false; } : . )* ~ '\\\\' '\"'
+            // BasicLexer.g:52:8: ( '\"' ( options {greedy=false; } : . )* ~ '\\\\' '\"' )
+            // BasicLexer.g:52:10: '\"' ( options {greedy=false; } : . )* ~ '\\\\' '\"'
             {
             match('\"'); 
-            // BasicLexer.g:32:14: ( options {greedy=false; } : . )*
+            // BasicLexer.g:52:14: ( options {greedy=false; } : . )*
             loop1:
             do {
                 int alt1=2;
@@ -144,7 +144,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
 
                 switch (alt1) {
             	case 1 :
-            	    // BasicLexer.g:32:41: .
+            	    // BasicLexer.g:52:41: .
             	    {
             	    matchAny(); 
 
@@ -182,10 +182,10 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:34:5: ( ( '0' .. '9' )+ )
-            // BasicLexer.g:34:7: ( '0' .. '9' )+
+            // BasicLexer.g:54:5: ( ( '0' .. '9' )+ )
+            // BasicLexer.g:54:7: ( '0' .. '9' )+
             {
-            // BasicLexer.g:34:7: ( '0' .. '9' )+
+            // BasicLexer.g:54:7: ( '0' .. '9' )+
             int cnt2=0;
             loop2:
             do {
@@ -199,7 +199,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // BasicLexer.g:34:7: '0' .. '9'
+            	    // BasicLexer.g:54:7: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -231,8 +231,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = DOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:36:5: ( '.' )
-            // BasicLexer.g:36:7: '.'
+            // BasicLexer.g:56:5: ( '.' )
+            // BasicLexer.g:56:7: '.'
             {
             match('.'); 
 
@@ -251,8 +251,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = DD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:37:4: ( ':' )
-            // BasicLexer.g:37:6: ':'
+            // BasicLexer.g:57:4: ( ':' )
+            // BasicLexer.g:57:6: ':'
             {
             match(':'); 
 
@@ -271,8 +271,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = COMMA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:38:7: ( ',' )
-            // BasicLexer.g:38:9: ','
+            // BasicLexer.g:58:7: ( ',' )
+            // BasicLexer.g:58:9: ','
             {
             match(','); 
 
@@ -291,8 +291,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = SEMI;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:39:6: ( ';' )
-            // BasicLexer.g:39:8: ';'
+            // BasicLexer.g:59:6: ( ';' )
+            // BasicLexer.g:59:8: ';'
             {
             match(';'); 
 
@@ -311,8 +311,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = EX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:40:4: ( '!' )
-            // BasicLexer.g:40:6: '!'
+            // BasicLexer.g:60:4: ( '!' )
+            // BasicLexer.g:60:6: '!'
             {
             match('!'); 
 
@@ -331,8 +331,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = AT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:41:4: ( '@' )
-            // BasicLexer.g:41:6: '@'
+            // BasicLexer.g:61:4: ( '@' )
+            // BasicLexer.g:61:6: '@'
             {
             match('@'); 
 
@@ -351,8 +351,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = ORS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:42:5: ( '|' )
-            // BasicLexer.g:42:7: '|'
+            // BasicLexer.g:62:5: ( '|' )
+            // BasicLexer.g:62:7: '|'
             {
             match('|'); 
 
@@ -371,8 +371,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = NS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:43:4: ( '#' )
-            // BasicLexer.g:43:6: '#'
+            // BasicLexer.g:63:4: ( '#' )
+            // BasicLexer.g:63:6: '#'
             {
             match('#'); 
 
@@ -391,8 +391,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = TILDE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:44:7: ( '~' )
-            // BasicLexer.g:44:9: '~'
+            // BasicLexer.g:64:7: ( '~' )
+            // BasicLexer.g:64:9: '~'
             {
             match('~'); 
 
@@ -411,8 +411,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = LP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:47:4: ( '(' )
-            // BasicLexer.g:47:6: '('
+            // BasicLexer.g:67:4: ( '(' )
+            // BasicLexer.g:67:6: '('
             {
             match('('); 
 
@@ -431,8 +431,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = RP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:48:4: ( ')' )
-            // BasicLexer.g:48:6: ')'
+            // BasicLexer.g:68:4: ( ')' )
+            // BasicLexer.g:68:6: ')'
             {
             match(')'); 
 
@@ -451,8 +451,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = CBO;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:49:5: ( '{' )
-            // BasicLexer.g:49:7: '{'
+            // BasicLexer.g:69:5: ( '{' )
+            // BasicLexer.g:69:7: '{'
             {
             match('{'); 
 
@@ -471,8 +471,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = CBC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:50:5: ( '}' )
-            // BasicLexer.g:50:7: '}'
+            // BasicLexer.g:70:5: ( '}' )
+            // BasicLexer.g:70:7: '}'
             {
             match('}'); 
 
@@ -491,8 +491,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = SBO;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:51:5: ( '[' )
-            // BasicLexer.g:51:7: '['
+            // BasicLexer.g:71:5: ( '[' )
+            // BasicLexer.g:71:7: '['
             {
             match('['); 
 
@@ -511,8 +511,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = SBC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:52:5: ( ']' )
-            // BasicLexer.g:52:7: ']'
+            // BasicLexer.g:72:5: ( ']' )
+            // BasicLexer.g:72:7: ']'
             {
             match(']'); 
 
@@ -531,8 +531,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = LE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:55:4: ( '<=' )
-            // BasicLexer.g:55:6: '<='
+            // BasicLexer.g:75:4: ( '<=' )
+            // BasicLexer.g:75:6: '<='
             {
             match("<="); 
 
@@ -552,8 +552,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = L;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:56:3: ( '<' )
-            // BasicLexer.g:56:5: '<'
+            // BasicLexer.g:76:3: ( '<' )
+            // BasicLexer.g:76:5: '<'
             {
             match('<'); 
 
@@ -572,8 +572,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = GE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:57:4: ( '>=' )
-            // BasicLexer.g:57:6: '>='
+            // BasicLexer.g:77:4: ( '>=' )
+            // BasicLexer.g:77:6: '>='
             {
             match(">="); 
 
@@ -593,8 +593,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = G;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:58:3: ( '>' )
-            // BasicLexer.g:58:5: '>'
+            // BasicLexer.g:78:3: ( '>' )
+            // BasicLexer.g:78:5: '>'
             {
             match('>'); 
 
@@ -613,8 +613,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = EQ;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:59:4: ( '=' )
-            // BasicLexer.g:59:6: '='
+            // BasicLexer.g:79:4: ( '=' )
+            // BasicLexer.g:79:6: '='
             {
             match('='); 
 
@@ -633,8 +633,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = PLUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:62:6: ( '+' )
-            // BasicLexer.g:62:8: '+'
+            // BasicLexer.g:82:6: ( '+' )
+            // BasicLexer.g:82:8: '+'
             {
             match('+'); 
 
@@ -653,8 +653,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = MINUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:63:7: ( '-' )
-            // BasicLexer.g:63:9: '-'
+            // BasicLexer.g:83:7: ( '-' )
+            // BasicLexer.g:83:9: '-'
             {
             match('-'); 
 
@@ -673,8 +673,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = PROD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:64:6: ( '*' )
-            // BasicLexer.g:64:8: '*'
+            // BasicLexer.g:84:6: ( '*' )
+            // BasicLexer.g:84:8: '*'
             {
             match('*'); 
 
@@ -693,8 +693,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = DIV;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:65:5: ( '/' )
-            // BasicLexer.g:65:7: '/'
+            // BasicLexer.g:85:5: ( '/' )
+            // BasicLexer.g:85:7: '/'
             {
             match('/'); 
 
@@ -713,8 +713,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:69:5: ( ( ' ' | '\\t' ) )
-            // BasicLexer.g:69:7: ( ' ' | '\\t' )
+            // BasicLexer.g:89:5: ( ( ' ' | '\\t' ) )
+            // BasicLexer.g:89:7: ( ' ' | '\\t' )
             {
             if ( input.LA(1)=='\t'||input.LA(1)==' ' ) {
                 input.consume();
@@ -742,12 +742,12 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:70:9: ( '//' ( options {greedy=false; } : . )* '\\n' )
-            // BasicLexer.g:70:11: '//' ( options {greedy=false; } : . )* '\\n'
+            // BasicLexer.g:90:9: ( '//' ( options {greedy=false; } : . )* '\\n' )
+            // BasicLexer.g:90:11: '//' ( options {greedy=false; } : . )* '\\n'
             {
             match("//"); 
 
-            // BasicLexer.g:70:16: ( options {greedy=false; } : . )*
+            // BasicLexer.g:90:16: ( options {greedy=false; } : . )*
             loop3:
             do {
                 int alt3=2;
@@ -763,7 +763,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // BasicLexer.g:70:44: .
+            	    // BasicLexer.g:90:44: .
             	    {
             	    matchAny(); 
 
@@ -793,10 +793,10 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = NL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:71:4: ( ( '\\r' )? '\\n' )
-            // BasicLexer.g:71:6: ( '\\r' )? '\\n'
+            // BasicLexer.g:91:4: ( ( '\\r' )? '\\n' )
+            // BasicLexer.g:91:6: ( '\\r' )? '\\n'
             {
-            // BasicLexer.g:71:6: ( '\\r' )?
+            // BasicLexer.g:91:6: ( '\\r' )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -805,7 +805,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt4) {
                 case 1 :
-                    // BasicLexer.g:71:6: '\\r'
+                    // BasicLexer.g:91:6: '\\r'
                     {
                     match('\r'); 
 
@@ -832,7 +832,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = IF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:74:4: ( 'WENN' | 'IF' )
+            // BasicLexer.g:94:4: ( 'WENN' | 'IF' )
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -850,7 +850,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // BasicLexer.g:74:6: 'WENN'
+                    // BasicLexer.g:94:6: 'WENN'
                     {
                     match("WENN"); 
 
@@ -858,7 +858,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:74:13: 'IF'
+                    // BasicLexer.g:94:13: 'IF'
                     {
                     match("IF"); 
 
@@ -880,7 +880,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = THEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:75:6: ( 'DANN' | 'THEN' )
+            // BasicLexer.g:95:6: ( 'DANN' | 'THEN' )
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -898,7 +898,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt6) {
                 case 1 :
-                    // BasicLexer.g:75:8: 'DANN'
+                    // BasicLexer.g:95:8: 'DANN'
                     {
                     match("DANN"); 
 
@@ -906,7 +906,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:75:15: 'THEN'
+                    // BasicLexer.g:95:15: 'THEN'
                     {
                     match("THEN"); 
 
@@ -928,7 +928,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = AND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:76:5: ( 'UND' | 'AND' )
+            // BasicLexer.g:96:5: ( 'UND' | 'AND' )
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -946,7 +946,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt7) {
                 case 1 :
-                    // BasicLexer.g:76:7: 'UND'
+                    // BasicLexer.g:96:7: 'UND'
                     {
                     match("UND"); 
 
@@ -954,7 +954,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:76:13: 'AND'
+                    // BasicLexer.g:96:13: 'AND'
                     {
                     match("AND"); 
 
@@ -976,7 +976,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = OR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:77:4: ( 'ODER' | 'OR' )
+            // BasicLexer.g:97:4: ( 'ODER' | 'OR' )
             int alt8=2;
             int LA8_0 = input.LA(1);
 
@@ -1004,7 +1004,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt8) {
                 case 1 :
-                    // BasicLexer.g:77:6: 'ODER'
+                    // BasicLexer.g:97:6: 'ODER'
                     {
                     match("ODER"); 
 
@@ -1012,7 +1012,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:77:13: 'OR'
+                    // BasicLexer.g:97:13: 'OR'
                     {
                     match("OR"); 
 
@@ -1034,7 +1034,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = NOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:78:5: ( 'NICHT' | 'NOT' )
+            // BasicLexer.g:98:5: ( 'NICHT' | 'NOT' )
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -1062,7 +1062,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt9) {
                 case 1 :
-                    // BasicLexer.g:78:7: 'NICHT'
+                    // BasicLexer.g:98:7: 'NICHT'
                     {
                     match("NICHT"); 
 
@@ -1070,7 +1070,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:78:15: 'NOT'
+                    // BasicLexer.g:98:15: 'NOT'
                     {
                     match("NOT"); 
 
@@ -1092,7 +1092,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = HIDE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:79:6: ( 'VERBERGE' | 'HIDE' )
+            // BasicLexer.g:99:6: ( 'VERBERGE' | 'HIDE' )
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -1110,7 +1110,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt10) {
                 case 1 :
-                    // BasicLexer.g:79:8: 'VERBERGE'
+                    // BasicLexer.g:99:8: 'VERBERGE'
                     {
                     match("VERBERGE"); 
 
@@ -1118,7 +1118,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:79:19: 'HIDE'
+                    // BasicLexer.g:99:19: 'HIDE'
                     {
                     match("HIDE"); 
 
@@ -1140,7 +1140,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = EXCEPT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:80:7: ( 'AUSSER' | 'EXCEPT' )
+            // BasicLexer.g:100:7: ( 'AUSSER' | 'EXCEPT' )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -1158,7 +1158,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt11) {
                 case 1 :
-                    // BasicLexer.g:80:9: 'AUSSER'
+                    // BasicLexer.g:100:9: 'AUSSER'
                     {
                     match("AUSSER"); 
 
@@ -1166,7 +1166,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:80:18: 'EXCEPT'
+                    // BasicLexer.g:100:18: 'EXCEPT'
                     {
                     match("EXCEPT"); 
 
@@ -1188,7 +1188,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = UNKNOWN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:81:8: ( 'UNBEKANNT' | 'UNKNOWN' )
+            // BasicLexer.g:101:8: ( 'UNBEKANNT' | 'UNKNOWN' )
             int alt12=2;
             int LA12_0 = input.LA(1);
 
@@ -1226,7 +1226,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt12) {
                 case 1 :
-                    // BasicLexer.g:81:10: 'UNBEKANNT'
+                    // BasicLexer.g:101:10: 'UNBEKANNT'
                     {
                     match("UNBEKANNT"); 
 
@@ -1234,7 +1234,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:81:22: 'UNKNOWN'
+                    // BasicLexer.g:101:22: 'UNKNOWN'
                     {
                     match("UNKNOWN"); 
 
@@ -1256,7 +1256,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = KNOWN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:82:6: ( 'BEKANNT' | 'KNOWN' )
+            // BasicLexer.g:102:6: ( 'BEKANNT' | 'KNOWN' )
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -1274,7 +1274,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // BasicLexer.g:82:8: 'BEKANNT'
+                    // BasicLexer.g:102:8: 'BEKANNT'
                     {
                     match("BEKANNT"); 
 
@@ -1282,7 +1282,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:82:18: 'KNOWN'
+                    // BasicLexer.g:102:18: 'KNOWN'
                     {
                     match("KNOWN"); 
 
@@ -1304,7 +1304,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = INSTANT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:83:8: ( 'INSTANT' | 'SOFORT' )
+            // BasicLexer.g:103:8: ( 'INSTANT' | 'SOFORT' )
             int alt14=2;
             int LA14_0 = input.LA(1);
 
@@ -1322,7 +1322,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt14) {
                 case 1 :
-                    // BasicLexer.g:83:10: 'INSTANT'
+                    // BasicLexer.g:103:10: 'INSTANT'
                     {
                     match("INSTANT"); 
 
@@ -1330,7 +1330,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:83:20: 'SOFORT'
+                    // BasicLexer.g:103:20: 'SOFORT'
                     {
                     match("SOFORT"); 
 
@@ -1352,8 +1352,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = MINMAX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:84:7: ( 'MINMAX' )
-            // BasicLexer.g:84:9: 'MINMAX'
+            // BasicLexer.g:104:7: ( 'MINMAX' )
+            // BasicLexer.g:104:9: 'MINMAX'
             {
             match("MINMAX"); 
 
@@ -1373,8 +1373,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = IN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:85:3: ( 'IN' )
-            // BasicLexer.g:85:5: 'IN'
+            // BasicLexer.g:105:3: ( 'IN' )
+            // BasicLexer.g:105:5: 'IN'
             {
             match("IN"); 
 
@@ -1394,8 +1394,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = INTER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:86:6: ( 'INTER' )
-            // BasicLexer.g:86:8: 'INTER'
+            // BasicLexer.g:106:6: ( 'INTER' )
+            // BasicLexer.g:106:8: 'INTER'
             {
             match("INTER"); 
 
@@ -1415,7 +1415,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = ALL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:87:4: ( 'ALLE' | 'ALL' )
+            // BasicLexer.g:107:4: ( 'ALLE' | 'ALL' )
             int alt15=2;
             int LA15_0 = input.LA(1);
 
@@ -1456,7 +1456,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             }
             switch (alt15) {
                 case 1 :
-                    // BasicLexer.g:87:6: 'ALLE'
+                    // BasicLexer.g:107:6: 'ALLE'
                     {
                     match("ALLE"); 
 
@@ -1464,7 +1464,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:87:13: 'ALL'
+                    // BasicLexer.g:107:13: 'ALL'
                     {
                     match("ALL"); 
 
@@ -1486,8 +1486,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = ALLOWEDNAMES;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:88:13: ( '##allowedNames' )
-            // BasicLexer.g:88:15: '##allowedNames'
+            // BasicLexer.g:108:13: ( '##allowedNames' )
+            // BasicLexer.g:108:15: '##allowedNames'
             {
             match("##allowedNames"); 
 
@@ -1507,8 +1507,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = INCLUDE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:89:8: ( '<include src' )
-            // BasicLexer.g:89:10: '<include src'
+            // BasicLexer.g:109:8: ( '<include src' )
+            // BasicLexer.g:109:10: '<include src'
             {
             match("<include src"); 
 
@@ -1528,8 +1528,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = DEFAULT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:90:8: ( '<default>' )
-            // BasicLexer.g:90:10: '<default>'
+            // BasicLexer.g:110:8: ( '<default>' )
+            // BasicLexer.g:110:10: '<default>'
             {
             match("<default>"); 
 
@@ -1549,8 +1549,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = INIT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:91:5: ( '<init>' )
-            // BasicLexer.g:91:7: '<init>'
+            // BasicLexer.g:111:5: ( '<init>' )
+            // BasicLexer.g:111:7: '<init>'
             {
             match("<init>"); 
 
@@ -1570,12 +1570,12 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = ABSTRACT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:92:9: ( '<abstrakt>' | '<abstract>' )
+            // BasicLexer.g:112:9: ( '<abstrakt>' | '<abstract>' )
             int alt16=2;
             alt16 = dfa16.predict(input);
             switch (alt16) {
                 case 1 :
-                    // BasicLexer.g:92:11: '<abstrakt>'
+                    // BasicLexer.g:112:11: '<abstrakt>'
                     {
                     match("<abstrakt>"); 
 
@@ -1583,7 +1583,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // BasicLexer.g:92:24: '<abstract>'
+                    // BasicLexer.g:112:24: '<abstract>'
                     {
                     match("<abstract>"); 
 
@@ -1605,8 +1605,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = SET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:93:4: ( 'SET' )
-            // BasicLexer.g:93:6: 'SET'
+            // BasicLexer.g:113:4: ( 'SET' )
+            // BasicLexer.g:113:6: 'SET'
             {
             match("SET"); 
 
@@ -1626,8 +1626,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = REF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:94:4: ( '&REF' )
-            // BasicLexer.g:94:6: '&REF'
+            // BasicLexer.g:114:4: ( '&REF' )
+            // BasicLexer.g:114:6: '&REF'
             {
             match("&REF"); 
 
@@ -1647,8 +1647,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = FUZZY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:95:6: ( 'FUZZY' )
-            // BasicLexer.g:95:8: 'FUZZY'
+            // BasicLexer.g:115:6: ( 'FUZZY' )
+            // BasicLexer.g:115:8: 'FUZZY'
             {
             match("FUZZY"); 
 
@@ -1668,8 +1668,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = DIVTEXT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:96:8: ( 'DIV' )
-            // BasicLexer.g:96:10: 'DIV'
+            // BasicLexer.g:116:8: ( 'DIV' )
+            // BasicLexer.g:116:10: 'DIV'
             {
             match("DIV"); 
 
@@ -1689,8 +1689,8 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = DIVNORM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:97:8: ( 'DIV-NORM' )
-            // BasicLexer.g:97:10: 'DIV-NORM'
+            // BasicLexer.g:117:8: ( 'DIV-NORM' )
+            // BasicLexer.g:117:10: 'DIV-NORM'
             {
             match("DIV-NORM"); 
 
@@ -1710,10 +1710,10 @@ public class DefaultLexer_BasicLexer extends Lexer {
         try {
             int _type = ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // BasicLexer.g:99:3: ( ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+ )
-            // BasicLexer.g:99:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
+            // BasicLexer.g:119:3: ( ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+ )
+            // BasicLexer.g:119:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
             {
-            // BasicLexer.g:99:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
+            // BasicLexer.g:119:5: ( 'A' .. 'Z' | 'a' .. 'z' | '\\u00a1' .. '\\uEFFF' | '%' | '$' | '&' | '\\'' | '?' | '_' )+
             int cnt17=0;
             loop17:
             do {
@@ -2208,7 +2208,7 @@ public class DefaultLexer_BasicLexer extends Lexer {
             this.transition = DFA16_transition;
         }
         public String getDescription() {
-            return "92:1: ABSTRACT : ( '<abstrakt>' | '<abstract>' );";
+            return "112:1: ABSTRACT : ( '<abstrakt>' | '<abstract>' );";
         }
     }
     static final String DFA18_eotS =

@@ -41,14 +41,14 @@ public class VisioTester {
 	 * @param args
 	 */
 	public static void main(String[] args) throws IOException, RecognitionException {
-		FileReader reader = new FileReader("examples\\Beispiel.vdx");
-		VisioParserCaller caller = new VisioParserCaller("examples\\Beispiel.vdx");
+		FileReader reader = new FileReader("src\\main\\examples\\Beispiel.vdx");
+		VisioParserCaller caller = new VisioParserCaller("examples\\Beispiel.vdx", "src\\main\\resources\\VisiotoXML.stg");
 		Collection<Message> col = caller.addKnowledge(reader, null, null);
 		List<Message> errors=(List<Message>) col;
 		for (Message m: errors) {
 			System.out.println(m);
 		}
-		caller.writeToFile("examples\\Beispiel.xml");
+		caller.writeToFile("src\\main\\examples\\Beispiel.xml");
 	}
 
 }

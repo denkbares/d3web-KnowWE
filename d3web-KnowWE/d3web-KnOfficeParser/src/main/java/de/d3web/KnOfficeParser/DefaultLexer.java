@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g 2009-10-13 18:05:36
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g 2009-10-14 10:09:28
 
 package de.d3web.KnOfficeParser;
 
@@ -106,15 +106,15 @@ public class DefaultLexer extends Lexer {
         super(input,state);
         gBasicLexer = new DefaultLexer_BasicLexer(input, state, this);
     }
-    public String getGrammarFileName() { return "D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g"; }
+    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g"; }
 
     // $ANTLR start "BLUB"
     public final void mBLUB() throws RecognitionException {
         try {
             int _type = BLUB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:37:5: ()
-            // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:37:6: 
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:57:5: ()
+            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:57:6: 
             {
             }
 
@@ -127,7 +127,7 @@ public class DefaultLexer extends Lexer {
     // $ANTLR end "BLUB"
 
     public void mTokens() throws RecognitionException {
-        // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:8: ( BLUB | BasicLexer. Tokens )
+        // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:8: ( BLUB | BasicLexer. Tokens )
         int alt1=2;
         int LA1_0 = input.LA(1);
 
@@ -138,14 +138,14 @@ public class DefaultLexer extends Lexer {
             alt1=1;}
         switch (alt1) {
             case 1 :
-                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:10: BLUB
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:10: BLUB
                 {
                 mBLUB(); 
 
                 }
                 break;
             case 2 :
-                // D:\\Workspaces\\KnowWE\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:15: BasicLexer. Tokens
+                // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:15: BasicLexer. Tokens
                 {
                 gBasicLexer.mTokens(); 
 
