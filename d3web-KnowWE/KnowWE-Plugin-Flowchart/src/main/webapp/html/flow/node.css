@@ -48,6 +48,21 @@
 	z-index: 100;
 }
 
+.added {
+	background-color: #00FF00;
+	color: #00FF00;
+}
+
+.removed {
+	background-color: #FF0000;
+	color: #FF0000;
+}
+
+.changed {
+	background-color: #0000FF;
+	color: #0000FF;
+}
+
 .Node .action {
 	background-color: #bcf; /* #80aeff; */
 }
