@@ -12,14 +12,14 @@ function gotoDate() {
     	}
 	
 	var options = {
-    		url : getURL( params ),
+    		url : KNOWWE.core.util.getURL( params ),
     		response : {
     			action : 'none',
     			ids : []
     		}
 	}
 	
-	new KnowWEAjax( options ).send();
+	new _KA( options ).send();
 	
 }
 
@@ -36,14 +36,14 @@ function gotoToday() {
    	}
 	
 	var options = {
-   		url : getURL( params ),
+   		url : KNOWWE.core.util.getURL( params ),
    		response : {
    			action : 'none',
    			ids : []
    		}
 	}
 	
-	new KnowWEAjax( options ).send();
+	new _KA( options ).send();
 	
 }
 
@@ -55,14 +55,14 @@ function loadAction( today ) {
    	}
 	
 	var options = {
-   		url : getURL( params ),
+   		url : KNOWWE.core.util.getURL( params ),
    		response : {
    			action : 'none',
    			ids : []
    		}
 	}
 	
-	new KnowWEAjax( options ).send();
+	new _KA( options ).send();
 
 }
 

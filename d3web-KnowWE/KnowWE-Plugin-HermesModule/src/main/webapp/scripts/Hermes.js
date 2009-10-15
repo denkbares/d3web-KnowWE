@@ -23,13 +23,13 @@ function sendTimeEventSearchRequest() {
     	}
 	
 	var options = {
-    		url : getURL( params ),
+    		url : KNOWWE.core.util.getURL( params ),
     		response : {
     			action : 'insert',
     			ids : ['hermesSearchResult']
     		}
 	}
 	
-	new KnowWEAjax( options ).send();
+	new _KA( options ).send();
 	
 }
