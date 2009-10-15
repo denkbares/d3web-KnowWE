@@ -98,7 +98,7 @@ public class KnowledgeSummerizeRenderer implements de.d3web.we.action.KnowWEActi
 				rb.getString("KnowWE.KnowledgeSummerize.th.rule"),
 				rb.getString("KnowWE.KnowledgeSummerize.th.questions"),
 				rb.getString("KnowWE.KnowledgeSummerize.th.start")};
-		html.append("<table><thead><tr>");
+		html.append("<br><table style=\"border-style: solid; border-width:1px;\"><thead><tr>");
 		for (String string : tblHeader) {
 			html.append("<td><strong>" + string + "<strong></td> \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 		}
@@ -158,7 +158,7 @@ public class KnowledgeSummerizeRenderer implements de.d3web.we.action.KnowWEActi
 		html.append("</tbody></table>");
 		
 		//add summary
-		html.insert(0, "<div class=\"info box\"><a href=\"#\" id='sumAll' class='clear-element'>" + rb.getString("KnowWE.buttons.close") + "</a><br />"
+		html.insert(0, "<div class=\"ok\"><a href=\"#\" id='sumAll' class='clear-element'>" + rb.getString("KnowWE.buttons.close") + "</a><br />"
 		    + "<a name=\"summarizer\"></a>" + rb.getString("KnowWE.KnowledgeSummerize.count.kb")+ cnt + "<br />"
 		    + rb.getString("KnowWE.KnowledgeSummerize.count.xcl") + allSCcnt + "<br />"
 		    + rb.getString("KnowWE.KnowledgeSummerize.count.rules") + allRuleCnt + "<br />");
