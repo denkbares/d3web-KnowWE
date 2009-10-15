@@ -33,6 +33,15 @@ import org.openrdf.query.TupleQueryResult;
 import de.d3web.we.core.KnowWEEnvironment;
 
 public class DefaultRenderer implements SparqlRenderer {
+	
+	private static DefaultRenderer instance;
+	
+	public static DefaultRenderer getInstance() {
+		if(instance == null) {
+			instance = new DefaultRenderer();
+		}
+		return instance;
+	}
 
 	public String render(TupleQueryResult result, Map<String, String> params) {
 
