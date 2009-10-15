@@ -385,7 +385,8 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 					temp.append("<tr>");
 					temp.append("<td");
 					temp.append("<ul>");
-					Collections.sort(rtc.getExpectedSolutions());
+					Collections.sort(rtc.getExpectedSolutions(), 
+							new RatedSolution.RatingComparatorByName());
 					for (RatedSolution rs : rtc.getExpectedSolutions()) {
 						temp.append("<li>");
 						temp.append(rs.toString());
@@ -395,7 +396,8 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 					temp.append("</td>");
 					temp.append("<td>");
 					temp.append("<ul>");
-					Collections.sort(rtc.getDerivedSolutions());
+					Collections.sort(rtc.getDerivedSolutions(), 
+							new RatedSolution.RatingComparatorByName());
 					for (RatedSolution rs : rtc.getDerivedSolutions()) {
 						temp.append("<li>");
 						temp.append(rs.toString());

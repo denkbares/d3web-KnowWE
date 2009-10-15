@@ -46,7 +46,9 @@ import de.d3web.empiricalTesting.TestSuite;
 import de.d3web.kernel.domainModel.Answer;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.KnowledgeBase;
+import de.d3web.kernel.domainModel.answers.AnswerNum;
 import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.kernel.domainModel.qasets.QuestionNum;
 import de.d3web.report.Message;
 
 /**
@@ -121,7 +123,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	 */
 	public void addRatedTestCase(int i, int line, String linetext) {
 		currentRatedTestCase = new RatedTestCase();
-		currentRatedTestCase.setName("rtc" + i);	
+		currentRatedTestCase.setName(currentSequentialTestCase.getName() + "_RTC" + i);	
 	}
 	
 	/**
@@ -134,10 +136,22 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	public void addFinding(String question, String answer, int line, String linetext) {
 
 		Question q = idom.findQuestion(question);
-
+		
 		if (q == null) { 
 			errors.add(MessageKnOfficeGenerator
 					.createQuestionNotFoundException("", line, linetext, question));
+		} else if (q instanceof QuestionNum) {
+			try {
+				double value = Double.parseDouble(answer);
+				AnswerNum a = new AnswerNum();
+				a.setValue(value);
+				Finding currentFinding = new Finding(q, a);
+				currentRatedTestCase.add(currentFinding);
+				
+			} catch (NumberFormatException e) {
+				errors.add(MessageKnOfficeGenerator
+						.createNaNException("", line, linetext, answer));
+			}
 		} else {
 			Answer a = idom.findAnswer(q, answer);
 			if (a == null) { 
