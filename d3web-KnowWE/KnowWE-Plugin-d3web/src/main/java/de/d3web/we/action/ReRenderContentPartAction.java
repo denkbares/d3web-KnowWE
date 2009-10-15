@@ -35,7 +35,7 @@ public class ReRenderContentPartAction implements KnowWEAction  {
 
 	@Override
 	public String perform(KnowWEParameterMap map) {		
-		return this.refreshKDOMElement(map.getWeb(), map.get("ArticleTopic"),
+		return this.refreshKDOMElement(map.getWeb(), map.getTopic(),
 									   map.getWikiContext(), map.get("KdomNodeId"));
 	}
 

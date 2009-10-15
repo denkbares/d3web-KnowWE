@@ -127,11 +127,11 @@ public class SemanticAnnotationRenderer implements KnowWEAction {
 				if (kss instanceof D3webKnowledgeServiceSession) {
 					sb.append(questionWriter.getHTMLString((Question) obj,
 							((D3webKnowledgeServiceSession) kss).getXpsCase(),
-							namespace, webname, targetUrlPrefix));
+							namespace, webname, topic, targetUrlPrefix));
 				}
 			} else {
 				sb.append(questionWriter.getHTMLString((Question) obj, null,
-						namespace, webname, targetUrlPrefix));
+						namespace, webname, topic, targetUrlPrefix));
 			}
 		}
 

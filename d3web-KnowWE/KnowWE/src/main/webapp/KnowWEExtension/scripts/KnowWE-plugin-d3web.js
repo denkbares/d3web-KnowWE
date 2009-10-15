@@ -967,7 +967,7 @@ KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
 		    var params = {
 		        action : 'ReRenderQuestionSheetAction',
 		        KWikiWeb : 'default_web',
-		        ArticleTopic : topic
+		        KWiki_Topic : topic
 		    }
 		    var url = KNOWWE.core.util.getURL( params );
 		    KNOWWE.plugin.d3web.rerenderquestionsheet.execute(url, 'questionsheet');
@@ -1017,7 +1017,7 @@ KNOWWE.plugin.d3web.rerendercontent = function(){
                 action : 'ReRenderContentPartAction',
                 KWikiWeb : 'default_web',
                 KdomNodeId : node,
-                ArticleTopic : topic
+                KWiki_Topic : topic
             }
             var url = KNOWWE.core.util.getURL( params );
             KNOWWE.plugin.d3web.rerendercontent.execute(url, node);
@@ -1037,7 +1037,7 @@ KNOWWE.plugin.d3web.rerendercontent = function(){
                         action : 'ReRenderContentPartAction',
                         KWikiWeb : 'default_web',
                         KdomNodeId : kdomnodeid,
-                        ArticleTopic : topic
+                        KWiki_Topic : topic
                     }           
                     var url = KNOWWE.core.util.getURL( params );
                     KNOWWE.plugin.d3web.rerendercontent.execute(url, kdomnodeid);
@@ -1083,7 +1083,7 @@ KNOWWE.plugin.d3web.rerendercontent = function(){
                         action : 'ReRenderContentPartAction',
                         KWikiWeb : 'default_web',
                         KdomNodeId : kdomnodeid,
-                        ArticleTopic : topic
+                        KWiki_Topic : topic
                     }           
                     var url = KNOWWE.core.util.getURL( params );
                     KNOWWE.plugin.d3web.rerendercontent.executeForXCLRelation

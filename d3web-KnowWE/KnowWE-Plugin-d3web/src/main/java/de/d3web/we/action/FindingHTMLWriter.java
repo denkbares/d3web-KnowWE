@@ -36,6 +36,7 @@ import de.d3web.kernel.domainModel.qasets.QuestionMC;
 import de.d3web.kernel.domainModel.qasets.QuestionNum;
 import de.d3web.kernel.domainModel.qasets.QuestionOC;
 import de.d3web.kernel.domainModel.qasets.QuestionYN;
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.utils.KnowWEUtils;
@@ -59,8 +60,8 @@ public class FindingHTMLWriter {
 	private static ResourceBundle rb;
 
 	@SuppressWarnings("deprecation")
-	private void appendCAnswers(Question theQuestion, StringBuffer buffy,
-			XPSCase theCase, String namespace, String webname, String targetUrlPrefix) {
+	private void appendOCAnswers(Question theQuestion, StringBuffer buffy,
+			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		QuestionChoice theQC = (QuestionChoice) theQuestion;
 		String timestampid = (new Date()).getTime() + "";
 		if (theQC.getAllAlternatives() != null) {
@@ -121,7 +122,7 @@ public class FindingHTMLWriter {
 
 	@SuppressWarnings("deprecation")
 	private void appendNUMAnswers(Question theQuestion, StringBuffer buffy,
-			XPSCase theCase, String namespace, String webname, String targetUrlPrefix) {
+			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		String timestampid = (new Date()).getTime() + "";
 		if (theCase != null && theQuestion.getValue(theCase).size() > 0) {
 			AnswerNum answer = (AnswerNum) theQuestion.getValue(theCase).get(0);			
@@ -132,7 +133,9 @@ public class FindingHTMLWriter {
 						+ java.net.URLEncoder.encode(namespace)
 						+ "&ObjectID="
 						+ theQuestion.getId()
-						+ "&KWikiWeb=" + webname;
+						+ "&" + KnowWEAttributes.WEB + "=" + webname
+						+ "&" + KnowWEAttributes.TOPIC + "=" + topic;
+				
 				buffy.append("<INPUT TYPE=text size=10 maxlength=10 " 
 						+ "NAME='num" + timestampid + theQuestion.getId() + "' " 
 						+ "value='" + answer.getValue(theCase).toString() + "' " 
@@ -158,7 +161,9 @@ public class FindingHTMLWriter {
 					+ namespace
 					+ "&ObjectID="
 					+ theQuestion.getId()
-					+ "&KWikiWeb=" + webname;
+					+ "&" + KnowWEAttributes.WEB + "=" + webname
+					+ "&" + KnowWEAttributes.TOPIC + "=" + topic;
+			
 			buffy.append("<INPUT TYPE=text size=10 maxlength=10 " 
 					+ "NAME='num" + timestampid + theQuestion.getId() + "' " 
 					+ "value='' " 
@@ -180,7 +185,7 @@ public class FindingHTMLWriter {
 
 	@SuppressWarnings("deprecation")
 	private void appendMCAnswers(Question theQuestion, StringBuffer buffy,
-			XPSCase theCase, String namespace, String webname, String targetUrlPrefix) {
+			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		QuestionMC theMC = (QuestionMC) theQuestion;
 		String timestampid = (new Date()).getTime() + "";
 
@@ -201,7 +206,9 @@ public class FindingHTMLWriter {
 							+ theQuestion.getId()
 							+ "&ValueID="
 							+ theAnswer.getId()
-							+ "&KWikiWeb="+ webname;
+							+ "&" + KnowWEAttributes.WEB + "=" + webname
+							+ "&" + KnowWEAttributes.TOPIC + "=" + topic;
+					
 					buffy.append("<INPUT TYPE=CHECKBOX NAME='f" + timestampid+"id"
 							+ theQuestion.getId() + "' " 
 							+ "value='" + theAnswer.getId() + "' " 
@@ -221,8 +228,9 @@ public class FindingHTMLWriter {
 			buffy.append("</form>");
 		}
 	}
+	
 	private String getHTMLString(Question theQuestion, String type,
-			XPSCase theCase, String namespace, String webname, String targetUrlPrefix) {
+			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		StringBuffer buffy = new StringBuffer();
 
 		buffy.append("<div class='semContents' >");
@@ -230,11 +238,11 @@ public class FindingHTMLWriter {
 				.append("<div align=left style='color:black;font-size:140%;padding:0.2em;margin-left:2px;"
 						+ "margin-top:5px;margin-bottom:5px;' >");
 		if (type.equalsIgnoreCase(MC)) {
-			appendMCAnswers(theQuestion, buffy, theCase, namespace, webname, targetUrlPrefix);
+			appendMCAnswers(theQuestion, buffy, theCase, namespace, webname, topic, targetUrlPrefix);
 		} else if (type.equalsIgnoreCase(OC) || type.equalsIgnoreCase(YN)) {
-			appendCAnswers(theQuestion, buffy, theCase, namespace, webname, targetUrlPrefix);
+			appendOCAnswers(theQuestion, buffy, theCase, namespace, webname, topic, targetUrlPrefix);
 		} else if (type.equalsIgnoreCase(NUM)) {
-			appendNUMAnswers(theQuestion, buffy, theCase, namespace, webname, targetUrlPrefix);
+			appendNUMAnswers(theQuestion, buffy, theCase, namespace, webname, topic, targetUrlPrefix);
 		} else {
 			Logger.getLogger(ID).warning("invalid question type");
 		}
@@ -242,8 +250,10 @@ public class FindingHTMLWriter {
 		buffy.append("</div >");
 		return buffy.toString();
 	}
+	
+	
 	public String getHTMLString(Question question, XPSCase theCase,
-			String namespace, String webname, String targetUrlPrefix) {
+			String namespace, String webname, String topic, String targetUrlPrefix) {
 		
 		rb = D3webModule.getKwikiBundle_d3web();
 		String retVal = null;		
@@ -254,16 +264,16 @@ public class FindingHTMLWriter {
 			retVal= "<h3>" + KnowWEUtils.convertUmlaut(question.getText()) + "</h3>";
 			if (question instanceof QuestionYN) {
 				retVal += getHTMLString((QuestionChoice) question, "YN",
-						theCase, namespace, webname,targetUrlPrefix);
+						theCase, namespace, webname,topic, targetUrlPrefix);
 			} else if (question instanceof QuestionOC) {
 				retVal += getHTMLString((QuestionChoice) question, "OC",
-						theCase, namespace, webname,targetUrlPrefix);
+						theCase, namespace, webname,topic, targetUrlPrefix);
 			} else if (question instanceof QuestionMC) {
 				retVal += getHTMLString((QuestionChoice) question, "MC",
-						theCase, namespace, webname,targetUrlPrefix);
+						theCase, namespace, webname,topic, targetUrlPrefix);
 			} else if (question instanceof QuestionNum) {
 				retVal += getHTMLString((Question) question, "Num", theCase,
-						namespace, webname,targetUrlPrefix);
+						namespace, webname,topic, targetUrlPrefix);
 			} /*
 				 * else if (question instanceof QuestionText) { retVal =
 				 * getXMLString((Question) question, "Text", theCase); } else if
