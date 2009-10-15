@@ -17,14 +17,14 @@ function saveForumBox() {
     	}
 	
 	var options = {
-    		url : getURL( params ),
+    		url : KNOWWE.core.util.getURL( params ),
     		response : {
     			action : 'none',
     			ids : []
     		}
 	}
 	
-	new KnowWEAjax( options ).send();
+	new _KA( options ).send();
 	
 }
 
@@ -37,13 +37,13 @@ function loadAction( topic ) {
    	}
 	
 	var options = {
-   		url : getURL( params ),
+   		url : KNOWWE.core.util.getURL( params ),
    		response : {
    			action : 'none',
    			ids : []
    		}
 	}
 	
-	new KnowWEAjax( options ).send();
+	new _KA( options ).send();
 
 }

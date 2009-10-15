@@ -171,7 +171,7 @@ public class KnowWEObjectTypeBrowserRenderer implements KnowWEAction {
 			mask.append(createFindingsMaskFatherColumnAndPath(sec));
 		}
 
-		mask.append("</table></fieldset></form>");
+		mask.append("</table></fieldset>");
 
 		return mask.toString();
 	}
@@ -218,19 +218,22 @@ public class KnowWEObjectTypeBrowserRenderer implements KnowWEAction {
 		}
 
 		// create atmUrl
-		String atmUrl = article.getTitle() + ":" + section + ":" + start + ":"
-				+ curWords + ":" + direction + ":" + wordCount;
+		String atmUrl = "{article: '"+ article.getTitle()+"'," 
+			        + "section: '"+section+"'," 
+			        + "index: " + start + ", "
+			        + "words: " + curWords + ", "
+			        + "direction: '"+direction+"'," 
+			        + "wordCount: "+wordCount +	"," 
+			        + "queryLength: "+queryLength + "}";
 
 		if (span) {
 			html.append("<span id='" + direction + start
 					+ "' class='short' style='display: inline;'>");
 		}
 
-		html.append("<a href='javascript:getAdditionalMatchTextTypeBrowser(\""
-				+ atmUrl + "\",\"" + queryLength + "\")'>");
-		html.append("<img width='12' height='12' border='0' src='" + img
-				+ "' alt='more'/>");
-		html.append("</a>");
+		html.append("<img width=\"12\" height=\"12\" border=\"0\" src=\"" + img
+				+ "\" alt=\"more\" rel=\"" + atmUrl + "\" " //delete queryLength 
+				+ "class=\"show-additional-text\"/>");
 
 		if (span) {
 			html.append("</span>");
@@ -393,7 +396,7 @@ public class KnowWEObjectTypeBrowserRenderer implements KnowWEAction {
 	 */
 	private String createFindingsMaskTableHeader(String searchedType) {
 		StringBuilder mask = new StringBuilder();
-		mask.append("<form method='post' action=''><fieldset><legend>"
+		mask.append("<fieldset><legend>"
 				+ rb.getString("KnowWE.KnowWeObjectTypeBrowser.searchresult")
 				+ " '" + searchedType.substring(searchedType.lastIndexOf(".")+1)
 				+ "'</legend>");

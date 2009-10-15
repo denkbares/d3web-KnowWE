@@ -1,1410 +1,1038 @@
-/*
- * A "class" for handling Ajax requests. 
+/**
+ * Title: KnowWE-core
+ * Contains javascript functions the KnowWE core needs to functions properly.
+ * The functions are based upon some KnowWE helper functions and need the
+ * KNOWWE-helper.js in order to work correct.
  */
-function KnowWEAjax( options ) {
-    var http = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    var oDefault = {
-        method : 'get',
-        url : 'KnowWE.jsp',
-        headers : {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'text/javascript, text/html, application/xml, text/xml, */*'
-        },
-        fn : handleResponse,
-        encoding : 'utf-8',
-        urlEncoded : true,      
-        async : true,
-        response : {
-            ids : [],
-            action : 'insert' /* replace|insert|update|none|create|string */,
-            fn : false  
-        },
-        create : {
-            id : '',
-            fn : false
-        }
-    }; 
-    oDefault = enrich( options, oDefault );
-    var headers = new Hash(oDefault.headers);
-          
-    /* get max.length 512 byte, check and set post if bigger*/
-    if( oDefault.url.getBytes() > 512)
-        oDefault.url = 'post';
-
-    /* sends the request */
-    this.send = function() {
-        if( !http ) return;
-        
-        if (oDefault.urlEncoded){
-            var encoding = (oDefault.encoding) ? '; charset=' + oDefault.encoding : '';
-            headers.set('Content-type', 'application/x-www-form-urlencoded' + encoding);
-        }       
-        
-        http.open( oDefault.method.toUpperCase(), oDefault.url, oDefault.async );
-        
-        headers.each(function(v,k){
-            http.setRequestHeader(k, v);
-        });
-        
-        /*http.setRequestHeader( 'Content-Type', oDefault.header );
-        http.setRequestHeader( 'Content-length', oDefault.url.length );
-        http.setRequestHeader( 'Connection', 'close' );*/
-        http.onreadystatechange = handleResponse;
-        http.send(oDefault.method);
-    }
-    
-    this.getResponse = function() {
-        return http.responseText;
-    }
-    
-    /* 
-     * Handles the response from the Ajax request. If the Ajax request ended 
-     * without errors the action defined in oDefault.response.action is executed.
+if (typeof KNOWWE == "undefined" || !KNOWWE) {
+    /**
+     * The KNOWWE global namespace object.  If KNOWWE is already defined, the
+     * existing KNOWWE object will not be overwritten so that defined
+     * namespaces are preserved.
      */
-    function handleResponse() {
-        if ((http.readyState == 4) && (http.status == 200)) {
-            var ids = oDefault.response.ids;
-            var action = oDefault.response.action;
-            switch ( action ) {
-                case 'insert':
-                    var max = ids.length;
-                    for ( var i = 0; i < max; i++ ) {
-                        $(ids[i]).innerHTML = http.responseText;
-                    }
-                    break;
-                case 'replace':
-                    replace( ids, http.responseText );
-                    break;
-                case 'create':
-                    if( oDefault.create ){
-                        var el = oDefault.create.fn.call();
-                        el.innerHTML = http.responseText;
-                        $( oDefault.create.id).insertBefore( el, $( oDefault.create.id ).getChildren()[0]);
-                    } 
-                    break;
-                case 'string':
-                    if( http.responseText.startsWith('@info@')){
-                         var info = new Element('p', { 'class' : 'box info' });
-                         info.setHTML( http.responseText.replace(/@info@/, '') );
-                         info.injectTop($( ids[0]));
-                    }
-                    if( http.responseText.startsWith('@replace@')){
-                         replace( ids, http.responseText.replace(/@replace@/, '') );	
-                    }
-                    break;
-                default:
-                    break;
-            }
-            if( !oDefault.response.fn ) return;
-            oDefault.response.fn.call();
-        }  
-    }
+    var KNOWWE = {};
 }
-
-
-var kwikiEvent;
-    
-    function kwikiOnLoad() {
-        //getSymptomGT('null');
-        //getDiagnosisGT('null');
-        //updateSolutions();
-        //updateDialogs();
-        //window.setTimeout("getSymptomGT('null')", 500);
-        //window.setTimeout("getDiagnosisGT('null')", 500);
-        //window.setTimeout("kwiki_poll()", 500);
-    }
-
-/*
- * 
+/**
+ * Namespace: KNOWWE.core
+ * The KNOWWE core namespace.
+ * Contains some init functions.
  */
-var SolutionState = 
-{
-    update : function() 
-    {
-        var params = {
-            renderer : 'KWiki_dpsSolutions',
-            KWikiWeb : 'default_web'
-        }
-        SolutionState.execute( getURL( params ) );
-    },
-    clear : function()
-    {
-        var params = {
-            action : 'KWiki_dpsClear',
-            KWikiWeb : 'default_web'
-        }
-        SolutionState.execute( getURL( params ) );
-    },
-    findings : function()
-    {
-        var params = {
-            renderer : 'KWiki_userFindings',
-            KWikiWeb : 'default_web'
-        }
-        kwiki_window( getURL(params) );
-        /*SolutionState.execute( url );*/
-    },
-    execute : function( url )
-    {
-        var id = 'sstate-result';
-        var options = {
-            url : url,
-            response : {
-                ids : [ id ]
-            }
-        }
-        if( $('sstate-result') ) {
-            new KnowWEAjax( options ).send();
-        }
-        
-        // Called to update the Relations in CoveringLists
-        ReRenderKnowWESectionContent.update();
-        
-        //Calls an update of QuestionSheetRenderer
-        ReRenderQuestionSheet.update();
-    }
-}
-
-
-var ReRenderQuestionSheet  = {
-		
-		update : function(node) {
-	// get the current topic
-	var topic = gup('page');
-    var params = {
-        action : 'ReRenderQuestionSheetAction',
-        KWikiWeb : 'default_web',
-        KdomNodeId : node,
-        ArticleTopic : topic
-    }
-    var url = getURL( params );
-    ReRenderQuestionSheet.execute(url, 'questionsheet');
-},
-
-
-execute : function( url, id ) {
-    var options = {
-        url : url,
-        action : 'insert',
-        response : {
-            ids : [ id ],
+KNOWWE.core = function(){
+    return {
+        /**
+         * Function: init
+         * Core init functions.
+         */
+        init : function(){
+            KNOWWE.core.util.addCollabsiblePluginHeader();
+            KNOWWE.core.util.form.addFormHints('knoffice-panel');
+            KNOWWE.core.actions.init(); 
         }
     }
-
-    new KnowWEAjax( options ).send();
-},
-}
-
-/*
- * Handles in view editable tables
+}();
+/**
+ * Namespace: KNOWWE.core.actions
+ * The KNOWWE actions namespace object.
+ * Contains all actions that can be triggered in KnowWE per javascript.
  */
-var KnowWETable = {
-    map : "",   
-    init : function(){
-        this.map = new Hash();
-        if( $$('.table-edit') )
-        {
-            var elements = $$(".table-edit input[type=submit]");
-            for(var i = 0; i < elements.length; i++)
-            {
-                elements[i].addEvent( 'click', KnowWETable.onSave );
+KNOWWE.core.actions = function(){
+    return {
+        /**
+         * Function: init
+         * Core KnowWE actions.
+         */
+        init : function(){
+            //init quickedit actions
+            var els = _KS('.quickedit');
+            
+            for (var i = 0; i < els.length; i++){
+                if( els[i]._hasClass( 'table' ))
+                    _KE.add('click', els[i], function(e){
+                        var el = _KE.target(e);
+                        var id = el.parentNode.id;
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id );
+                    });
+                if( els[i]._hasClass( 'default') )
+                    _KE.add('click', els[i], function(e){
+                        var el = _KE.target(e);
+                        var id = el.parentNode.id;
+                        KNOWWE.core.actions.enableQuickEdit( null, id );
+                    });
             }
-            var elements = $$('.table-edit-node');
-            for(var i = 0; i < elements.length; i++)
-            {
-                elements[i].addEvent( 'change', KnowWETable.onChange );
+            
+            //init show extend panel
+            if(_KS('.show-extend')){
+                els = _KS('.show-extend');
+                els.each(function(element){
+                    _KE.add('click', element, KNOWWE.core.util.form.showExtendedPanel); 
+                });
             }
-        }
-    },
-    onChange : function() {
-        KnowWETable.map.set(this.id, this.value);
-    },
-    onSave : function(){
-        var id = this.id;
-        var namespace = '';
-        KnowWETable.map.each(function(value, key){
-            namespace += key + ";-;" + value + "::";
-        });
-        namespace = namespace.substring(0, namespace.lastIndexOf('::'));
-
-        var params = {
-            action : 'UpdateTableKDOMNodes',
-            TargetNamespace : encodeURIComponent(namespace),
-            KWiki_Topic : gup('page')
-        }
-        var options = {
-            url : getURL ( params ),
-            response : {
-                action : 'none',
-                fn : function(){QuickEdit.enable(id, null);}
+            
+            //enable clearHTML
+            _KS('.clear-element').each(function(element){
+                _KE.add('click', element, KNOWWE.core.actions.clearHTML);
+            });
+            
+            _KS('.js-cell-change').each(function(element){
+                _KE.add('change', element, KNOWWE.core.actions.cellChanged);
+            });
+        },
+        /**
+         * Function: clearHTML
+         * Clears the inner HTML of a given element.
+         * 
+         * Parameters:
+         *     e - The occurred event.
+         */
+        clearHTML : function( e ){
+            var el = KNOWWE.helper.event.target( e );
+            if( el.id ){
+                _KS(el.id)._clear();
             }
-        }
-        new KnowWEAjax( options ).send();
-    }
-}
-
-var QuickEdit = {
-    enable : function( nodeID, fn ){
-        var params = {
-            action : 'SetQuickEditFlagAction',
-            TargetNamespace : nodeID,
-            KWiki_Topic : gup('page')
-        }   
-        
-        var options = {
-            url : getURL( params ),
-            response : {
-                action : 'string',
-                ids : [nodeID],
-                fn : fn
-            }
-        }
-        new KnowWEAjax( options ).send();
-    },
-    doTable : function( nodeID ){
-        QuickEdit.enable( nodeID, function(){KnowWETable.init()} ); 
-    }
-}
-
-
-
-
-function doKbGenerating( jarfile ) {
-    var params = {
-        renderer : 'GenerateKBRenderer',
-        NewKBName : $( jarfile ).value,
-        AttachmentName : jarfile
-    }
-    
-    var options = {
-        url : getURL( params ),
-        response : {
-            ids : ['GeneratingInfo']
-        }
-    }
-    new KnowWEAjax( options ).send();
-}
-
-
-function setQuickEditFlag( nodeID , topic ) {
-        try {  
-         
-            kBUpload_xmlhttp = window.XMLHttpRequest 
-                ? new XMLHttpRequest()  
-                : new ActiveXObject("Microsoft.XMLHTTP");
-            kBUpload_xmlhttp.onreadystatechange = setQuickEditFlagDone; 
-            var kBUpload_poll_url = "KnowWE.jsp?action=SetQuickEditFlagAction&TargetNamespace="+nodeID+"&KWiki_Topic="+topic;
-            kBUpload_xmlhttp.open("Get", kBUpload_poll_url); 
-            kBUpload_xmlhttp.send(null);
-        } catch (e) {alert(e);}
-    
-}
-    
-function setQuickEditFlagDone() {
-    document.location.reload();
-}
-    
-    function cellChanged(nodeID,topic) {
-        if(document.getElementById("editCell"+nodeID) != null) {
-                var el = document.getElementById("editCell"+nodeID);
+        },
+        /**
+         * Function: cellChanged
+         * 
+         * Parameters:
+         *     e - The occurred event.
+         */
+        cellChanged : function( e ) {
+            var el = KNOWWE.helper.event.target( e );
+            var rel = el.getAttribute('rel');
+            
+            if(!rel) return;
+            rel = rel.parseToObject();
+            
+            var nodeID = rel.id;
+            var topic = rel.title;
+            
+            if(_KS('#' + nodeID)) {
+                el = _KS('#' + nodeID);
                 var selectedOption = el.options[el.selectedIndex].value; 
-                 try {  
-         
-            kBUpload_xmlhttp = window.XMLHttpRequest 
-                ? new XMLHttpRequest()  
-                : new ActiveXObject("Microsoft.XMLHTTP");
-            kBUpload_xmlhttp.onreadystatechange = replacedNodeContent;  
-            var kBUpload_poll_url = "KnowWE.jsp?action=ReplaceKDOMNodeAction&TargetNamespace="+nodeID+"&KWikitext="+selectedOption+"&KWiki_Topic="+topic;
-            kBUpload_xmlhttp.open("Get", kBUpload_poll_url); 
-            kBUpload_xmlhttp.send(null);
-        } catch (e) {alert(e);}
-            }
-    
-    }
-    
-    function replacedNodeContent() {
-        //alert(kBUpload_xmlhttp.responseText);
-    }
-    
-    function doTiRexToXCL(topicname) {
-    
-        var params = {
-            renderer : 'TirexToXCLRenderer',
-            TopicForXCL : topicname
-        }
-    
-        var options = {
-            url : getURL( params ),
-            response : {
-                ids : ['GeneratingTiRexToXCLInfo']
-            }
-        }
-        new KnowWEAjax( options ).send();
-    }
-    
-    function highlightXCLRelation(node, topic, depth, breadth) {
-    	ReRenderKnowWESectionContent.updateForXCLRelation(node, topic, depth, breadth);		
-    }
-    
-    function highlightRule(node, topic, depth, breadth) {
-        
-        // Restore the Highlighting that was before
-        var restore = document.getElementById('uniqueMarker');
-        if (restore != null) {
-            ReRenderKnowWESectionContent.updateNode(restore.className, topic);
-        }
-		highlightNode(node, topic, depth, breadth);
-    }
-    
-    /*
-     * You need a span with an id to use this.
-     * there the uniqueMarker is located.
-     * node is the tag that has the marker under it.
-     * depth means the tag that has the marker as firstchild.
-     * Note: if a node has more than 1 element this function.
-     * will not work because it cannot foresee how the html-tree
-     * is build
-     */
-    function highlightNode(node, topic, depth, breadth) {
-        
-        var params = {
-            action : 'HighlightNodeAction',
-            Kwiki_Topic : topic,
-            KWikiJumpId : node
-        }
-        
-        var options = {
-            url : getURL( params ),
-            response : {
-                action : 'update',
-                ids : [],
-                fn : (function() {
-//                        // get the uniqueMarker marking the last marked element
-//                        var curMark = document.getElementById("uniqueMarker");
-//                        
-//                        // remove the last marker
-//                        if (curMark != null) {
-//                            curMark.id = "";
-//                            curMark.style.backgroundColor = "";
-//                        }
-                        
-                        // set the new Marker: Get the root node
-                        var element = document.getElementById(node);
-                        
-                        // get to the depth given.
-                        for (var i = 0; i < depth; i++) {
-                            element = element.firstChild;
-                        }
-                        
-                        // get to the given breadth
-                        for (var j = 0; j < breadth; j++) {
-                        	var test = element.nextSibling;                       	
-                        	if (test != null)
-                        		element = element.nextSibling;
-                        }
-                                              
-                        if (element != null) {
-                            element.firstChild.style.backgroundColor = "yellow";
-                            element.firstChild.id = "uniqueMarker";
-                            element.firstChild.className = node;
-                            element.scrollIntoView(true);
-                        }
-                        
-                     })()
-            }
-        }
-        new KnowWEAjax( options ).send();
-    }
-//        try {  
-//            tiRexToXCL_xmlhttp = window.XMLHttpRequest 
-//                ? new XMLHttpRequest()  
-//                : new ActiveXObject("Microsoft.XMLHTTP");
-//            tiRexToXCL_xmlhttp.onreadystatechange = nodeHighlightRendererSet;
-//            var tiRexToXCL_poll_url = "KnowWE.jsp?action=HighlightNodeAction&KWiki_Topic="+topic+"&KWikiJumpId="+node;
-//            tiRexToXCL_xmlhttp.open("Get", tiRexToXCL_poll_url); 
-//            tiRexToXCL_xmlhttp.send(null);
-//        } catch (e) {
-//          alert(e);
-//          }
-//    }
-//    
-//    function nodeHighlightRendererSet() {
-//        if ((tiRexToXCL_xmlhttp.readyState == 4) && (tiRexToXCL_xmlhttp.status == 200)) {
-//           document.location.reload();
-//           if(document.getElementById("uniqueMarker") != null) {
-//                //document.getElementById("uniqueMarker").scrollIntoView(true);
-//            }
-//
-//        } 
-//    }
-    
-function showSolutions() {
- document.getElementById('KnowWESolutions').style.visibility = 'visible';
- document.getElementById('KnowWEDialogs').style.visibility = 'hidden';
- //document.getElementById('solutionsButton').style.backgroundColor = '#E2DCC8';
- //document.getElementById('dialogsButton').style.backgroundColor = '#FFFFFF';
-}
-
-function showDialogs() {
- document.getElementById('KnowWESolutions').style.visibility = 'hidden';
- document.getElementById('KnowWEDialogs').style.visibility = 'visible';
- //document.getElementById('solutionsButton').style.backgroundColor = '#FFFFFF';
- //document.getElementById('dialogsButton').style.backgroundColor = '#E2DCC8';
-}
-
-function doShowHideOptionsMenu() {
- if(document.getElementById("kwikiOptionsMenu").style.visibility == "visible") {
- doHideOptionsMenu();
- } else if(document.getElementById("kwikiOptionsMenu").style.visibility == "hidden") {
- doShowOptionsMenu();
- }
-}
-
-function kwiki_window(url) {
-    // 420 x 500 
-    var screenWidth = (window.screen.width/2) - (210 + 10);
-    var screenHeight = (window.screen.height/2) - (250 + 50);
-    newWindow = window.open(url, url, "height=420,width=520,left="+screenWidth + ",top="+screenHeight + ",screenX="+screenWidth + ", screenY="+screenHeight+",resizable=yes,toolbar=no,menubar=no,scrollbars=yes,location=no,status=yes,dependent=yes");
-    newWindow.focus();
-}
-
-function kwiki_call(url) {
- try {
- kwiki_xmlhttp = window.XMLHttpRequest
- ? new XMLHttpRequest()
- : new ActiveXObject("Microsoft.XMLHTTP");
- kwiki_xmlhttp.open("GET", url);
- kwiki_xmlhttp.send(null);
- SolutionState.update();
- updateDialogs();
- } catch (e) {}
-}
-
-function doHideOptionsMenu() {
- document.getElementById("kwikiOptionsMenu").style.visibility="hidden";
-}
-
-function doShowOptionsMenu() {
- document.getElementById("kwikiOptionsMenu").style.visibility="visible";
-}
-
-function updateDialogs() {
-    var url = 'KnowWE.jsp?renderer=KWiki_dpsDialogs&KWikiWeb=default_web';
-    KnowWEAjax.id = 'KnowWEDialogs';
-    KnowWEAjax.send(url, KnowWEAjax.insert, true);
-} 
-
-function kwiki_sessions(linkAction, event) {
-        if(!event) {
-            event = window.event;
-        }
-        try {  
-            kwikiEvent = event;
-            kwiki_xmlhttp = window.XMLHttpRequest 
-                ? new XMLHttpRequest()  
-                : new ActiveXObject("Microsoft.XMLHTTP");
-            kwiki_xmlhttp.onreadystatechange = kwiki_sessions_triggered;  
-            var kwiki_poll_url = "KnowWE.jsp?renderer=KWiki_sessionChooser&KWikiLinkAction="+linkAction+"&KWikiWeb=default_web";
-            kwiki_xmlhttp.open("GET", kwiki_poll_url); 
-            kwiki_xmlhttp.send(null); 
-        } catch (e) {alert(e);} 
-    } 
              
-    function kwiki_sessions_triggered() { 
-        if ((kwiki_xmlhttp.readyState == 4) && (kwiki_xmlhttp.status == 200)) {  
-            dummy = document.getElementById("kwikiSessions");
-            dummy.innerHTML = kwiki_xmlhttp.responseText;
-            setCorrectPositionAndShow(dummy, kwikiEvent);
-            setTimeout("hideSessionChooser()", 5000);
-        } 
-    } 
-
-// Ajax events admin panel
-function doReInit() {  
-        
-        try {  
-            xmlhttp = window.XMLHttpRequest 
-                ? new XMLHttpRequest()  
-                : new ActiveXObject("Microsoft.XMLHTTP");
-            xmlhttp.onreadystatechange = reInitTrigger;  
-            var kwiki_poll_url = "KnowWE.jsp?renderer=KWiki_ReInitWebTermsRenderer&KWikiWeb=default_web";
-            xmlhttp.open("GET", kwiki_poll_url); 
-            xmlhttp.send(null); 
-        } catch (e) {alert(e);} 
-    }  
-function reInitTrigger() { 
-    insertAjaxResponse("reInit"); 
-}
-function doParseWeb() {  
-    //Offline parse-Aktion - DPSEnvironment/Terminologien nicht aktualisiert
-    try {  
-        xmlhttp = window.XMLHttpRequest 
-            ? new XMLHttpRequest()  
-            : new ActiveXObject("Microsoft.XMLHTTP");
-        xmlhttp.onreadystatechange = parseWebTrigger;  
-        var kwiki_poll_url = "KnowWE.jsp?renderer=ParseWebOffline&KWikiWeb=default_web";
-        xmlhttp.open("GET", kwiki_poll_url); 
-        xmlhttp.send(null); 
-    } catch (e) {alert(e);} 
-}  
-
-function parseWebTrigger() {
-    insertAjaxResponse("parseWeb"); 
-}
-function doSumAll() {  
-    
-    try {  
-        xmlhttp = window.XMLHttpRequest 
-            ? new XMLHttpRequest()  
-            : new ActiveXObject("Microsoft.XMLHTTP");
-        xmlhttp.onreadystatechange = sumAllTrigger;  
-        var kwiki_poll_url = "KnowWE.jsp?renderer=KWikiSummarizer&KWikiWeb=default_web";
-        xmlhttp.open("GET", kwiki_poll_url); 
-        xmlhttp.send(null); 
-    } catch (e) {alert(e);} 
-}   
-function sumAllTrigger() { 
-    insertAjaxResponse("sumAll");
-} 
-/*
-Clears a certain area of the HTML document per id. 
-Is used in the admin panel to hide the generated information for:
-   - parseWeb | sumAll | reInit
-*/
-function clearInnerHTML(id){
-    if(document.getElementById(id) != null){
-        document.getElementById(id).innerHTML = "";
-    }
-}
-/* update response text sollte auch zusammenzufassen gehen, ...*/
-function insertAjaxResponse(id){
-    if ((xmlhttp.readyState == 4) && (xmlhttp.status == 200)) {  
-        if(document.getElementById(id) != null) {
-            document.getElementById(id).innerHTML = xmlhttp.responseText; 
-        }
-        document.getElementById(id).scrollIntoView(true);
-    } 
-}
-
-
-function encodeUmlauts(text) {
-    text = text.replace(/�/g, "&auml;");
-    text = text.replace(/�/g, "&Auml;");
-    text = text.replace(/�/g, "&ouml;");
-    text = text.replace(/�/g, "&Ouml;");
-    text = text.replace(/�/g, "&uuml;");
-    text = text.replace(/�/g, "&Uuml;");
-    text = text.replace(/�/g, "&szlig;");
-    return text;
-}
-
-function hideSessionChooser() {
-        document.getElementById("kwikiSessions").style.visibility='hidden';
-    }
-
-function showPopupButtons(usagePrefix, event) {
-if(!event) {
- event = window.event;
- }
- hideAllPopupDivs();
- var dummy = document.getElementById(usagePrefix+'Popup');
- setCorrectPositionAndShow(dummy, event);
- planToHide(dummy, event);
-}
-
-function planToHide(node, event) {
- replanToHide(node, event);
- node.kwikiTimer = window.setTimeout("hideNow('"+node.id+"')", 2000);
-}
-
-function hideNow(id, event) {
- node = document.getElementById(id);
- node.style.visibility = 'hidden';
-}
-
-function replanToHide(node, event) {
- if(node.kwikiTimer != null) {
- window.clearTimeout(node.kwikiTimer);
- }
-}
-
-function hideAllPopupDivs() {
- for (i = 0; i < document.getElementsByTagName("div").length; i++) {
- div = document.getElementsByTagName("div")[i];
- if(div.getAttribute("KWikiPopupLinksDiv") != null) {
- div.style.visibility = 'hidden';
- }
- }
-}
-
-function doNothing() {
-}
-
-
-function hidePopupButtons(usagePrefix) {
- document.getElementById(usagePrefix+'Popup').style.visibility = 'hidden';
-}
-
-
-var ie4=document.all&&navigator.userAgent.indexOf("Opera")==-1;
-var ns6=document.getElementById&&!document.all;
-var ns4=document.layers;
-var canhide=false;
-
-function setCorrectPositionAndShow(menuobj, e) {
-    menuobj.thestyle=(ie4||ns6)? menuobj.style : menuobj;
-    eventX = e.layerX;
-    eventY = e.layerY;
-    menuobj.thestyle.left=(eventX - menuobj.contentwidth) + "px";
-    menuobj.thestyle.top = eventY + "px";
-    menuobj.thestyle.visibility="visible";
- }
-
-function switchTypeActivation(size) {
-    try {
-        var j = null;
-        var params = {
-            renderer : 'KnowWEObjectTypeActivationRenderer',
-            KnowWeObjectType : (function () {
-                var test = "";
-                for (i=0;i<size;i++) {
-                    if (document.typeactivator.Auswahl.options[i].selected) {
-                        test += document.typeactivator.Auswahl.options[i].value;
-                        j = i;
-                    }           
+                var params = {
+                    action : 'ReplaceKDOMNodeAction',
+                    TargetNamespace : nodeID,
+                    KWikitext : selectedOption,
+                    KWiki_Topic : topic
                 }
-                return test;
-            })()
+                var options = {
+                    url : KNOWWE.helper.getURL( params ),
+                    response : {
+                        action : none,
+                        fn : null
+                    }
+                }
+                new _KA( options ).send();
+            }
+        },
+        /**
+         * Function: enableQuickEdit
+         * Sets the quick-edit flag to the given element.
+         * 
+         * Parameters:
+         *     fn - The function that should be executed afterwards.
+         *     id - The id of the element the quick edit flag should set to.
+         */        
+        enableQuickEdit : function( fn, id ){
+            var params = {
+                action : 'SetQuickEditFlagAction',
+                TargetNamespace : id,
+                KWiki_Topic : KNOWWE.helper.gup('page')
+            }   
+            
+            var options = {
+                url : KNOWWE.core.util.getURL( params ),
+                response : {
+                    action : 'string',
+                    ids : [id],
+                    fn : fn
+                }
+            }
+            new _KA( options ).send();
         }
+    }
+}();
+
+/**
+ * Namespace: KNOWWE.core.util
+ * The KNOWWE core util namespace object.
+ * Contains some helper functions. For detailed information read the comments
+ * above each function.
+ */
+KNOWWE.core.util = function(){
+    return {
+        /**
+         * Function: addCollabsiblePluginHeader
+         * Extends the headings of the KnowWEPlugin DIVs with collabs ability.
+         * The function searches for all DIVs with an ".panel" class attribute and
+         * extends them. The plugin DIV should have the following structure in order
+         * to work properly:
+         * (start code)
+         * <div class='panel'><h3>Pluginname</h3><x>some plugin content</x></div>
+         * (end)
+         */
+        addCollabsiblePluginHeader : function( id ){
+        	var selector = "div .panel";
+        	if( id ) {
+        		selector = id;
+        	}
+        	
+            var panels = _KS( selector );
+            if( !panels.length ) panels = new Array(panels);
+            
+            for(var i = 0; i < panels.length; i++){
+                var span = new _KN('span');
+                span._setText('- ');
+                
+                var heading = panels[i]._getChildren()[0];
+                span._injectTop( heading );
+
+                _KE.add('click', heading , function(){
+                    var el = new _KN( this );
+                    var style = el._next()._getStyle('display');
+                    style = (style == 'block') ? 'none' : ((style == '') ? 'none' : 'block');                    
+                    
+                    el._getChildren()[0]._setText( (style == 'block')? '- ' : '+ ' );
+                    el._next()._setStyle('display', style);
+                });
+            }
+        },
+        /**
+         * Function: getURL
+         * Returns an URL created out of the given parameters.
+         * e.g.: 
+         * (start code)
+         *  var params = {
+         *      renderer : 'KWiki_dpsSolutions',
+         *      KWikiWeb : 'default_web'
+         *  }
+         * KNOWWE.util.getURL( params ) --> KnowWE.jsp?renderer=KWiki_dpsSolutions&KWikiWeb=default_web
+         * (end)
+         * 
+         * Parameters:
+         *     params - The parameter for the URL.
+         * 
+         * Returns:
+         *     The URL containing the elements of the params array.
+         */
+         getURL : function( params ){
+            var baseURL = 'KnowWE.jsp';
+            var tokens = []
         
-        var options = {
-            url : getURL ( params ),
-            response : {
-                action : 'update',
-                ids : [],
-                fn : (function() {
-                        var element = document.typeactivator.Auswahl.options[j];
-                        if (element.style.color == "red") {
-                            element.style.color = "green";
-                        } else {
-                            element.style.color = "red";
-                        }
-                     })()
+            if( !params && typeof params != 'object') return baseURL;
+            
+            for( keys in params ){
+                tokens.push(keys + "=" + encodeURIComponent( params[keys] ));
+            }
+            tokens.push('tstamp='+new Date().getTime());            
+            return baseURL + '?' + tokens.join('&');
+        },       
+        /**
+         * Function: getWindowParams
+         * Returns an URL which is used as the target URL for a popup window.
+         * 
+         * Parameters:
+         *     params - The parameter for the popup window
+         * Returns:
+         *     The url for the popup window
+         */
+        getWindowParams : function( params ){
+            if( !params && typeof params != 'object') return '';
+            var tokens = [];
+            for( keys in params ){
+                if(keys == 'url') continue;
+                tokens.push(keys + "=" + params[keys]);
+            }
+            return tokens.join(',');
+        },
+        /**
+         * Function: replace
+         * Used to replace elements in the DOM tree. All elements given in the ids
+         * array are replaced with the value of the second parameter. If one
+         * element is not found, nothing happens.
+         * 
+         * Parameters:
+         *     ids - The ids of the elements that should be replaced.
+         *     value - The value used for replacement.
+         */
+        replace : function(ids, value){
+            for (var i in ids ) {
+                if( typeof ids[i] != 'string' ) return;
+                
+                var tmpDiv = new _KN('div', {
+                    'styles': {
+                        'display': 'hidden' 
+                    },
+                    'id' : 'KnowWE-temp'
+                });
+                var old = _KS('#' + ids[i]);
+                tmpDiv._injectBefore( old );
+                tmpDiv._setHTML( value );
+                old._remove();
+                _KS('#' + ids[i])._injectAfter( _KS('#KnowWE-temp') );
+                tmpDiv._remove();
             }
         }
-        new KnowWEAjax( options ).send();
-    } catch (e) {alert(e);}
-}
+    }
+}();
 
-function searchTypes(size) {
-    try {
-
-        var params = {
-            renderer : 'KnowWEObjectTypeBrowserRenderer',
-            TypeBrowserParams : (function () {
-                var test = "";
-                for (i=0;i<size;i++) {
-                    if (document.typebrowser.Auswahl.options[i].selected) {
-                        test += document.typebrowser.Auswahl.options[i].value;
-                    }           
+/**
+ * Namespace: KNOWWE.core.util.form
+ * Some helper functions concerning HTML form elements.
+ */
+KNOWWE.core.util.form = function(){
+    return {
+        /**
+         * Function: getCursorPositionInTextArea
+         * Does get the current position of the cursor inside a textarea.
+         * 
+         * Parameters:
+         *     textarea - The textarea
+         * 
+         * Returns: 
+         *     The position of the cursor inside the textarea.
+         */
+        getCursorPositionInTextArea : function( textarea ){
+            if( document.selection ){
+                var range = document.selection.createRange();
+                var stored_range = range.duplicate();
+                stored_range.moveToElementText( textarea );           
+                stored_range.setEndPoint( 'EndToEnd', range );
+                textarea.selectionStart = stored_range.text.length - range.text.length;            
+                return textarea.selectionStart + range.text.length;
+            } 
+            else {
+                if(textarea.selectionEnd){
+                    textarea.focus();
+                    return textarea.selectionEnd;
                 }
-                return test;
-            })(),
-        }
-        
-        /*for (i=0;i<size;i++) {
-            if (document.typebrowser.Auswahl.options[i].selected) {
-                params += "&TypeBrowserParams"+"="+document.typebrowser.Auswahl.options[i].value;
-            }           
-        }*/
-//        console.log( getURL(params));
-        var options = {
-            url : getURL ( params ),
-            response : {
-                action : 'insert',
-                ids : ['TypeSearchResult']
             }
-        }
-        new KnowWEAjax( options ).send();
-        
-    } catch (e) {alert(e);}
-}
+        },          
+        /**
+         * Function: insertAtCursor
+         * Inserts an text element at the current cursor position in a textarea, etc.
+         * 
+         * Parameters:
+         *     element - The textarea, etc.
+         *     value - The text string
+         */
+        insertAtCursor : function(element, value) {
+            if (document.selection) { 
+                element.focus();
+                sel = document.selection.createRange();
+                sel.text = value;
+            } else if(element.selectionStart || element.selectionStart == '0'){ 
+                 var startPos = element.selectionStart;
+                 var endPos = element.selectionEnd;
+                 element.value = element.value.substring(0, startPos) + value
+                     + element.value.substring(endPos, element.value.length);
+                 element.setSelectionRange(endPos + value.length, endPos + value.length);
+            } else {
+                element.value = value;
+            }
+            element.focus();
+        },
+        /**
+         * Function: addFormHints
+         * Shows a small overlay text containing additional information about an
+         * input HTMLElement. Used for e.g. in the KnofficeUploader.
+         * 
+         * Parameters:
+         *     name - The name of the HTMLElement
+         */
+        addFormHints : function( name ){
+            if(!_KS('#' + name)) return;
+            
+            var els = document.getElementById(name + '-extend').getElementsByTagName("input");
+            for (var i = 0; i < els.length; i++){
+                var tag = els[i].nextSibling.tagName;
+                if( !tag) continue;
 
-function sendRenameRequest() {
-    
-    var params = {
-        action : 'RenamingRenderer',
-        TargetNamespace : $('renameInputField').value,
-        KWikiFocusedTerm : $('replaceInputField').value,
-        ContextPrevious : $('renamePreviousInputContext').value,
-        ContextAfter : $('renameAfterInputContext').value,
-        CaseSensitive :$('search-sensitive').checked
-    }
-    
-    var options = {
-        url : getURL(params),
-        response : {
-            ids : ['rename-result']
-        }
-    }
-    new KnowWEAjax( options ).send();
-    /*
-     try {        
-         var renameText = document.getElementById("renameInputField").value; 
-         var replacementText = document.getElementById("replaceInputField").value;
-         var renameContextPrevious = document.getElementById("renamePreviousInputContext").value;
-         var renameContextAfter = document.getElementById("renameAfterInputContext").value;
-         var caseSensitive = document.getElementById("search-sensitive").checked;
-                 
-         var url = "KnowWE.jsp";
-         var params = 'TargetNamespace='+encodeURIComponent(encodeUmlauts(renameText))
-             +'&action=RenamingRenderer&KWikiFocusedTerm='+replacementText
-             +'&ContextPrevious='+encodeURIComponent(encodeUmlauts(renameContextPrevious))
-             +'&ContextAfter='+encodeURIComponent(encodeUmlauts(renameContextAfter))
-             +'&CaseSensitive='+caseSensitive;
+              if(tag.toLowerCase() == 'span'){
+                _KE.add('focus', els[i], function (e) {
+                   e = e || window.event;
+                   var el = e.target || e.srcElement;
+                   el.nextSibling.style.display = "inline";});
+                _KE.add('blur', els[i], function (e) {
+                   e = e || window.event;
+                   var el = e.target || e.srcElement;
+                   el.nextSibling.style.display = "none";});
+              }
+            }
+        },
+        /**
+         * Function: showExtendedPanel
+         * Shows a panel in certain plugin with additional options.
+         */
+        showExtendedPanel : function(){
+            var el = this;
+
+            var style = el._next().style;
+            el.removeAttribute('class');           
          
-         KnowWEAjax.id = 'rename-result';
-         KnowWEAjax.send(url + "?" + params, KnowWEAjax.insert, true);
-     } catch (e) {alert(e);}*/
-}
-
-// gets the additional text, displayed in the match column of the TypeBrowser. 
-function getAdditionalMatchTextTypeBrowser(atmUrl, query){
-	
-	var params = {
-        action : 'KnowWEObjectTypeBrowserRenderer',
-        ATMUrl : atmUrl,
-        kwiki_poll_url : "KnowWE.jsp",
-        TypeBrowserQuery : query
-    }
-    
-    var options = {
-        url : getURL( params ),
-        method : 'get',
-        response : {
-            action : 'insert',
-            ids : [(atmUrl.split(":")[4] + atmUrl.split(":")[2])]
-        }
-    }
-    new KnowWEAjax( options ).send();
-}
-
-// gets the additional text, displayed in the match column of the renaming tool. 
-function getAdditionalMatchText(atmUrl)
-{   
-    var params = {
-        action : 'RenamingRenderer',
-        ATMUrl : atmUrl,
-        KWikiFocusedTerm : $('replaceInputField').getValue(),
-        TargetNamespace : $('renameInputField').getValue(),
-        ContextAfter : $('renameAfterInputContext').getValue(),
-        ContextPrevious : $('renamePreviousInputContext').getValue(),
-        CaseSensitive : $('search-sensitive').getValue()
-    }
-    
-    var options = {
-        url : getURL( params ),
-        method : 'post',
-        response : {
-            action : 'none',
-            fn : function(){ 
-                var id = atmUrl.split(":")[4] + atmUrl.split(":")[2];
-                $(id).setHTML( request.getResponse() );
-                response = null;
+            if(style['display'] == 'inline'){
+                style['display'] = 'none';
+                el.setAttribute('class', 'show extend pointer extend-panel-down');
+            }else{
+                style['display'] = 'inline';
+                el.setAttribute('class', 'show extend pointer extend-panel-up');
             }
-        }
-    }
-    var request = new KnowWEAjax( options );
-    request.send();
-}
-
-function insertRenamingMask() {
-    if ((kwiki_xmlhttp2.readyState == 4) && (kwiki_xmlhttp2.status == 200)) {
-        if(document.getElementById("rename-result") != null) {
-            //alert("hab was bekommen!");
-            var text = kwiki_xmlhttp2.responseText;
-                if(text.length == 0) {
-                    text = "no response for request";
-                }
-
-            document.getElementById("rename-result").innerHTML = text;
-        }
-        document.getElementById("rename-result").scrollIntoView(true);
-        addLoadEvent(init_sortable(myColumns, 'sortable1'));
-    }
- } 
-
-
- function replaceAll() 
- {
-    var codeReplacements = '';
-    var inputs = $ES('input');
-    for(var i = 0; i < inputs.length; i++) {
-        var inputID = inputs[i].id;
-        if(inputID.substring(0,11) == 'replaceBox_') {
-            if(inputs[i].checked) {
-                var code = inputID.substring(11);
-                codeReplacements += "__" + code;
-            }
-        }
-    } 
- 
-    var params = {
-        TargetNamespace : encodeURIComponent(encodeUmlauts( $('renameInputField').getValue() )),
-        action : 'GlobalReplaceAction',
-        KWikitext : codeReplacements,
-        KWikiFocusedTerm : $('replaceInputField').getValue()
-    }
-     
-    var options = {
-        url : getURL( params ),
-        method : 'post',
-        response : {
-            action : 'insert',
-            ids : [ 'rename-result' ],
-            fn : function(){ setTimeout ( 'document.location.reload()', 5000 ); }
         }
     }    
-    new KnowWEAjax( options ).send();
-}
-
-function kwiki_pollSyntax(article) {
- try {
- kwiki_xmlhttp2 = window.XMLHttpRequest
- ? new XMLHttpRequest()
- : new ActiveXObject("Microsoft.XMLHTTP");
- kwiki_xmlhttp2.onreadystatechange = kwiki_triggeredSyntax;
- var semi = new RegExp("\;","g");
-// var kopictext = "<topic>Swimming</topic>"+(document.main.text.value.replace(semi,"\;"));
-var kopictext = document.getElementById("editorarea").value; 
- var kwiki_poll_url = "KnowWE.jsp";
- var params = 'KWikitext='+encodeURIComponent(encodeUmlauts(kopictext))+'&KWiki_Topic='+article+'&renderer=KWikiParseRenderer'+'&action=KWiki_parseTextToKnowledgebase';
- kwiki_xmlhttp2.open("POST", kwiki_poll_url,false);
- kwiki_xmlhttp2.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
- kwiki_xmlhttp2.setRequestHeader("Content-length", params.length);
- kwiki_xmlhttp2.setRequestHeader("Connection", "close");
- kwiki_xmlhttp2.send(params);
- //kwiki_xmlhttp2.send(encodeURI('KWikitext='+kopictext.substring(0,20)));
-
- } catch (e) {alert(e);}
- } 
-
-function kwiki_triggeredSyntax() {
- if ((kwiki_xmlhttp2.readyState == 4) && (kwiki_xmlhttp2.status == 200)) {
- if(document.getElementById("kwikiSyntaxReportArea") != null) {
- //alert("hab was bekommen!");
- var text = kwiki_xmlhttp2.responseText;
- if(text.length == 0) {
- text = "no response for request";
- }
-
- document.getElementById("kwikiSyntaxReportArea").innerHTML = text;
- }
- document.getElementById("kwikiSyntaxReportArea").scrollIntoView(true);
- }
- } 
+}();
 
 /**
- * Handles a key down event in the edit textarea.<b>
- * Used for KnowWE-CodeCompletion.
+ * Namespace: KNOWWE.core.util.tablesorter
+ * The KNOWWE table sorter namespace.
+ * Contains functions to sort HTMLTables.
  */
-function handleKeyDown(event) {
-    $('autoCompleteMenu').style['display'] = 'inline';
-    if (event.ctrlKey && event.keyCode == 32) {        
-        var textArea = $('editorarea');
-        var endPos;
-        if( document.selection ){
-            var range = document.selection.createRange();
-            var stored_range = range.duplicate();
-            stored_range.moveToElementText( textArea );           
-            stored_range.setEndPoint( 'EndToEnd', range );
-            textArea.selectionStart = stored_range.text.length - range.text.length;            
-            endPos = textArea.selectionStart + range.text.length;
-        } 
-        else 
-        {   // Firefox, etc.
-            if(textArea.selectionEnd) 
-            {
-                textArea.focus();
-                endPos = textArea.selectionEnd;
-            }
-            else
-                textArea.focus();
-        }          
-        
-        var tmp = textArea.value.substring(0, endPos);
-        var startPos = 0; var i = endPos;
-        while( startPos == 0 )
-        {
-            if(tmp.charAt(i) == '\n' || tmp.charAt(i) == '\r' ||tmp.charAt(i) == ' ')
-            {
-                 startPos = i;
-            }
-            i--;
-        }
-        //send request
-        var encodedData = encodeURIComponent(tmp.substring(startPos + 1));
-        var url = "KnowWE.jsp?renderer=KWiki_codeCompletion&KWikiWeb=default_web&CompletionText="+encodedData;
-        
-        KnowWEAjax.ext = {
-            id: 'autoCompleteMenu',
-            div: '',
-            fn: function(){
-                $('codeCompletion').addEvent( 'keydown', function(event){
-                    var event = new Event(event);
-                    if( event.code == 13){
-                        if( $('codeCompletion').selectedIndex == 1) {
-                            $('codeCompletion').fireEvent('change');
-                        }
-                    }
-                });
-                $('codeCompletion').options[1].addEvent('click', function(){
-                      $('codeCompletion').fireEvent('change');
-                });                
-                $('codeCompletion').addEvent( 'change', function(){
-                        index = $('codeCompletion').selectedIndex;
-                        value = $('codeCompletion').options[index].value;
-                        insertAtCursor($('editorarea'), value);
-                });
-                $('codeCompletion').focus();
-            }
-        };
-        KnowWEAjax.send(url, KnowWEAjax.insertExtended , true);
+KNOWWE.core.util.tablesorter = function(){
+    /*sorting function for strings */
+    function stringSort(el1, el2){
+        var cellOne = el1.getElementsByTagName("td")[col].innerHTML;
+        var cellTwo = el2.getElementsByTagName("td")[col].innerHTML;       
+                
+        return (cellOne > cellTwo) ? direction :(cellOne < cellTwo)? -direction : 0;
     }
-}
-/**
- * Inserts an text element at the current cursor position in a textarea, etc.
- * @param element the textarea, etc.
- * @param value the text string
- */
-function insertAtCursor(element, value) {
-    if (document.selection) { //IE support
-        element.focus();
-        sel = document.selection.createRange();
-        sel.text = value;
-    } else if(element.selectionStart || element.selectionStart == '0'){ //Gecko based
-         var startPos = element.selectionStart;
-         var endPos = element.selectionEnd;
-         element.value = element.value.substring(0, startPos) + value
-             + element.value.substring(endPos, element.value.length);
-         element.setSelectionRange(endPos + value.length, endPos + value.length);
-    } else {
-        element.value = value;
-    }
-    element.focus();
-}
-/* ############################################################### */
-/* ############################################################### */
-/*
- * Extends the headings of the KnowWEPlugin DIV with collabs abilities.
- * The funtion searches for all DIVs with an ".panel" class attribute and
- * extends them. The Plugin DIV should have the following structure in order
- * to work proberly:
- * <div class='panel'><h3>Pluginname</h3><x> some plugin content</x></div>
- */
-function addPanelToggle()
-{
-    var panels = $$('div .panel');
-    for(var i = 0; i < panels.length; i++)
-    {
-        var span = new Element('span');
-        span.setText('- ');
-        
-        var el = panels[i].getChildren()[0];
-        span.injectTop( el );
-        
-        el.addEvent( 'click', function(){
-            var style = this.getNext().getStyle('display');
-            style = (style == 'block') ? 'none' : ((style == '') ? 'none' : 'block');
+    
+    /*sorting function for integers */
+    function intSort(el1, el2){
+        var cellOne = parseInt(el1.getElementsByTagName("td")[col].innerHTML);
+        var cellTwo = parseInt(el2.getElementsByTagName("td")[col].innerHTML);
+                
+        return (cellOne > cellTwo) ? direction :(cellOne < cellTwo)? -direction : 0;
+    }   
+    return {
+        /**
+         * Function: init
+         * Initializes the sort ability.
+         * 
+         * Parameters:
+         *     columns - The columns of the to sort table.
+         *     tableID - The id of the table.
+         */
+        init : function(columns, tableID){
+            if(!_KS('#' + tableID)) return;
+            var tblHeader = document.getElementById(tableID).getElementsByTagName('thead')[0].getElementsByTagName('th');
+            for( var i = 0; i < tblHeader.length; i++){
+                if(columns[i].sortable == "true"){
+                    var text = tblHeader[i].innerHTML;
+                    _KE.add('click', tblHeader[i], function(){
+                        KNOWWE.core.util.tablesorter.sort(i, tableID);
+                    });
+                }
+            }
+        },
+        /**
+         * Function: sort
+         * Sorts the table according to the selected column.
+         * 
+         * Parameters:
+         *     columns - The columns of the to sort table.
+         *     tableID - The id of the table.
+         */
+        sort : function(columnID, tableID){
+            var tblHeader = document.getElementById(tableID).getElementsByTagName('thead')[0].getElementsByTagName('th');
+            var tbody = document.getElementById(tableID).getElementsByTagName('tbody');
+                    
+            var sortingType; var direction;
+            var rowsSort = [];
             
-            var children = this.getParent().getChildren();          
-            for(var i = 0; i < children.length;i++){
-                if(children[i].getTag() == "h3"){
-                    children[i].getChildren()[0].setText( (style == 'block')? '- ' : '+ ' );
-                } else {
-                    children[i].setStyle('display', style);
+            /* choose sorting type [asc desc]*/
+            if(tblHeader[columnID].classname == "asc"){
+                sortingType = "des";
+                direction = -1;
+            }else if(tblHeader[columnID].classname == "des"){
+                sortingType = "asc";
+                direction = 1;
+            }else{
+                sortingType = "asc";
+                direction = 1;
+            }       
+                
+            /* for each tbody if query is found in more than one article*/
+            for(var i = 0; i < tbody.length; i++){
+                var rows = tbody[i].getElementsByTagName('tr');
+                col = columnID;
+                
+                /* clone original nodes´, necessary for comparision. */
+                for(var j = 0; j < rows.length; j++){
+                    rowsSort[j] = rows[j].cloneNode(true);
+                }
+                
+                /* sort the table*/
+                rowsSort.sort(stringSort);
+                    
+                /* replace old table with new sorted one */
+                for(var k = 0; k < rows.length; k++){
+                    rows[k].parentNode.replaceChild(rowsSort[k], rows[k]);
+                }
+            }
+            
+            /* store current sorting type */
+            tblHeader[columnID].classname = sortingType;
+        }       
+    }   
+}();
+
+/**
+ * Namespace: KNOWWE.core.table
+ * The KNOWWE table tag namespace.
+ */
+KNOWWE.core.table = function(){
+    var map = new KNOWWE.helper.hash(); 
+    return {  
+        /**
+         * Function: init
+         * Initializes some table functionality.
+         */
+        init : function(){                  
+            if( _KS('.table-edit').length != 0 ){
+                var elements = _KS(".table-edit input[type=submit]");
+                for(var i = 0; i < elements.length; i++){
+                    _KE.add('click', elements[i], KNOWWE.core.table.onSave );
+                }
+                elements = _KS('.table-edit-node');
+                for(var i = 0; i < elements.length; i++){
+                    _KE.add('change', elements[i], KNOWWE.core.table.onChange );
+                }
+                
+                elements = _KS('.quickedit .table');
+                for(var i = 0; i < elements.length; i++){
+                    _KE.removeEvents('click', elements[i]);
+                    _KE.add('click', elements[i], function(e){
+                        var el = _KE.target(e);
+                        var id = el.parentNode.id;
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id);
+                    });
+                }                
+            }
+        },
+        /**
+         * Function: map
+         * Returns the map of the KnowWETable. Stores the changed cells in edit mode.
+         * 
+         * Returns:
+         *     The changed cells stored as map.
+         */
+        getMap : function(){
+            return map;
+        },
+        /**
+         * Function: onChange
+         * Triggered when the cell content changes. Stores the new value together 
+         * with the old one in the table map.
+         * 
+         * Parameters:
+         *     e - The occurred cell change event.
+         */
+        onChange : function(e){
+            var el = _KE.target( e );
+            KNOWWE.core.table.getMap().set(el.id, el.value);
+        },
+        /**
+         * Function: onSave
+         * Triggered when the changes to the table in edit mode should be saved.
+         * 
+         * Parameters:
+         *     e - The occurred event.
+         */
+        onSave : function( e ){
+            var el = _KE.target(e);
+            var id = el.id;
+
+            var n = '';
+            KNOWWE.core.table.getMap().forEach(function(key, value){
+                n += key + ";-;" + value + "::";
+            });
+            n = n.substring(0, n.lastIndexOf('::'));
+
+            var params = {
+                action : 'UpdateTableKDOMNodes',
+                TargetNamespace : n,
+                KWiki_Topic : KNOWWE.helper.gup('page')
+            }
+
+            var options = {
+                url : KNOWWE.core.util.getURL ( params ),
+                response : {
+                    action : 'none',
+                    fn : function(){ 
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id);
+                    }
+                }
+            }
+            new _KA( options ).send();
+        }
+    }
+}();
+
+
+/**
+ * Namespace: KNOWWE.core.renaming
+ * The KNOWWE renaming tool plugin object.
+ */
+KNOWWE.core.renaming = function(){
+    var myColumns = [{key:'match'  , label:'Match'   , type:'string' , sortable:'false'},
+                {key:'section', label:'Section' , type:'string' , sortable:'true'},
+                {key:'replace', label:'Replace?', type:'string' , sortable:'false'},
+                {key:'preview', label:'Preview' , type:'string' , sortable:'false'}];
+    return {
+        /**
+         * Function:init
+         * The init function for the renaming tool. Enables the preview button.
+         */
+        init : function(){                    
+            var bttn = _KS( '#rename-panel input[type=button]')[0];
+            if( bttn ){
+                _KE.add('click', bttn, KNOWWE.core.renaming.preview );
+            }
+        },
+        /**
+         * Function: selectPerSelection
+         * Select all checkboxes within a certain section.
+         * 
+         * Parameters:
+         *     e - The occurred event. 
+         */
+        selectPerSection : function( e ) {
+            var renameForm = this.form;
+            var el = KNOWWE.helper.event.target( e );
+            var rel = el.getAttribute('rel');
+            if(!rel) return;  
+                       
+            rel = eval("(" + rel + ")");
+            var section = rel.section;
+            
+            for(i = 0; i < renameForm.length; i++){
+                if(renameForm[i].type == 'checkbox' && renameForm[i].id != ''){
+                    if(renameForm[i].id.search(section) != -1)
+                        renameForm[i].checked = true;
+                }
+            }
+        },
+        /**
+         * Function: deselectPerSelection
+         * Deselects all chechboxes in the renaming form.  
+         * 
+         * Parameters:
+         *     e - The occurred event. 
+         */
+         deselectPerSection : function( e ){
+            var renameForm = this.form;
+            var el = KNOWWE.helper.event.target( e );
+            
+            var rel = el.getAttribute('rel');
+            if(!rel) return;             
+            
+            rel = eval("(" + rel + ")");
+            var section = rel.section;            
+            
+            for(i = 0; i < renameForm.length; i++){
+                if(renameForm[i].type == 'checkbox' && renameForm[i].id != ''){
+                    if(renameForm[i].id.search(section) != -1)
+                        renameForm[i].checked = false;
+                }
+            }
+         },
+        /**
+         * Function: preview
+         * Sends an request with the entered values and shows the result of the
+         * renaming request in a preview table.
+         */
+        preview : function(){
+            if(!_KS('#rename-panel')) return;
+            
+            var params = {
+                action : 'RenamingRenderer',
+                TargetNamespace : _KS('#renameInputField').value,
+                KWikiFocusedTerm : _KS('#replaceInputField').value,
+                ContextPrevious : _KS('#renamePreviousInputContext').value,
+                ContextAfter : _KS('#renameAfterInputContext').value,
+                CaseSensitive :_KS('#search-sensitive').checked
+            }
+            
+            var options = {
+                url : KNOWWE.core.util.getURL(params),
+                response : {
+                    ids : ['rename-result'],
+                    fn : function(){
+                        if(_KS('.check-select')) {
+                             _KS('.check-select').each(function(element){
+                                _KE.add('click', element, KNOWWE.core.renaming.selectPerSection );     
+                             });
+                        }
+                            
+                        if(_KS('.check-deselect')){
+                            _KS('.check-deselect').each(function(element){
+                                _KE.add('click', element, KNOWWE.core.renaming.deselectPerSection );     
+                             });
+                        }
+                        if(_KS('#renaming-replace'))
+                            _KE.add('click', _KS('#renaming-replace'), KNOWWE.core.renaming.replace );
+                        
+                        var imgs = _KS('.show-additional-text-renaming');
+                        for( var i = imgs.length - 1; i > -1 ; i--){
+                            _KE.add('click', imgs[i], KNOWWE.core.renaming.getAdditionalMatchText);
+                        }
+                        
+                        //init sortable table
+                        var tableID = _KS('#rename-result table')[0].id;
+                        var tblHeader = _KS('#' + tableID + ' thead')[0].getElementsByTagName('th');
+                        for( var i = 0; i < tblHeader.length; i++){
+                            if(myColumns[i].sortable == "true"){ 
+                                var text = tblHeader[i].innerHTML; 
+                                tblHeader[i].innerHTML = '<a href="#" onclick="javascript:KNOWWE.core.util.tablesorter.sort(' 
+                                    + i + ",'" + tableID + "'" + ');">' + text + '</a>';
+                            }
+                        }                        
+                    }
+                }
+            }
+            new _KA( options ).send();
+        },
+        /**
+         * Function: replace
+         * Replace action. Replaces the given string in all the selceted articles.
+         */
+        replace : function(){
+            var codeReplacements = '';
+            var inputs = _KS('input');
+
+            for(var i = 0; i < inputs.length; i++) {
+                var inputID = inputs[i].id;
+                if(inputID.substring(0,11) == 'replaceBox_') {
+                    if(inputs[i].checked) {
+                        var code = inputID.substring(11);
+                        codeReplacements += code + "__";
+                    }
                 }
             } 
-        });
-    }
-}
-/*
- * Shows a panel in certain plugin with additional options.
- */
-function showExtendedPanel(event){
-    var evt = event || window.event;
-    var el = evt.target || evt.srcElement;
-    
-    var style = el.nextSibling.style;
-    el.removeAttribute('class');           
- 
-    if(style['display'] == 'inline'){
-        style['display'] = 'none';
-        el.setAttribute('class', 'pointer extend-panel-down');
-    }else{
-        style['display'] = 'inline';
-        el.setAttribute('class', 'pointer extend-panel-up');
-    }
-}
-
-function formHint(event){
-    if(!$('knoffice-panel')) return;
-    
-    var els = $('knoffice-extend-panel').getElementsByTagName("input");
-    
-    for (var i = 0; i < els.length; i++){
-      if(els[i].nextSibling.tagName.toLowerCase() == 'span'){
-        els[i].addEvent('focus', function (event) {
-           var evt = event || window.event;
-           var el = evt.target || evt.srcElement;
-           el.nextSibling.style.display = "inline";});
-        els[i].addEvent('blur', function (event) {
-           var evt = event || window.event;
-           var el = evt.target || evt.srcElement;
-           el.nextSibling.style.display = "none";});
-      }
-    }
-}
-/*
- * Returns the value of a URL parameter. Which paramater is specified through
- * name.
- */
-function gup( name ){
-    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-    var regexS = "[\\?&]" + name + "=([^&#]*)";
-    var regex = new RegExp( regexS );
-    var results = regex.exec( window.location.href );
-    if( results === null )
-        return "";
-    else
-        return results[1];
-}
-/*
- * Checks if the current page allows certain onload events.
- * If the page list contains the current page, the onload event is triggered,
- * otherwise none. Prevents errors due incorrect context for onload events.
- */
-function loadCheck( pages ){
-      var path = window.location.pathname.split('/');
-      var page = path[path.length - 1];
-      
-      for(var i = 0; i < pages.length; i++){
-          if(page === pages[i])
-              return true;
-      }
-      return false;
-}
-/*
- * Returns an URL that is createt out of the given parameters. 
- */
-function getURL( params ) {
-    var baseURL = 'KnowWE.jsp';
-    var tokens = []
-
-    if( !params && typeof params != 'object') return baseURL;
-    
-    for( keys in params ){
-        tokens.push(keys + "=" + params[keys]);
-    };  
-    return baseURL + '?' + tokens.join('&');
-}
-
-/* ############################################################### */
-/* KnowWEAjax - common ajax ability.                               */
-/* ############################################################### */
-//var http;
-//var KnowWEAjax = {
-//    /* stores current request */
-//    send : function(url, fn, post){
-//        http = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');       
-//        if(!http) return;
-//        
-//        var method = (post) ? 'POST' : 'GET';
-//        
-//        http.open(method, url, true);
-//        http.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-//        http.setRequestHeader('Content-length', url.length);
-//        http.setRequestHeader('Connection', 'close');
-//        http.onreadystatechange = fn;
-//        http.send(method);
-//    },
-//    /* inserts the repsonse. mainly text or html result that changed*/
-//    insert : function(){
-//        if ((http.readyState == 4) && (http.status == 200)) { 
-//            var response = http.responseText;
-//            if(!KnowWEAjax.id) return;
-//            if(KnowWEAjax.id.contains(';-;')){
-//                var token = KnowWEAjax.id.split(';-;');
-//                for(var i = 0; i < token.length; i++){
-//                    if(!$(token[i])) return;
-//                    $(token[i]).innerHTML = response;
-//                }  
-//            } else if( response.contains( KnowWEAjax.id) ){
-//              replace(KnowWEAjax.id, response)
-//            } else {
-//                $(KnowWEAjax.id).innerHTML = response;
-//            }
-//        }
-//    },
-//    /* inserts an extendend response. user can specify additional information to execute tasks.*/
-//    insertExtended : function(){   
-//        if ((http.readyState == 4) && (http.status == 200)) {  
-//            if(KnowWEAjax.ext && KnowWEAjax.ext.id)
-//            {          
-//              if(!KnowWEAjax.ext.div || KnowWEAjax.ext.div === ''){
-//                  $(KnowWEAjax.ext.id).innerHTML = http.responseText;
-//              } else {
-//                  var div = document.createElement('div');
-//                  div.setAttribute('id', KnowWEAjax.ext.div);
-//                  div.innerHTML = http.responseText;
-//                  $(KnowWEAjax.ext.id).insertBefore(div, $(KnowWEAjax.ext.id).getChildren()[0]);; 
-//              }
-//            }
-//            if(!KnowWEAjax.ext.fn) return;
-//            console.log("handle_response:"+KnowWEAjax.ext.fn);
-//            KnowWEAjax.ext.fn.call();      
-//        
-//        /*
-//        
-//            if((KnowWEAjax.ext || KnowWEAjax.ext.id) && KnowWEAjax.ext.id != '')
-//            {          
-//              if(!KnowWEAjax.ext.div || KnowWEAjax.ext.div === ''){
-//                  var response = http.responseText;
-//                  if( response.contains( KnowWEAjax.ext.id) ){
-//                      replace(KnowWEAjax.ext.id, response)
-//                      console.log("replace: " + response );
-//                  } else {
-//                      $(KnowWEAjax.ext.id).innerHTML = response;
-//                  }
-//              } else {
-//                  var div = document.createElement('div');
-//                  div.setAttribute('id', KnowWEAjax.ext.div);
-//                  div.innerHTML = http.responseText;
-//                  $(KnowWEAjax.ext.id).insertBefore(div, $(KnowWEAjax.ext.id).getChildren()[0]);; 
-//              }
-//            }
-//            if(!KnowWEAjax.ext.fn || KnowWEAjax.ext.fn == '') return;
-//            eval(KnowWEAjax.ext.fn);  
-//            console.log( "fn: " + KnowWEAjax.ext.fn);    */
-//        }
-//    }
-//};
-
-function replace(ids, text)
-{
-    for (var i in ids ) {
-        if( typeof ids[i] != 'string' ) return;
-        div = new Element('div', {
-            'styles': {
-                'display': 'hidden' 
-            },
-            'id' : 'KnowWE-temp'
-        });
-        div.injectBefore($( ids[i] ));
-        $( ids[i] ).remove();
-        div.innerHTML = text;
-        $( ids[i] ).injectAfter( $('KnowWE-temp') );
-        $('KnowWE-temp').remove();
-    }
-}
-
-/*
- * Some string helper functions  
- */
-String.prototype.getBytes = function() {
-    return encodeURIComponent(this).replace(/%../g, 'x').length;
-};
-String.prototype.startsWith = function( str ) {
-	return (this.match("^"+str)==str);
-};
-String.prototype.endsWith = function(str){
-  return (this.match(str+"$")==str);
-};
-
-/*
- * Used to ReRender the updated CoveringLists.
- * Called by SolutionState.execute()
- */
-var ReRenderKnowWESectionContent  = {
-    
-    updateNode : function(node, topic) {
-        var params = {
-            action : 'ReRenderContentPartAction',
-            KWikiWeb : 'default_web',
-            KdomNodeId : node,
-            ArticleTopic : topic
+         
+            var params = {
+                TargetNamespace : _KS('#renameInputField').value,
+                action : 'GlobalReplaceAction',
+                KWikitext : codeReplacements,
+                KWikiFocusedTerm : _KS('#replaceInputField').value
+            }
+             
+            var options = {
+                url : KNOWWE.core.util.getURL( params ),
+                method : 'post',
+                response : {
+                    action : 'insert',
+                    ids : [ 'rename-result' ],
+                    fn : function(){ setTimeout ( 'document.location.reload()', 5000 ); }
+                }
+            }
+            new _KA( options ).send();
+        },
+        /**
+         * Function: getAdditionalMatchText
+         * Get additional context in which the string occurs. This text is shown
+         * in the match column of the renaming tool.
+         * 
+         * Parameters:
+         *     atmUrl - A string containing information which context to expand.
+         */ 
+        getAdditionalMatchText : function( event ){   
+            var el = KNOWWE.helper.event.target( event );
+            var rel = el.getAttribute('rel');
+            if(!rel) return;             
+            rel = eval("(" + rel + ")" );
+            
+            var atmUrl = rel.article + ":" + rel.section + ":" + rel.index + ":" 
+                + rel.words + ":" + rel.direction;
+            
+            var params = {
+                action : 'RenamingRenderer',
+                ATMUrl : atmUrl,
+                KWikiFocusedTerm : _KS('#replaceInputField').value,
+                TargetNamespace : _KS('#renameInputField').value,
+                ContextAfter : _KS('#renameAfterInputContext').value,
+                ContextPrevious : _KS('#renamePreviousInputContext').value,
+                CaseSensitive : _KS('#search-sensitive').value
+            }
+            var options = {
+                url : KNOWWE.core.util.getURL( params ),
+                method : 'post',
+                response : {
+                    action : 'none',
+                    fn : function(){ 
+                        var id = rel.direction + rel.index;
+                        _KS('#'+id).setHTML( request.getResponse() );
+                        request = null;
+                        _KE.add('click', _KS('#'+id), KNOWWE.core.renaming.getAdditionalMatchText);
+                    }
+                }
+            }
+            var request = new _KA( options );
+            request.send();
+        },
+        /**
+         * Function: getColumns
+         * Returns the columns used in the renaming result table.
+         * 
+         * Returns:
+         *     The columns used in the renaming result table.
+         */
+        getColumns : function(){
+            return myColumns;
         }
-        var url = getURL( params );
-        ReRenderKnowWESectionContent.execute(url, node);
-    },
-    
-    update : function() {
-        
-   		// get the current topic
-		var topic = gup('page');
-		
-		// get all CoveringLists
-		var classlist = getElementsByClass(null, 'ReRenderSectionMarker', null);             
-        
-        // Rerender the CoveringLists
-        if (classlist != null) {
-            for (var i = 0; i < classlist.length; i++) {
-                var kdomnodeid = classlist[i].id;
+    }
+}();
+
+/**
+ * Namespace: KNOWWE.core.typebrowser
+ * The KNOWWE typebrowser namespace.
+ */
+KNOWWE.core.typebrowser = function(){
+    return {
+        /**
+         * Function: init
+         * The typebrowser init function. Enables the typebrowser and type 
+         * activator buttons.
+         */
+        init : function(){
+            var bttn = _KS('#KnowWEObjectTypeBrowser input[type=button]')[0];
+            if( bttn )_KE.add('click', bttn, KNOWWE.core.typebrowser.searchTypes );
+            
+            bttn = _KS('#KnowWEObjectTypeActivator input[type=button]')[0];   
+            if( bttn ) _KE.add('click', bttn, KNOWWE.core.typebrowser.switchTypeActivation );
+        },
+        /**
+         * Function: getAdditionalMatchTextTypeBrowser
+         * 
+         * Gets additional context around the typebrowser finding. Used to view the
+         * context in which the type occurs.
+         * 
+         * Parameters:
+         *     atmUrl - An special URL. Used o transport the position of the finding and how many context elements should be displayed.
+         *     query - The query string  for the TypeBrowser action
+         */
+        getAdditionalMatchTextTypeBrowser : function( event ){
+            var el = KNOWWE.helper.event.target( event );
+            var rel = el.getAttribute('rel');
+            if(!rel) return;             
+            rel = eval("(" + rel + ")" );
+
+            var id = rel.direction + rel.index;
+            var atmUrl = rel.article + ":" + rel.section + ":" + rel.index + ":" + rel.words + ":"
+                + rel.direction + ":" + rel.wordCount;
+            
+            var params = {
+                TypeBrowserQuery : rel.queryLength, //queryLength
+                action : 'KnowWEObjectTypeBrowserRenderer',
+                ATMUrl :  atmUrl
+            };
+            var options = {
+                url : KNOWWE.core.util.getURL( params ),
+                response : {
+                    action : 'insert',
+                    ids : [ id ]
+                }
+            }
+            var request = new _KA( options );
+            request.send();
+        },
+        /**
+         * Function: switchTypeActivation
+         * Switches the status of the selected type. 
+         * It either enables or disables one type.
+         */
+        switchTypeActivation : function() {
+            if(!_KS('#KnowWEObjectTypeActivator')) return;           
+            var params = {
+                renderer : 'KnowWEObjectTypeActivationRenderer',
+                KnowWeObjectType : (function () {
+                    var ob = _KS('#KnowWEObjectTypeActivator select')[0];
+                    if(ob.selectedIndex){
+                        return ob[ob.selectedIndex].value;
+                    }
+                    return "";
+                })()
+            }
+                
+            var options = {
+                url : KNOWWE.core.util.getURL ( params ),
+                response : {
+                    action : 'update',
+                    fn : function() {
+                            var ob = _KS('#KnowWEObjectTypeActivator select')[0];
+                            ob = ob[ob.selectedIndex];
+                            if ( ob.style.color == "red") {
+                                ob.style.color = "green";
+                            } else {
+                            	ob.style.color = "red";
+                            }
+                         }
+                }
+            }
+            new _KA( options ).send();
+        },
+        /**
+         * Function: searchTypes
+         * Searches for selected type and returns the result that can be viewed
+         * in the Wiki page.
+         */
+        searchTypes : function() {
+            if(!document.typebrowser) return;
+            var params = {
+                renderer : 'KnowWEObjectTypeBrowserRenderer',
+                TypeBrowserParams : (function () {
+                	var box = document.typebrowser.Auswahl;
+                	
+                	if(box.selectedIndex){
+                		return box.options[box.selectedIndex].value;
+                	}
+                	return "";
+                })()
+            }
+            var options = {
+                url : KNOWWE.core.util.getURL ( params ),
+                response : {
+                    action : 'insert',
+                    ids : ['TypeSearchResult'],
+                    fn : function(){
+                        _KS('.show-additional-text').each(function(){
+                             _KE.add('click', this, KNOWWE.core.typebrowser.getAdditionalMatchTextTypeBrowser);
+                        });
+                    }
+                }
+            }
+            new _KA( options ).send();
+        }        
+    }
+}();
+/**
+ * Namespace: KNOWWE.core.codecompletition
+ * The KNOWWE code completion tool namespace.
+ * Do not use! Will be replaced soon :)
+ */
+KNOWWE.core.codecompletion = function(){
+    return {
+        /**
+         * Function: init
+         * Initializes the code completion functionality.
+         * Enables the keydown handler in the editor and insert the auto complete button.
+         */
+        init : function(){            
+            var span = new _KN('span', { 'id' : 'autoCompleteMenu' });
+            span.inject(_KS('#submitbuttons'));
+
+            _KE.add('keydown', _KS('#editorarea'), KNOWWE.core.codecompletion.handleKeyEvent );
+        },
+        /**
+         * Function: handleKeyEvent
+         * Triggers the codecomplition action after the user pressed STRG + Space.
+         * 
+         * Parameters:
+         *     event - The triggered event
+         */
+        handleKeyEvent : function( event ){
+            _KS('#autoCompleteMenu').style['display'] = 'inline';
+            if (event.ctrlKey && event.keyCode == 32) {        
+                var textarea = _KS('#editorarea');
+                var endPos = KNOWWE.core.util.form.getCursorPositionInTextArea( textarea );         
+                
+                var tmp = textarea.value.substring(0, endPos);
+                var startPos = 0; var i = endPos;
+                while( startPos == 0 ) {
+                    if(tmp.charAt(i) == '\n' || tmp.charAt(i) == '\r' ||tmp.charAt(i) == ' ') {
+                         startPos = i;
+                    }
+                    i--;
+                }
+                var encodedData = tmp.substring(startPos + 1);
+                
                 var params = {
-                    action : 'ReRenderContentPartAction',
+                    renderer : 'KWiki_codeCompletion',
                     KWikiWeb : 'default_web',
-                    KdomNodeId : kdomnodeid,
-                    ArticleTopic : topic
-                }           
-                var url = getURL( params );
-                ReRenderKnowWESectionContent.execute(url, kdomnodeid);
-            }
-        }
-    },
-    
-    execute : function( url, id ) {
-        var options = {
-            url : url,
-            action : 'replace',
-            response : {
-                ids : [ id ],
-            }
-        }
+                    CompletionText : encodedData
+                };
 
-        new KnowWEAjax( options ).send();
-    },
-    
-    updateForXCLRelation : function (node, topic, depth, breadth) {
-    	// get the current topic
-		var topic = gup('page');
-		
-		// get all CoveringLists
-		var classlist = getElementsByClass(null, 'ReRenderSectionMarker', null);             
-        
-        // Rerender the CoveringLists
-        if (classlist != null) {
-            for (var i = 0; i < classlist.length; i++) {
-                var kdomnodeid = classlist[i].id;
-                var params = {
-                    action : 'ReRenderContentPartAction',
-                    KWikiWeb : 'default_web',
-                    KdomNodeId : kdomnodeid,
-                    ArticleTopic : topic
-                }           
-                var url = getURL( params );
-                ReRenderKnowWESectionContent.
-                		executeForXCLRelation
-                			(url, kdomnodeid, node, topic, depth, breadth);
-            }
-        }   	
-    },
-    
-    executeForXCLRelation : function(url, id, node, topic, depth, breadth) {
-    	var options = {
-            url : url,
-            action : 'replace',
-            response : {
-                ids : [ id ]
-            }
-        }
-        new KnowWEAjax( options ).send();
-		setTimeout(function () {ReRenderKnowWESectionContent.sleepForXCLRelation(node, topic, depth, breadth)}, 500);
-    },
-    
-    sleepForXCLRelation : function(node, topic, depth, breadth) {
-
-    	if (document.getElementById('uniqueMarker') != null) {
-    		setTimeout(function () {ReRenderKnowWESectionContent.sleepForXCLRelation(node, topic, depth, breadth)}, 500);
-    	} else {
-    		
-    		if (document.getElementById(node) != null) {
-    			// Restore the Highlighting that was before
-       			var restore = document.getElementById('uniqueMarker');
-        		if (restore != null) {
-            		ReRenderKnowWESectionContent.updateNode(restore.className, topic);
-        		}
-        		highlightNode(node, topic, depth, breadth);
-    			} else {
-					setTimeout(function () {ReRenderKnowWESectionContent.sleepForXCLRelation(node, topic, depth, breadth)}, 100);
-    			}
-    	}
-
-    }
-}
-
-function log( msg ){
-    if(console.log) console.log(msg);
-    else alert(msg);
-}
-
-function echo( object ){
-    if( typeof object == 'object'){
-        
-        for (var i in object ){
-            if( typeof object[i] == 'object') {
-                console.log(i);
-                echo (object[i]);
-            }
-            else console.log( i + ":" + object[i]);
+                var options = {
+                    url : KNOWWE.core.util.getURL( params ),
+                    response : {
+                        ids : [ 'autoCompleteMenu' ],
+                        fn : function(){
+                            var el = _KS('#codeCompletion');
+                            _KE.add('keydown', el, function(event){
+                                var event = event|| window.event;
+                                if( event.code == 13){
+                                    if( el.selectedIndex == 1) {
+                                        el.fireEvent('change');
+                                    }
+                                }
+                            });
+                            _KE.add('click', el.options[1], function(){
+                                  el.fireEvent('change');
+                            });                
+                            _KE.add('change', el, function(){
+                                    index = el.selectedIndex;
+                                    value = el.options[index].value;
+                                    KNOWWE.core.util.form.insertAtCursor(_KS('#editorarea'), value);
+                            });
+                            el.focus();
+                        } 
+                    }
+                }
+                new _KA( options ).send();
+            }   
         }
     }
-}
+}();
 
-/*
- * Enriches an object by replacing its key:value pairs with those from an other
- * object. Also non existing key:value pairs from an object are added. Key:value
- * pairs that occur not in the oNew object are not changed in the oDefault object.
+
+
+/**
+ * Namespace: KNOWWE.plugin
+ * The KNOWWE plugin namespace.
+ * Initialized empty to ensure existence.
  */
-function enrich (oNew, oDefault) {
-    if( typeof(oNew) != 'undefined' && oNew != null) {
-        for( var i in oNew ) {
-            if( oNew[i] != null && typeof oNew[i] != 'object' ) oDefault[i] = oNew[i];
-            if(typeof oNew[i] == 'object') enrich( oNew[i], oDefault[i]);
-        }
+KNOWWE.plugin = function(){
+    return {
     }
-    return oDefault;
-}
+}();
 
-
+/**
+ * Aliases for some often used namespaced function to reduce typing.
+ */
+var _KE = KNOWWE.helper.event;    /* Alias KNOWWE event. */
+var _KA = KNOWWE.helper.ajax;     /* Alias KNOWWE ajax. */
+var _KS = KNOWWE.helper.selector; /* Alias KNOWWE ElementSelector */
+var _KL = KNOWWE.helper.logger;   /* Alias KNOWWE logger */
+var _KN = KNOWWE.helper.element   /* Alias KNOWWE.helper.element */
+var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 
 
 /* ############################################################### */
 /* ------------- Onload Events  ---------------------------------- */
 /* ############################################################### */
 (function init(){
-    if( loadCheck( ['Wiki.jsp'] )) {
+    window.addEvent( 'domready', _KL.setup );
+
+    if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
         window.addEvent( 'domready', function(){
-            addPanelToggle();
-            formHint();
-            KnowWETable.init();
-            SolutionState.update();
-            
-            if($('rename-show-extend')){
-            $('rename-show-extend').addEvent( 'click', showExtendedPanel);
+            /* loop through all init function and do some stuff */
+            var ns = [KNOWWE.core, KNOWWE.core.renaming, 
+                KNOWWE.core.tablesorter, KNOWWE.core.typebrowser];
+            for ( var i = 0; i < ns.length; i++ ){
+                if( typeof ns[i] === undefined ) continue;
+                
+               if( ns[i] ){
+                    if(ns[i].init){
+                        ns[i].init();
+                    }
+                }
             }
-            if($('knoffice-show-extend')){
-                $('knoffice-show-extend').addEvent( 'click', showExtendedPanel);
+			if(_KS('#testsuite-show-extend')){
+                _KE.add('click', _KS('#testsuite-show-extend'), KNOWWE.core.util.form.showExtendedPanel);
             }
-			if($('testsuite-show-extend')){
-                $('testsuite-show-extend').addEvent( 'click', showExtendedPanel);
-            }
-            if($('testsuite2-show-extend')){
-                $('testsuite2-show-extend').addEvent( 'click', showExtendedPanel);
-            }
+            if(_KS('#testsuite2-show-extend')){
+                _KE.add('click', _KS('#testsuite2-show-extend'), KNOWWE.core.util.form.showExtendedPanel);
+            }            
         });
     };
-    //CodeCompletion
-    if(loadCheck( ['Edit.jsp'] ))
-    {
-        window.addEvent('domready', function(){
-            if($('autoCompleteMenu')) return false;
-            
-            var span = new Element('span', { 'id' : 'autoCompleteMenu' });
-            span.inject($('submitbuttons'));
-        });
-        window.addEvent('domready', function(){
-            $('editorarea').addEvent( 'keydown', handleKeyDown );
-        });
-    }
 }());
-

@@ -71,7 +71,7 @@ public class ParseWebOfflineRenderer implements KnowWEAction {
 		reports.delete(0, reports.length());
 		reports.append(converted);
 		
-		reports.insert(0, "<a href=\"#\" onclick=\"clearInnerHTML('parseWeb');\">" + rb.getString("KnowWE.buttons.close") + "</a><br />");
+		reports.insert(0, "<a href=\"#\" id='js-parseWeb' class='clear-element'>" + rb.getString("KnowWE.buttons.close") + "</a><br />");
 		
 		return reports.toString();
 

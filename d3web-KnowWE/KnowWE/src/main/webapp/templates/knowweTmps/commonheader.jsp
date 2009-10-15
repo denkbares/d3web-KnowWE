@@ -42,14 +42,6 @@
 <script type="text/javascript" src="<wiki:Link format='url' jsp='scripts/prettify.js'/>"></script>
 <script type="text/javascript" src="<wiki:Link format='url' jsp='scripts/jspwiki-common.js'/>"></script>
 <script type="text/javascript" src="<wiki:Link format='url' jsp='scripts/jspwiki-commonstyles.js'/>"></script>
-<script type="text/javascript" src="KnowWEExtension/scripts/KnowWE.js"></script>
-<script type="text/javascript" src="KnowWEExtension/scripts/HTMLdialog.js"></script>
-<script type="text/javascript" src="KnowWEExtension/scripts/Semanno.js"></script>
-<script type="text/javascript" src="KnowWEExtension/scripts/lib/overlibmws.js" ></script>
-<script type="text/javascript" src="KnowWEExtension/scripts/lib/ajaxcontentmws.js"></script>
-<script type="text/javascript" src="KnowWEExtension/scripts/TableSort.js"></script>
-<script type="text/javascript" src="KnowWEExtension/scripts/RenamingTool.js"></script>
-<script type="text/javascript" src="KnowWEExtension/scripts/silveripe.0.2.js"></script>
 
 
 <wiki:IncludeResources type="script"/>

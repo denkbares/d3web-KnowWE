@@ -212,7 +212,6 @@ public class DPSSolutionsRenderer implements KnowWEAction {
 		sb.append("<ul>");
 		for (Term term : list) {
 			sb.append("<li>");
-			sb.append("<div>");
 			String exactPrefix = KnowWEUtils.replaceUmlaut(((String) term
 					.getInfo(TermInfoType.TERM_NAME)))
 					+ "buttomLink";
@@ -236,15 +235,15 @@ public class DPSSolutionsRenderer implements KnowWEAction {
 								+ "&KWikiUser=" + user;
 
 			
-				sb.append("<a href=\"#\" onclick=\"kwiki_window('" + url + "')\" >"
+				sb.append("<a href=\"#\" class=\"sstate-show-explanation\"" 
+						+ " rel=\"{term : '"+info.getObjectID()+"', session : '"+string+"', web : '"+web+"', user: '"+user+"'}\" >"
 						+ getInferenceInfo(b, term, string) + "</a>");
 			}
 
 			sb.append(getAssumptionsLink(user, web, term, assumptionMap));
 
 			StringBuffer inner = new StringBuffer();
-			inner.append(KnowWERenderUtils.getTopicLink(web, term, iconURL,
-					"dps", true, true));
+			inner.append(KnowWERenderUtils.getTopicLink(web, term, iconURL, "dps", true, true));
 			// inner.append(KnowWERenderUtils.getKopicLinks(web, term, iconURL,
 			// "dps", true, true));
 			// inner.append(KnowWERenderUtils.getExplanationLinks(user, web,
@@ -256,10 +255,7 @@ public class DPSSolutionsRenderer implements KnowWEAction {
 			// inner.append(KnowWERenderUtils.getDialogLinks(user, web, term,
 			// iconURL, "dps", true, true));
 
-			sb
-					.append(KnowWERenderUtils.getButtomLink(term, exactPrefix,
-							inner));
-			sb.append("</div>");
+			//sb.append(KnowWERenderUtils.getButtomLink(term, exactPrefix, inner)); /* not used???*/
 			sb.append("</li>");
 		}
 		sb.append("</ul>");
@@ -323,8 +319,8 @@ public class DPSSolutionsRenderer implements KnowWEAction {
 						double c2 = (Double) info.getValues().get(1);
 						c1 = (double) ((int) (c1 * 100)) / 100;
 						c2 = (double) ((int) (c2 * 100)) / 100;
-						sb.append("<font title='" + getScoreToolTip() + "'> ["
-								+ c1 + ";" + c2 + "] </font>");
+						sb.append("<span title='" + getScoreToolTip() + "'> ["
+								+ c1 + ";" + c2 + "] </span>");
 					}
 					if (info.getInformationType().equals(
 							InformationType.XCLInferenceInformation)
@@ -334,8 +330,8 @@ public class DPSSolutionsRenderer implements KnowWEAction {
 						c1 = (double) ((int) (c1 * 100)) / 100;
 						c2 = (double) ((int) (c2 * 100)) / 100;
 
-						sb.append("<font title='" + getScoreToolTip()
-								+ "'> XCL:[" + c1 + ";" + c2 + "] </font>");
+						sb.append("<span title='" + getScoreToolTip()
+								+ "'> XCL:[" + c1 + ";" + c2 + "] </span>");
 					}
 				}
 			}
@@ -362,51 +358,42 @@ public class DPSSolutionsRenderer implements KnowWEAction {
 		// KnowWEAttributes.USER, String.class, true);
 		// String web = (String) BasicUtils.getModelAttribute(model,
 		// KnowWEAttributes.WEB, String.class, true);
-		String link = "javascript:void(0)";
+		String link = "";
 		try {
-			link = "javascript:kwiki_window('KnowWE.jsp?renderer=KWiki_solutionLog&KWikiUser="
-					+ user
-					+ "&KWikiWeb="
-					+ web
-					+ "&KWikiTerm="
-					+ URLEncoder.encode((String) term
-							.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
-					+ "')";
+			
+			link = " rel=\"{term : '"+URLEncoder.encode((String) term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
+					+ "', web : '"+web+"', user: '"+user+"'}\"";
+			
+//			link = "javascript:kwiki_window('KnowWE.jsp?renderer=KWiki_solutionLog&KWikiUser="
+//					+ user
+//					+ "&KWikiWeb="
+//					+ web
+//					+ "&KWikiTerm="
+//					+ URLEncoder.encode((String) term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
+//					+ "')";
 		} catch (UnsupportedEncodingException e) {
 
 		}
 
 		if (shouldDisplay(etas, suggs, excs)) {
-			sb.append("<a href=\"javascript:doNothing()\" onclick=\"" + link
-					+ "\" >");
-			sb.append("<span>");
+			sb.append("<div class=\"show-solutions-log pointer\" " + link + ">");
 			sb.append("(");
-			sb.append("</span>");
-			sb.append("<span title='"
-					+ rb.getString("KnowWE.solution.established")
+			sb.append("<span title='" + rb.getString("KnowWE.solution.established")
 					+ "' style='color:#007700'>");
 			sb.append(etas);
 			sb.append("</span>");
-			sb.append("<span>");
 			sb.append("|");
-			sb.append("</span>");
-			sb.append("<span title='"
-					+ rb.getString("KnowWE.solution.suggested")
+			sb.append("<span title='" + rb.getString("KnowWE.solution.suggested")
 					+ "' style='color:#FF6600'>");
 			sb.append(suggs);
 			sb.append("</span>");
-			sb.append("<span>");
 			sb.append("|");
-			sb.append("</span>");
-			sb.append("<span title='"
-					+ rb.getString("KnowWE.solution.excluded")
+			sb.append("<span title='" + rb.getString("KnowWE.solution.excluded")
 					+ "' style='color:#CC0000'>");
 			sb.append(excs);
 			sb.append("</span>");
-			sb.append("<span>");
 			sb.append(")");
-			sb.append("</span>");
-			sb.append("</a>");
+			sb.append("</div>");
 		}
 
 		return sb;

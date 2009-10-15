@@ -82,7 +82,7 @@ public class ImportKnOfficeHandler extends AbstractTagHandler {
 		html.append("<div id='knoffice-panel' class='panel'>");
 		html.append("<h3>" + rb.getString("KnowWE.knoffice.name") + "</h3>");	
 		
-		html.append("<form onsubmit='sendForm(this);' enctype=\"multipart/form-data\"  method=\"POST\" action=\"KnowWEUpload\">");
+		html.append("<form enctype=\"multipart/form-data\"  method=\"POST\" action=\"KnowWEUpload\">");
 		//normal fields
 		for (int i = 0; i < fields.length; i++) {
 				html.append("<label for='" + 	fields[i][1] + "' class='" + fields[i][4] + "'>" + rb.getString(fields[i][0].toString()) + "</label>");
@@ -91,9 +91,9 @@ public class ImportKnOfficeHandler extends AbstractTagHandler {
 				html.append("\n <br />"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 		}
 		
-		html.append("<p id='knoffice-show-extend' class='pointer extend-panel-down'>" 
+		html.append("<p id='knoffice-show-extend' class='show-extend pointer extend-panel-down'>" 
 				+ rb.getString("KnowWE.renamingtool.settings") + "</p>");
-		html.append("<div id='knoffice-extend-panel' class='hidden'>");
+		html.append("<div id='knoffice-panel-extend' class='hidden'>");
 		//extended fields
 		for (int i = 0; i < extFields.length; i++) {			
 			html.append("<label for='" + extFields[i][1] + "' class='" + extFields[i][4] + "'>" + rb.getString(extFields[i][0].toString()) + "</label>");

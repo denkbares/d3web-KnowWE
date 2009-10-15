@@ -48,7 +48,7 @@ public class ReInitDPSEnvironmentRenderer implements KnowWEAction{
 		StringBuffer html = new StringBuffer();
 		
 		html.append("<p class=\"box info\">");
-		html.append("<a href=\"#\" onclick=\"clearInnerHTML('reInit');\">" + rb.getString("KnowWE.buttons.close") + "</a><br />");
+		html.append("<a href=\"#\" id='js-reInit' class='clear-element'>" + rb.getString("KnowWE.buttons.close") + "</a><br />");
 		html.append(rb.getString("dpsenv.status") + "<br />");
 		html.append(rb.getString("dpsenv.duration") + (((float)diff)/1000) + rb.getString("dpsenv.seconds") + " <br />");
 		html.append("</p>");

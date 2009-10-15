@@ -93,10 +93,9 @@ public class KnowWEObjectTypeBrowserHandler extends AbstractTagHandler{
 		
 		// Create a Search Button to start the Search for every Type
 		html.append("<p><input type='button'"
-				    + " value='" + KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.KnowWeObjectTypeBrowser.searchbutton") + "' name='' class='button' title='' onclick='searchTypes(\"" + types.size() +"\");'/></p>");
-		
-		html.append("<div id=\"TypeSearchResult\""
-					+ "</div>");
+			    + " value='" + KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.KnowWeObjectTypeBrowser.searchbutton") + "' name='' class='button' title=''/></p>");
+	
+		html.append("<div id=\"TypeSearchResult\"> </div>");
 		
 		html.append("</fieldset> ");
 		html.append("</form>");

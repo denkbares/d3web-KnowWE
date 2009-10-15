@@ -88,8 +88,8 @@ public class KnowWETypeActivationHandler extends AbstractTagHandler{
 		
 		// button for changing
 		html.append("<p><input type='button' class='button' "
-					+ "value='" + KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.KnowWEObjectTypeActivator.changebutton") + "'"
-					+ "onclick='switchTypeActivation(\"" + types.size() + "\");'/></p>");
+				+ "value='" + KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.KnowWEObjectTypeActivator.changebutton") + "'/></p>");
+
 		
 		html.append("</fieldset> ");
 		html.append("</form>");

@@ -43,13 +43,13 @@ public class SolutionStateViewHandler extends AbstractTagHandler {
 		
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 		
-		return "<div id='sstate-panel' class='panel'><h3>" + rb.getString("KnowWE.Solutions.name") + "</h3>" 
-		    + "<p>"
-		    + "<a href='javascript:SolutionState.update();' class='small'>" + rb.getString("KnowWE.Solutions.update") + "</a> - "
-		    + "<a href='javascript:SolutionState.clear();' class='small'>" + rb.getString("KnowWE.Solutions.clear") + "</a> - "
-		    + "<a href='javascript:SolutionState.findings();' class='small'>" + rb.getString("KnowWE.Solutions.findings") + "</a>"
-		    + "</p>"
-		    + "<div id='sstate-result'> - </div>"
-		    + "</div>";
+		return "<div id='sstate-panel' class='panel'><h3>" + rb.getString("KnowWE.Solutions.name") + "</h3><div>" 
+			    + "<p>"
+			    + "<span id='sstate-update' class='pointer small'>" + rb.getString("KnowWE.Solutions.update") + "</span> - "
+			    + "<span id='sstate-clear' class='pointer small'>" + rb.getString("KnowWE.Solutions.clear") + "</span> - "
+			    + "<span id='sstate-findings' class='pointer small'>" + rb.getString("KnowWE.Solutions.findings") + "</span>"		    
+			    + "</p>"
+			    + "<div id='sstate-result'></div>"
+			    + "</div></div>";
 	}
 }

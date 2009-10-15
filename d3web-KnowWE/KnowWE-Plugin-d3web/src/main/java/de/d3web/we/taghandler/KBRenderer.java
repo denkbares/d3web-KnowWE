@@ -66,6 +66,7 @@ public class KBRenderer extends AbstractTagHandler {
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 		
 		StringBuilder text = new StringBuilder("<div id=\"knowledge-panel\" class=\"panel\"><h3>" + rb.getString("KnowWE.KBRenderer.header") + "</h3>");
+		text.append("<div>");
 		text.append("<p>");
 		if (service != null) {
 //			text.append("<h4>Knowledge of article:</h4>";
@@ -136,8 +137,10 @@ public class KBRenderer extends AbstractTagHandler {
 					String kdomid = idMap.get(rule.getId());
 		
 					if(kdomid != null) {
-						String button = ("<img src=KnowWEExtension/images/page_white_find.png onclick='highlightRule(\""
-								+ kdomid + "\",\""+topic+"\",\"0\",\"0\" );'/></img>");
+						String button = ("<img src=KnowWEExtension/images/page_white_find.png " 
+								+ "class=\"highlight-rule\" " 
+								+ "rel=\"{kdomid: '"+kdomid+"', topic: '"+topic+"', depth: 0, breadth: 0}\""
+								+ "/></img>");
 						text.append(button);
 					}
 					
@@ -182,8 +185,10 @@ public class KBRenderer extends AbstractTagHandler {
 							}
 							
 							if(kdomid != null) {
-								String button = ("<img src=KnowWEExtension/images/page_white_find.png onclick='highlightXCLRelation(\""
-										+ kdomid + "\",\""+topic+"\",\"0\",\"0\" );'/></img>");
+								String button = ("<img src=\"KnowWEExtension/images/page_white_find.png\" " 
+										+ "class=\"highlight-xcl-relation\" " 
+										+ "rel=\"{kdomid: '"+kdomid+"', topic: '"+topic+"', depth: 0, breadth: 0}\"" 
+										+ "/></img>");
 								text.append(button);
 							}
 							
@@ -216,6 +221,6 @@ public class KBRenderer extends AbstractTagHandler {
 		} else {
 			text.append("<p class=\"box error\">" + rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
-		return text.append("</p></div>").toString();
+		return text.append("</p></div></div>").toString();
 	}
 }

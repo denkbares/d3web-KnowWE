@@ -45,9 +45,9 @@ public class DefaultTextLineRenderer extends KnowWEDomRenderer {
 	}
 
 	private String generateQuickEditLink(String topic, String id, String web2, String user) {
-		String icon = " <img src=KnowWEExtension/images/pencil.png title='Set QuickEdit-Mode' onclick=setQuickEditFlag('"+id+"','"+topic+"'); ></img>";
+		String icon = " <img src=KnowWEExtension/images/pencil.png title='Set QuickEdit-Mode' class='quickedit default pointer'/>";
 
-		return KnowWEEnvironment.maskHTML("<a>" + icon + "</a>");		
+		return KnowWEEnvironment.maskHTML("<a>"+icon+"</a>");
 	}
 
 }

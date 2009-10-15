@@ -119,7 +119,7 @@ public class KnowWERenderUtils {
 			if(withTitle) sb.append(rb.getString("KnowWE.topic.defining"));
 			sb.append("</a>");
 		} else {
-			sb.append("<a href='javascript:doNothing()' onClick=\"showKopicLinks('"+exactPrefix+"', event)\">");
+			sb.append("<a href='#' onClick=\"showKopicLinks('"+exactPrefix+"', event)\">");
 			sb.append("<img border='0' style='margin-left:1px;margin-right:1px' src=\"");
 			sb.append(iconURL);
 			sb.append("table_go.png");
@@ -129,7 +129,7 @@ public class KnowWERenderUtils {
 			sb.append("\" />");
 			if(withTitle) sb.append(rb.getString("KnowWE.topic.links.defining"));
 			sb.append("</a>");
-			sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+exactPrefix+"kopicLinks' class='patternToolBar' onmouseover=\"replanToHide(this,event)\" onmouseout=\"planToHide(this,event)\" style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
+			sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+exactPrefix+"kopicLinks' class='patternToolBar' style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
 			sb.append("<table>");
 			Collections.sort(iis, iiNamespceComparator);
 			//TODO refactor
@@ -213,7 +213,7 @@ public class KnowWERenderUtils {
 			sb.append("\" />");
 			if(withTitle) sb.append(rb.getString("KnowWE.dialog.links"));
 			sb.append("</a>");
-			sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+exactPrefix+"dialogLinks' class='patternToolBar' onmouseover=\"replanToHide(this,event)\" onmouseout=\"planToHide(this,event)\" style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
+			sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+exactPrefix+"dialogLinks' class='patternToolBar' style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
 			sb.append("<table>");
 			for (IdentifiableInstance eachII : iis) {
 				sb.append("<tr>");
@@ -322,7 +322,7 @@ public class KnowWERenderUtils {
 			sb.append("\" />");
 			if(withTitle) sb.append(rb.getString("KnowWE.explanation.links"));
 			sb.append("</a>");
-			sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+exactPrefix+"explanationLinks' class='patternToolBar' onmouseover=\"replanToHide(this,event)\" onmouseout=\"planToHide(this,event)\" style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
+			sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+exactPrefix+"explanationLinks' class='patternToolBar' style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
 			sb.append("<table>");
 			for (IdentifiableInstance eachII : iis) {
 				sb.append("<tr>");
@@ -403,7 +403,7 @@ public class KnowWERenderUtils {
 			sb.append("\" />");
 			if(withTitle) sb.append(rb.getString("KnowWE.clarification.links"));
 			sb.append("</a>");
-			sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+exactPrefix+"clarificationLinks' class='patternToolBar' onmouseover=\"replanToHide(this,event)\" onmouseout=\"planToHide(this,event)\" style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
+			sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+exactPrefix+"clarificationLinks' class='patternToolBar' style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
 			sb.append("<table>");
 			for (IdentifiableInstance eachII : iis) {
 				sb.append("<tr>");
@@ -450,7 +450,7 @@ public class KnowWERenderUtils {
 	public static StringBuffer getButtomLink( Term term, String usagePrefix, StringBuffer inner) {
 		StringBuffer sb = new StringBuffer();
 		//String exactPrefix = KWikiUtils.replaceUmlaut(((String)term.getInfo(TermInfoType.TERM_NAME))) + usagePrefix;
-		sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+usagePrefix+"Popup' class='patternToolBar' onmouseover=\"replanToHide(this,event)\" onmouseout=\"planToHide(this,event)\" style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
+		sb.append("<div KWikiPopupLinksDiv=\"KWikiPopupLinksDiv\" id='"+usagePrefix+"Popup' class='patternToolBar' style='position:absolute;top:16px;right:0px;visibility:hidden;overflow:visible;'>");
 		sb.append("<table>");
 		sb.append(inner);
 		sb.append("</table>");

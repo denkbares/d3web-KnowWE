@@ -121,7 +121,7 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 		        	Set<MMInfoObject> o = storage.getMMInfo(markup);
 		        }
 				String rendered = DefaultTextType.getRenderedInput(question.getId(), question.getText(), service.getId(), user.getUsername(), "Question", question.getText(),"");
-				html.append("<img src=\"KnowWEExtension/images/arrow_right.png\" border=\"0\"/>" +" "+ rendered + answerstring+" \n<br>"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
+				html.append("<li><img src=\"KnowWEExtension/images/arrow_right.png\" border=\"0\"/>" +" "+ rendered + answerstring+"</li>"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 			}
 			html.append("</ul>");
 		} else {

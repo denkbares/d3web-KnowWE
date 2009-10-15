@@ -158,7 +158,7 @@ public class KnowledgeSummerizeRenderer implements de.d3web.we.action.KnowWEActi
 		html.append("</tbody></table>");
 		
 		//add summary
-		html.insert(0, "<div class=\"info box\"><a href=\"#\" onclick=\"clearInnerHTML('sumAll');\">" + rb.getString("KnowWE.buttons.close") + "</a><br />"
+		html.insert(0, "<div class=\"info box\"><a href=\"#\" id='sumAll' class='clear-element'>" + rb.getString("KnowWE.buttons.close") + "</a><br />"
 		    + "<a name=\"summarizer\"></a>" + rb.getString("KnowWE.KnowledgeSummerize.count.kb")+ cnt + "<br />"
 		    + rb.getString("KnowWE.KnowledgeSummerize.count.xcl") + allSCcnt + "<br />"
 		    + rb.getString("KnowWE.KnowledgeSummerize.count.rules") + allRuleCnt + "<br />");

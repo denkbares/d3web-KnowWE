@@ -59,8 +59,7 @@ public class OwlUploadHandler extends AbstractTagHandler {
 		+ rb.getString("KnowWE.OwlUploadHandler.header")
 		+ "</h3>");
 
-	html
-		.append("<form onsubmit='sendForm(this);' enctype=\"multipart/form-data\"  method=\"POST\" action=\"KnowWEUpload\">");
+	html.append("<form enctype=\"multipart/form-data\"  method=\"POST\" action=\"KnowWEUpload\">");
 	// normal fields
 	for (int i = 0; i < fields.length; i++) {
 	    html.append("<label for='" + fields[i][1] + "' class='"
@@ -72,16 +71,14 @@ public class OwlUploadHandler extends AbstractTagHandler {
 		    + fields[i][3] + "'/>");
 	    html.append("<br /> \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 	}
-	html
-		.append("<p id='knoffice-show-extend' class='pointer extend-panel-down'>"
+	html.append("<p id='knoffice-show-extend' class='show-extend pointer extend-panel-down'>"
 			+ rb.getString("KnowWE.renamingtool.settings")
 			+ "</p>");
-	html.append("<div id='knoffice-extend-panel' class='hidden'>");
+	html.append("<div id='knoffice-panel-extend' class='hidden'>");
 	SemanticCore sc = SemanticCore.getInstance();
 	File[] files = sc.getImportList();
 	if (files != null) {
-	    html
-		    .append("<form onsubmit='sendForm(this);' method=\"POST\" action=\"OWLDelete\">");
+		html.append("<form method=\"POST\" action=\"OWLDelete\">");
 	    for (File f : files) {
 		html.append("<label for='filename' >" + f.getName()
 			+ "</label>");

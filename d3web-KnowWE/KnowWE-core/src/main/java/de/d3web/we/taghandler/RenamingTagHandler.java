@@ -67,12 +67,12 @@ public class RenamingTagHandler extends AbstractTagHandler {
 		html.append("</div>");
 		
 		html.append("<div id='search-button'>");
-		html.append("<input type='button' value='" + rb.getString("KnowWE.renamingtool.preview") + "' name='submit' tabindex='3' class='button' title='' onclick='sendRenameRequest();'/>");
+		html.append("<input type='button' value='" + rb.getString("KnowWE.renamingtool.preview") + "' name='submit' tabindex='3' class='button' title=''/>");
 		html.append("</div>");
 		
 		html.append("<div style='clear:both'></div>");
 		
-		html.append("<p id='rename-show-extend' class='pointer extend-panel-down'>");
+		html.append("<p id='rename-show-extend' class='show-extend pointer extend-panel-down'>");
 		html.append(rb.getString("KnowWE.renamingtool.settings") + "</p>");
 
 		html.append("<div id='rename-extend-panel' class='hidden'>");

@@ -82,7 +82,7 @@ public class SCListEditorRenderer implements KnowWEAction {
 		int level = 0;
 		renderQASet(qaset, sb, cnt, level);
 
-		sb.append("<div onclick=\"insertSCLData();\">Einfï¿½gen</div>");
+		sb.append("<div>Einfügen</div>");
 
 		sb.append("</table>");
 		return sb;

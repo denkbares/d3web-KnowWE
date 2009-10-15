@@ -60,7 +60,7 @@ public class GenerateKBRenderer implements KnowWEAction {
 		// If Nothing was Entered for new PageName.
 		if (!parameterMap.containsKey(KnowWEAttributes.NEWKB_NAME)) {
 			return "<p class='error box'>"
-				+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.nonameError")
+			    + rb.getString("KnowWE.KnowledgeBasesGenerator.nonameError")
 				+ "</p>";
 		}
 		
@@ -68,11 +68,11 @@ public class GenerateKBRenderer implements KnowWEAction {
 		if (KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(parameterMap.get(KnowWEAttributes.NEWKB_NAME))) {
 			if (this.appendKnowledgeBase(KnowWEEnvironment.getInstance(), parameterMap.getWeb(), parameterMap.get(KnowWEAttributes.NEWKB_NAME), kbString, parameterMap.getUser())) {
 				return "<p class='info box'>"
-				+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.kbAppended")
+				+ rb.getString("KnowWE.KnowledgeBasesGenerator.kbAppended")
 				+ "</p>";
 			}
 			return "<p class='error box'>"
-				+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.alreadyexistsError")
+				+ rb.getString("KnowWE.KnowledgeBasesGenerator.alreadyexistsError")
 				+ "</p>";
 		}
 		
@@ -82,12 +82,12 @@ public class GenerateKBRenderer implements KnowWEAction {
 			KnowWEEnvironment.getInstance().processAndUpdateArticle(parameterMap.getUser(), updateContent, parameterMap.get(KnowWEAttributes.NEWKB_NAME), parameterMap.getWeb());
 			// Link zu neuer page...
 			return "<p class='info box'>"
-				+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.creationSuccess") +
+				+ rb.getString("KnowWE.KnowledgeBasesGenerator.creationSuccess") +
 				parameterMap.get(KnowWEAttributes.NEWKB_NAME) + "</p>";
 		}
 		
 		return "<p class='error box'>"
-		+ rb.getString("KnowWE.KnowledgeBasesgeGenerator.generatingError")
+		+ rb.getString("KnowWE.KnowledgeBasesGenerator.generatingError")
 		+ "</p>";
 
 	}

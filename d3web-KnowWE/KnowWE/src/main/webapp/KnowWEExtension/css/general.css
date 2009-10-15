@@ -139,7 +139,7 @@ code.box {
   background-color: #ffc;
 }
 .knowwetable select{
-  	width: 100px;
+    width: 100px;
 }
 /* ################################################## */
 /* ------------->>> Panel Different  <<<------------- */
@@ -284,10 +284,10 @@ code.box {
     border: 0px;
     width: 30px;
 }
-#rename-panel #check-select{
+#rename-panel .check-select{
     background-image: url(../images/checkmark-all.png);
 }
-#rename-panel #check-deselect{
+#rename-panel .check-deselect{
     background-image: url(../images/checkmark-none.png);  
 }
 /* ################################################### */
@@ -306,7 +306,7 @@ code.box {
 /* --------------general styling issues---------------------- */
 
 .dialogstyle{
-	border: none;
+    border: none;
 }
 
 .dialogstyle label{
@@ -324,16 +324,12 @@ code.box {
 }
 
 .dialogstyle h4{
-	padding: 5px 0 5px 10px;
-	/*background-color: #37435B;*/
-}
-
-#dialog span {
-	cursor: pointer;
+    padding: 5px 0 5px 10px;
+    /*background-color: #37435B;*/
 }
 
 /*.dialogstyle h4 a{
-	color: #fff;
+    color: #fff;
 }*/
 
 /* ########################################################## */
@@ -362,28 +358,28 @@ code.box {
 /* ######################################################### */
 /* --------------dialog table styling ---------------------- */
 
-.dialogstyle .trEven{	/* Hintergrund Zeilen Gerade */
-	background-color: #F7F7F7;
-	color: #000;
-	border-bottom: 1px solid #E8E8E8;
-	width: 100%;
-	height: 20px;
-}
-
-.dialogstyle .trOdd{		/* Hintergrund Zeilen Ungerade */
-	background-color: #FAFAFA;
+.dialogstyle .trEven{   /* Hintergrund Zeilen Gerade */
+    background-color: #F7F7F7;
     color: #000;
     border-bottom: 1px solid #E8E8E8;
     width: 100%;
-	height: 20px;
+    height: 20px;
+}
+
+.dialogstyle .trOdd{        /* Hintergrund Zeilen Ungerade */
+    background-color: #FAFAFA;
+    color: #000;
+    border-bottom: 1px solid #E8E8E8;
+    width: 100%;
+    height: 20px;
 }
 
 .dialogstyle .first{
-	border-top: 1px solid #E8E8E8;
+    border-top: 1px solid #E8E8E8;
 }
 
-.dialogstyle .trFollow{		/* Folgefragen */
-	background-color: #FFFFFF;
+.dialogstyle .trFollow{     /* Folgefragen */
+    background-color: #FFFFFF;
     border-style: solid;
     border-width: 1px;
     border-color: #8B2500;
@@ -392,32 +388,27 @@ code.box {
     height: 20px;
 }
 
-.dialogstyle .labelcellEven {		
+.dialogstyle .labelcellEven {       
     display: block;
     font-weight:bold;
     width: 220px;
     margin: 0px 0px 0px 25px;
 }
-
 .dialogstyle .labelcellOdd {
-	display: block;
+    display: block;
     font-weight:bold;
     width: 220px;
     margin: 0px 0px 0px 25px;
 }
-
 .dialogstyle .labelcellFollow {
-	display: block;
+    display: block;
     font-weight:bold;
     width: 220px;
     margin: 0px 0px 0px 25px;
 }
-
-
 .dialogstyle .fieldcell {
-	width: 100%;
+    width: 70%;
 }
-
 .dialogstyle .fieldcell input {
     background-color: #D7E5F2;
     border: 1px solid #96BBD9;
@@ -571,7 +562,7 @@ a.action.dialog {
     margin:0px 50px;
 }
 #KnowWEObjectTypeBrowser table col.section {
-	width: 300px;	
+    width: 300px;   
 }
 #KnowWEObjectTypeBrowser input{
     margin: 2px 15px;
@@ -624,7 +615,7 @@ font-size:120%;
     background-color: #F1F6FA;
     border: 1px solid #96BBD9;
     margin: 2px 15px;
-	padding: 6px;
+    padding: 6px;
 }
 #testsuite-panel input.button {
     border:1px solid #DEDEDE;
@@ -648,26 +639,84 @@ font-size:120%;
     color: #5DA4B6;
 }
 #testsuite-panel .fail {
-	float: left;
-	padding: 10px;
-	background-color: #FCC;
-	border: 1px solid;
+    float: left;
+    padding: 10px;
+    background-color: #FCC;
+    border: 1px solid;
 }
 #testsuite-panel .passed {
-	float: left;
-	padding: 10px;
-	background-color: #CFC;
-	border: 1px solid;
+    float: left;
+    padding: 10px;
+    background-color: #CFC;
+    border: 1px solid;
 }
 #testsuite-panel table {
-	border: 1px solid #D2D2D2;
-	margin-left: 22px;
+    border: 1px solid #D2D2D2;
+    margin-left: 22px;
 }
 #testsuite-panel td {
-	border: 1px solid #D2D2D2;
-	
+    border: 1px solid #D2D2D2;
+    
 }
 #testsuite-panel td.centered {
-	border: 1px solid #D2D2D2;
-	text-align: center;
+    border: 1px solid #D2D2D2;
+    text-align: center;
 }
+
+/* ################################################## */
+/* -------------- logger settings     --------------- */
+/* ################################################## */
+#KNOWWE-logger-main {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+#KNOWWE-logger-count, #KNOWWE-logger-clear {
+    background-color: rgb(255,255,255);
+    padding:5px;
+}
+#KNOWWE-logger-display{
+    
+}
+.KNOWWE-logger-message {
+    background-color: rgb(255,255,255); 
+}
+.log-info{
+    background-color: rgb(255, 204, 51);    
+}
+.log-error{
+    background-color: rgb(255, 61, 61);    
+}
+
+/* ################################################## */
+/* -------------- overlay settings    --------------- */
+/* ################################################## */
+#o-lay{
+    border: 1px solid rgb(0,0,0);
+    background-color: rgb(255,255,255);
+}
+#o-lay-wrapper{
+    border:1px solid rgb(104,104,104); 
+    margin:5px;
+    height:95%; 
+    width:96%;
+}
+#o-lay-top{
+    height:23px; 
+    top:0; 
+    width:100%;
+}
+#o-lay-title{
+    font:bold 0.8em/1.4em Arial,Verdana; 
+    text-align:center; 
+    vertical-align:middle; 
+    background-color: rgb(150, 187,217); 
+    color:rgb(255,255,255); 
+    padding:5px;
+}
+#o-lay-body{
+    overflow:auto;
+    margin: 5px;
+    font: normal 1em Verdana;
+}
+

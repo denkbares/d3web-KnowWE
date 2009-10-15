@@ -225,7 +225,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("<div style='clear:both'></div>");
 		
 		// Pointer and Text
-		html.append("<p id='testsuite-show-extend' class='pointer extend-panel-down'>");
+		html.append("<p id='testsuite-show-extend' class='show-extend pointer extend-panel-down'>");
 		html.append(rb.getString("KnowWE.Testsuite.extend"));
 		html.append("</p>");
 				
@@ -285,7 +285,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("<div style='clear:both'></div>");
 		
 		// Pointer and Text
-		html.append("<p id='testsuite2-show-extend' class='pointer extend-panel-down'>");
+		html.append("<p id='testsuite2-show-extend' class='show-extend pointer extend-panel-down'>");
 		html.append(rb.getString("KnowWE.Testsuite.detail"));
 		html.append("</p>");
 		
@@ -346,7 +346,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("<div style='clear:both'></div>");
 		
 		// Pointer and Text
-		html.append("<p id='testsuite2-show-extend' class='pointer extend-panel-down'>");
+		html.append("<p id='testsuite2-show-extend' class='show-extend pointer extend-panel-down'>");
 		html.append(rb.getString("KnowWE.Testsuite.detail"));
 		html.append("</p>");
 		

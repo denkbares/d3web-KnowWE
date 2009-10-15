@@ -74,25 +74,15 @@ public class DefaultTextType extends DefaultAbstractKnowWEObjectType {
 			String type) {
 		question = URLEncoder.encode(question);
 		// text=URLEncoder.encode(text);
-		String func = KnowWE_JSP_PATH + "?renderer=semAno&namespace="
-				+ namespace + "&" + KnowWEAttributes.SEMANO_OBJECT_ID + "="
-				+ questionid + "&TermName=" + question
-				+ "&KWikiWeb=default_web" + "&TermType=symptom&KWikiUser="
-				+ userName;
-		String rendering = "<span class=\"semLink\"><a href=\"javascript:void(0);\" title=\""
-				+ title
-				+ " TYPE: "
-				+ type
-				+ "\" onclick=\"return olgetajax('"
-				+ func
-				+ "',kajaxwrapper,300, 'ovfl1');\" onmouseout=\"return nd();\">"
-				+ text + "</a></span>";
+		
+		String rendering = "<span class=\"semLink\" " 
+			+ "rel=\"{type: '"+type+"', objectID: '"+questionid+"', termName: '"+text+"', user:'"+userName+"'}\">"
+         	+ text + "</span>";
 		return rendering;
-
 	}
 
 	public static String getErrorQ404(String question, String text) {
-		String rendering = "<span class=\"semLink\"><a href=\"javascript:void(0);\" title=\""
+		String rendering = "<span class=\"semLink\"><a href=\"#\" title=\""
 				+ "Question not found:"
 				+ question
 				+ "\" >"
@@ -110,15 +100,9 @@ public class DefaultTextType extends DefaultAbstractKnowWEObjectType {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String func = KnowWE_JSP_PATH + "?renderer=semAno&namespace="
-				+ namespace + "&" + KnowWEAttributes.SEMANO_OBJECT_ID + "="
-				+ questionid + "&TermName=" + question
-				+ "&KWikiWeb=default_web" + "&TermType=symptom&KWikiUser="
-				+ userName;
-		String rendering = "<span class=\"semLink\"><a href=\"javascript:void(0);\" onclick=\"return olgetajax('"
-				+ func
-				+ "',kajaxwrapper,300, 'ovfl1');\" onmouseout=\"return nd();\">"
-				+ text + "</a></span>";
+		String rendering = "<span class=\"semLink\" "
+		    + "rel=\"{ objectID: '"+questionid+"', termName: '"+question+"', user:'"+userName+"'}\">"
+			+ text + "</span>";
 		return rendering;
 
 	}
@@ -133,7 +117,7 @@ public class DefaultTextType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	public static String getErrorUnknownConcept(String op, String text) {
-		String rendering = "<span class=\"semLink\"><a href=\"javascript:void(0);\" title=\""
+		String rendering = "<span class=\"semLink\"><a href=\"#\" title=\""
 				+ "Concept not found:" + op + "\" >" + text + "</a></span>";
 		return rendering;
 

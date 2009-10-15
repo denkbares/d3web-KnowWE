@@ -68,8 +68,8 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 	 * @return
 	 */
 	protected String generateQuickEdit(String id) {
-		String icon = " <img src='KnowWEExtension/images/pencil.png' title='Set QuickEdit-Mode'/>";
-		return "<a href=\"javascript:QuickEdit.doTable('" + id + "')\">" + icon + "</a>";
+		String icon = " <img src='KnowWEExtension/images/pencil.png' title='Set QuickEdit-Mode' class='quickedit table pointer'/>";
+		return icon;
 	}
 	
 	protected String getHeader() {

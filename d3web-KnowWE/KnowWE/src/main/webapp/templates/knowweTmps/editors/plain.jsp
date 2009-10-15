@@ -79,7 +79,6 @@
   <input type="submit" name="ok" value="<fmt:message key='editor.plain.save.submit'/>" 
     accesskey="s"
         title="<fmt:message key='editor.plain.save.title'/>" />
-    <input name="syntaxCheck" type="button" value="Syntax Check" onclick='kwiki_pollSyntax("<wiki:PageName />")'/>
   <input type="submit" name="preview" value="<fmt:message key='editor.plain.preview.submit'/>" 
     accesskey="v"
         title="<fmt:message key='editor.plain.preview.title'/>" />

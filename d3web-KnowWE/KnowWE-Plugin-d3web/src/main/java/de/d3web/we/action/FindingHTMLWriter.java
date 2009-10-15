@@ -69,25 +69,23 @@ public class FindingHTMLWriter {
 			
 			for (AnswerChoice theAnswer : theQC.getAllAlternatives()) {
 				String answerText = KnowWEUtils.convertUmlaut(theAnswer.verbalizeValue(theCase));
-				buffy.append("&nbsp; ");
-				String rqst= targetUrlPrefix+"?action=setFinding&namespace="+java.net.URLEncoder.encode(namespace) + "&ObjectID="
-								+ theQuestion.getId();
-												
-				buffy.append("<INPUT TYPE=radio NAME='f" + timestampid+"id"
-						+ theQuestion.getId() + "' value='"
-						+ theAnswer.getId() + "' id='semanooc"
-						+ theQuestion.getId() + "' ");
+
+				String rqst= targetUrlPrefix + "?action=setFinding&namespace=" + java.net.URLEncoder.encode(namespace) 
+                		+ "&ObjectID=" + theQuestion.getId() + "&ValueID=" + theAnswer.getId();
+								
+				buffy.append("<INPUT TYPE='radio' NAME='f" + timestampid+"id"
+						+ theQuestion.getId() + "' " 
+						+ "value='" + theAnswer.getId() + "'" 
+						+ "id='semanooc" + theQuestion.getId() + "' " 
+						+ "rel=\"{url: '"+rqst+"'}\" ");				
+
 
 				if (theCase != null
 						&& theQuestion.getValue(theCase)
 								.contains(theAnswer)) {		
-					buffy.append(" checked ");
+					buffy.append(" checked=\"checked\" ");
 				}
-				
-				buffy.append("onClick='readoc(&quot;" + rqst
-						+ "&quot;,&quot;" + theQuestion.getId()
-						+ "&quot;,&quot;" + timestampid + "&quot;)'");
-
+				buffy.append("class='semano_oc'");
 				buffy.append(">"+answerText+"<br />");
 			}
 			String answerText = theQuestion.getUnknownAlternative().verbalizeValue(theCase);
@@ -104,12 +102,9 @@ public class FindingHTMLWriter {
 			if (theCase != null
 					&& theQuestion.getValue(theCase)
 							.contains(theQuestion.getUnknownAlternative())) {		
-				buffy.append(" checked ");
+				buffy.append(" checked=\"checked\" ");
 			}
-			
-			buffy.append("onClick='readoc(&quot;" + rqst
-					+ "&quot;,&quot;" + theQuestion.getId()
-					+ "&quot;,&quot;" + timestampid + "&quot;)'");
+			buffy.append("class='semano_oc'");
 
 			buffy.append(">"+renderAnswerText(answerText)+"<br />");
 		}
@@ -138,16 +133,18 @@ public class FindingHTMLWriter {
 						+ "&ObjectID="
 						+ theQuestion.getId()
 						+ "&KWikiWeb=" + webname;
-				buffy.append("<INPUT TYPE=text size=10 maxlength=10 NAME='num"
-						+ timestampid + theQuestion.getId() + "' value='"
-						+ answer.getValue(theCase).toString() 
-						+ "' ");
+				buffy.append("<INPUT TYPE=text size=10 maxlength=10 " 
+						+ "NAME='num" + timestampid + theQuestion.getId() + "' " 
+						+ "value='" + answer.getValue(theCase).toString() + "' " 
+
+						+ "class=\"semano_num\"" 
+						+ "rel=\"{url : '" + rqst + "'}\" "
+						+ "");
 
 				buffy.append(">");
-				buffy.append("<input type='button' name='submit' value='ok' ");
-				buffy.append("onClick='readformnum(&quot;" + rqst
-						+ "&quot;,&quot;num" + timestampid
-						+ "&quot;,&quot;" + theQuestion.getId() + "&quot;)'");
+				buffy.append("<input type='button' name='submit' value='ok' class=\"semano_num_ok\" " 
+						+ "rel=\"{url : '" + rqst + "'}\"" 
+						+ "");
 				buffy.append(answerText);
 
 				buffy.append("<br>");
@@ -162,15 +159,17 @@ public class FindingHTMLWriter {
 					+ "&ObjectID="
 					+ theQuestion.getId()
 					+ "&KWikiWeb=" + webname;
-			buffy
-					.append("<INPUT TYPE=text size=10 maxlength=10 NAME='num"
-							+ timestampid + theQuestion.getId() + "' value='"
-							+"' ");
+			buffy.append("<INPUT TYPE=text size=10 maxlength=10 " 
+					+ "NAME='num" + timestampid + theQuestion.getId() + "' " 
+					+ "value='' " 
+					+ "class=\"semano_num\" "
+					+ "rel=\"{url : '" + rqst + "'}\" "
+					+ "");
 			buffy.append(">");
-			buffy.append("<input type='button' name='submit' value='ok' ");
-			buffy.append("onClick='readformnum(&quot;" + rqst
-					+ "&quot;,&quot;num" + timestampid + "&quot;,&quot;"
-					+ theQuestion.getId() + "&quot;)'");
+			buffy.append("<input type='button' name='submit' value='ok' class=\"semano_num_ok\" " 
+						+ "rel=\"{url : '" + rqst + "'}\"" 
+						+ "");
+
 			buffy.append(answerText);
 
 			buffy.append("<br>");
@@ -189,7 +188,7 @@ public class FindingHTMLWriter {
 		
 		if (theMC.getAllAlternatives() != null) {
 	
-			buffy.append("<form action='javascript:void()' name='semanomc'"
+			buffy.append("<form action='#' name='semanomc'"
 					+ theQuestion.getId() + timestampid + "'>");
 			for (Answer theAnswer : theMC.getAllAlternatives()) {
 				String answerText = theAnswer.verbalizeValue(theCase);
@@ -204,17 +203,15 @@ public class FindingHTMLWriter {
 							+ theAnswer.getId()
 							+ "&KWikiWeb="+ webname;
 					buffy.append("<INPUT TYPE=CHECKBOX NAME='f" + timestampid+"id"
-							+ theQuestion.getId() + "' value='"
-							+ theAnswer.getId() + "' id='semanomc"
-							+ theQuestion.getId() + "' ");
-					buffy.append("onClick='readform(&quot;" + rqst
-							+ "&quot;,&quot;" + theQuestion.getId()
-							+ "&quot;,&quot;" + timestampid + "&quot;)'");
+							+ theQuestion.getId() + "' " 
+							+ "value='" + theAnswer.getId() + "' " 
+							+ "id='semanomc" + theQuestion.getId() + "' " 
+							+ "class=\"semano_mc\" " 
+							+ "rel=\"{url: '"+rqst+"'}\" ");
 
-					if (theCase != null
-							&& theQuestion.getValue(theCase)
+					if (theCase != null && theQuestion.getValue(theCase)
 									.contains(theAnswer)) {		
-						buffy.append(" checked");
+						buffy.append(" checked=\"checked\" ");
 					}
 					buffy.append(">");
 					buffy.append(renderAnswerText(KnowWEUtils.convertUmlaut(answerText)));
@@ -254,7 +251,7 @@ public class FindingHTMLWriter {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"null is no Question");	
 		} else {
-			retVal= KnowWEUtils.convertUmlaut(question.getText());
+			retVal= "<h3>" + KnowWEUtils.convertUmlaut(question.getText()) + "</h3>";
 			if (question instanceof QuestionYN) {
 				retVal += getHTMLString((QuestionChoice) question, "YN",
 						theCase, namespace, webname,targetUrlPrefix);

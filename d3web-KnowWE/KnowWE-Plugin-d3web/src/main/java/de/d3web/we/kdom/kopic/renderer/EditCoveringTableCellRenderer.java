@@ -37,12 +37,13 @@ public class EditCoveringTableCellRenderer extends KnowWEDomRenderer {
 
 		StringBuilder b = new StringBuilder();
 		b.append("<select id=\"editCell"
-					  + secID
-					  + "\" onchange=\"cellChanged('"
-					  + secID + "','" + sec.getTitle() + "');\">");
+	              + secID
+	              + "\" class='js-cell-change' rel='{id: "
+	              + secID+", title: "
+	              + sec.getTitle()+"}'>");
 		b.append("<option value=\""
-				      + currentOp + "\">"
-				      + currentOp + "</option>");
+				  + currentOp + "\">"
+				  + currentOp + "</option>");
 		for (int i = 0; i < options.length; i++) {
 			if (!options[i].equals(currentOp)) {
 				b.append("<option value=\"" + options[i] + "\">" + options[i]

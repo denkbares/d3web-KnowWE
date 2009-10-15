@@ -93,7 +93,7 @@ public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 				
 				html.append("<input type='button' value='"
 						+ rb.getString("KnowWE.KnowledgeBasesGenerator.generateButton")
-						+ "' name='generate' class='button' title='' onclick='doKbGenerating(\"" + a + "\");'/>");
+						+ "' name='generate' class='button generate-kb' title='' rel='{jar : \""+a+"\"}'/>");
 				
 				html.append("</div> \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 

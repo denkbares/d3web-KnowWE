@@ -182,13 +182,16 @@ public class WordBasedRenamingAction implements KnowWEAction {
 						+ rb.getString("KnowWE.renamingtool.article")
 						+ ": " + article.getTitle() + "</strong>");
 				mask.append("</td><td></td><td>");
-				mask.append("<input id='check-select' class='check' onclick='selectPerSection(this, \""
+				
+				mask.append("<input class='check-select check' value='' type='button'  title='Select all checkboxes' rel='{section: \""+article.getTitle()+"\"}'/>");
+				mask.append("<input class='check-deselect check' value='' type='button' title='Deselect all checkboxes' rel='{section: \""+article.getTitle()+"\"}'/>");
+/*				mask.append("<input id='check-select' class='check' onclick='selectPerSection(this, \""
 								+ article.getTitle()
 								+ "\");' value='' type='button'  title='Select all checkboxes'/>");
 				mask.append("<input id='check-deselect' class='check' onclick='deselectPerSection(this, \""
 								+ article.getTitle()
 								+ "\");' value='' type='button' title='Deselect all checkboxes'/>"
-								+ "</td><td></td></tr>");
+								+ "</td><td></td></tr>"); */
 				mask.append("</thead>");
 			}
 			mask.append("<tbody>");
@@ -231,10 +234,14 @@ public class WordBasedRenamingAction implements KnowWEAction {
 		}
 		mask.append("<tfoot>");
 		mask.append("<tr><td></td><td></td>");
-		mask.append("<td><input onclick='replaceAll();' value='"
+		mask.append("<td><input id='renaming-replace' value='"
+				+ rb.getString("KnowWE.renamingtool.bttn.replace")
+				+ "' type='button' class='button'"
+				+ " title='Begriff in ausgewählten Stellen ersetzen'/></td>");
+		/*mask.append("<td><input onclick='replaceAll();' value='"
 						+ rb.getString("KnowWE.renamingtool.bttn.replace")
 						+ "' type='button' class='button'"
-						+ " title='Begriff in ausgewï¿½hlten Stellen ersetzen'/></td>");
+						+ " title='Begriff in ausgewï¿½hlten Stellen ersetzen'/></td>");*/
 		mask.append("<td></td></tr>");
 		mask.append("</tfoot>");
 		mask.append("</table></fieldset></form>");
@@ -327,22 +334,22 @@ public class WordBasedRenamingAction implements KnowWEAction {
 		}
 
 		// create atmUrl
-		String atmUrl = article.getTitle() + WordBasedRenamingAction.TXT_SEPERATOR 
-		        + section + WordBasedRenamingAction.TXT_SEPERATOR 
-		        + sectionIndex + WordBasedRenamingAction.TXT_SEPERATOR
-				+ curWords + WordBasedRenamingAction.TXT_SEPERATOR
-				+ direction;
+		String atmUrl = "{article: '"+ article.getTitle()+"'," 
+				        + "section: '"+section+"'," 
+				        + "index: " + sectionIndex + ", "
+				        + "words: " + curWords + ", "
+				        + "direction: '"+direction+"'}";		
 
 		if (span) {
 			html.append("<span id='" + direction + sectionIndex
 					+ "' class='short' style='display: inline;'>");
 		}
 
-		html.append("<a href='javascript:getAdditionalMatchText(\"" + atmUrl
-				+ "\")'>");
-		html.append("<img width='12' height='12' border='0' src='" + img
-				+ "' alt='more'/>");
-		html.append("</a>");
+//		html.append("<a href='javascript:getAdditionalMatchText(\"" + atmUrl
+//				+ "\")'>");
+		html.append("<img width=\"12\" height=\"12\" border=\"0\" src=\"" + img
+				+ "\" alt=\"more\" rel=\""+ atmUrl+"\" class=\"show-additional-text-renaming\"/>");
+//		html.append("</a>");
 
 		if (span) {
 			html.append("</span>");

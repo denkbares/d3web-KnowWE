@@ -324,6 +324,7 @@ public class XCLExplanationRenderer implements de.d3web.we.action.KnowWEAction {
 		this.template = new StringBuffer();
 		this.template.append("<html><head><title>" + this.labels.getString(TITLE)+"</title>"
 				+ "<link rel=\"stylesheet\" type=\"text/css\" href=\"KnowWEExtension/css/general.css\"/>"
+				+ "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/KnowWE-helper.js\">"
 				+ "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/KnowWE.js\">"
 				+ "</script></head>");
 		this.template.append("<body><div id=\"popup-xcle\">");

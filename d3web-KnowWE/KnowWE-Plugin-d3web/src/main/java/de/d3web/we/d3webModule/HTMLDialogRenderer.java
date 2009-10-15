@@ -48,8 +48,7 @@ public class HTMLDialogRenderer {
 		StringBuffer buffi = new StringBuffer();
 
 		// for formatting the specific dialog panel
-		buffi
-				.append("<div class='dialogstyle''>"
+		buffi.append("<div class='dialogstyle''>"
 						+ "<b class='top'><b class='b1'></b><b class='b2'></b><b class='b3'>"
 						+ "</b><b class='b4'></b></b>"
 						+ "<div class='boxcontent'>");
@@ -62,11 +61,9 @@ public class HTMLDialogRenderer {
 			if (container.getText().endsWith("Q000"))
 				continue;
 
-			
 			if(first){
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
-				buffi.append("<h4 class='qcontainerName'><a href='javascript:showDialogElement(\""
-							+ container.getId() + "\")'>");
+				buffi.append("<h4 class='qcontainerName'>");
 				buffi.append("<img src='KnowWEExtension/images/arrow_down.png' border='0'/>");
 				buffi.append(container.getText() + ": ");
 				buffi.append("</a></h4>");
@@ -75,16 +72,14 @@ public class HTMLDialogRenderer {
 			} else {
 				
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
-				buffi.append("<h4 class='qcontainerName'><a href='javascript:showDialogElement(\""
-							+ container.getId() + "\")'>");
+				buffi.append("<h4 class='qcontainerName'>");
 				buffi.append("<img src='KnowWEExtension/images/arrow_right.png' border='0'/>");
 				buffi.append(container.getText() + ": ");
 				buffi.append("</a></h4>");
 				buffi.append("<table id='tbl" + container.getId() + "' class='hidden'><tbody>");
 			}
 			
-			java.util.List<? extends NamedObject> questions = container
-					.getChildren();
+			java.util.List<? extends NamedObject> questions = container.getChildren();
 
 			// to be able to format the table lines alternatingly
 			int i = -1;
@@ -159,11 +154,9 @@ public class HTMLDialogRenderer {
 		StringBuffer html = new StringBuffer();
 
 		if (even) {
-			html.append("<td class='labelcellEven'><label for='" + q.getId()
-					+ "'>" + q.getText() + "</label></td>");
+			html.append("<td class='labelcellEven'>" + q.getText() + "</td>");
 		} else {
-			html.append("<td class='labelcellOdd'><label for='" + q.getId()
-					+ "'>" + q.getText() + "</label></td>");
+			html.append("<td class='labelcellOdd'>" + q.getText() + "</td>");
 		}
 
 		html.append("<td class='fieldcell'><div id='" + q.getId() + "'>");
@@ -192,9 +185,7 @@ public class HTMLDialogRenderer {
 		
 		if(first instanceof Question){
 			
-			html.append("<td class='labelcellFollow'><label for='" + first.getId() + "'>"
-					 + first.getText() + " </label></td>");
-		
+			html.append("<td class='labelcellFollow'>" + first.getText() + " </td>");
 			html.append("<td class='fieldcell'><div id='" + first.getId() + "'>");
 			
 			if (first instanceof QuestionChoice) {
@@ -229,17 +220,18 @@ public class HTMLDialogRenderer {
 			}
 		}
 		String id = "numInput_" + q.getId();
-		String jscall = "numInputEntered(event,'" + web + "','" + namespace
-				+ "','" + q.getId() + "','" + URLEncoder.encode(q.getText())
-				+ "','" + id + "');";
-		buffi.append("<input id='" + id + "' type='text' value='" + value
-				+ "' class='numInput' size='7' onkeydown=\"" + jscall + "\">");
-		String jscall2 = "numOkClicked('" + web + "','" + namespace + "','"
-				+ q.getId() + "','" + URLEncoder.encode(q.getText()) + "','"
-				+ id + "');";
-		buffi.append("<input type='button' value='ok' onclick=\"" + jscall2
-				+ "\">");
-
+		String jscall = " rel=\"{oid: '"+q.getId()+"'," 
+			    + "web: '"+web+"',"
+			    + "ns: '"+namespace+"',"
+			    + "qtext: '"+URLEncoder.encode(q.getText())+"',"
+			    + "inputid: '"+id+"'"
+				+ "}\" ";
+		buffi.append("<input id='" + id + "' type='text' " 
+				+ "value='" + value + "' "
+				+ "class='numInput num-cell-down' " 
+				+ "size='7' " 
+				+ jscall + ">");
+		buffi.append("<input type='button' value='ok' class=\"num-cell-ok\">");
 	}
 
 	private static void renderChoiceAnswers(XPSCase c, StringBuffer buffi,
@@ -254,32 +246,21 @@ public class HTMLDialogRenderer {
 		for (AnswerChoice answerChoice : list) {
 
 			String cssclass="fieldcell";
-			// OLD: String jscall = "answerClicked('" + answerChoice.getId() +
-			// "','"
-			// + web + "','" + namespace + "','" + q.getId() + "','"
-			// + URLEncoder.encode(q.getText()) + "')";
-
-			// For BIOLOG2
-			String jscall = "answerClicked('" + answerChoice.getId() + "','"
-					+ web + "','" + namespace + "','" + q.getId() + "')";
 			
-			if (q.getValue(c).contains(answerChoice)) {
-				cssclass = "answerTextActive";
-
+			// For BIOLOG2
+			String jscall = " rel=\"{oid: '"+answerChoice.getId()+"'," 
+				    + "web: '"+web+"',"
+				    + "ns: '"+namespace+"',"
+				    + "qid: '"+q.getId()+"'"
+					+ "}\" ";
 				
-				jscall = "answerActiveClicked('" + answerChoice.getId() + "','"
-						+ web + "','" + namespace + "','" + q.getId() + "')";
-
-				// jscall = "answerActiveClicked('" + answerChoice.getId() +
-				// "','"
-				// + web + "','" + namespace + "','" + q.getId() + "','"
-				// + URLEncoder.encode(q.getText()) + "')";
+			if (q.getValue(c).contains(answerChoice)) {
+				cssclass = "fieldcell answerTextActive";
 			}
 			String spanid = "span_" + q.getId() + "_" + answerChoice.getId();
 			buffi.append(getEnclosingTagOnClick(SPAN, ""
-					+ answerChoice.getText() + " ", cssclass, jscall, "",
+					+ answerChoice.getText() + " ", cssclass, jscall, null,
 					spanid));
-			// "setHandCursor("+"'"+spanid+"')", spanid));
 			
 			
 			if(i<list.size()){
@@ -302,10 +283,10 @@ public class HTMLDialogRenderer {
 			sub.append(" class='" + cssclass + "'");
 		}
 		if (onclick != null && onclick.length() > 0) {
-			sub.append(" onclick=" + onclick + "; ");
+			sub.append(" " + onclick + " ");
 		}
 		if (onmouseover != null && onmouseover.length() > 0) {
-			sub.append(" onmouseover=" + onmouseover + "; ");
+			sub.append(" " + onmouseover + " ");
 		}
 		sub.append(">");
 		sub.append(text);

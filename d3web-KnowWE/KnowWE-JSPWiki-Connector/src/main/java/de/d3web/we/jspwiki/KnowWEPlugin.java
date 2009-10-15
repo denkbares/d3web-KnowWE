@@ -168,8 +168,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 
 			
 			// Render Pre-PageAppendHandlers
-			List<PageAppendHandler> ap = KnowWEEnvironment.getInstance()
-					.getAppendHandlers();
+			List<PageAppendHandler> ap = KnowWEEnvironment.getInstance().getAppendHandlers();
 			for (PageAppendHandler pageAppendHandler : ap) {
 				if (pageAppendHandler.isPre()) {
 					articleString.append(pageAppendHandler.getDataToAppend(
@@ -177,10 +176,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 							userContext));
 				}
 			}
-
+			
 			// RENDER PAGE
-			article.getRenderer().render(article.getSection(), userContext,
-					articleString);
+			article.getRenderer().render(article.getSection(), userContext, articleString);
 			
 			// Render Post-PageAppendHandlers
 			for (PageAppendHandler pageAppendHandler : ap) {
@@ -190,6 +188,14 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 							userContext));
 				}
 			}
+			/**
+			 * JS Handler own div am ende der seite, ...
+			 */
+			articleString.append(KnowWEEnvironment.maskHTML("<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/KnowWE-helper.js\"></script>"
+				    + "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/KnowWE.js\"></script>"
+				    + "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/KnowWE-plugin-d3web.js\"></script>" 
+				    + "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/silveripe.0.2.js\"></script>"));
+				
 
 
 			// long timeEnde = System.currentTimeMillis();

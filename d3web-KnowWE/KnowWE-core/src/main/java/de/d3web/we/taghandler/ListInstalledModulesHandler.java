@@ -44,8 +44,8 @@ public class ListInstalledModulesHandler extends AbstractTagHandler{
 		
 		StringBuffer html = new StringBuffer();
 		
-		html.append("<div id=\"rename-panel\" class=\"panel\"><h3>" + KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.ListInstalledModules.headline") + "</h3>");
-		
+		html.append("<div id=\"installed-modules-panel\" class=\"panel\"><h3>" + KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.ListInstalledModules.headline") + "</h3>");
+		html.append("<div>");
 		if(modules.size() == 0) {
 			html.append("<b>(no modules installed)</b>");
 		}
@@ -62,7 +62,7 @@ public class ListInstalledModulesHandler extends AbstractTagHandler{
 			html.append("</div><br>");
 		}
 		
-		html.append("</div>");
+		html.append("</div></div>");
 		
 		return html.toString();
 	}

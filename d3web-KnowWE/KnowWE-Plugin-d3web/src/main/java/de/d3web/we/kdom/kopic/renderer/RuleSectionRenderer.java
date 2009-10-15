@@ -63,12 +63,15 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 						if (msg.getMessageText().equals(rulesParsed)) {
 							parsedCount += msg.getCount();
 						} else if (msg.getMessageType() == Message.WARNING && foundWarning == false) {
-							warnings.add(KnowWEEnvironment.maskHTML("<a onclick='highlightRule(\"" + r.getId() + "\",\"" 
-									+ r.getTitle() + "\",\"0\",\"0\" );'/>" + rnum + "</a>"));
+							warnings.add(KnowWEEnvironment.maskHTML("<a href=\"#\" " 
+									+ "class=\"highligh-rule\" "
+									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"+r.getTitle()+"', depth: 0, breadth: 0}\""
+									+ "/>" + rnum + "</a>"));
 							foundWarning = true;
 						} else if (msg.getMessageType() == Message.ERROR && foundError == false) {
-							errors.add(KnowWEEnvironment.maskHTML("<a onclick='highlightRule(\"" + r.getId() + "\",\"" 
-									+ r.getTitle() + "\",\"0\",\"0\" );'/>" + rnum + "</a>"));
+							errors.add(KnowWEEnvironment.maskHTML("<a href=\"#\" "
+									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"+r.getTitle()+"', depth: 0, breadth: 0}\""
+									+ "/>" + rnum + "</a>"));
 							foundError = true;
 						}
 					}

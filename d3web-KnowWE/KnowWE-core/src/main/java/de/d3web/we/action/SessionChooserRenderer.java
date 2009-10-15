@@ -53,13 +53,13 @@ public class SessionChooserRenderer implements KnowWEAction {
 		File[] files = sessionPathFile.listFiles(filter);
 		if(files == null || files.length == 0) {
 			sb.append("<tr>");
-			sb.append("<div class='patternButton' onmouseover=\"replanToHide(this,event)\" onmouseout=\"planToHide(this,event)\" style='clear:left; text-align:right; width:100%;'><a href='#' onclick='hideSessionChooser();' rel='nofollow' title='"+rb.getString("KnowWE.session.noSessionsAvailable")+"'>"+rb.getString("KnowWE.session.noSessionsAvailable")+"</a></div>");		
+			sb.append("<div class='patternButton' style='clear:left; text-align:right; width:100%;'><a href='#' rel='nofollow' title='"+rb.getString("KnowWE.session.noSessionsAvailable")+"'>"+rb.getString("KnowWE.session.noSessionsAvailable")+"</a></div>");		
 			sb.append("</tr>");
 		} else {
 			for (File file : sessionPathFile.listFiles(filter)) {
-				String link = "kwiki_call(\"/KnowWE.jsp?action="+linkAction+"&KWikiUser="+user+"&KWikiWeb="+web+"&"+KnowWEAttributes.SESSION_FILE+"="+file.getName()+"\");hideSessionChooser();";
+				//String link = "kwiki_call(\"/KnowWE.jsp?action="+linkAction+"&KWikiUser="+user+"&KWikiWeb="+web+"&"+KnowWEAttributes.SESSION_FILE+"="+file.getName()+"\");hideSessionChooser();";
 				sb.append("<tr>");
-				sb.append("<div class='patternButton' style='clear:left; text-align:right; width:100%;'><a href='#' onclick='"+link+ "' rel='nofollow' title='Choose session'>"+file.getName()+"</a></div>");		
+				sb.append("<div class='patternButton' style='clear:left; text-align:right; width:100%;'><a href='#' rel='nofollow' title='Choose session'>"+file.getName()+"</a></div>");		
 				sb.append("</tr>");
 			}
 		}

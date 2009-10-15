@@ -245,7 +245,7 @@ private String iconURL;
 		}
 
 		if(shouldDisplay(etas, suggs, excs)) {
-			sb.append("<a href=\"javascript:doNothing()\" onclick=\""+link+"\" >");
+			sb.append("<a href=\"#\" onclick=\""+link+"\" >");
 			sb.append("<span>");
 			sb.append("(");
 			sb.append("</span>");

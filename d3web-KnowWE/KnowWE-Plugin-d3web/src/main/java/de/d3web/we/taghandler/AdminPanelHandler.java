@@ -50,13 +50,10 @@ public class AdminPanelHandler extends AbstractTagHandler {
 		String html = 
 			"<div id=\"admin-panel\" class=\"panel\"><h3>" + header + "</h3>"
 		    + "<ul>"
-		    + "<li><a href=\"#summarizer\" onclick='doSumAll();'>"+overview+"</a><p id=\"sumAll\"></p></li>"
-		    + "<li><a href=\"#reInit\" onclick='doReInit();'>"+reset+"</a><p id=\"reInit\"></p></li>"
-		    + "<li><a href=\"#parseWeb\" onclick='doParseWeb();'>"+parse+"</a><p id=\"parseWeb\"></p></li>"
+		    + "<li id='admin-summarizer' class='pointer'>"+overview+"<p id=\"sumAll\"></p></li>"
+		    + "<li id='admin-reInit' class='pointer'>"+reset+"<p id=\"reInit\"></p></li>"
+		    + "<li id='admin-parseWeb' class='pointer'>"+parse+"<p id=\"parseWeb\"></p></li>"
 		    + "</ul></div>";
-//				"<hr/></li> <li> <a href=\"#summarizer\" onclick='doSumAll();'><big>"+overview+"</big></a><div id=\"sumAll\"></div></li> "
-//			+ "<li> <a href=\"#reInit\" onclick='doReInit();'><big>"+reset+"</big></a><div id=\"reInit\"></div>"
-//			+ "</li> <li> <a href=\"#parseWeb\" onclick='doParseWeb();'><big>"+parse+"</big></a><div id=\"parseWeb\"></div><hr/>";
 		return html;
 	}
 
