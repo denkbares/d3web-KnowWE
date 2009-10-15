@@ -209,9 +209,9 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			QuestionChoice qc = (QuestionChoice) question;
 			if (qc instanceof QuestionYN) {
 				QuestionYN qyn = (QuestionYN) qc;
-				if ((value.equals("ja")) || (value.equals("yes"))) {
+				if ((value.equalsIgnoreCase("ja")) || (value.equalsIgnoreCase("yes"))) {
 					answer = qyn.yes;
-				} else if ((value.equals("nein")) || (value.equals("no"))) {
+				} else if ((value.equalsIgnoreCase("nein")) || (value.equalsIgnoreCase("no"))) {
 					answer = qyn.no;
 				} else {
 					errors.add(MessageKnOfficeGenerator.createWrongYNAnswer(
