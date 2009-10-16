@@ -62,7 +62,6 @@ public class DPSEnvironment {
 	public static final String globalAlignments = "GlobalAlignments.xml";
 	public static final String clustersLocation = "Clusters.xml";
 	public static final String metaInfoLocation = "META";
-	public static final String defaultUser = "TWikiGuest";
 	
 	private URL environmentLocation;
 	private TerminologyServer terminologyServer;
