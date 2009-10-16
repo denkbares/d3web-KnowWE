@@ -71,39 +71,42 @@ public class XMLSectionFinderTest extends TestCase {
 		f = new XMLSectionFinder("Start");
 		findings = f.lookForSections(content, artSec);
 		start = 0;
-		end = 265;
+		end = 254;
 		assertEquals("Element <Start> begin index wrong", start, findings.get(0).getStart());
 		assertEquals("Element <Start> end index wrong", end, findings.get(0).getEnd());
 		
 		// Test2
 		f = new XMLSectionFinder("SubSection");
 		findings = f.lookForSections(content, artSec);
-		start = 10;
-		end = 199;
+		start = 9;
+		end = 190;
 		assertEquals("Element <SubSection> begin index wrong", start, findings.get(0).getStart());
 		assertEquals("Element <SubSection> end index wrong", end, findings.get(0).getEnd());
 		
 		// Test3
-		f = new XMLSectionFinder("SubSubSection");
+		f = new XMLSectionFinder("SubSubSection1");
 		findings = f.lookForSections(content, artSec);
-		start = 64;
-		end = 103;
-		assertEquals("Element <SubSubSection> begin index wrong",start, findings.get(0).getStart());
-		assertEquals("Element <SubSubSection> end index wrong", end, findings.get(0).getEnd());
-		start = 105;
-		end = 183;
-		assertEquals("Element <SubSubSection> begin index wrong",start, findings.get(1).getStart());
-		assertEquals("Element <SubSubSection> end index wrong", end, findings.get(1).getEnd());
+		start = 61;
+		end = 98;
+		assertEquals("Element <SubSubSection1> begin index wrong",start, findings.get(0).getStart());
+		assertEquals("Element <SubSubSection1> end index wrong", end, findings.get(0).getEnd());
+		
+		f = new XMLSectionFinder("SubSubSection2");
+		findings = f.lookForSections(content, artSec);
+		start = 100;
+		end = 175;
+		assertEquals("Element <SubSubSection2> begin index wrong",start, findings.get(0).getStart());
+		assertEquals("Element <SubSubSection2> end index wrong", end, findings.get(0).getEnd());
 		
 		// Test4
 		f = new XMLSectionFinder("Text2");
 		findings = f.lookForSections(content, artSec);
-		start = 126;
-		end = 162;
+		start = 120;
+		end = 155;
 		assertEquals("Element <Text2> begin index wrong", start, findings.get(0).getStart());
 		assertEquals("Element <Text2> end index wrong", end, findings.get(0).getEnd());
-		start = 200;
-		end = 236;
+		start = 191;
+		end = 226;
 		assertEquals("Element <Text2> begin index wrong", start, findings.get(1).getStart());
 		assertEquals("Element <Text2> end index wrong", end, findings.get(1).getEnd());
 		
@@ -113,7 +116,7 @@ public class XMLSectionFinderTest extends TestCase {
 		f = new XMLSectionFinder();
 		findings = f.lookForSections(content, artSec);
 		start = 0;
-		end = 265;
+		end = 254;
 		assertEquals("Generic SectionFinder failed", start, findings.get(0).getStart());
 		assertEquals("Generic SectionFinder failed", end, findings.get(0).getEnd());
 		
