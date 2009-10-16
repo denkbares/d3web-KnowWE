@@ -592,7 +592,8 @@ KNOWWE.core.renaming = function(){
         /**
          * Function: selectPerSelection
          * Select all checkboxes within a certain section.
-         * 
+         * If section has value "undefined", select all checkboxes.
+         *
          * Parameters:
          *     e - The occurred event. 
          */
@@ -607,7 +608,7 @@ KNOWWE.core.renaming = function(){
             
             for(i = 0; i < renameForm.length; i++){
                 if(renameForm[i].type == 'checkbox' && renameForm[i].id != ''){
-                    if(renameForm[i].id.search(section) != -1)
+                    if(section == undefined || renameForm[i].id.search(section) != -1)
                         renameForm[i].checked = true;
                 }
             }
@@ -615,7 +616,8 @@ KNOWWE.core.renaming = function(){
         /**
          * Function: deselectPerSelection
          * Deselects all chechboxes in the renaming form.  
-         * 
+         * If section has value "undefined", deselect all checkboxes.
+         *
          * Parameters:
          *     e - The occurred event. 
          */
@@ -631,7 +633,7 @@ KNOWWE.core.renaming = function(){
             
             for(i = 0; i < renameForm.length; i++){
                 if(renameForm[i].type == 'checkbox' && renameForm[i].id != ''){
-                    if(renameForm[i].id.search(section) != -1)
+                    if(section == undefined || renameForm[i].id.search(section) != -1)
                         renameForm[i].checked = false;
                 }
             }

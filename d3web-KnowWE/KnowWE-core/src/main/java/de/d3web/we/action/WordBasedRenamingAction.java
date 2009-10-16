@@ -166,10 +166,19 @@ public class WordBasedRenamingAction implements KnowWEAction {
 				+ rb.getString("KnowWE.renamingtool.clmn.section")
 				+ "</th>");
 		mask.append("<th scope='col'>"
-				+ rb.getString("KnowWE.renamingtool.clmn.replace")
+				+ rb.getString("KnowWE.renamingtool.clmn.replace")							
 				+ "</th><th scope='col'>"
 				+ rb.getString("KnowWE.renamingtool.clmn.preview")
-				+ "</th></tr></thead>");
+				+ "</th></tr></thead>"
+				
+				+ "<thead>"
+				+ "<tr><td></td><td></td><td>"
+				+ "<input class='check-select check' value='' type='button'  title='Select all checkboxes' rel='{section: undefined}'/>"
+				+ "<input class='check-deselect check' value='' type='button' title='Deselect all checkboxes' rel='{section: undefined}'/>"
+				+ "</td><td></td></tr>"
+				+ "</thead>"
+
+				+ "");
 
 		for (Entry<KnowWEArticle, Collection<WordBasedRenameFinding>> entry : findings.entrySet()) {
 
