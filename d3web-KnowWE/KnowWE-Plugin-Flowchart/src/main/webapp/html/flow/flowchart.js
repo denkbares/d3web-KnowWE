@@ -441,6 +441,7 @@ Flowchart.prototype.toPreviewHTML = function(node) {
 	var size = Element.getDimensions(node);
 	var html = '<' + node.nodeName; 
 	if (node.className)	html += ' class="' + node.className + '"';
+	if (node.id) html += ' id="' + node.id + '"';
 	if (node.src) html += ' src="' + node.src + '"';
 	// for nodes we have a problem: padding is not taken nto consideration
 	// therefore allow width+padding not to be more than parent's width - 2
