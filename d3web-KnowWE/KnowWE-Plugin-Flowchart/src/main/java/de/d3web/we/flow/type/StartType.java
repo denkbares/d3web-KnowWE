@@ -18,21 +18,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.kernel.psMethods.diaFlux.predicates;
+package de.d3web.we.flow.type;
 
-import java.io.Serializable;
-
-import de.d3web.kernel.XPSCase;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
  * 
- * @author hatko
  *
+ * @author hatko
+ * Created on: 08.10.2009
  */
-public interface IPredicate extends Serializable {
+public class StartType extends AbstractXMLObjectType {
+
+	private static StartType instance;
+
+	private StartType() {
+		super("start");
+	}
+
+	public static StartType getInstance() {
+		if (instance == null)
+			instance = new StartType();
+
+		return instance;
+	}
+
 	
-	
-	boolean evaluate(XPSCase theCase);
-	
+	@Override
+	protected void init() {
+	}
 
 }

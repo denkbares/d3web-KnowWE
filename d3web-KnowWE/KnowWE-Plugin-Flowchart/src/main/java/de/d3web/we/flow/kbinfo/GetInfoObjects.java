@@ -44,7 +44,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
-import de.d3web.we.flow.FlowchartSection;
+import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 
 public class GetInfoObjects implements KnowWEAction {
@@ -168,7 +168,7 @@ public class GetInfoObjects implements KnowWEAction {
 			// TODO: append flowcharts out of knowledge base here
 			List<Section> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
 			for (Section flowchart : flowcharts) {
-				FlowchartSection type = (FlowchartSection) flowchart.getObjectType();
+				FlowchartType type = (FlowchartType) flowchart.getObjectType();
 				buffer.append("\t\t<child>");
 				buffer.append(service.getId() + "/" + type.getFlowchartID(flowchart));
 				buffer.append("</child>\n");
@@ -195,7 +195,7 @@ public class GetInfoObjects implements KnowWEAction {
 			// look for a flowchart th the article
 			List<Section> flowcharts = ManagerUtils.getFlowcharts(web, service);
 			for (Section flowchart : flowcharts) {
-				FlowchartSection type = (FlowchartSection) flowchart.getObjectType();
+				FlowchartType type = (FlowchartType) flowchart.getObjectType();
 				String id = type.getFlowchartID(flowchart);
 				if (id.equalsIgnoreCase(objectID)) {
 					appendInfoObject(web, service, flowchart, buffer);
@@ -258,7 +258,7 @@ public class GetInfoObjects implements KnowWEAction {
 
 	
 	private void appendInfoObject(String web, D3webKnowledgeService service, Section flowchart, StringBuffer buffer) {
-		FlowchartSection type = (FlowchartSection) flowchart.getObjectType();
+		FlowchartType type = (FlowchartType) flowchart.getObjectType();
 		String name = type.getFlowchartName(flowchart);
 		String id = type.getFlowchartID(flowchart);
 		String[] startNames = type.getStartNames(flowchart);

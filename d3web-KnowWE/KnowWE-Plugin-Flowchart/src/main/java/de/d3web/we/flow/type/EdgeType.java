@@ -18,40 +18,35 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.kernel.psMethods.diaFlux.flow;
+package de.d3web.we.flow.type;
 
-import java.io.Serializable;
-
-import de.d3web.kernel.domainModel.CaseObjectSource;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
  * 
- * @author hatko
  *
+ * @author hatko
+ * Created on: 09.10.2009
  */
-public interface IEdge extends Serializable, CaseObjectSource {
-	
-	/**
-	 * 
-	 * @return s the node this edge starts at
-	 */
-	INode getStartNode();
-	
-	
-	/**
-	 * 
-	 * @return s the node this edge ends at
-	 */
-	INode getEndNode();
+public class EdgeType extends AbstractXMLObjectType {
+
+	private static EdgeType instance;
+
+	private EdgeType() {
+		super("edge");
+	}
+
+	public static EdgeType getInstance() {
+		if (instance == null)
+			instance = new EdgeType();
+
+		return instance;
+	}
 
 
-	/**
-	 * 
-	 * @return s the edges predicate
-	 */
-	AbstractCondition getCondition();
-	
-	
+	@Override
+	protected void init() {
+		childrenTypes.add(EdgeContentType.getInstance());
+	}
 
 }

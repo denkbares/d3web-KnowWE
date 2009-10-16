@@ -18,31 +18,33 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+package de.d3web.we.flow.type;
+
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+
 /**
  * 
- */
-package de.d3web.kernel.psMethods.diaFlux.flow;
-
-import java.io.Serializable;
-
-/**
- * @author Reinhard Hatko
- * Created: 14.09.2009
  *
+ * @author hatko
+ * Created on: 09.10.2009
  */
-public interface IEdgeData extends Serializable {
-	
-	
-	IEdge getEdge();
-	
-	
-	boolean getEvaluation();
-	
-	boolean hasFired();
-	
-	void fire();
-	
-	void unfire();
-	
+public class ExitType extends AbstractXMLObjectType {
 
+	private static ExitType instance;
+
+	private ExitType() {
+		super("exit");
+	}
+
+	public static ExitType getInstance() {
+		if (instance == null)
+			instance = new ExitType();
+
+		return instance;
+	}
+
+
+	@Override
+	protected void init() {
+	}
 }

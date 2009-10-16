@@ -18,35 +18,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.kernel.psMethods.diaFlux.predicates;
+package de.d3web.we.flow.type;
 
-import java.io.Serializable;
-
-import de.d3web.kernel.XPSCase;
+import de.d3web.we.kdom.xml.XMLContent;
 
 /**
  * 
- * @author hatko
  *
+ * @author hatko
+ * Created on: 09.10.2009
  */
-public class PredicateNot implements IPredicate {
-	
-	private final IPredicate predicate;
+public class EdgeContentType extends XMLContent{
 
+	private static EdgeContentType instance;
 
-	public PredicateNot(IPredicate predicate) {
-		this.predicate = predicate;
+	private EdgeContentType() {
 	}
-	
+
+	public static EdgeContentType getInstance() {
+		if (instance == null)
+			instance = new EdgeContentType();
+
+		return instance;
+	}
+
+
 	
 	@Override
-	public boolean evaluate(XPSCase theCase) {
-		return !predicate.evaluate(theCase);
+	protected void init() {
+		this.childrenTypes.add(SourceType.getInstance());
+		this.childrenTypes.add(TargetType.getInstance());
+		this.childrenTypes.add(GuardType.getInstance());
+		
 	}
-	
-	
-	
 
-	
+
 
 }

@@ -18,28 +18,49 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.flow;
+package de.d3web.we.flow.type;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.we.flow.FlowchartSectionRenderer;
+import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 
-public class FlowchartSection extends AbstractXMLObjectType {
+/**
+ * 
+ *
+ * @author hatko
+ * Created on: 09.10.2009
+ */
+public class FlowchartType extends AbstractXMLObjectType {
 	
 	protected KnowWEDomRenderer renderer = new FlowchartSectionRenderer();
 
-	public FlowchartSection() {
+	private static FlowchartType instance;
+
+	private FlowchartType() {
 		super("flowchart");
 	}
+
+	public static FlowchartType getInstance() {
+		if (instance == null)
+			instance = new FlowchartType();
+
+		return instance;
+	}
+
+
+	
 	
 	@Override
 	protected void init() {
-		this.childrenTypes.add(new NodeSection());
-		this.childrenTypes.add(new XMLContent());
+		
+		this.childrenTypes.add(FlowchartContentType.getInstance());
+		addReviseSubtreeHandler(new FlowchartSubTreeHandler());
 		
 //		setNotRecyclable(true);
 	}
@@ -65,13 +86,13 @@ public class FlowchartSection extends AbstractXMLObjectType {
 
 	public String[] getStartNames(Section sec) {
 		List<Section> startSections = new LinkedList<Section>();
-		sec.findSuccessorsOfType(StartSection.class, startSections);
+		sec.findSuccessorsOfType(StartType.class, startSections);
 		return getSectionsContents(startSections);
 	}
 	
 	public String[] getExitNames(Section sec) {
 		List<Section> exitSections = new LinkedList<Section>();
-		sec.findSuccessorsOfType(ExitSection.class, exitSections);
+		sec.findSuccessorsOfType(ExitType.class, exitSections);
 		return getSectionsContents(exitSections);
 	}
 	

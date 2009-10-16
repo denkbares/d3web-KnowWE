@@ -36,7 +36,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
-import de.d3web.we.flow.FlowchartSection;
+import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 
 public class SearchInfoObjects implements KnowWEAction {
@@ -142,7 +142,7 @@ public class SearchInfoObjects implements KnowWEAction {
 					// (seen for KnowWE-ExamplePage but no sense detected in that)
 					List<Section> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
 					for (Section flowchart : flowcharts) {
-						FlowchartSection type = (FlowchartSection) flowchart.getObjectType();
+						FlowchartType type = (FlowchartType) flowchart.getObjectType();
 						if (matches(type.getFlowchartName(flowchart).toLowerCase(), phrases)) {
 							result.add(d3Service.getId() + "/" + type.getFlowchartID(flowchart));
 						}

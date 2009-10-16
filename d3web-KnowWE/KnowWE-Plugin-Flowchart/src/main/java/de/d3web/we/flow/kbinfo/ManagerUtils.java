@@ -26,7 +26,7 @@ import java.util.List;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.flow.FlowchartSection;
+import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
@@ -48,7 +48,7 @@ public class ManagerUtils {
 		KnowWEArticle article = ManagerUtils.getArticle(web, service);
 		List<Section> result = new LinkedList<Section>();
 		if (article != null) {
-			article.getSection().findSuccessorsOfType(FlowchartSection.class, result);
+			article.getSection().findSuccessorsOfType(FlowchartType.class, result);
 		}
 		return result;
 	}

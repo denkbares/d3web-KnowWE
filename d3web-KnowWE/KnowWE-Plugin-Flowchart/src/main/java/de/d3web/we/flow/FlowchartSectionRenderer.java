@@ -25,6 +25,7 @@ import java.util.List;
 
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -37,7 +38,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
 		List<Section> lines = new ArrayList<Section>(); 
 		sec.findSuccessorsOfType(TextLine.class, lines);
-		FlowchartSection section = (FlowchartSection)sec.getObjectType();
+		FlowchartType section = (FlowchartType)sec.getObjectType();
 		
 		String title = "Flowchart '" + section.getFlowchartName(sec) + "'";
 		

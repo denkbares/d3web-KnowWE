@@ -18,19 +18,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.flow;
+package de.d3web.we.flow.type;
 
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
-public class StartSection extends AbstractXMLObjectType {
-
-	public StartSection() {
-		super("start");
+/**
+ *
+ * @author hatko
+ * Created on: 08.10.2009
+ */
+public class PositionType extends AbstractXMLObjectType{
+	
+	
+	private static PositionType instance;
+	
+	private PositionType() {
+		super("position");
 	}
-
+	
+	public static PositionType getInstance() {
+		if (instance == null)
+			instance = new PositionType();
+		
+		return instance;
+	}
+	
 	@Override
 	protected void init() {
-		this.childrenTypes.add(new XMLContent());
 	}
+	
 
 }

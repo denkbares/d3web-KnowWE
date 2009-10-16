@@ -205,7 +205,7 @@ Guard.createPossibleGuards = function(nodeModel) {
 	 	for (var i=0; i<this.possibleGuards.length; i++) {
 	 		var guard = this.possibleGuards[i];
 	 		if (Object.isString(guard)) continue;
-	 		// das erste selektieren, dass für den Guard Vorlage ist 
+	 		// das erste selektieren, dass fuer den Guard Vorlage ist 
 	 		// (bzw. einfach nur das erste wenn wir keinen Guard haben)
 	 		if (guard.isPatternFor(this.initialGuard)) {
 	 			this.selectedIndex = i;
@@ -412,17 +412,17 @@ GuardPane.prototype.getDOM = function() {
 GuardPane.prototype.checkProblems = function(rule) {
 	this.problem = null;
 	if (!rule) {
-		this.problem = 'die Kante kann nicht überprüft werden';
+		this.problem = 'die Kante kann nicht ueberprueft werden';
 		return;
 	}
 	var sourceModel = rule.getSourceNode().getNodeModel();
 	var targetModel = rule.getTargetNode().getNodeModel();
-//	if (sourceModel && sourceModel.exit) {
-//		this.problem = 'von einem Exit-Knoten dürfen keine Kanten weiterführen';
-//	}
-//	if (targetModel && targetModel.start) {
-//		this.problem = 'zu einem Start-Knoten dürfen keine Kanten hinführen';
-//	}
+	if (sourceModel && sourceModel.exit) {
+		this.problem = 'von einem Exit-Knoten duerfen keine Kanten weiterfuehren';
+	}
+	if (targetModel && targetModel.start) {
+		this.problem = 'zu einem Start-Knoten duerfen keine Kanten hinfuehren';
+	}
 	// TODO: check for problems with the guard for the source node here
 	if (this.isVisible) {
 		this.setVisible(false);
@@ -450,12 +450,12 @@ GuardPane.prototype.setVisible = function(visible) {
 GuardPane.prototype.render = function() {
 	var childs = [];
 	
-//	if (this.problem) {
-//		childs.push(Builder.node('img', {
-//			src: FlowEditor.imagePath+'warning.gif',
-//			title: this.problem
-//		}));
-//	}
+	if (this.problem) {
+		childs.push(Builder.node('img', {
+			src: FlowEditor.imagePath+'warning.gif',
+			title: this.problem
+		}));
+	}
 	
 	if (this.guard) {
 		var textNode = Builder.node('div');

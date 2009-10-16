@@ -18,22 +18,35 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.kernel.psMethods.diaFlux.flow;
+package de.d3web.we.flow.type;
 
-import java.util.List;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
-import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.dynamicObjects.XPSCaseObject;
-import de.d3web.kernel.psMethods.diaFlux.actions.NoopAction;
+/**
+ * 
+ *
+ * @author hatko
+ * Created on: 09.10.2009
+ */
+public class ActionType extends	AbstractXMLObjectType{
+		
+	private static ActionType instance;
 
-public class SnapshotNode extends Node {
-	
-	public SnapshotNode() {
-		super(NoopAction.INSTANCE);
+	private ActionType() {
+		super("action");
 	}
-	
-	
 
-	
+	public static ActionType getInstance() {
+		if (instance == null)
+			instance = new ActionType();
 
+		return instance;
+	}
+
+	//		in de.d3web.we.kdom.condition.FindingToConditionBuilder
+	
+	
+	@Override
+	protected void init() {
+	}
 }

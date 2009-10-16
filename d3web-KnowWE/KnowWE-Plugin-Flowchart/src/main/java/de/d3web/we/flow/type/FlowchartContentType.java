@@ -18,23 +18,38 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.flow;
+package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.XMLContent;
 
-public class NodeSection extends AbstractXMLObjectType {
+/**
+ * 
+ *
+ * @author hatko
+ * Created on: 09.10.2009
+ */
+public class FlowchartContentType extends XMLContent{
 
-	public NodeSection() {
-		super("node");
+	private static FlowchartContentType instance;
+
+	private FlowchartContentType() {
 	}
 
+	public static FlowchartContentType getInstance() {
+		if (instance == null)
+			instance = new FlowchartContentType();
+
+		return instance;
+	}
+
+	
 	@Override
 	protected void init() {
-		this.childrenTypes.add(new StartSection());
-		this.childrenTypes.add(new ExitSection());
-		this.childrenTypes.add(new Position());
-		this.childrenTypes.add(new Action());
-		this.childrenTypes.add(new XMLContent());
+		this.childrenTypes.add(NodeType.getInstance());
+		this.childrenTypes.add(EdgeType.getInstance());
+		
 	}
+
+
 
 }

@@ -1,11 +1,11 @@
 
 /**
  * Action ist zur Behandlung einer beliebigen Regelaktion in allen bekannten
- * markups. Aktuell ist als markup 'KnOffice' und 'NOP' unterstützt.
+ * markups. Aktuell ist als markup 'KnOffice' und 'NOP' unterstuetzt.
  * 
  * Die Action dient nur zum Parsen der Aktion. Es werden keine Interpretationen 
- * gegen die Sematik vorgenommen (z.B. "ist der indizierte Text überhaupt eine 
- * Frage" oder "existiert das Zielobjekt überhaupt").
+ * gegen die Sematik vorgenommen (z.B. "ist der indizierte Text ueberhaupt eine 
+ * Frage" oder "existiert das Zielobjekt ueberhaupt").
  */
 function Action(markup, expression) {
 	this.markup = markup;
@@ -170,7 +170,7 @@ Action.prototype._checkSemantic = function() {
 	}
 	else if (clazz == KBInfo.Solution) {
 		if (this.valueString && this.valueString.search(/^[NP][1234567]$/i) >= 0) return;
-		this.error = '"'+this.valueString+'" ist kein gültiger Wert für eine Lösung';
+		this.error = '"'+this.valueString+'" ist kein gueltiger Wert fuer eine Loesung';
 	}
 	else if (clazz == KBInfo.Question) {
 		switch (infoObject.getType()) {
@@ -178,7 +178,7 @@ Action.prototype._checkSemantic = function() {
 				// for now we receive also choices for boolean questions 
 				// from the server so treat them similar to oc questions
 				//if (this.valueString == "YES" || this.valueString == "NO" || this.isFormula()) break;
-				//this.error = '"'+this.valueString+'" ist kein erlaubter Wert für eine Ja/Nein-Frage';
+				//this.error = '"'+this.valueString+'" ist kein erlaubter Wert fuer eine Ja/Nein-Frage';
 				//break;
 			case KBInfo.Question.TYPE_OC:
 			case KBInfo.Question.TYPE_MC:
@@ -189,7 +189,7 @@ Action.prototype._checkSemantic = function() {
 			case KBInfo.Question.TYPE_DATE:
 			case KBInfo.Question.TYPE_TEXT:
 				if (this.isFormula()) break;
-				this.error = 'Nur Formeln als Wert für diese Frage zugelassen';
+				this.error = 'Nur Formeln als Wert fuer diese Frage zugelassen';
 				break;
 		}
 	}
@@ -240,7 +240,7 @@ Action.createPossibleActions = function(infoObject) {
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.Solution) {
-		result.push('---- Lösung bewerten ----');			
+		result.push('---- Loesung bewerten ----');			
 		result.push(new Action('KnOffice', Action._createExpression(name, 'P7')));
 		result.push(new Action('KnOffice', Action._createExpression(name, 'P6')));
 		result.push(new Action('KnOffice', Action._createExpression(name, 'P5')));
@@ -414,7 +414,7 @@ ActionEditor.prototype.refreshValueInput = function() {
 	this.selectedAction = null;
 
 	if (!actions) {
-		root.innerHTML = '<i>Keine Aktionen verfügbar</i>';
+		root.innerHTML = '<i>Keine Aktionen verfuegbar</i>';
 		if (this.objectSelect) this.selectedAction = new Action('NOP', this.objectSelect.getValue());
 		return;
 	}
@@ -425,13 +425,13 @@ ActionEditor.prototype.refreshValueInput = function() {
 			this.selectableActions.push(action);
 			// ein Wert wird dann selektiert wenn der Wert gleich ist 
 			// oder beides eine Formel ist (da dann der Wert in der Drop-Down-Liste leer ist)
-			// Außerdem wird die erste Action gemerkt, da eventuell keine passende mehr nachfolgt
+			// Ausserdem wird die erste Action gemerkt, da eventuell keine passende mehr nachfolgt
 			if ((indexToSelect == -1) 
 					|| (action.getValueString() == valueToSelect)
 					|| (action.getValueString() == '()' && isFormula)
 					) {
 				indexToSelect = i;
-				// bei Formeln der Wert übernehmen
+				// bei Formeln der Wert uebernehmen
 				if (isFormula) {
 					this.selectedAction = Object.clone(action);
 					this.selectedAction.setValueString(valueToSelect);
@@ -472,8 +472,8 @@ ActionEditor.prototype.destroy = function() {
 
 
 /**
- * ActionPane ist eine Klasse zur Anzeige einer Aktion ohne Editiermöglichkeit. 
- * Neben dem Rendern der Inhalte überwacht ActionPane auch den KBInfo Cache.
+ * ActionPane ist eine Klasse zur Anzeige einer Aktion ohne Editiermï¿½glichkeit. 
+ * Neben dem Rendern der Inhalte ueberwacht ActionPane auch den KBInfo Cache.
  */
  
  function ActionPane(parent, action, style, onChange) {

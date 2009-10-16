@@ -18,22 +18,41 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.flow;
+package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.XMLContent;
 
-public class Action extends	AbstractXMLObjectType{
-		
-		public Action() {
-			super("Action");
-		}
+/**
+ * 
+ *
+ * @author hatko
+ * Created on: 09.10.2009
+ */
+public class NodeContentType extends XMLContent{
 
+	private static NodeContentType instance;
+
+	private NodeContentType() {
+	}
+
+	public static NodeContentType getInstance() {
+		if (instance == null)
+			instance = new NodeContentType();
+
+		return instance;
+	}
+
+
+	
+	@Override
+	protected void init() {
+		this.childrenTypes.add(StartType.getInstance());
+		this.childrenTypes.add(ExitType.getInstance());
+		this.childrenTypes.add(PositionType.getInstance());
+		this.childrenTypes.add(ActionType.getInstance());
 		
-		//		in de.d3web.we.kdom.condition.FindingToConditionBuilder
-		
-		
-		@Override
-		protected void init() {
-			this.childrenTypes.add(new XMLContent());
-		}
+	}
+
+
+
 }
