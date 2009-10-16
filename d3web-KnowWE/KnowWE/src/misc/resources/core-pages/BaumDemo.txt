@@ -46,7 +46,7 @@ Baumfragen
 -- "gelb, klein, vor dem Laubaustrieb"
 -- "gelbe Kätzchen, mit dem Laubaustrieb"
 -- "weiß/gelb, klein, nach dem Laubaustrieb"
--- "grün/gleb, vor oder mit dem Laubaustrieb"
+-- "grün/gelb, vor oder mit dem Laubaustrieb"
 - Blatttyp [oc]
 -- ein Blatt pro Stiel
 --- Blattaufteilung [oc]

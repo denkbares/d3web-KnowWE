@@ -1,4 +1,3 @@
-lkh
 [Dreht der Anlasser durch? <=> asks:: Anlasser]
 
 <Kopic>
@@ -186,7 +185,7 @@ IF "Num. Bewertung Kraftstoffverbrauch" > 130
 THEN Bewertung Kraftstoffverbrauch = erhöht  
 
 IF "Üblicher Kraftstoffverbrauch/100km" > 0 AND BEKANNT["Tatsächlicher Kraftstoffverbrauch/100km"]
-THEN "Num. Bewertung Kraftstoffverbrauch" = (("Tatsächlicher Kraftstoffverbrauch/100km" / "Üblicher //Kraftstoffverbrauch/100km") * 100.0)  
+THEN "Num. Bewertung Kraftstoffverbrauch" = (("Tatsächlicher Kraftstoffverbrauch/100km" / "Üblicher Kraftstoffverbrauch/100km") * 100.0)  
 
 IF (Verhalten bei Motorstart = "springt überhaupt nicht an" OR Verhalten bei Motorstart = springt schlecht an)
 THEN Batterie leer = P5
