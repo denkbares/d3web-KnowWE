@@ -2,53 +2,62 @@ package de.d3web.we.hermes;
 
 import java.util.List;
 
-import de.d3web.we.hermes.util.TimeStringInterpreter;
-
-public class TimeEvent {
-
-	public String getTextOrigin() {
-		return textOrigin;
-	}
+public class TimeEvent implements Comparable<TimeEvent> {
 
 	private int importance;
+
 	private String title;
 	private String description;
 	private List<String> sources;
+	private String textOriginNode;
+	private String topic;
 
-	private String textOrigin;
+	public String getTopic() {
+		return topic;
+	}
 
 	private TimeStamp time;
 
 	public TimeEvent(String title, String description, int imp,
-			List<String> sources, String time, String textOrigin) {
+			List<String> sources, String time, String textOriginNode, String topic) {
 		this.title = title;
 		this.description = description;
 		this.sources = sources;
 		this.importance = imp;
-		this.textOrigin = textOrigin;
+		this.textOriginNode = textOriginNode;
+		this.topic = topic;
 		if (time != null) {
-			this.time = new TimeStringInterpreter(time);
+			this.time = new TimeStamp(time);
 		}
-	}
-
-	public int getImportance() {
-		return importance;
-	}
-
-	public String getTitle() {
-		return title;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
+	public int getImportance() {
+		return importance;
+	}
+
 	public List<String> getSources() {
 		return sources;
 	}
 
+	public String getTextOriginNode() {
+		return textOriginNode;
+	}
+
 	public TimeStamp getTime() {
 		return time;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	@Override
+	public int compareTo(TimeEvent o) {
+		return this.getTime().compareTo(o.getTime());
 	}
 
 }

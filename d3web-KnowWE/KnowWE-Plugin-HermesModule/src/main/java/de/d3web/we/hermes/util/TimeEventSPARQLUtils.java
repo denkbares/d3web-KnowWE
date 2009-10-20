@@ -4,12 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openrdf.model.Value;
 import org.openrdf.query.Binding;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.BooleanQuery;
@@ -29,7 +27,8 @@ import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 
 public class TimeEventSPARQLUtils {
 
-	private static final String TIME_SPARQL = "SELECT  ?title ?imp ?desc ?y WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
+	private static final String TIME_SPARQL = "SELECT  ?t ?title ?topic ?imp ?desc ?y ?kdomid ?topic WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
+	private static final String SOURCE_SPARQL = "SELECT ?source WHERE { <*URI*> lns:hasSource ?source .}";
 
 	public static Collection<TimeEvent> findTimeEventsFromTo(int yearFrom,
 			int yearTo) {
@@ -51,7 +50,6 @@ public class TimeEventSPARQLUtils {
 		try {
 			con.setAutoCommit(false);
 		} catch (RepositoryException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		Query query = null;
@@ -71,7 +69,7 @@ public class TimeEventSPARQLUtils {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
 				// return "graphquery ouput implementation: TODO";
 			} else if (query instanceof BooleanQuery) {
-				boolean result = ((BooleanQuery) query).evaluate();
+//				boolean result = ((BooleanQuery) query).evaluate();
 				// return result + "";
 			}
 		} catch (QueryEvaluationException e) {
@@ -84,44 +82,38 @@ public class TimeEventSPARQLUtils {
 		return null;
 	}
 
-	private static final String SOURCE_SPARQL = "SELECT ?source WHERE { ?t lns:hasSource ?source .  ?t lns:hasTitle TITLE .}";
-	private static final String TEXTORIGIN_SPARQL = "SELECT ?textOrigin WHERE { ?t lns:hasNode ?textOrigin .  ?t lns:hasTitle TITLE .}";
+//	private static final String TEXTORIGIN_SPARQL = "SELECT ?textOrigin WHERE { ?t lns:hasNode ?textOrigin .  ?t lns:hasTitle TITLE .}";
 
 	private static Collection<TimeEvent> buildTimeEvents(TupleQueryResult result) {
 		// List<String> bindings = result.getBindingNames();
 
 		Set<TimeEvent> events = new HashSet<TimeEvent>();
-
-		StringBuffer buffy = new StringBuffer();
 		try {
 			while (result.hasNext()) {
+				
 				BindingSet set = result.next();
+
+				
+				Binding tB = set.getBinding("t");
+				String tURI = tB.getValue().stringValue();
+				
 				Binding titleB = set.getBinding("title");
+				String kdomid = set.getBinding("kdomid").getValue().toString();
+				String topic = set.getBinding("topic").getValue().toString();
+				
 				Binding impB = set.getBinding("imp");
 				// Binding textOriginB = set.getBinding("textOrigin");
-
+				
 				String time = set.getBinding("y").getValue().toString();
 				String desc = set.getBinding("desc").getValue().toString();
-
 				String title = titleB.getValue().toString();
 				String imp = impB.getValue().toString();
 
 				Set<String> sources = new HashSet<String>();
 
-				TupleQueryResult sourcesResult = executeQuery(SOURCE_SPARQL
+				String query = SOURCE_SPARQL.replace("*URI*", tURI);
+				TupleQueryResult sourcesResult = executeQuery(query
 						.replaceAll("TITLE", title));
-
-				TupleQueryResult textOriginResult = executeQuery(TEXTORIGIN_SPARQL
-						.replaceAll("TITLE", title));
-
-				// String textOrigin = textOriginB.getValue().toString();
-				String textOrigin = "TO";
-				if (textOriginResult.hasNext()) {
-					BindingSet toSet = textOriginResult.next();
-					if (toSet != null) {
-						textOrigin = toSet.getValue(textOrigin).toString();
-					}
-				}
 
 				while (sourcesResult.hasNext()) {
 					// for some reason every source appears twice in this loop
@@ -133,7 +125,6 @@ public class TimeEventSPARQLUtils {
 					try {
 						aSource = URLDecoder.decode(aSource, "UTF-8");
 					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					if (aSource != null) {
@@ -142,11 +133,12 @@ public class TimeEventSPARQLUtils {
 				}
 
 				try {
-					textOrigin = URLDecoder.decode(textOrigin, "UTF-8");
 					title = URLDecoder.decode(title, "UTF-8");
 					imp = URLDecoder.decode(imp, "UTF-8");
 					time = URLDecoder.decode(time, "UTF-8");
 					desc = URLDecoder.decode(desc, "UTF-8");
+					topic = URLDecoder.decode(topic, "UTF-8");
+					kdomid = URLDecoder.decode(kdomid, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -165,7 +157,7 @@ public class TimeEventSPARQLUtils {
 				resultSources.addAll(sources);
 
 				events.add(new TimeEvent(title, desc, parseInt, resultSources,
-						time, textOrigin));
+						time, kdomid, topic));
 
 			}
 		} catch (QueryEvaluationException e) {

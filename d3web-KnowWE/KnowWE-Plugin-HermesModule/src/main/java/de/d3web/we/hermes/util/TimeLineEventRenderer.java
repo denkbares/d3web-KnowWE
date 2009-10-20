@@ -1,6 +1,5 @@
 package de.d3web.we.hermes.util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.core.KnowWEEnvironment;
@@ -39,7 +38,7 @@ public class TimeLineEventRenderer {
 				.append("<h4 id=\"section-Main-<spanStyle'colorRgb23523520'>Anl_C3_A4sseF_C3_BCrDenAusbruchDesPeloponnesischenKrieges<Span>435rv\" class=\"collapsetitle\"><div class=\"collapseClose\" title=\"Click to expand\">+</div>"
 						+ colorTagStart
 						+ "<i>"
-						+ te.getTime().getTimeString()
+						+ te.getTime().getDescription()
 						+ "</i> - "
 						+ te.getTitle()
 						+ colorTagEnd
@@ -65,7 +64,8 @@ public class TimeLineEventRenderer {
 			}
 		}
 		
-		sb.append("<br>textOrigin:"+te.getTextOrigin() + "<br>");
+		sb.append("<br>textOrigin:"+te.getTopic()+ "<br>");
+		sb.append("<br>textOrigin:"+te.getTextOriginNode() + "<br>");
 
 		sb.append("</div>\n");
 
@@ -82,7 +82,7 @@ public class TimeLineEventRenderer {
 	public static String renderToSimpleList(List<TimeEvent> events) {
 		String s = "<ul>";
 		for (TimeEvent te : events) {
-			s += "<li>" + te.getTime().getTimeString() + ": " + te.getTitle()
+			s += "<li>" + te.getTime().getDescription() + ": " + te.getTitle()
 					+ "</li>\n";
 		}
 

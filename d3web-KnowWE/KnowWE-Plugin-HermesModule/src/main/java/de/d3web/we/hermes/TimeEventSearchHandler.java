@@ -20,7 +20,7 @@ public class TimeEventSearchHandler extends AbstractTagHandler {
 	private String generateForms(String topic) {
 		int startIndex = 0;
 		int noEntries = 20;
-		String startTimeString = "10000v";
+		String startTimeString = "-10000";
 		String endTimeString = "2008";
 		String header = "Suche nach Ereignissen";
 		String s = "";

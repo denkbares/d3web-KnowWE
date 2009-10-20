@@ -1,3 +1,6 @@
+build_20091020_2200 reutelshoefer/lemmerich
+	* some things remained the same...
+
 build_20090721_1245 reutelshoefer
 	* changes due to KnowWE refactoring
 

@@ -32,15 +32,13 @@ public class SearchTimeEventsAction implements KnowWEAction {
 			Collection<TimeEvent> events = TimeEventSPARQLUtils
 					.findTimeEventsFromTo(Integer.parseInt(from), Integer
 							.parseInt(to));
-
+			
 			StringBuffer result = new StringBuffer();
-
 			if (events != null) {
 				int cnt = 0;
 				for (TimeEvent timeEvent : events) {
 					cnt++;
 					if(cnt > countNum) break;
- 						
 					result.append(TimeLineEventRenderer.renderToHTML(timeEvent, false));
 				}
 			}

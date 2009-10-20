@@ -30,7 +30,6 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.hermes.kdom.renderer.TimeEventRenderer;
-import de.d3web.we.hermes.util.TimeStringInterpreter;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -112,21 +111,26 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			Literal importanceURI = uo.getVf().createLiteral(importance);
 
 			// Literal dateURI = uo.getHelper().createLiteral(date);
-			TimeStringInterpreter timeStringInterpreter = new TimeStringInterpreter(
-					date.trim());
-			Literal dateStartURI = uo.getVf().createLiteral(
-					timeStringInterpreter.getStartTime());
-			Literal dateEndURI = uo.getVf().createLiteral(
-					timeStringInterpreter.getEndTime());
-			Literal dateTextURI = uo.getVf().createLiteral(
-					timeStringInterpreter.getTimeString());
+//			TimeStamp timeStringInterpreter = new TimeStamp(
+//					date.trim());
+//			Literal dateStartURI = uo.getVf().createLiteral(
+//					timeStringInterpreter.getStartPoint().getInterpretableTime());
+//			
+//			
+//			Literal dateEndURI;
+//			if (timeStringInterpreter.getEndPoint() != null) {
+//			
+//			dateEndURI = uo.getVf().createLiteral(
+//					timeStringInterpreter.getEndPoint().getInterpretableTime());
+//			}
+			Literal dateTextURI = uo.getVf().createLiteral(date.trim());
 
 			List<Literal> sourceURIs = new ArrayList<Literal>();
 			for (String source : sourceStrings) {
 				sourceURIs.add(uo.getVf().createLiteral(source));
 			}
 
-			uo.getHelper().attachTextOrigin(section, io, localURI);
+			uo.getHelper().attachTextOrigin(localURI, section, io);
 
 			/* adding all OWL statements to io object */
 			io.addStatement(uo.getHelper().createStatement(localURI, RDF.TYPE,
@@ -141,12 +145,12 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			slist.add(uo.getHelper().createStatement(localURI,
 					uo.getHelper().createlocalURI("hasImportance"),
 					importanceURI));
-			slist.add(uo.getHelper()
-					.createStatement(localURI,
-							uo.getHelper().createlocalURI("hasStartDate"),
-							dateStartURI));
-			slist.add(uo.getHelper().createStatement(localURI,
-					uo.getHelper().createlocalURI("hasEndDate"), dateEndURI));
+//			slist.add(uo.getHelper()
+//					.createStatement(localURI,
+//							uo.getHelper().createlocalURI("hasStartDate"),
+//							dateStartURI));
+//			slist.add(uo.getHelper().createStatement(localURI,
+//					uo.getHelper().createlocalURI("hasEndDate"), dateEndURI));
 			slist.add(uo.getHelper().createStatement(localURI,
 					uo.getHelper().createlocalURI("hasDateDescription"),
 					dateTextURI));

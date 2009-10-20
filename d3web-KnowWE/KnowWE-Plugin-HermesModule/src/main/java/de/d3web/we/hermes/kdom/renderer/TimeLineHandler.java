@@ -22,7 +22,6 @@ package de.d3web.we.hermes.kdom.renderer;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -63,15 +62,18 @@ public class TimeLineHandler extends AbstractTagHandler {
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 
-		String yearAfter = values.get(TIME_AFTER);
+		boolean asList = false;
+		if (values.containsKey("renderType")
+				&& values.get("renderType").equals("list")) {
+			asList = true;
+		}
+
+		String yearAfter = getIntAsString (-10000, values, TIME_AFTER);
 		String querystring = null;
-
 		try {
-			int i = Integer.parseInt(yearAfter);
 			querystring = TIME_SPARQL.replaceAll("YEAR", yearAfter);
-
 		} catch (Exception e) {
-			return "no valid parameter for" + TIME_AFTER;
+			return "Illegal query String: " + querystring +"<br />" + " no valid parameter for: " + TIME_AFTER;
 		}
 
 		SemanticCore sc = SemanticCore.getInstance();
@@ -84,7 +86,8 @@ public class TimeLineHandler extends AbstractTagHandler {
 		}
 		Query query = null;
 		try {
-			query = con.prepareQuery(QueryLanguage.SPARQL, SparqlDelegateRenderer.addNamespaces(querystring,topic));
+			query = con.prepareQuery(QueryLanguage.SPARQL,
+					SparqlDelegateRenderer.addNamespaces(querystring, topic));
 		} catch (RepositoryException e) {
 			return e.getMessage();
 		} catch (MalformedQueryException e) {
@@ -94,16 +97,16 @@ public class TimeLineHandler extends AbstractTagHandler {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
 				return KnowWEEnvironment.maskHTML(renderQueryResult(result,
-						values));
+						values, asList));
 			} else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
-				return "graphquery ouput implementation: TODO";
+				return "graphquery output implementation: TODO";
 			} else if (query instanceof BooleanQuery) {
 				boolean result = ((BooleanQuery) query).evaluate();
 				return result + "";
 			}
 		} catch (QueryEvaluationException e) {
-			return kwikiBundle.getString("KnowWE.owl.query.evalualtion.error")
+			return kwikiBundle.getString("KnowWE.owl.query.evaluation.error")
 					+ ":" + e.getMessage();
 		} finally {
 
@@ -111,9 +114,18 @@ public class TimeLineHandler extends AbstractTagHandler {
 		return null;
 	}
 
+	private String getIntAsString(int defaultValue, Map<String, String> valueMap,
+			String valueFromMap) {
+		try {
+			return String.valueOf(Integer.parseInt(valueMap.get(valueFromMap)));
+		} catch (NumberFormatException nfe) {
+			return String.valueOf(defaultValue);
+		}
+	}
+
 	private String renderQueryResult(TupleQueryResult result,
-			Map<String, String> params) {
-		//List<String> bindings = result.getBindingNames();
+			Map<String, String> params, boolean asList) {
+		// List<String> bindings = result.getBindingNames();
 		StringBuffer buffy = new StringBuffer();
 		try {
 			while (result.hasNext()) {
@@ -122,19 +134,20 @@ public class TimeLineHandler extends AbstractTagHandler {
 				for (String string : names) {
 					Binding b = set.getBinding(string);
 					Value event = b.getValue();
-					buffy.append(URLDecoder.decode(event.toString(), "UTF-8")+"<br>");
+					buffy.append(URLDecoder.decode(event.toString(), "UTF-8")
+							+ "<br>");
 				}
-				
-				
+
 			}
 		} catch (QueryEvaluationException e) {
 			return kwikiBundle.getString("KnowWE.owl.query.evalualtion.error")
 					+ ":" + e.getMessage();
-		}
-		catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException e) {
 			return e.toString();
 		}
 		
+
+
 		return buffy.toString();
 	}
 
