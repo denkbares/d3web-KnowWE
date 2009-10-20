@@ -662,8 +662,8 @@ KNOWWE.plugin.d3web.semantic = function(){
             if(_KS('.semano_num').length != 0){
                 _KS('.semano_num').forEach(function(element){
                     _KE.add('keydown', element, KNOWWE.plugin.d3web.semantic.handleNum);
-                });   
-                _KS('.semano_num_ok').forEach(function(){
+                });
+                 _KS('.semano_ok').forEach(function(element){
                     _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleNum);
                 });
             }
@@ -681,6 +681,10 @@ KNOWWE.plugin.d3web.semantic = function(){
                         sTimer = setTimeout(function(){_KS('#o-lay')._remove();}, 4000);
                     }
                 });
+                _KE.add('click', _KS('#o-lay-close'), function(){
+                	_KS('#o-lay')._remove();
+                	clearTimeout( sTimer );
+                });
             }
         },
         /**
@@ -692,7 +696,7 @@ KNOWWE.plugin.d3web.semantic = function(){
          */
         handleForm : function(e){
             var el = new _KN(_KE.target(e));
-            var rel = eval( "(" + el.getAttrbiute('rel') + ")");
+            var rel = eval( "(" + el.getAttribute('rel') + ")");
             KNOWWE.plugin.d3web.semantic.send( rel.url, null );
         },
         /**
@@ -702,21 +706,23 @@ KNOWWE.plugin.d3web.semantic = function(){
          * Parameters:
          *      e - The current occurred event
          */
-        handleNum : function(e){
-            var bttn = (_KE.target( e ).className == 'semano_num_ok');            
-            var key = (e.code == 13);
-            if( !(key || bttn) ) return false;
+        handleNum : function(e){        	
+            var bttn = (_KE.target( e ).value == 'ok');
+            console.log( bttn );
+            var key = (e.keyCode == 13);
+            if( !( key || bttn ) ) return false;
             
             var rel = null, el = null;
-            if(key){
-                el = new _KN(_KE.target(e));
-                rel = eval("(" + el.getAttribute('rel') + ")");
-            } else {
-                el = new _KN(_KE.target(e)).previousSibling;
-                rel = eval("(" + el.getAttribute('rel') + ")");
-            }
-            if( !rel ) return;            
             
+            
+            el = new _KN(_KE.target(e));
+            if( el.value=="ok" ){
+            	el = el.previousSibling;
+            }
+            rel = eval("(" + el.getAttribute('rel') + ")");
+            
+            if( !rel ) return;            
+            console.log( el );
             KNOWWE.plugin.d3web.semantic.send( rel.url, {ValueNum : el.value} );
         },
         /**
@@ -779,11 +785,13 @@ KNOWWE.plugin.d3web.semantic = function(){
                 TermType : 'symptom',
                 KWikiUser : rel.user
             }
+            var mousePos = KNOWWE.helper.mouseCoords( e );
+            var mouseOffset = KNOWWE.helper.getMouseOffset( el, e );
             
             var olay = new KNOWWE.helper.overlay({
                 cursor : {
-                    top : e.clientY,
-                    left : e.screenX
+                    top : mousePos.y - mouseOffset.y,
+                    left : mousePos.x - mouseOffset.x
                 },
                 url : KNOWWE.core.util.getURL( params ),
                 fn : KNOWWE.plugin.d3web.semantic.overlayActions

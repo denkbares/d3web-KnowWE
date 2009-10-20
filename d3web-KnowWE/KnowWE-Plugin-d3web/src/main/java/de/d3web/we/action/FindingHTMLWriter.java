@@ -65,7 +65,7 @@ public class FindingHTMLWriter {
 		QuestionChoice theQC = (QuestionChoice) theQuestion;
 		String timestampid = (new Date()).getTime() + "";
 		if (theQC.getAllAlternatives() != null) {
-			buffy.append("<form action='javascript:void()' name='semanooc'"
+			buffy.append("<form action='#' name='semanooc'"
 					+ theQuestion.getId() + timestampid + "'>");
 			
 			for (AnswerChoice theAnswer : theQC.getAllAlternatives()) {
@@ -91,7 +91,6 @@ public class FindingHTMLWriter {
 			}
 			String answerText = theQuestion.getUnknownAlternative().verbalizeValue(theCase);
 			
-			buffy.append("&nbsp; ");
 			String rqst= targetUrlPrefix+"?action=setFinding&namespace="+java.net.URLEncoder.encode(namespace) + "&ObjectID="
 							+ theQuestion.getId();
 											
@@ -145,12 +144,12 @@ public class FindingHTMLWriter {
 						+ "");
 
 				buffy.append(">");
-				buffy.append("<input type='button' name='submit' value='ok' class=\"semano_num_ok\" " 
+				buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" " 
 						+ "rel=\"{url : '" + rqst + "'}\"" 
 						+ "");
 				buffy.append(answerText);
 
-				buffy.append("<br>");
+				buffy.append("<br />");
 			}
 		} else {
 			AnswerNum an = new AnswerNum();
@@ -171,13 +170,13 @@ public class FindingHTMLWriter {
 					+ "rel=\"{url : '" + rqst + "'}\" "
 					+ "");
 			buffy.append(">");
-			buffy.append("<input type='button' name='submit' value='ok' class=\"semano_num_ok\" " 
+			buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" " 
 						+ "rel=\"{url : '" + rqst + "'}\"" 
 						+ "");
 
 			buffy.append(answerText);
 
-			buffy.append("<br>");
+			buffy.append("<br />");
 
 		}
 
@@ -193,8 +192,7 @@ public class FindingHTMLWriter {
 		
 		if (theMC.getAllAlternatives() != null) {
 	
-			buffy.append("<form action='#' name='semanomc'"
-					+ theQuestion.getId() + timestampid + "'>");
+			buffy.append("<form action='#' name='semanomc'" + theQuestion.getId() + timestampid + "'>");
 			for (Answer theAnswer : theMC.getAllAlternatives()) {
 				String answerText = theAnswer.verbalizeValue(theCase);
 				if (theAnswer instanceof AnswerUnknown) {
@@ -216,13 +214,12 @@ public class FindingHTMLWriter {
 							+ "class=\"semano_mc\" " 
 							+ "rel=\"{url: '"+rqst+"'}\" ");
 
-					if (theCase != null && theQuestion.getValue(theCase)
-									.contains(theAnswer)) {		
+					if (theCase != null && theQuestion.getValue(theCase).contains(theAnswer)) {		
 						buffy.append(" checked=\"checked\" ");
 					}
 					buffy.append(">");
 					buffy.append(renderAnswerText(KnowWEUtils.convertUmlaut(answerText)));
-					buffy.append("<br>");
+					buffy.append("<br />");
 				}
 			}
 			buffy.append("</form>");
@@ -233,10 +230,8 @@ public class FindingHTMLWriter {
 			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		StringBuffer buffy = new StringBuffer();
 
-		buffy.append("<div class='semContents' >");
-		buffy
-				.append("<div align=left style='color:black;font-size:140%;padding:0.2em;margin-left:2px;"
-						+ "margin-top:5px;margin-bottom:5px;' >");
+		buffy.append("<div class=\"semContents\" >");
+		buffy.append("<div class=\"questionsheet-layer\">");
 		if (type.equalsIgnoreCase(MC)) {
 			appendMCAnswers(theQuestion, buffy, theCase, namespace, webname, topic, targetUrlPrefix);
 		} else if (type.equalsIgnoreCase(OC) || type.equalsIgnoreCase(YN)) {
@@ -247,7 +242,7 @@ public class FindingHTMLWriter {
 			Logger.getLogger(ID).warning("invalid question type");
 		}
 		buffy.append("</div>");
-		buffy.append("</div >");
+		buffy.append("</div>");
 		return buffy.toString();
 	}
 	

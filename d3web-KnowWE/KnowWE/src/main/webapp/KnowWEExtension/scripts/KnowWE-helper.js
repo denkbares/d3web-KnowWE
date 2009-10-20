@@ -82,24 +82,56 @@ KNOWWE.helper = function(){
          *  Returns:
          *     The x and y value of the distance.
          */
-        findXY : function( obj ) {
-            var curLeft = 0;
-            var curTop = 0;
-            if(obj.offsetParent){
-                while(1) {
-                    curLeft += obj.offsetLeft;
-                    curTop += obj.offsetTop;
-                      
-                    if(!obj.offsetParent)
-                        break;
-                    obj = obj.offsetParent;
-                }
-            }
-            else if(obj.x) {
-                curLeft += obj.x;
-                curTop += obj.y;
-            }
-            return [curLeft, curTop];
+        findXY : function( e ) {
+			var left = 0;
+			var top  = 0;
+		
+			while (e.offsetParent){
+				left += e.offsetLeft;
+				top  += e.offsetTop;
+				e     = e.offsetParent;
+			}
+		
+			left += e.offsetLeft;
+			top  += e.offsetTop;
+		
+			return {x:left, y:top};
+        },       
+        /**
+         * Function: getMouseOffset
+         * 
+         * Parameters:
+         *     target -
+         *     e - 
+         * 
+         * Returns:
+         * 
+         */
+        getMouseOffset : function(target, e){
+           	e = e || window.event;
+
+           	var docPos    = KNOWWE.helper.findXY(target);
+           	var mousePos  = KNOWWE.helper.mouseCoords(e);
+           	return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
+        },
+        /**
+         * Function: mouseCoords
+         * Returns the position of the mouse cursor in the browser.
+         * 
+         * Parameters:
+         *     e - An event.
+         * 
+         * Returns:
+         *     The coords of the mouse cursor as array
+         */
+        mouseCoords : function( e ){
+           	if(e.pageX || e.pageY){
+           		return {x:e.pageX, y:e.pageY};
+           	}
+           	return {
+           		x:e.clientX + document.body.scrollLeft - document.body.clientLeft,
+           		y:e.clientY + document.body.scrollTop  - document.body.clientTop
+          	};
         },
         /**
          * Function: gup
@@ -1275,7 +1307,7 @@ KNOWWE.helper.overlay = function( options ){
        title : 'Interview',
        css : {
            display : 'none',
-           position : 'fixed',
+           position : 'absolute',
            zIndex : 1000,
            height : '200px',
            width: '340px'
@@ -1288,6 +1320,7 @@ KNOWWE.helper.overlay = function( options ){
        fn : null
     };
     oDefault = KNOWWE.helper.enrich( options, oDefault );
+
     init();
     return o;
     
@@ -1302,10 +1335,10 @@ KNOWWE.helper.overlay = function( options ){
         });
         o._css( oDefault.css );
         o._setHTML( '<div id="o-lay-wrapper"><div id="o-lay-top"><div id="o-lay-title">'
-                + oDefault.title + '</div></div>' 
+                + oDefault.title + '<span class="right pointer" id="o-lay-close">x</span></div></div>' 
                 + '<div id="' + oDefault.mainCSS +'"></div></div>');
         document.getElementsByTagName('body')[0].appendChild(o);
-   
+
         var options = {
             url : oDefault.url,
             response : {

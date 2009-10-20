@@ -720,3 +720,8 @@ font-size:120%;
     font: normal 1em Verdana;
 }
 
+.questionsheet-layer{
+    color:rgb(0,0,0);
+    padding:0.2em;
+    margin: 5px 0 5px 2px;
+}
