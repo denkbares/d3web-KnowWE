@@ -70,7 +70,7 @@ public class DefaultRenderer implements SparqlRenderer {
 				}
 
 				for (String cur : names) {
-					String erg = b.getBinding(cur).toString();
+					String erg = b.getBinding(cur).getValue().toString();
 					if (erg.split("#").length == 2)
 						erg = erg.split("#")[1];
 					if (links) {

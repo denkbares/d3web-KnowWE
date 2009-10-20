@@ -121,7 +121,34 @@ public class OwlHelper {
 
 	}
 
-	public void attachTextOrigin(Section source, IntermediateOwlObject io,
+	/**
+	 * attaches a TextOrigin Node to a Resource. It's your duty to make sure the
+	 * Resource is of the right type if applicable (eg attachto RDF.TYPE
+	 * RDF.STATEMENT)
+	 * 
+	 * @param attachto
+	 *            The Resource that will be annotated bei the TO-Node
+	 * @param source
+	 *            The source section that should be used
+	 * @param io
+	 *            the IntermediateOwlObject that should collect the statements
+	 */
+	public void attachTextOrigin(Resource attachto, Section source,
+			IntermediateOwlObject io) {
+		try {
+			UpperOntology uo = UpperOntology.getInstance();
+			BNode to = uo.getVf().createBNode();
+			createTextOrigin(source, io, to);
+			io.addStatement(uo.getHelper().createStatement(attachto,
+					RDFS.ISDEFINEDBY, to));
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private void createTextOrigin(Section source, IntermediateOwlObject io,
 			Resource to) throws RepositoryException {
 		io.addStatement(createStatement(to, RDF.TYPE, createURI("TextOrigin")));
 		io.addStatement(createStatement(to, createURI("hasNode"),
@@ -266,7 +293,7 @@ public class OwlHelper {
 		return io;
 
 	}
-	
+
 	/**
 	 * @param cur
 	 */
@@ -317,7 +344,7 @@ public class OwlHelper {
 					source.getTitle() + ".." + source.getId() + ".."
 							+ suri.getLocalName() + puri.getLocalName()
 							+ ouri.getLocalName());
-			helper.attachTextOrigin(source, io, to);
+			helper.createTextOrigin(source, io, to);
 			io.addStatement(helper.createStatement(nary, RDFS.ISDEFINEDBY, to));
 			io.addStatement(helper.createStatement(nary, RDF.TYPE,
 					RDF.STATEMENT));
