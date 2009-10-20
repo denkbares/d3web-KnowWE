@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.kernel.XPSCase;
@@ -71,86 +72,88 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.utils.ConverterUtils;
 
 public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
- 
+
 	private class DefaultExternalClient extends ExternalClient {
-		
+
 		private final KnowledgeServiceSession kss;
-		
+
 		public DefaultExternalClient(KnowledgeServiceSession kss) {
 			super();
 			this.kss = kss;
 		}
-		
+
 		@Override
 		public void init() {
 			// nothing to initialize...
 		}
-		
+
 		@Override
-		public void delegate(String targetNamespace, String id, boolean temporary, String comment) {
-			Information info = new Information(kss.getNamespace(), id, null, getTerminologyType(id), InformationType.ExternalInformation);
+		public void delegate(String targetNamespace, String id,
+				boolean temporary, String comment) {
+			Information info = new Information(kss.getNamespace(), id, null,
+					getTerminologyType(id), InformationType.ExternalInformation);
 			List<Information> infos = new ArrayList<Information>();
 			infos.add(info);
-			broker.delegate(infos, targetNamespace, temporary, false, comment, kss);
+			broker.delegate(infos, targetNamespace, temporary, false, comment,
+					kss);
 			/*
-			 * solution: let the DDcontroller look at the action of the rule... after last one: execute!
+			 * solution: let the DDcontroller look at the action of the rule...
+			 * after last one: execute!
 			 */
 		}
 
 		@Override
-		public void delegateInstanly(String targetNamespace, String id, boolean temporary, String comment) {
-			Information info = new Information(kss.getNamespace(), id, null, getTerminologyType(id), InformationType.ExternalInformation);
+		public void delegateInstanly(String targetNamespace, String id,
+				boolean temporary, String comment) {
+			Information info = new Information(kss.getNamespace(), id, null,
+					getTerminologyType(id), InformationType.ExternalInformation);
 			List<Information> infos = new ArrayList<Information>();
 			infos.add(info);
-			broker.delegate(infos, targetNamespace, temporary, true, comment, kss);
+			broker.delegate(infos, targetNamespace, temporary, true, comment,
+					kss);
 		}
-		
+
 		@Override
 		public void executeDelegation() {
-			//normally: already done
-			
+			// normally: already done
+
 			/*
-			 * solution: let the DDcontroller look at the action of the rule... after last one: execute!
+			 * solution: let the DDcontroller look at the action of the rule...
+			 * after last one: execute!
 			 */
 		}
 
-		
-
-		
 	}
-	
+
 	private class XCLModelValueListener implements KBOEventListener {
-		
+
 		private final D3webKnowledgeServiceSession kss;
 		private final Broker broker;
 		/**
-		 * Map for interpolation of the scores. Keys are precentages,
-		 * values are assigned scores.
-		 */ 
+		 * Map for interpolation of the scores. Keys are precentages, values are
+		 * assigned scores.
+		 */
 		private Map<Double, Integer> percentagesToScores = new LinkedHashMap();
-		
-		
-		
-		public XCLModelValueListener(D3webKnowledgeServiceSession kss, Broker broker) {
+
+		public XCLModelValueListener(D3webKnowledgeServiceSession kss,
+				Broker broker) {
 			super();
 			this.kss = kss;
 			this.broker = broker;
 			percentagesToScores.put(0.00, 0);
-//			percentagesToScores.put(0.10, 2);
-//			percentagesToScores.put(0.20, 5);
-//			percentagesToScores.put(0.40, 10);
-//			percentagesToScores.put(0.60, 20);
-//			percentagesToScores.put(0.80, 40);
-//			percentagesToScores.put(0.95, 80);
+			// percentagesToScores.put(0.10, 2);
+			// percentagesToScores.put(0.20, 5);
+			// percentagesToScores.put(0.40, 10);
+			// percentagesToScores.put(0.60, 20);
+			// percentagesToScores.put(0.80, 40);
+			// percentagesToScores.put(0.95, 80);
 			percentagesToScores.put(1.00, 100);
 		}
-		
-		
-
 
 		public void notify(IEventSource source, XPSCase theCase) {
-			if(theCase != xpsCase) return;
-		
+			if (theCase != xpsCase)
+				return;
+
 			XCLModel model = (XCLModel) source;
 			List<Object> values = new ArrayList<Object>();
 			List<Object> xclInferenceValues = new ArrayList<Object>();
@@ -161,20 +164,25 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			xclInferenceValues.add(support);
 			values = new ArrayList<Object>();
 			values.add(getLocalSolutionState(xclstate));
-			
-			
-			broker.update(new Information(kss.getNamespace(), model.getSolution().getId(), values, TerminologyType.diagnosis, InformationType.SolutionInformation));
-			if(xclInferenceValues.size() > 0) {
-				broker.update(new Information(kss.getNamespace(), model.getSolution().getId(), xclInferenceValues, TerminologyType.diagnosis, InformationType.XCLInferenceInformation));
+
+			broker.update(new Information(kss.getNamespace(), model
+					.getSolution().getId(), values, TerminologyType.diagnosis,
+					InformationType.SolutionInformation));
+			if (xclInferenceValues.size() > 0) {
+				broker.update(new Information(kss.getNamespace(), model
+						.getSolution().getId(), xclInferenceValues,
+						TerminologyType.diagnosis,
+						InformationType.XCLInferenceInformation));
 			}
-			
+
 		}
-		
+
 		/**
 		 * Returns the score assigned to the given percentage. The calculation
-		 * is based on the interpolation map. If the given percentage is not defined
-		 * in the map, an interpolated score will be calculated by considering
-		 * the two adjacent defined percentages (linear interpolation).
+		 * is based on the interpolation map. If the given percentage is not
+		 * defined in the map, an interpolated score will be calculated by
+		 * considering the two adjacent defined percentages (linear
+		 * interpolation).
 		 */
 		public int getInterpolatedScore(double percentage) {
 			double[] adjacentPs = getAdjacentPercentages(percentage);
@@ -182,22 +190,20 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			if (adjacentPs[0] == adjacentPs[1]) {
 				return percentagesToScores.get(adjacentPs[0]);
 			}
-			
+
 			int lowerValue = percentagesToScores.get(adjacentPs[0]);
 			int upperValue = percentagesToScores.get(adjacentPs[1]);
-			
-			double interpolated = lowerValue 
-				+ ((upperValue - lowerValue) 
-						* (percentage - adjacentPs[0]) 
-						/ (adjacentPs[1] - adjacentPs[0]));
-			
+
+			double interpolated = lowerValue
+					+ ((upperValue - lowerValue) * (percentage - adjacentPs[0]) / (adjacentPs[1] - adjacentPs[0]));
+
 			return (int) Math.round(interpolated);
 		}
-		
+
 		/**
 		 * Returns two doubles: the first one is the percentage defined in the
 		 * interpolation map, which is less or equal to the given percentage;
-		 * the second one is the percentage defined in the interpolation map, 
+		 * the second one is the percentage defined in the interpolation map,
 		 * which is greater or equal to the given percentage.
 		 */
 		private double[] getAdjacentPercentages(double percentage) {
@@ -215,7 +221,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		}
 
 	}
-	
 
 	private final KnowledgeBase base;
 	private final KnowledgeBaseManagement baseManagement;
@@ -223,11 +228,12 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private final Broker broker;
 	private XPSCase xpsCase;
 	private ComparisonResultRepository crr;
-	
+
 	private boolean instantly = true;
 	private List<ValuedObject> toChange;
-	
-	public D3webKnowledgeServiceSession(KnowledgeBase base, Broker broker, String id) {
+
+	public D3webKnowledgeServiceSession(KnowledgeBase base, Broker broker,
+			String id) {
 		super();
 		this.base = base;
 		this.broker = broker;
@@ -238,17 +244,14 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		initConnection();
 	}
 
-	
-
 	private void initCase() {
 		DistributedControllerFactory factory = getControllerFactory();
 		xpsCase = CaseFactory.createXPSCase(base, factory);
-		((D3WebCase)xpsCase).addUsedPSMethod(PSMethodXCL.getInstance());
-		((D3WebCase)xpsCase).addUsedPSMethod(PSMethodDelegate.getInstance());
+		((D3WebCase) xpsCase).addUsedPSMethod(PSMethodXCL.getInstance());
+		((D3WebCase) xpsCase).addUsedPSMethod(PSMethodDelegate.getInstance());
 
-		
 		Collection caseRepository = base.getCaseRepository("train");
-		if(caseRepository != null && !caseRepository.isEmpty()) {
+		if (caseRepository != null && !caseRepository.isEmpty()) {
 			initCBR();
 		}
 	}
@@ -260,133 +263,146 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		crr.setCompareMode(CompareMode.BOTH_FILL_UNKNOWN);
 	}
 
-
-
 	private DistributedControllerFactory getControllerFactory() {
 		ExternalClient external = new DefaultExternalClient(this);
 		ExternalProxy proxy = new ExternalProxy();
 		proxy.addClient(external);
-		DistributedControllerFactory factory = new DistributedControllerFactory(proxy);
+		DistributedControllerFactory factory = new DistributedControllerFactory(
+				proxy);
 		return factory;
 	}
-	
+
 	private void initConnection() {
 		xpsCase.addListener(new XPSCaseEventListener() {
 			public void notify(XPSCase source, ValuedObject o, Object context) {
 				maybeNotifyBroker(o, source, context);
 			}
-		});	
+		});
 
-		
-		//also listen to XCL knowledge
-		for(KnowledgeSlice slice : base.getAllKnowledgeSlicesFor(PSMethodXCL.class)) {
-			if(slice instanceof XCLModel) {
-				((XCLModel)slice).addListener(new XCLModelValueListener(this, broker));
+		// also listen to XCL knowledge
+		for (KnowledgeSlice slice : base
+				.getAllKnowledgeSlicesFor(PSMethodXCL.class)) {
+			if (slice instanceof XCLModel) {
+				((XCLModel) slice).addListener(new XCLModelValueListener(this,
+						broker));
 			}
 		}
 	}
-	
+
 	public void clear() {
 		initCase();
 		initConnection();
 	}
-	
-	
+
 	public void processInit() {
 		for (Question question : base.getQuestions()) {
-			Information info = new Information(id, question.getId(), null, null, null);
+			Information info = new Information(id, question.getId(), null,
+					null, null);
 			info = broker.request(info, this);
-			if(info != null) {
+			if (info != null) {
 				inform(info);
 			}
 		}
 	}
-	
+
 	public void inform(Information info) {
 		IDObject object = base.search(info.getObjectID());
-	
+
 		List<Object> values = new ArrayList<Object>();
-		if(object instanceof QuestionChoice) {
-			values.addAll(getAnswers((QuestionChoice)object, info.getValues()));
-		} else if(object instanceof QuestionNum) {
+		if (object instanceof QuestionChoice) {
+			values
+					.addAll(getAnswers((QuestionChoice) object, info
+							.getValues()));
+		} else if (object instanceof QuestionNum) {
 			values.addAll(getAnswers((QuestionNum) object, info.getValues()));
-		} else if(object instanceof Diagnosis) {
+		} else if (object instanceof Diagnosis) {
 			PropertiesContainer pc = (PropertiesContainer) object;
-			Boolean external = (Boolean) pc.getProperties().getProperty(Property.EXTERNAL);
-			if(info.getInformationType().equals(InformationType.SolutionInformation)) {
-				if(external != null && external) {
+			Boolean external = (Boolean) pc.getProperties().getProperty(
+					Property.EXTERNAL);
+			if (info.getInformationType().equals(
+					InformationType.SolutionInformation)) {
+				if (external != null && external) {
 					values.addAll(getStatesForDiagnosis(info.getValues()));
 				}
 			} else {
 				// see ClusterSolutionManager
-				//values.addAll(getValuesForDiagnosis(info.getValues()));
+				// values.addAll(getValuesForDiagnosis(info.getValues()));
 			}
 		}
-		
+
 		ValuedObject vo = null;
-		if(object instanceof ValuedObject) {
+		if (object instanceof ValuedObject) {
 			vo = (ValuedObject) object;
 		}
-		if(object instanceof QuestionOC) { //[HOTFIX]:!!!!!!!!!!!!!
-			if(values.size() > 1) {
+		if (object instanceof QuestionOC) { // [HOTFIX]:!!!!!!!!!!!!!
+			if (values.size() > 1) {
 				Object value = values.get(0);
 				values = new ArrayList<Object>();
 				values.add(value);
 			}
 		}
-		
-		if(vo instanceof Diagnosis) {
+
+		if (vo instanceof Diagnosis) {
 			Diagnosis diag = (Diagnosis) vo;
-			if(!(values.isEmpty())) {
+			if (!(values.isEmpty())) {
 				toChange.add(diag);
-				if(info.getInformationType().equals(InformationType.SolutionInformation)) {
-					xpsCase.setValue(diag, values.toArray(), PSMethodHeuristic.class);
-				} else if(info.getInformationType().equals(InformationType.HeuristicInferenceInformation)) {
-					DiagnosisScore oldScore = diag.getScore(xpsCase, PSMethodHeuristic.class);
-					DiagnosisScore newScore = oldScore.add((DiagnosisScore) values.get(0));
+				if (info.getInformationType().equals(
+						InformationType.SolutionInformation)) {
+					xpsCase.setValue(diag, values.toArray(),
+							PSMethodHeuristic.class);
+				} else if (info.getInformationType().equals(
+						InformationType.HeuristicInferenceInformation)) {
+					DiagnosisScore oldScore = diag.getScore(xpsCase,
+							PSMethodHeuristic.class);
+					DiagnosisScore newScore = oldScore
+							.add((DiagnosisScore) values.get(0));
 					List newValues = new ArrayList();
 					newValues.add(newScore);
-					xpsCase.setValue(diag, values.toArray(), PSMethodHeuristic.class);
+					xpsCase.setValue(diag, values.toArray(),
+							PSMethodHeuristic.class);
 				}
 			}
 		} else {
-			toChange.add(vo);
-			xpsCase.setValue(vo, values.toArray());
+			if (vo != null) {
+				toChange.add(vo);
+				xpsCase.setValue(vo, values.toArray());
+			}else {
+				Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "ValuedObject is null: "+object.getClass().getName()+" :"+object.toString());
+			}
 		}
 	}
-
-
 
 	public void request(List<Information> infos) {
 		List<Diagnosis> requestedDiagnoses = new ArrayList<Diagnosis>();
 		List<QASet> requestedFindings = new ArrayList<QASet>();
 		for (Information info : infos) {
 			IDObject ido = base.search(info.getObjectID());
-			if(ido instanceof QASet) {
+			if (ido instanceof QASet) {
 				requestedFindings.add((QASet) ido);
-			} else if(ido instanceof Diagnosis) {
+			} else if (ido instanceof Diagnosis) {
 				requestedDiagnoses.add((Diagnosis) ido);
 			}
 		}
-	
-		//[TODO]: no idea if this is correct:
-		if(requestedDiagnoses.isEmpty()) {
+
+		// [TODO]: no idea if this is correct:
+		if (requestedDiagnoses.isEmpty()) {
 			for (QASet set : requestedFindings) {
-				xpsCase.getQASetManager().propagate(set, null, PSMethodNextQASet.getInstance());
+				xpsCase.getQASetManager().propagate(set, null,
+						PSMethodNextQASet.getInstance());
 			}
 		} else {
 			for (QASet set : base.getInitQuestions()) {
-				xpsCase.getQASetManager().propagate(set, null, PSMethodInit.getInstance());
+				xpsCase.getQASetManager().propagate(set, null,
+						PSMethodInit.getInstance());
 			}
 		}
-	
+
 	}
 
-	
 	private Collection<? extends Answer> getAnswers(QuestionNum qn, List values) {
 		Collection<Answer> result = new ArrayList<Answer>();
 		for (Object answerValue : values) {
-			if(answerValue instanceof Double) {
+			if (answerValue instanceof Double) {
 				AnswerNum answer = new AnswerNum();
 				answer.setQuestion(qn);
 				answer.setValue((Double) answerValue);
@@ -398,15 +414,15 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 	private Collection<Answer> getAnswers(QuestionChoice choice, List values) {
 		Collection<Answer> result = new ArrayList<Answer>();
-		//[HOTFIX]:Peter: known, but another answer
-//		if(values.isEmpty()) {
-//			result.add(choice.getUnknownAlternative());
-//		}
+		// [HOTFIX]:Peter: known, but another answer
+		// if(values.isEmpty()) {
+		// result.add(choice.getUnknownAlternative());
+		// }
 		for (Object object : values) {
-			if(object instanceof String) {
+			if (object instanceof String) {
 				String id = (String) object;
 				Answer answer = baseManagement.findAnswer(choice, id);
-				if(answer != null) {
+				if (answer != null) {
 					result.add(answer);
 				}
 			}
@@ -417,7 +433,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private Collection<DiagnosisScore> getValuesForDiagnosis(List values) {
 		Collection<DiagnosisScore> result = new ArrayList<DiagnosisScore>();
 		for (Object obj : values) {
-			if(obj instanceof Double) {
+			if (obj instanceof Double) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore((Double) obj);
 				result.add(score);
@@ -428,21 +444,21 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 	private Collection<Object> getStatesForDiagnosis(List values) {
 		Collection<Object> result = new ArrayList<Object>();
-		if(values.size() == 1) {
+		if (values.size() == 1) {
 			SolutionState state = (SolutionState) values.get(0);
-			if(state.equals(SolutionState.ESTABLISHED)) {
+			if (state.equals(SolutionState.ESTABLISHED)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(80);
 				result.add(score);
-			} else if(state.equals(SolutionState.SUGGESTED)) {
+			} else if (state.equals(SolutionState.SUGGESTED)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(20);
 				result.add(score);
-			} else if(state.equals(SolutionState.EXCLUDED)) {
+			} else if (state.equals(SolutionState.EXCLUDED)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(-80);
 				result.add(score);
-			} else if(state.equals(SolutionState.UNCLEAR)) {
+			} else if (state.equals(SolutionState.UNCLEAR)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(0);
 				result.add(score);
@@ -451,71 +467,107 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return result;
 	}
 
-
-	
-	protected void maybeNotifyBroker(ValuedObject valuedObject, XPSCase xpsCase, Object context) {
-		// do not inform anyone about some things that were told you by the broker...
-		if(toChange.contains(valuedObject)) {
+	protected void maybeNotifyBroker(ValuedObject valuedObject,
+			XPSCase xpsCase, Object context) {
+		// do not inform anyone about some things that were told you by the
+		// broker...
+		if (toChange.contains(valuedObject)) {
 			toChange.remove(valuedObject);
 			return;
 		}
 		InformationType infoType = getInfoType(context);
-		
-		if(valuedObject instanceof Question) {
+
+		if (valuedObject instanceof Question) {
 			Question question = (Question) valuedObject;
-			if(instantly) {
-				broker.update(new Information(id, question.getId(), ConverterUtils.toValueList(question.getValue(xpsCase), xpsCase), TerminologyType.symptom, infoType));
-			} else {
-//				 mag ich grad net
-			}
-		} else if(valuedObject instanceof Diagnosis) {
-			Diagnosis diagnosis = (Diagnosis) valuedObject;
-			if(instantly) {
-				List solutionList = new ArrayList();
-				solutionList.add(getLocalSolutionState(diagnosis.getState(xpsCase, PSMethodHeuristic.class)));
-				List inferenceList = new ArrayList();
-				inferenceList.add(diagnosis.getScore(xpsCase, PSMethodHeuristic.class).getScore());
-				broker.update(new Information(id, diagnosis.getId(), solutionList, TerminologyType.diagnosis, InformationType.SolutionInformation));
-				broker.update(new Information(id, diagnosis.getId(), inferenceList, TerminologyType.diagnosis, InformationType.HeuristicInferenceInformation));
+			if (instantly) {
+				broker.update(new Information(id, question.getId(),
+						ConverterUtils.toValueList(question.getValue(xpsCase),
+								xpsCase), TerminologyType.symptom, infoType));
 			} else {
 				// mag ich grad net
 			}
-		} 
-		if(crr != null) {
+		} else if (valuedObject instanceof Diagnosis) {
+			Diagnosis diagnosis = (Diagnosis) valuedObject;
+			if (instantly) {
+				List solutionList = new ArrayList();
+				solutionList.add(getLocalSolutionState(diagnosis.getState(
+						xpsCase, PSMethodHeuristic.class)));
+				List inferenceList = new ArrayList();
+				inferenceList.add(diagnosis.getScore(xpsCase,
+						PSMethodHeuristic.class).getScore());
+				broker.update(new Information(id, diagnosis.getId(),
+						solutionList, TerminologyType.diagnosis,
+						InformationType.SolutionInformation));
+				broker.update(new Information(id, diagnosis.getId(),
+						inferenceList, TerminologyType.diagnosis,
+						InformationType.HeuristicInferenceInformation));
+			} else {
+				// mag ich grad net
+			}
+		}
+		if (crr != null) {
 			crr.setCurrentCase(xpsCase);
 			try {
-				List simpleResults = crr.getSimpleResults(base.getCaseRepository("train"));
+				List simpleResults = crr.getSimpleResults(base
+						.getCaseRepository("train"));
 				for (Object eachObj1 : simpleResults) {
 					SimpleResult sr = (SimpleResult) eachObj1;
-					if(sr.getSimilarity() > 0.9) {
+					if (sr.getSimilarity() > 0.9) {
 						for (Object eachObj2 : sr.getDiagnoses()) {
 							Diagnosis diagnosis = (Diagnosis) eachObj2;
 							List solutionList = new ArrayList();
 							solutionList.add(SolutionState.ESTABLISHED);
 							List inferenceList = new ArrayList();
 							inferenceList.add(sr.getSimilarity());
-							broker.update(new Information(id, diagnosis.getId(), solutionList, TerminologyType.diagnosis, InformationType.SolutionInformation));
-							broker.update(new Information(id, diagnosis.getId(), inferenceList, TerminologyType.diagnosis, InformationType.CaseBasedInferenceInformation));
+							broker.update(new Information(id,
+									diagnosis.getId(), solutionList,
+									TerminologyType.diagnosis,
+									InformationType.SolutionInformation));
+							broker
+									.update(new Information(
+											id,
+											diagnosis.getId(),
+											inferenceList,
+											TerminologyType.diagnosis,
+											InformationType.CaseBasedInferenceInformation));
 						}
-					} else if(sr.getSimilarity() > 0.5) {
+					} else if (sr.getSimilarity() > 0.5) {
 						for (Object eachObj2 : sr.getDiagnoses()) {
 							Diagnosis diagnosis = (Diagnosis) eachObj2;
 							List solutionList = new ArrayList();
 							solutionList.add(SolutionState.SUGGESTED);
 							List inferenceList = new ArrayList();
 							inferenceList.add(sr.getSimilarity());
-							broker.update(new Information(id, diagnosis.getId(), solutionList, TerminologyType.diagnosis, InformationType.SolutionInformation));
-							broker.update(new Information(id, diagnosis.getId(), inferenceList, TerminologyType.diagnosis, InformationType.CaseBasedInferenceInformation));
+							broker.update(new Information(id,
+									diagnosis.getId(), solutionList,
+									TerminologyType.diagnosis,
+									InformationType.SolutionInformation));
+							broker
+									.update(new Information(
+											id,
+											diagnosis.getId(),
+											inferenceList,
+											TerminologyType.diagnosis,
+											InformationType.CaseBasedInferenceInformation));
 						}
-					} else if(sr.getSimilarity() < 0.1) {
+					} else if (sr.getSimilarity() < 0.1) {
 						for (Object eachObj2 : sr.getDiagnoses()) {
 							Diagnosis diagnosis = (Diagnosis) eachObj2;
 							List solutionList = new ArrayList();
 							solutionList.add(SolutionState.EXCLUDED);
 							List inferenceList = new ArrayList();
 							inferenceList.add(sr.getSimilarity());
-							broker.update(new Information(id, diagnosis.getId(), solutionList, TerminologyType.diagnosis, InformationType.SolutionInformation));
-							broker.update(new Information(id, diagnosis.getId(), inferenceList, TerminologyType.diagnosis, InformationType.CaseBasedInferenceInformation));
+							broker.update(new Information(id,
+									diagnosis.getId(), solutionList,
+									TerminologyType.diagnosis,
+									InformationType.SolutionInformation));
+							broker
+									.update(new Information(
+											id,
+											diagnosis.getId(),
+											inferenceList,
+											TerminologyType.diagnosis,
+											InformationType.CaseBasedInferenceInformation));
 						}
 					}
 				}
@@ -523,24 +575,25 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				Logger.getLogger(getClass().getName()).warning(e.getMessage());
 			}
 		}
-		
-		if(isFinished()) {
+
+		if (isFinished()) {
 			broker.finished(this);
 		}
 	}
 
 	public boolean isFinished() {
-		return xpsCase.isFinished() || !xpsCase.getQASetManager().hasNextQASet();
+		return xpsCase.isFinished()
+				|| !xpsCase.getQASetManager().hasNextQASet();
 	}
-	
+
 	private SolutionState getLocalSolutionState(DiagnosisState state) {
-		if(state.equals(DiagnosisState.ESTABLISHED)) {
+		if (state.equals(DiagnosisState.ESTABLISHED)) {
 			return SolutionState.ESTABLISHED;
-		} else if(state.equals(DiagnosisState.SUGGESTED)) {
+		} else if (state.equals(DiagnosisState.SUGGESTED)) {
 			return SolutionState.SUGGESTED;
-		} else if(state.equals(DiagnosisState.EXCLUDED)) {
+		} else if (state.equals(DiagnosisState.EXCLUDED)) {
 			return SolutionState.EXCLUDED;
-		} else if(state.equals(DiagnosisState.UNCLEAR)) {
+		} else if (state.equals(DiagnosisState.UNCLEAR)) {
 			return SolutionState.UNCLEAR;
 		}
 		return SolutionState.CONFLICT;
@@ -548,17 +601,17 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 	public TerminologyType getTerminologyType(String id) {
 		IDObject ido = base.search(id);
-		if(ido instanceof Diagnosis) {
+		if (ido instanceof Diagnosis) {
 			return TerminologyType.diagnosis;
-		} else if(ido instanceof QASet) {
+		} else if (ido instanceof QASet) {
 			return TerminologyType.symptom;
 		}
 		return null;
 	}
-	
+
 	private InformationType getInfoType(Object context) {
 		InformationType result = null;
-		if(context.equals(Object.class)) {
+		if (context.equals(Object.class)) {
 			// Dialog did it!
 			result = InformationType.OriginalUserInformation;
 		} else {
@@ -579,7 +632,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	public XPSCase getXpsCase() {
 		return xpsCase;
 	}
-	
+
 	public String toString() {
 		return base.getDiagnoses().toString();
 	}
@@ -588,14 +641,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return id;
 	}
 
-
-
 	public KnowledgeBaseManagement getBaseManagement() {
 		return baseManagement;
 	}
 
-
-
-	
-	
 }
