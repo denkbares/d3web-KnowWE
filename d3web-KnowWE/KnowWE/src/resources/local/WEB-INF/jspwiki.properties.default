@@ -1,11 +1,4 @@
 ###########################################################################
-####                                                                   ####
-####		WARNING: This is NOT the properties-file containing your   ####
-####		local configuration. For your local config see:            ####
-####		/src/resources/local/WEB-INF/jspwiki.properties            ####
-####		This file contains the config for building with Hudson.    ####
-####                                                                   ####
-###########################################################################
 #
 #  This is the JSPWiki configuration file.  You'll need to edit this
 #  a bit.  The first few lines are the most important ones.
@@ -15,8 +8,31 @@
 #
 
 # Introduced this for convenience while editing this file:
-#var.basedir = C:\\wikis\\exampleWiki
-var.basedir = @pagedir@
+var.basedir = C:\\wikis\\exampleWiki
+
+#
+#  Determines where wiki files are kept for FileSystemProvider
+#  and RCSFileProvider
+#
+#  If you're using Windows, then you must duplicate the backslashes.
+#  For example, use:
+#
+jspwiki.fileSystemProvider.pageDir = C:\\wikis\\exampleWiki
+
+
+#
+#  The BasicAttachmentProvider needs to know where to store the files
+#  the user has uploaded.  It's okay to put these in the same directory
+#  as you put your text files (i.e. the pageDir setting above).
+#
+#  If you're using Windows, then you must duplicate the backslashes.
+#  For example, use:
+#
+#  jspwiki.basicAttachmentProvider.storageDir = C:\\Data\\jspwiki
+#
+jspwiki.basicAttachmentProvider.storageDir = C:\\wikis\\exampleWiki
+
+
 #
 #  You can use this to override the default application name.  It affects
 #  the HTML titles and logging, for example.  It can be different from
@@ -24,6 +40,24 @@ var.basedir = @pagedir@
 #  it is the same.
 #
 jspwiki.applicationName = KnowWE
+
+#
+#  BaseURL can be used to rewrite all of JSPWiki's internal references.
+#  Sometimes, especially if you're behind a address-rewriting firewall,
+#  relative URLs don't work since the servlet container has no idea
+#  where it's actually located.
+#
+#  Leave undefined if you want to rely on what your servlet container
+#  thinks of where your application lives.
+#
+#  You MUST, however, define this one if you want to enable RSS (see below).  In
+#  general, this is a good idea to define it anyway.  Do not forget the
+#  trailing slash.
+#
+#  Example:
+#  jspwiki.baseURL = http://www.jspwiki.org/
+#
+jspwiki.baseURL=http://localhost:8080/KnowWE/
 
 #
 #  Which page provider class to use.  Possibilities are:
@@ -48,14 +82,7 @@ jspwiki.pageProvider = FileSystemProvider
 #
 jspwiki.usePageCache = true
 
-#
-#  Determines where wiki files are kept for FileSystemProvider
-#  and RCSFileProvider
-#
-#  If you're using Windows, then you must duplicate the backslashes.
-#  For example, use:
-#
- jspwiki.fileSystemProvider.pageDir = $basedir
+
 #
 #jspwiki.fileSystemProvider.pageDir = @pagedir@
 
@@ -81,17 +108,6 @@ jspwiki.usePageCache = true
 #
 jspwiki.attachmentProvider = BasicAttachmentProvider
 
-#
-#  The BasicAttachmentProvider needs to know where to store the files
-#  the user has uploaded.  It's okay to put these in the same directory
-#  as you put your text files (i.e. the pageDir setting above).
-#
-#  If you're using Windows, then you must duplicate the backslashes.
-#  For example, use:
-#
-#  jspwiki.basicAttachmentProvider.storageDir = C:\\Data\\jspwiki
-#
-jspwiki.basicAttachmentProvider.storageDir = $basedir
 
 #
 #  You can tell the BasicAttachmentProvider to add a flag
@@ -154,23 +170,7 @@ jspwiki.basicAttachmentProvider.storageDir = $basedir
 #
 jspwiki.diffProvider = TraditionalDiffProvider
 
-#
-#  BaseURL can be used to rewrite all of JSPWiki's internal references.
-#  Sometimes, especially if you're behind a address-rewriting firewall,
-#  relative URLs don't work since the servlet container has no idea
-#  where it's actually located.
-#
-#  Leave undefined if you want to rely on what your servlet container
-#  thinks of where your application lives.
-#
-#  You MUST, however, define this one if you want to enable RSS (see below).  In
-#  general, this is a good idea to define it anyway.  Do not forget the
-#  trailing slash.
-#
-#  Example:
-#  jspwiki.baseURL = http://www.jspwiki.org/
-#
-jspwiki.baseURL=$baseurl
+
 
 #  Determines if you need to have relative urls or not.  If the baseURL
 #  is not set, then this has no effect, but if you set the baseURL (which
