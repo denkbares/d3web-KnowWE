@@ -105,6 +105,8 @@ public class FlowchartDiffProvider implements DiffProvider
      */
     public String makeDiffHtml( WikiContext ctx, String p1, String p2 )
     {        
+    	Logging.getInstance().addHandlerToLogger(Logging.getInstance().getLogger(), "MakeDiffHtml.txt");
+    	
         String diffResult = "";
 
         try
@@ -176,13 +178,15 @@ public class FlowchartDiffProvider implements DiffProvider
                     s += "changed Edges:<br />" + changedEdges + "<br />";
                 }
 
-                
-                v1 = setIdToNodes( v1, getNodes( v1 ) );
-                v2 = setIdToNodes( v2, getNodes( v2 ) );
-
-                v2 = colorNodes( v2, changedNodes, FlowchartChangeType.changed );
+                v2 = colorNodes(v2, changedNodes, FlowchartChangeType.changed);
                 v2 = colorNodes(v2, addedNodes, FlowchartChangeType.added);
-                v1 = colorNodes (v1, removedNodes, FlowchartChangeType.removed);  
+                v1 = colorNodes(v1, changedNodes, FlowchartChangeType.changed);
+                v1 = colorNodes(v1, removedNodes, FlowchartChangeType.removed);  
+
+                v1 = colorEdges(v1, changedEdges, FlowchartChangeType.changed);
+                v1 = colorEdges(v1, removedEdges, FlowchartChangeType.removed); 
+                v2 = colorEdges(v2, changedEdges, FlowchartChangeType.changed);
+                v2 = colorEdges(v2, addedEdges, FlowchartChangeType.added);
                 
                 return s + "<br \\>" + "<br \\>" + createPreview( v1 ) + "<br \\>" + "<br \\>" + "<br \\>" + "<br \\>"
                        + createPreview( v2 );
@@ -438,16 +442,17 @@ public class FlowchartDiffProvider implements DiffProvider
         v1.removeAll(removedEdges(v1, v2));
         v2.removeAll(addedEdges(v1, v2));
         
+        boolean unchanged;
         
-        for (FlowchartEdge n2 : v2) {
-            for (FlowchartEdge n1 : v1) {
-                if( n2.getID().equals( n1.getID() )
-                    && (!(n2.getSource().equals( n1.getSource()) ) || !(n2.getTarget().equals( n1.getTarget()) )) )
-                {
-                    changedEdges.add(n2);
-                    Logging.getInstance().log( Level.INFO, "n1: " + n1 + "  n2: " + n2 );
-                
+        for (FlowchartEdge e2 : v2) {
+            unchanged = false;
+            for (FlowchartEdge e1 : v1) {
+                if (e2.equals( e1 )) {
+                    unchanged = true;
                 }
+            }
+            if (!unchanged) {
+                changedEdges.add(e2);
             }
         }
         
@@ -506,38 +511,91 @@ public class FlowchartDiffProvider implements DiffProvider
     
         
     
-    private String setIdToNodes(String version, List<FlowchartNode> flowchartNodes) {
+//    private String setIdToNodes(String version, List<FlowchartNode> flowchartNodes) {
+//        String temp = version;
+//        
+//        // get the lower part of the flowchart
+//        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
+//        version = version.substring(version.indexOf(">") + 1);
+//        
+//        // get all the nodes
+//        String[] nodes = version.split("<DIV class=\"Node\"");
+//       
+//        // make temporary nodes out of the lines, which are easier to compare
+//        // to the xml nodes and add their respective ids
+//        for (int i = 1; i < nodes.length; i++) {  
+//            nodes[i] = nodes[i].substring(0, nodes[i].indexOf( ">" ));
+//            String line = nodes[i];
+//                      
+//            nodes[i] = nodes[i].substring(14);
+//            int left = Integer.valueOf(nodes[i].substring(0, nodes[i].indexOf("px")));
+//            
+//            nodes[i] = nodes[i].substring( nodes[i].indexOf("px") + 8);
+//            int top = Integer.valueOf(nodes[i].substring(0, nodes[i].indexOf("px")));
+//            
+//            FlowchartNode tempNode = new FlowchartNode(left, top);
+//          
+//            for (FlowchartNode n : flowchartNodes) {
+//                if (tempNode.equalsPositionOnly(n)) {
+//                    String inputHelper1 = temp.substring(0, temp.indexOf(line));
+//                    String inputHelper2 = temp.substring(temp.indexOf(line));
+//                    temp = inputHelper1 + " id=\"" + n.getID() + "\"" + inputHelper2;
+//                }
+//            }
+//        }
+//        return temp;
+//    }
+    
+    
+    private String colorEdges(String version, List<FlowchartEdge> alteredEdges, FlowchartChangeType change) {
+    	// set the additional class of the yet to be colored nodes
+    	String alteration = "";
+    	if (change.equals(FlowchartChangeType.added)) {
+    		alteration = "added";
+    	} else if (change.equals(FlowchartChangeType.removed)) {
+    		alteration = "removed";	
+    	} else if (change.equals(FlowchartChangeType.changed)) {
+    		alteration = "changed";
+    	} else {
+    		return version;
+    	}
+    	
+    	
         String temp = version;
         
         // get the lower part of the flowchart
         version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
         version = version.substring(version.indexOf(">") + 1);
-        
+      
         // get all the nodes
-        String[] nodes = version.split("<DIV class=\"Node\"");
-       
-        // make temporary nodes out of the lines, which are easier to compare
-        // to the xml nodes and add their respective ids
-        for (int i = 1; i < nodes.length; i++) {  
-            nodes[i] = nodes[i].substring(0, nodes[i].indexOf( ">" ));
-            String line = nodes[i];
-                      
-            nodes[i] = nodes[i].substring(14);
-            int left = Integer.valueOf(nodes[i].substring(0, nodes[i].indexOf("px")));
+        String[] edges = version.split("<DIV class=\"Rule\" id=\"");
+
+        
+        for (int i = 1; i < edges.length; i++) {  
+//        	Logging.getInstance().log(Level.INFO, "edges[" + i + "]: " + edges[i] );
+            String id = edges[i].substring( 0, edges[i].indexOf("\""));
+
             
-            nodes[i] = nodes[i].substring( nodes[i].indexOf("px") + 8);
-            int top = Integer.valueOf(nodes[i].substring(0, nodes[i].indexOf("px")));
-            
-            FlowchartNode tempNode = new FlowchartNode(left, top);
-          
-            for (FlowchartNode n : flowchartNodes) {
-                if (tempNode.equalsPositionOnly(n)) {
-                    String inputHelper1 = temp.substring(0, temp.indexOf(line));
-                    String inputHelper2 = temp.substring(temp.indexOf(line));
-                    temp = inputHelper1 + " id=\"" + n.getID() + "\"" + inputHelper2;
-                }
+            for (FlowchartEdge n : alteredEdges) {
+
+            	// check for each node if it changed
+                String nID = n.getID();
+                if (id.equals( nID )) {
+                		String[] parts = edges[i].split("<DIV class=\"");
+                		for (String s : parts) {
+                			if (!s.startsWith("#rule")) {
+//                				String type = s.substring(0, s.indexOf("\""));
+//                				Logging.getInstance().log(Level.INFO, "type: " + type);
+                				String inputHelper1 = temp.substring(0, temp.indexOf(s));
+                				String inputHelper2 = temp.substring(temp.indexOf(s));
+                				temp = inputHelper1 + alteration + "\" id=\"" + inputHelper2;
+                			}
+//                			Logging.getInstance().log(Level.INFO, "s: " + s);
+                		}
+                	}
             }
         }
+//        Logging.getInstance().log(Level.INFO, "temp: " + temp);
         return temp;
     }
 
