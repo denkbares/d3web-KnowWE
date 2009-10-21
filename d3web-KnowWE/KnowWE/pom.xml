@@ -191,6 +191,9 @@
 
 								<configuration>
 									<tasks>
+										<copy todir="${project.build.directory}/${pom.name}-${pom.version}">
+											<fileset dir="../KnowWE-Plugin-HermesModule/src/main/webapp" />
+										</copy>
 										<copy file="../KnowWE-Plugin-HermesModule/src/main/wikiplugin/de.d3web.we.hermes.HermesPlugin.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
 									</tasks>
 								</configuration>
