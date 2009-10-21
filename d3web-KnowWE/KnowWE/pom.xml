@@ -99,7 +99,7 @@
 
 								<configuration>
 									<tasks>
-										<copy todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension">
+										<copy todir="${project.build.directory}/${pom.name}-${pom.version}/">
 											<fileset dir="../KnowWE-Plugin-Comment/src/main/webapp" />
 										</copy>
 										<copy file="../KnowWE-Plugin-Comment/src/main/wikiplugin/de.d3web.we.plugin.comment.CommentModule.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
@@ -145,7 +145,7 @@
 
 								<configuration>
 									<tasks>
-										<copy todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension">
+										<copy todir="${project.build.directory}/${pom.name}-${pom.version}">
 											<fileset dir="../KnowWE-Plugin-Calendar/src/main/webapp" />
 										</copy>
 										<copy file="../KnowWE-Plugin-Calendar/src/main/wikiplugin/de.d3web.we.plugin.calendar.CalendarModule.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
