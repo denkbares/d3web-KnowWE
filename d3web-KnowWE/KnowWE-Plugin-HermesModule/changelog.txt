@@ -1,3 +1,7 @@
+build_20091021_1000 lemmerich
+	* try to explain maven, what "Exclude from build path" means 
+		on the example of class TimeStringInterpreter
+
 build_20091020_2200 reutelshoefer/lemmerich
 	* some things remained the same...
 
