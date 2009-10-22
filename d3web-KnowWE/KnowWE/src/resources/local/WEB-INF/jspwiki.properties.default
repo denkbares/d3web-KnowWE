@@ -6,9 +6,12 @@
 #  Wherever it is said that an option can be "true" or "false", you can
 #  also use "yes"/"no", or "on/off".  Just for some convenience.
 #
+# Don't forget the trailing slashes .. (even in win)
+# for linux use something like /var/lib/wiki/
 
 # Introduced this for convenience while editing this file:
-var.basedir = C:\\wikis\\exampleWiki
+var.basedir = C:\\wikis\\exampleWiki\
+
 
 #
 #  Determines where wiki files are kept for FileSystemProvider
@@ -17,7 +20,7 @@ var.basedir = C:\\wikis\\exampleWiki
 #  If you're using Windows, then you must duplicate the backslashes.
 #  For example, use:
 #
-jspwiki.fileSystemProvider.pageDir = C:\\wikis\\exampleWiki
+jspwiki.fileSystemProvider.pageDir = $basedir
 
 
 #
@@ -30,8 +33,50 @@ jspwiki.fileSystemProvider.pageDir = C:\\wikis\\exampleWiki
 #
 #  jspwiki.basicAttachmentProvider.storageDir = C:\\Data\\jspwiki
 #
-jspwiki.basicAttachmentProvider.storageDir = C:\\wikis\\exampleWiki
+jspwiki.basicAttachmentProvider.storageDir = $basedir
 
+
+#  AUTHORIZATION (GROUPS)
+#  As an additional source of authorization, users can belong to discretionary
+#  "wiki groups" that the users manage themselves. Wiki groups are stored in a
+#  GroupDatabase. The default group database uses an XML file for persistent
+#  storage. Override with your own GroupDatabase implementation with this property:
+
+jspwiki.groupdatabase = com.ecyrd.jspwiki.auth.authorize.XMLGroupDatabase
+
+#  The default group database implementation stores member lists
+#  in an XML file. The location of this file should be in a secure directory
+#  in the filesystem; for example, in /etc or your servlet container's
+#  configuration directory If you do not supply a value for this property,
+#  a blank group database will be initialized in the WEB-INF/ directory of the
+#  deployed webapp. Since these directories are often overwritten when webapps
+#  are undeployed or redeployed, you should probably set this property to
+#  something useful as soon as you can. But for test wikis, it's probably
+#  ok to leave this un-set, as long as users know that their groups could
+#  "disappear" if the wiki app is ever redeployed.
+
+jspwiki.xmlGroupDatabaseFile = $basedir/groupdatabase.xml
+
+#  USER DATABASE
+#  User's wiki profiles are stored in a UserDatabase. The default user database
+#  uses an XML file for persistent storage.
+#  Override with your own UserDatabase implementation with this property:
+
+jspwiki.userdatabase = com.ecyrd.jspwiki.auth.user.XMLUserDatabase
+
+#  The default user database implementation stores usernames and passwords
+#  in an XML file. Passwords are SHA-1 hashed. The location of this file
+#  should be in a secure directory in the filesystem; for example, in
+#  /etc or your servlet container's configuration directory.
+#  If you do not supply a value for this property, a blank user database
+#  will be initialized in the WEB-INF/ directory of the deployed webapp.
+#  Since these directories are often overwritten when webapps are
+#  undeployed or redeployed, you should probably set this property to
+#  something useful as soon as you can. But for test wikis, it's probably
+#  ok to leave this un-set, as long as users know that their profiles could
+#  "disappear" if the wiki app is ever redeployed.
+
+jspwiki.xmlUserDatabaseFile = $basedir/userdatabase.xml
 
 #
 #  You can use this to override the default application name.  It affects
@@ -491,48 +536,6 @@ jspwiki.plugin.searchPath = de.jave.jspwiki.plugins,de.d3web.we.jspwiki,de.d3web
 #  class here.
 
 jspwiki.authorizer = com.ecyrd.jspwiki.auth.authorize.WebContainerAuthorizer
-
-#  AUTHORIZATION (GROUPS)
-#  As an additional source of authorization, users can belong to discretionary
-#  "wiki groups" that the users manage themselves. Wiki groups are stored in a
-#  GroupDatabase. The default group database uses an XML file for persistent
-#  storage. Override with your own GroupDatabase implementation with this property:
-
-jspwiki.groupdatabase = com.ecyrd.jspwiki.auth.authorize.XMLGroupDatabase
-
-#  The default group database implementation stores member lists
-#  in an XML file. The location of this file should be in a secure directory
-#  in the filesystem; for example, in /etc or your servlet container's
-#  configuration directory If you do not supply a value for this property,
-#  a blank group database will be initialized in the WEB-INF/ directory of the
-#  deployed webapp. Since these directories are often overwritten when webapps
-#  are undeployed or redeployed, you should probably set this property to
-#  something useful as soon as you can. But for test wikis, it's probably
-#  ok to leave this un-set, as long as users know that their groups could
-#  "disappear" if the wiki app is ever redeployed.
-
-jspwiki.xmlGroupDatabaseFile = $basedir/groupdatabase.xml
-
-#  USER DATABASE
-#  User's wiki profiles are stored in a UserDatabase. The default user database
-#  uses an XML file for persistent storage.
-#  Override with your own UserDatabase implementation with this property:
-
-jspwiki.userdatabase = com.ecyrd.jspwiki.auth.user.XMLUserDatabase
-
-#  The default user database implementation stores usernames and passwords
-#  in an XML file. Passwords are SHA-1 hashed. The location of this file
-#  should be in a secure directory in the filesystem; for example, in
-#  /etc or your servlet container's configuration directory.
-#  If you do not supply a value for this property, a blank user database
-#  will be initialized in the WEB-INF/ directory of the deployed webapp.
-#  Since these directories are often overwritten when webapps are
-#  undeployed or redeployed, you should probably set this property to
-#  something useful as soon as you can. But for test wikis, it's probably
-#  ok to leave this un-set, as long as users know that their profiles could
-#  "disappear" if the wiki app is ever redeployed.
-
-jspwiki.xmlUserDatabaseFile = $basedir/userdatabase.xml
 
 # You can also use a JDBC database for storing user profiles.
 # See the online AuthenticationAndAuthorization2.3 docs for details on
