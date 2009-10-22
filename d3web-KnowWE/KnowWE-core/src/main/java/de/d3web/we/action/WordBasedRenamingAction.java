@@ -101,7 +101,7 @@ public class WordBasedRenamingAction implements KnowWEAction {
 		// article#section#position#curWords#direction
 		String[] params = atmURL.split( WordBasedRenamingAction.TXT_SEPERATOR );
 		String articleTitle = params[0];
-		int sectionNum = Integer.parseInt(params[1]);
+		String sectionID = params[1];
 		int pos = Integer.parseInt(params[2]);
 		int curWords = Integer.parseInt(params[3]);
 		String direction = params[4];
@@ -114,7 +114,7 @@ public class WordBasedRenamingAction implements KnowWEAction {
 			KnowWEArticle article = iter.next();
 
 			if (article.getTitle().equals(articleTitle)) {
-				Section section = article.getSection().getChildren().get(sectionNum);
+				Section section = article.getSection().findChild(sectionID);
 				String context = WordBasedRenameFinding.getAdditionalContext(
 									pos, direction, curWords, query.length(),
 									section.getOriginalText());
@@ -127,8 +127,8 @@ public class WordBasedRenamingAction implements KnowWEAction {
 					curWords = WordBasedRenameFinding.MAX_WORDS + 1;					
 				}
 					
-				String span = createAdditionalMatchingTextSpan(article, sectionNum,
-							pos, curWords+1, direction.charAt(0), false);
+				String span = createAdditionalMatchingTextSpan(article, pos,
+							sectionID, curWords+1, direction.charAt(0), false);
 				
 				if( direction.charAt(0) == 'a') {
 					additionalText = context + span;
@@ -214,19 +214,23 @@ public class WordBasedRenamingAction implements KnowWEAction {
 						+ TXT_SEPERATOR
 						+ WordBasedRenameFinding.getSec().getId() + TXT_SEPERATOR
 						+ WordBasedRenameFinding.getStart();
-
+				
 				mask.append("<tr>");
+				
+				// TODO indexOf only searches the 1. children
+				// and does not consider the section to be
+				// deeper in the tree!!!
 				mask.append("<td>"
-						+ createAdditionalMatchingTextSpan(article, article
-								.getSection().getChildren().indexOf(
-										WordBasedRenameFinding.getSec()), WordBasedRenameFinding
-								.getStart(), 0,
+						+ createAdditionalMatchingTextSpan(article,
+								WordBasedRenameFinding.getStart(),
+								WordBasedRenameFinding.getSec().getId(),
+								0,
 								'p', true));
 				mask.append(" " + text + " ");
-				mask.append(createAdditionalMatchingTextSpan(article, article
-								.getSection().getChildren().indexOf(
-										WordBasedRenameFinding.getSec()), WordBasedRenameFinding
-								.getStart(), 0,
+				mask.append(createAdditionalMatchingTextSpan(article,
+								WordBasedRenameFinding.getStart(),
+								WordBasedRenameFinding.getSec().getId(),
+								0,
 								'a', true));
 				mask.append("</td>");
 				mask.append("<td><i>"
@@ -315,7 +319,7 @@ public class WordBasedRenamingAction implements KnowWEAction {
 	 * @return
 	 */
 	private String createAdditionalMatchingTextSpan(KnowWEArticle article,
-			int section, int sectionIndex, int curWords, char direction, boolean span) {
+			int sectionIndex, String sectionId, int curWords, char direction, boolean span) {
 
 		StringBuilder html = new StringBuilder();
 
@@ -343,7 +347,7 @@ public class WordBasedRenamingAction implements KnowWEAction {
 
 		// create atmUrl
 		String atmUrl = "{article: '"+ article.getTitle()+"'," 
-				        + "section: '"+section+"'," 
+				        + "section: '"+sectionId+"'," 
 				        + "index: " + sectionIndex + ", "
 				        + "words: " + curWords + ", "
 				        + "direction: '"+direction+"'}";		

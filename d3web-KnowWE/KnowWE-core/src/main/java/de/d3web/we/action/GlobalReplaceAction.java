@@ -57,13 +57,13 @@ public class GlobalReplaceAction implements KnowWEAction {
 		if(replacements == null) return rb.getString("KnowWE.renamingtool.noreplacement");
 		String [] replacementArray = replacements.split("__");
 		
-		Map<Section, List<RenameFinding>> findingsPerSection = new HashMap<Section, List<RenameFinding>>();
+		Map<Section, List<WordBasedRenameFinding>> findingsPerSection = new HashMap<Section, List<WordBasedRenameFinding>>();
 		Collection<KnowWEArticle> modifiedArticles = new HashSet<KnowWEArticle>();
 		
 		//replaceFindings decodieren
 		for (String string : replacementArray) {
-			if(!string.contains( RenamingRenderer.TXT_SEPERATOR )) continue;
- 			String data [] = string.split( RenamingRenderer.TXT_SEPERATOR );
+			if(!string.contains( WordBasedRenamingAction.TXT_SEPERATOR )) continue;
+ 			String data [] = string.split( WordBasedRenamingAction.TXT_SEPERATOR );
 			String article = data[0];
 			String sectionNumber = data[1];
 			String startIndex = data[2];
@@ -83,10 +83,10 @@ public class GlobalReplaceAction implements KnowWEAction {
 			
 			//organize replacementRequests per sections
 			if(findingsPerSection.containsKey(sec)) {
-				findingsPerSection.get(sec).add(new RenameFinding(start,RenameFinding.getContext(start, sec, art.getSection().getOriginalText(), query.length()) , sec));
+				findingsPerSection.get(sec).add(new WordBasedRenameFinding(start, 0,WordBasedRenameFinding.getContext(start, sec, art.getSection().getOriginalText(), query.length()) , sec));
 			}else {
-				List<RenameFinding>  set = new ArrayList<RenameFinding>();
-				set.add(new RenameFinding(start,RenameFinding.getContext(start, sec, art.getSection().getOriginalText(), query.length()) , sec));
+				List<WordBasedRenameFinding>  set = new ArrayList<WordBasedRenameFinding>();
+				set.add(new WordBasedRenameFinding(start, 0,WordBasedRenameFinding.getContext(start, sec, art.getSection().getOriginalText(), query.length()) , sec));
 				findingsPerSection.put(sec, set);
 			}
 		}
@@ -95,13 +95,13 @@ public class GlobalReplaceAction implements KnowWEAction {
 		
 		int count = 0;
 		//Ersetzungen vornehmen
-		for (Entry<Section, List<RenameFinding>> entry : findingsPerSection.entrySet()) {
+		for (Entry<Section, List<WordBasedRenameFinding>> entry : findingsPerSection.entrySet()) {
 			Section sec = entry.getKey();
-			List<RenameFinding> list = entry.getValue();
+			List<WordBasedRenameFinding> list = entry.getValue();
 			Collections.sort(list);
 			StringBuffer buff = new StringBuffer();
 			int lastEnd = 0;
-			for (RenameFinding finding : list) {
+			for (WordBasedRenameFinding finding : list) {
 				int start = finding.getStart();
 				String potentialMatch = sec.getOriginalText().substring(start, start+ query.length());
 				if(potentialMatch.equals(query)) {
