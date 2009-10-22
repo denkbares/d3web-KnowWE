@@ -34,6 +34,7 @@ import org.openrdf.repository.RepositoryException;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.SolutionContext;
@@ -174,20 +175,12 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 					.getContext(s, SolutionContext.CID)).getSolutionURI();
 			io.addStatement(uo.getHelper().createStatement(solutionuri, uo
 				.getHelper().createURI("isRatedBy"), explainsdings));
-
-			URI torigin = uo.getHelper().createlocalURI("Origin" + s.getTitle()
-					+ solutionuri.getLocalName() + s.getId());
-			io.addStatement(uo.getHelper().createStatement(torigin, RDF.TYPE, uo
-				.getHelper().createURI("TextOrigin")));
-			Literal nodeid = uo.getConnection().getValueFactory()
-					.createLiteral(s.getId());
-			io.addStatement(uo.getHelper().createStatement(torigin,
-					uo.getHelper().createURI("hasNode"), nodeid));
+			uo.getHelper().attachTextOrigin(explainsdings, s, io);
 
 			io.addStatement(uo.getHelper().createStatement(explainsdings, RDF.TYPE, uo
 				.getHelper().createURI("Explains")));
 			for (Section current : s.getChildren()) {
-				if (current.getObjectType() instanceof ComplexFinding) {
+				if (current.getObjectType() instanceof ComplexFinding||current.getObjectType() instanceof Finding) {
 					AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) current
 							.getObjectType();
 					for (URI curi : handler.getOwl(current).getLiterals()) {
