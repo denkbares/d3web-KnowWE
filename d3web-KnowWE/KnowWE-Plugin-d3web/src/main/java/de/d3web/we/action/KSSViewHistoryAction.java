@@ -32,13 +32,13 @@ import de.d3web.we.core.dialog.Dialog;
 import de.d3web.we.core.dialog.DialogControl;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class KSSViewHistoryRenderer implements KnowWEAction {
+public class KSSViewHistoryAction implements KnowWEAction {
 
 	private String htmlHeader;
 	private SimpleDateFormat dateFormat;
 	private String dialogLink = "KnowWE.jsp?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
 	
-	public KSSViewHistoryRenderer() {
+	public KSSViewHistoryAction() {
 		htmlHeader = "<head>"
 			+ "<link rel=\"stylesheet\" type=\"text/css\" href=\"KnowWEExtension/css/general.css\"/>"
 			+ "<link href=\"templates/knowweTmps/jspwiki.css\" type=\"text/css\" media=\"screen, projection, print\" rel=\"stylesheet\">"

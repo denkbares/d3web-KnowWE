@@ -32,7 +32,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.WordBasedRenameFinding;
 
 /**
  * Renders the Mask for the findings of
@@ -42,7 +41,7 @@ import de.d3web.we.kdom.WordBasedRenameFinding;
  * @author Johannes Dienst
  *
  */
-public class KnowWEObjectTypeBrowserRenderer implements KnowWEAction {
+public class KnowWEObjectTypeBrowserAction implements KnowWEAction {
 
 	private ResourceBundle rb;
 	

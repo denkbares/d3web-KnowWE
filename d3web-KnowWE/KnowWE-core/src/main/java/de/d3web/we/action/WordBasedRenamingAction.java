@@ -36,7 +36,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.WordBasedRenameFinding;
 
 /**
  * Renders all actions for the Renaming Tool.

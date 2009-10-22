@@ -549,7 +549,7 @@ KNOWWE.core.table = function(){
             n = n.substring(0, n.lastIndexOf('::'));
 
             var params = {
-                action : 'UpdateTableKDOMNodes',
+                action : 'UpdateTableKDOMNodesAction',
                 TargetNamespace : n,
                 KWiki_Topic : KNOWWE.helper.gup('page')
             }
@@ -647,7 +647,7 @@ KNOWWE.core.renaming = function(){
             if(!_KS('#rename-panel')) return;
             
             var params = {
-                action : 'RenamingRenderer',
+                action : 'WordBasedRenamingAction',
                 TargetNamespace : _KS('#renameInputField').value,
                 KWikiFocusedTerm : _KS('#replaceInputField').value,
                 ContextPrevious : _KS('#renamePreviousInputContext').value,
@@ -748,7 +748,7 @@ KNOWWE.core.renaming = function(){
                 + rel.words + ":" + rel.direction;
             
             var params = {
-                action : 'RenamingRenderer',
+                action : 'RenamingAction',
                 ATMUrl : atmUrl,
                 KWikiFocusedTerm : _KS('#replaceInputField').value,
                 TargetNamespace : _KS('#renameInputField').value,
@@ -825,7 +825,7 @@ KNOWWE.core.typebrowser = function(){
             
             var params = {
                 TypeBrowserQuery : rel.queryLength, //queryLength
-                action : 'KnowWEObjectTypeBrowserRenderer',
+                action : 'KnowWEObjectTypeBrowserAction',
                 ATMUrl :  atmUrl
             };
             var options = {
@@ -846,7 +846,7 @@ KNOWWE.core.typebrowser = function(){
         switchTypeActivation : function() {
             if(!_KS('#KnowWEObjectTypeActivator')) return;           
             var params = {
-                renderer : 'KnowWEObjectTypeActivationRenderer',
+                action : 'KnowWEObjectTypeActivationAction',
                 KnowWeObjectType : (function () {
                     var ob = _KS('#KnowWEObjectTypeActivator select')[0];
                     if(ob.selectedIndex){
@@ -881,7 +881,7 @@ KNOWWE.core.typebrowser = function(){
         searchTypes : function() {
             if(!document.typebrowser) return;
             var params = {
-                renderer : 'KnowWEObjectTypeBrowserRenderer',
+                action : 'KnowWEObjectTypeBrowserAction',
                 TypeBrowserParams : (function () {
                 	var box = document.typebrowser.Auswahl;
                 	
@@ -949,7 +949,7 @@ KNOWWE.core.codecompletion = function(){
                 var encodedData = tmp.substring(startPos + 1);
                 
                 var params = {
-                    renderer : 'KWiki_codeCompletion',
+                    action : 'CodeCompletionAction',
                     KWikiWeb : 'default_web',
                     CompletionText : encodedData
                 };

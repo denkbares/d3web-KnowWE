@@ -30,11 +30,11 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.dialog.Dialog;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class DPSDialogsRenderer implements KnowWEAction {
+public class DPSDialogsAction implements KnowWEAction {
 
 	private String iconURL;
 	
-	public DPSDialogsRenderer() {
+	public DPSDialogsAction() {
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String path = "KnowWEExtension/";
 		iconURL = path + rb.getString("KWiki.config.path.images") + "";

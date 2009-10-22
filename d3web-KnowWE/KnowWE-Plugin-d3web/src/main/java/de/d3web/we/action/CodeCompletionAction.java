@@ -38,13 +38,13 @@ import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 
-public class CodeCompletionRenderer implements KnowWEAction {
+public class CodeCompletionAction implements KnowWEAction {
 
 	AbstractCompletionFinder defaultFinder = new DefaultCompletionFinder();
 
 	private static List<String> additionalKeyWords = new ArrayList<String>();
 
-	public CodeCompletionRenderer() {
+	public CodeCompletionAction() {
 		initKeyWords();
 	}
 

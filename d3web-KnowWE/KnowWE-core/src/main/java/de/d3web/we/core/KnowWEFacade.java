@@ -34,18 +34,17 @@ import org.apache.commons.fileupload.FileItem;
 
 import de.d3web.we.action.GlobalReplaceAction;
 import de.d3web.we.action.KnowWEAction;
-import de.d3web.we.action.KnowWEObjectTypeActivationRenderer;
-import de.d3web.we.action.KnowWEObjectTypeBrowserRenderer;
+import de.d3web.we.action.KnowWEObjectTypeActivationAction;
+import de.d3web.we.action.KnowWEObjectTypeBrowserAction;
 import de.d3web.we.action.ParseWebOfflineRenderer;
 import de.d3web.we.action.ReplaceKDOMNodeAction;
 import de.d3web.we.action.SetQuickEditFlagAction;
 import de.d3web.we.action.TagHandlingAction;
 import de.d3web.we.action.UpdateTableKDOMNodes;
+import de.d3web.we.action.WordBasedRenameFinding;
 import de.d3web.we.action.WordBasedRenamingAction;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.WordBasedRenameFinding;
 import de.d3web.we.module.KnowWEModule;
-import de.d3web.we.renderer.xml.GraphMLOwlRenderer;
 import de.d3web.we.upload.UploadManager;
 
 
@@ -113,8 +112,8 @@ public class KnowWEFacade {
 
 		actionMap.put(ReplaceKDOMNodeAction.class, new ReplaceKDOMNodeAction());
 		actionMap.put(UpdateTableKDOMNodes.class, new UpdateTableKDOMNodes());
-		actionMap.put(KnowWEObjectTypeBrowserRenderer.class, new KnowWEObjectTypeBrowserRenderer());
-		actionMap.put(KnowWEObjectTypeActivationRenderer.class, new KnowWEObjectTypeActivationRenderer());
+		actionMap.put(KnowWEObjectTypeBrowserAction.class, new KnowWEObjectTypeBrowserAction());
+		actionMap.put(KnowWEObjectTypeActivationAction.class, new KnowWEObjectTypeActivationAction());
 		
 		actionMap.put(TagHandlingAction.class, new TagHandlingAction());
 		
@@ -125,18 +124,14 @@ public class KnowWEFacade {
 		}
 	}
 
-	public String replaceKDOMNode(KnowWEParameterMap map) {
-		return this.actionMap.get(ReplaceKDOMNodeAction.class).perform(map);
-	}
-
 	/**
-	 * Used for in-line table editing. Stores the changes back in the KDOM.
+	 * Used for Tests.
 	 * 
 	 * @param map
 	 * @return
 	 */
-	public String updateKDOMNodes(KnowWEParameterMap map){
-		return this.actionMap.get(UpdateTableKDOMNodes.class).perform(map);
+	public String replaceKDOMNode(KnowWEParameterMap map) {
+		return this.actionMap.get(ReplaceKDOMNodeAction.class).perform(map);
 	}
 	
 	/**
@@ -150,102 +145,6 @@ public class KnowWEFacade {
 	 */
 	public String autoCompletion(KnowWEParameterMap parameterMap) {
 		return performAction("CodeCompletionRenderer", parameterMap);
-
-	}
-
-	/**
-	 * returns the current solution states to be shown in the solutions-panel
-	 * 
-	 * @param map
-	 * @return
-	 */
-	public String getActualSolutionState(KnowWEParameterMap map) {
-		return performAction("DPSSolutionsRenderer", map);
-
-	}
-
-	/**
-	 * returns the graphml representation of one pages statements
-	 * 
-	 * @param map
-	 * @return
-	 */
-	public String getGraphML(KnowWEParameterMap map) {
-		KnowWEAction action = actionMap.get(GraphMLOwlRenderer.class);
-		return action.perform(map);
-	}
-
-	/**
-	 * renders the dialog history to be shown in the solutions-panel * * TODO:
-	 * check whether stil usefull/necessary
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String getDialogHistory(KnowWEParameterMap parameterMap) {
-		return performAction("KSSViewHistoryRenderer", parameterMap);
-
-	}
-
-	/**
-	 * renders the opened dialogs to be shown in the solutions-panel * TODO:
-	 * check whether stil usefull/necessary
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String getDialogs(KnowWEParameterMap map) {
-		return performAction("DPSDialogsRenderer", map);
-	}
-
-	/**
-	 * returns the answer state of a question used in GuideLineModule only
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String getQuestionState(KnowWEParameterMap map) {
-		return performAction("QuestionStateReportAction", map);
-	}
-
-	/**
-	 * Renders the global search and renaming tool
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String getRenamingMask(KnowWEParameterMap parameterMap) {
-		return this.actionMap.get(WordBasedRenamingAction.class).perform(parameterMap);
-	}
-
-	/**
-	 * Renders all currently entered findings for a user
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String getUserFindings(KnowWEParameterMap parameterMap) {
-		return performAction("UserFindingsRenderer", parameterMap);
-	}
-
-	/**
-	 * renders the XCL-Explanation for a certain solution
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String getXCLExplanation(KnowWEParameterMap map) {
-		return performAction("XCLExplanationRenderer", map);
-	}
-
-	/**
-	 * clears a user session --> Start new Case --> all Findings deleted
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String clearSession(KnowWEParameterMap map) {
-		return performAction("ClearDPSSessionAction", map);
 	}
 
 	/**
@@ -276,78 +175,8 @@ public class KnowWEFacade {
 	}
 
 	/**
-	 * updates the embedded HTML-Dialog to mark entered answers
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String refreshHTMLDialog(KnowWEParameterMap parameterMap) {
-		return performAction("RefreshHTMLDialogAction", parameterMap);
-
-	}
-
-	/**
-	 * regenerates the terminologies of the distributed reasoning engine
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String reInitTerminologies(KnowWEParameterMap parameterMap) {
-		return performAction("ReInitDPSEnvironmentRenderer", parameterMap);
-	}
-
-	/**
-	 * replaces a set of occurences of a textphrase with the specified
-	 * replacement used by the global search and renaming tool
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String replaceOperation(KnowWEParameterMap map) {
-		return performAction("GlobalReplaceAction", map);
-	}
-
-	/**
-	 * Sets the QuickEditFlag in the UserSettingsManager.
-	 * @param map
-	 * @return
-	 */
-	public String setQuickEdit(KnowWEParameterMap map) {
-		return performAction("SetQuickEditFlagAction", map);
-	}
-	
-	/**
-	 * starts the external dialog
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String requestDialog(KnowWEParameterMap map) {
-		return performAction("RequestDialogRenderer", map);
-	}
-
-	/**
-	 * renders the popup for an inline-Answer
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String semAno(KnowWEParameterMap parameterMap) {
-		return performAction("SemanticAnnotationRenderer", parameterMap);
-	}
-
-	/**
-	 * Sets findings for a question. For MCs possibly multiple at once
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String setFinding(KnowWEParameterMap parameterMap) {
-		return performAction("SetFindingAction", parameterMap);
-	}
-
-	/**
 	 * Sets a single finding for a question
+	 * TODO: Why performAction is called with two different actions
 	 * 
 	 * @param parameterMap
 	 * @return
@@ -355,50 +184,6 @@ public class KnowWEFacade {
 	public String setSingleFinding(KnowWEParameterMap parameterMap) {
 		performAction("SetSingleFindingAction", parameterMap);
 		return performAction("RefreshHTMLDialogAction", parameterMap);
-	}
-
-	/**
-	 * Shows all solution states * * TODO: check whether stil usefull/necessary
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String showAllSolutions(KnowWEParameterMap parameterMap) {
-		return performAction("DPSSolutionsRenderer", parameterMap);
-	}
-
-	// /**
-	// * Renders Explanation Component - possibly outdated (from KnowWE1)
-	// *
-	// * TODO: check wether stil usefull/necessary
-	// *
-	// * @param parameterMap
-	// * @return
-	// */
-	// public String showExplanation(KnowWEParameterMap parameterMap) {
-	// ((RequestDialogRenderer) actionMap.get(RequestDialogRenderer.class))
-	// .prepareDialog(parameterMap);
-	// return actionMap.get(ExplanationRenderer2.class).perform(parameterMap);
-	// }
-
-	/**
-	 * Shows solution log * * TODO: check whether stil usefull/necessary
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String showSolutionLog(KnowWEParameterMap parameterMap) {
-		return performAction("SolutionLogRenderer", parameterMap);
-	}
-
-	/**
-	 * Renders an overview of all knowledge articles with short stats *
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String summarize(KnowWEParameterMap parameterMap) {
-		return performAction("KnowledgeSummerizeRenderer", parameterMap);
 	}
 
 	/**
@@ -425,40 +210,6 @@ public class KnowWEFacade {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Returns the embedded HTML-Dialog
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String getDialogMask(KnowWEParameterMap parameterMap) {
-		
-		return performAction("RefreshHTMLDialogAction", parameterMap);
-	}
-
-
-	
-	/**
-	 * Saves the choosen answers in the dialog as an XCLModel.
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String saveAsXCL(KnowWEParameterMap parameterMap) {
-		return performAction("SaveDialogAsXCLAction", parameterMap);
-	}
-
-	/**
-	 * Generates a KnowledgeBase from an Uploaded jarFile(Attachment).
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String generateKB(KnowWEParameterMap parameterMap) {
-		String className = "GenerateKBRenderer";
-		return performAction(className, parameterMap);
 	}
 
 	public String performAction(String action, KnowWEParameterMap parameterMap) {
@@ -532,6 +283,7 @@ public class KnowWEFacade {
 
 	/**
 	 * Generates XCL from a Tirex Input of a given Page.
+	 * TODO: Hey this class is gone... Where is it =(
 	 * 
 	 * @param parameterMap
 	 * @return
@@ -552,28 +304,7 @@ public class KnowWEFacade {
 	}
 
 	/**
-	 * Switches the Activation-State of a KnowWeObjectType
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String switchKnowWeObjectActivation(KnowWEParameterMap parameterMap) {
-		return performAction("KnowWEObjectTypeActivationRenderer", parameterMap);
-	}
-	
-	/**
-	 * Collects all Sections selected in KnowWEObjectTypeBrowser.
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String collectAllSearchedSections(KnowWEParameterMap parameterMap) {
-		KnowWEAction action = actionMap
-		.get(KnowWEObjectTypeBrowserRenderer.class);
-		return action.perform(parameterMap);
-	}
-	/**
-	 * This returns a dump of the current Ontolgy
+	 * This returns a dump of the current Ontology
 	 * @return
 	 */
 	public void writeOwl(OutputStream stream){
@@ -583,10 +314,12 @@ public class KnowWEFacade {
 	/**
 	 * This is for the JUnit Test of the Renaming Tool.
 	 */
-	public Map<KnowWEArticle, Collection<WordBasedRenameFinding>> renamingToolTest(KnowWEParameterMap map) {		
-		return ((WordBasedRenamingAction)this.actionMap.get(WordBasedRenamingAction.class)).
-				scanForFindings(map.getWeb(), map.get(KnowWEAttributes.TARGET),
-						map.get(KnowWEAttributes.CONTEXT_PREVIOUS).length());
+	public Map<KnowWEArticle, Collection<WordBasedRenameFinding>> renamingToolTest(
+			KnowWEParameterMap map) {
+		return ((WordBasedRenamingAction) this.actionMap
+				.get(WordBasedRenamingAction.class)).scanForFindings(map
+				.getWeb(), map.get(KnowWEAttributes.TARGET), map.get(
+				KnowWEAttributes.CONTEXT_PREVIOUS).length());
 	}
 
 }

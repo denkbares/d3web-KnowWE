@@ -39,7 +39,7 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
 
-public class UserFindingsRenderer implements KnowWEAction {
+public class UserFindingsAction implements KnowWEAction {
 
 	private String htmlHeader;
 	private SimpleDateFormat dateFormat;
@@ -47,7 +47,7 @@ public class UserFindingsRenderer implements KnowWEAction {
 	private String jumplink = "KnowWE.jsp?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikiJumpId=%jumpId%&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
 	
 	
-	public UserFindingsRenderer() {
+	public UserFindingsAction() {
 		htmlHeader = "<head>"
 			+ "<link rel=\"stylesheet\" type=\"text/css\" href=\"KnowWEExtension/css/general.css\"/>"
 			+ "<link href=\"templates/knowweTmps/jspwiki.css\" type=\"text/css\" media=\"screen, projection, print\" rel=\"stylesheet\">"

@@ -48,7 +48,7 @@ import de.d3web.we.terminology.local.LocalTerminologyAccess;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 
-public class SolutionLogRenderer implements KnowWEAction {
+public class SolutionLogAction implements KnowWEAction {
 
 	private String htmlHeader;
 	private SimpleDateFormat dateFormat;
@@ -56,7 +56,7 @@ public class SolutionLogRenderer implements KnowWEAction {
 	private String jumplink = "KnowWE.jsp?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikiJumpId=%jumpId%&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
 	private String iconURL;
 	
-	public SolutionLogRenderer() {
+	public SolutionLogAction() {
 		htmlHeader = "<meta content='text/html; charset=iso-8859-1' http-equiv='content-type'><head><script src='../javascript/d3dialog.js'></script><script src='../javascript/dt.js'></script><link rel='stylesheet' type='text/css' href='../css/d3dialog.css' ></link><link rel='stylesheet' type='text/css' href='../css/dt.css' ><link rel='stylesheet' type='text/css' href='../css/KnowWE.css'></link></head>";
 		dateFormat = new SimpleDateFormat();
 		dateFormat.applyPattern("dd.MM.yyyy HH:mm:ss");

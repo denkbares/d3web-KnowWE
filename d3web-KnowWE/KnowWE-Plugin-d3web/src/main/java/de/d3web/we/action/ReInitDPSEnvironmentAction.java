@@ -29,7 +29,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 
 
-public class ReInitDPSEnvironmentRenderer implements KnowWEAction{
+public class ReInitDPSEnvironmentAction implements KnowWEAction{
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

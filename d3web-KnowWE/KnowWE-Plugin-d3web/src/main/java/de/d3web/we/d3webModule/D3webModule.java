@@ -40,25 +40,25 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.ClearDPSSessionAction;
-import de.d3web.we.action.CodeCompletionRenderer;
-import de.d3web.we.action.DPSDialogsRenderer;
-import de.d3web.we.action.DPSSolutionsRenderer;
+import de.d3web.we.action.CodeCompletionAction;
+import de.d3web.we.action.DPSDialogsAction;
+import de.d3web.we.action.DPSSolutionsAction;
 import de.d3web.we.action.ExplanationRenderer2;
-import de.d3web.we.action.GenerateKBRenderer;
-import de.d3web.we.action.KSSViewHistoryRenderer;
+import de.d3web.we.action.GenerateKBAction;
+import de.d3web.we.action.KSSViewHistoryAction;
 import de.d3web.we.action.KnowWEAction;
-import de.d3web.we.action.KnowledgeSummerizeRenderer;
+import de.d3web.we.action.KnowledgeSummerizeAction;
 import de.d3web.we.action.ParseWebOfflineRenderer;
 import de.d3web.we.action.QuestionStateReportAction;
-import de.d3web.we.action.ReInitDPSEnvironmentRenderer;
+import de.d3web.we.action.ReInitDPSEnvironmentAction;
 import de.d3web.we.action.RefreshHTMLDialogAction;
 import de.d3web.we.action.RequestDialogRenderer;
 import de.d3web.we.action.SaveDialogAsXCLAction;
-import de.d3web.we.action.SemanticAnnotationRenderer;
+import de.d3web.we.action.SemanticAnnotationAction;
 import de.d3web.we.action.SetFindingAction;
 import de.d3web.we.action.SetSingleFindingAction;
-import de.d3web.we.action.SolutionLogRenderer;
-import de.d3web.we.action.UserFindingsRenderer;
+import de.d3web.we.action.SolutionLogAction;
+import de.d3web.we.action.UserFindingsAction;
 import de.d3web.we.action.XCLExplanationRenderer;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
@@ -257,29 +257,29 @@ public class D3webModule implements KnowWEModule {
 
 	public void addAction(
 			Map<Class<? extends KnowWEAction>, KnowWEAction> actionMap) {
-		actionMap.put(GenerateKBRenderer.class, new GenerateKBRenderer());
-		actionMap.put(SemanticAnnotationRenderer.class,
-				new SemanticAnnotationRenderer());
+		actionMap.put(GenerateKBAction.class, new GenerateKBAction());
+		actionMap.put(SemanticAnnotationAction.class,
+				new SemanticAnnotationAction());
 		actionMap.put(GraphMLOwlRenderer.class, new GraphMLOwlRenderer());
-		actionMap.put(DPSSolutionsRenderer.class, new DPSSolutionsRenderer());
+		actionMap.put(DPSSolutionsAction.class, new DPSSolutionsAction());
 
-		actionMap.put(KnowledgeSummerizeRenderer.class,
-				new KnowledgeSummerizeRenderer());
-		actionMap.put(ReInitDPSEnvironmentRenderer.class,
-				new ReInitDPSEnvironmentRenderer());
+		actionMap.put(KnowledgeSummerizeAction.class,
+				new KnowledgeSummerizeAction());
+		actionMap.put(ReInitDPSEnvironmentAction.class,
+				new ReInitDPSEnvironmentAction());
 		actionMap.put(RequestDialogRenderer.class, new RequestDialogRenderer());
 
-		actionMap.put(DPSSolutionsRenderer.class, new DPSSolutionsRenderer());
-		actionMap.put(DPSDialogsRenderer.class, new DPSDialogsRenderer());
-		actionMap.put(UserFindingsRenderer.class, new UserFindingsRenderer());
-		actionMap.put(KSSViewHistoryRenderer.class,
-				new KSSViewHistoryRenderer());
+		actionMap.put(DPSSolutionsAction.class, new DPSSolutionsAction());
+		actionMap.put(DPSDialogsAction.class, new DPSDialogsAction());
+		actionMap.put(UserFindingsAction.class, new UserFindingsAction());
+		actionMap.put(KSSViewHistoryAction.class,
+				new KSSViewHistoryAction());
 		actionMap.put(ExplanationRenderer2.class, new ExplanationRenderer2());
-		actionMap.put(SolutionLogRenderer.class, new SolutionLogRenderer());
+		actionMap.put(SolutionLogAction.class, new SolutionLogAction());
 		actionMap.put(QuestionStateReportAction.class,
 				new QuestionStateReportAction());
-		actionMap.put(CodeCompletionRenderer.class,
-				new CodeCompletionRenderer());
+		actionMap.put(CodeCompletionAction.class,
+				new CodeCompletionAction());
 		actionMap.put(XCLExplanationRenderer.class,
 				new XCLExplanationRenderer());
 		actionMap.put(SetSingleFindingAction.class,

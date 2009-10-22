@@ -88,7 +88,7 @@ public class SetSingleFindingAction implements KnowWEAction {
 		
 		
 		Term term = null;
-		term = SemanticAnnotationRenderer.getTerm(env, termName);
+		term = SemanticAnnotationAction.getTerm(env, termName);
 		
 		//workaround TODO refactor
 		if(term == null) {
@@ -98,14 +98,14 @@ public class SetSingleFindingAction implements KnowWEAction {
 				Question q = ((D3webKnowledgeServiceSession)kss).getBaseManagement().getKnowledgeBase().searchQuestions(objectid);
 				if(q != null) {
 					termName = q.getText();
-					term = SemanticAnnotationRenderer.getTerm(env, termName);
+					term = SemanticAnnotationAction.getTerm(env, termName);
 				}
 			}
 		}
 
 		IdentifiableInstance ii = null;
 		if (term != null) {
-			ii = SemanticAnnotationRenderer.getII(env, namespace, term);
+			ii = SemanticAnnotationAction.getII(env, namespace, term);
 		}
 		if (ii == null) {
 			return "Question not found in KB: " + termName;

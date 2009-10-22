@@ -22,17 +22,17 @@ package de.d3web.we.taghandler;
 
 import java.util.Map;
 
-import de.d3web.we.action.KnowledgeSummerizeRenderer;
+import de.d3web.we.action.KnowledgeSummerizeAction;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ShowAllKBsHandler extends AbstractTagHandler {	
 	
-	private KnowledgeSummerizeRenderer renderer = null;
+	private KnowledgeSummerizeAction renderer = null;
 	
 	public ShowAllKBsHandler() {
 		super("showAllKBs");
-		renderer = new KnowledgeSummerizeRenderer();
+		renderer = new KnowledgeSummerizeAction();
 	}
 	
 	@Override

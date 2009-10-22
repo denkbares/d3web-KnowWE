@@ -38,12 +38,12 @@ import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
 import de.d3web.we.terminology.term.Term;
 
-public class SemanticAnnotationRenderer implements KnowWEAction {
+public class SemanticAnnotationAction implements KnowWEAction {
 
 	// private FindingXMLWriter questionWriter;
 	private FindingHTMLWriter questionWriter;
 
-	public SemanticAnnotationRenderer() {
+	public SemanticAnnotationAction() {
 		questionWriter = new FindingHTMLWriter();
 	}
 
