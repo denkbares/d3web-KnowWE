@@ -533,7 +533,7 @@ KNOWWE.plugin.d3web.adminconsole = function(){
          * no action in the admin console.
          */
         init : function(){
-    	    if(_KS('#admin-summarizer'))
+            if(_KS('#admin-summarizer'))
                 _KE.add('click', _KS('#admin-summarizer'), KNOWWE.plugin.d3web.adminconsole.doSumAll);
             if(_KS('#admin-reInit'))
                 _KE.add('click', _KS('#admin-reInit'), KNOWWE.plugin.d3web.adminconsole.doReInit);
@@ -682,8 +682,8 @@ KNOWWE.plugin.d3web.semantic = function(){
                     }
                 });
                 _KE.add('click', _KS('#o-lay-close'), function(){
-                	_KS('#o-lay')._remove();
-                	clearTimeout( sTimer );
+                    _KS('#o-lay')._remove();
+                    clearTimeout( sTimer );
                 });
             }
         },
@@ -706,9 +706,8 @@ KNOWWE.plugin.d3web.semantic = function(){
          * Parameters:
          *      e - The current occurred event
          */
-        handleNum : function(e){        	
+        handleNum : function(e){            
             var bttn = (_KE.target( e ).value == 'ok');
-            console.log( bttn );
             var key = (e.keyCode == 13);
             if( !( key || bttn ) ) return false;
             
@@ -717,12 +716,11 @@ KNOWWE.plugin.d3web.semantic = function(){
             
             el = new _KN(_KE.target(e));
             if( el.value=="ok" ){
-            	el = el.previousSibling;
+                el = el.previousSibling;
             }
             rel = eval("(" + el.getAttribute('rel') + ")");
             
             if( !rel ) return;            
-            console.log( el );
             KNOWWE.plugin.d3web.semantic.send( rel.url, {ValueNum : el.value} );
         },
         /**
@@ -964,46 +962,46 @@ KNOWWE.plugin.d3web.solutionstate = function(){
  * an answer in the dialog or in the question sheet itself.
  */
 KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
-	return {
-		/**
-		 * Function: update
-		 * Updates the question sheet after the user selected an answer in the
-		 * pop-up window.
-		 */
-		update : function( ) {
-			var topic = KNOWWE.helper.gup('page');
-		    var params = {
-		        action : 'ReRenderQuestionSheetAction',
-		        KWikiWeb : 'default_web',
-		        KWiki_Topic : topic
-		    }
-		    var url = KNOWWE.core.util.getURL( params );
-		    KNOWWE.plugin.d3web.rerenderquestionsheet.execute(url, 'questionsheet');
-		},
-		/**
-		 * Function: execute
-		 * Executes the update question sheet AJAX request
-		 * 
-		 * Parameters:
-		 *     url - The URL for the AJAX request
-		 *     id - The id of the DOM Element that should be updated.
-		 */
-		execute : function( url, id ) {
-			if(!_KS('#questionsheet-panel')) return ;
-		    var options = {
-		        url : url,
-		        response : {
-		        	action : 'insert',
-		            ids : [ id ],
-		            fn : function(){
-		            	KNOWWE.core.util.addCollabsiblePluginHeader('#questionsheet-panel');
-		            	KNOWWE.plugin.d3web.semantic.init();
-		            }
-		        }
-		    }
-		    new _KA( options ).send();
-	    }
-	}
+    return {
+        /**
+         * Function: update
+         * Updates the question sheet after the user selected an answer in the
+         * pop-up window.
+         */
+        update : function( ) {
+            var topic = KNOWWE.helper.gup('page');
+            var params = {
+                action : 'ReRenderQuestionSheetAction',
+                KWikiWeb : 'default_web',
+                KWiki_Topic : topic
+            }
+            var url = KNOWWE.core.util.getURL( params );
+            KNOWWE.plugin.d3web.rerenderquestionsheet.execute(url, 'questionsheet');
+        },
+        /**
+         * Function: execute
+         * Executes the update question sheet AJAX request
+         * 
+         * Parameters:
+         *     url - The URL for the AJAX request
+         *     id - The id of the DOM Element that should be updated.
+         */
+        execute : function( url, id ) {
+            if(!_KS('#questionsheet-panel')) return ;
+            var options = {
+                url : url,
+                response : {
+                    action : 'insert',
+                    ids : [ id ],
+                    fn : function(){
+                        KNOWWE.core.util.addCollabsiblePluginHeader('#questionsheet-panel');
+                        KNOWWE.plugin.d3web.semantic.init();
+                    }
+                }
+            }
+            new _KA( options ).send();
+        }
+    }
 }();
 
 /**

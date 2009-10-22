@@ -83,19 +83,19 @@ KNOWWE.helper = function(){
          *     The x and y value of the distance.
          */
         findXY : function( e ) {
-			var left = 0;
-			var top  = 0;
-		
-			while (e.offsetParent){
-				left += e.offsetLeft;
-				top  += e.offsetTop;
-				e     = e.offsetParent;
-			}
-		
-			left += e.offsetLeft;
-			top  += e.offsetTop;
-		
-			return {x:left, y:top};
+            var left = 0;
+            var top  = 0;
+        
+            while (e.offsetParent){
+                left += e.offsetLeft;
+                top  += e.offsetTop;
+                e     = e.offsetParent;
+            }
+        
+            left += e.offsetLeft;
+            top  += e.offsetTop;
+        
+            return {x:left, y:top};
         },       
         /**
          * Function: getMouseOffset
@@ -108,11 +108,11 @@ KNOWWE.helper = function(){
          * 
          */
         getMouseOffset : function(target, e){
-           	e = e || window.event;
+            e = e || window.event;
 
-           	var docPos    = KNOWWE.helper.findXY(target);
-           	var mousePos  = KNOWWE.helper.mouseCoords(e);
-           	return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
+            var docPos    = KNOWWE.helper.findXY(target);
+            var mousePos  = KNOWWE.helper.mouseCoords(e);
+            return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
         },
         /**
          * Function: mouseCoords
@@ -125,13 +125,13 @@ KNOWWE.helper = function(){
          *     The coords of the mouse cursor as array
          */
         mouseCoords : function( e ){
-           	if(e.pageX || e.pageY){
-           		return {x:e.pageX, y:e.pageY};
-           	}
-           	return {
-           		x:e.clientX + document.body.scrollLeft - document.body.clientLeft,
-           		y:e.clientY + document.body.scrollTop  - document.body.clientTop
-          	};
+            if(e.pageX || e.pageY){
+                return {x:e.pageX, y:e.pageY};
+            }
+            return {
+                x:e.clientX + document.body.scrollLeft - document.body.clientLeft,
+                y:e.clientY + document.body.scrollTop  - document.body.clientTop
+            };
         },
         /**
          * Function: gup
@@ -443,7 +443,7 @@ KNOWWE.helper.element.prototype = {
     _css : function( properties ){
         if(properties.constructor !== Object) throw new Error('awaits object');
         for( var i in properties){
-            this['style'][i] = properties[i];
+            this.style[i] = properties[i];
         }
     },
     /**
@@ -1309,8 +1309,7 @@ KNOWWE.helper.overlay = function( options ){
            display : 'none',
            position : 'absolute',
            zIndex : 1000,
-           height : '200px',
-           width: '340px'
+           minWidth:'300px'
        },
        cursor : {
            top : 0,
@@ -1455,24 +1454,24 @@ if (!Array.prototype.each)
      * Iterates over an array and executes the given function for each element of the 
      * array. Used to simply apply a function to all elements of an array.
      * 
-	 * This prototype is provided by the Mozilla foundation and
-	 * is distributed under the MIT license.
-	 * http://www.ibiblio.org/pub/Linux/LICENSES/mit.license
+     * This prototype is provided by the Mozilla foundation and
+     * is distributed under the MIT license.
+     * http://www.ibiblio.org/pub/Linux/LICENSES/mit.license
      * 
      * Parameters:
      *     fun - The called function.
      */
-	Array.prototype.each = function(fun /*, thisp*/)
-	{
-	  var len = this.length >>> 0;
-	  if (typeof fun != "function")
-	    throw new TypeError();
-	
-	  var thisp = arguments[1];
-	  for (var i = 0; i < len; i++)
-	  {
-	    if (i in this)
-	      fun.call(thisp, this[i], i, this);
-	  }
-	};
+    Array.prototype.each = function(fun /*, thisp*/)
+    {
+      var len = this.length >>> 0;
+      if (typeof fun != "function")
+        throw new TypeError();
+    
+      var thisp = arguments[1];
+      for (var i = 0; i < len; i++)
+      {
+        if (i in this)
+          fun.call(thisp, this[i], i, this);
+      }
+    };
 }
