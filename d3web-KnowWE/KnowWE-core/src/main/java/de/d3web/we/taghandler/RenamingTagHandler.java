@@ -115,6 +115,7 @@ public class RenamingTagHandler extends AbstractTagHandler {
 		html.append("</div>");		
 		// includes the section selection tree. uses external yahoo yui files (should be integrated)
 		html.append("" +
+				"<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/TreeView.css'>" +
 				"<!-- Combo-handled YUI CSS files: -->" +
 				"<link rel='stylesheet' type='text/css' href='http://yui.yahooapis.com/combo?2.8.0r4/build/treeview/assets/skins/sam/treeview.css'>" +
 				"<!-- Combo-handled YUI JS files: -->" +
