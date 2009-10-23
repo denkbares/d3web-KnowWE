@@ -652,7 +652,9 @@ KNOWWE.core.renaming = function(){
                 KWikiFocusedTerm : _KS('#replaceInputField').value,
                 ContextPrevious : _KS('#renamePreviousInputContext').value,
                 ContextAfter : _KS('#renameAfterInputContext').value,
-                CaseSensitive :_KS('#search-sensitive').checked
+                CaseSensitive :_KS('#search-sensitive').checked,
+                //method getSelectedSections() is located in TreeView.js (TreeView.js should be included here eventually)
+				SelectedSections : JSON.stringify(getSelectedSections()),
             }
             
             var options = {

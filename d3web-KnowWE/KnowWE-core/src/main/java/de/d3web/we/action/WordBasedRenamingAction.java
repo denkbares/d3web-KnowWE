@@ -20,16 +20,20 @@
 
 package de.d3web.we.action;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.gson.Gson;
 
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -54,7 +58,11 @@ public class WordBasedRenamingAction implements KnowWEAction {
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest());
-		
+		// get the selected sections from the section selection tree
+		String s = parameterMap.get("SelectedSections");
+		Gson gson = new Gson();
+		String[] sections = gson.fromJson(s, String[].class);
+
 		String queryString = parameterMap.get(KnowWEAttributes.TARGET);
 		String queryContextPrevious = parameterMap.get(KnowWEAttributes.CONTEXT_PREVIOUS);
 		String queryContextAfter = parameterMap.get(KnowWEAttributes.CONTEXT_AFTER);
@@ -81,7 +89,7 @@ public class WordBasedRenamingAction implements KnowWEAction {
 		}
 
 		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> findings = 
-							scanForFindings(web, queryContext, queryContextPrevious.length());
+							scanForFindings(web, queryContext, queryContextPrevious.length(), sections);
 
 		return renderFindingsSelectionMask(findings, queryString, replacement);
 	}
@@ -267,11 +275,13 @@ public class WordBasedRenamingAction implements KnowWEAction {
 	 * 
 	 * @param web
 	 * @param query any string the user is looking for
+	 * @param previousMatchLength
+	 * @param sections just add findings to the map which have a corresponding section type - if null, all findings are added  
 	 * @return a map containing all findings of the string <code>query<code>
 	 */
 	public Map<KnowWEArticle, Collection<WordBasedRenameFinding>> scanForFindings(
-			String web, String query, int previousMatchLength) {
-		
+			String web, String query, int previousMatchLength, String[] sections) {
+		Set<String> sectionSet = new HashSet<String>(Arrays.asList(sections));
 		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> map = 
 						new HashMap<KnowWEArticle, Collection<WordBasedRenameFinding>>();
 		Iterator<KnowWEArticle> iter = 
@@ -301,7 +311,9 @@ public class WordBasedRenamingAction implements KnowWEAction {
 					new WordBasedRenameFinding(startInSec, startInSec+query.length(),
 							WordBasedRenameFinding.
 								getContext(startInSec,sec, text, query.length()), sec);
-				map.get(article).add(f);
+				if (sections == null || sectionSet.contains(sec.getObjectType().getName())) {
+					map.get(article).add(f);
+				}
 			}
 		}
 		return map;

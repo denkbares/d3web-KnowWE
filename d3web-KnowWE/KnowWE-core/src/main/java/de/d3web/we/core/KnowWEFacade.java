@@ -319,7 +319,7 @@ public class KnowWEFacade {
 		return ((WordBasedRenamingAction) this.actionMap
 				.get(WordBasedRenamingAction.class)).scanForFindings(map
 				.getWeb(), map.get(KnowWEAttributes.TARGET), map.get(
-				KnowWEAttributes.CONTEXT_PREVIOUS).length());
+				KnowWEAttributes.CONTEXT_PREVIOUS).length(), null);
 	}
 
 }

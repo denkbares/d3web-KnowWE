@@ -20,10 +20,32 @@
 
 package de.d3web.we.taghandler;
 
+
+import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -91,6 +113,18 @@ public class RenamingTagHandler extends AbstractTagHandler {
 	    html.append("<label for='search-sensitive'>" + rb.getString("KnowWE.renamingtool.case") + "</label>");
 	    html.append("<input id='search-sensitive' type='checkbox' name='search-sensitive' tabindex='7' checked='checked'/>");
 		html.append("</div>");		
+		// includes the section selection tree. uses external yahoo yui files (should be integrated)
+		html.append("" +
+				"<!-- Combo-handled YUI CSS files: -->" +
+				"<link rel='stylesheet' type='text/css' href='http://yui.yahooapis.com/combo?2.8.0r4/build/treeview/assets/skins/sam/treeview.css'>" +
+				"<!-- Combo-handled YUI JS files: -->" +
+				"<script type='text/javascript' src='http://yui.yahooapis.com/combo?2.8.0r4/build/yahoo-dom-event/yahoo-dom-event.js&amp;2.8.0r4/build/treeview/treeview-min.js'></script>" +
+				"");
+		html.append("\n<script type='text/javascript' src='"
+				+ "KnowWEExtension/scripts/"
+				+ "TreeView.js"
+				+ "'></script>\n");
+		html.append("<br><br>" + printULTree()+"\n");
 		
 		html.append("</div>");
 		
@@ -101,5 +135,91 @@ public class RenamingTagHandler extends AbstractTagHandler {
 		html.append("</div>");
 		
 		return html.toString();
+	}
+	
+	private StringBuffer printULTree() {
+		//input
+		//get an instance of factory
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		Document dom = null;
+		try {
+			//get an instance of builder
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			//create an instance of DOM
+			dom = db.newDocument();
+		}catch(ParserConfigurationException pce) {
+			//dump it
+			System.out.println("Error while trying to instantiate DocumentBuilder " + pce);
+		}
+		//fill
+		//TODO
+		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
+		List<KnowWEObjectType> typeList = ke.getRootTypes();
+		//set div and ul
+		Element div = dom.createElement("div");
+		div.setAttribute("id", "typeTree");
+		div.setAttribute("class", "ygtv-checkbox");
+		dom.appendChild(div);
+		//
+		Element ul = dom.createElement("ul");
+		Element li = dom.createElement("li");
+		Text rootNode = dom.createTextNode("alle Bereiche");
+		li.appendChild(rootNode);
+		//li.setAttribute("class", "expanded");
+		ul.appendChild(li);
+		div.appendChild(ul);
+		printULNodes(typeList, dom, li, new HashSet<String>());
+		
+		//output
+		Transformer tr = null;
+		try {
+			tr = TransformerFactory.newInstance().newTransformer();
+		} catch (TransformerConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformerFactoryConfigurationError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		tr.setOutputProperty(OutputKeys.INDENT, "yes");
+		tr.setOutputProperty(OutputKeys.METHOD,"html");
+		tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "3");
+		//to send the output to StringBuffer
+		StringWriter sw = new StringWriter();
+		try {
+			tr.transform( new DOMSource(dom), new StreamResult(sw));
+		} catch (TransformerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return sw.getBuffer();
+	}
+	
+	private void printULNodes(List<KnowWEObjectType> typeList, Document dom, Element father, 
+			HashSet<String> usedTypeOrig) {
+		if (typeList != null) {
+			Element ul = dom.createElement("ul");
+			boolean ulHasChildren = false;
+			for (KnowWEObjectType koType : typeList) {
+				HashSet<String> usedType = (HashSet<String>) usedTypeOrig.clone();
+				if (koType != null) {
+					String koTypeName = koType.getName();
+					if (usedType.add(koTypeName)) {
+						ulHasChildren = true;
+						//füge im dom hinzu
+						Element li = dom.createElement("li");
+						Text koTypeNameText = dom.createTextNode(koTypeName);
+						li.appendChild(koTypeNameText);
+						ul.appendChild(li);
+						//mach mit den Kindern weiter
+						printULNodes(koType.getAllowedChildrenTypes(), dom, li,
+								usedType);
+					}
+				}
+			}
+			if (ulHasChildren) {
+				father.appendChild(ul);
+			}
+		}
 	}
 }
