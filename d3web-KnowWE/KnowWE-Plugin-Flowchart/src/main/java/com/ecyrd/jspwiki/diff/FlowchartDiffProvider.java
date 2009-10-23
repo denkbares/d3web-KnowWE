@@ -178,6 +178,15 @@ public class FlowchartDiffProvider implements DiffProvider
                     s += "changed Edges:<br />" + changedEdges + "<br />";
                 }
 
+                v1 = removeHighlighting(v1);
+                v2 = removeHighlighting(v2);
+                
+                v1 = removeArrows(v1);
+                v2 = removeArrows(v2);
+                
+                v1 = removeBoxes(v1);
+                v2 = removeBoxes(v2);
+                
                 v2 = colorNodes(v2, changedNodes, FlowchartChangeType.changed);
                 v2 = colorNodes(v2, addedNodes, FlowchartChangeType.added);
                 v1 = colorNodes(v1, changedNodes, FlowchartChangeType.changed);
@@ -187,7 +196,7 @@ public class FlowchartDiffProvider implements DiffProvider
                 v1 = colorEdges(v1, removedEdges, FlowchartChangeType.removed); 
                 v2 = colorEdges(v2, changedEdges, FlowchartChangeType.changed);
                 v2 = colorEdges(v2, addedEdges, FlowchartChangeType.added);
-                
+                                
                 return s + "<br \\>" + "<br \\>" + createPreview( v1 ) + "<br \\>" + "<br \\>" + "<br \\>" + "<br \\>"
                        + createPreview( v2 );
             }
@@ -597,6 +606,85 @@ public class FlowchartDiffProvider implements DiffProvider
         }
 //        Logging.getInstance().log(Level.INFO, "temp: " + temp);
         return temp;
+    }
+    
+    
+    /**
+     * removes the arrows from selections in the editor
+     */
+    private String removeArrows(String version) {
+    	
+		String temp = version;
+
+		// get the lower part of the flowchart
+		version = version
+				.substring(version.indexOf("<DIV class=\"Flowchart\""));
+		version = version.substring(version.indexOf(">") + 1);
+
+		// get all the arrows
+		String[] arrows = version.split("<DIV class=\"ArrowTool\"");
+
+		if (arrows.length > 0) {
+			for (int i = 1; i < arrows.length; i++) {
+				
+				String arrow = arrows[i].substring(arrows[i].indexOf(">") + 1);
+
+				arrow = arrow.substring(0, arrow.indexOf(">") + 1);
+
+				String inputHelper1 = temp.substring(0, temp.indexOf(arrow));
+				String inputHelper2 = temp.substring(temp.indexOf(arrow) + arrow.length());
+				temp = inputHelper1  + inputHelper2;
+			}
+		}
+		return temp;
+	}
+    
+    /**
+     * removes the boxes from selections in the editor
+     */
+	private String removeBoxes(String version) {
+		String temp = version;
+
+		// get the lower part of the flowchart
+		version = version
+				.substring(version.indexOf("<DIV class=\"Flowchart\""));
+		version = version.substring(version.indexOf(">") + 1);
+
+		// get all the boxes
+		String[] boxes = version.split("<SELECT");
+
+		if (boxes.length > 0) {
+			for (int i = 1; i < boxes.length; i++) {
+
+				String selection = "<SELECT"
+						+ boxes[i].substring(0, boxes[i].indexOf("</SELECT>"));
+
+				String text = "";
+
+				if (selection.contains("<OPTION")) {
+					text = selection.substring(
+							selection.indexOf("<OPTION") + 7, selection
+									.indexOf("</OPTION>"));
+					text = "<DIV" + text + "</DIV>";
+				}
+
+				String inputHelper1 = temp
+						.substring(0, temp.indexOf(selection));
+				String inputHelper2 = temp.substring(temp.indexOf(selection)
+						+ selection.length());
+				temp = inputHelper1 + text + inputHelper2;
+			}
+		}
+		return temp;
+
+	}
+    
+	
+	/**
+	 * removes the red surroundings of nodes if they were selected in the editor
+	 */
+    private String removeHighlighting(String version) {
+    	return version.replace("_highlight", "");
     }
 
     private static final class RevisionPrint
