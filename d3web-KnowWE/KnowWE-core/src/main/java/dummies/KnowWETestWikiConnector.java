@@ -86,7 +86,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
 	@Override
 	public String getBaseUrl() {
-		return "some-base-URL";
+		return "http://valid_base_url/";
 	}
 
 	@Override

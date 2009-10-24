@@ -220,12 +220,16 @@ public class TaggingMangler {
 		HashMap<String, Float> countlist = new HashMap<String, Float>();
 		float max = 0;
 		for (String cur : tags) {
-			if (countlist.get(cur) == null)
-				countlist.put(cur, new Float(0));
-			float c = countlist.get(cur) + 1;
-			countlist.put(cur, c);
+			float c= 0;
+			if (countlist.get(cur) == null){
+				countlist.put(cur, new Float(0));}
+			else {
+				c = countlist.get(cur) + 1;
+				countlist.put(cur, c);
+			}
 			max = c > max ? c : max;
 		}
+		
 		HashMap<String, Float> weighted = new HashMap<String, Float>();
 		for (Entry<String, Float> cur : countlist.entrySet()) {
 			weighted.put(cur.getKey(), cur.getValue() / max);
@@ -304,7 +308,7 @@ public class TaggingMangler {
 				output += temptag.trim() + " ";
 			}
 		}
-		text+="<tags>"+output+"</tags>";
+		text+="<tags>"+output.trim()+"</tags>";
 		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
 		.replaceKDOMNode(params, topic, asection.getId(), text);
 	}

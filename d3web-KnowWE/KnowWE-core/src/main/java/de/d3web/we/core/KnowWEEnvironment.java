@@ -327,6 +327,11 @@ public class KnowWEEnvironment {
 						.getString("path_to_knowweextension"));
 
 			}
+			if (wiki instanceof KnowWETestWikiConnector){
+				String userdir=System.getProperty("user.dir");
+				knowweExtensionPath=userdir+"/../KnowWE/src/main/webapp/KnowWEExtension/";
+				
+			}
 			// TODO: warn me, if any of these == null
 
 			// set topic Loader & dispatcher

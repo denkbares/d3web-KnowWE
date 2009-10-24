@@ -281,7 +281,11 @@ public class WordBasedRenamingAction implements KnowWEAction {
 	 */
 	public Map<KnowWEArticle, Collection<WordBasedRenameFinding>> scanForFindings(
 			String web, String query, int previousMatchLength, String[] sections) {
-		Set<String> sectionSet = new HashSet<String>(Arrays.asList(sections));
+		Set<String> sectionSet=null;
+		if (sections!=null){
+			 sectionSet= new HashSet<String>(Arrays.asList(sections));
+		}
+		
 		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> map = 
 						new HashMap<KnowWEArticle, Collection<WordBasedRenameFinding>>();
 		Iterator<KnowWEArticle> iter = 

@@ -77,7 +77,7 @@ public class UpperOntology {
 		settings = new HashMap<String, String>();
 		ontfile = path + File.separatorChar + "knowwe.owl";
 		settings.put("ontfile", ontfile);
-		reppath = path + File.separatorChar + "repository";
+		reppath = System.getProperty("java.io.tmpdir") +File.separatorChar+ "repository";
 		settings.put("reppath", reppath);
 		config_file = path + File.separatorChar + "owlim.ttl";
 		settings.put("config_file", config_file);

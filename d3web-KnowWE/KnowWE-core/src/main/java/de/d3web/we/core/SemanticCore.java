@@ -396,21 +396,8 @@ public class SemanticCore {
 	 * @return
 	 */
 	public List<Statement> getTopicStatements(String topic) {
-		// List<Statement> erg = null;
 		return statementcache.get(topic);
-		// try {
-		// RepositoryConnection con = uo.getConnection();
-		// BNode context = getContext(topic);
-		// List<Resource> l = con.getContextIDs().asList();
-		// if (!l.contains(context))
-		// return null;
-		//
-		// erg = con.getStatements(null, null, null, true, context).asList();
-		// } catch (RepositoryException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// return erg;
+
 	}
 
 	public String includeUrl(String addy) {

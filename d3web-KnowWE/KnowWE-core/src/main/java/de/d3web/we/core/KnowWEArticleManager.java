@@ -20,6 +20,7 @@
 
 package de.d3web.we.core;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ import dummies.KnowWETestWikiConnector;
 /**
  * @author Jochen
  * 
- * Manages all the articles of one web in a HashMap
+ *         Manages all the articles of one web in a HashMap
  * 
  */
 public class KnowWEArticleManager {
@@ -45,11 +46,11 @@ public class KnowWEArticleManager {
 	 * Stores KnowWEArticles for article-names
 	 */
 	private HashMap<String, KnowWEArticle> articleMap = new java.util.HashMap<String, KnowWEArticle>();
-	
+
 	private List<String> initializingArticles = new ArrayList<String>();
 
 	protected KnowWESectionInfoStorage typeStore = new KnowWESectionInfoStorage();
-	
+
 	public KnowWESectionInfoStorage getTypeStore() {
 		return typeStore;
 	}
@@ -57,9 +58,9 @@ public class KnowWEArticleManager {
 	private String webname;
 	private SemanticCore sc;
 
-	public String jarsPath; 
+	public String jarsPath;
 	public String reportPath;
-	
+
 	public String getReportPath() {
 		return reportPath;
 	}
@@ -70,13 +71,19 @@ public class KnowWEArticleManager {
 	public KnowWEArticleManager(KnowWEEnvironment env, String webname) {
 		this.webname = webname;
 		if (!(env.getWikiConnector() instanceof KnowWETestWikiConnector)) {
-			jarsPath = KnowWEUtils.getRealPath(env.getWikiConnector().getServletContext()
-					, rb.getString("path_to_jars"));
-			reportPath = KnowWEUtils.getRealPath(env.getWikiConnector().getServletContext(), rb
-					.getString("path_to_reports"));
-		
-			sc=SemanticCore.getInstance(env);
+			jarsPath = KnowWEUtils.getRealPath(env.getWikiConnector()
+					.getServletContext(), rb.getString("path_to_jars"));
+			reportPath = KnowWEUtils.getRealPath(env.getWikiConnector()
+					.getServletContext(), rb.getString("path_to_reports"));
+
+		} else {
+			jarsPath = System.getProperty("java.io.tmpdir")
+					+ File.separatorChar + "jars";
+			reportPath = System.getProperty("java.io.tmpdir")
+					+ File.separatorChar + "reports";
+
 		}
+		sc = SemanticCore.getInstance(env);
 	}
 
 	public String getWebname() {
@@ -93,11 +100,10 @@ public class KnowWEArticleManager {
 		return articleMap.get(id);
 	}
 
-
 	public Iterator<KnowWEArticle> getArticleIterator() {
 		return articleMap.values().iterator();
 	}
-	
+
 	public Collection<KnowWEArticle> getArticles() {
 		return articleMap.values();
 	}
@@ -116,7 +122,7 @@ public class KnowWEArticleManager {
 	 */
 	public String replaceKDOMNode(KnowWEParameterMap map, String articleName,
 			String nodeID, String text) {
-		//String user = map.getUser();
+		// String user = map.getUser();
 		String web = map.getWeb();
 		KnowWEArticle art = this.getArticle(articleName);
 		if (art == null)
@@ -128,10 +134,11 @@ public class KnowWEArticleManager {
 		String newArticleSourceText = newText.toString();
 		KnowWEEnvironment.getInstance().saveArticle(web, articleName,
 				newArticleSourceText, map);
-		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName, KnowWEEnvironment
-				.getInstance().getRootTypes(),this.webname));
+		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
+				KnowWEEnvironment.getInstance().getRootTypes(), this.webname));
 		return "done";
 	}
+
 	/**
 	 * Replaces a KDOM-node with the given text
 	 * 
@@ -144,21 +151,21 @@ public class KnowWEArticleManager {
 	 * @param text
 	 * @return
 	 */
-	public String replaceKDOMNodeWithoutSave(KnowWEParameterMap map, String articleName, String nodeID, String text) {
+	public String replaceKDOMNodeWithoutSave(KnowWEParameterMap map,
+			String articleName, String nodeID, String text) {
 		KnowWEArticle art = this.getArticle(articleName);
 		if (art == null)
 			return "article not found: " + articleName;
 		Section root = art.getSection();
 		StringBuffer newText = new StringBuffer();
 		appendTextReplaceNode(root, nodeID, text, newText);
-		
-		String newArticleSourceText = newText.toString();
-		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName, KnowWEEnvironment
-				.getInstance().getRootTypes(),this.webname));
-		return newArticleSourceText;
-	}	
 
-	
+		String newArticleSourceText = newText.toString();
+		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
+				KnowWEEnvironment.getInstance().getRootTypes(), this.webname));
+		return newArticleSourceText;
+	}
+
 	/**
 	 * Looks in KDOM of given article for the Section object with given nodeID
 	 * 
@@ -173,13 +180,14 @@ public class KnowWEArticleManager {
 		return art.findSection(nodeID);
 	}
 
-	private void appendTextReplaceNode(Section sec, String nodeID, String text, StringBuffer newText) {
-		if ( sec.getId().equals(nodeID) ) {
-			newText.append( text );
+	private void appendTextReplaceNode(Section sec, String nodeID, String text,
+			StringBuffer newText) {
+		if (sec.getId().equals(nodeID)) {
+			newText.append(text);
 			return;
 		}
 		List<Section> children = sec.getChildren();
-		if ( children.size() == 0 ) {
+		if (children.size() == 0) {
 			newText.append(sec.getOriginalText());
 			return;
 		}
@@ -201,13 +209,12 @@ public class KnowWEArticleManager {
 	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle art) {
 		// store new article
 		articleMap.put(art.getTitle(), art);
-		//if(sc == null) sc = SemanticCore.getInstance();
-		if (!(KnowWEEnvironment.getInstance().getWikiConnector() instanceof KnowWETestWikiConnector))
-				sc.update(art.getTitle(), art);
-		
+
+		sc.update(art.getTitle(), art);
+
 		return art.getReport();
 	}
-	
+
 	public List<String> getInitializingArticles() {
 		return initializingArticles;
 	}
@@ -215,5 +222,5 @@ public class KnowWEArticleManager {
 	public void addInitializingArticle(String article) {
 		this.initializingArticles.add(article);
 	}
-	
+
 }
