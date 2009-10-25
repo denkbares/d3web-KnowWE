@@ -37,7 +37,7 @@ import de.d3web.textParser.casesTable.TextParserResource;
 
 
 public class SetCoveringTableExportTest extends TestCase {
-	
+	private String examplespath;
 
 	public void testWritingCoveringListTable() {
 		KBTextInterpreter kbTxtInterpreter;
@@ -53,11 +53,14 @@ public class SetCoveringTableExportTest extends TestCase {
 		output = new HashMap<String, Report>();
 		//hole ressourcen
 		TextParserResource ressource;
+		String basepath=System.getProperty("user.dir");
+		examplespath=basepath+File.separatorChar+"src"+File.separatorChar+"doc"+File.separatorChar+"examples";
+
 		
-		String diagnosis = hc.readTxtFile("exampleFiles" + File.separator + "xclTest" + File.separator + "Loesungen.txt");
-		String initQuestion = hc.readTxtFile("exampleFiles" + File.separator + "xclTest" + File.separator + "Frageklassen.txt");
-		String questions = hc.readTxtFile("exampleFiles" + File.separator + "xclTest" + File.separator + "Fragebaum.txt");
-		String xcl = hc.readTxtFile("exampleFiles" + File.separator + "xclTest" + File.separator + "XCL.txt");
+		String diagnosis = hc.readTxtFile(examplespath + File.separator + "xclTest" + File.separator + "Loesungen.txt");
+		String initQuestion = hc.readTxtFile(examplespath+ File.separator + "xclTest" + File.separator + "Frageklassen.txt");
+		String questions = hc.readTxtFile(examplespath + File.separator + "xclTest" + File.separator + "Fragebaum.txt");
+		String xcl = hc.readTxtFile(examplespath + File.separator + "xclTest" + File.separator + "XCL.txt");
 		
 
 		if (questions != null) {
@@ -85,7 +88,7 @@ public class SetCoveringTableExportTest extends TestCase {
 		manager = new KnowledgeManager(kb);
 		tableWriter = new SetCoveringTableWriter(manager);
 		try {
-			tableWriter.writeFile(new File("exampleFiles" + File.separator + "xclTest" + File.separator + "SetCoveringTable.xls"));
+			tableWriter.writeFile(new File(examplespath + File.separator + "xclTest" + File.separator + "SetCoveringTable.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

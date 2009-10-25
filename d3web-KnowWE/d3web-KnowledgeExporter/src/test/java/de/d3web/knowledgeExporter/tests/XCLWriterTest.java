@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -44,8 +43,8 @@ import de.d3web.knowledgeExporter.KnowledgeManager;
 import de.d3web.knowledgeExporter.testutils.HelperClass;
 import de.d3web.knowledgeExporter.txtWriters.XCLWriter;
 import de.d3web.knowledgeExporter.xlsWriters.SetCoveringTableWriter;
-import de.d3web.textParser.KBTextInterpreter;
 import de.d3web.report.Report;
+import de.d3web.textParser.KBTextInterpreter;
 import de.d3web.textParser.casesTable.TextParserResource;
 import de.d3web.textParser.xclPatternParser.XCLParserHelper;
 
@@ -295,7 +294,7 @@ public class XCLWriterTest extends TestCase {
 		kb = kbTxtInterpreter.getKnowledgeBase();
 		//System.out.println(output);
 		manager = new KnowledgeManager(kb);
-		KnowledgeManager.setLocale(Locale.ENGLISH);
+		//KnowledgeManager.setLocale(Locale.ENGLISH);
 		writer = new XCLWriter(manager);
 		tableWriter = new SetCoveringTableWriter(manager);
 	}

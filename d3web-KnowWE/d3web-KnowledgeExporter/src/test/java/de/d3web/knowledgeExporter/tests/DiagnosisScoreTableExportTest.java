@@ -48,7 +48,7 @@ public class DiagnosisScoreTableExportTest extends TestCase {
 	private KnowledgeBase kb = null;
 	private KnowledgeManager manager;
 	private DiagnosisScoresTableWriter writer;
-
+	private String examplespath;
 	/**
 	 * Erstellt die KnowledgeBase.
 	 */
@@ -56,10 +56,12 @@ public class DiagnosisScoreTableExportTest extends TestCase {
 
 	
 	public void setUp() {
+		String basepath=System.getProperty("user.dir");
+		examplespath=basepath+File.separatorChar+"src"+File.separatorChar+"doc"+File.separatorChar+"examples";
 
-		String diagnosis = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "DiagnosisHierarchy.txt");
-		String initQuestion = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "QuestionClassHierarchy.txt");
-		String decisionTree = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "QuestionTree.txt");
+		String diagnosis = hc.readTxtFile(examplespath + File.separator + "Baumerkennung" + File.separator + "DiagnosisHierarchy.txt");
+		String initQuestion = hc.readTxtFile(examplespath + File.separator + "Baumerkennung" + File.separator + "QuestionClassHierarchy.txt");
+		String decisionTree = hc.readTxtFile(examplespath + File.separator + "Baumerkennung" + File.separator + "QuestionTree.txt");
 		//System.out.println(diagnosis + initQuestion + decisionTree);
 		kb = hc.createKnowledgeBase(diagnosis, initQuestion, decisionTree).getKnowledgeBase();
 		//System.out.println(kb.getQuestions());
@@ -69,7 +71,7 @@ public class DiagnosisScoreTableExportTest extends TestCase {
 		URL url = null;
 		//AttributeConfigReader attrReader = null;
 		try {
-			url = new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls").toURL();
+			url = new File(examplespath + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls").toURL();
 		} catch (MalformedURLException e) {
 			fail("beim Laden der Dateien ist ein Fehler aufgetreten");
 		}
@@ -97,14 +99,14 @@ public class DiagnosisScoreTableExportTest extends TestCase {
 		setUp();
 		double minRes = 0.5;
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByCell(
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls")));
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
+				new File(examplespath+ File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls")));
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByContent(
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls")));
+				new File(examplespath+ File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls")));
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByRowContent(
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"),
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"),
 				minRes));
 	}
 	
@@ -112,14 +114,14 @@ public class DiagnosisScoreTableExportTest extends TestCase {
 	public void testDiagnosisScoresTabelExportByRows() {
 		setUp();
 		try {
-			writer.writeFile(new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"));
+			writer.writeFile(new File(examplespath + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		double minRes = 0.8;
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByRowContent(
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"),
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"),
 				minRes));
 
 	}
@@ -128,8 +130,8 @@ public class DiagnosisScoreTableExportTest extends TestCase {
 		setUp();
 		double minRes = 0.8;
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByRowContent(
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport2.xls"), 
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"),
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport2.xls"), 
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"),
 				minRes));
 
 	}
@@ -137,14 +139,14 @@ public class DiagnosisScoreTableExportTest extends TestCase {
 	public void testDiagnosisScoresTabelExportByColumns() {
 		setUp();
 		try {
-			writer.writeFile(new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"));
+			writer.writeFile(new File(examplespath + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		double minRes = 0.3;
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByColumnContent(
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
-				new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"),
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "diagnosescores.xls"), 
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "DiagnosisScoreExport.xls"),
 				minRes));
 
 	}

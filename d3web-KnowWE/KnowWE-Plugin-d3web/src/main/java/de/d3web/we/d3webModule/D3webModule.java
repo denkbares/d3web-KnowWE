@@ -21,12 +21,8 @@
 package de.d3web.we.d3webModule;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,6 +60,7 @@ import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
@@ -104,7 +101,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class D3webModule implements KnowWEModule {
 
 	private String defaultJarsPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/KBrepository/";
-
+	private String ontfile = "file:resources/d3web.owl";
 	private Map<Class<? extends KnowWEAction>, KnowWEAction> actionMap = new HashMap<Class<? extends KnowWEAction>, KnowWEAction>();
 
 	private List<de.d3web.we.taghandler.TagHandler> tagHandlers = new ArrayList<de.d3web.we.taghandler.TagHandler>();
@@ -112,24 +109,26 @@ public class D3webModule implements KnowWEModule {
 	private static D3webModule instance;
 
 	private D3webTerminologyHandler handler = null;
-	
+
 	public static ResourceBundle getKwikiBundle_d3web() {
-		
+
 		return ResourceBundle.getBundle("KnowWE2_plugin_d3web_messages");
 	}
-	
+
 	public static ResourceBundle getKwikiBundle_d3web(KnowWEUserContext user) {
-		
-		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector().getLocale(user.getHttpRequest()));
+
+		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
+				.getLocale(user.getHttpRequest()));
 		return getKwikiBundle_d3web();
 	}
-	
+
 	public static ResourceBundle getKwikiBundle_d3web(HttpServletRequest request) {
-		
-		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector().getLocale(request));
+
+		Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector()
+				.getLocale(request));
 		return getKwikiBundle_d3web();
 	}
-	
+
 	public List<KnowWEObjectType> getRootTypes() {
 		List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
 		rootTypes.add(new Kopic());
@@ -146,19 +145,18 @@ public class D3webModule implements KnowWEModule {
 		rootTypes.add(new BulletScoring());
 		return rootTypes;
 	}
-	
+
 	@Override
 	public List<TerminalType> getGlobalTypes() {
 		return null;
 	}
 
 	public static D3webModule getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new D3webModule();
 		}
 		return instance;
 	}
-	
 
 	public String performAction(String action, KnowWEParameterMap parameterMap) {
 		if (action == null) {
@@ -201,12 +199,16 @@ public class D3webModule implements KnowWEModule {
 							+ AnnotationInlineAnswerRenderer.class.getName());
 
 		}
+		// Introduce my ontology parts to the core
+		SemanticCore sc = SemanticCore.getInstance();
+		sc.loadOwlFile(new File(ontfile));
 
 		this.addAction(actionMap);
 
 		loadData(context);
-		
-		UploadManager.getInstance().registerHandler( new KnOfficeUploadHandler());
+
+		UploadManager.getInstance()
+				.registerHandler(new KnOfficeUploadHandler());
 
 	}
 
@@ -237,7 +239,7 @@ public class D3webModule implements KnowWEModule {
 						.println("KB directory creation failed, check permissions!! path:"
 								+ path.getAbsolutePath());
 				e.printStackTrace();
-				//System.exit(1);
+				// System.exit(1);
 			}
 		}
 		DPSEnvironmentManager.getInstance().setWebEnvironmentLocation(webPath);
@@ -272,14 +274,12 @@ public class D3webModule implements KnowWEModule {
 		actionMap.put(DPSSolutionsAction.class, new DPSSolutionsAction());
 		actionMap.put(DPSDialogsAction.class, new DPSDialogsAction());
 		actionMap.put(UserFindingsAction.class, new UserFindingsAction());
-		actionMap.put(KSSViewHistoryAction.class,
-				new KSSViewHistoryAction());
+		actionMap.put(KSSViewHistoryAction.class, new KSSViewHistoryAction());
 		actionMap.put(ExplanationRenderer2.class, new ExplanationRenderer2());
 		actionMap.put(SolutionLogAction.class, new SolutionLogAction());
 		actionMap.put(QuestionStateReportAction.class,
 				new QuestionStateReportAction());
-		actionMap.put(CodeCompletionAction.class,
-				new CodeCompletionAction());
+		actionMap.put(CodeCompletionAction.class, new CodeCompletionAction());
 		actionMap.put(XCLExplanationRenderer.class,
 				new XCLExplanationRenderer());
 		actionMap.put(SetSingleFindingAction.class,
@@ -397,7 +397,6 @@ public class D3webModule implements KnowWEModule {
 		return sessionDir;
 	}
 
-
 	public static String getSessionPath(KnowWEParameterMap parameterMap) {
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
@@ -415,7 +414,7 @@ public class D3webModule implements KnowWEModule {
 			String realPath = context.getRealPath("");
 			realPath = realPath.replace('\\', '/');
 			while (realPath.endsWith("/")) {
-				realPath  = realPath.substring(0, realPath.length() - 1);
+				realPath = realPath.substring(0, realPath.length() - 1);
 			}
 			varPath = varPath.replaceAll("\\$webapp_path\\$", realPath);
 		}
@@ -428,9 +427,9 @@ public class D3webModule implements KnowWEModule {
 
 	}
 
-
 	@Override
-	public void registerKnowledgeRepresentationHandler(KnowledgeRepresentationManager mgr) {
+	public void registerKnowledgeRepresentationHandler(
+			KnowledgeRepresentationManager mgr) {
 		handler = new D3webTerminologyHandler();
 		mgr.registerHandler("d3web", handler);
 
@@ -439,7 +438,6 @@ public class D3webModule implements KnowWEModule {
 	public D3webTerminologyHandler getKnowledgeRepresentationHandler() {
 		return handler;
 	}
-
 
 	@Override
 	public List<TagHandler> getTagHandlers() {
@@ -450,6 +448,5 @@ public class D3webModule implements KnowWEModule {
 	public List<PageAppendHandler> getPageAppendHandlers() {
 		return new ArrayList<PageAppendHandler>();
 	}
-
 
 }

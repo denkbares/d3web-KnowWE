@@ -49,7 +49,7 @@ public class AttributeTableExportTest extends TestCase {
 	private KnowledgeBase kb = null;
 	private KnowledgeManager manager;
 	private AttributeTableWriter writer;
-
+    private String examplespath;
 	/**
 	 * Erstellt die KnowledgeBase.
 	 */
@@ -57,10 +57,11 @@ public class AttributeTableExportTest extends TestCase {
 
 	
 	public void setUp() {
-
-		String diagnosis = hc.readTxtFile("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "DiagnosisHierarchy.txt");
-		String initQuestion = hc.readTxtFile("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "QuestionClassHierarchy.txt");
-		String decisionTree = hc.readTxtFile("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "QuestionTree.txt");
+		String basepath=System.getProperty("user.dir");
+		examplespath=basepath+File.separatorChar+"src"+File.separatorChar+"doc"+File.separatorChar+"examples";
+		String diagnosis = hc.readTxtFile(examplespath+ File.separator + "Baumerkennung" + File.separator + "DiagnosisHierarchy.txt");
+		String initQuestion = hc.readTxtFile(examplespath+ File.separator + "Baumerkennung" + File.separator + "QuestionClassHierarchy.txt");
+		String decisionTree = hc.readTxtFile(examplespath+ File.separator + "Baumerkennung" + File.separator + "QuestionTree.txt");
 		
 		kb = hc.createKnowledgeBase(diagnosis, initQuestion, decisionTree).getKnowledgeBase();
 		
@@ -69,9 +70,9 @@ public class AttributeTableExportTest extends TestCase {
 		URL url = null;
 		AttributeConfigReader attrReader = null;
 		try {
-			url = new File("exampleFiles" + File.separator + "decisionTable" + File.separator + "config_AT.txt").toURL();
+			url = new File(examplespath+ File.separator + "decisionTable" + File.separator + "config_AT.txt").toURL();
 			attrReader = new AttributeConfigReader(url);
-			url = new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls").toURL();
+			url = new File(examplespath+ File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls").toURL();
 		} catch (MalformedURLException e) {
 			fail("beim Laden der Dateien ist ein Fehler aufgetreten");
 		}
@@ -101,14 +102,14 @@ public class AttributeTableExportTest extends TestCase {
 	public void testAttributeTabelExportByRows() {
 		setUp();
 		try {
-			writer.writeFile(new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"));
+			writer.writeFile(new File(examplespath + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		double minRes = 0.5;
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByRowContent(
-				new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls"), 
-				new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"),
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls"), 
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"),
 				minRes));
 
 	}
@@ -116,14 +117,14 @@ public class AttributeTableExportTest extends TestCase {
 	public void testAttributeTabelExportByColumns() {
 		setUp();
 		try {
-			writer.writeFile(new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"));
+			writer.writeFile(new File(examplespath + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		double minRes = 0.3;
 		assertEquals("Unterschiede zwischen den Tabellen: ", "", hc.compareXLSTablesByColumnContent(
-				new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls"), 
-				new File("exampleFiles" + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"),
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "Attributtabelle.xls"), 
+				new File(examplespath + File.separator + "Baumerkennung" + File.separator + "AttributeTableExport.xls"),
 				minRes));
 
 	}

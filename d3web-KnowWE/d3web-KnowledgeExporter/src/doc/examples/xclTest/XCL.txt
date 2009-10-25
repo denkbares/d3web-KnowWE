@@ -1,10 +1,19 @@
+Running {
+  Medium = land [!],
+  Training goals = endurance OR Training goals = losing weight [++],
+  Physical problems = joint problems on the legs [--],
+}[ establishedThreshold = 0.55,
+   suggestedThreshold = 0.3,
+   minSupport = 0.17
+ ]
+
 Swimming {
   Medium = water OR Type of sport = individual [!],
   My favorite sports form = Swimming [++],
   Trained muscles = upper part [2],
   Trained muscles = back,
-  Training goals ALL {endurance, stress reduction},
-  Favorite color IN {red, green, blue},
+  Training goals = endurance AND Training goals = stress reduction,
+  Favorite color = red OR Favorite color = green OR Favorite color = blue,
   Running costs = low [-1],
   Running costs = nothing [--],
   Physical problems = skin allergy [--],
@@ -14,15 +23,6 @@ Swimming {
    minSupport = 0.1
  ]
 
-Running {
-  Medium = land [!],
-  Training goals = endurance OR Training goals = losing weight [++],
-  Physical problems = joint problems on the legs [--],
-}[ establishedThreshold = 0.55,
-   suggestedThreshold = 0.3,
-   minSupport = 0.17
- ]
-  
 Walking {
   Medium = land [!],
   Training goals = losing weight [++],

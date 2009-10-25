@@ -63,7 +63,7 @@ public class UpperOntology {
 	private String localens;
 
 	private org.openrdf.repository.Repository myRepository;
-	private String ontfile = "file:resources/knowwe.owl";
+	private String ontfile = "file:resources/knowwe_base.owl";
 	private OwlHelper owlhelper;
 	private RepositoryConnection repositoryConn;
 	private HashMap<String, String> settings;

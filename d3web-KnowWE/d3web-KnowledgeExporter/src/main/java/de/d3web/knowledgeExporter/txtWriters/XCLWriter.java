@@ -22,6 +22,7 @@ package de.d3web.knowledgeExporter.txtWriters;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 import de.d3web.kernel.domainModel.KnowledgeSlice;
@@ -50,7 +51,7 @@ public class XCLWriter extends TxtKnowledgeWriter {
         		xclModels.add((XCLModel)slice);
         	}
         }
-        
+        Collections.sort(xclModels);
         int i = 0;
 		for (XCLModel model:xclModels) {
             XclVerbalizer v = new XclVerbalizer();
