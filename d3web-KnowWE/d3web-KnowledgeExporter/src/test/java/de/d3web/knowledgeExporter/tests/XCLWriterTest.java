@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -294,7 +295,7 @@ public class XCLWriterTest extends TestCase {
 		kb = kbTxtInterpreter.getKnowledgeBase();
 		//System.out.println(output);
 		manager = new KnowledgeManager(kb);
-		//KnowledgeManager.setLocale(Locale.ENGLISH);
+		KnowledgeManager.setLocale(Locale.ENGLISH);
 		writer = new XCLWriter(manager);
 		tableWriter = new SetCoveringTableWriter(manager);
 	}
