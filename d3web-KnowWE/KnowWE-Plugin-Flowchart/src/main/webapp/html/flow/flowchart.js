@@ -1,5 +1,5 @@
 
-function Flowchart(parent, id, width, height) {
+function Flowchart(parent, id, width, height, idCounter) {
 	this.parent = $(parent);
 	this.nodes = [];
 	this.rules = [];
@@ -9,7 +9,11 @@ function Flowchart(parent, id, width, height) {
 	this.dom = null;
 	this.router = new Router(this);
 	this.selection = [];
-	this.idCounter = 0;
+	if (idCounter) {
+		this.idCounter = idCounter;
+	} else {
+		this.idCounter = 0;
+	}
 }
 // register select click events for flowchart
 CCEvents.addClassListener('click', 'FlowchartGroup', 
@@ -123,9 +127,11 @@ Flowchart.prototype.moveSelection = function(dx, dy) {
 }
 
 Flowchart.prototype.createID = function(prefix) {
-	var id = '#' + (prefix || "XX") + "_" + (this.idCounter++);
+	this.idCounter++;
+	var id = '#' + (prefix || "XX") + "_" + this.idCounter;
 	while (this.findObject(id)) {
-		id = '#' + (prefix || "XX") + "_" + (this.idCounter++);
+		this.idCounter++;
+		id = '#' + (prefix || "XX") + "_" + this.idCounter;
 	}
 	return id;
 }
@@ -408,7 +414,8 @@ Flowchart.prototype.toXML = function(includePreview) {
 			(this.name ? ' name="'+this.name.escapeXML()+'"' : '') +
 			(this.icon ?' icon="'+this.icon+'"' : '')  +
 			' width="'+this.width+'"' +
-			' height="'+this.height+'">\n\n';
+			' height="'+this.height+'"' +
+			' idCounter="'+this.idCounter+'">\n\n';
 	
 	xml += '\t<!-- nodes of the flowchart -->\n';
 	for (var i=0; i<this.nodes.length; i++) {
@@ -525,11 +532,14 @@ Flowchart.createFromXML = function(parent, xmlDom) {
 	var height = xmlDom.getAttribute('height') | 400;
 	var name = xmlDom.getAttribute('name');
 	var icon = xmlDom.getAttribute('icon');
+	var idCounter = xmlDom.getAttribute('idCounter');
+
 	
 	// create flowchart
-	var flowchart = new Flowchart(parent, id, width, height);
+	var flowchart = new Flowchart(parent, id, width, height, idCounter);
 	flowchart.name = name;
 	flowchart.icon = icon;
+	flowchart.idCounter = idCounter;
 	
 	flowchart.addFromXML(xmlDom, 0, 0);
 	
