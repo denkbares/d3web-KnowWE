@@ -295,7 +295,12 @@ public class KnowWEEnvironment {
 	 * @return
 	 */
 	public KnowWEArticleManager getArticleManager(String web) {
-		return this.articleManagers.get(web);
+		KnowWEArticleManager knowWEArticleManager = this.articleManagers.get(web);
+		if (knowWEArticleManager == null) {
+			initArticleManager(web);
+			knowWEArticleManager = this.articleManagers.get(web);
+		}
+		return knowWEArticleManager;
 	}
 
 	/**
@@ -752,11 +757,12 @@ public class KnowWEEnvironment {
 	 */
 	public String processAndUpdateArticle(String username, String content,
 			String topic, String web) {
-		return this.articleManagers.get(web).saveUpdatedArticle(
+		return this.getArticleManager(web).saveUpdatedArticle(
 				new KnowWEArticle(content, topic, KnowWEEnvironment
 						.getInstance().getRootTypes(), web)).getHTML();
 	}
 
+	
 	/**
 	 * Called by the Core-Junit-Tests
 	 * 

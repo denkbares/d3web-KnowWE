@@ -108,7 +108,11 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	public KnowWEArticle(String text, String title,
 			List<KnowWEObjectType> allowedObjects, String web) {
 		
-		KnowWEEnvironment.getInstance().getArticleManager(web).addInitializingArticle(title);
+		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
+		
+		KnowWEArticleManager articleManager = instance.getArticleManager(web);
+		
+		articleManager.addInitializingArticle(title);
 		
 		long startTime = System.currentTimeMillis();
 
@@ -120,8 +124,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		
 		this.childrenTypes = allowedObjects;
 		
-		oldArticle = KnowWEEnvironment.getInstance()
-			.getArticleManager(web).getArticle(title);
+		oldArticle = articleManager.getArticle(title);
 		
 		// call Save hooks for KnowWEModules
 		callSaveHooks(title);
@@ -139,7 +142,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		
 		// create default solution context as title name
 		// TODO: should be refactored to d3web-Plugin project
-		if (KnowWEEnvironment.getInstance() != null) {
+		if (instance != null) {
 			SolutionContext con = new SolutionContext();
 			con.setSolution(title);
 			ContextManager.getInstance().attachContext(sec, con);
@@ -196,7 +199,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			.log(Level.INFO,"---> Finished building JAR for article '" + title + "' in " 
 					+ (System.currentTimeMillis() - startTime) + "ms <---");
 		
-		KnowWEEnvironment.getInstance().getArticleManager(web).getInitializingArticles().remove(title);
+		articleManager.getInitializingArticles().remove(title);
 	}
 
 	private void clearTypeStore(
