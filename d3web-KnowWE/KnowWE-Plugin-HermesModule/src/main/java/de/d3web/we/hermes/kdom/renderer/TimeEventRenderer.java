@@ -30,6 +30,7 @@ import de.d3web.we.hermes.kdom.TimeEventImportanceType;
 import de.d3web.we.hermes.kdom.TimeEventSourceType;
 import de.d3web.we.hermes.kdom.TimeEventTitleType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -61,9 +62,9 @@ public class TimeEventRenderer extends KnowWEDomRenderer {
 
 		Section descriptionSection = sec
 				.findChildOfType(TimeEventDescriptionType.class);
-		String description = "no description found";
-		if (descriptionSection != null)
-			description = descriptionSection.getOriginalText();
+//		String description = "no description found";
+//		if (descriptionSection != null)
+//			description = descriptionSection.getOriginalText();
 
 		Section importanceSection = sec
 				.findChildOfType(TimeEventImportanceType.class);
@@ -93,7 +94,8 @@ public class TimeEventRenderer extends KnowWEDomRenderer {
 		
 		result.append("! " + titleHeader + " \n");
 
-		result.append(description);
+		
+		DelegateRenderer.getInstance().render(descriptionSection, user, result);
 
 		if (sources.size() > 0) {
 			result.append("\\\\__Quellen:__\n\n");
