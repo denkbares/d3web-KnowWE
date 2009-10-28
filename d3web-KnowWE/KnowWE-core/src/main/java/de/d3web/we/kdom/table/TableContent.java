@@ -48,7 +48,9 @@ public class TableContent extends XMLContent {
 		public void reviseSubtree(Section s) {
 			Section headerLine = s.findSuccessor(TableLine.class);
 			AbstractKnowWEObjectType solutionHeaderType = new TableHeaderLine();
-			headerLine.setType(solutionHeaderType);
+			if (headerLine != null) {
+				headerLine.setType(solutionHeaderType);
+			}
 		}
 	}
 }
