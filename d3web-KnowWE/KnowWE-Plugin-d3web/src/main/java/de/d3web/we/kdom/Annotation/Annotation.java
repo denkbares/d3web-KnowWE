@@ -44,10 +44,7 @@ public class Annotation extends DefaultAbstractKnowWEObjectType {
 		renderer.addConditionalRenderer(new AnnotationInlineAnswerRenderer());
 	}
 
-    @Override
-    public KnowWEDomRenderer getDefaultRenderer() {
-	return renderer;
-    }
+
 	
     @Override
 	public void init() {

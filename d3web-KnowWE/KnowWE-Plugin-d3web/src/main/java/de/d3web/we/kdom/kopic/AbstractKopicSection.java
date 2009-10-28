@@ -30,11 +30,7 @@ public abstract class AbstractKopicSection extends AbstractXMLObjectType {
 		super(type);
 	}
 	
-	@Override
-	public KnowWEDomRenderer getDefaultRenderer() {
-		return new KopicSectionRenderer();
-	}
-	
+
 	public static String removeIncludedFromTags(String s) {
 		s = s.replaceAll("<includedFrom[^>]*>", "");
 		s = s.replaceAll("</includedFrom[^>]*>", "");

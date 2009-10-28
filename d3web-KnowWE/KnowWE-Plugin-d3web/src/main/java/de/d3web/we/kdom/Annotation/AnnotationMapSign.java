@@ -32,10 +32,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class AnnotationMapSign extends DefaultAbstractKnowWEObjectType {
 	
-	@Override
-	public KnowWEDomRenderer getDefaultRenderer() {
-		return DelegateRenderer.getInstance();
-	}
+
 
 	public class AnnotationMapSignSectionFinder extends SectionFinder {
 		
