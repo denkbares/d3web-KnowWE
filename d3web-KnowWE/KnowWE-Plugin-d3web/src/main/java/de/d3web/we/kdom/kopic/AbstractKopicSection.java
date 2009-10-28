@@ -36,6 +36,11 @@ public abstract class AbstractKopicSection extends AbstractXMLObjectType {
 		s = s.replaceAll("</includedFrom[^>]*>", "");
 		return s;
 	}
+	
+    @Override 	 
+    public KnowWEDomRenderer getDefaultRenderer() { 	 
+            return new KopicSectionRenderer(); 	 
+    }
 
 
 	
