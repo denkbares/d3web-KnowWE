@@ -62,6 +62,11 @@ public class PlainText extends DefaultAbstractKnowWEObjectType {
 	public KnowWEDomRenderer getRenderer() {
 		return DefaultTextRenderer.getInstance();
 	}
+	
+	@Override
+	public KnowWEDomRenderer getDefaultRenderer() {
+		return DefaultTextRenderer.getInstance();
+	}
 
 	@Override
 	protected void init() {

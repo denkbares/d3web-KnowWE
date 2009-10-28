@@ -66,7 +66,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	
 	
 	/**
-	 * types can be activated and decactivated in KnowWE
+	 * types can be activated and deactivated in KnowWE
 	 * this field is holding the current state
 	 */
 	protected boolean isActivated = true;
@@ -309,7 +309,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return getDefaultRenderer();
 	}
 
-	private KnowWEDomRenderer getDefaultRenderer() {
+	protected KnowWEDomRenderer getDefaultRenderer() {
 		return DelegateRenderer.getInstance();
 	}
 
