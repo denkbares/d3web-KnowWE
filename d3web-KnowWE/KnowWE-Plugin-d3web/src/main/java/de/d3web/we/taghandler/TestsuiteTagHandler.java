@@ -22,6 +22,7 @@ package de.d3web.we.taghandler;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +33,8 @@ import de.d3web.empiricalTesting.RatedSolution;
 import de.d3web.empiricalTesting.RatedTestCase;
 import de.d3web.empiricalTesting.SequentialTestCase;
 import de.d3web.empiricalTesting.TestSuite;
+import de.d3web.empiricalTesting.caseVisualization.dot.DDBuilder;
+import de.d3web.empiricalTesting.caseVisualization.jung.JUNGCaseVisualizer;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -45,8 +48,10 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class TestsuiteTagHandler extends AbstractTagHandler {
 	
 	private Map<String, Section> testsuites = new HashMap<String, Section>();
+	private DecimalFormat formatter = new DecimalFormat("0.00");
 	private String topic;
 	private String web;
+	private String article;
 	private ResourceBundle rb;
 	
 	public TestsuiteTagHandler() {
@@ -70,9 +75,12 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 				
 		if (article != null	&& testsuites.containsKey(article)) {
 			
+			this.article = article;
+			
 			TestSuite t = loadTestSuite(article);
 			
 			if (t != null) { 
+				
 				return renderRunTestSuite(t);
 			}
 			
@@ -84,6 +92,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 
 	}
 		
+
 	private String renderRunTestSuite(TestSuite t) {
 		
 		StringBuilder html = new StringBuilder();
@@ -192,6 +201,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append(rb.getString("KnowWE.Testsuite.passed"));
 		html.append("</strong>");
 		html.append("</p>");
+
 		
 		// Clear floating
 		html.append("<div style='clear:both'></div>");
@@ -207,6 +217,12 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("<br /><br />");
 		html.append("</p>");
 		html.append("</div>");
+		
+		// DOT Download Button
+		html.append(renderDOTDownload(t));
+		
+		// PDF Download Button
+		html.append(renderPDFDownload(t));
 		
 		// Run more TestSuites
 		html.append(renderExtend());
@@ -257,10 +273,10 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("<div style='margin-left:22px'>");
 		html.append("<p>");
 		html.append("Precision: ");
-		html.append(t.totalPrecision());
+		html.append(formatter.format(t.totalPrecision()));
 		html.append("<br />");
 		html.append("Recall: ");
-		html.append(t.totalRecall());
+		html.append(formatter.format(t.totalRecall()));
 		html.append("<br /><br />");
 		html.append(rb.getString("KnowWE.Testsuite.notconsistent"));
 		html.append("<br /><br />");
@@ -304,7 +320,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		
 		html.append("<fieldset>");
 				
-		// TestSuite passed text and green bulb
+		// TestSuite failed text and red bulb
 		html.append("<p>");
 		html.append("<img src='KnowWEExtension/images/red_bulb.gif' width='16' height='16' />");
 		html.append("<strong>");
@@ -319,13 +335,19 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("<div style='margin-left:22px'>");
 		html.append("<p>");
 		html.append("Precision: ");
-		html.append(t.totalPrecision());
+		html.append(formatter.format(t.totalPrecision()));
 		html.append("<br />");
 		html.append("Recall: ");
-		html.append(t.totalRecall());
+		html.append(formatter.format(t.totalRecall()));
 		html.append("<br /><br />");
 		html.append("</p>");
 		html.append("</div>");
+		
+		// PDF Download Button
+		html.append(renderDOTDownload(t));
+		
+		// DOT Download Button
+		html.append(renderPDFDownload(t));
 		
 		html.append(renderDifferenceDetails(t));
 		
@@ -451,7 +473,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("</select>");
 		html.append("</div>");
 		
-		// Button
+		// Run Button
 		html.append("<div>");
 		html.append("<input type=\"hidden\" name=\"page\" value=\"");
 		html.append(urlencode(topic));
@@ -540,6 +562,76 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		
 		// Not very nice but prevents double listing of RTCs
 		return message.substring(0, message.length() / 2).toString();
+	}
+	
+	private String renderPDFDownload(TestSuite t) {
+		
+		long time = System.nanoTime();
+		
+		// Create PDF
+		StringBuilder path = new StringBuilder();
+		path.append(KnowWEEnvironment.getInstance().getContext().getRealPath(""));
+		path.append("/KnowWEExtension/tmp/");
+		path.append(article);
+		path.append("_testsuite_");
+		path.append(time);
+		path.append(".pdf");
+		JUNGCaseVisualizer.getInstance().writeToFile(t, path.toString());
+		
+		// Render Download Button
+		StringBuilder html = new StringBuilder();
+		html.append("<div>");
+		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
+		html.append("<a style='margin-left:5px' href='");
+		html.append(KnowWEEnvironment.getInstance().getContext().getContextPath());
+		html.append("/KnowWEExtension/tmp/");
+		html.append(article);
+		html.append("_testsuite_");
+		html.append(time);
+		html.append(".pdf");
+		html.append("'>");
+		html.append(rb.getString("KnowWE.Testsuite.downloadpdf")); 
+		html.append("</a>");
+		html.append("</div>");
+		
+		return html.toString();
+		
+		
+		
+	}
+	
+	private String renderDOTDownload(TestSuite t) {
+		
+		long time = System.nanoTime();
+		
+		// Create DOT
+		StringBuilder path = new StringBuilder();
+		path.append(KnowWEEnvironment.getInstance().getContext().getRealPath(""));
+		path.append("/KnowWEExtension/tmp/");
+		path.append(article);
+		path.append("_testsuite_");
+		path.append(time);
+		path.append(".dot");
+		DDBuilder.getInstance().writeToFile(t, path.toString());
+		
+		// Render Download Button
+		StringBuilder html = new StringBuilder();
+		html.append("<div>");
+		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
+		html.append("<a style='margin-left:5px' href='");
+		html.append(KnowWEEnvironment.getInstance().getContext().getContextPath());
+		html.append("/KnowWEExtension/tmp/");
+		html.append(article);
+		html.append("_testsuite_");
+		html.append(time);
+		html.append(".dot");
+		html.append("'>");
+		html.append(rb.getString("KnowWE.Testsuite.downloaddot")); 
+		html.append("</a>");
+		html.append("</div>");
+		
+		return html.toString();
+		
 	}
 	
 	private String urlencode(String text) {

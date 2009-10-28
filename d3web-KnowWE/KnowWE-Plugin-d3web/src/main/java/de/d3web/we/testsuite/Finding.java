@@ -25,6 +25,10 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Annotation.FindingAnswer;
+import de.d3web.we.kdom.Annotation.FindingQuestion;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -32,8 +36,17 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public void init() {
-    	this.childrenTypes.add(new Question());
-    	this.childrenTypes.add(new Answer());
+		
+		FindingQuestion question = new FindingQuestion();
+		question.setSectionFinder(new QuestionSectionFinder());
+		question.setCustomRenderer(new ObjectInfoLinkRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR6)));
+		
+		FindingAnswer answer = new FindingAnswer();
+		answer.setSectionFinder(new AnswerSectionFinder());
+		answer.setCustomRenderer(new ObjectInfoLinkRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR5)));
+		
+		this.childrenTypes.add(question);
+		this.childrenTypes.add(answer);
 		this.sectionFinder = new FindingSectionFinder();
 	}
 	
@@ -55,4 +68,43 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		}
 		
 	}
+	
+	public class AnswerSectionFinder extends SectionFinder {
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section father) {
+			
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<String> findings = SplitUtility.splitUnquoted(text, "=");
+
+			int start = text.indexOf(findings.get(1));
+			int end = start + findings.get(1).length();
+			SectionFinderResult s = new SectionFinderResult(start, end);
+			result.add(s);
+
+			return result;
+		}
+		
+	}
+	
+
+	class QuestionSectionFinder extends SectionFinder {
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section father) {
+			
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<String> findings = SplitUtility.splitUnquoted(text, "=");
+
+			int start = text.indexOf(findings.get(0));
+			int end = start + findings.get(0).length();
+			SectionFinderResult s = 
+				new SectionFinderResult(start, end);
+			result.add(s);
+
+			return result;
+		}
+		
+	}
+	
 }

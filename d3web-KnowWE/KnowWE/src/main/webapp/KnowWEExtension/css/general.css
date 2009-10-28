@@ -662,6 +662,22 @@ font-size:120%;
     border: 1px solid #D2D2D2;
     text-align: center;
 }
+#testsuite-panel a {
+    color: #000000;
+    text-decoration: none;
+}
+#testsuite-panel a:hover {
+    color: #000000;
+    text-decoration: none;
+}
+#testsuite-panel a:active {
+    color: #000000;
+    text-decoration: none;
+}
+#testsuite-panel a:selected {
+    color: #000000;
+    text-decoration: none;
+}
 
 /* ################################################## */
 /* -------------- logger settings     --------------- */
