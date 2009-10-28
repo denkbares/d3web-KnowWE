@@ -530,8 +530,12 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		if (currentQuestion != null) {
 			if (parent != null) {
 				parent.addLinkedChild(currentQuestion);
+				currentQuestion.addLinkedParent(parent);
+			}else {
+				errors.add(MessageKnOfficeGenerator
+						.createNoParentQuestionError(file, line, linetext));
+				return;
 			}
-			currentQuestion.addLinkedParent(parent);
 		} else {
 			currentQuestion = D3webQuestionFactory.createQuestion(idom, parent,
 					name, type);
