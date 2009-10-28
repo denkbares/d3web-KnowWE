@@ -1508,7 +1508,14 @@ if (!Array.prototype.each)
 
 
 /**
- * Function
+ * Function: Array.toLogger
+ * Converts an array to a string.
+ * 
+ * Parameters:
+ *     indent - The indent of the line
+ * 
+ * Returns:
+ *     The formatted string
  */
 Array.prototype.toLogger = function(indent){
     var space = KNOWWE.helper.logger.space(indent), s = '[';
@@ -1536,7 +1543,14 @@ Array.prototype.toLogger = function(indent){
     return s;
 }
 /**
- * Function: 
+ * Function: String.toLogger
+ * Converts an array to a string.
+ * 
+ * Parameters:
+ *     indent - The indent of the line
+ * 
+ * Returns:
+ *     The formatted string
  */
 String.prototype.toLogger = function(indent){
     var space = KNOWWE.helper.logger.space(indent);
