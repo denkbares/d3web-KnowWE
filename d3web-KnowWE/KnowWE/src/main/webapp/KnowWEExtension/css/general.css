@@ -667,25 +667,37 @@ font-size:120%;
 /* -------------- logger settings     --------------- */
 /* ################################################## */
 #KNOWWE-logger-main {
+    font: normal 10px Tahoma,Verdana,Arial;
     position: absolute;
-    top: 10px;
+    top: 2px;
     left: 10px;
+    width: 30%;
 }
 #KNOWWE-logger-count, #KNOWWE-logger-clear {
-    background-color: rgb(255,255,255);
-    padding:5px;
+
+}
+#KNOWWE-logger-header{
+    background-color: rgb(255,255,255);	
+    padding: 5px;
 }
 #KNOWWE-logger-display{
-    
+	overflow:auto;
+    height: 100px;
 }
-.KNOWWE-logger-message {
-    background-color: rgb(255,255,255); 
+#KNOWWE-logger-display dl, #KNOWWE-logger-display dd{
+    background-color: rgb(255,255,255);	
 }
-.log-info{
+.log-info-bg{
     background-color: rgb(255, 204, 51);    
 }
-.log-error{
+.log-info-font{
+    color: rgb(255, 204, 51);    
+}
+.log-error-bg{
     background-color: rgb(255, 61, 61);    
+}
+.log-error-font{
+    color: rgb(255, 61, 61);    
 }
 
 /* ################################################## */

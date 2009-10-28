@@ -26,7 +26,7 @@ KNOWWE.core = function(){
         init : function(){
             KNOWWE.core.util.addCollabsiblePluginHeader();
             KNOWWE.core.util.form.addFormHints('knoffice-panel');
-            KNOWWE.core.actions.init(); 
+            KNOWWE.core.actions.init();
         }
     }
 }();
@@ -44,7 +44,6 @@ KNOWWE.core.actions = function(){
         init : function(){
             //init quickedit actions
             var els = _KS('.quickedit');
-            
             for (var i = 0; i < els.length; i++){
                 if( els[i]._hasClass( 'table' ))
                     _KE.add('click', els[i], function(e){
@@ -171,6 +170,10 @@ KNOWWE.core.util = function(){
          * (start code)
          * <div class='panel'><h3>Pluginname</h3><x>some plugin content</x></div>
          * (end)
+         * 
+         * Parameters: 
+         *     id - Optional id attribute. Specifies the DOM element, the collabsible
+         *          functionality should be applied to.
          */
         addCollabsiblePluginHeader : function( id ){
         	var selector = "div .panel";
@@ -179,6 +182,7 @@ KNOWWE.core.util = function(){
         	}
         	
             var panels = _KS( selector );
+            if( panels.length < 1 ) return;
             if( !panels.length ) panels = new Array(panels);
             
             for(var i = 0; i < panels.length; i++){
@@ -1021,7 +1025,7 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
         window.addEvent( 'domready', function(){
             /* loop through all init function and do some stuff */
             var ns = [KNOWWE.core, KNOWWE.core.renaming, 
-                KNOWWE.core.tablesorter, KNOWWE.core.typebrowser];
+                KNOWWE.core.util.tablesorter, KNOWWE.core.typebrowser];
             for ( var i = 0; i < ns.length; i++ ){
                 if( typeof ns[i] === undefined ) continue;
                 

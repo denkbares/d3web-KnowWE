@@ -96,7 +96,26 @@ KNOWWE.helper = function(){
             top  += e.offsetTop;
         
             return {x:left, y:top};
-        },       
+        },   
+        /**
+         * Function: formatAttributes
+         * Formats the attribute node of an DOM element.
+         * 
+         * Parameters:
+         *     attr - The attribute node of the DOM element.
+         * 
+         * Returns:
+         *     The attributes of the DOM element as string
+         */
+        formatAttributes : function( attr ){
+			var s ='', i = 0;
+			for( i = 0; i < attr.length; i++){
+				var nodeName = attr[i].name; 
+		  	    if(nodeName.startsWith('_')) continue; //due the KNOWWE element class
+			    s += attr[i].nodeValue + '#';
+			}
+			return s;
+		},        
         /**
          * Function: getMouseOffset
          * 
@@ -177,7 +196,11 @@ KNOWWE.helper = function(){
          loadCheck : function( pages ){
             if(!pages || pages.constructor !== Array) return false;
             
-            var path = window.location.pathname.split('/');
+            var path = window.location.pathname;
+          //quick fix for checking if init actions should apply to start page
+            if(path == '/KnowWE/') return true; 
+            
+            var path = path.split('/');
             var page = path[path.length - 1];
               
             for(var i = 0; i < pages.length; i++){
@@ -1092,13 +1115,14 @@ KNOWWE.helper.logger = function(){
      *     The HTMLNode representation of the message
      */
     function getMessageDisplayHTML( msg, lvl ){
-        var html = '<tr class="@class@"><td>' + getTime() + '</td><td>@msg@</td></tr>';
+        //var html = '<tr class="@class@"><td>' + getTime() + '</td><td>@msg@</td></tr>';
+        var html = '<dt class="@class@">' + getTime() + '</dt><dd class="">@msg@</dd>';
         switch( lvl ){
             case LOGGER_ERROR : 
-                html = html.replace(/@class@/, 'log-error');
+                html = html.replace(/@class@/, 'log-error-bg');
                 break;
             case LOGGER_INFO : 
-                html = html.replace(/@class@/, 'log-info');
+                html = html.replace(/@class@/, 'log-info-bg');
                 break;             
             default :
                 break;
@@ -1118,80 +1142,76 @@ KNOWWE.helper.logger = function(){
      *     The formatted message as string.
      */
     function formatMessage( msg ){
-        if(!msg) return "null";
-        
-        var type = msg.constructor, r = "";
-        var regex = new RegExp("HTML");
+    	if(!msg) return 'null';
+    	
+    	var indent = '', formattedMsg = '';
+        var type = typeof msg;
 
-        if(regex.test(type)){
-            return formatDomNode( msg );
-        } else if(type == Object || type == Array){
-            return formatObject(msg, "");
-        } else {
-            return msg;
+        switch(type){
+            case 'string':
+            case 'number':
+            	formattedMsg = msg.toLogger(0);
+        	    break;        	
+            case 'object':
+            	if(!msg.length){
+            		formattedMsg = objToLogger(msg, 4);
+            	} else {
+            		formattedMsg = msg.toLogger(0);
+            	}
+                break;
+            default:
+              	break;
         }
+        return formattedMsg;
     }
     /**
-    * Formats an object and array element.
-    * 
-    * Parameters:
-    *     object - The object/array to be formatted.
-    *     space - A string used to indent.
-    * 
-    * Returns:
-    *     The formatted string.
-    */
-    function formatObject( object, space ){
-        var r = "", row = "";
-        if( typeof object == 'object'){
-            for ( var i in object ){
-                if( typeof object[i] == 'object') {
-                    row = space + i + " : <br />";
-                    space += "    ";
-                    r += row + formatObject(object[i], space) ;
-                    space = "";
-                }
-                else {
-                    if(typeof object[i] != 'function') {
-                        row = i + " : \"" + object[i] + "\"<br />"; 
-                        r += space + row;
-                    }
-                }
-            }
-        }
-        return r;
-    }
-    /**
-     * Formats an DomNode.
+     * Formats an object element.
      * 
      * Parameters:
-     *     element - The DOM node to be formatted.
+     *     object - The object/array to be formatted.
+     *     space - A string used to indent.
      * 
      * Returns:
-     *     String representation of a DOM node.
-     */
-    function formatDomNode( element ){ 
-        var regex = new RegExp("HTML");
-        if(!regex.test(element.constructor)) return "";
-        
-        var r = "";
-        r += "[" + element.nodeName + " : \n";
-        
-        for(var i = 0; i < element.attributes.length; i++){
-            var name = element.attributes[i].nodeName;
-            var value = element.attributes[i].nodeValue;
-            r += "    " + name + " : \"" + value + "\",\n";
-        }
-        return r + "]";
+     *     The formatted string.
+     */    
+    function objToLogger (obj, indent){
+        var s = '{<br />', oldIndent = indent;
+    	for( var i in obj ){
+    		if( typeof obj[i] == 'function') continue;
+    	    var space = KNOWWE.helper.logger.space( indent );
+    		if(typeof obj[i] == 'object'){
+    		    s += space + i + ':';
+    			indent += oldIndent;
+    	        s += objToLogger(obj[i], indent) + '<br />';
+    			indent -= oldIndent;
+    		}
+    	    else {
+    		    s += space + i + ':' + obj[i].toLogger(0) + '<br />';
+    		}
+    	}
+        s += KNOWWE.helper.logger.space(indent-oldIndent) + '}';
+    	return s;
     }
     
     /**
      * Toggles the logger message window.
      */
     function toogle( ){
-        var style = document.getElementById('KNOWWE-logger-display').style['display'];
-        if( style == "" ) style = 'inline';
-        document.getElementById('KNOWWE-logger-display').style.display = (style === 'inline' ) ? 'none' : 'inline';
+    	var element = document.getElementById('KNOWWE-logger-display').getElementsByTagName('dl')[0].style;
+        var show = element['display'];
+        if( show == "" ) show = 'inline';
+        element.display = (show === 'inline' ) ? 'none' : 'inline';
+        document.getElementById('KNOWWE-logger-clear').style.display = (show === 'inline' ) ? 'none' : 'inline';
+    }
+    /**
+     * Function: clear
+     * Clears the logger messages. And resets the message counter to zero.
+     */
+    function clear(){
+    	msgCount = 0;
+        document.getElementById('KNOWWE-logger-count').innerHTML = msgCount;
+        document.getElementById('KNOWWE-logger-display').getElementsByTagName('dl')[0].innerHTML = "";
+        toogle();
     }
     /**
      * Logs the message with the given level to the message panel. Logs only if the
@@ -1206,9 +1226,8 @@ KNOWWE.helper.logger = function(){
         msgCount = (msgCount * 1 )+ 1;
         document.getElementById('KNOWWE-logger-count').innerHTML = msgCount;
     
-        var oldMsg = document.getElementById('KNOWWE-logger-display');
-        oldMsg.innerHTML = oldMsg.innerHTML.replace(/<table>/i, '<table>' + getMessageDisplayHTML( msg, lvl ));
-        return getMessageDisplayHTML( msg, lvl );
+        var oldMsg = document.getElementById('KNOWWE-logger-display').getElementsByTagName('dl')[0];
+        oldMsg.innerHTML = getMessageDisplayHTML( msg, lvl ) + oldMsg.innerHTML;
     }
     
     /**
@@ -1216,19 +1235,22 @@ KNOWWE.helper.logger = function(){
      * This is indicated by the <code>inUse</code> property.
      */
     function init(){
-        if(!inUse) return;
+       if(!inUse) return;
         var domEl = document.createElement('div');
         var domAtt = document.createAttribute('id');
         domAtt.nodeValue = 'KNOWWE-logger-main';
         domEl.setAttributeNode( domAtt );
-        domEl.innerHTML = '<div id="KNOWWE-logger-count" class="pointer">' + msgCount + '</div>'
-            + '<div id="KNOWWE-logger-display"><table></table></div>';
+        domEl.innerHTML = '<div id="KNOWWE-logger-header" class="pointer">' 
+            + '<span id="KNOWWE-logger-count">' + msgCount + '</span>'
+            + '<span id="KNOWWE-logger-clear" class="right" style="display:none">[clear]</span></div>'
+            + '<div id="KNOWWE-logger-display"><dl></dl></div>';
 
         document.getElementsByTagName("body")[0].appendChild( domEl );
         
         var loggerCount = document.getElementById('KNOWWE-logger-count'); 
         loggerCount.innerHTML = msgCount;
         KNOWWE.helper.event.add('click', loggerCount, toogle );
+        KNOWWE.helper.event.add('click', _KS('#KNOWWE-logger-clear'), clear );
         toogle();
     }
     
@@ -1240,14 +1262,6 @@ KNOWWE.helper.logger = function(){
         setup : function(){
             if(document.getElementById('KNOWWE-logger-main')) return;
             init();
-        },
-        /**
-         * Function: clear
-         * Clears the logger messages. And resets the message counter to zero.
-         */
-        clear : function(){
-            document.getElementById('KNOWWE-logger-count').innerHTML = 0;
-            document.getElementById('KNOWWE-logger-display').getElementsByTagName('table').innerHTML = "";
         },      
         /**
          * Function: error
@@ -1276,6 +1290,22 @@ KNOWWE.helper.logger = function(){
                 init();
             }
             log( msg, LOGGER_INFO );
+        },
+        /**
+         * Function: space
+         * Returns a string with the given length of space characters.
+         * 
+         * Parameters:
+         *     len - The length of the space string.
+         * Returns:
+         *     A string containing len space characters.
+         */
+        space : function( len ){
+            var s = '';
+        	for(var i = 0; i < len; i++){
+        	    s += '&nbsp;';
+        	}
+        	return s;
         }
     }
 }();
@@ -1475,3 +1505,42 @@ if (!Array.prototype.each)
       }
     };
 }
+
+
+/**
+ * Function
+ */
+Array.prototype.toLogger = function(indent){
+    var space = KNOWWE.helper.logger.space(indent), s = '[';
+    var len = this.length >>> 0;
+
+    for (var i = 0; i < len; i++){
+      if (i in this){
+    	  if(typeof this[i] == 'function') continue;
+    	  if(typeof this[i] == 'object'){
+    		  if(this[i].tagName){
+    			  var tag = this[i].tagName.toLowerCase();
+            	  var attr = KNOWWE.helper.formatAttributes(this[i].attributes);
+
+            	  s += tag + ':' + attr;    			  
+    		  } else {
+    			  s += this[i];  
+    		  }
+    	  } else {
+              s += ' ' + this[i].toLogger(indent);
+    	  }
+	  }
+	  if(i + 1 != len) s += ',';
+    }
+    s += ' ]';
+    return s;
+}
+/**
+ * Function: 
+ */
+String.prototype.toLogger = function(indent){
+    var space = KNOWWE.helper.logger.space(indent);
+    return space + '"' + this + '"';
+}
+
+
