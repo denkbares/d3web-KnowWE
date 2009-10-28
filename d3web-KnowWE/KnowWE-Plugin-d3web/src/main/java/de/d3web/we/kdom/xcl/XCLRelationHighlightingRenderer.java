@@ -38,6 +38,7 @@ import de.d3web.we.kdom.condition.NegatedFinding;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -71,11 +72,6 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
 		
-		// Get KnowledgeServiceSession containing the XPSCase
-		String xpsCaseId = sec.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(sec.getTitle());
-		Broker broker = D3webModule.getBroker(user.getUsername(), sec.getArticle().getWeb());
-		KnowledgeServiceSession kss = broker.getSession().getServiceSession(xpsCaseId);
-		
 		String kbrelId = (String)KnowWEUtils.getStoredObject(sec.getArticle().getWeb(), sec.getTitle(), sec.getId(), CoveringListContent.KBID_KEY);
 		
 		StringBuilder buffi = new StringBuilder();
@@ -85,15 +81,12 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 			return;
 		}
 
+		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
 		
-		if (kss instanceof D3webKnowledgeServiceSession) {
-			
-			// Get the XPSCase
-			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) kss;
-			XPSCase c = d3webKSS.getXpsCase();
+		if (xpsCase != null) {
 			
 			// Get the KnowledgeSlices from KB and find the XCLRelation to be rendered
-			Collection<KnowledgeSlice> models = c.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
+			Collection<KnowledgeSlice> models = xpsCase.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
 			for (KnowledgeSlice knowledgeSlice : models) {
 				if(knowledgeSlice instanceof XCLModel) {
 					
@@ -102,7 +95,7 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 						
 						// eval the Relation to find the right Rendering
 						try {
-							boolean b = ((XCLModel)knowledgeSlice).findRelation(kbrelId).eval(c);
+							boolean b = ((XCLModel)knowledgeSlice).findRelation(kbrelId).eval(xpsCase);
 							// Highlight Relation
 							string.append( this.renderRelationChildren(sec, user, true, b));
 							return;

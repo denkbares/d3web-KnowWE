@@ -135,9 +135,11 @@ public class SaveDialogAsXCLAction implements KnowWEAction {
 		broker.getDialogControl().showNextActiveDialog();
 		KnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(kbid);
 		XPSCase c = null;
+		
 		if(serviceSession instanceof D3webKnowledgeServiceSession) {
 			c = ((D3webKnowledgeServiceSession)serviceSession).getXpsCase();
 		}
+		
 		if(serviceSession == null) {
 			kbid =  KnowWEEnvironment.WIKI_FINDINGS+".."+KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
 			 serviceSession = broker.getSession().getServiceSession(kbid);
@@ -145,6 +147,7 @@ public class SaveDialogAsXCLAction implements KnowWEAction {
 					c = ((D3webKnowledgeServiceSession)serviceSession).getXpsCase();
 				}
 		}
+		
 		return c;
 	}
 	

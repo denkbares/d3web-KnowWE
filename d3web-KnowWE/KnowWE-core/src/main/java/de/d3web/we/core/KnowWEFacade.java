@@ -175,18 +175,6 @@ public class KnowWEFacade {
 	}
 
 	/**
-	 * Sets a single finding for a question
-	 * TODO: Why performAction is called with two different actions
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String setSingleFinding(KnowWEParameterMap parameterMap) {
-		performAction("SetSingleFindingAction", parameterMap);
-		return performAction("RefreshHTMLDialogAction", parameterMap);
-	}
-
-	/**
 	 * Allows to perform actions by Class
 	 * 
 	 * @param parameterMap

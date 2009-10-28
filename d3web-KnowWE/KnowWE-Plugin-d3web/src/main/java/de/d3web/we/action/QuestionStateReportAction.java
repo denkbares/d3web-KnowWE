@@ -67,12 +67,14 @@ public class QuestionStateReportAction implements KnowWEAction{
 			
 			if(questionID != null) {
 				
-			QASet set = ((D3webKnowledgeService)service).getBase().searchQASet(questionID);
-			if(set instanceof Question) {
-				
-				q = ((Question)set);
+				QASet set = ((D3webKnowledgeService) service).getBase()
+						.searchQASet(questionID);
+				if (set instanceof Question) {
+
+					q = ((Question) set);
+				}
 			}
-			}
+			
 			if(questionName != null) {
 				
 				List<Question> questionList = ((D3webKnowledgeService)service).getBase().getQuestions();
@@ -84,9 +86,11 @@ public class QuestionStateReportAction implements KnowWEAction{
 				}
 			}
 		}
-		if(kss instanceof de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession){
-			
-		}
+		
+//		if(kss instanceof de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession){
+//			
+//		}
+		
 		if(kss instanceof de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession && q != null) {
 			
 			D3webKnowledgeServiceSession d3kss = ((D3webKnowledgeServiceSession)kss);

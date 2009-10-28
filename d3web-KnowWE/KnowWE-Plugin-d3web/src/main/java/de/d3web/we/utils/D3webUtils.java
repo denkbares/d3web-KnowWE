@@ -18,13 +18,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.d3webModule;
+package de.d3web.we.utils;
 
+import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.answers.AnswerChoice;
 import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
+import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class D3webUtils {
 	
@@ -47,6 +53,47 @@ public class D3webUtils {
 			return (AnswerChoice)session.getBaseManagement().findAnswer(q, aid);
 		}
 		return null;
+	}
+	
+	/**
+	 * Gets the XPSCase Object.
+	 * 
+	 * @param sec
+	 * @param user
+	 */
+	public static XPSCase getXPSCase(Section sec, KnowWEUserContext user) {
+		
+		String xpsCaseId = sec.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(sec.getTitle());
+		Broker broker = D3webModule.getBroker(user.getUsername(), sec.getWeb());
+		KnowledgeServiceSession kss = broker.getSession().getServiceSession(xpsCaseId);
+		XPSCase xpsCase = null;
+		
+		if (kss instanceof D3webKnowledgeServiceSession) {
+			
+			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) kss;
+			xpsCase = d3webKSS.getXpsCase();
+		}
+		return xpsCase;
+	}
+	
+	/**
+	 * Gets the XPSCase Object.
+	 * 
+	 * @param user
+	 */
+	public static XPSCase getXPSCase(String topic, KnowWEUserContext user, String web) {
+		
+		String xpsCaseId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
+		Broker broker = D3webModule.getBroker(user.getUsername(), web);
+		KnowledgeServiceSession kss = broker.getSession().getServiceSession(xpsCaseId);
+		XPSCase xpsCase = null;
+		
+		if (kss instanceof D3webKnowledgeServiceSession) {
+			
+			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) kss;
+			xpsCase = d3webKSS.getXpsCase();
+		}
+		return xpsCase;
 	}
 
 }

@@ -25,11 +25,6 @@ import java.util.Collection;
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.domainModel.RuleComplex;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
@@ -42,6 +37,7 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rules.Rule;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -111,18 +107,9 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 		Section rule = KnowWEObjectTypeUtils.getAncestorOfType(sec, Rule.class);
 		String kbRuleId = (String) KnowWEUtils.getStoredObject(sec.getWeb(), sec.getTitle(), rule.getId(), Rule.KBID_KEY);
 		
-		// Get KnowledgeServiceSession containing the XPSCase
-		String xpsCaseId = sec.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(sec.getTitle());
-		Broker broker = D3webModule.getBroker(user.getUsername(), sec.getWeb());
-		KnowledgeServiceSession kss = broker.getSession().getServiceSession(xpsCaseId);
+		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
 		
-		if (kss instanceof D3webKnowledgeServiceSession) {
-			
-			// Get the XPSCase
-			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) kss;
-			XPSCase xpsCase = d3webKSS.getXpsCase();
-			
-			// Get the RuleComplex with kbRuleId
+		if (xpsCase != null) {
 			Collection<KnowledgeSlice> slices = xpsCase.getKnowledgeBase().getAllKnowledgeSlices();
 			for (KnowledgeSlice slice : slices) {
 				

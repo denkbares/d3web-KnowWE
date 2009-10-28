@@ -57,11 +57,11 @@ public class DPSSolutionsAction implements KnowWEAction {
 
 	protected Comparator<Information> infComp = new InferenceComparator();
 
-	private class DerivationComarator implements Comparator<Term> {
+	private class DerivationComparator implements Comparator<Term> {
 		private final ISetMap<Term, Information> assumptionMap;
 		private final Broker broker;
 
-		public DerivationComarator(ISetMap<Term, Information> assumptionMap,
+		public DerivationComparator(ISetMap<Term, Information> assumptionMap,
 				Broker b) {
 			super();
 			this.assumptionMap = assumptionMap;
@@ -477,7 +477,7 @@ public class DPSSolutionsAction implements KnowWEAction {
 			}
 		}
 
-		Comparator<Term> derivationComarator = new DerivationComarator(
+		Comparator<Term> derivationComarator = new DerivationComparator(
 				assumptionMap, broker);
 
 		Collections.sort(established, derivationComarator);

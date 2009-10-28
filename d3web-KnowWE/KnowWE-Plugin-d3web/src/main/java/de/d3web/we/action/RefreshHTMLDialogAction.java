@@ -70,10 +70,12 @@ public class RefreshHTMLDialogAction implements de.d3web.we.action.KnowWEAction{
 		KnowledgeServiceSession serviceSession = broker.getSession()
 				.getServiceSession(kbid);
 		XPSCase c = null;
+		
 		if(serviceSession instanceof D3webKnowledgeServiceSession) {
 			c = ((D3webKnowledgeServiceSession)serviceSession).getXpsCase();
 			return HTMLDialogRenderer.renderDialog(c,web);
 		}
+		
 		if(serviceSession == null) {
 			kbid =  KnowWEEnvironment.WIKI_FINDINGS+".."+KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
 			 serviceSession = broker.getSession().getServiceSession(kbid);
@@ -82,6 +84,7 @@ public class RefreshHTMLDialogAction implements de.d3web.we.action.KnowWEAction{
 					return HTMLDialogRenderer.renderDialog(c,web);
 				}
 		}
+		
 		return null;
 	}
 

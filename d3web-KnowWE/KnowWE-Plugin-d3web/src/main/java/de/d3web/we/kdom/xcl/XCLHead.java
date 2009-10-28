@@ -43,10 +43,10 @@ import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	
 	Map<String, String> solutionStore = new HashMap<String, String>(); 
-
+	
 	
 	public class XCLHeadSectionFinder extends SectionFinder{
-
+		
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			if(text.length() == 0) return null;
@@ -103,7 +103,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.sectionFinder = new XCLHeadSectionFinder();
-		
+		this.setCustomRenderer(XCLHeadHighlightingRenderer.getInstance());
 	}
 
 }
