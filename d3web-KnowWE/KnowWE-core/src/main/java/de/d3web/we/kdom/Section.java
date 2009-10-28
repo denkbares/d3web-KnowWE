@@ -235,7 +235,7 @@ public class Section implements Visitable, Comparable<Section> {
 		// try to get unchanged Sections from old article
 		if (article.getOldArticle() != null && !isExpanded
 				&& !objectType.isNotRecyclable()
-				&& !objectType.isLeaveType()) {
+				&& !objectType.isLeafType()) {
 			
 			Map<String, Section> sectionsOfSameType = article.getOldArticle()
 					.findChildrenOfTypeMap(getPathFromArticleToThis());

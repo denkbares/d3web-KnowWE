@@ -348,10 +348,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return this.getClass().getSimpleName();
 	}
 
-	@Override
-	public KnowWEDomRenderer getDefaultRenderer() {
-		return DelegateRenderer.getInstance();
-	}
+
 
 	public Section getSection() {
 		return sec;

@@ -55,11 +55,7 @@ public class PlainText extends DefaultAbstractKnowWEObjectType {
 	    throw new CloneNotSupportedException(); 	   
 	  }
 	
-	
-	@Override
-	public KnowWEDomRenderer getDefaultRenderer() {
-		return DefaultTextRenderer.getInstance();
-	}
+
 
 
 	@Override

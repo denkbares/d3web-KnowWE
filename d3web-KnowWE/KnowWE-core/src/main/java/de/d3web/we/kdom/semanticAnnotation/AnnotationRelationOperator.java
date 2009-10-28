@@ -59,10 +59,6 @@ public class AnnotationRelationOperator extends DefaultAbstractKnowWEObjectType 
 		throw new CloneNotSupportedException();
 	}
 
-	@Override
-	public KnowWEDomRenderer getDefaultRenderer() {
-		return DelegateRenderer.getInstance();
-	}
 
 
 	public static class AnnotationPropertySectionFinder extends SectionFinder {

@@ -86,7 +86,7 @@ public interface KnowWEObjectType extends KnowWEType{
 	
 	public void cleanStoredInfos(String articleName);
 	
-	public boolean isLeaveType();
+	public boolean isLeafType();
 	
 	public boolean isNotRecyclable();
 	
