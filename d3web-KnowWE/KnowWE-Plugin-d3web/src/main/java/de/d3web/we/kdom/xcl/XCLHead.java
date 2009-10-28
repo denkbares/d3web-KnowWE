@@ -42,7 +42,6 @@ import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 
 public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	
-	Map<String, String> solutionStore = new HashMap<String, String>(); 
 	
 	
 	public class XCLHeadSectionFinder extends SectionFinder{
@@ -64,7 +63,6 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 			if(start <= end) {
 			    String solution=text.substring(start,end).trim();
 				result.add(new SectionFinderResult(start, end));				
-				solutionStore.put(text.substring(start, end), solution);
 				
 				if (father != null) {
 					SolutionContext con=new SolutionContext();
