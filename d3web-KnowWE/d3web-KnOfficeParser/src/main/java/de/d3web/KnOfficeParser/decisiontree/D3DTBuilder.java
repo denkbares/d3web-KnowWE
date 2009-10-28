@@ -121,8 +121,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	private class Tupel<T, X> {
 		private T first;
 		private X second;
-		boolean used=false;
-		
+		boolean used = false;
+
 		public Tupel(T t, X x) {
 			first = t;
 			second = x;
@@ -131,7 +131,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 
 	private class Tripel<T, X, U> extends Tupel<T, X> {
 		private U third;
-		
+
 		public Tripel(T t, X x, U u) {
 			super(t, x);
 			third = u;
@@ -151,8 +151,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	 */
 	@Override
 	public void addAnswerOrQuestionLink(int dashes, String name, String ref,
-			List<String> syn, boolean def, boolean init, int line, String linetext,
-			String idlink) {
+			List<String> syn, boolean def, boolean init, int line,
+			String linetext, String idlink) {
 		if (questionStack.isEmpty()) {
 			errors.add(MessageKnOfficeGenerator.createNoQuestionOnStack(file,
 					line, linetext));
@@ -200,17 +200,16 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			conditionStack.push(c);
 			conddashstack.push(dashes);
 			if (idlink != null) {
-				descriptionlinks
-						.add(new Tripel<String, Object, Message>(
-								idlink, answer, MessageKnOfficeGenerator
-										.createDescriptionTextNotFoundError(
-												file, line, linetext, idlink)));
+				descriptionlinks.add(new Tripel<String, Object, Message>(
+						idlink, answer, MessageKnOfficeGenerator
+								.createDescriptionTextNotFoundError(file, line,
+										linetext, idlink)));
 			}
-			//answer is the default answer
+			// answer is the default answer
 			if (def) {
 				setAnswerPropertytoCurrentQuestion(answer, Property.DEFAULT);
 			}
-			//the question is initialised with this answer
+			// the question is initialised with this answer
 			if (init) {
 				setAnswerPropertytoCurrentQuestion(answer, Property.INIT);
 			}
@@ -237,19 +236,20 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 
 	}
 
-	private void setAnswerPropertytoCurrentQuestion(AnswerChoice answer, Property property) {
+	private void setAnswerPropertytoCurrentQuestion(AnswerChoice answer,
+			Property property) {
 		Properties properties = currentQuestion.getProperties();
 		Object defproperty = properties.getProperty(property);
-		if (defproperty!=null) {
+		if (defproperty != null) {
 			if (defproperty instanceof String) {
 				String s = (String) defproperty;
 				if (!s.contains(answer.getId())) {
-					s+=";"+answer.getId();
-					defproperty=s;
+					s += ";" + answer.getId();
+					defproperty = s;
 				}
 			}
 		} else {
-			defproperty=answer.getId();
+			defproperty = answer.getId();
 		}
 		properties.setProperty(property, defproperty);
 	}
@@ -263,8 +263,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					linetext), line, linetext);
 		} else {
 			qcontainertolink
-					.add(new Tripel<String, AbstractCondition, Message>(
-							name, cond, MessageKnOfficeGenerator
+					.add(new Tripel<String, AbstractCondition, Message>(name,
+							cond, MessageKnOfficeGenerator
 									.createQuestionClassNotFoundException(file,
 											line, linetext, name)));
 			if ((ref != null) || (syn != null) || (def)) {
@@ -297,7 +297,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 
 	private AnswerChoice createAnswer(String name, String ref) {
 		if (ref == null) {
-			ref = idom.findNewIDForAnswerChoice((QuestionChoice) currentQuestion);
+			ref = idom
+					.findNewIDForAnswerChoice((QuestionChoice) currentQuestion);
 		}
 		AnswerChoice answer = AnswerFactory.createAnswerChoice(ref, name);
 		return answer;
@@ -322,7 +323,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			errors.add(MessageKnOfficeGenerator.createNameNotAllowedWarning(
 					file, line, linetext, des));
 		}
-		
+
 		// check if the subject is allowed
 		// (if the type is a defined subject)
 		boolean isTypeAllowed = false;
@@ -338,10 +339,10 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					line, linetext, type));
 			return;
 		}
-		
+
 		for (Tupel<String, Object> t : descriptionlinks) {
 			if (t.first.equals(id)) {
-				t.used=true;
+				t.used = true;
 				if (t.second instanceof NamedObject) {
 					NamedObject na = (NamedObject) t.second;
 					addMMInfo(na, des, type, text, language);
@@ -398,14 +399,10 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					}
 				}
 				if (idlink != null) {
-					descriptionlinks
-							.add(new Tripel<String, Object, Message>(
-									idlink,
-									q,
-									MessageKnOfficeGenerator
-											.createDescriptionTextNotFoundError(
-													file, line, linetext,
-													idlink)));
+					descriptionlinks.add(new Tripel<String, Object, Message>(
+							idlink, q, MessageKnOfficeGenerator
+									.createDescriptionTextNotFoundError(file,
+											line, linetext, idlink)));
 				}
 				if ((link != null) || (linkdes != null)) {
 					errors
@@ -435,17 +432,14 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					return;
 				}
 				RuleFactory.createHeuristicPSRule(newRuleID, diag, score, cond);
-				addMMInfo(diag, "Link", MMInfoSubject.LINK.getName(), link, null);
+				addMMInfo(diag, "Link", MMInfoSubject.LINK.getName(), link,
+						null);
 				// TODO Linkbeschreibung?
 				if (idlink != null) {
-					descriptionlinks
-							.add(new Tripel<String, Object, Message>(
-									idlink,
-									diag,
-									MessageKnOfficeGenerator
-											.createDescriptionTextNotFoundError(
-													file, line, linetext,
-													idlink)));
+					descriptionlinks.add(new Tripel<String, Object, Message>(
+							idlink, diag, MessageKnOfficeGenerator
+									.createDescriptionTextNotFoundError(file,
+											line, linetext, idlink)));
 				}
 				// Condition falls Frageklassenindikationen als Kinder
 				// existieren
@@ -499,7 +493,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			errors.add(MessageKnOfficeGenerator.createNoNumQuestionException(
 					file, line, linetext));
 		}
-		
+
 	}
 
 	/*
@@ -534,7 +528,9 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		currentQuestion = idom.findQuestion(name);
 		if (currentQuestion != null) {
-			parent.addLinkedChild(currentQuestion);
+			if (parent != null) {
+				parent.addLinkedChild(currentQuestion);
+			}
 			currentQuestion.addLinkedParent(parent);
 		} else {
 			currentQuestion = D3webQuestionFactory.createQuestion(idom, parent,
@@ -613,8 +609,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		questionStack
 				.push(new Tupel<Integer, Question>(dashes, currentQuestion));
 		if (idlink != null) {
-			descriptionlinks.add(new Tripel<String, Object, Message>(
-					idlink, currentQuestion, MessageKnOfficeGenerator
+			descriptionlinks.add(new Tripel<String, Object, Message>(idlink,
+					currentQuestion, MessageKnOfficeGenerator
 							.createDescriptionTextNotFoundError(file, line,
 									linetext, idlink)));
 		}
@@ -688,7 +684,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		QASet qs1 = idom.findQContainer(name);
 		if (qs1 == null) {
-			qs1 = idom.createQContainer(name, idom.getKnowledgeBase().getRootQASet());
+			qs1 = idom.createQContainer(name, idom.getKnowledgeBase()
+					.getRootQASet());
 			if (idom.getKnowledgeBase().getInitQuestions().isEmpty()) {
 				ArrayList<QASet> tmp = new ArrayList<QASet>();
 				tmp.add(qs1);
@@ -729,19 +726,23 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	 */
 	private void addMMInfo(NamedObject o, String title, String subject,
 			String content, String language) {
-		if (o == null) return;
-		if (content == null) return;
-		
-		if (content.startsWith("\"") && content.endsWith("\"") && content.length()>1) {
-			content = content.substring(1, content.length()-1);
+		if (o == null)
+			return;
+		if (content == null)
+			return;
+
+		if (content.startsWith("\"") && content.endsWith("\"")
+				&& content.length() > 1) {
+			content = content.substring(1, content.length() - 1);
 		}
-		
+
 		MMInfoStorage mmis;
 		DCMarkup dcm = new DCMarkup();
 		dcm.setContent(DCElement.TITLE, title);
 		dcm.setContent(DCElement.SUBJECT, subject);
 		dcm.setContent(DCElement.SOURCE, o.getId());
-		if (language!=null) dcm.setContent(DCElement.LANGUAGE, language);
+		if (language != null)
+			dcm.setContent(DCElement.LANGUAGE, language);
 		MMInfoObject mmi = new MMInfoObject(dcm, content);
 		if (o.getProperties().getProperty(Property.MMINFO) == null) {
 			mmis = new MMInfoStorage();
@@ -808,18 +809,19 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		// prüfen ob noch nichtgesetzte Links zu Erklärungen vorhanden sind
 		for (Tripel<String, Object, Message> t : descriptionlinks) {
-			if (!t.used) ret.add(t.third);
+			if (!t.used)
+				ret.add(t.third);
 		}
 		if (ret.size() == 0) {
-			ret.add(MessageKnOfficeGenerator.createDTparsedNote(file, 0, "", idom.getKnowledgeBase()
-					.getQuestions().size()));
+			ret.add(MessageKnOfficeGenerator.createDTparsedNote(file, 0, "",
+					idom.getKnowledgeBase().getQuestions().size()));
 		}
 		return ret;
 	}
 
 	@Override
-	public List<Message> addKnowledge(Reader r,
-			IDObjectManagement idom, KnOfficeParameterSet s) {
+	public List<Message> addKnowledge(Reader r, IDObjectManagement idom,
+			KnOfficeParameterSet s) {
 		this.idom = idom;
 		ReaderInputStream input = new ReaderInputStream(r);
 		ANTLRInputStream istream = null;
@@ -852,8 +854,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	public void addManyQuestionClassLink(int dashes, List<String> qcs,
 			int line, String string) {
 		for (String s : qcs) {
-			addAnswerOrQuestionLink(dashes, s, null, null, false, false, line, string,
-					null);
+			addAnswerOrQuestionLink(dashes, s, null, null, false, false, line,
+					string, null);
 		}
 
 	}
