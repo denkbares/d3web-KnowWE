@@ -49,18 +49,18 @@
 }
 
 .added {
-	background-color: #00FF00;
-	color: #00FF00;
+	background-color: green;
+	color: green;
 }
 
 .removed {
-	background-color: #FF0000;
-	color: #FF0000;
+	background-color: red;
+	color: red;
 }
 
 .changed {
-	background-color: #0000FF;
-	color: #0000FF;
+	background-color: blue;
+	color: blue;
 }
 
 .Node .action {

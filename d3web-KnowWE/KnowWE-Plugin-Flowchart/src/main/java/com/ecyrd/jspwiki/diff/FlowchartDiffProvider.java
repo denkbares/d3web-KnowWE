@@ -196,6 +196,9 @@ public class FlowchartDiffProvider implements DiffProvider
                 v1 = colorEdges(v1, removedEdges, FlowchartChangeType.removed); 
                 v2 = colorEdges(v2, changedEdges, FlowchartChangeType.changed);
                 v2 = colorEdges(v2, addedEdges, FlowchartChangeType.added);
+                
+//                Logging.getInstance().log(Level.INFO, "v1: " + v1);
+//                Logging.getInstance().log(Level.INFO, "v2: " + v2);
                                 
                 return s + "<br \\>" + "<br \\>" + createPreview( v1 ) + "<br \\>" + "<br \\>" + "<br \\>" + "<br \\>"
                        + createPreview( v2 );
@@ -592,12 +595,17 @@ public class FlowchartDiffProvider implements DiffProvider
                 if (id.equals( nID )) {
                 		String[] parts = edges[i].split("<DIV class=\"");
                 		for (String s : parts) {
-                			if (!s.startsWith("#rule")) {
-//                				String type = s.substring(0, s.indexOf("\""));
+                			String type = s.substring(0, s.indexOf("\""));
+                			if (type.equals("h_line") || type.equals("v_line") || type.contains("arrow")) {
 //                				Logging.getInstance().log(Level.INFO, "type: " + type);
                 				String inputHelper1 = temp.substring(0, temp.indexOf(s));
                 				String inputHelper2 = temp.substring(temp.indexOf(s));
                 				temp = inputHelper1 + alteration + "\" id=\"" + inputHelper2;
+                			} else if (type.equals("GuardPane") || type.equals("value")) {
+//                				Logging.getInstance().log(Level.INFO, "type: " + type);
+                				String inputHelper1 = temp.substring(0, temp.indexOf(s));
+                				String inputHelper2 = temp.substring(temp.indexOf(s));
+                				temp = inputHelper1 + alteration + "Text\" id=\"" + inputHelper2;
                 			}
 //                			Logging.getInstance().log(Level.INFO, "s: " + s);
                 		}
