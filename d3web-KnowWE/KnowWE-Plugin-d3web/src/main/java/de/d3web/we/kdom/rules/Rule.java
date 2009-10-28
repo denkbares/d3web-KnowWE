@@ -111,12 +111,14 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 			boolean empty = true;
 			if (messages != null) {
 				for (Message m : messages) {
-					if (!m.getMessageText().equals(
-							MessageKnOfficeGenerator.getResourceBundle().
-							getString("rule"))) {
+					if (m.getMessageType().equals(Message.ERROR)) {  // hack showing only errors, this rendering needs a complete redesign
 						empty = false;
+							string.append(KnowWEEnvironment.maskHTML(
+									"<span style='color:red'>"));
 						string.append(m.getMessageType()+": " + m.getMessageText() 
 								+ (m.getMessageType().equals(Message.NOTE) ? " " + m.getCount() : " Line: " + m.getLineNo()));
+							string.append(KnowWEEnvironment.maskHTML(
+									"</span>"));
 						string.append(KnowWEEnvironment.maskHTML("\n"));
 					}
 				}
