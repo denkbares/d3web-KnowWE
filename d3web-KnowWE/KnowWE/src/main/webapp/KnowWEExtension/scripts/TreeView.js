@@ -61,35 +61,5 @@ getSelectedSections = function () {
 	for(var v in selectedSectionsSet) {
 		ar.push(v);
 	}
-	//alert(ar);
 	return ar;
 }
-//childrenHighlighted = function(node) {
-//	var yes = false, no = false;
-//	if (node.enableHighlight) {
-//		for (var i = 0;i < node.children.length;i++) {
-//			switch(node.children[i].highlightState) {
-//				case 0:
-//					no = true;
-//					break;
-//				case 1:
-//					yes = true;
-//					break;
-//				case 2:
-//					yes = no = true;
-//					break;
-//			}
-//		}
-//		if (yes && no) {
-//		} else if (yes && node.highlightState != 1) {
-//			node.highlight();
-//		} else if (node.highlightState != 0) {
-//			node.unhighlight();
-//		}
-//		if (node.propagateHighlightUp) {
-//			if (node.parent) {
-//				childrenHighlighted(node.parent);
-//			}
-//		}
-//	}
-//}

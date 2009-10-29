@@ -113,13 +113,13 @@ public class RenamingTagHandler extends AbstractTagHandler {
 	    html.append("<label for='search-sensitive'>" + rb.getString("KnowWE.renamingtool.case") + "</label>");
 	    html.append("<input id='search-sensitive' type='checkbox' name='search-sensitive' tabindex='7' checked='checked'/>");
 		html.append("</div>");		
-		// includes the section selection tree. uses external yahoo yui files (should be integrated)
+		// includes the section selection tree
 		html.append("" +
-				"<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/TreeView.css'>" +
-				"<!-- Combo-handled YUI CSS files: -->" +
-				"<link rel='stylesheet' type='text/css' href='http://yui.yahooapis.com/combo?2.8.0r4/build/treeview/assets/skins/sam/treeview.css'>" +
-				"<!-- Combo-handled YUI JS files: -->" +
-				"<script type='text/javascript' src='http://yui.yahooapis.com/combo?2.8.0r4/build/yahoo-dom-event/yahoo-dom-event.js&amp;2.8.0r4/build/treeview/treeview-min.js'></script>" +
+				"<!-- YUI CSS files: -->" +
+				"<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/yui2/treeview/assets/skins/sam/treeview.css'>" +
+				"<!-- YUI JS files: -->" +
+				"<script type='text/javascript' src='KnowWEExtension/scripts/yui2/yahoo-dom-event/yahoo-dom-event.js'></script>" +
+				"<script type='text/javascript' src='KnowWEExtension/scripts/yui2/treeview/treeview-min.js'></script>" +
 				"");
 		html.append("\n<script type='text/javascript' src='"
 				+ "KnowWEExtension/scripts/"
