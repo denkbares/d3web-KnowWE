@@ -22,9 +22,10 @@ package de.d3web.we.kdom.contexts;
 
 import org.openrdf.model.URI;
 
+import de.d3web.we.kdom.Section;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class SolutionContext extends FullContext {
+public class SolutionContext extends StringContext {
     	private URI soluri;
 	public final static String CID="SOLUTIONCONTEXT";
 	
@@ -50,5 +51,10 @@ public class SolutionContext extends FullContext {
 	@Override
 	public String getCID() {		
 		return CID;
+	}
+
+	@Override
+	public boolean isValidForSection(Section s) {
+		return true;
 	}
 }

@@ -22,8 +22,9 @@ package de.d3web.we.kdom.table;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
+import de.d3web.we.kdom.contexts.StringContext;
 
-public class TableColumnContext extends Context {
+public class TableColumnContext extends  StringContext {
 	
 	private Section table;
 	private int column;
@@ -39,7 +40,7 @@ public class TableColumnContext extends Context {
 	}
 
 	@Override
-	protected boolean isValidForSection(Section s) {
+	public boolean isValidForSection(Section s) {
 		if(TableContent.class.isAssignableFrom(table.getObjectType().getClass())) {
 			int foundCol = TableUtils.getColumn(s);
 			return foundCol == column;

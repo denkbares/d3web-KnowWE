@@ -20,7 +20,9 @@
 
 package de.d3web.we.kdom.contexts;
 
-public class AnnotationContext extends FullContext{
+import de.d3web.we.kdom.Section;
+
+public class AnnotationContext extends StringContext{
 
 	public static final String CID="ANNOTATIONCONTEXT";
 	
@@ -44,6 +46,11 @@ public class AnnotationContext extends FullContext{
 	
 	public String getAnnotationproperty(){
 		return attributes.get("property");
+	}
+
+	@Override
+	public boolean isValidForSection(Section s) {
+		return true;
 	}
 	
 	

@@ -20,17 +20,29 @@
 
 package de.d3web.we.kdom.contexts;
 
-import de.d3web.we.kdom.Section;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class FullContext implements Context{
+/**
+ * 
+ * 
+ * @author Fabian Haupt
+ * 
+ */
+public abstract class StringContext implements Context{
+	protected Map<String, String> attributes;
 
-
-	/* 
-	 * This Context is valid for all nodes beneath the context
-	 */
-	@Override
-	public boolean isValidForSection(Section s) {
-				return true;
+	public abstract String getCID();
+	
+	public StringContext() {
+		attributes = new HashMap<String, String>();
 	}
+
+	@Override
+	public Map<String, String> getAttributes() {
+		return attributes;
+	}
+	
+	
 
 }
