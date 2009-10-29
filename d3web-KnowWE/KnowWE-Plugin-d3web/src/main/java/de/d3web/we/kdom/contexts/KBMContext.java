@@ -24,13 +24,14 @@
 package de.d3web.we.kdom.contexts;
 
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.we.kdom.Section;
 
 /**
  * @author kazamatzuri
  *
  */
 @Deprecated
-public class KBMContext extends FullContext{
+public class KBMContext extends StringContext{
     public final static String CID="KBMCONTEXT";
     private KnowledgeBaseManagement kbm;
     /* (non-Javadoc)
@@ -48,4 +49,9 @@ public class KBMContext extends FullContext{
     public KnowledgeBaseManagement getKBM(){
 	return kbm;
     }
+
+	@Override
+	public boolean isValidForSection(Section s) {
+		return true;
+	}
 }
