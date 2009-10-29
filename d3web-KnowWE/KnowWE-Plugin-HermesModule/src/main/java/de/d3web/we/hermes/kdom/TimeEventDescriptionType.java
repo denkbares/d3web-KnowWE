@@ -20,16 +20,54 @@
 
 package de.d3web.we.hermes.kdom;
 
+import java.util.List;
+
+import de.d3web.we.hermes.kdom.conceptMining.AnnotationObjectInTimeEvent;
 import de.d3web.we.hermes.kdom.conceptMining.ConceptOccurrence;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.semanticAnnotation.AnnotationContent;
+import de.d3web.we.kdom.semanticAnnotation.AnnotationObject;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
 
 public class TimeEventDescriptionType extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
 		this.childrenTypes.add(new ConceptOccurrence());
+		SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
+		insertCustomAnnotationObjectType(semanticAnnotation);
+		
+		this.childrenTypes.add(semanticAnnotation);
 		sectionFinder = new AllTextSectionFinder();
+	}
+
+	private void insertCustomAnnotationObjectType(
+			SemanticAnnotation semanticAnnotation) {
+		KnowWEObjectType content = findContentType(semanticAnnotation);;
+		
+		if(content != null) {
+			List<KnowWEObjectType> allowedChildrenTypes = content.getAllowedChildrenTypes();
+			//removing usual annotationObjectType-object
+			KnowWEObjectType type = allowedChildrenTypes.remove(allowedChildrenTypes.size()-1);
+			if(! (type instanceof AnnotationObject)) {
+				throw new IllegalStateException("removed unexpected KnowWEObjectType:" +type.getClass().getName()+" instead of"+AnnotationObject.class.getName());
+			}
+			//replaced by customized one
+			content.getAllowedChildrenTypes().add(new AnnotationObjectInTimeEvent());
+		}
+	}
+
+	private KnowWEObjectType findContentType(SemanticAnnotation semanticAnnotation) {
+		List<KnowWEObjectType> annoChildren = semanticAnnotation.getAllowedChildrenTypes();
+		for (KnowWEObjectType knowWEObjectType : annoChildren) {
+			if(knowWEObjectType instanceof AnnotationContent) {
+				return knowWEObjectType;
+			}
+		}
+		return null;
+	
 	}
 
 }

@@ -32,6 +32,7 @@ import org.openrdf.repository.RepositoryException;
 import de.d3web.we.hermes.kdom.renderer.TimeEventRenderer;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.AnnotationEndSymbol;
@@ -105,6 +106,13 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			URI localURI = uo.getHelper().createlocalURI(localID);
 			
 			URI timeEventURI = uo.getHelper().createlocalURI("TimeEvent");
+			
+			
+			// Putting the TimeEventURI in a context, so it can be found by subtypes
+			TimeEventContext c = new TimeEventContext();
+			c.setTimeEventURI(localURI);
+			ContextManager.getInstance().attachContext(section,c );
+			
 
 			Literal descriptionURI = uo.getHelper().createLiteral(description);
 			Literal titleURI = uo.getHelper().createLiteral(title);

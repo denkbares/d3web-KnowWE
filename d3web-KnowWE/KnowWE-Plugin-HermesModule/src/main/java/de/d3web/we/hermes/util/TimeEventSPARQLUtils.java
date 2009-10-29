@@ -27,7 +27,11 @@ import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 
 public class TimeEventSPARQLUtils {
 
-	private static final String TIME_SPARQL = "SELECT  ?t ?title ?topic ?imp ?desc ?y ?kdomid ?topic WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
+	//private static final String TIME_SPARQL = "SELECT  ?title ?imp ?desc ?y  WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double . ?y < \"YEARTO\" ^^xsd:double) .}";
+	//private static final String TIME_SPARQL = "SELECT  ?t ?title ?topic ?imp ?desc ?y ?kdomid ?topic WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
+	//private static final String TIME_SPARQL = "SELECT ?title ?imp ?desc ?y WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
+	private static final String TIME_SPARQL = "SELECT ?t ?title ?desc ?imp WHERE {  ?t lns:hasTitle ?title . ?t lns:hasDescription ?desc . ?t lns:hasImportance ?imp  . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}}";
+
 	private static final String SOURCE_SPARQL = "SELECT ?source WHERE { <*URI*> lns:hasSource ?source .}";
 
 	public static Collection<TimeEvent> findTimeEventsFromTo(int yearFrom,
@@ -81,6 +85,7 @@ public class TimeEventSPARQLUtils {
 		}
 		return null;
 	}
+	
 
 //	private static final String TEXTORIGIN_SPARQL = "SELECT ?textOrigin WHERE { ?t lns:hasNode ?textOrigin .  ?t lns:hasTitle TITLE .}";
 

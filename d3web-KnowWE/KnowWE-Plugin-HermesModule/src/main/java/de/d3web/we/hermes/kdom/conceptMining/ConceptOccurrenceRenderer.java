@@ -9,7 +9,12 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(Section arg0, KnowWEUserContext arg1, StringBuilder arg2) {
-		arg2.append(KnowWEEnvironment.maskHTML("<b>"+arg0.getOriginalText()+"</b>"));
+		
+		String conceptName = arg0.getOriginalText();
+		
+		arg2.append(KnowWEEnvironment.maskHTML("<b>"+arg0.getOriginalText()+"</b>"+"<span class=\"conceptLink\" " 
+			+ "rel=\"{type: '"+conceptName+"', objectID: '"+conceptName+"', termName: '"+conceptName+"', user:'"+arg1.getUsername()+"'}\">"
+         	+ "!" + "</span>"));
 
 	}
 
