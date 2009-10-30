@@ -37,7 +37,7 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.SolutionContext;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.include.IncludedFromSection;
 import de.d3web.we.kdom.include.IncludedFromType;
 import de.d3web.we.kdom.include.IncludedFromTypeHead;
@@ -143,8 +143,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// create default solution context as title name
 		// TODO: should be refactored to d3web-Plugin project
 		if (instance != null) {
-			SolutionContext con = new SolutionContext();
-			con.setSolution(title);
+			DefaultSubjectContext con = new DefaultSubjectContext();
+			con.setSubject(title);
 			ContextManager.getInstance().attachContext(sec, con);
 		}
 		

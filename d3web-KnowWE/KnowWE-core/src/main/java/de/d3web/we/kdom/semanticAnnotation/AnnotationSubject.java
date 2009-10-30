@@ -29,7 +29,7 @@ import java.util.List;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.SolutionContext;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -58,8 +58,8 @@ public class AnnotationSubject extends DefaultAbstractKnowWEObjectType {
 				ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 				if (text.trim().length() == 0)
 					return null;
-				SolutionContext sol = new SolutionContext();
-				sol.setSolution(text.trim());
+				DefaultSubjectContext sol = new DefaultSubjectContext();
+				sol.setSubject(text.trim());
 				ContextManager.getInstance().attachContext(father, sol);
 				result.add(new SectionFinderResult(0, text.length()));
 				return result;

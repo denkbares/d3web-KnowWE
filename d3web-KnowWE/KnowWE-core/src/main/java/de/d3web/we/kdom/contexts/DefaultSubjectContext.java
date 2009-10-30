@@ -25,25 +25,25 @@ import org.openrdf.model.URI;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class SolutionContext extends StringContext {
+public class DefaultSubjectContext extends StringContext {
     	private URI soluri;
 	public final static String CID="SOLUTIONCONTEXT";
 	
-	public void setSolution(String sol){
+	public void setSubject(String sol){
 		attributes.put("solution", sol);
 	}
 
-	public void setSolutionURI(URI solutionuri){
+	public void setSubjectURI(URI solutionuri){
 	    soluri=solutionuri;
 	}
-	public String getSolution() {
+	public String getSubject() {
 		return attributes.get("solution");
 	}
 	
 	public URI getSolutionURI(){
 	    if (soluri==null){
 		UpperOntology uo=UpperOntology.getInstance();
-		soluri=uo.getHelper().createlocalURI(getSolution());
+		soluri=uo.getHelper().createlocalURI(getSubject());
 	    }
 	    return soluri;
 	}

@@ -25,7 +25,7 @@ package de.d3web.we.kdom.semanticFactSheet;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.SolutionContext;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.PropertyManager;
@@ -55,9 +55,9 @@ public class InfoContent extends XMLContent {
 	IntermediateOwlObject io = new IntermediateOwlObject();
 	String text = s.getOriginalText();
 	PropertyManager pm = PropertyManager.getInstance();
-	String subjectconcept = ((SolutionContext) ContextManager
-		.getInstance().getContext(s, SolutionContext.CID))
-		.getSolution();
+	String subjectconcept = ((DefaultSubjectContext) ContextManager
+		.getInstance().getContext(s, DefaultSubjectContext.CID))
+		.getSubject();
 	for (String cur : text.split("\r\n|\r|\n")) {
 	    if (cur.trim().length() > 0) {
 		String[] spaces = cur.split(" ");

@@ -30,7 +30,7 @@ import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.SolutionContext;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -48,8 +48,8 @@ public class AnnotationKnowledgeSliceSubject extends DefaultAbstractKnowWEObject
 			if(father.hasRightSonOfType(AnnotationRelationOperator.class, text)) {				
 				List<SectionFinderResult> sections =
 					new AllTextSectionFinder().lookForSections(text, father);
-				SolutionContext con=new SolutionContext();
-				con.setSolution(text.trim());
+				DefaultSubjectContext con=new DefaultSubjectContext();
+				con.setSubject(text.trim());
 				ContextManager.getInstance().attachContext(father,con);
 				return sections;
 			}
@@ -60,13 +60,13 @@ public class AnnotationKnowledgeSliceSubject extends DefaultAbstractKnowWEObject
 	@Override
 	public IntermediateOwlObject getOwl(Section section) {
 	    IntermediateOwlObject io =new IntermediateOwlObject();		
-		SolutionContext sol = 
-			(SolutionContext)ContextManager.
-				getInstance().getContext(section, SolutionContext.CID);		
+		DefaultSubjectContext sol = 
+			(DefaultSubjectContext)ContextManager.
+				getInstance().getContext(section, DefaultSubjectContext.CID);		
 		UpperOntology uo=SemanticCore.getInstance().getUpper();
 		try {
 			URI solutionuri=sol.getSolutionURI();
-			sol.setSolutionURI(solutionuri);
+			sol.setSubjectURI(solutionuri);
 			io.addStatement(
 					uo.getHelper().createStatement(
 							solutionuri,RDF.TYPE, OwlHelper.SOLUTION));

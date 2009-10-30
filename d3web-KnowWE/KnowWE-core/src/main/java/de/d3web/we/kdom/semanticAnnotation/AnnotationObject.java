@@ -33,7 +33,7 @@ import org.openrdf.repository.RepositoryException;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.SolutionContext;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.PropertyManager;
@@ -90,8 +90,8 @@ public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
 		}
 
 		if (prop != null && validprop && stringa != null) {
-			SolutionContext sol = (SolutionContext) ContextManager
-					.getInstance().getContext(s, SolutionContext.CID);
+			DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager
+					.getInstance().getContext(s, DefaultSubjectContext.CID);
 			URI soluri = sol.getSolutionURI();
 			try {
 				if (PropertyManager.getInstance().isRDFS(prop)) {
