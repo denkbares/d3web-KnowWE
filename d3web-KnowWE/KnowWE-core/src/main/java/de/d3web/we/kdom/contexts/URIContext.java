@@ -29,8 +29,7 @@ public class URIContext implements Context {
 
 	@Override
 	public boolean isValidForSection(Section s) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }
