@@ -33,7 +33,7 @@ import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.SolutionContext;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
@@ -65,8 +65,8 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 				result.add(new SectionFinderResult(start, end));				
 				
 				if (father != null) {
-					SolutionContext con=new SolutionContext();
-					con.setSolution(solution);
+					DefaultSubjectContext con=new DefaultSubjectContext();
+					con.setSubject(solution);
 					ContextManager.getInstance().attachContext(father, con);
 				}
 			}
@@ -78,9 +78,9 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	@Override
 	public IntermediateOwlObject getOwl(Section section) {
 	    IntermediateOwlObject io = new IntermediateOwlObject();
-		SolutionContext sol = (SolutionContext) ContextManager.getInstance()
-				.getContext(section, SolutionContext.CID);
-		String solution = sol != null ? sol.getSolution() : null;
+		DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager.getInstance()
+				.getContext(section, DefaultSubjectContext.CID);
+		String solution = sol != null ? sol.getSubject() : null;
 		if (solution != null) {
 			UpperOntology uo = SemanticCore.getInstance().getUpper();
 

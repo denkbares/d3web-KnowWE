@@ -37,7 +37,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.SolutionContext;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
@@ -171,8 +171,8 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 
 			URI explainsdings = uo.getHelper().createlocalURI(s.getTitle() + ".."
 					+ s.getId());
-			URI solutionuri = ((SolutionContext) ContextManager.getInstance()
-					.getContext(s, SolutionContext.CID)).getSolutionURI();
+			URI solutionuri = ((DefaultSubjectContext) ContextManager.getInstance()
+					.getContext(s, DefaultSubjectContext.CID)).getSolutionURI();
 			io.addStatement(uo.getHelper().createStatement(solutionuri, uo
 				.getHelper().createURI("isRatedBy"), explainsdings));
 			uo.getHelper().attachTextOrigin(explainsdings, s, io);
