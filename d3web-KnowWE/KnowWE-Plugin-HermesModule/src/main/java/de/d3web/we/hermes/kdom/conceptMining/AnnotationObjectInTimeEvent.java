@@ -1,9 +1,11 @@
 package de.d3web.we.hermes.kdom.conceptMining;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
@@ -19,7 +21,6 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
 
 public class AnnotationObjectInTimeEvent extends AnnotationObject {
 
-	
 	@Override
 	public IntermediateOwlObject getOwl(Section s) {
 		UpperOntology uo = UpperOntology.getInstance();
@@ -34,46 +35,38 @@ public class AnnotationObjectInTimeEvent extends AnnotationObject {
 			} else if (cur.getObjectType().getClass().equals(
 					SimpleAnnotation.class)) {
 				stringa = ((SimpleAnnotation) cur.getObjectType()).getOwl(cur)
-						.getLiterals().get(0);				
+						.getLiterals().get(0);
 			}
 
 		}
-		
+
 		boolean validprop = false;
 		if (prop != null) {
 			validprop = PropertyManager.getInstance().isValid(prop);
 			io.setBadAttribute(prop.getLocalName());
 		}
 		io.setValidPropFlag(validprop);
-		if (!validprop){
-		    Logger.getLogger(this.getClass().getName()).log(
-				Level.WARNING,
-				"invalid property: "+prop.getLocalName());
+		if (!validprop) {
+			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+					"invalid property: " + prop.getLocalName());
 		}
 
 		if (prop != null && validprop && stringa != null) {
 			TimeEventContext tURI = (TimeEventContext) ContextManager
 					.getInstance().getContext(s, TimeEventContext.CID);
-			URI soluri = null;
-			if(tURI == null) {
-				System.out.println("TE URI not found");
+			URI TEURI = null;
+			if (tURI == null) {
 				return io;
-			}else {
-				soluri = tURI.getTimeEventURI();
-				System.out.println("FOUND!!!!!");
+			} else {
+				TEURI = tURI.getTimeEventURI();
 			}
-			
+
 			try {
-				if (PropertyManager.getInstance().isRDFS(prop)) {
-					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));
-				} else if (PropertyManager.getInstance().isRDF(prop)) {
-					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));
-				}
-				else {
-					IntermediateOwlObject tempio = UpperOntology.getInstance().getHelper().createProperty(soluri, prop,
-									stringa, s);
-					io.merge(tempio);
-				}
+
+				ArrayList<Statement> slist = new ArrayList<Statement>();
+				slist.add(uo.getHelper().createStatement(TEURI, prop, stringa));
+
+				io.addAllStatements(slist);
 			} catch (RepositoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

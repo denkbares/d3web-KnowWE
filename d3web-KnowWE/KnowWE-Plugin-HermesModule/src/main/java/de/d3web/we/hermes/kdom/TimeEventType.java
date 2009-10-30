@@ -30,6 +30,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.hermes.kdom.renderer.TimeEventRenderer;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
@@ -171,6 +172,15 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 
 		} catch (RepositoryException e) {
 			e.printStackTrace();
+		}
+		
+		
+		for (Section cur : section.getChildren()) {
+			if (cur.getObjectType() instanceof AbstractKnowWEObjectType) {
+				AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) cur
+						.getObjectType();
+				io.merge(handler.getOwl(cur));
+			}
 		}
 
 		return io;

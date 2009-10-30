@@ -35,11 +35,16 @@ public class TimeEventDescriptionType extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		this.childrenTypes.add(new ConceptOccurrence());
+		
 		SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
 		insertCustomAnnotationObjectType(semanticAnnotation);
 		
+		// first grab annotated concepts
 		this.childrenTypes.add(semanticAnnotation);
+		
+		// then search for un-annotated concepts
+		this.childrenTypes.add(new ConceptOccurrence());
+		
 		sectionFinder = new AllTextSectionFinder();
 	}
 
