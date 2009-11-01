@@ -98,11 +98,14 @@ public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
 					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));
 				} else if (PropertyManager.getInstance().isRDF(prop)) {
 					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));
+				} else if (PropertyManager.getInstance().isNary(prop)) {
+					IntermediateOwlObject tempio = UpperOntology.getInstance().getHelper().createProperty(soluri, prop,
+							stringa, s);
+					io.merge(tempio);
+					
 				}
 				else {
-					IntermediateOwlObject tempio = UpperOntology.getInstance().getHelper().createProperty(soluri, prop,
-									stringa, s);
-					io.merge(tempio);
+					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));	
 				}
 			} catch (RepositoryException e) {
 				// TODO Auto-generated catch block
