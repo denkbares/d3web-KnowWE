@@ -38,7 +38,6 @@ import de.d3web.report.Message;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeKDOMBuilder;
-import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.kopic.renderer.DefaultLineNumberDeligateRenderer;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -49,9 +48,8 @@ public class SolutionsTreeANTLR extends DefaultAbstractKnowWEObjectType{
 	@Override
 	protected void init() {
 		this.sectionFinder = new SolutionsKDOMANTLRSectionFinder();
-		childrenTypes.add(new RootSolution());
+		childrenTypes.add(new SolutionDef());
 		childrenTypes.add(new SolutionLine());
-		childrenTypes.add(new SolutionID());
 		this.setCustomRenderer(new DefaultLineNumberDeligateRenderer());
 	}
 	

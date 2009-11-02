@@ -25,6 +25,9 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.decisionTree.SolutionID;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -32,7 +35,10 @@ public class RatedSolution extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public void init() {
-		childrenTypes.add(new Solution());
+		SolutionID solution = new SolutionID();
+		solution.setSectionFinder(new SolutionSectionFinder());
+		solution.setCustomRenderer(new ObjectInfoLinkRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1)));
+		childrenTypes.add(solution);
 //		childrenTypes.add(new ScoreRating());
 		childrenTypes.add(new StateRating());
 		this.sectionFinder = new RatedSolutionSectionFinder();
@@ -56,5 +62,30 @@ public class RatedSolution extends DefaultAbstractKnowWEObjectType {
 		}
 			
 	}
+	
+	
+	public class SolutionSectionFinder extends SectionFinder {
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section father) {
+			
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			int start = 0;
+			int end = text.indexOf("(");
+			
+			while (end - 1 > 0 && text.charAt(end - 1)==' ') {
+				end--;
+			}
+			if (end < start)
+				end = start;
+			
+			SectionFinderResult s = new SectionFinderResult(start, end);
+			result.add(s);
+
+			return result;
+		}
+		
+	}
+	
 	
 }

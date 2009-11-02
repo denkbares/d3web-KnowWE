@@ -23,10 +23,10 @@ package de.d3web.we.kdom.dashTree.solutions;
 import java.util.List;
 import java.util.Stack;
 
+import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.dashTree.DashTreeKDOMBuilder;
 import de.d3web.we.kdom.dashTree.Tilde;
-import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 
 public class SolutionsKDOMBuilder implements DashTreeKDOMBuilder {
@@ -115,13 +115,29 @@ public class SolutionsKDOMBuilder implements DashTreeKDOMBuilder {
 		
 		if (dashes == 0) { // root diagnosis (not P000!)
 			
-			father.addChild(new ExpandedSectionFinderResult(name + ((description == null) ? "\r\n" : "" ),
-				new RootSolution(),  getOffset(father)));
+//			father.addChild(new ExpandedSectionFinderResult(name + ((description == null) ? "\r\n" : "" ),
+//				new SolutionDef(),  getOffset(father)));
+			
+			father.addChild(new ExpandedSectionFinderResult(name,
+					new SolutionDef(),  getOffset(father)));
+			
+			if (description == null) {
+				father.addChild(new ExpandedSectionFinderResult("\r\n", 
+						new PlainText(), getOffset(father)));
+			}
 			
 		} else { // normal diagnosis
 			
-			father.addChild(new ExpandedSectionFinderResult(makeDashes(dashes) + name + 
-					((description == null) ? "\r\n" : "" ),	new SolutionID(), getOffset(father)));			
+			father.addChild(new ExpandedSectionFinderResult(makeDashes(dashes), 
+					new PlainText(), getOffset(father)));
+			
+			father.addChild(new ExpandedSectionFinderResult(name,
+					new SolutionDef(), getOffset(father)));			
+			
+			if (description == null) {
+				father.addChild(new ExpandedSectionFinderResult("\r\n", 
+						new PlainText(), getOffset(father)));
+			}
 			
 		}
 		
@@ -131,8 +147,11 @@ public class SolutionsKDOMBuilder implements DashTreeKDOMBuilder {
 			father.addChild(new ExpandedSectionFinderResult(" ~ ", new Tilde(), getOffset(father)));	
 			
 			// Description			
-			father.addChild(new ExpandedSectionFinderResult(description + "\r\n",
+			father.addChild(new ExpandedSectionFinderResult(description,
 					new SolutionDescription(), getOffset(father)));	
+			
+			father.addChild(new ExpandedSectionFinderResult("\r\n", 
+					new PlainText(), getOffset(father)));
 			
 		}
 		

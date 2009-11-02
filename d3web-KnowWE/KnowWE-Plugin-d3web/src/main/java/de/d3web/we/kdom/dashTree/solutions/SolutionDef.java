@@ -20,15 +20,8 @@
 
 package de.d3web.we.kdom.dashTree.solutions;
 
-import de.d3web.we.kdom.basic.LineContent;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
+import de.d3web.we.kdom.decisionTree.SolutionID;
 
-public class RootSolution extends LineContent {
-	
-	@Override
-	public void init() {
-		setCustomRenderer(new ObjectInfoLinkRenderer(new FontColorRenderer(FontColorRenderer.COLOR1)));
-	}
+public class SolutionDef extends SolutionID {
 	
 }
