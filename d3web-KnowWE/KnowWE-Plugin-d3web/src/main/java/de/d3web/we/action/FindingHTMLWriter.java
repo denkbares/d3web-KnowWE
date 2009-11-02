@@ -71,7 +71,7 @@ public class FindingHTMLWriter {
 			for (AnswerChoice theAnswer : theQC.getAllAlternatives()) {
 				String answerText = KnowWEUtils.convertUmlaut(theAnswer.verbalizeValue(theCase));
 
-				String rqst= targetUrlPrefix + "?action=setFinding&namespace=" + java.net.URLEncoder.encode(namespace) 
+				String rqst= targetUrlPrefix + "?action=SetFindingAction&namespace=" + java.net.URLEncoder.encode(namespace) 
                 		+ "&ObjectID=" + theQuestion.getId() + "&ValueID=" + theAnswer.getId();
 								
 				buffy.append("<INPUT TYPE='radio' NAME='f" + timestampid+"id"
@@ -91,7 +91,7 @@ public class FindingHTMLWriter {
 			}
 			String answerText = theQuestion.getUnknownAlternative().verbalizeValue(theCase);
 			
-			String rqst= targetUrlPrefix+"?action=setFinding&namespace="+java.net.URLEncoder.encode(namespace) + "&ObjectID="
+			String rqst= targetUrlPrefix+"?action=SetFindingAction&namespace="+java.net.URLEncoder.encode(namespace) + "&ObjectID="
 							+ theQuestion.getId();
 											
 			buffy.append("<INPUT TYPE=radio NAME='f" + timestampid+"id"
@@ -128,7 +128,7 @@ public class FindingHTMLWriter {
 			if (answer != null) {
 				String answerText = answer.verbalizeValue(theCase);
 				String prefix=KnowWEEnvironment.getInstance().getPathPrefix();
-				String rqst = prefix+(prefix.length()!=0?"/":"")+"KnowWE.jsp?action=setFinding&namespace="
+				String rqst = prefix+(prefix.length()!=0?"/":"")+"KnowWE.jsp?action=SetFindingAction&namespace="
 						+ java.net.URLEncoder.encode(namespace)
 						+ "&ObjectID="
 						+ theQuestion.getId()
@@ -156,7 +156,7 @@ public class FindingHTMLWriter {
 			an.setQuestion(theQuestion);
 			an.setValue(new Double(0));
 			String answerText = an.verbalizeValue(theCase);
-			String rqst = targetUrlPrefix+"?action=setFinding&namespace="
+			String rqst = targetUrlPrefix+"?action=SetFindingAction&namespace="
 					+ namespace
 					+ "&ObjectID="
 					+ theQuestion.getId()
@@ -198,7 +198,7 @@ public class FindingHTMLWriter {
 				if (theAnswer instanceof AnswerUnknown) {
 					answerText = KnowWEUtils.convertUmlaut(rb.getString("KnowWE.answer.unknown"));
 				} else {
-					String rqst = targetUrlPrefix+"?action=setFinding&namespace="
+					String rqst = targetUrlPrefix+"?action=SetFindingAction&namespace="
 							+ java.net.URLEncoder.encode(namespace)
 							+ "&ObjectID="
 							+ theQuestion.getId()
