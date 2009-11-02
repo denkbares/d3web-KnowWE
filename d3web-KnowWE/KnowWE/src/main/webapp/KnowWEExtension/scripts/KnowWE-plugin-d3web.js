@@ -782,7 +782,7 @@ KNOWWE.plugin.d3web.semantic = function(){
                 KWikiWeb : 'default_web',
                 TermType : 'symptom',
                 KWikiUser : rel.user,
-                sendToUrl : KnowWE.jsp
+                sendToUrl : 'KnowWE.jsp'
             }
             var mousePos = KNOWWE.helper.mouseCoords( e );
             var mouseOffset = KNOWWE.helper.getMouseOffset( el, e );
