@@ -1,15 +1,27 @@
 package de.d3web.we.hermes.maps;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.openrdf.model.Literal;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
+import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class MapType extends AbstractXMLObjectType {
+
+    private static final DecimalFormat format = new DecimalFormat("#.###");
 
     public MapType() {
 	super("Map");
@@ -26,26 +38,76 @@ public class MapType extends AbstractXMLObjectType {
 	return new MapRenderer();
     }
 
+    @Override
+    public IntermediateOwlObject getOwl(Section sec) {
+	IntermediateOwlObject ioo = new IntermediateOwlObject();
+	String url = getIFrameSrcURL(sec);
+
+	KMLLoader kmlLoader = new KMLLoader(url);
+	List<Placemark> placemarks = kmlLoader.getPlacemarks();
+
+	for (Placemark placem : placemarks) {
+	    addPlacemarkToOwlObject(sec, placem, ioo);
+	}
+
+	return ioo;
+    }
+
+    private String getIFrameSrcURL(Section sec) {
+	Section iframeSection = sec
+		.findChildOfType(AbstractXMLObjectType.class);
+	AbstractXMLObjectType objectType = (AbstractXMLObjectType) iframeSection
+		.getObjectType();
+	if (objectType.getXMLTagName() != "iframe") {
+	    // System.out.println("warning");
+	    return null;
+	}
+	Map<String, String> attributeMap = AbstractXMLObjectType
+		.getAttributeMapFor(iframeSection);
+	String url = attributeMap.get("src");
+	return url;
+    }
+
+    private void addPlacemarkToOwlObject(Section section, Placemark placem,
+	    IntermediateOwlObject ioo) {
+	OwlHelper helper = UpperOntology.getInstance().getHelper();
+
+	URI conceptURI = helper.createlocalURI(placem.getTitle());
+
+	Literal latitude = helper.createLiteral(format.format(placem
+		.getLatitude()));
+	Literal longitude = helper.createLiteral(format.format(placem
+		.getLongitude()));
+
+	/* adding all OWL statements to ioo object */
+	try {
+	    ArrayList<Statement> slist = new ArrayList<Statement>();
+	    slist.add(helper.createStatement(conceptURI, helper
+		    .createlocalURI("hasLatitude"), latitude));
+	    slist.add(helper.createStatement(conceptURI, helper
+		    .createlocalURI("hasLongitude"), longitude));
+	    ioo.addAllStatements(slist);
+	} catch (RepositoryException e) {
+	    e.printStackTrace();
+	}
+
+    }
+
     private class MapRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(Section sec, KnowWEUserContext user,
 		StringBuilder string) {
-	    Section iframeSection = sec
-		    .findChildOfType(AbstractXMLObjectType.class);
-	    AbstractXMLObjectType objectType = (AbstractXMLObjectType) iframeSection
-		    .getObjectType();
-	    if (objectType.getXMLTagName() != "iframe") {
-		System.out.println("warning");
-		return;
-	    }
-	    Map<String, String> attributeMap = AbstractXMLObjectType
-		    .getAttributeMapFor(iframeSection);
-	    String url = attributeMap.get("src");
+	    string.append("<div id=\"map\" class=\"panel\">");
+	    string.append("<h3>Karte</h3>");
+	    String originalText = sec.getOriginalText();
+	    int start = originalText.indexOf("<Map>");
+	    int end = originalText.indexOf("</Map>");
+	    string.append(originalText.substring(start + 5, end));
 
-	    string.append("URL: " + url + "<br />");
-	    KMLLoader kmlLoader = new KMLLoader(url);
-	    List<Placemark> placemark = kmlLoader.getPlacemarks();
-	    string.append(placemark.toString());
+	    // dirty
+	    string.append("</a>");
+
+	    string.append("</div>");
 	}
     }
 }

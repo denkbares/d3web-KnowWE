@@ -30,6 +30,7 @@ import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.hermes.action.SearchTimeEventsAction;
 import de.d3web.we.hermes.kdom.TimeEventType;
+import de.d3web.we.hermes.kdom.renderer.LocalTimeEventsHandler;
 import de.d3web.we.hermes.kdom.renderer.TimeLineHandler;
 import de.d3web.we.hermes.maps.MapType;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -90,6 +91,7 @@ public class HermesPlugin extends AbstractDefaultKnowWEModule {
     public List<TagHandler> getTagHandlers() {
 	List<TagHandler> list = new ArrayList<TagHandler>();
 	list.add(new TimeLineHandler());
+	list.add(new LocalTimeEventsHandler());
 	list.add(new TimeEventSearchHandler());
 	return list;
     }
