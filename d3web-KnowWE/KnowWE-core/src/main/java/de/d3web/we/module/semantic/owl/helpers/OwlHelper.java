@@ -351,8 +351,8 @@ public class OwlHelper {
 			io.addStatement(helper.createStatement(nary, RDF.PREDICATE, puri));
 			io.addStatement(helper.createStatement(nary, RDF.OBJECT, ouri));
 			io.addStatement(helper.createStatement(nary, RDF.SUBJECT, suri));
-			io.addStatement(helper.createStatement(nary, RDF.TYPE, helper
-					.createURI("Finding")));
+//			io.addStatement(helper.createStatement(nary, RDF.TYPE, helper
+//					.createURI("Finding")));
 			io.addLiteral(nary);
 
 		} catch (RepositoryException e) {

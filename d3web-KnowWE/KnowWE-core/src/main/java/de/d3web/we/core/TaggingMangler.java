@@ -148,7 +148,7 @@ public class TaggingMangler {
 	 */
 	public ArrayList<String> getPages(String tag) {
 		String querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object lns:"
-		+ tag + " .\n" + "?t rdf:predicate lns:hasTag .\n"
+		+ tag + " .\n" + "?t rdf:predicate ns:hasTag .\n"
 		+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
 		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
 	}
@@ -172,7 +172,7 @@ public class TaggingMangler {
 		}
 
 		String querystring = "SELECT ?q \n" + "WHERE {\n"
-				+ "?t rdf:object ?q .\n" + "?t rdf:predicate lns:hasTag .\n"
+				+ "?t rdf:object ?q .\n" + "?t rdf:predicate ns:hasTag .\n"
 				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic \"" + topicenc
 				+ "\" .\n" + "}";
 		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
@@ -222,7 +222,7 @@ public class TaggingMangler {
 		for (String cur : tags) {
 			float c= 0;
 			if (countlist.get(cur) == null){
-				countlist.put(cur, new Float(0));}
+				countlist.put(cur, new Float(1));}
 			else {
 				c = countlist.get(cur) + 1;
 				countlist.put(cur, c);
@@ -231,6 +231,7 @@ public class TaggingMangler {
 		}
 		
 		HashMap<String, Float> weighted = new HashMap<String, Float>();
+		max=max==0?1:max;
 		for (Entry<String, Float> cur : countlist.entrySet()) {
 			weighted.put(cur.getKey(), cur.getValue() / max);
 		}
@@ -239,7 +240,7 @@ public class TaggingMangler {
 
 	private ArrayList<String> getAllTagsWithDuplicates() {
 		String querystring = "SELECT ?q \n" + "WHERE {\n"
-				+ "?t rdf:object ?q .\n" + "?t rdf:predicate lns:hasTag .\n"
+				+ "?t rdf:object ?q .\n" + "?t rdf:predicate ns:hasTag .\n"
 				+ "}";
 		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
 
@@ -319,13 +320,13 @@ public class TaggingMangler {
 		int i=0;
 		if (tags.length==1){
 			querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object lns:"
-			+ tags[0] + " .\n" + "?t rdf:predicate lns:hasTag .\n"
+			+ tags[0] + " .\n" + "?t rdf:predicate ns:hasTag .\n"
 			+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
 		} else {
 			querystring= "SELECT ?q \n" + "WHERE {\n";
 			for (String cur:tags){
 				querystring+="?t"+i+" rdf:object lns:" + cur + " .\n";			
-				querystring+= "?t"+i+" rdf:predicate lns:hasTag .\n";
+				querystring+= "?t"+i+" rdf:predicate ns:hasTag .\n";
 				querystring+= "?t"+i+" rdfs:isDefinedBy ?o"+i+" .\n ?o"+i+" ns:hasTopic ?q . \n";				
 				i++;
 			}

@@ -44,7 +44,7 @@ public class TagsContent extends XMLContent {
 			if (cur.trim().length() > 0) {
 				UpperOntology uo = UpperOntology.getInstance();
 				URI suri = uo.getHelper().createlocalURI(s.getTitle());
-				URI puri = uo.getHelper().createlocalURI("hasTag");
+				URI puri = uo.getHelper().createURI("hasTag");
 				URI ouri = uo.getHelper().createlocalURI(cur.trim());
 				io.merge(uo.getHelper().createProperty(suri, puri, ouri, s));
 			}
