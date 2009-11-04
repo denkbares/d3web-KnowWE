@@ -24,7 +24,6 @@ public class TimeEventSearchHandler extends AbstractTagHandler {
 		String endTimeString = "2008";
 		String header = "Suche nach Ereignissen";
 		String s = "";
-		s += ("<script type=text/javascript src=KnowWEExtension/scripts/Hermes.js></script>\n");
 		
 		s +="<div class=\"panel\"><h3>" + header + "</h3>";
 		s += "<form action=\"Wiki.jsp?page=" + topic + "\" name=\"testform\" accept-charset=\"UTF-8\" method=\"post\" enctype=\"application/x-www-form-urlencoded\">" +

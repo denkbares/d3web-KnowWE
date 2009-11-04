@@ -34,6 +34,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.AnnotationEndSymbol;
@@ -113,6 +114,10 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			TimeEventContext c = new TimeEventContext();
 			c.setTimeEventURI(localURI);
 			ContextManager.getInstance().attachContext(section,c );
+			
+			DefaultSubjectContext sc = new DefaultSubjectContext();
+			sc.setSubjectURI(localURI);
+			ContextManager.getInstance().attachContext(section,sc );
 			
 
 			Literal descriptionURI = uo.getHelper().createLiteral(description);

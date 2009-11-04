@@ -37,7 +37,7 @@ public class TimeEventDescriptionType extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 		
 		SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
-		insertCustomAnnotationObjectType(semanticAnnotation);
+		//insertCustomAnnotationObjectType(semanticAnnotation);
 		
 		// first grab annotated concepts
 		this.childrenTypes.add(semanticAnnotation);

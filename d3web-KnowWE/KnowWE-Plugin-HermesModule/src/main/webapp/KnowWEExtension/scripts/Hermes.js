@@ -10,15 +10,7 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
  */
  var KNOWWE = {};
 }
-/**
- * Namespace: KNOWWE.plugin
- * The KNOWWE plugin namespace.
- * Initialized empty to ensure existence.
- */
-KNOWWE.plugin = function(){
-    return {
-    }
-}();
+
 
 /**
  * Namespace: KNOWWE.plugin.hermes
@@ -90,8 +82,11 @@ KNOWWE.plugin.hermes.conceptPopup = function(){
          */
         init : function(){
             if(_KS('.conceptLink').length != 0){
-                _KS('.conceptLink').each(function(element) {
-                    _KE.add('click', element, KNOWWE.plugin.d3web.semantic.showOverlayQuestion);
+            	var array = _KS('.conceptLink');
+            	console.log(array);
+            	array.each(function(element) {
+            		
+                    _KE.add('click', element, KNOWWE.plugin.hermes.conceptPopup.showConceptOverlay);
                 });
             }
         },
@@ -101,25 +96,25 @@ KNOWWE.plugin.hermes.conceptPopup = function(){
          * Used to initialize the actions after the overlay is created.
          */
         overlayActions : function(){
-            if(_KS('.semano_mc').length != 0){
-                _KS('.semano_mc').forEach(function(element){
-                    _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleForm);
-                });
-            }
-
-            if(_KS('.semano_oc').length != 0){
-                _KS('.semano_oc').forEach(function(element){
-                    _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleOC);
-                });         
-            }
-            if(_KS('.semano_num').length != 0){
-                _KS('.semano_num').forEach(function(element){
-                    _KE.add('keydown', element, KNOWWE.plugin.d3web.semantic.handleNum);
-                });
-                 _KS('.semano_ok').forEach(function(element){
-                    _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleNum);
-                });
-            }
+//            if(_KS('.semano_mc').length != 0){
+//                _KS('.semano_mc').forEach(function(element){
+//                    _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleForm);
+//                });
+//            }
+//
+//            if(_KS('.semano_oc').length != 0){
+//                _KS('.semano_oc').forEach(function(element){
+//                    _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleOC);
+//                });         
+//            }
+//            if(_KS('.semano_num').length != 0){
+//                _KS('.semano_num').forEach(function(element){
+//                    _KE.add('keydown', element, KNOWWE.plugin.d3web.semantic.handleNum);
+//                });
+//                 _KS('.semano_ok').forEach(function(element){
+//                    _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleNum);
+//                });
+//            }
             if(_KS('#o-lay')){
                 _KE.add('mouseout', _KS('#o-lay'), function(e){             
                     var father = _KE.target(e);
@@ -221,22 +216,13 @@ KNOWWE.plugin.hermes.conceptPopup = function(){
          * Parameters:
          *     e - The latest event object
          */
-        showOverlayQuestion : function(e){
+        showConceptOverlay : function(e){
             var el = _KE.target( e );
             if(!el.getAttribute('rel')) return;
             
             var rel = eval( "(" + el.getAttribute('rel') + ")");
             
-            var params = {
-                action : 'RenderConceptRelationPropositionsAction',
-                namespace : KNOWWE.helper.gup( 'page' )+'..'+KNOWWE.helper.gup( 'page' )+'_KB',
-                ObjectID : rel.objectID,
-                TermName : rel.termName,
-                KWikiWeb : 'default_web',
-                TermType : 'symptom',
-                KWikiUser : rel.user,
-                sendToUrl : KnowWE.jsp
-            }
+           
             var mousePos = KNOWWE.helper.mouseCoords( e );
             var mouseOffset = KNOWWE.helper.getMouseOffset( el, e );
             
@@ -245,8 +231,8 @@ KNOWWE.plugin.hermes.conceptPopup = function(){
                     top : mousePos.y - mouseOffset.y,
                     left : mousePos.x - mouseOffset.x
                 },
-                url : KNOWWE.core.util.getURL( params ),
-                fn : KNOWWE.plugin.d3web.semantic.overlayActions
+                content : "popup content",
+                fn : KNOWWE.plugin.hermes.conceptPopup.overlayActions
              });
         }
     }
