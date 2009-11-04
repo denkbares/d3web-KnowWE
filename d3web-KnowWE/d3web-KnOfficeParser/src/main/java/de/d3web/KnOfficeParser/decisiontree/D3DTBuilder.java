@@ -621,7 +621,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		if (attributes != null && values != null) {
 			// TODO setzen der Dialogannotationen
 			int i = 0;
-			System.out.println("Frage " + name + ": ");
+			//System.out.println("Frage " + name + ": ");
 			for (String s : attributes) {
 				System.out.println(s + "=" + values.get(i));
 				i++;
