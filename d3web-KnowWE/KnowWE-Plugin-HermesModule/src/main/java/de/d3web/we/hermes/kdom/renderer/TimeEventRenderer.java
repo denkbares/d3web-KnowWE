@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.hermes.HermesUserManagement;
 import de.d3web.we.hermes.kdom.TimeEventDateType;
 import de.d3web.we.hermes.kdom.TimeEventDescriptionType;
 import de.d3web.we.hermes.kdom.TimeEventImportanceType;
@@ -48,6 +49,33 @@ public class TimeEventRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder result) {
 
+		Integer impFilterLevel = HermesUserManagement.getInstance()
+				.getEventFilterLevelForUser(user.getUsername());
+		
+		int  filterInt = 3;
+		if(impFilterLevel != null) {
+			filterInt = impFilterLevel.intValue();
+		}
+
+		Section importanceSection = sec
+				.findChildOfType(TimeEventImportanceType.class);
+		String importance = "no importance found";
+		if (importanceSection != null)
+			importance = importanceSection.getOriginalText();
+		
+		String digit = importance.substring(importance.indexOf('(')+1, importance.indexOf(')')).trim();
+		
+		try {
+			int eventLevel = Integer.parseInt(digit);
+			if(eventLevel > filterInt) {
+				//do NOT render TimeEvent at all
+				return;
+			}
+		} catch (Exception e) {
+			// no valid importance found
+		}
+		
+
 		Section titleSection = sec.findChildOfType(TimeEventTitleType.class);
 		String title = "no title found";
 		if (titleSection != null)
@@ -62,21 +90,17 @@ public class TimeEventRenderer extends KnowWEDomRenderer {
 
 		Section descriptionSection = sec
 				.findChildOfType(TimeEventDescriptionType.class);
-//		String description = "no description found";
-//		if (descriptionSection != null)
-//			description = descriptionSection.getOriginalText();
+		// String description = "no description found";
+		// if (descriptionSection != null)
+		// description = descriptionSection.getOriginalText();
 
-		Section importanceSection = sec
-				.findChildOfType(TimeEventImportanceType.class);
-		String importance = "no importance found";
-		if (importanceSection != null)
-			importance = importanceSection.getOriginalText();
+
 
 		List<Section> sources = new ArrayList<Section>();
 		sec.findSuccessorsOfType(TimeEventSourceType.class, sources);
 
-		//StringBuilder result = new StringBuilder();
-		
+		// StringBuilder result = new StringBuilder();
+
 		String titleHeader = "";
 		String style = "color:rgb(20, 200, 102)";
 		if (importance.contains("1")) {
@@ -91,10 +115,9 @@ public class TimeEventRenderer extends KnowWEDomRenderer {
 		titleHeader += date;
 		// titleHeader += " " + importance;
 		result.append("%%collapsebox-closed \n");
-		
+
 		result.append("! " + titleHeader + " \n");
 
-		
 		DelegateRenderer.getInstance().render(descriptionSection, user, result);
 
 		if (sources.size() > 0) {
@@ -110,7 +133,7 @@ public class TimeEventRenderer extends KnowWEDomRenderer {
 		}
 		result.append("/%\n");
 
-		//return result.toString();
+		// return result.toString();
 	}
 
 }

@@ -29,11 +29,13 @@ import javax.servlet.ServletContext;
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.hermes.action.SearchTimeEventsAction;
+import de.d3web.we.hermes.action.SetFilterLevelAction;
 import de.d3web.we.hermes.kdom.TimeEventType;
 import de.d3web.we.hermes.kdom.renderer.LocalTimeEventsHandler;
 import de.d3web.we.hermes.kdom.renderer.TimeLineHandler;
 import de.d3web.we.hermes.maps.MapType;
 import de.d3web.we.hermes.maps.ShowMapHandler;
+import de.d3web.we.hermes.taghandler.SetTimeEventFilterLevelHandler;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
 import de.d3web.we.module.AbstractDefaultKnowWEModule;
@@ -95,6 +97,7 @@ public class HermesPlugin extends AbstractDefaultKnowWEModule {
 		list.add(new LocalTimeEventsHandler());
 		list.add(new TimeEventSearchHandler());
 		list.add(new ShowMapHandler());
+		list.add(new SetTimeEventFilterLevelHandler());
 		return list;
 	}
 
@@ -108,5 +111,6 @@ public class HermesPlugin extends AbstractDefaultKnowWEModule {
 	@Override
 	public void addAction(Map<Class<? extends KnowWEAction>, KnowWEAction> map) {
 		map.put(SearchTimeEventsAction.class, new SearchTimeEventsAction());
+		map.put(SetFilterLevelAction.class, new SetFilterLevelAction());
 	}
 }

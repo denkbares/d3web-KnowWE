@@ -58,6 +58,31 @@ function sendTimeEventSearchRequest() {
 	
 }
 
+/**
+ *  save new input.
+ */
+function sendFilterLevel(level, user) {
+	   
+	var params = {
+    		action : 'SetFilterLevelAction',
+    		user : user,
+    		level : level
+    		   		
+    	}
+	
+	var options = {
+    		url : KNOWWE.core.util.getURL( params ),
+    		response : {
+    			action : 'insert',
+    			ids : [''],
+    			fn : window.location.reload
+    		}
+	}
+	
+	new _KA( options ).send();
+	
+}
+
 
 /**
  * Namespace: KNOWWE.plugin.hermes.conceptPopup
