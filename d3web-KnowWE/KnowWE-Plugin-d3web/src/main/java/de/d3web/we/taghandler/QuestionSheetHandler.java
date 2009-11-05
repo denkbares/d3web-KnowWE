@@ -77,7 +77,7 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 			KnowledgeBase kb = service.getBase();
 			List<Question> questions = kb.getQuestions();
 			
-			html.append("\n<ul>");
+			html.append("<ul>");
 			for (Question question : questions) {
 				if(question.getProperties().getProperty(Property.ABSTRACTION_QUESTION) != null &&  question.getProperties().getProperty(Property.ABSTRACTION_QUESTION) instanceof Boolean && ((Boolean)question.getProperties().getProperty(Property.ABSTRACTION_QUESTION)).booleanValue()) {
 					//dont show abstract questions

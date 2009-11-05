@@ -45,6 +45,6 @@ public class DialogPaneTagHandler extends AbstractTagHandler {
 		String dialog = RefreshHTMLDialogAction.callDialogRenderer(topic, user.getUsername(), user.getHttpRequest(), web);
 		if(dialog == null) return null;
 		
-		return "<div id='dialog-panel' class=\'panel\'>"+dialog+"</div>";
+		return "<div id='dialog-panel'>"+dialog+"</div>";
 	}
 }

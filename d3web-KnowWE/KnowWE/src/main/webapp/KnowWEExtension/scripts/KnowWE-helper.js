@@ -108,14 +108,14 @@ KNOWWE.helper = function(){
          *     The attributes of the DOM element as string
          */
         formatAttributes : function( attr ){
-			var s ='', i = 0;
-			for( i = 0; i < attr.length; i++){
-				var nodeName = attr[i].name; 
-		  	    if(nodeName.startsWith('_')) continue; //due the KNOWWE element class
-			    s += attr[i].nodeValue + '#';
-			}
-			return s;
-		},        
+            var s ='', i = 0;
+            for( i = 0; i < attr.length; i++){
+                var nodeName = attr[i].name; 
+                if(nodeName.startsWith('_')) continue; //due the KNOWWE element class
+                s += attr[i].nodeValue + '#';
+            }
+            return s;
+        },        
         /**
          * Function: getMouseOffset
          * 
@@ -534,7 +534,7 @@ KNOWWE.helper.element.prototype = {
      *     The specified style attribute of the element.
      */
     _getStyle : function( attr ){
-        return this['style'][attr];
+        return this.style[attr];
     },
     /**
      * Function: _setStyle
@@ -544,7 +544,7 @@ KNOWWE.helper.element.prototype = {
      *     attr - The style attribute of the element one wants to set.
      */
     _setStyle : function( attr , value){
-        this['style'][attr] = value;
+        this.style[attr] = value;
     },
     /**
      * Function: _setText
@@ -761,11 +761,13 @@ KNOWWE.helper.selector = function(selector, context){
         if(t1){
             if(t1.constructor == Array || t1.constructor == Object){
                 t3 = new Array();
-                for(i = 0; i < t1.length; i++){
+                var len = t1.length;
+                for(i = 0; i < len; i++){
                     context = t1[i];
                     t2 = find( m, context );
                     if( t2.constructor == Array ) {
-                        for(var j = 0; j < t2.length; j++){
+                        var len2 = t2.length;
+                        for(var j = 0; j < len2; j++){
                             t3.push( t2[j] );
                         }
                     }
@@ -783,14 +785,16 @@ KNOWWE.helper.selector = function(selector, context){
     if(!t1) return null;
     
     var tmp = new Array();
-    if(t1.length > 0){
-        for(var i = 0; i < t1.length; i++){
-           var el = new KNOWWE.helper.element( t1[i] );
+    var k = KNOWWE.helper.element;
+    var l = t1.length;
+    if(l > 0){
+        for(var i = 0; i < l; i++){
+           var el = new k( t1[i] );
            tmp.push( el );
         }
         return tmp;
     } else {
-        return new KNOWWE.helper.element( t1 );
+        return new k( t1 );
     }    
     /**
      * Searches for the elements in the given context.
@@ -804,9 +808,10 @@ KNOWWE.helper.selector = function(selector, context){
      */
     function find( selector, context ){
         var i, t;
-        for (i in KNOWWE.helper.selector.regex){
-            if( KNOWWE.helper.selector.regex[i].test( selector )){
-                t = KNOWWE.helper.selector.filter[i]( context, selector );
+        var ns = KNOWWE.helper.selector;
+        for (i in ns.regex){
+            if( ns.regex[i].test( selector )){
+                t = ns.filter[i]( context, selector );
                 break;
             }
         }
@@ -857,11 +862,7 @@ KNOWWE.helper.selector.filter = function(){
          */
         TAG : function( context, selector ){
             var e = context.getElementsByTagName( selector );
-            var r = new Array();
-            for(var i = 0; i < e.length; i++){
-                r.push( e[i] );
-            }
-            return r;
+            return e;
         },
         /**
          * Searches for a given className.
@@ -876,7 +877,8 @@ KNOWWE.helper.selector.filter = function(){
         CLASS : function( context, selector ){          
             if( context === document ){
                 var e = document.getElementsByTagName('*'), r = new Array(), t;
-                for( var i = 0; i < e.length; i++){
+                var l = e.length;
+                for( var i = 0; i < l; i++){
                     t = this.CLASS( e[i], selector);
                     if( t.length !== 0 ) r.push( t );
                 }
@@ -901,11 +903,13 @@ KNOWWE.helper.selector.filter = function(){
          *     The found elements.
          */
         ATTR : function( context, selector ){
-            var m, r = new Array(), t, i;
+            var m, r = new Array(), t, i, l;
             
             m = KNOWWE.helper.selector.regex.ATTR.exec( selector );
             t = context.getElementsByTagName( m[1] || '*' ); /* get all elements with given tag*/
-            for(i = 0; i < t.length; i++){
+            l = t.length;
+            
+            for(i = 0; i < l; i++){
                 if( m[3] && t[i].getAttribute( m[2] ) === m[3] )
                     r.push( t[i] );
                 if( !m[3] && t[i].hasAttribute( m[2] ) )
@@ -1142,25 +1146,25 @@ KNOWWE.helper.logger = function(){
      *     The formatted message as string.
      */
     function formatMessage( msg ){
-    	if(!msg) return 'null';
-    	
-    	var indent = '', formattedMsg = '';
+        if(!msg) return 'null';
+        
+        var indent = '', formattedMsg = '';
         var type = typeof msg;
 
         switch(type){
             case 'string':
             case 'number':
-            	formattedMsg = msg.toLogger(0);
-        	    break;        	
+                formattedMsg = msg.toLogger(0);
+                break;          
             case 'object':
-            	if(!msg.length){
-            		formattedMsg = objToLogger(msg, 4);
-            	} else {
-            		formattedMsg = msg.toLogger(0);
-            	}
+                if(!msg.length){
+                    formattedMsg = objToLogger(msg, 4);
+                } else {
+                    formattedMsg = msg.toLogger(0);
+                }
                 break;
             default:
-              	break;
+                break;
         }
         return formattedMsg;
     }
@@ -1176,28 +1180,28 @@ KNOWWE.helper.logger = function(){
      */    
     function objToLogger (obj, indent){
         var s = '{<br />', oldIndent = indent;
-    	for( var i in obj ){
-    		if( typeof obj[i] == 'function') continue;
-    	    var space = KNOWWE.helper.logger.space( indent );
-    		if(typeof obj[i] == 'object'){
-    		    s += space + i + ':';
-    			indent += oldIndent;
-    	        s += objToLogger(obj[i], indent) + '<br />';
-    			indent -= oldIndent;
-    		}
-    	    else {
-    		    s += space + i + ':' + obj[i].toLogger(0) + '<br />';
-    		}
-    	}
+        for( var i in obj ){
+            if( typeof obj[i] == 'function') continue;
+            var space = KNOWWE.helper.logger.space( indent );
+            if(typeof obj[i] == 'object'){
+                s += space + i + ':';
+                indent += oldIndent;
+                s += objToLogger(obj[i], indent) + '<br />';
+                indent -= oldIndent;
+            }
+            else {
+                s += space + i + ':' + obj[i].toLogger(0) + '<br />';
+            }
+        }
         s += KNOWWE.helper.logger.space(indent-oldIndent) + '}';
-    	return s;
+        return s;
     }
     
     /**
      * Toggles the logger message window.
      */
     function toogle( ){
-    	var element = document.getElementById('KNOWWE-logger-display').getElementsByTagName('dl')[0].style;
+        var element = document.getElementById('KNOWWE-logger-display').getElementsByTagName('dl')[0].style;
         var show = element['display'];
         if( show == "" ) show = 'inline';
         element.display = (show === 'inline' ) ? 'none' : 'inline';
@@ -1208,7 +1212,7 @@ KNOWWE.helper.logger = function(){
      * Clears the logger messages. And resets the message counter to zero.
      */
     function clear(){
-    	msgCount = 0;
+        msgCount = 0;
         document.getElementById('KNOWWE-logger-count').innerHTML = msgCount;
         document.getElementById('KNOWWE-logger-display').getElementsByTagName('dl')[0].innerHTML = "";
         toogle();
@@ -1302,10 +1306,10 @@ KNOWWE.helper.logger = function(){
          */
         space : function( len ){
             var s = '';
-        	for(var i = 0; i < len; i++){
-        	    s += '&nbsp;';
-        	}
-        	return s;
+            for(var i = 0; i < len; i++){
+                s += '&nbsp;';
+            }
+            return s;
         }
     }
 }();
@@ -1346,6 +1350,7 @@ KNOWWE.helper.overlay = function( options ){
            left : 0
        },
        url : null,
+       content : null,
        fn : null
     };
     oDefault = KNOWWE.helper.enrich( options, oDefault );
@@ -1368,21 +1373,28 @@ KNOWWE.helper.overlay = function( options ){
                 + '<div id="' + oDefault.mainCSS +'"></div></div>');
         document.getElementsByTagName('body')[0].appendChild(o);
 
-        var options = {
-            url : oDefault.url,
-            response : {
-                action: 'insert',
-                ids : [ oDefault.mainCSS ],
-                fn : function(){
-                    var olay = KNOWWE.helper.selector('#' + oDefault.id);
-                    olay._css({top : oDefault.cursor.top + 'px', left: oDefault.cursor.left + 'px'});
-                    olay._show();
-                    oDefault.fn.call();
-                }
-            }
-        };
         if( oDefault.url ){
+        	var options = {
+	            url : oDefault.url,
+	            response : {
+	                action: 'insert',
+	                ids : [ oDefault.mainCSS ],
+	                fn : function(){
+	                    var olay = KNOWWE.helper.selector('#' + oDefault.id);
+	                    olay._css({top : oDefault.cursor.top + 'px', left: oDefault.cursor.left + 'px'});
+	                    olay._show();
+	                    oDefault.fn.call();
+	                }
+	            }
+	        };
             new KNOWWE.helper.ajax( options ).send();
+        } else if(oDefault.content) {
+        	var olay = KNOWWE.helper.selector('#' + oDefault.id);
+        	olay.innerHTML = oDefault.content;
+            olay._css({top : oDefault.cursor.top + 'px', left: oDefault.cursor.left + 'px'});
+            olay._show();
+            if(oDefault.fn)
+                oDefault.fn.call();
         }
     }
 }
@@ -1523,21 +1535,21 @@ Array.prototype.toLogger = function(indent){
 
     for (var i = 0; i < len; i++){
       if (i in this){
-    	  if(typeof this[i] == 'function') continue;
-    	  if(typeof this[i] == 'object'){
-    		  if(this[i].tagName){
-    			  var tag = this[i].tagName.toLowerCase();
-            	  var attr = KNOWWE.helper.formatAttributes(this[i].attributes);
+          if(typeof this[i] == 'function') continue;
+          if(typeof this[i] == 'object'){
+              if(this[i].tagName){
+                  var tag = this[i].tagName.toLowerCase();
+                  var attr = KNOWWE.helper.formatAttributes(this[i].attributes);
 
-            	  s += tag + ':' + attr;    			  
-    		  } else {
-    			  s += this[i];  
-    		  }
-    	  } else {
+                  s += tag + ':' + attr;                  
+              } else {
+                  s += this[i];  
+              }
+          } else {
               s += ' ' + this[i].toLogger(indent);
-    	  }
-	  }
-	  if(i + 1 != len) s += ',';
+          }
+      }
+      if(i + 1 != len) s += ',';
     }
     s += ' ]';
     return s;

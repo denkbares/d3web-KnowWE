@@ -45,23 +45,24 @@ KNOWWE.core.actions = function(){
             //init quickedit actions
             var els = _KS('.quickedit');
             for (var i = 0; i < els.length; i++){
-                if( els[i]._hasClass( 'table' ))
+                if( els[i]._hasClass( 'table' )){
                     _KE.add('click', els[i], function(e){
                         var el = _KE.target(e);
                         var id = el.parentNode.id;
                         KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id );
                     });
-                if( els[i]._hasClass( 'default') )
+                } else if( els[i]._hasClass( 'default') ) {
                     _KE.add('click', els[i], function(e){
                         var el = _KE.target(e);
                         var id = el.parentNode.id;
                         KNOWWE.core.actions.enableQuickEdit( null, id );
                     });
+                }
             }
             
             //init show extend panel
-            if(_KS('.show-extend')){
-                els = _KS('.show-extend');
+            els = _KS('.show-extend'); 
+            if( els ){
                 els.each(function(element){
                     _KE.add('click', element, KNOWWE.core.util.form.showExtendedPanel); 
                 });
@@ -105,8 +106,8 @@ KNOWWE.core.actions = function(){
             var nodeID = rel.id;
             var topic = rel.title;
             
-            if(_KS('#' + nodeID)) {
-                el = _KS('#' + nodeID);
+            el = _KS('#' + nodeID);
+            if( el ) {
                 var selectedOption = el.options[el.selectedIndex].value; 
              
                 var params = {
@@ -176,11 +177,11 @@ KNOWWE.core.util = function(){
          *          functionality should be applied to.
          */
         addCollabsiblePluginHeader : function( id ){
-        	var selector = "div .panel";
-        	if( id ) {
-        		selector = id;
-        	}
-        	
+            var selector = "div .panel";
+            if( id ) {
+                selector = id;
+            }
+            
             var panels = _KS( selector );
             if( panels.length < 1 ) return;
             if( !panels.length ) panels = new Array(panels);
@@ -222,7 +223,7 @@ KNOWWE.core.util = function(){
          */
          getURL : function( params ){
             var baseURL = 'KnowWE.jsp';
-            var tokens = []
+            var tokens = [];
         
             if( !params && typeof params != 'object') return baseURL;
             
@@ -355,12 +356,10 @@ KNOWWE.core.util.form = function(){
 
               if(tag.toLowerCase() == 'span'){
                 _KE.add('focus', els[i], function (e) {
-                   e = e || window.event;
-                   var el = e.target || e.srcElement;
+                   var el = _KE.target( e );
                    el.nextSibling.style.display = "inline";});
                 _KE.add('blur', els[i], function (e) {
-                   e = e || window.event;
-                   var el = e.target || e.srcElement;
+                   var el = _KE.target( e );
                    el.nextSibling.style.display = "none";});
               }
             }
@@ -603,14 +602,15 @@ KNOWWE.core.renaming = function(){
          */
         selectPerSection : function( e ) {
             var renameForm = this.form;
-            var el = KNOWWE.helper.event.target( e );
+            var el = _KE.target( e );
             var rel = el.getAttribute('rel');
             if(!rel) return;  
                        
             rel = eval("(" + rel + ")");
             var section = rel.section;
             
-            for(i = 0; i < renameForm.length; i++){
+            var  l = renameForm.length;
+            for(i = 0; i < l; i++){
                 if(renameForm[i].type == 'checkbox' && renameForm[i].id != ''){
                     if(section == undefined || renameForm[i].id.search(section) != -1)
                         renameForm[i].checked = true;
@@ -635,7 +635,8 @@ KNOWWE.core.renaming = function(){
             rel = eval("(" + rel + ")");
             var section = rel.section;            
             
-            for(i = 0; i < renameForm.length; i++){
+            var l = renameForm.length;
+            for(i = 0; i < l; i++){
                 if(renameForm[i].type == 'checkbox' && renameForm[i].id != ''){
                     if(section == undefined || renameForm[i].id.search(section) != -1)
                         renameForm[i].checked = false;
@@ -658,7 +659,7 @@ KNOWWE.core.renaming = function(){
                 ContextAfter : _KS('#renameAfterInputContext').value,
                 CaseSensitive :_KS('#search-sensitive').checked,
                 //method getSelectedSections() is located in TreeView.js (TreeView.js should be included here eventually)
-				SelectedSections : JSON.stringify(getSelectedSections()),
+                SelectedSections : JSON.stringify(getSelectedSections()),
             }
             
             var options = {
@@ -872,7 +873,7 @@ KNOWWE.core.typebrowser = function(){
                             if ( ob.style.color == "red") {
                                 ob.style.color = "green";
                             } else {
-                            	ob.style.color = "red";
+                                ob.style.color = "red";
                             }
                          }
                 }
@@ -889,12 +890,12 @@ KNOWWE.core.typebrowser = function(){
             var params = {
                 action : 'KnowWEObjectTypeBrowserAction',
                 TypeBrowserParams : (function () {
-                	var box = document.typebrowser.Auswahl;
-                	
-                	if(box.selectedIndex){
-                		return box.options[box.selectedIndex].value;
-                	}
-                	return "";
+                    var box = document.typebrowser.Auswahl;
+                    
+                    if(box.selectedIndex){
+                        return box.options[box.selectedIndex].value;
+                    }
+                    return "";
                 })()
             }
             var options = {
@@ -1023,19 +1024,12 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 
     if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
         window.addEvent( 'domready', function(){
-            /* loop through all init function and do some stuff */
-            var ns = [KNOWWE.core, KNOWWE.core.renaming, 
-                KNOWWE.core.util.tablesorter, KNOWWE.core.typebrowser];
-            for ( var i = 0; i < ns.length; i++ ){
-                if( typeof ns[i] === undefined ) continue;
-                
-               if( ns[i] ){
-                    if(ns[i].init){
-                        ns[i].init();
-                    }
-                }
-            }
-			if(_KS('#testsuite-show-extend')){
+            KNOWWE.core.init();
+            KNOWWE.core.renaming.init(); 
+            KNOWWE.core.util.tablesorter.init();
+            KNOWWE.core.typebrowser.init();
+            
+            if(_KS('#testsuite-show-extend')){
                 _KE.add('click', _KS('#testsuite-show-extend'), KNOWWE.core.util.form.showExtendedPanel);
             }
             if(_KS('#testsuite2-show-extend')){
