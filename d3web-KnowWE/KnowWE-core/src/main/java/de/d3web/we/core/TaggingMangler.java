@@ -233,7 +233,7 @@ public class TaggingMangler {
 		HashMap<String, Float> weighted = new HashMap<String, Float>();
 		max=max==0?1:max;
 		for (Entry<String, Float> cur : countlist.entrySet()) {
-			weighted.put(cur.getKey(), cur.getValue() / max);
+			weighted.put(cur.getKey(), (cur.getValue()-1) / (max-1));
 		}
 		return weighted;
 	}
