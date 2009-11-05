@@ -788,6 +788,7 @@ KNOWWE.plugin.d3web.semantic = function(){
             var mouseOffset = KNOWWE.helper.getMouseOffset( el, e );
             
             var olay = new KNOWWE.helper.overlay({
+            	title : 'Interview',
                 cursor : {
                     top : mousePos.y - mouseOffset.y,
                     left : mousePos.x - mouseOffset.x

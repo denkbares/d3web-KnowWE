@@ -1338,7 +1338,7 @@ KNOWWE.helper.overlay = function( options ){
     var oDefault = {
        id : 'o-lay',
        mainCSS : 'o-lay-body',
-       title : 'Interview',
+       title : '',
        css : {
            display : 'none',
            position : 'absolute',
@@ -1368,9 +1368,10 @@ KNOWWE.helper.overlay = function( options ){
             id : oDefault.id
         });
         o._css( oDefault.css );
+        var c = (oDefault.content) ? oDefaultContent : '';
         o._setHTML( '<div id="o-lay-wrapper"><div id="o-lay-top"><div id="o-lay-title">'
                 + oDefault.title + '<span class="right pointer" id="o-lay-close">x</span></div></div>' 
-                + '<div id="' + oDefault.mainCSS +'"></div></div>');
+                + '<div id="' + oDefault.mainCSS +'">' + c + '</div></div>');
         document.getElementsByTagName('body')[0].appendChild(o);
 
         if( oDefault.url ){
@@ -1390,7 +1391,6 @@ KNOWWE.helper.overlay = function( options ){
             new KNOWWE.helper.ajax( options ).send();
         } else if(oDefault.content) {
         	var olay = KNOWWE.helper.selector('#' + oDefault.id);
-        	olay.innerHTML = oDefault.content;
             olay._css({top : oDefault.cursor.top + 'px', left: oDefault.cursor.left + 'px'});
             olay._show();
             if(oDefault.fn)
