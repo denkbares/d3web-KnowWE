@@ -20,7 +20,7 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
 	super("lokaleZeitlinie");
     }
 
-    private static final String TIME_SPARQL = "SELECT  ?t ?title ?imp ?desc ?y WHERE {  ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasDateDescription ?y .}";
+    private static final String TIME_SPARQL = "SELECT  ?t ?title ?imp ?desc ?y WHERE {  ?t rdfs:isDefinedBy ?to . ?to ns:hasTopic TOPIC . ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasDateDescription ?y .}";
     private static final String TIME_AFTER = "nach";
 
     // ?t lns:isDefinedBy ?to . ?to lns:hasTopic TOPIC .

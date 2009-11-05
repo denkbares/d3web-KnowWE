@@ -29,7 +29,7 @@ public class TimeEventSPARQLUtils {
 
     // private static final String TIME_SPARQL =
     // "SELECT  ?title ?imp ?desc ?y  WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double . ?y < \"YEARTO\" ^^xsd:double) .}";
-    private static final String TIME_SPARQL = "SELECT  ?t ?title ?topic ?imp ?desc ?y ?kdomid ?topic WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
+    private static final String TIME_SPARQL = "SELECT  ?t ?title ?topic ?imp ?desc ?encodedTime ?y ?kdomid ?topic WHERE {  ?t rdfs:isDefinedBy ?to . ?to ns:hasTopic ?topic . ?to ns:hasNode ?kdomid . ?t lns:hasDateDescription ?encodedTime . ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
     // private static final String TIME_SPARQL =
     // "SELECT ?title ?imp ?desc ?y WHERE { ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}";
     // private static final String TIME_SPARQL =
@@ -105,16 +105,18 @@ public class TimeEventSPARQLUtils {
 		String tURI = tB.getValue().stringValue();
 
 		Binding titleB = set.getBinding("title");
-		String kdomid = set.getBinding("kdomid").getValue().toString();
-		String topic = set.getBinding("topic").getValue().toString();
+		String kdomid = set.getBinding("kdomid").getValue()
+			.stringValue();
+		String topic = set.getBinding("topic").getValue().stringValue();
 
 		Binding impB = set.getBinding("imp");
 		// Binding textOriginB = set.getBinding("textOrigin");
 
-		String time = set.getBinding("y").getValue().toString();
-		String desc = set.getBinding("desc").getValue().toString();
-		String title = titleB.getValue().toString();
-		String imp = impB.getValue().toString();
+		String time = set.getBinding("encodedTime").getValue()
+			.stringValue();
+		String desc = set.getBinding("desc").getValue().stringValue();
+		String title = titleB.getValue().stringValue();
+		String imp = impB.getValue().stringValue();
 
 		Set<String> sources = new HashSet<String>();
 
@@ -128,7 +130,7 @@ public class TimeEventSPARQLUtils {
 		    // thus using a set
 		    BindingSet set2 = sourcesResult.next();
 		    Binding sourceBinding = set2.getBinding("source");
-		    String aSource = sourceBinding.getValue().toString();
+		    String aSource = sourceBinding.getValue().stringValue();
 		    try {
 			aSource = URLDecoder.decode(aSource, "UTF-8");
 		    } catch (UnsupportedEncodingException e) {
@@ -151,7 +153,7 @@ public class TimeEventSPARQLUtils {
 		    e.printStackTrace();
 		}
 
-		imp = imp.substring(2, 3);
+		imp = imp.substring(1, 2);
 
 		int parseInt = 3;
 
