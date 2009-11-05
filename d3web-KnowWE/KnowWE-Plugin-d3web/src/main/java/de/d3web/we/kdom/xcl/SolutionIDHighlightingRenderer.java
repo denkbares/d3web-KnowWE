@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.xcl;
 
 import java.util.Collection;
@@ -10,30 +30,39 @@ import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class XCLHeadHighlightingRenderer extends KnowWEDomRenderer {
+/**
+ * 
+ * @author Johannes Dienst
+ * 
+ * Highlights the Solutions in CoveringList according to state.
+ * Also Includes the ObjectInfoLinkRenderer.
+ *
+ */
+public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 
-	private static XCLHeadHighlightingRenderer instance;
+	private static SolutionIDHighlightingRenderer instance;
 	
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
 		String solution = sec.getOriginalText().replace("\"", "").trim();
 
 		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
+
+		String spanStart = "<span style=\"background-color: rgb(";
+		String spanStartEnd = ";\">";
+		String spanEnd = "</span>";
 		
 		if (xpsCase != null) {
 			
 			List<Diagnosis> diags = xpsCase.getKnowledgeBase().getDiagnoses();
 			Collection <KnowledgeSlice> slices =
 				xpsCase.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
-			
-			// Some String definitions
-			String spanStart = "<span style=\"background-color: rgb(";
-			String spanStartEnd = ";\">";
-			String spanEnd = "</span>";
 
 			for (Diagnosis d : diags) {
 
@@ -45,34 +74,32 @@ public class XCLHeadHighlightingRenderer extends KnowWEDomRenderer {
 						state = DiagnosisState.UNCLEAR;
 					else
 						state = diagModel.getState(xpsCase);
-						
-					solution += " ";
 
 					if (state == DiagnosisState.ESTABLISHED) {
-						string.append(spanStart + "51, 255, 51)" + spanStartEnd
-								+ solution + spanEnd);
+						string.append(spanStart + "51, 255, 51)" + spanStartEnd);
 					}
 
 					if (state == DiagnosisState.EXCLUDED) {
-						string.append(spanStart + "255, 153, 0)" + spanStartEnd
-								+ solution + spanEnd);
+						string.append(spanStart + "255, 153, 0)" + spanStartEnd);
 					}
 
 					if (state == DiagnosisState.SUGGESTED) {
-						string.append(spanStart + "251, 199, 11)" + spanStartEnd
-								+ solution + spanEnd);
+						string.append(spanStart + "251, 199, 11)" + spanStartEnd);
 					}
 
 					if (state == DiagnosisState.UNCLEAR) {
-						string.append(solution);
+						string.append(spanEnd);
 					}
 				}
-
 			}
 		} else {
-			string.append(solution);
+			string.append(spanEnd);
 		}
-
+		
+		new ObjectInfoLinkRenderer(
+				FontColorRenderer.getRenderer(FontColorRenderer.COLOR1)).
+					render(sec, user, string);
+		string.append(spanEnd);
 	}
 	
 	/**
@@ -94,9 +121,9 @@ public class XCLHeadHighlightingRenderer extends KnowWEDomRenderer {
 	 * 
 	 * @return
 	 */
-	public static XCLHeadHighlightingRenderer getInstance() {
+	public static SolutionIDHighlightingRenderer getInstance() {
 		if (instance == null)
-			instance = new XCLHeadHighlightingRenderer();
+			instance = new SolutionIDHighlightingRenderer();
 		
 		return instance;
 	}

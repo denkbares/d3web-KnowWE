@@ -21,9 +21,7 @@
 package de.d3web.we.kdom.xcl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
@@ -32,8 +30,10 @@ import org.openrdf.repository.RepositoryException;
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
+import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
@@ -41,8 +41,7 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 
 public class XCLHead extends DefaultAbstractKnowWEObjectType {
-	
-	
+
 	
 	public class XCLHeadSectionFinder extends SectionFinder{
 		
@@ -101,7 +100,11 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.sectionFinder = new XCLHeadSectionFinder();
-		this.setCustomRenderer(XCLHeadHighlightingRenderer.getInstance());
+		SolutionID sID = new SolutionID();
+		sID.setSectionFinder(new SolutionIDSectionFinder());
+		sID.setCustomRenderer(SolutionIDHighlightingRenderer.getInstance());
+		this.childrenTypes.add(sID);
+		this.childrenTypes.add(new LineBreak());
 	}
 
 }
