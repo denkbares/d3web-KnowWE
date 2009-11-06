@@ -41,7 +41,6 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * @see TextLine
  */
 public class TableLine extends DefaultAbstractKnowWEObjectType {
-	
 
 	@Override
 	protected void init() {
@@ -69,8 +68,7 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 			Pattern linePattern = Pattern.compile(lineRegex, Pattern.MULTILINE);
 
 			Matcher tagMatcher = linePattern.matcher(text);
-			ArrayList<SectionFinderResult> resultRegex =
-							new ArrayList<SectionFinderResult>();
+			ArrayList<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
 
 			while (tagMatcher.find()) {
 				resultRegex.add(new SectionFinderResult(tagMatcher.start(),
@@ -85,11 +83,14 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public void reviseSubtree(Section s) {
 			Section colHeaderCell = s.findSuccessor(TableCell.class);
-			Section content = colHeaderCell
-					.findChildOfType(TableCellContent.class);
-			AbstractKnowWEObjectType colHeaderType = new TableColumnHeaderCellContent();
-			if (content != null) {
-				content.setType(colHeaderType);
+			if (colHeaderCell != null) {
+
+				Section content = colHeaderCell
+						.findChildOfType(TableCellContent.class);
+				if (content != null) {
+					AbstractKnowWEObjectType colHeaderType = new TableColumnHeaderCellContent();
+					content.setType(colHeaderType);
+				}
 			}
 		}
 	}
