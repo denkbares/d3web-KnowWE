@@ -42,6 +42,8 @@ public class DefaultRenderer implements SparqlRenderer {
 		}
 		return instance;
 	}
+	
+	  
 
 	public String render(TupleQueryResult result, Map<String, String> params) {
 

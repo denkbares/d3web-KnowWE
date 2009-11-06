@@ -20,25 +20,91 @@
 
 package de.d3web.we.kdom.semanticAnnotation;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import org.openrdf.model.URI;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
+
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.contexts.Context;
+import de.d3web.we.kdom.contexts.ContextManager;
+import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
+import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class StandardAnnotationRenderer extends ConditionalRenderer {
 
-    @Override
-    public void renderDefault(Section sec, KnowWEUserContext user, StringBuilder string) {
+	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> lns:hasTitle ?title }";
+	
+	
+	@Override
+	public void renderDefault(Section sec, KnowWEUserContext user,
+			StringBuilder string) {
 
-    	Section astring = sec.findSuccessor(AnnotatedString.class);
+		String object = "no object found";
+		Section objectSection = sec.findSuccessor(SimpleAnnotation.class);
+		if (objectSection != null) {
+			object = objectSection.getOriginalText();
+		}
+
+		Section astring = sec.findSuccessor(AnnotatedString.class);
 		String text = "";
 		if (astring != null)
 			text = "''" + astring.getOriginalText() + "''";
 		else
-			text = "(?)";
+			text = "<b>" + object + "</b>";
 		Section content = sec.findSuccessor(AnnotationContent.class);
+		Section propSection = sec.findSuccessor(AnnotationPropertyName.class);
+
+		String property = "no property found";
+		if (propSection != null) {
+			property = propSection.getOriginalText();
+		}
+
+		String subject = "no subject found";
+
+		Section subjectSectin = sec.findSuccessor(AnnotationSubject.class);
+		if (subjectSectin != null
+				&& subjectSectin.getOriginalText().trim().length() > 0) {
+			subject = subjectSectin.getOriginalText();
+		} else {
+
+			Context context = ContextManager.getInstance().getContext(sec,
+					DefaultSubjectContext.CID);
+			if (context != null) {
+				URI solutionURI = ((DefaultSubjectContext) context).getSolutionURI();
+				subject = solutionURI
+						.getLocalName();
+				TupleQueryResult result =  SPARQLUtil.executeTupleQuery(TITLE_QUERY.replaceAll("URI", solutionURI.toString()), sec.getTitle());
+				if(result != null) {
+					try {
+						if(result.hasNext()) {
+							BindingSet set = result.next();
+							String title = set.getBinding("title").getValue().stringValue();
+							 try {
+								title = URLDecoder.decode(title, "UTF-8");
+								subject = title;
+							} catch (UnsupportedEncodingException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					} catch (QueryEvaluationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+		}
+
 		if (content != null) {
-			String title = content.getOriginalText();
+			String title = subject + " " + property + " " + object;
 			text = KnowWEEnvironment.maskHTML("<span title='" + title + "'>"
 					+ text + "</span>");
 		}
@@ -50,6 +116,6 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 		}
 
 		string.append(text);
-    }
+	}
 
 }

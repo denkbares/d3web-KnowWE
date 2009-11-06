@@ -86,7 +86,7 @@ public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
 		if (!validprop){
 		    Logger.getLogger(this.getClass().getName()).log(
 				Level.WARNING,
-				"invalid property: "+prop.getLocalName());
+				"invalid property: "+s.getOriginalText());
 		}
 
 		if (prop != null && validprop && stringa != null) {
