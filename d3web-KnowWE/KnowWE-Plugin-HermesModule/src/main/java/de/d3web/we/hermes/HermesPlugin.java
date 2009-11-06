@@ -28,6 +28,7 @@ import javax.servlet.ServletContext;
 
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.hermes.action.InsertRelationAction;
 import de.d3web.we.hermes.action.SearchTimeEventsAction;
 import de.d3web.we.hermes.action.SetFilterLevelAction;
 import de.d3web.we.hermes.kdom.TimeEventType;
@@ -112,5 +113,6 @@ public class HermesPlugin extends AbstractDefaultKnowWEModule {
 	public void addAction(Map<Class<? extends KnowWEAction>, KnowWEAction> map) {
 		map.put(SearchTimeEventsAction.class, new SearchTimeEventsAction());
 		map.put(SetFilterLevelAction.class, new SetFilterLevelAction());
+		map.put(InsertRelationAction.class, new InsertRelationAction());
 	}
 }
