@@ -1368,7 +1368,7 @@ KNOWWE.helper.overlay = function( options ){
             id : oDefault.id
         });
         o._css( oDefault.css );
-        var c = (oDefault.content) ? oDefaultContent : '';
+        var c = (oDefault.content) ? oDefault.content : '';
         o._setHTML( '<div id="o-lay-wrapper"><div id="o-lay-top"><div id="o-lay-title">'
                 + oDefault.title + '<span class="right pointer" id="o-lay-close">x</span></div></div>' 
                 + '<div id="' + oDefault.mainCSS +'">' + c + '</div></div>');
