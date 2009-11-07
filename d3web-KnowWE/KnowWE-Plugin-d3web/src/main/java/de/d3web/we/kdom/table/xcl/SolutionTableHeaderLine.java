@@ -66,6 +66,7 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 
 			for (Section section : cells) {
 				Section findChildOfType = section.findSuccessor(TableCellContent.class);
+				if(findChildOfType == null) continue;
 				findChildOfType.setType(SolutionCellContent.getInstance());
 				String solution = null;
 				if (findChildOfType != null) {

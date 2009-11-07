@@ -60,6 +60,7 @@ import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
@@ -204,12 +205,13 @@ public class D3webModule implements KnowWEModule {
 		sc.loadOwlFile(new File(ontfile));
 
 		this.addAction(actionMap);
+		this.loadData(context);
 
-		loadData(context);
-
-		UploadManager.getInstance()
-				.registerHandler(new KnOfficeUploadHandler());
-
+		UploadManager.getInstance().registerHandler(new KnOfficeUploadHandler());
+		
+		//add the javascript files
+		KnowWEScriptLoader.getInstance().add("KnowWE-plugin-d3web.js",false);
+		KnowWEScriptLoader.getInstance().add( "silveripe.0.2.js",false);
 	}
 
 	protected void addTagHandler(de.d3web.we.taghandler.TagHandler handler) {

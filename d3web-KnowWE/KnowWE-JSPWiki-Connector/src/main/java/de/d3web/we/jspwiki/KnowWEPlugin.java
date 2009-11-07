@@ -37,6 +37,7 @@ import com.ecyrd.jspwiki.plugin.PluginException;
 import com.ecyrd.jspwiki.plugin.WikiPlugin;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.module.PageAppendHandler;
 
@@ -188,15 +189,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 							userContext));
 				}
 			}
-			/**
-			 * JS Handler own div am ende der seite, ...
-			 */
-			articleString.append(KnowWEEnvironment.maskHTML("<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/KnowWE-helper.js\"></script>"
-				    + "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/KnowWE.js\"></script>"
-				    + "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/KnowWE-plugin-d3web.js\"></script>" 
-				    + "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/silveripe.0.2.js\"></script>"));
+		
+			KnowWEScriptLoader.getInstance().add("KnowWE.js", true);
+			KnowWEScriptLoader.getInstance().add("KnowWE-helper.js", true);
+			
+			String jsModuleIncludes = KnowWEScriptLoader.getInstance().getIncludes();
+			articleString.append( KnowWEEnvironment.maskHTML(jsModuleIncludes) );
 				
-
 
 			// long timeEnde = System.currentTimeMillis();
 

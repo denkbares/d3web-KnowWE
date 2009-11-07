@@ -323,7 +323,7 @@ KNOWWE.plugin.d3web.dialog = function(){
                 create : {
                     id : 'pagecontent',
                     fn : function(){
-                        return new _KN('div', {'id' : 'dialog-panel', 'class' : 'panel'});
+                        return new _KN('div', {'id' : 'dialog-panel'});
                     }
                 }
             }
