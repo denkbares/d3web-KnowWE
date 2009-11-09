@@ -101,27 +101,36 @@ public class KnowWEFacade {
 	 * initialises all supported actions dont forget to register your new
 	 * written actions here!
 	 */
-	/**
-	 * 
-	 */
 	private void initActions() {
-        actionMap.put(SetQuickEditFlagAction.class, new SetQuickEditFlagAction());
 
-		actionMap.put(WordBasedRenamingAction.class, new WordBasedRenamingAction());
-		actionMap.put(GlobalReplaceAction.class, new GlobalReplaceAction());
+		registerAction(SetQuickEditFlagAction.class, new SetQuickEditFlagAction());
+		registerAction(WordBasedRenamingAction.class, new WordBasedRenamingAction());
+		registerAction(GlobalReplaceAction.class, new GlobalReplaceAction());
 
-		actionMap.put(ReplaceKDOMNodeAction.class, new ReplaceKDOMNodeAction());
-		actionMap.put(UpdateTableKDOMNodes.class, new UpdateTableKDOMNodes());
-		actionMap.put(KnowWEObjectTypeBrowserAction.class, new KnowWEObjectTypeBrowserAction());
-		actionMap.put(KnowWEObjectTypeActivationAction.class, new KnowWEObjectTypeActivationAction());
+		registerAction(ReplaceKDOMNodeAction.class, new ReplaceKDOMNodeAction());
+		registerAction(UpdateTableKDOMNodes.class, new UpdateTableKDOMNodes());
+		registerAction(KnowWEObjectTypeBrowserAction.class, new KnowWEObjectTypeBrowserAction());
+		registerAction(KnowWEObjectTypeActivationAction.class, new KnowWEObjectTypeActivationAction());
 		
-		actionMap.put(TagHandlingAction.class, new TagHandlingAction());
+		registerAction(TagHandlingAction.class, new TagHandlingAction());
 		
 		List<KnowWEModule> modules = KnowWEEnvironment.getInstance()
 				.getModules();
+		
 		for (KnowWEModule knowWEModule : modules) {
 			knowWEModule.addAction(actionMap);
 		}
+	}
+
+	/**
+	 * Registers an action instance for an action class.
+	 */
+	private KnowWEAction registerAction(
+			Class<? extends KnowWEAction> actionClass, KnowWEAction action) {
+		
+		Logger.getLogger(this.getClass().getName()).info("Registering action: " + actionClass);
+		
+		return actionMap.put(actionClass, action);
 	}
 
 	/**
@@ -221,8 +230,12 @@ public class KnowWEFacade {
 			actionInstance = actionMap.get(clazz);
 			if (actionInstance == null) {
 				Logger.getLogger(this.getClass().getName()).warning(
-						"Action/Render " + action + " wasn't registered => default instanciation");
+						"Action/Render " + action + " wasn't registered.");
 				actionInstance = (KnowWEAction)clazz.newInstance();
+
+				//register the new Action for reusage
+				registerAction(clazz, actionInstance);
+				
 			} 
 			return actionInstance.perform(parameterMap);
 		} 

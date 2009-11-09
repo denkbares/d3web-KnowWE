@@ -69,7 +69,7 @@ public interface KnowWEModule {
 	 * 
 	 * COMMENT: registering is not strictly necessary: Because if an action 
 	 * request comes in, the class for this action is loaded for name if having correct package and found in classpath. 
-	 * An action instance is created and executed.
+	 * An action instance is created and executed and registered automatically for later usage.
 	 * 
 	 * 
 	 * @param map
