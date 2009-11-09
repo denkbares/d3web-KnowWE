@@ -22,9 +22,9 @@ package tests;
 
 import java.util.List;
 
+import junit.framework.TestCase;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.owlextension.Extension;
-import de.d3web.we.kdom.owlextension.ExtensionSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -36,7 +36,6 @@ import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
 import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellStart;
 import de.d3web.we.kdom.table.TableLine;
-import junit.framework.TestCase;
 
 /**
  * Tests all KnowWESectionFinders
@@ -99,19 +98,6 @@ public class KnowWESectionFinderTests extends TestCase {
 	
 	public void testAnnotationSubjectSectionFinder() {
 		
-	}
-	
-	public void testExtensionSectionFinder() {
-		String text = "OHM <extension>(oh my god)</extension> GOD"
-			        + "<extension>(oh my god)</extension>";
-		ExtensionSectionFinder f = new ExtensionSectionFinder(new Extension());
-		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
-		assertEquals(WRONG_FIRST_START, 4, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 37, results.get(0).getEnd());
-		
-		assertEquals(WRONG_SECOND_START, 42, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 112, results.get(1).getEnd());
 	}
 	
 //	public void testFindingFinder() {

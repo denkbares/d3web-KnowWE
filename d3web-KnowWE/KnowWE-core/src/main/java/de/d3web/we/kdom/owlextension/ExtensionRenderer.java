@@ -23,6 +23,7 @@ package de.d3web.we.kdom.owlextension;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ExtensionRenderer extends KnowWEDomRenderer {
@@ -39,15 +40,9 @@ public class ExtensionRenderer extends KnowWEDomRenderer {
 		String footer = "</p>";
 		String content = "";
 		
-		ExtensionObject eo = 
-			((Extension) sec.getObjectType()).getExtensionObject(sec.getOriginalText());
-		if(eo != null) {
-			content += eo.getErrorreport();
-		} else {
-			content += "render error: extension object not found";
-		}
+		content=(String) KnowWEUtils.getStoredObject(sec,Extension.EXTENSION_RESULT_KEY);
 		
-		if (eo != null && eo.isError() ) {
+		if (!content.equals("success")) {
 			header = "<p class=\"box error\">";
 		} else {
 			header = "<p class=\"box ok\">";

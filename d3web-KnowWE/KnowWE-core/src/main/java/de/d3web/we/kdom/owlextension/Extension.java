@@ -20,43 +20,23 @@
 
 package de.d3web.we.kdom.owlextension;
 
-import java.util.HashMap;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-
-public class Extension extends DefaultAbstractKnowWEObjectType{
-	private HashMap<String, String> extensiontexts;
-	private HashMap<String, ExtensionObject> extensionmap;
-
+public class Extension extends AbstractXMLObjectType{
+	public static final String EXTENSION_SOURCE_KEY="EXTENSION_SOURCE";
+	public static final String EXTENSION_OBJECT_KEY="EXTENSION_OBJECT";
+	public static final String EXTENSION_RESULT_KEY="EXTENSION_RESULT";
 	public Extension(){
-		super();
-		extensiontexts=new HashMap<String, String>();
-		extensionmap=new HashMap<String, ExtensionObject>();
+		super("extension");
 	}
-	
-	public void addExtensionSource(String s,String src) {
-		extensiontexts.put(s, src);		
-	}
-	
-	public void setExtensionObject (String s, ExtensionObject e){
-		extensionmap.put(s, e);
-	}
-	
-	public String getExtensionSource(String s){
-		return extensiontexts.get(s);
-	}
-	
-	public ExtensionObject getExtensionObject(String sec) {		
-		return extensionmap.get(sec);
-	}
-		
 
 	/* (non-Javadoc)
 	 * @see de.d3web.we.dom.AbstractKnowWEObjectType#init()
 	 */
 	@Override
 	protected void init() {
-	   this.setCustomRenderer(ExtensionRenderer.getInstance());
-	   this.sectionFinder=(new ExtensionSectionFinder(this));	    
+	   //this.setCustomRenderer(ExtensionRenderer.getInstance());
+	   childrenTypes.add(new ExtensionContent());
+	   // this.sectionFinder=(new ExtensionSectionFinder(this));	    
 	}
 }
