@@ -34,21 +34,20 @@ public class TimeLineEventRenderer {
 	// if no renderedString is cached, render now
 	StringBuffer sb = new StringBuffer("<div class='panel'>\n");
 
-	sb.append("<h3 "
-	// + styleTag
-		// + "><i>"
-		// + te.getTime().getDescription()
-		// + "</i> - "
-		// + te.getTitle()
-		// + " <a class=\"wikipage\" href=\"Wiki.jsp?page="
-		// + te.getTopic()
-		// +
-		// "\"><img src=\"./images/goto.jpg\" alt=\"Zum Wiki\" title=\"Zum Wiki\"/></a>"
-		// + " <a class=\"wikipage\" href=\"Edit.jsp?page="
-		// + te.getTopic()
-		// +
-		// "\"><img src=\"./images/edit.gif\" alt=\"Bearbeiten\" title=\"Bearbeiten\"/></a>"
-		+ ">Test</h3>");
+	sb
+		.append("<h3 "
+			+ styleTag
+			+ "><i>"
+			+ te.getTime().getDescription()
+			+ "</i> - "
+			+ te.getTitle()
+			+ " <a class=\"wikipage\" href=\"Wiki.jsp?page="
+			+ te.getTopic()
+			+ "\"><img src=\"./images/goto.jpg\" alt=\"Zum Wiki\" title=\"Zum Wiki\"/></a>"
+			+ " <a class=\"wikipage\" href=\"Edit.jsp?page="
+			+ te.getTopic()
+			+ "\"><img src=\"./images/edit.gif\" alt=\"Bearbeiten\" title=\"Bearbeiten\"/></a>"
+			+ "</h3>");
 
 	sb.append("\n<div>" + te.getDescription() + "<br>");
 	List<String> sources = te.getSources();

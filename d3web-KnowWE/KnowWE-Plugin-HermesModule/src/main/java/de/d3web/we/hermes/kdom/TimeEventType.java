@@ -30,7 +30,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.hermes.TimeStamp;
-import de.d3web.we.hermes.kdom.renderer.TimeEventRenderer;
+import de.d3web.we.hermes.kdom.renderer.TimeEventTypeRenderer;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -63,7 +63,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 
     @Override
     public KnowWEDomRenderer getRenderer() {
-	return TimeEventRenderer.getInstance();
+	return TimeEventTypeRenderer.getInstance();
     }
 
     @Override

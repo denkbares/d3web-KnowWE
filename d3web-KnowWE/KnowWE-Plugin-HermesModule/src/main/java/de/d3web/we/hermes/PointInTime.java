@@ -82,6 +82,7 @@ public class PointInTime {
 
 	if (timeS.contains("v")) {
 	    interpretableTime *= -1;
+	    description += "v. Chr.";
 	}
     }
 
