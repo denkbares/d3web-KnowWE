@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 
 import org.openrdf.OpenRDFException;
 import org.openrdf.model.BNode;
+import org.openrdf.model.Namespace;
 import org.openrdf.model.Statement;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.BooleanQuery;
@@ -71,10 +72,14 @@ public class SemanticCore {
 	private HashMap<String, BNode> contextmap;
 	private HashMap<String, String> settings;
 	private HashMap<String, List<Statement>> statementcache;
+	private HashMap<String,String> namespaces;
+	private HashMap<String,String> defaultnamespaces;
 
 	private SemanticCore(KnowWEEnvironment ke) {
 		this.knowWEEnvironment = ke;
 		contextmap = new HashMap<String, BNode>();
+		
+
 		statementcache = new HashMap<String, List<Statement>>();
 		String path = ke.getKnowWEExtensionPath();
 		settingsbundle = ResourceBundle.getBundle("semanticdefaults");
@@ -83,6 +88,15 @@ public class SemanticCore {
 			settings.put(cur, settingsbundle.getString(cur));
 		}
 		uo = UpperOntology.getInstance(path);
+		initnamespaces();
+
+		readSettings();
+		readIncludings();
+
+	}
+	private void initnamespaces(){
+		namespaces=new HashMap<String,String>();
+		defaultnamespaces=new HashMap<String,String>();
 		try {
 			uo.setLocaleNS(knowWEEnvironment.getWikiConnector().getBaseUrl());
 		} catch (RepositoryException e1) {
@@ -91,12 +105,18 @@ public class SemanticCore {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					"using default");
 		}
-
-		readSettings();
-		readIncludings();
-
+		defaultnamespaces.put("ns",uo.getBaseNS());
+		defaultnamespaces.put("lns",uo.getLocaleNS());
+		defaultnamespaces.put("rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		defaultnamespaces.put("owl","http://www.w3.org/2002/07/owl#");
+		defaultnamespaces.put("rdfs","http://www.w3.org/2000/01/rdf-schema#");
+		defaultnamespaces.put("xsd","http://www.w3.org/2001/XMLSchema#");
 	}
 
+	public void addNamespace(String sh,String ns){
+		namespaces.put(sh, ns);
+	}
+	
 	private void readIncludings() {
 		File[] files = getImportList();
 		if (files == null)
@@ -481,15 +501,22 @@ public class SemanticCore {
 		}
 	}
 	
-	public ArrayList<String> simpleQueryToList(String inquery,String targetbinding){
-		ArrayList<String> resultlist = new ArrayList<String>();
-		UpperOntology uo = UpperOntology.getInstance();
-		String querystring = "PREFIX ns: <" + uo.getBaseNS() + "> \n";
-		querystring += "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-		querystring += "PREFIX lns: <" + uo.getLocaleNS() + "> \n";
-		querystring += "PREFIX owl:<http://www.w3.org/2002/07/owl#> \n";
-		querystring += "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> \n";
+	public String getSparqlNamespaceShorts(){
+		StringBuffer buffy=new StringBuffer();
 
+        for (Entry<String,String> cur:namespaces.entrySet()){
+			buffy.append("PREFIX "+cur.getKey()+": <"+cur.getValue()+"> \n");
+		}
+        for (Entry<String,String> cur:defaultnamespaces.entrySet()){
+			buffy.append("PREFIX "+cur.getKey()+": <"+cur.getValue()+"> \n");
+		}
+
+		return buffy.toString();
+	}
+	
+	public ArrayList<String> simpleQueryToList(String inquery,String targetbinding){
+		ArrayList<String> resultlist = new ArrayList<String>();		
+		String querystring = getSparqlNamespaceShorts();
 		querystring = querystring + inquery;
 		RepositoryConnection con = UpperOntology.getInstance().getConnection();
 		Query query = null;
@@ -506,7 +533,6 @@ public class SemanticCore {
 		try {
 			result = ((TupleQuery) query).evaluate();
 		} catch (QueryEvaluationException e) {
-
 			e.printStackTrace();
 		}
 
@@ -519,8 +545,7 @@ public class SemanticCore {
 						tag = tag.split("#")[1];
 					try {
 						tag = URLDecoder.decode(tag, "UTF-8");
-					} catch (UnsupportedEncodingException e) {
-					
+					} catch (UnsupportedEncodingException e) {					
 						e.printStackTrace();
 					}
 					if (tag.contains("=")){
@@ -554,5 +579,12 @@ public class SemanticCore {
 	 */
 	public void writeDump(OutputStream stream) {
 		uo.writeDump(stream);
+	}
+	
+	public HashMap<String,String> getDefaultNameSpaces() {		
+		return defaultnamespaces;
+	}
+	public HashMap<String, String> getNameSpaces() {		
+		return namespaces;
 	}
 }

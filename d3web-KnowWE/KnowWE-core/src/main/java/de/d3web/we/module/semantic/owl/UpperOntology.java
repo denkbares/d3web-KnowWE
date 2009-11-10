@@ -25,10 +25,12 @@ import java.io.OutputStream;
 import java.util.HashMap;
 
 import org.openrdf.OpenRDFException;
+import org.openrdf.model.Namespace;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.config.RepositoryConfig;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFHandlerException;
@@ -77,7 +79,8 @@ public class UpperOntology {
 		settings = new HashMap<String, String>();
 		ontfile = path + File.separatorChar + "knowwe.owl";
 		settings.put("ontfile", ontfile);
-		reppath = System.getProperty("java.io.tmpdir") +File.separatorChar+ "repository";
+		reppath = System.getProperty("java.io.tmpdir") + File.separatorChar
+				+ "repository";
 		settings.put("reppath", reppath);
 		config_file = path + File.separatorChar + "owlim.ttl";
 		settings.put("config_file", config_file);
@@ -87,8 +90,9 @@ public class UpperOntology {
 		// setLocaleNS(path);
 		localens = basens;
 		settings.put("basens", basens);
-		
-		//ON JUnit test running no ontology is read
+        
+
+		// ON JUnit test running no ontology is read
 		try {
 			readOntology();
 		} catch (Exception e) {
@@ -194,11 +198,13 @@ public class UpperOntology {
 	public void setLocaleNS(String locns) throws RepositoryException {
 		RepositoryConnection con = myRepository.getConnection();
 		con.setNamespace("local", locns + "OwlDownload.jsp#");
+		RepositoryResult<Namespace> r = con.getNamespaces();
 		locns = locns + "OwlDownload.jsp#";
 		localens = locns;
 		owlhelper.setLocaleNS(localens);
 		con.close();
 	}
+
 
 	public void setPersistenceDir(String path) {
 		persistencedir = new File(path);

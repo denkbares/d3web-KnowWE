@@ -46,6 +46,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.css.CSS;
+import de.d3web.we.kdom.namespaces.Namespaces;
 import de.d3web.we.kdom.owlextension.Extension;
 import de.d3web.we.kdom.owlextension.OwlProperties;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
@@ -583,6 +584,7 @@ public class KnowWEEnvironment {
 		this.rootTypes.add(new CSS());
 		this.rootTypes.add(new TagHandlerType());
 		this.rootTypes.add(new Sparql());
+		this.rootTypes.add(new Namespaces());
 		this.rootTypes.add(new Extension());
 		this.rootTypes.add(new OwlProperties());
 		this.rootTypes.add(new SemanticAnnotation());
