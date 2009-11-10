@@ -190,9 +190,10 @@ KNOWWE.core.util = function(){
                 var span = new _KN('span');
                 span._setText('- ');
                 
-                var heading = panels[i]._getChildren()[0];
-                span._injectTop( heading );
-
+                var heading = panels[i].getElementsByTagName('h3')[0];
+                if(!heading.innerHTML.startsWith('<span>')){
+                	 span._injectTop( heading );
+                }
                 _KE.add('click', heading , function(){
                     var el = new _KN( this );
                     var style = el._next()._getStyle('display');
