@@ -7,7 +7,8 @@ var SilverIPE = function (eb,el, url, options) {
 	this.url = url;
 	var that = this;
 	
-	// If el is a string, we get the element by this id, if not, assume it's an element
+	// If el is a string, we get the element by this id, if not, assume it's an
+	// element
 	this.el = (typeof el === 'string') ? document.getElementById(el) : el;
 	this.eb = (typeof eb === 'string') ? document.getElementById(eb) : eb;
 	this.el.title = (this.el.title === '') ? 'Click to edit...' : this.el.title;
@@ -31,21 +32,21 @@ var SilverIPE = function (eb,el, url, options) {
 	this.options = this.mergeObjects(this.options, options || {});
 	this.options.method = this.options.method.toUpperCase();
 	this.el.onmouseover = function () {
-		//that.el.style.backgroundColor = that.options.highlightColor;
+		// that.el.style.backgroundColor = that.options.highlightColor;
 	};
 	this.eb.onmouseover = function () {
 		that.el.style.backgroundColor = that.options.highlightColor;
 	};
 
 	this.el.onmouseout = function () {
-		//that.el.style.backgroundColor = that.originalBg;
+		// that.el.style.backgroundColor = that.originalBg;
 	};
 	this.eb.onmouseout = function () {
 		that.el.style.backgroundColor = that.originalBg;
 	};
 	
 	this.el.onclick = function () {	
-		//that.elClicked.call(that);
+		// that.elClicked.call(that);
 	};
 	this.eb.onclick = function () {	
 		that.elClicked.call(that);
@@ -78,14 +79,37 @@ SilverIPE.prototype.buildElements = function () {
 	this.inputEl.style.display = 'none';
 	this.inputEl.style.border = '1px dashed ' + this.options.borderColor;
 	this.inputEl.style.backgroundColor = this.options.highlightColor;
+	this.inputEl.onkeypress = function (e){
+		var characterCode 
+		if(e && e.which){ 
+		e = e
+		characterCode = e.which 
+		}
+		else{
+		e = event
+		characterCode = e.keyCode 
+		}
+		if(characterCode == 13){ 
+			that.saveClicked.call(that);
+		return false
+		}
+		else{
+		return true
+		}
+		}
+ 
 	parentEl.insertBefore(this.inputEl, this.el.nextSibling);
 	this.saveButton = document.createElement('a');
 	this.saveButton.innerHTML = this.options.saveButtonLabel;
-	this.setCommonStyles(this.saveButton);
+	this.setCommonStyles(this.saveButton);	
 	this.saveButton.onclick = function () {
 		that.saveClicked.call(that);
 		return false;
 	};
+	
+
+
+	
 	parentEl.insertBefore(this.saveButton, this.inputEl.nextSibling);
 	
 	this.cancelButton = document.createElement('a');
@@ -102,6 +126,7 @@ SilverIPE.prototype.cancelClicked = function () {
 	this.hideIpe();
 
 };
+
 
 SilverIPE.prototype.saveClicked = function () {
 	if (this.inputEl.value !== this.lastValue)
