@@ -24,7 +24,7 @@ public class TimeLineEventRenderer {
 	if (te.getImportance() == 1) {
 	    styleTag = " style=\"color: red; ";
 	} else if (te.getImportance() == 2) {
-	    styleTag = " style=\"color: \"#FABE30; ";
+	    styleTag = " style=\"color: #FABE30; ";
 	} else if (te.getImportance() == 3) {
 	    styleTag = " style=\"color: green; ";
 	}

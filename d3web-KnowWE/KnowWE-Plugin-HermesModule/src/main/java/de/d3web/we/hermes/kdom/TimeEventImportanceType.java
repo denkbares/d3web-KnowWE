@@ -41,14 +41,22 @@ public class TimeEventImportanceType extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {
-			int indexStart = text.indexOf("(");
-			int indexEnd = text.indexOf(")") + 1;
+			List<SectionFinderResult> list = new ArrayList<SectionFinderResult>();
+			int firstLineBreak = text.indexOf("\n");
+			String firstLine = text;
+			if (firstLineBreak > -1) {
+				firstLine = text.substring(0, firstLineBreak);
+			}
+
+			int indexStart = firstLine.indexOf("(");
+			int indexEnd = firstLine.indexOf(")") + 1;
 
 			if (indexStart == -1 || indexEnd == -1) {
 				return null;
 			}
-			List<SectionFinderResult> list = new ArrayList<SectionFinderResult>();
+
 			list.add(new SectionFinderResult(indexStart, indexEnd));
+
 			return list;
 		}
 	}

@@ -42,7 +42,8 @@ function sendTimeEventSearchRequest() {
 		url : KNOWWE.core.util.getURL(params),
 		response : {
 			action : 'insert',
-			ids : [ 'hermesSearchResult' ]
+			ids : [ 'hermesSearchResult' ],
+			fn : KNOWWE.core.util.addCollabsiblePluginHeader
 		}
 	}
 

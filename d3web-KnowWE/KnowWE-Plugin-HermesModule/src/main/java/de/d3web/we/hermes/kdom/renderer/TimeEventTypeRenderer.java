@@ -38,117 +38,117 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TimeEventTypeRenderer extends KnowWEDomRenderer {
 
-    private static TimeEventTypeRenderer instance;
+	private static TimeEventTypeRenderer instance;
 
-    public static TimeEventTypeRenderer getInstance() {
-	if (instance == null) {
-	    instance = new TimeEventTypeRenderer();
-	}
-	return instance;
-    }
-
-    @Override
-    public void render(Section sec, KnowWEUserContext user, StringBuilder result) {
-
-	// check filter Level
-	int filterLevel = getFilterLevel(user);
-	int eventImportanceLevel = getImportanceOfEvent(sec);
-
-	if (eventImportanceLevel > filterLevel) {
-	    // do NOT render TimeEvent at all
-	    return;
-	}
-
-	Section titleSection = sec.findChildOfType(TimeEventTitleType.class);
-	String title = "no title found";
-	if (titleSection != null)
-	    title = titleSection.getOriginalText();
-
-	String date = TimeStamp.decode(getDateString(sec));
-
-	Section descriptionSection = sec
-		.findChildOfType(TimeEventDescriptionType.class);
-	// String description = "no description found";
-	// if (descriptionSection != null)
-	// description = descriptionSection.getOriginalText();
-
-	List<Section> sources = new ArrayList<Section>();
-	sec.findSuccessorsOfType(TimeEventSourceType.class, sources);
-
-	// StringBuilder result = new StringBuilder();
-
-	String titleHeader = "";
-	String style = "color:rgb(20, 200, 102)";
-	if (eventImportanceLevel == 1) {
-	    style = "color:rgb(255, 0, 102)";
-	}
-	if (eventImportanceLevel == 2) {
-	    style = "color:rgb(235, 235, 20)";
-	}
-
-	title = KnowWEEnvironment.maskHTML("<span style='" + style + "'>"
-		+ title + "</span>");
-	titleHeader = title + "   :   ";
-	titleHeader += date;
-	// titleHeader += " " + importance;
-	result.append("%%collapsebox-closed \n");
-
-	result.append("! " + titleHeader + " \n");
-
-	DelegateRenderer.getInstance().render(descriptionSection, user, result);
-
-	if (sources.size() > 0) {
-	    result.append("\\\\__Quellen:__\n\n");
-	    for (Section section : sources) {
-		String text = section.getOriginalText();
-		String key = "QUELLE:";
-		if (text.startsWith(key)) {
-		    text = text.substring(key.length());
+	public static TimeEventTypeRenderer getInstance() {
+		if (instance == null) {
+			instance = new TimeEventTypeRenderer();
 		}
-		result.append(text + "\\\\");
-	    }
-	}
-	result.append("/%\n");
-
-	// return result.toString();
-    }
-
-    private String getDateString(Section sec) {
-	Section dateSection = sec.findChildOfType(TimeEventDateType.class);
-	String date = "no date found";
-	if (dateSection != null)
-	    date = dateSection.getOriginalText();
-	if (date.startsWith("\r\n"))
-	    date = date.substring(2);
-	return date;
-    }
-
-    private int getFilterLevel(KnowWEUserContext user) {
-	Integer impFilterLevel = HermesUserManagement.getInstance()
-		.getEventFilterLevelForUser(user.getUsername());
-	int filterLevel = 3;
-	if (impFilterLevel != null) {
-	    filterLevel = impFilterLevel.intValue();
-	}
-	return filterLevel;
-    }
-
-    private int getImportanceOfEvent(Section sec) {
-	Section importanceSection = sec
-		.findChildOfType(TimeEventImportanceType.class);
-	String importance = "no importance found";
-	if (importanceSection != null) {
-	    importance = importanceSection.getOriginalText();
+		return instance;
 	}
 
-	String digit = importance.substring(importance.indexOf('(') + 1,
-		importance.indexOf(')')).trim();
-	try {
-	    int eventLevel = Integer.parseInt(digit);
-	    return eventLevel;
-	} catch (NumberFormatException nfe) {
-	    return -1;
+	@Override
+	public void render(Section sec, KnowWEUserContext user, StringBuilder result) {
+
+		// check filter Level
+		int filterLevel = getFilterLevel(user);
+		int eventImportanceLevel = getImportanceOfEvent(sec);
+
+		if (eventImportanceLevel > filterLevel) {
+			// do NOT render TimeEvent at all
+			return;
+		}
+
+		Section titleSection = sec.findChildOfType(TimeEventTitleType.class);
+		String title = "no title found";
+		if (titleSection != null)
+			title = titleSection.getOriginalText();
+
+		String date = TimeStamp.decode(getDateString(sec));
+
+		Section descriptionSection = sec
+				.findChildOfType(TimeEventDescriptionType.class);
+		// String description = "no description found";
+		// if (descriptionSection != null)
+		// description = descriptionSection.getOriginalText();
+
+		List<Section> sources = new ArrayList<Section>();
+		sec.findSuccessorsOfType(TimeEventSourceType.class, sources);
+
+		// StringBuilder result = new StringBuilder();
+
+		String titleHeader = "";
+		String style = "color:rgb(20, 200, 102)";
+		if (eventImportanceLevel == 1) {
+			style = "color:rgb(255, 0, 102)";
+		}
+		if (eventImportanceLevel == 2) {
+			style = "color:rgb(235, 235, 20)";
+		}
+
+		title = KnowWEEnvironment.maskHTML("<span style='" + style + "'>"
+				+ title + "</span>");
+		titleHeader = title + "   :   ";
+		titleHeader += date;
+		// titleHeader += " " + importance;
+		result.append("%%collapsebox-closed \n");
+
+		result.append("! " + titleHeader + " \n");
+
+		DelegateRenderer.getInstance().render(descriptionSection, user, result);
+
+		if (sources.size() > 0) {
+			result.append("\\\\__Quellen:__\n\n");
+			for (Section section : sources) {
+				String text = section.getOriginalText();
+				String key = "QUELLE:";
+				if (text.startsWith(key)) {
+					text = text.substring(key.length());
+				}
+				result.append(text + "\\\\");
+			}
+		}
+		result.append("/%\n");
+
+		// return result.toString();
 	}
-    }
+
+	private String getDateString(Section sec) {
+		Section dateSection = sec.findChildOfType(TimeEventDateType.class);
+		String date = "no date found";
+		if (dateSection != null)
+			date = dateSection.getOriginalText();
+		if (date.startsWith("\r\n"))
+			date = date.substring(2);
+		return date;
+	}
+
+	private int getFilterLevel(KnowWEUserContext user) {
+		Integer impFilterLevel = HermesUserManagement.getInstance()
+				.getEventFilterLevelForUser(user.getUsername());
+		int filterLevel = 3;
+		if (impFilterLevel != null) {
+			filterLevel = impFilterLevel.intValue();
+		}
+		return filterLevel;
+	}
+
+	private int getImportanceOfEvent(Section sec) {
+		Section importanceSection = sec
+				.findChildOfType(TimeEventImportanceType.class);
+		String importance = "no importance found";
+		if (importanceSection != null) {
+			importance = importanceSection.getOriginalText();
+		}
+
+		try {
+			String digit = importance.substring(importance.indexOf('(') + 1,
+					importance.indexOf(')')).trim();
+			int eventLevel = Integer.parseInt(digit);
+			return eventLevel;
+		} catch (Exception e) {
+			return -1;
+		}
+	}
 
 }

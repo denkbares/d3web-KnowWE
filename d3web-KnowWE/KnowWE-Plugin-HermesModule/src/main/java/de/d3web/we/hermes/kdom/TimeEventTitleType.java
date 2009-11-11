@@ -43,7 +43,14 @@ public class TimeEventTitleType extends DefaultAbstractKnowWEObjectType {
 			if (text.length() < 3) {
 				return null;
 			}
-			int indexEnd = text.indexOf("(");
+			
+			int firstLineBreak = text.indexOf("\n");
+			String firstLine = text;
+			if (firstLineBreak > -1) {
+				firstLine = text.substring(0, firstLineBreak);
+			}
+			
+			int indexEnd = firstLine.lastIndexOf("(");
 			if (indexEnd == -1) {
 				return null;
 			}
