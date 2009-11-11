@@ -177,11 +177,15 @@ public class TerminologyPersistenceHandler {
 		try {
 		out = new FileOutputStream(f);
 		} catch (Exception e) {
-			Logger.getLogger(getClass().getName()).info("Cannot create FileOutputStream: "+ f.toString()+ " - "+e.getClass().toString());
+			Logger.getLogger(getClass().getName()).warning("Cannot create FileOutputStream: "+ f.toString()+ " - "+e.getClass().toString());
 			throw e;
 		}
 		XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		XMLStreamWriter writer = factory.createXMLStreamWriter(out, "ISO-8859-1");
+		
+		//hotfix for NPE --rh@20091102
+		if (gt == null)
+			return;
 		
 		writer.writeStartDocument();
 		writer.writeStartElement("GlobalTerms");
@@ -197,7 +201,7 @@ public class TerminologyPersistenceHandler {
 		
 		writer.writeEndElement();
 		writer.writeEndDocument();
-		Logger.getLogger(getClass().getName()).info("Saved "+gt.getType()+" terminology to " + target);
+		Logger.getLogger(getClass().getName()).fine("Saved "+gt.getType()+" terminology to " + target);
 		writer.flush();
 		writer.close();
 		out.close();	

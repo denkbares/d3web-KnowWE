@@ -114,7 +114,7 @@ public class FriendlyServiceClusterPersistenceHandler {
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		
-		Logger.getLogger(getClass().getName()).info("Saved cluster information to " + target);
+		Logger.getLogger(getClass().getName()).fine("Saved cluster information to " + target);
 		
 		writer.flush();
 		writer.close();

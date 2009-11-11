@@ -164,7 +164,7 @@ public class AlignmentPersistenceHandler {
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
-		Logger.getLogger(getClass().getName()).info("Saved global alignments to " + target);
+		Logger.getLogger(getClass().getName()).fine("Saved global alignments to " + target);
 		writer.flush();
 		writer.close();
 		out.close();
@@ -191,7 +191,7 @@ public class AlignmentPersistenceHandler {
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
-		Logger.getLogger(getClass().getName()).info("Saved local alignments to " + target);
+		Logger.getLogger(getClass().getName()).fine("Saved local alignments to " + target);
 		writer.flush();
 		writer.close();
 		out.close();
