@@ -26,6 +26,6 @@ public interface KnowWEAction {
 	   
 	public String perform(KnowWEParameterMap parameterMap);
 	
-	
+	boolean isAdminAction();
 
 }

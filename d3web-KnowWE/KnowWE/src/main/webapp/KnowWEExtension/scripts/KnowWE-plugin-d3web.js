@@ -94,7 +94,7 @@ KNOWWE.plugin.d3web.actions = function(){
          */
         doTiRexToXCL : function(topicname) {
             var params = {
-                renderer : 'TirexToXCLRenderer',
+                action : 'TirexToXCLRenderer',
                 TopicForXCL : topicname
             }
         
@@ -569,7 +569,7 @@ KNOWWE.plugin.d3web.adminconsole = function(){
          */
         doParseWeb : function(){
             var params = {
-                renderer : 'ParseWebOffline',
+                action : 'ParseWebOffline',
                 KWikiWeb : 'default_web'
             };
             var options = {
@@ -912,7 +912,7 @@ KNOWWE.plugin.d3web.solutionstate = function(){
             if( !rel ) return false;
             
             var params = {
-                renderer : 'XCLExplanationAction',
+                action : 'XCLExplanationAction',
                 KWikiTerm : rel.term,
                 KWikisessionid : rel.session, 
                 KWikiWeb : rel.web,

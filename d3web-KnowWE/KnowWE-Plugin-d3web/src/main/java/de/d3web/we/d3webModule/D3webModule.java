@@ -55,7 +55,7 @@ import de.d3web.we.action.SetFindingAction;
 import de.d3web.we.action.SetSingleFindingAction;
 import de.d3web.we.action.SolutionLogAction;
 import de.d3web.we.action.UserFindingsAction;
-import de.d3web.we.action.XCLExplanationRenderer;
+import de.d3web.we.action.XCLExplanationAction;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -282,8 +282,8 @@ public class D3webModule implements KnowWEModule {
 		actionMap.put(QuestionStateReportAction.class,
 				new QuestionStateReportAction());
 		actionMap.put(CodeCompletionAction.class, new CodeCompletionAction());
-		actionMap.put(XCLExplanationRenderer.class,
-				new XCLExplanationRenderer());
+		actionMap.put(XCLExplanationAction.class,
+				new XCLExplanationAction());
 		actionMap.put(SetSingleFindingAction.class,
 				new SetSingleFindingAction());
 		actionMap.put(ParseWebOfflineRenderer.class,

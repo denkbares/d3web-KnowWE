@@ -1,9 +1,10 @@
 package de.d3web.we.hermes.action;
 
+import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEParameterMap;
 
-public class InsertRelationAction implements KnowWEAction{
+public class InsertRelationAction extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

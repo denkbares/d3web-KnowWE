@@ -48,7 +48,7 @@ import de.d3web.we.utils.KopicWriter;
  * @author Johannes Dienst
  *
  */
-public class GenerateKBAction implements KnowWEAction {
+public class GenerateKBAction extends AbstractKnowWEAction {
 	
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

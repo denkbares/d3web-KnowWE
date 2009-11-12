@@ -43,7 +43,7 @@ import de.d3web.we.core.SemanticCore;
  * @author kazamatzuri
  *
  */
-public class OwlUploadAction implements KnowWEAction{
+public class OwlUploadAction extends AbstractKnowWEAction {
 
     /* (non-Javadoc)
      * @see de.d3web.we.javaEnv.KnowWEAction#perform(de.d3web.we.javaEnv.KnowWEParameterMap)

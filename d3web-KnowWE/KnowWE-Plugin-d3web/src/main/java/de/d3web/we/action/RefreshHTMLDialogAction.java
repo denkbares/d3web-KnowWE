@@ -35,7 +35,7 @@ import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.HTMLDialogRenderer;
 
-public class RefreshHTMLDialogAction implements de.d3web.we.action.KnowWEAction{
+public class RefreshHTMLDialogAction extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

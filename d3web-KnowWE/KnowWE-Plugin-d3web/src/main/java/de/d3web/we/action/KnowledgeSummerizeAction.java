@@ -44,7 +44,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.taghandler.DialogLinkTagHandler;
 
-public class KnowledgeSummerizeAction implements de.d3web.we.action.KnowWEAction{
+public class KnowledgeSummerizeAction extends AbstractKnowWEAction {
 
 //	public void render(Model model) throws Exception {
 //		List<KnowledgeService> ks = new ArrayList<KnowledgeService>(KnowWEUtils

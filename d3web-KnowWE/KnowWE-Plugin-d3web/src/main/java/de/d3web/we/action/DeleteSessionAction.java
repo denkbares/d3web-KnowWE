@@ -26,7 +26,7 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class DeleteSessionAction implements KnowWEAction {
+public class DeleteSessionAction extends AbstractKnowWEAction {
 
 
 	public String perform(KnowWEParameterMap map) {

@@ -33,7 +33,7 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class RequestDialogRenderer implements KnowWEAction {
+public class RequestDialogRenderer extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

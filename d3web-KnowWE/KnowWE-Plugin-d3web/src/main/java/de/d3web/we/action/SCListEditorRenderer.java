@@ -31,7 +31,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class SCListEditorRenderer implements KnowWEAction {
+public class SCListEditorRenderer extends AbstractKnowWEAction {
 
 	// private FindingXMLWriter questionWriter;
 

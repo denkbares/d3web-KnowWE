@@ -31,7 +31,7 @@ import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ReRenderContentPartAction implements KnowWEAction  {
+public class ReRenderContentPartAction extends AbstractKnowWEAction  {
 
 	@Override
 	public String perform(KnowWEParameterMap map) {		

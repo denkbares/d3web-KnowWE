@@ -42,7 +42,7 @@ import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class AllSolutionsRenderer implements KnowWEAction {
+public class AllSolutionsRenderer extends AbstractKnowWEAction {
 
 private String iconURL;
 	

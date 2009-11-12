@@ -29,7 +29,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class SessionChooserRenderer implements KnowWEAction {
+public class SessionChooserRenderer extends AbstractKnowWEAction {
 
 	public FilenameFilter filter;
 	

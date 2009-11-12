@@ -2,13 +2,14 @@ package de.d3web.we.hermes.action;
 
 import java.util.Collection;
 
+import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.hermes.TimeEvent;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
 import de.d3web.we.hermes.util.TimeLineEventRenderer;
 
-public class SearchTimeEventsAction implements KnowWEAction {
+public class SearchTimeEventsAction extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
