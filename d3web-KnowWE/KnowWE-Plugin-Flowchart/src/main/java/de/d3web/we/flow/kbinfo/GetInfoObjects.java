@@ -38,6 +38,7 @@ import de.d3web.kernel.domainModel.qasets.QuestionNum;
 import de.d3web.kernel.domainModel.qasets.QuestionOC;
 import de.d3web.kernel.domainModel.qasets.QuestionText;
 import de.d3web.kernel.domainModel.qasets.QuestionYN;
+import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -47,7 +48,7 @@ import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 
-public class GetInfoObjects implements KnowWEAction {
+public class GetInfoObjects extends AbstractKnowWEAction {
 
 	public GetInfoObjects() {
 	}
@@ -56,12 +57,12 @@ public class GetInfoObjects implements KnowWEAction {
 	public String perform(KnowWEParameterMap parameterMap) {
 		/** 
 		 * KnowWEEnvironment:
-		 * Allgemeines Semantic Wiki auf OWL als Reprï¿½sentation KDOM Engine.
+		 * Allgemeines Semantic Wiki auf OWL als Repraesentation KDOM Engine.
 		 * Verwaltet alle technischen Aspekte der Umgebung (z.B. Plugins).
 		 * Dieser hat noch nichts mit d3web zu tun.
 		 * 
 		 * ArticeManager:
-		 * Verwaltung der Wiki-Artikel. Fï¿½r jedes Web kann es einen 
+		 * Verwaltung der Wiki-Artikel. Fuer jedes Web kann es einen 
 		 * Article-Manager geben. Dieser kann vom KnowWEEnvironment
 		 * angefragt werden. Dieser hat noch nichts mit d3web zu tun.
 		 * Ein Article besteht im wesentlichen aus dem KDOM-Baum
@@ -70,23 +71,23 @@ public class GetInfoObjects implements KnowWEAction {
 		 * Baumstruktur des Wiki-Textes ohne Semantik
 		 * 
 		 * WebEnvironmentManager:
-		 * Verwaltet die DSPEnvironments, eines fï¿½r jedes Web des Wiki.
+		 * Verwaltet die DSPEnvironments, eines fuer jedes Web des Wiki.
 		 * 
 		 * DSPEnvironment:
-		 * Verwaltung fï¿½r diagnostischen Problemlï¿½sungsservices, fï¿½r alle 
+		 * Verwaltung fuer diagnostischen Problemlï¿½sungsservices, fï¿½r alle 
 		 * Wissensbasen dieses Webs (z.B. unter anderem d3web-Services 
 		 * (D3webKnowledgeService)).  Ein Service entspricht einer Wissensbasis 
 		 * der jeweiligen Engine (z.B. unter anderem d3web).
 		 * 
 		 * KnowledgeService 
-		 * Service fï¿½r eine Wissensbasis fï¿½r eine Wiki-Seite. Der Zugriff erfolgt
-		 * ï¿½ber das DSPEnvironmentï¿½ber eine Wissensbasis-ID, die aktuell aber 
-		 * eindeutig aus dem Wiki-Seiten-Namen erzeugt wird). Das bedeutet, fï¿½r jede 
-		 * Wiki-Seite gibt es aktuell genau (maximal) eine Wissenbasis fï¿½r genau 
+		 * Service fuer eine Wissensbasis fuer eine Wiki-Seite. Der Zugriff erfolgt
+		 * ueber das DSPEnvironmentï¿½ber eine Wissensbasis-ID, die aktuell aber 
+		 * eindeutig aus dem Wiki-Seiten-Namen erzeugt wird). Das bedeutet, fuer jede 
+		 * Wiki-Seite gibt es aktuell genau (maximal) eine Wissenbasis fuer genau 
 		 * (maximal) eine Engine.
 		 * 
 		 * D3webKnowledgeService:
-		 * Implementierung des KnowledgeServices fï¿½r d3web. Hierï¿½ber erhï¿½lt man
+		 * Implementierung des KnowledgeServices fuer d3web. Hierueber erhaelt man
 		 * Zugriff auf die d3web Wissensbasis der jeweiligen Wiki-Seite.
 		 */
 
@@ -235,13 +236,16 @@ public class GetInfoObjects implements KnowWEAction {
 		buffer.append("'");
 		buffer.append(">\n");
 		appendChilds(web, service, object, buffer);
-		if (object instanceof QuestionChoice) {
+		if (object instanceof QuestionYN) { //workaround for german localization
+			buffer.append("\t\t<choice>").append(encodeXML("Ja")).append("</choice>\n");
+			buffer.append("\t\t<choice>").append(encodeXML("Nein")).append("</choice>\n");
+			
+		} else if (object instanceof QuestionChoice) {
 			// TODO: choices are not considered in JS implementation of bool questions
 			for (AnswerChoice answer : ((QuestionChoice) object).getAllAlternatives()) {
 				buffer.append("\t\t<choice>").append(encodeXML(answer.getText())).append("</choice>\n");
 			}
-		}
-		else if (object instanceof QuestionNum) {
+		} else if (object instanceof QuestionNum) {
 			// TODO: access range and append "<range min='???' max='???'></range>"
 		}
 		buffer.append("\t</question>\n");

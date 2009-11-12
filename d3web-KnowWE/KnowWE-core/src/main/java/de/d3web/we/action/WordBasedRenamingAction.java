@@ -47,7 +47,7 @@ import de.d3web.we.kdom.Section;
  * @author Johannes Dienst
  *
  */
-public class WordBasedRenamingAction implements KnowWEAction {
+public class WordBasedRenamingAction extends AbstractKnowWEAction {
 
 	private static ResourceBundle rb;
 

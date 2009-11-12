@@ -39,7 +39,7 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
 
-public class UserFindingsAction implements KnowWEAction {
+public class UserFindingsAction extends AbstractKnowWEAction {
 
 	private String htmlHeader;
 	private SimpleDateFormat dateFormat;

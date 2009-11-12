@@ -23,7 +23,7 @@ package de.d3web.we.action;
 
 import de.d3web.we.core.KnowWEParameterMap;
 
-public class SetCurrentWebAction  implements KnowWEAction {
+public class SetCurrentWebAction  extends AbstractKnowWEAction {
 
 
 	public String perform(KnowWEParameterMap map) {

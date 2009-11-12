@@ -31,7 +31,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class ParseWebOfflineRenderer implements KnowWEAction {
+public class ParseWebOfflineRenderer extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
@@ -81,6 +81,11 @@ public class ParseWebOfflineRenderer implements KnowWEAction {
 
 		return "<a href='Wiki.jsp?page=" + topicName + "' target='_blank'>"
 				+ topicName + "</a>";
+	}
+	
+	@Override
+	public boolean isAdminAction() {
+		return true;
 	}
 
 }

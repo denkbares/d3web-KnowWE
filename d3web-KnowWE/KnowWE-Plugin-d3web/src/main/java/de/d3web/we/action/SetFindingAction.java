@@ -34,7 +34,7 @@ import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 
 
-public class SetFindingAction implements KnowWEAction {
+public class SetFindingAction extends AbstractKnowWEAction {
 
 //	public void perform(Model model) throws Exception {
 //		Broker broker = KnowWEUtils.getBroker(model);

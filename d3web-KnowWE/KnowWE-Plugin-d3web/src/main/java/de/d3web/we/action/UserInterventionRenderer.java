@@ -30,7 +30,7 @@ import de.d3web.we.core.dialog.DialogControl;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class UserInterventionRenderer implements KnowWEAction {
+public class UserInterventionRenderer extends AbstractKnowWEAction {
 
 	private static ResourceBundle rb;
 
