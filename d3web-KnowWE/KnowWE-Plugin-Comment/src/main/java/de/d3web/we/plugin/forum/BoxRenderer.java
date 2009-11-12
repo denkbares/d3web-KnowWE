@@ -22,7 +22,9 @@ package de.d3web.we.plugin.forum;
 
 import java.util.Map;
 
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -46,61 +48,68 @@ public class BoxRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
-		StringBuffer box = new StringBuffer();
-
-		Map<String, String> boxMap = AbstractXMLObjectType
-				.getAttributeMapFor(sec);
-
+		
+		String name;
+		String date;
+		
+		try {
+		
+			Map<String, String> boxMap = AbstractXMLObjectType.getAttributeMapFor(sec);
+	
+			name = boxMap.get("name");
+			date = boxMap.get("date");
+			
+		} catch (NullPointerException n) {
+			
+			name = "System";
+			date = "-"; 
+		}
+		
 		Section contentSec = ForumBox.getInstance().getContentChild(sec);
-
+		
 		if (contentSec == null || contentSec.getOriginalText().length() < 1)
 			return; // no empty posts
 
-		//String content = contentSec.getOriginalText();
+		if(name == null || date == null) {
 		
-		String name = boxMap.get("name");
-		String date = boxMap.get("date");
-
-		if (name == null && date == null) {
-			name = user.getUsername();
-			date = ForumRenderer.getDate();
-
-			ForumRenderer.change = true;
+			if (name == null) name = user.getUsername();	
+			
+			if (date == null) date = ForumRenderer.getDate();
+			
 			sec
 					.findChildOfType(XMLHead.class)
 					.findChildOfType(PlainText.class)
 					.setOriginalText(
 							"<box name=\"" + name + "\" date=\"" + date + "\">");
 
-		} else if (name == null) {
-			name = user.getUsername();
+			//save article:
+			try {
+				
+				StringBuilder buffi = new StringBuilder();
+				String topic = sec.getTitle();
+				String web = sec.getWeb();
+				
+				KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
+				instance.getArticle(web, topic).getSection().collectTextsFromLeaves(buffi);
+				KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, web);
+				map.put(KnowWEAttributes.TOPIC, topic);
+				map.put(KnowWEAttributes.USER, user.toString());
+				instance.saveArticle(web, topic, buffi.toString(), map);
+				
+			} catch (Exception e) {
+				
+				// Do nothing if WikiEngine is not properly started yet
+				
+			}
+		} 
 
-			ForumRenderer.change = true;
-			sec
-					.findChildOfType(XMLHead.class)
-					.findChildOfType(PlainText.class)
-					.setOriginalText(
-							"<box name=\"" + name + "\" date=\"" + date + "\">");
-
-		} else if (date == null) {
-			date = ForumRenderer.getDate();
-
-			ForumRenderer.change = true;
-			sec
-					.findChildOfType(XMLHead.class)
-					.findChildOfType(PlainText.class)
-					.setOriginalText(
-							"<box name=\"" + name + "\" date=\"" + date + "\">");
-
-		}
-
-		box.append(maskHTML("<table class=wikitable width=95% border=0>\n"));
-		box.append(maskHTML("<tr><th align=left>" + name
+		string.append(maskHTML("<table class=wikitable width=95% border=0>\n"));
+		string.append(maskHTML("<tr><th align=left>" + name
 				+ "</th><th align=right width=150>" + date + "</th></tr>\n"));
-		box.append(maskHTML("<tr><td colspan=2>"));
+		string.append(maskHTML("<tr><td colspan=2>"));
 		
-		string.append(box);
 		DelegateRenderer.getInstance().render(contentSec, user, string);
+		
 		string.append(maskHTML("</td></tr>\n</table>\n"));
 	}
 

@@ -20,6 +20,7 @@
 
 package de.d3web.we.action;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import de.d3web.we.kdom.xml.XMLTail;
 import de.d3web.we.plugin.forum.ForumRenderer;
 
 public class ForumBoxAction implements KnowWEAction {
-
 	
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
@@ -47,42 +47,52 @@ public class ForumBoxAction implements KnowWEAction {
 		String topic = parameterMap.get("ForumArticleTopic");
 		String web = parameterMap.getWeb();
 		
+		String html = "";
+		
 		if(KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(topic, r)) {
 			
-			String save = "\n</forum>";
-			
 			if(text != null && text.length() > 0) { // don't add an empty box
-			
+				
 				// ISO 8859-1 --> UTF-8
 				Charset iso = Charset.forName("ISO-8859-1");
 				ByteBuffer bb = iso.encode(text);
 				Charset utf8 = Charset.forName("UTF-8");
 				text = utf8.decode(bb).toString();
+								
+				try {
+					text = java.net.URLDecoder.decode(text, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					// do nothing!
+				} 
+
+				html = "<table class=wikitable width=95% border=0><tr>\n<th align=\"left\">" + parameterMap.getUser() + "</th>" +
+						"<th width=\"150\" align=\"right\">" + ForumRenderer.getDate() + "</th>\n" +
+						"</tr>\n<tr>\n<td colspan=\"2\">" + text + "</td>\n</tr>\n</table>";
 				
-				text = text.replace("\n", "\\\\ ");
-					
-				save = "<box name=\"" + parameterMap.getUser() + "\"; date=\"" + ForumRenderer.getDate() + "\">" + text + "</box>\n</forum>";
+				text = text.replace("\n", "\\\\ ");	
+				
+				String save = "<box name=\"" + parameterMap.getUser() + "\"; date=\"" + ForumRenderer.getDate() + "\">" + text + "</box>\n</forum>";
+		
+				Section sec = KnowWEEnvironment.getInstance().getArticle(web, topic).getSection();
+				
+				List<Section> found = new ArrayList<Section>();
+				sec.findSuccessorsOfType(XMLTail.class, found);
+				
+				if (found.size() != 0) {
+					Section changeSec = found.get(found.size() - 1);
+					changeSec.findChildOfType(PlainText.class).setOriginalText(save);
+				}
+				
+	
+				StringBuilder buffi = new StringBuilder();
+				sec.collectTextsFromLeaves(buffi);
+				KnowWEEnvironment.getInstance().saveArticle(web, topic, buffi.toString(), parameterMap);
 		
 			}
-			
-			Section sec = KnowWEEnvironment.getInstance().getArticle(web, topic).getSection();
-			
-			List<Section> found = new ArrayList<Section>();
-			sec.findSuccessorsOfType(XMLTail.class, found);
-			
-			if (found.size() != 0) {
-				Section changeSec = found.get(found.size() - 1);
-				changeSec.findChildOfType(PlainText.class).setOriginalText(save);
-			}
-			
-			StringBuilder buffi = new StringBuilder();
-			sec.collectTextsFromLeaves(buffi);
-			KnowWEEnvironment.getInstance().saveArticle(web, topic, buffi.toString(), parameterMap);
-		
 		}
 		
-		return null;
+		return html;
 	}
 	
-	
+
 }

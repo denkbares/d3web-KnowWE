@@ -1,13 +1,12 @@
-
 /**
  *  save new input.
  */
 function saveForumBox() {
 	
-	var text = document.answer.text.value;
-	var topic = document.answer.topic.value;
+	var text = document.getElementById('text').value;
+	var topic = document.getElementById('topic').value;
 	
-    text = encodeURIComponent( text );
+	text = encodeURIComponent( text );
     topic = topic.replace(/\ /g,"+");
     
 	var params = {
@@ -17,33 +16,22 @@ function saveForumBox() {
     	}
 	
 	var options = {
-    		url : KNOWWE.core.util.getURL( params ),
+			url : KNOWWE.core.util.getURL( params ),
     		response : {
-    			action : 'none',
-    			ids : []
+    			action : 'insert',
+    			ids : [ 'newBox' ]
     		}
 	}
 	
 	new _KA( options ).send();
-	
 }
 
-function loadAction( topic ) {
-
-	var params = {
-   		action : 'ForumBoxAction',
-   		ForumBoxText : '',
-   		ForumArticleTopic : topic
-   	}
+function reloadForumBox() {
 	
-	var options = {
-   		url : KNOWWE.core.util.getURL( params ),
-   		response : {
-   			action : 'none',
-   			ids : []
-   		}
-	}
+	var url = document.URL;
 	
-	new _KA( options ).send();
-
+	var url = url.substring(0,url.length-4);
+	
+	document.location.replace(url);
+	
 }

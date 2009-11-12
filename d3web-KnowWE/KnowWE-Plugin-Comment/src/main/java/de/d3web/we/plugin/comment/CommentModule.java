@@ -39,6 +39,8 @@ import de.d3web.we.plugin.forum.Forum;
 public class CommentModule extends AbstractDefaultKnowWEModule{
 
 	private static Map<String, String> commentTypes;
+	private static Map<String, Integer> ids;
+	
 	private static CommentModule instance;
 		
 	public static CommentModule getInstance() {
@@ -50,7 +52,9 @@ public class CommentModule extends AbstractDefaultKnowWEModule{
 	
 	private void importTypes() {
 		ResourceBundle rb = ResourceBundle.getBundle("commentTypes");
-		Map<String, String> commentTypes = new HashMap<String, String>();
+		
+		Map<String, String> types = new HashMap<String, String>();
+		Map<String, Integer> ids = new HashMap<String, Integer>();
 		
 		Iterator<String> it = rb.keySet().iterator();
 		
@@ -60,14 +64,21 @@ public class CommentModule extends AbstractDefaultKnowWEModule{
 			if (path == null || path.length() == 0) {
 				path = rb.getString("DEFAULT");
 			}
-			commentTypes.put(type, path);
+			types.put(type, path);
+			ids.put(type, 1);
 		}
+				
+		CommentModule.commentTypes = types;	
+		CommentModule.ids = ids;
 		
-		CommentModule.commentTypes = commentTypes;	
 	}
 	
 	protected static Map<String, String> getCommentTypes() {
 		return commentTypes;
+	}
+	
+	protected static Map<String, Integer> getIDs() {
+		return ids;
 	}
 	
 	@Override

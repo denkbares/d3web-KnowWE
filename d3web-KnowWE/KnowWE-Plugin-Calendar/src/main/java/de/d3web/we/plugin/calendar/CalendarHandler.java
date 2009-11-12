@@ -293,7 +293,7 @@ public class CalendarHandler extends AbstractTagHandler{
 		DateType today = new DateType();
 		
 		//import calendar.css
-		StringBuffer toHTML = new StringBuffer("<link rel=stylesheet type=text/css href=KnowWEExtension/layout/calendar.css>");
+		StringBuffer toHTML = new StringBuffer("<link rel=stylesheet type=text/css href=KnowWEExtension/css/calendar.css>");
 	
 		String[] days = (cb.getString("KnowWE2-Plugin-CalendarHandler.days")).split(", ");
 		

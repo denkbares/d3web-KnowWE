@@ -1,0 +1,22 @@
+.forumbutton {
+	background-image: url(../images/button.jpg);
+	background-repeat: no-repeat;
+	
+	color: black;
+	
+	width: 100px;
+	height: 20px;
+	line-height: 20px;
+	
+	text-align: center;
+	vertical-align: middle;
+	
+	cursor: pointer;
+}
+
+.forumbutton:hover {
+	background-image: url(../images/button_hover.jpg);
+	
+	color: black;
+	text-decoration: none;
+}

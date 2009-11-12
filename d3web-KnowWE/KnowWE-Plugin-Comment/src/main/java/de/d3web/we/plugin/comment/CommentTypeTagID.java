@@ -25,16 +25,6 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 public class CommentTypeTagID extends AbstractKnowWEObjectType{
 	
-	private static int ID = 1;
-	
-	public static int getID() {
-		return ID;
-	}
-
-	public static void setID(int id) {
-		ID = id;
-	}
-	
 	@Override
 	protected void init() {
 		sectionFinder = new RegexSectionFinder("[0-9]* ");		

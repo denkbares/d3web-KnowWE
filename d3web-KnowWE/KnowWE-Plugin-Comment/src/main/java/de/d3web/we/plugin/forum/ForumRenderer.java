@@ -27,9 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -37,8 +35,6 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ForumRenderer extends KnowWEDomRenderer {
 	
-	static boolean change = false;
-	private static boolean firstStart = true;
 	private static boolean sortUpwards = ResourceBundle.getBundle("Forum_config").getString("upwards").equals("true");
 	
 	public static String getDate() {
@@ -80,101 +76,86 @@ public class ForumRenderer extends KnowWEDomRenderer {
 		setSortUpwards(false);
 	}
 	
-
 	private static String maskHTML(String s) {
 		return KnowWEEnvironment.maskHTML(s);
 	}
 
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
-		ResourceBundle rb = ForumModule.getForumBundle(user);
 		
-		String topic = sec.getTitle();
-		
-		String web = sec.getWeb();
-		
-		Map<String, String> forumMap = AbstractXMLObjectType.getAttributeMapFor(sec);
-		
-		// load sort-parameter from URL:
-		setSortUpwards(user.getUrlParameterMap().get("sort"));
-		
-		//load javascript-file:
-		string.append(maskHTML("<script type=text/javascript src=KnowWEExtension/scripts/ForumPlugin.js></script>\n"));
-		
-		boolean canEditPage = false;
-		if(user.getUsername() != "Guest") { // causes endless loop
+			//load css-file:
+			string.append(maskHTML("<link rel=stylesheet type=text/css href=KnowWEExtension/css/forum.css>\n"));
 			
-			//check edit-permission
-			canEditPage = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(topic, user.getHttpRequest());
+			//load javascript-file:
+			string.append(maskHTML("<script type=text/javascript src=KnowWEExtension/scripts/ForumPlugin.js></script>\n"));
+			
+			String topic = sec.getTitle();
 		
-			//load action once after server restart (javascript-failure)
-			if(canEditPage && firstStart) {
-				string.append(maskHTML("<script>loadAction('" + topic + "')</script>\n"));
-				firstStart = false;
-			}	
-		}
-		
-		// back link:
-		String link = forumMap.get("ref");
-		if(link != null) string.append(maskHTML("<a href=" + link + "><< back</a><br><br>\n"));
-		
-		// title is now used for pagename
-//		// title:
-//		String title = forumMap.get("name");
-//		if(title != null) string.append(maskHTML("<h2>" + title + "</h2><br><hr>\n"));
-		
-		List<Section> contentSectionList = new ArrayList<Section>();
-		sec.findSuccessorsOfType(ForumBox.class, contentSectionList);
-		
-		//add first-comment
-		Section section0 = contentSectionList.get(0);
-		section0.getObjectType().getRenderer().render(section0, user, string);
-		
-		//if user is logged in: tool (textbox) to add easily a post:
-		if (canEditPage) {
-			string.append(maskHTML("<br><form name=answer method=post action=Wiki.jsp?page=" + topic + "&sort=" + (sortUpwards?"up":"down") + " accept-charset=UTF-8>"));
-		}
-		
-		string.append(maskHTML("<table width=95% border=0>\n"));
-		string.append(maskHTML("<tr><th align=left></th><th align=right width=150>\n"));
-		
-		//sort posts up- or downwards
-		string.append(maskHTML("<a href=Wiki.jsp?page=" + topic + "&sort=up title='" + rb.getString("Forum.sort.up") + "'><img src=KnowWEExtension/images/ct_up.gif title='" + rb.getString("Forum.sort.up") + "'></a>\n"));
-		string.append(maskHTML("<a href=Wiki.jsp?page=" + topic + "&sort=down title='" + rb.getString("Forum.sort.down") + "'><img src=KnowWEExtension/images/ct_down.gif title='" + rb.getString("Forum.sort.down") + "'></a>\n</th></tr>\n"));
-		
-		if(canEditPage) {
-			string.append(maskHTML("<tr><td colspan=2><p align=right><textarea name=text cols=68 rows=8></textarea><br>\n"));
-			string.append(maskHTML("<input type=hidden name=topic value='" + topic + "'>"));
-			string.append(maskHTML("<input type=submit name=Submit value='" + rb.getString("Forum.button.postMessage") + "' onclick=saveForumBox()></p></td></tr>"));
-			string.append(maskHTML("</table></form><hr><br>\n"));
-		} else {
-			string.append(maskHTML("</table><hr><br>\n"));
-		}
-	    
-		//render posts
-	    if(sortUpwards) {
-			for(int i = 1; i < contentSectionList.size(); i++) {	
-				Section sectionI = contentSectionList.get(i);
-				sectionI.getObjectType().getRenderer().render(sectionI, user, string);
+			ResourceBundle rb = ForumModule.getForumBundle(user);
+					
+			Map<String, String> forumMap = AbstractXMLObjectType.getAttributeMapFor(sec);
+			
+			// load sort-parameter from URL:
+			setSortUpwards(user.getUrlParameterMap().get("sort"));
+			
+			// back link:
+			String link = forumMap.get("ref");
+			if(link != null) string.append(maskHTML("<a href=" + link + "><< back</a><br><br>\n"));
+			
+			String title = forumMap.get("name");
+			// title used for pagename?
+			if(title != null && !topic.equals(title)) {
+				string.append(maskHTML("<h2>" + title + "</h2><br><hr>\n"));
 			}
-		} else {
-			for(int i = contentSectionList.size() - 1; i > 0; i--) {	
-				Section sectionI = contentSectionList.get(i);
-				sectionI.getObjectType().getRenderer().render(sectionI, user, string);
+					
+			List<Section> contentSectionList = new ArrayList<Section>();
+			sec.findSuccessorsOfType(ForumBox.class, contentSectionList);
+			
+			if(!contentSectionList.isEmpty()) {
+				
+				//add first-comment
+				Section section0 = contentSectionList.get(0);
+				section0.getObjectType().getRenderer().render(section0, user, string);
+				
+				boolean canEditPage = false;
+				if(user.getUsername() != "Guest") { // causes endless loop
+					
+					//check edit-permission
+					canEditPage = KnowWEEnvironment.getInstance().getWikiConnector().userCanEditPage(topic, user.getHttpRequest());
+				
+				}
+				
+				string.append(maskHTML("<table width=95% border=0>\n"));
+				string.append(maskHTML("<tr><th align=left></th><th align=right width=150>\n"));
+				
+				//sort posts up- or downwards
+				string.append(maskHTML("<a href=Wiki.jsp?page=" + topic.replace(" ", "+") + "&sort=up title='" + rb.getString("Forum.sort.up") + "'><img src=KnowWEExtension/images/ct_up.gif title='" + rb.getString("Forum.sort.up") + "'></a>\n"));
+				string.append(maskHTML("<a href=Wiki.jsp?page=" + topic.replace(" ", "+") + "&sort=down title='" + rb.getString("Forum.sort.down") + "'><img src=KnowWEExtension/images/ct_down.gif title='" + rb.getString("Forum.sort.down") + "'></a>\n</th></tr>\n"));
+				
+				if(canEditPage) {
+					string.append(maskHTML("<tr><td colspan=2><p align=right><textarea id=text name=text cols=68 rows=8></textarea><br>\n"));
+					string.append(maskHTML("<input id=topic type=hidden name=topic value='" + topic.replace(" ", "+") + "'></p>"));
+					string.append(maskHTML("<div align=right><div class=forumbutton onclick=saveForumBox()>" + rb.getString("Forum.button.postMessage") + "</div></div></td></tr>"));
+					string.append(maskHTML("</table><hr><br>\n"));
+				} else {
+					string.append(maskHTML("</table><hr><br>\n"));
+				}
+			    
+				//render posts
+			    if(sortUpwards) {
+					for(int i = 1; i < contentSectionList.size(); i++) {	
+						Section sectionI = contentSectionList.get(i);
+						sectionI.getObjectType().getRenderer().render(sectionI, user, string);
+					}
+					string.append(maskHTML("<div id=newBox></div>"));
+				} else {
+					string.append(maskHTML("<div id=newBox></div>"));
+					for(int i = contentSectionList.size() - 1; i > 0; i--) {	
+						Section sectionI = contentSectionList.get(i);
+						sectionI.getObjectType().getRenderer().render(sectionI, user, string);
+					}
+				}
+			    
 			}
-		}
-	    
-		if (change) {
-			StringBuilder buffi = new StringBuilder();
-			
-			KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
-			instance.getArticle(web, topic).getSection().collectTextsFromLeaves(buffi);
-			KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, web);
-			map.put(KnowWEAttributes.TOPIC, topic);
-			map.put(KnowWEAttributes.USER, user.toString());
-			instance.saveArticle(web, topic, buffi.toString(), map);
-			
-			change = false;
-		}
 	}
 }
