@@ -3,7 +3,6 @@ package de.d3web.we.hermes.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,8 +36,7 @@ public class TimeEventSPARQLUtils {
 
     private static final String SOURCE_SPARQL = "SELECT ?source WHERE { <*URI*> lns:hasSource ?source .}";
 
-    public static Collection<TimeEvent> findTimeEventsFromTo(int yearFrom,
-	    int yearTo) {
+    public static List<TimeEvent> findTimeEventsFromTo(int yearFrom, int yearTo) {
 
 	String querystring = null;
 
@@ -92,10 +90,10 @@ public class TimeEventSPARQLUtils {
     // private static final String TEXTORIGIN_SPARQL =
     // "SELECT ?textOrigin WHERE { ?t lns:hasNode ?textOrigin .  ?t lns:hasTitle TITLE .}";
 
-    private static Collection<TimeEvent> buildTimeEvents(TupleQueryResult result) {
+    private static List<TimeEvent> buildTimeEvents(TupleQueryResult result) {
 	// List<String> bindings = result.getBindingNames();
 
-	Set<TimeEvent> events = new HashSet<TimeEvent>();
+	List<TimeEvent> events = new ArrayList<TimeEvent>();
 	try {
 	    while (result.hasNext()) {
 
