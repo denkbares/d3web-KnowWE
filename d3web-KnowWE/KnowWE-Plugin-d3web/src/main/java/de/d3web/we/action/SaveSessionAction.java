@@ -32,7 +32,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.persistence.SessionPersistenceHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class SaveSessionAction implements KnowWEAction {
+public class SaveSessionAction extends AbstractKnowWEAction {
 	
 	private SimpleDateFormat dateFormat;
 	public SaveSessionAction(String name) {

@@ -31,7 +31,7 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 
-public abstract class AddD3webKnowledgeServiceAction implements KnowWEAction {
+public abstract class AddD3webKnowledgeServiceAction extends AbstractKnowWEAction {
 
 
 //	public String perform(KnowWEParameterMap map) {

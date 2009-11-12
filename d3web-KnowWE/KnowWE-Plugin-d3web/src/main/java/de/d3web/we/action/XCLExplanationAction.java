@@ -49,7 +49,7 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class XCLExplanationRenderer implements de.d3web.we.action.KnowWEAction {
+public class XCLExplanationAction extends AbstractKnowWEAction {
 	
 	//properties only
 	private static final String SOLUTION = "SOLUTION";

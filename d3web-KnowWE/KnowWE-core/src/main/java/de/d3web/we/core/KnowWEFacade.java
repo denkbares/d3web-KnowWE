@@ -164,20 +164,7 @@ public class KnowWEFacade {
 	 */
 	public String parseAll(KnowWEParameterMap parameterMap) {
 
-		ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
-
-		if (bundle.getString("knowwe2wiki.parseAllFunction").equals("true")) {
-
-			if (parameterMap.getWikiContext().userIsAdmin()) {
-				KnowWEAction action = actionMap
-						.get(ParseWebOfflineRenderer.class);
-				return action.perform(parameterMap);
-			}
-
-			return "<p class=\"info box\">"
-					+ KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest()).getString("KnowWE.login.error.admin")
-					+ "</p>";
-		}
+		
 
 		KnowWEAction action = actionMap.get(ParseWebOfflineRenderer.class);
 		return action.perform(parameterMap);
@@ -219,43 +206,88 @@ public class KnowWEFacade {
 		
 		//Hotfix: search in ActionMap
 		KnowWEAction actionInstance = findInActionMap(action); 
-		if(actionInstance != null) return actionInstance.perform(parameterMap);
+		if(actionInstance == null)
+			actionInstance = tryLoadingAction(action);
+		
+		if (actionInstance.isAdminAction())
+			return performAdminAction(actionInstance, parameterMap);
+		else 
+			return actionInstance.perform(parameterMap);
+	}
+
+	
+	/**
+	 * Checks the rights of the user prior to performing the action.
+	 * 
+	 */
+	private String performAdminAction(KnowWEAction action,
+			KnowWEParameterMap parameterMap) {
+		
+		ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
+
+		if (bundle.getString("knowwe2wiki.parseAllFunction").equals("true")) {
+
+			if (parameterMap.getWikiContext().userIsAdmin()) {
+				return action.perform(parameterMap);
+			}
+
+			return "<p class=\"info box\">"
+					+ KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest()).getString("KnowWE.login.error.admin")
+					+ "</p>";
+		}
+		
+		
+		return action.perform(parameterMap);
+	}
+
+	/**
+	 * Trys to load the class with the specified name.
+	 * if it is not fully qualified, the default knowwe action
+	 * package is prefixed.
+	 * If an action is found the created instance is cached in the
+	 * action map for later use.
+	 * 
+	 * @return s an instance of the action, never null
+	 * @throws various exceptions depending on the exact error 
+	 * 
+	 */
+	private KnowWEAction tryLoadingAction(String actionName) {
 		try {
 			// check is action is fully qualified class name
-			if (!action.contains(".")) {
+			if (!actionName.contains(".")) {
 				// if not, use d3web default package
-				action = "de.d3web.we.action." + action;
+				actionName = "de.d3web.we.action." + actionName;
 			}
-			Class clazz = Class.forName(action);
-			actionInstance = actionMap.get(clazz);
+			Class clazz = Class.forName(actionName);
+			KnowWEAction actionInstance = actionMap.get(clazz);
 			if (actionInstance == null) {
 				Logger.getLogger(this.getClass().getName()).warning(
-						"Action/Render " + action + " wasn't registered.");
+						"Action/Render " + actionName + " wasn't registered.");
 				actionInstance = (KnowWEAction)clazz.newInstance();
 
 				//register the new Action for reusage
 				registerAction(clazz, actionInstance);
 				
 			} 
-			return actionInstance.perform(parameterMap);
+			return actionInstance; //can not be null at this point
 		} 
 		catch (ClassNotFoundException e) {
-			String msg = "action's class not found: "+action;
+			String msg = "action's class not found: "+actionName;
 			Logger.getLogger(this.getClass().getName()).severe(msg);
 			throw new IllegalArgumentException(msg, e);
 		}
 		catch (InstantiationException e) {
-			String msg = "action cannot be instanciated: "+action;
+			String msg = "action cannot be instanciated: "+actionName;
 			Logger.getLogger(this.getClass().getName()).severe(msg);
 			throw new IllegalArgumentException(msg, e);
 		} 
 		catch (IllegalAccessException e) {
-			String msg = "action constructor cannot be accessed: "+action;
+			String msg = "action constructor cannot be accessed: "+actionName;
 			Logger.getLogger(this.getClass().getName()).severe(msg);
 			throw new IllegalArgumentException(msg, e);
 		}
 		catch (ClassCastException e) {
-			String msg = "action is not an implementation of KnowWEAction: "+action;
+			String msg = "action is not an implementation of KnowWEAction: "+actionName;
 			Logger.getLogger(this.getClass().getName()).severe(msg);
 			throw new IllegalArgumentException(msg, e);
 		}
@@ -282,27 +314,6 @@ public class KnowWEFacade {
 		return UploadManager.getInstance().manageUpload(fileItems);
 	}
 
-	/**
-	 * Generates XCL from a Tirex Input of a given Page.
-	 * TODO: Hey this class is gone... Where is it =(
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String tirexToXCL(KnowWEParameterMap parameterMap) {
-		String className = "TirexToXCLRenderer";
-		Class clazz;
-		try {
-			this.getClass();
-			clazz = Class.forName(className);
-			KnowWEAction action = actionMap.get(clazz);
-			return action.perform(parameterMap);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "Class not Found: " + className;
-	}
 
 	/**
 	 * This returns a dump of the current Ontology

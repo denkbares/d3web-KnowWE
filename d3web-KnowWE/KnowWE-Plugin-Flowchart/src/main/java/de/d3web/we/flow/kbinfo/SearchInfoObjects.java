@@ -29,6 +29,7 @@ import java.util.Set;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -39,7 +40,7 @@ import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 
-public class SearchInfoObjects implements KnowWEAction {
+public class SearchInfoObjects extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

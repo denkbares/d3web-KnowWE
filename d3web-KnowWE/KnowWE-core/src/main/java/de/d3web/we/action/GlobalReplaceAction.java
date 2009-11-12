@@ -37,7 +37,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
-public class GlobalReplaceAction implements KnowWEAction {
+public class GlobalReplaceAction extends AbstractKnowWEAction {
 
 	/* (non-Javadoc)
 	 * @see de.d3web.we.javaEnv.KnowWEAction#perform(de.d3web.we.javaEnv.KnowWEParameterMap)

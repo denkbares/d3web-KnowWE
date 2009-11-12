@@ -34,7 +34,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
  * @author Johannes Dienst
  *
  */
-public class KnowWEObjectTypeActivationAction implements KnowWEAction{
+public class KnowWEObjectTypeActivationAction extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

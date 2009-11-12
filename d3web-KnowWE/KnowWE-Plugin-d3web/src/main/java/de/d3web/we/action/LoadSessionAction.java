@@ -31,7 +31,7 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.persistence.SessionPersistenceHandler;
 
-public class LoadSessionAction implements KnowWEAction {
+public class LoadSessionAction extends AbstractKnowWEAction {
 
 
 	public String perform(KnowWEParameterMap map) {

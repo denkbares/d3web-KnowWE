@@ -35,21 +35,10 @@ public class JSPActionDispatcher extends KnowWEActionDispatcher {
 	@Override
 	public String performAction(KnowWEParameterMap parameterMap) {
 		String action = parameterMap.get("action");
-		String renderer =  parameterMap.get("renderer");
 		parameterMap.put("env", "JSPWiki");
 		parameterMap.put("KWikiWeb", "default_web");
 		
-		// TODO Search that class ;)
-		if(renderer != null && renderer.equals("TirexToXCLRenderer")) {			
-			return fac.tirexToXCL(parameterMap);
-		}
-		
-		// TODO has special functions in facade. Do not delete!
-		if(renderer != null && renderer.equals("ParseWebOffline")) {
-			//parameterMap.put("dataFolder","/var/lib/kjspwiki");
-			return fac.parseAll(parameterMap);
-		}
-		
+				
 		if(action != null) {
 			return fac.performAction(parameterMap);
 		}		

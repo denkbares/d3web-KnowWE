@@ -44,7 +44,7 @@ import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.utils.D3webUtils;
 
-public class SetSingleFindingAction implements KnowWEAction {
+public class SetSingleFindingAction extends AbstractKnowWEAction {
 
 	@SuppressWarnings("deprecation")
 	@Override

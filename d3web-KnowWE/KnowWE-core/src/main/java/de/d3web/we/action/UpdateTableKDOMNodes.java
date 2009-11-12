@@ -33,8 +33,7 @@ import de.d3web.we.core.KnowWEParameterMap;
  * @author smark
  * @see KnowWEAction
  */
-public class UpdateTableKDOMNodes implements KnowWEAction
-{
+public class UpdateTableKDOMNodes extends AbstractKnowWEAction {
 	private final static String UPDATE_CELL_SEPERATOR = ";-;";
 	
 	private final static String UPDATE_NODE_SEPERATOR = "::";

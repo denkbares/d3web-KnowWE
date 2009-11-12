@@ -30,7 +30,7 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.dialog.Dialog;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class DPSDialogsAction implements KnowWEAction {
+public class DPSDialogsAction extends AbstractKnowWEAction {
 
 	private String iconURL;
 	

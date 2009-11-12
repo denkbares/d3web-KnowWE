@@ -25,7 +25,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.d3webModule.D3webModule;
 
 @Deprecated
-public class ReInitDPSEnvironment implements KnowWEAction {
+public class ReInitDPSEnvironment extends AbstractKnowWEAction {
 
 
 	public String perform(KnowWEParameterMap parameterMap) {

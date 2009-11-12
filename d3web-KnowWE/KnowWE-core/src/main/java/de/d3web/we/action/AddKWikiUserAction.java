@@ -22,7 +22,7 @@ package de.d3web.we.action;
 
 import de.d3web.we.core.KnowWEParameterMap;
 
-public class AddKWikiUserAction implements KnowWEAction {
+public class AddKWikiUserAction extends AbstractKnowWEAction {
 
 
 	public String perform(KnowWEParameterMap map) {

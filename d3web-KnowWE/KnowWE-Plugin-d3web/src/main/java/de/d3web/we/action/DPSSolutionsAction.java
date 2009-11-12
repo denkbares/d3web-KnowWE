@@ -49,7 +49,7 @@ import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class DPSSolutionsAction implements KnowWEAction {
+public class DPSSolutionsAction extends AbstractKnowWEAction {
 
 	private String iconURL;
 

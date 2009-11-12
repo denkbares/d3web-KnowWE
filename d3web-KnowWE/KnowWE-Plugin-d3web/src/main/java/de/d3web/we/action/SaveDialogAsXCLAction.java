@@ -44,7 +44,7 @@ import de.d3web.we.kdom.xcl.CoveringListSection;
  * 
  * @author smark
  */
-public class SaveDialogAsXCLAction implements KnowWEAction {
+public class SaveDialogAsXCLAction extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

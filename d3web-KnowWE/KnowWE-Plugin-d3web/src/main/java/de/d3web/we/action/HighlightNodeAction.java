@@ -28,7 +28,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.HighlightRenderer;
 import de.d3web.we.kdom.renderer.OneTimeRenderer;
 
-public class HighlightNodeAction implements KnowWEAction {
+public class HighlightNodeAction extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
