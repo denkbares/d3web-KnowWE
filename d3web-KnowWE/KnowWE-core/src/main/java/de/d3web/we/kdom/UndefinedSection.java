@@ -23,6 +23,7 @@ package de.d3web.we.kdom;
 
 
 public class UndefinedSection extends Section{
+	
 
 	public UndefinedSection(String text, int offset, KnowWEArticle article) {
 		super(article);
@@ -31,5 +32,14 @@ public class UndefinedSection extends Section{
 	
 		
 	}
+	
+	
+	@Override
+	public String toString() {
+	return "UndefinedSection l:"
+		+ this.getOriginalText().length() + " - "
+		+ this.getOriginalText();}
+
+	
 
 }
