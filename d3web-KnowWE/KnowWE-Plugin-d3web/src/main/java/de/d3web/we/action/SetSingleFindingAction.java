@@ -166,7 +166,12 @@ public class SetSingleFindingAction extends AbstractKnowWEAction {
 
 		} else {
 			if (valuenum != null) {
-				valuesAfterClick.add(Double.valueOf(valuenum));
+				
+				try {
+					valuesAfterClick.add(Double.valueOf(valuenum));
+				} catch (NumberFormatException e) {
+				}
+				
 			} else {
 				valuesAfterClick.add(valueid.trim());
 			}
