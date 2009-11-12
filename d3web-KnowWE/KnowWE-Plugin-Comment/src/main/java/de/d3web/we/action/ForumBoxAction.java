@@ -36,7 +36,7 @@ import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.xml.XMLTail;
 import de.d3web.we.plugin.forum.ForumRenderer;
 
-public class ForumBoxAction implements KnowWEAction {
+public class ForumBoxAction extends AbstractKnowWEAction {
 	
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
