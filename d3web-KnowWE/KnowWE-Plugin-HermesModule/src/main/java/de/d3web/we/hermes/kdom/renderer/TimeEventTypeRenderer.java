@@ -86,8 +86,7 @@ public class TimeEventTypeRenderer extends KnowWEDomRenderer {
 			style = "color:rgb(235, 235, 20)";
 		}
 
-		title = KnowWEEnvironment.maskHTML("<span style='" + style + "'>"
-				+ title + "</span>");
+		title = KnowWEEnvironment.maskHTML("<span style='" + style + "'>") + title + KnowWEEnvironment.maskHTML("</span>");
 		titleHeader = title + "   :   ";
 		titleHeader += date;
 		// titleHeader += " " + importance;
