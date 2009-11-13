@@ -89,8 +89,7 @@ public class PropertyManager {
 		// TODO evil hack, to get going
 		if (property.getLocalName().contains("subClassOf")
 				|| property.getLocalName().contains("type")
-				|| property.getLocalName().contains("subPropertyOf")
-				|| property.getLocalName().contains("hasTag"))
+				|| property.getLocalName().contains("subPropertyOf"))
 			return true;
 		String querystring = SemanticCore.getInstance().getSparqlNamespaceShorts();
 		String objectpropquery = querystring + "ASK WHERE { <"

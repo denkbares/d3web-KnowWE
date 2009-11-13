@@ -74,6 +74,7 @@ public class SemanticCore {
 
 	private SemanticCore(KnowWEEnvironment ke) {
 		this.knowWEEnvironment = ke;
+		me=this;
 		contextmap = new HashMap<String, BNode>();
 		
 
