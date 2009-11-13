@@ -33,6 +33,8 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.SemanticCore;
+
 /**
  * @author kazamatzuri
  * 
@@ -90,11 +92,7 @@ public class PropertyManager {
 				|| property.getLocalName().contains("subPropertyOf")
 				|| property.getLocalName().contains("hasTag"))
 			return true;
-		String querystring = "PREFIX ns: <" + uo.getBaseNS() + "> \n";
-		querystring += "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-		querystring += "PREFIX lns: <" + uo.getLocaleNS() + "> \n";
-		querystring += "PREFIX owl:<http://www.w3.org/2002/07/owl#> \n";
-		querystring += "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> \n";
+		String querystring = SemanticCore.getInstance().getSparqlNamespaceShorts();
 		String objectpropquery = querystring + "ASK WHERE { <"
 				+ property.toString() + "> rdf:type owl:ObjectProperty }";
 		String datatypepropquery = querystring + "ASK WHERE { <"

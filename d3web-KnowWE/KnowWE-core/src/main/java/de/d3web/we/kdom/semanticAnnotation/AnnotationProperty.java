@@ -49,7 +49,7 @@ public class AnnotationProperty extends DefaultAbstractKnowWEObjectType {
     
     public static class AnnotationPropertySectionFinder extends SectionFinder {
 
-	private String PATTERN = "[\\w]*::";
+	private String PATTERN = "[(\\w:)?\\w]*::";
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
