@@ -44,7 +44,6 @@ import com.ecyrd.jspwiki.auth.AuthorizationManager;
 import com.ecyrd.jspwiki.auth.permissions.PagePermission;
 import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
 import com.ecyrd.jspwiki.preferences.Preferences;
-import com.ecyrd.jspwiki.providers.AbstractFileProvider;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
@@ -53,442 +52,469 @@ import de.d3web.we.core.TaggingMangler;
 import de.d3web.we.wikiConnector.GenericSearchResult;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
-
 /**
  * For code documentation look at the KnowWEWikiConnector interface definition
  * 
  * @author Jochen
- *
+ * 
  */
 public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
-	private ServletContext context = null;
-	private WikiEngine engine = null;
-	public static final String LINK_PREFIX = "Wiki.jsp?page=";
-	
-	public JSPWikiKnowWEConnector(WikiEngine eng) {
-		this.context = eng.getServletContext();
-		this.engine = eng;
+    private ServletContext context = null;
+    private WikiEngine engine = null;
+    public static final String LINK_PREFIX = "Wiki.jsp?page=";
+
+    public JSPWikiKnowWEConnector(WikiEngine eng) {
+	this.context = eng.getServletContext();
+	this.engine = eng;
+    }
+
+    @Override
+    public ServletContext getServletContext() {
+	return context;
+    }
+
+    @Override
+    public KnowWEActionDispatcher getActionDispatcher() {
+	// TODO Auto-generated method stub
+	return new JSPActionDispatcher();
+    }
+
+    @Override
+    public boolean saveArticle(String name, String text, KnowWEParameterMap map) {
+	try {
+	    HttpServletRequest req = map.getRequest();
+	    WikiContext context = engine.createContext(req, WikiContext.EDIT);
+	    context.setPage(engine.getPage(name));
+	    engine.saveText(context, text);
+	    // engine.saveText(map.getContext(), text);
+	    return true;
+	} catch (WikiException e) {
+	    e.printStackTrace();
+	    return false;
 	}
+    }
 
-	@Override
-	public ServletContext getServletContext() {
-		return context;
-	}
+    @Override
+    public LinkedList<String> getAttachments() {
 
-	@Override
-	public KnowWEActionDispatcher getActionDispatcher() {
-		// TODO Auto-generated method stub
-		return new JSPActionDispatcher();
-	}
+	try {
+	    LinkedList<String> sortedAttList = new LinkedList<String>();
+	    Collection<Attachment> attList = this.engine.getAttachmentManager()
+		    .getAllAttachments();
 
+	    for (Attachment p : attList) {
 
-	@Override
-	public boolean saveArticle(String name, String text, KnowWEParameterMap map) {
-		try {
-			HttpServletRequest req = map.getRequest();
-			WikiContext context = engine.createContext(req, WikiContext.EDIT);
-			context.setPage(engine.getPage(name));
-			engine.saveText(context, text);
-			// engine.saveText(map.getContext(), text);
-			return true;
-		} catch (WikiException e) {
-			e.printStackTrace();
-			return false;
+		if (p.getFileName().endsWith("jar")) {
+		    sortedAttList.add(p.getFileName());
 		}
+
+	    }
+	    return sortedAttList;
+	} catch (ProviderException e) {
+	    return null;
 	}
+    }
 
-	@Override
-	public LinkedList<String> getAttachments() {
+    @Override
+    public String getAttachmentPath(String jarName) {
 
-		try {
-			LinkedList<String> sortedAttList = new LinkedList<String>();
-			Collection<Attachment> attList = (Collection<Attachment>) this.engine
-					.getAttachmentManager().getAllAttachments();
+	if (this.getMeAttachment(jarName) != null) {
 
-			for (Attachment p : attList) {
+	    String jarPath = "";
 
-				if (p.getFileName().endsWith("jar")) {
-					sortedAttList.add(p.getFileName());
-				}
-
-			}
-			return sortedAttList;
-		} catch (ProviderException e) {
-			return null;
-		}
-	}
-
-	@Override
-	public String getAttachmentPath(String jarName) {
-
-		if (this.getMeAttachment(jarName) != null) {
-
-			String jarPath = "";
-
-			// Get Path where all Attachments are stored
-			String storageDir;
-			try {
-				storageDir = WikiEngine.getRequiredProperty(this.engine
-						.getWikiProperties(),
-						"jspwiki.basicAttachmentProvider.storageDir");
-				jarPath += storageDir;
-			} catch (NoRequiredPropertyException e) {
-				// TODO Auto-generated catch block
-				return null;
-			}
-
-			// Get Attachments ParentPage
-			String parentPage = this.getMeAttachment(jarName).getParentName();
-			jarPath += "/" + parentPage + "-att/";
-
-			// Get the Attachments directory
-			// TEST: WHAT VERSION IS THE NEWEST
-			jarPath += jarName + "-dir/";
-
-			// Fixes a bug in which the getVersion returns -1 instead of 1;
-			jarPath += String.valueOf(Math.abs(this.getMeAttachment(jarName)
-					.getVersion()));
-			String fileSuffix = jarName.substring(jarName.lastIndexOf("."));
-			jarPath += fileSuffix;
-
-			return jarPath;
-		}
+	    // Get Path where all Attachments are stored
+	    String storageDir;
+	    try {
+		storageDir = WikiEngine.getRequiredProperty(this.engine
+			.getWikiProperties(),
+			"jspwiki.basicAttachmentProvider.storageDir");
+		jarPath += storageDir;
+	    } catch (NoRequiredPropertyException e) {
+		// TODO Auto-generated catch block
 		return null;
+	    }
+
+	    // Get Attachments ParentPage
+	    String parentPage = this.getMeAttachment(jarName).getParentName();
+	    jarPath += "/" + parentPage + "-att/";
+
+	    // Get the Attachments directory
+	    // TEST: WHAT VERSION IS THE NEWEST
+	    jarPath += jarName + "-dir/";
+
+	    // Fixes a bug in which the getVersion returns -1 instead of 1;
+	    jarPath += String.valueOf(Math.abs(this.getMeAttachment(jarName)
+		    .getVersion()));
+	    String fileSuffix = jarName.substring(jarName.lastIndexOf("."));
+	    jarPath += fileSuffix;
+
+	    return jarPath;
+	}
+	return null;
+    }
+
+    private Attachment getMeAttachment(String name) {
+
+	Collection<Attachment> attList;
+
+	try {
+	    attList = this.engine.getAttachmentManager().getAllAttachments();
+	} catch (ProviderException e) {
+	    // TODO Auto-generated catch block
+	    return null;
 	}
 
-	private Attachment getMeAttachment(String name) {
-
-		Collection<Attachment> attList;
-
-		try {
-			attList = (Collection<Attachment>) this.engine
-					.getAttachmentManager().getAllAttachments();
-		} catch (ProviderException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
-
-		for (Attachment p : attList) {
-			if (p.getFileName().equals(name)) {
-				return p;
-			}
-		}
-
-		return null;
+	for (Attachment p : attList) {
+	    if (p.getFileName().equals(name)) {
+		return p;
+	    }
 	}
 
-	public java.util.Map<String, String> getAllArticles(String web) {
-		Map<String, String> result = new HashMap<String, String>();
-		Collection<WikiPage> pages = null;
-		try {
-			pages = this.engine.getPageManager().getProvider().getAllPages();
-		} catch (ProviderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (pages == null)
-			return null;
+	return null;
+    }
 
-		for (WikiPage wikiPage : pages) {
-			String pageContent = null;
-			try {
-				pageContent = this.engine.getPageManager().getPageText(
-						wikiPage.getName(), wikiPage.getVersion());
-			} catch (ProviderException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if (pageContent != null) {
-				result.put(wikiPage.getName(), pageContent);
-			}
+    public java.util.Map<String, String> getAllArticles(String web) {
+	Map<String, String> result = new HashMap<String, String>();
+	Collection<WikiPage> pages = null;
+	try {
+	    pages = this.engine.getPageManager().getProvider().getAllPages();
+	} catch (ProviderException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+	if (pages == null)
+	    return null;
 
-		}
+	for (WikiPage wikiPage : pages) {
+	    String pageContent = null;
+	    try {
+		pageContent = this.engine.getPageManager().getPageText(
+			wikiPage.getName(), wikiPage.getVersion());
+	    } catch (ProviderException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	    if (pageContent != null) {
+		result.put(wikiPage.getName(), pageContent);
+	    }
 
-		return result;
 	}
 
-	public String createWikiPage(String topic, String content, String author) {
+	return result;
+    }
 
-		WikiPage wp = new WikiPage(this.engine, topic);
+    public String createWikiPage(String topic, String content, String author) {
 
-		try {
-			// References Updaten.
-			// this.engine.getReferenceManager().updateReferences(
-			// att.getName(),
-			// new java.util.Vector() );
-			wp.setAuthor(author);
-			this.engine.getPageManager().putPageText(wp, content);
-			this.engine.getSearchManager().reindexPage(wp);
+	WikiPage wp = new WikiPage(this.engine, topic);
 
-		} catch (ProviderException e) {
-			return null;
-		}
+	try {
+	    // References Updaten.
+	    // this.engine.getReferenceManager().updateReferences(
+	    // att.getName(),
+	    // new java.util.Vector() );
+	    wp.setAuthor(author);
+	    this.engine.getPageManager().putPageText(wp, content);
+	    this.engine.getSearchManager().reindexPage(wp);
 
-		return this.engine.getPureText(wp);
+	} catch (ProviderException e) {
+	    return null;
 	}
 
-	// private String getHashMapContent(HashMap<String, String> pageContent,
-	// String topic ) {
-	//		
-	// String content = "<Kopic id=\"" + topic + "\"" + ">";
-	//		
-	// // append the Sections to content if they are not "".
-	// // 1. Questionnaires-section
-	// if (pageContent.get("qClassHierarchy") != "") {
-	// content += "\n<Questionnaires-section>\n";
-	// content += pageContent.get("qClassHierarchy");
-	// content += "</Questionnaires-section>\n";
-	// }
-	//		
-	// // 2.Questions-section
-	// if (pageContent.get("decisionTree") != "") {
-	// content += "<Questions-section>\n";
-	// content += pageContent.get("decisionTree");
-	// content += "</Questions-section>\n";
-	// }
-	//		
-	// // 3. SetCoveringList-Section
-	// if (pageContent.get("xcl") != "") {
-	// content += "<SetCoveringList-section>\n";
-	// content += pageContent.get("xcl");
-	// content += "</SetCoveringList-section>\n";
-	// }
-	//				
-	// // 4. Rules-section
-	// if (pageContent.get("rules") != "") {
-	// content.concat("<Rules-section>\n");
-	// content.concat(pageContent.get("rules"));
-	// content.concat("</Rules-section>\n");
-	// }
-	//		
-	// // 5. Solutions-Section
-	// if (pageContent.get("diagnosisHierarchy") != "") {
-	// content += "<Solutions-section>\n";
-	// content += pageContent.get("diagnosisHierarchy");
-	// content += "</Solutions-section>\n";
-	// }
-	//				
-	// content += "</Kopic>";
-	// return content;
-	// }
+	return this.engine.getPureText(wp);
+    }
 
-	@Override
-	public boolean doesPageExist(String topic) {
+    // private String getHashMapContent(HashMap<String, String> pageContent,
+    // String topic ) {
+    //		
+    // String content = "<Kopic id=\"" + topic + "\"" + ">";
+    //		
+    // // append the Sections to content if they are not "".
+    // // 1. Questionnaires-section
+    // if (pageContent.get("qClassHierarchy") != "") {
+    // content += "\n<Questionnaires-section>\n";
+    // content += pageContent.get("qClassHierarchy");
+    // content += "</Questionnaires-section>\n";
+    // }
+    //		
+    // // 2.Questions-section
+    // if (pageContent.get("decisionTree") != "") {
+    // content += "<Questions-section>\n";
+    // content += pageContent.get("decisionTree");
+    // content += "</Questions-section>\n";
+    // }
+    //		
+    // // 3. SetCoveringList-Section
+    // if (pageContent.get("xcl") != "") {
+    // content += "<SetCoveringList-section>\n";
+    // content += pageContent.get("xcl");
+    // content += "</SetCoveringList-section>\n";
+    // }
+    //				
+    // // 4. Rules-section
+    // if (pageContent.get("rules") != "") {
+    // content.concat("<Rules-section>\n");
+    // content.concat(pageContent.get("rules"));
+    // content.concat("</Rules-section>\n");
+    // }
+    //		
+    // // 5. Solutions-Section
+    // if (pageContent.get("diagnosisHierarchy") != "") {
+    // content += "<Solutions-section>\n";
+    // content += pageContent.get("diagnosisHierarchy");
+    // content += "</Solutions-section>\n";
+    // }
+    //				
+    // content += "</Kopic>";
+    // return content;
+    // }
 
-		// Check if a Page with the chosen Topic already exists.
-		if (this.engine.pageExists(topic)) {
-			return true;
-		}
-		return false;
+    @Override
+    public boolean doesPageExist(String topic) {
+
+	// Check if a Page with the chosen Topic already exists.
+	if (this.engine.pageExists(topic)) {
+	    return true;
+	}
+	return false;
+    }
+
+    @Override
+    public String appendContentToPage(String topic, String content) {
+
+	try {
+	    content = this.engine.getPureText(this.engine.getPage(topic))
+		    + content;
+	    WikiContext context = new WikiContext(this.engine, this.engine
+		    .getPage(topic));
+	    this.engine.saveText(context, content);
+	    this.engine.updateReferences(this.engine.getPage(topic));
+	    this.engine.getSearchManager().reindexPage(
+		    this.engine.getPage(topic));
+
+	} catch (ProviderException e) {
+	    return null;
+	} catch (WikiException e1) {
+	    return null;
 	}
 
-	@Override
-	public String appendContentToPage(String topic, String content) {
+	return this.engine.getPureText(this.engine.getPage(topic));
+    }
 
-		try {
-			content = this.engine.getPureText(this.engine.getPage(topic))
-					+ content;
-			WikiContext context = new WikiContext(this.engine, this.engine
-					.getPage(topic));
-			this.engine.saveText(context, content);
-			this.engine.updateReferences(this.engine.getPage(topic));
-			this.engine.getSearchManager().reindexPage(
-					this.engine.getPage(topic));
+    @Override
+    public String getArticleSource(String name) {
+	if (this.engine.getPage(name) == null)
+	    return null;
+	WikiContext context = new WikiContext(this.engine, this.engine
+		.getPage(name));
 
-		} catch (ProviderException e) {
-			return null;
-		} catch (WikiException e1) {
-			return null;
-		}
+	String pagedata = context.getEngine().getPureText(
+		context.getPage().getName(), context.getPage().getVersion());
+	return pagedata;
+    }
 
-		return this.engine.getPureText(this.engine.getPage(topic));
-	}
+    @Override
+    public String getBaseUrl() {
+	return engine.getBaseURL();
+    }
 
-	@Override
-	public String getArticleSource(String name) {
-		if(this.engine.getPage(name)==null)
-		    return null;
-	    WikiContext context = new WikiContext(this.engine, this.engine.getPage(name));
-		
-		String pagedata = context.getEngine().getPureText(
-				context.getPage().getName(), context.getPage().getVersion());
-		return pagedata;
-	}
-
-	@Override
-	public String getBaseUrl() {		
-		return engine.getBaseURL();
-	}
-
-	/**
-	 * Checks if the current user has the rights to edit the given page. IReturns TRUE
-	 * if the user has editing permission, otherwise FALSE and editing of the page
-	 * is denied.
-	 * 
-	 * @param articlename
-	 */
-	@Override
-	public boolean userCanEditPage( String articlename ) {
-		WikiPage page = new WikiPage( engine, articlename );
-		WikiContext context = new WikiContext(this.engine, this.engine.getPage( articlename ));
-		AuthorizationManager authmgr = engine.getAuthorizationManager();
-		PagePermission pp = PermissionFactory.getPagePermission(page, "edit");
-		
-        return authmgr.checkPermission( context.getWikiSession(), pp );
-	}
-	
-	   /**
-     * Checks if the current user has the rights to edit the given page. IReturns TRUE
-     * if the user has editing permission, otherwise FALSE and editing of the page
-     * is denied.
+    /**
+     * Checks if the current user has the rights to edit the given page.
+     * IReturns TRUE if the user has editing permission, otherwise FALSE and
+     * editing of the page is denied.
      * 
      * @param articlename
-     * @param r HttpRequest
      */
     @Override
-    public boolean userCanEditPage( String articlename, HttpServletRequest r ) {
-        WikiPage page = new WikiPage( engine, articlename );
-        WikiContext context = new WikiContext(this.engine, r, this.engine.getPage( articlename ));
-       
-        AuthorizationManager authmgr = engine.getAuthorizationManager();
-        PagePermission pp = PermissionFactory.getPagePermission(page, "edit");
-        
-        return authmgr.checkPermission( context.getWikiSession(), pp );
+    public boolean userCanEditPage(String articlename) {
+	WikiPage page = new WikiPage(engine, articlename);
+	WikiContext context = new WikiContext(this.engine, this.engine
+		.getPage(articlename));
+	AuthorizationManager authmgr = engine.getAuthorizationManager();
+	PagePermission pp = PermissionFactory.getPagePermission(page, "edit");
+
+	return authmgr.checkPermission(context.getWikiSession(), pp);
     }
-	
-	
-	/**
-	 * Checks if the current page has an access lock. If TRUE no user other then
-	 * the lock owner can edit the page. If FALSE the current page has no lock and 
-	 * can be edited by anyone.
-	 * 
-	 * @param articlename
-	 */
-	@Override
-	public boolean isPageLocked( String articlename ) {
-		PageManager mgr = engine.getPageManager();
-		WikiPage page = new WikiPage( engine, articlename );
-		if( mgr.getCurrentLock( page ) == null )
-			return false;
-		else
-			return true;
+
+    /**
+     * Checks if the current user has the rights to edit the given page.
+     * IReturns TRUE if the user has editing permission, otherwise FALSE and
+     * editing of the page is denied.
+     * 
+     * @param articlename
+     * @param r
+     *            HttpRequest
+     */
+    @Override
+    public boolean userCanEditPage(String articlename, HttpServletRequest r) {
+	WikiPage page = new WikiPage(engine, articlename);
+	WikiContext context = new WikiContext(this.engine, r, this.engine
+		.getPage(articlename));
+
+	AuthorizationManager authmgr = engine.getAuthorizationManager();
+	PagePermission pp = PermissionFactory.getPagePermission(page, "edit");
+
+	return authmgr.checkPermission(context.getWikiSession(), pp);
+    }
+
+    /**
+     * Checks if the current page has an access lock. If TRUE no user other then
+     * the lock owner can edit the page. If FALSE the current page has no lock
+     * and can be edited by anyone.
+     * 
+     * @param articlename
+     */
+    @Override
+    public boolean isPageLocked(String articlename) {
+	PageManager mgr = engine.getPageManager();
+	WikiPage page = new WikiPage(engine, articlename);
+	if (mgr.getCurrentLock(page) == null)
+	    return false;
+	else
+	    return true;
+    }
+
+    /**
+     * Checks if the current page has been locked by the current user. Returns
+     * TRUE if yes, FALSE otherwise.
+     * 
+     * @param articlename
+     * @param user
+     * @return
+     */
+    @Override
+    public boolean isPageLockedCurrentUser(String articlename, String user) {
+	PageManager mgr = engine.getPageManager();
+	WikiPage page = new WikiPage(engine, articlename);
+	PageLock lock = mgr.getCurrentLock(page);
+
+	if (lock == null)
+	    return false;
+
+	if (lock.getLocker().equals(user)) {
+	    return true;
 	}
-	
-	/**
-	 * Checks if the current page has been locked by the current user. Returns
-	 * TRUE if yes, FALSE otherwise.
-	 * 
-	 * @param articlename
-	 * @param user
-	 * @return
-	 */
-	@Override
-	public boolean isPageLockedCurrentUser( String articlename, String user ){
-		PageManager mgr = engine.getPageManager();
-		WikiPage page = new WikiPage( engine, articlename );
-		PageLock lock = mgr.getCurrentLock( page );
-		
-		if (lock == null ) return false;
-		
-		if( lock.getLocker().equals( user )) {
-			return true;
+	return false;
+    }
+
+    /**
+     * Locks a page in the WIKI so no other user can edit the page.
+     * 
+     * @param articlename
+     */
+    @Override
+    public boolean setPageLocked(String articlename, String user) {
+	PageManager mgr = engine.getPageManager();
+	WikiPage page = new WikiPage(engine, articlename);
+	PageLock lock = mgr.lockPage(page, user);
+
+	if (lock != null)
+	    return true;
+	return false;
+    }
+
+    /**
+     * Removes a page lock from a certain page in the WIKI so other users can
+     * edit the page.
+     * 
+     * @param articlename
+     */
+    @Override
+    public void undoPageLocked(String articlename) {
+	PageManager mgr = engine.getPageManager();
+	WikiPage page = new WikiPage(engine, articlename);
+
+	if (isPageLocked(articlename)) {
+	    PageLock lock = mgr.getCurrentLock(page);
+	    mgr.unlockPage(lock);
+	}
+    }
+
+    @Override
+    public String getRealPath() {
+
+	return context.getContextPath();
+    }
+
+    public Locale getLocale(HttpServletRequest request) {
+
+	WikiContext wikiContext = new WikiContext(this.engine, request,
+		this.engine.getPage("Main"));
+
+	return Preferences.getLocale(wikiContext);
+    }
+
+    public Locale getLocale() {
+
+	WikiContext wikiContext = new WikiContext(this.engine, this.engine
+		.getPage("Main"));
+
+	return Preferences.getLocale(wikiContext);
+    }
+
+    @Override
+    public Collection findPages(String query) {
+	ArrayList<SearchResult> result = new ArrayList<SearchResult>();
+	if (query.contains("#")) {
+	    return null;
+	}
+
+	for (GenericSearchResult cur : TaggingMangler.getInstance()
+		.searchPages(query.trim())) {
+	    WikiPage page = this.engine.getPage(cur.getPagename());
+	    result.add(new SearchResultImpl(page, cur.getContexts(), cur
+		    .getScore()));
+	}
+
+	return result;
+    }
+
+    @Override
+    public List<String> getAttachmentFilenamesForPage(String pageName) {
+	try {
+	    List<String> attachmentList = new LinkedList<String>();
+
+	    Collection<Attachment> attList = this.engine.getAttachmentManager()
+		    .getAllAttachments();
+
+	    // This is damn inefficient - How can I grab all Attachment for a
+	    // specific page???
+	    for (Attachment p : attList) {
+
+		if (p.getParentName().equals(pageName)) {
+		    attachmentList.add(p.getFileName());
 		}
-		return false;
-	}
-	
-	/**
-	 * Locks a page in the WIKI so no other user can edit the page.
-	 * @param articlename
-	 */
-	@Override
-	public boolean setPageLocked( String articlename, String user ) {
-		PageManager mgr = engine.getPageManager();
-		WikiPage page = new WikiPage( engine, articlename );
-		PageLock lock = mgr.lockPage(page, user);
-		
-		if( lock != null ) return true;
-		return false;
-	}	
-	/**
-	 * Removes a page lock from a certain page in the WIKI so other users can edit the page.
-	 * @param articlename
-	 */
-	@Override
-	public void undoPageLocked( String articlename ) {
-		PageManager mgr = engine.getPageManager();
-		WikiPage page = new WikiPage( engine, articlename );
-		
-		if( isPageLocked( articlename )) {
-			PageLock lock = mgr.getCurrentLock( page );
-			mgr.unlockPage( lock );
-		}
-	}
 
-	@Override
-	public String getRealPath() {
-		
-		return context.getContextPath();
+	    }
+	    return attachmentList;
+	} catch (ProviderException e) {
+	    return null;
 	}
-	
-	public Locale getLocale( HttpServletRequest request ) {
-		
-		WikiContext wikiContext = new WikiContext(this.engine, request, this.engine.getPage("Main"));
-		
-		return Preferences.getLocale(wikiContext);
-	}
-	
-	public Locale getLocale() {
-		
-		WikiContext wikiContext = new WikiContext(this.engine, this.engine.getPage("Main"));
-		
-		return Preferences.getLocale(wikiContext);
-	}
+    }
 
-	@Override
-	public Collection findPages(String query) {
-		ArrayList<SearchResult> result=new ArrayList<SearchResult>();
-		if (query.contains("#")){
-			return null;
-		}
-		
-		for (GenericSearchResult cur:TaggingMangler.getInstance().searchPages(query.trim())){						
-			WikiPage page=this.engine.getPage(cur.getPagename());
-			result.add(new SearchResultImpl(page, cur.getContexts(), cur.getScore()));
-		}
-	        
-		
-		return result;
+    @Override
+    public String createWikiLink(String articleName, String linkText) {
+	String string = (linkText != null && !linkText.equals("")) ? "["
+		+ linkText + "|" : "[";
+
+	return string + articleName + "]";
+    }
+
+    @Override
+    public Map<String, Integer> getVersionCounts() {
+	HashMap<String, Integer> result = new HashMap<String, Integer>();
+	PageManager pm = engine.getPageManager();
+	try {
+	    for (Object pageObj : pm.getAllPages()) {
+		String pageName = ((WikiPage) pageObj).getName();
+		List versionHistory = pm.getVersionHistory(pageName);
+		int versionNumber = versionHistory.size();
+		result.put(pageName, versionNumber);
+	    }
+	} catch (ProviderException e) {
+	    e.printStackTrace();
 	}
+	return result;
+    }
 
-	@Override
-	public List<String> getAttachmentFilenamesForPage(String pageName) {
-		try {
-			List<String> attachmentList = new LinkedList<String>();
-			
-			Collection<Attachment> attList = (Collection<Attachment>) this.engine
-					.getAttachmentManager().getAllAttachments();
-
-			// This is damn inefficient - How can I grab all Attachment for a specific page???
-			for (Attachment p : attList) {
-
-				if (p.getParentName().equals(pageName)) {
-					attachmentList.add(p.getFileName());
-				}
-
-			}
-			return attachmentList;
-		} catch (ProviderException e) {
-			return null;
-		}
-	}
-	
-	@Override
-	public String createWikiLink(String articleName, String linkText) {
-		String string = (linkText != null && !linkText.equals("")) ? "[" + linkText + "|" : "[";
-		
-				
-		return string + articleName + "]";
-	}
-	
 }
