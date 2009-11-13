@@ -64,7 +64,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	private ServletContext context = null;
 	private WikiEngine engine = null;
-
+	public static final String LINK_PREFIX = "Wiki.jsp?page=";
+	
 	public JSPWikiKnowWEConnector(WikiEngine eng) {
 		this.context = eng.getServletContext();
 		this.engine = eng;
@@ -481,4 +482,13 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			return null;
 		}
 	}
+	
+	@Override
+	public String createWikiLink(String articleName, String linkText) {
+		String string = (linkText != null && !linkText.equals("")) ? "[" + linkText + "|" : "[";
+		
+				
+		return string + articleName + "]";
+	}
+	
 }

@@ -164,5 +164,11 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	public List<String> getAttachmentFilenamesForPage(String pageName) {
 		return new ArrayList<String>();
 	}
+	
+	@Override
+	public String createWikiLink(String articleName, String linkText) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

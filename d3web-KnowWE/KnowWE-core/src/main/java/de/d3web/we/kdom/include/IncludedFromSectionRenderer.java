@@ -27,11 +27,10 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class IncludedFromSectionRenderer extends KnowWEDomRenderer {
 
-	protected String src;
 	
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
-		src = sec instanceof IncludedFromSection ? ((IncludedFromSection) sec).getSrc() 
+		String src = sec instanceof IncludedFromSection ? ((IncludedFromSection) sec).getSrc() 
 				: "Unknown Source";
 		StringBuilder content = new StringBuilder();
 		StringBuilder b = new StringBuilder();
@@ -47,12 +46,18 @@ public class IncludedFromSectionRenderer extends KnowWEDomRenderer {
 		}
 
 		//renderedContent = DefaultDelegateRenderer.getInstance().render(sec, user, web, topic);
-		string.append(wrapIncludeFrame(b.toString()));		
+		string.append(wrapIncludeFrame(b.toString(), src));		
 	}
 	
-	protected String wrapIncludeFrame(String renderedContent) {
+	protected String wrapIncludeFrame(String renderedContent, String src) {
+		
+		//relies on src begin 'src="article/section"'
+		String articleName = src.substring(5, src.indexOf('/'));
+		String linkText = src.substring(5, src.length() - 1);
+		
+		String srclink = KnowWEEnvironment.getInstance().getWikiConnector().createWikiLink(articleName, linkText);
 		return KnowWEEnvironment.maskHTML("<div style=\"text-align:left; padding-top:5px; padding-right:5px; padding-left:5px; border:thin solid #99CC99\">") 
-			+ renderedContent + KnowWEEnvironment.maskHTML("<div style=\"text-align:right\"><font size=\"1\">" + src + "</font></div></div><p>");
+			+ renderedContent + KnowWEEnvironment.maskHTML("<div style=\"text-align:right\"><font size=\"1\">")+ "From: " + srclink + KnowWEEnvironment.maskHTML("</font></div></div><p>");
 	}
 
 }

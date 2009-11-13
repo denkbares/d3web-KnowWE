@@ -234,4 +234,18 @@ public interface KnowWEWikiConnector {
 	@SuppressWarnings("unchecked")
 	public Collection findPages(String query);
 
+	
+	/**
+	 * Creates a link to an article with the given text to display
+	 * as link text in the syntax of the specific wiki.
+	 * If the link text is null or empty it is omitted.
+	 * 
+	 * 
+	 * @param articleName name of the article to link to
+	 * @param linkText the text to show for the link. can be empty String or null 
+	 * @return s a string representing a link to the given article in wiki syntax
+	 */
+	String createWikiLink(String articleName, String linkText);
+	
+	
 }
