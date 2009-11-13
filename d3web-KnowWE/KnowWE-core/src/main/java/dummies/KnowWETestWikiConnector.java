@@ -19,6 +19,7 @@
  */
 
 package dummies;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,142 +34,147 @@ import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
-
 public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
-	@Override
-	public String appendContentToPage(String topic, String pageContent) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String appendContentToPage(String topic, String pageContent) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public String createWikiPage(String topic, String newContent, String author) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String createWikiPage(String topic, String newContent, String author) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public boolean doesPageExist(String Topic) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean doesPageExist(String Topic) {
+	// TODO Auto-generated method stub
+	return false;
+    }
 
-	@Override
-	public KnowWEActionDispatcher getActionDispatcher() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public KnowWEActionDispatcher getActionDispatcher() {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public Map<String, String> getAllArticles(String web) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Map<String, String> getAllArticles(String web) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public String getArticleSource(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getArticleSource(String name) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public String getAttachmentPath(String JarName) {
-		// TODO Auto-generated method stub
-		return "some-path";
-	}
+    @Override
+    public String getAttachmentPath(String JarName) {
+	// TODO Auto-generated method stub
+	return "some-path";
+    }
 
-	@Override
-	public LinkedList<String> getAttachments() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public LinkedList<String> getAttachments() {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public String getBaseUrl() {
-		return "http://valid_base_url/";
-	}
+    @Override
+    public String getBaseUrl() {
+	return "http://valid_base_url/";
+    }
 
-	@Override
-	public ServletContext getServletContext() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public ServletContext getServletContext() {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public boolean isPageLocked(String articlename) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean isPageLocked(String articlename) {
+	// TODO Auto-generated method stub
+	return false;
+    }
 
-	@Override
-	public boolean isPageLockedCurrentUser(String articlename, String user) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean isPageLockedCurrentUser(String articlename, String user) {
+	// TODO Auto-generated method stub
+	return false;
+    }
 
-	@Override
-	public boolean saveArticle(String name, String text, KnowWEParameterMap map) {
-		//pretend so save article for KnowWEEnvironment Sandbox testing
-		return true;
-	}
+    @Override
+    public boolean saveArticle(String name, String text, KnowWEParameterMap map) {
+	// pretend so save article for KnowWEEnvironment Sandbox testing
+	return true;
+    }
 
-	@Override
-	public boolean setPageLocked(String articlename, String user) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean setPageLocked(String articlename, String user) {
+	// TODO Auto-generated method stub
+	return false;
+    }
 
-	@Override
-	public void undoPageLocked(String articlename) {
-		// TODO Auto-generated method stub
+    @Override
+    public void undoPageLocked(String articlename) {
+	// TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public boolean userCanEditPage(String articlename) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean userCanEditPage(String articlename) {
+	// TODO Auto-generated method stub
+	return false;
+    }
 
-	@Override
-	public boolean userCanEditPage(String articlename, HttpServletRequest r) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean userCanEditPage(String articlename, HttpServletRequest r) {
+	// TODO Auto-generated method stub
+	return false;
+    }
 
-	@Override
-	public String getRealPath() {
-		return "some-path";
-	}
+    @Override
+    public String getRealPath() {
+	return "some-path";
+    }
 
-	@Override
-	public Locale getLocale() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Locale getLocale() {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public Locale getLocale(HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Locale getLocale(HttpServletRequest request) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public Collection findPages(String query) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Collection findPages(String query) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public List<String> getAttachmentFilenamesForPage(String pageName) {
-		return new ArrayList<String>();
-	}
-	
-	@Override
-	public String createWikiLink(String articleName, String linkText) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<String> getAttachmentFilenamesForPage(String pageName) {
+	return new ArrayList<String>();
+    }
+
+    @Override
+    public String createWikiLink(String articleName, String linkText) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public Map<String, Integer> getVersionCounts() {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
 }

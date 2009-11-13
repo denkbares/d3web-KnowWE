@@ -28,52 +28,73 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * Creates a list of all TagHandlers mentioned in the Hash-map knowWEDefaultTagHandlers.
+ * Creates a list of all TagHandlers mentioned in the Hash-map
+ * knowWEDefaultTagHandlers.
+ * 
  * @author Max Diez
- *
+ * 
  */
-public class TagHandlerListHandler extends AbstractTagHandler{
-	
-	public TagHandlerListHandler() {
-		super("taghandlerlist");
-	}
+public class TagHandlerListHandler extends AbstractTagHandler {
 
-	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String,String> values, String web){
-		Collection<TagHandler> coll = KnowWEEnvironment.getInstance().getDefaultTagHandlers().values();
-		
-		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
+    public TagHandlerListHandler() {
+	super("taghandlerlist");
+    }
 
-		StringBuffer html = new StringBuffer();
-		html.append("<div id='taghandlerlist-panel' class='panel'>" + "<h3>" 
-				+ rb.getString("KnowWE.TagHandlerList.header") + "</h3> ");
-		html.append("<table width=100% border=1>");
-		html.append("<TR><TH>" + rb.getString("KnowWE.TagHandlerList.table.name") 
-				+ "</TH><TH>" + rb.getString("KnowWE.TagHandlerList.table.example")
-				+ "</TH><TH>" + rb.getString("KnowWE.TagHandlerList.table.description") + "</TH>");
-		for (TagHandler th : coll) {
-			String name = "no name available";
-			String example = "no example available";
-			String description = "no description available";
-			try {
-			if(th instanceof AbstractTagHandler) {
-				name = ((AbstractTagHandler)th).getName();
-				example =((AbstractTagHandler)th).getExampleString();
-				description =  ((AbstractTagHandler)th).getDescription(user);			
-			}
-			} catch(Exception e) {
-				description = "Fehler";
-				System.out.println("Error by getting information:");
-				System.out.println(e.getStackTrace());
-			}
-			html.append("<TR><TD>" +  name+ "</TD><TD>" + example + "</TD><TD>" + description+ "</TD></TR> \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
+    @Override
+    public String render(String topic, KnowWEUserContext user,
+	    Map<String, String> values, String web) {
+	Collection<TagHandler> coll = KnowWEEnvironment.getInstance()
+		.getDefaultTagHandlers().values();
+
+	ResourceBundle rb = KnowWEEnvironment.getInstance()
+		.getKwikiBundle(user);
+
+	StringBuffer html = new StringBuffer();
+	html.append("<div id='taghandlerlist-panel' class='panel'>" + "<h3>"
+		+ rb.getString("KnowWE.TagHandlerList.header") + "</h3> ");
+	html.append("<div class=\"sortable\">");
+	html.append("<table class=\"wikitable\" border=\"1\">");
+	html.append("<tbody>");
+
+	// html.append("<tr class=\"odd\">");
+
+	// html.append("<table width=100% border=1>");
+	html.append("<TR><TH class=\"sort\">"
+		+ rb.getString("KnowWE.TagHandlerList.table.name")
+		+ "</TH><TH class=\"sort\">"
+		+ rb.getString("KnowWE.TagHandlerList.table.example")
+		+ "</TH><TH class=\"sort\">"
+		+ rb.getString("KnowWE.TagHandlerList.table.description")
+		+ "</TH>");
+	for (TagHandler th : coll) {
+	    String name = "no name available";
+	    String example = "no example available";
+	    String description = "no description available";
+	    try {
+		if (th instanceof AbstractTagHandler) {
+		    name = ((AbstractTagHandler) th).getName();
+		    example = ((AbstractTagHandler) th).getExampleString();
+		    description = ((AbstractTagHandler) th)
+			    .getDescription(user);
 		}
-		html.append("</table></div>");
-		return html.toString();
+	    } catch (Exception e) {
+		description = "Fehler";
+		System.out.println("Error by getting information:");
+		System.out.println(e.getStackTrace());
+	    }
+	    html.append("<TR><TD>" + name + "</TD><TD>" + example + "</TD><TD>"
+		    + description + "</TD></TR> \n"); // \n only to avoid
+	    // hmtl-code being cut by
+	    // JspWiki (String.length
+	    // > 10000)
 	}
-	
-	@Override
-	public String getDescription(KnowWEUserContext user) {
-		return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.TagHandlerList.description");
-	}
+	html.append("</tbody></table></div></div>");
+	return html.toString();
+    }
+
+    @Override
+    public String getDescription(KnowWEUserContext user) {
+	return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString(
+		"KnowWE.TagHandlerList.description");
+    }
 }
