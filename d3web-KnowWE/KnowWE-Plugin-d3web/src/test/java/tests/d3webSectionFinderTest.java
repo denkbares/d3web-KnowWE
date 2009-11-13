@@ -45,14 +45,14 @@ import de.d3web.we.kdom.rules.RuleCondLine;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.Annotation.AnnotationContent;
 import de.d3web.we.kdom.semanticAnnotation.AnnotatedString;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationEndSymbol;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
 import de.d3web.we.kdom.semanticAnnotation.AnnotationMapSign;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationProperty;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationPropertyDelimiter;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationPropertyName;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationPropertyDelimiter;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationPropertyName;
 import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
 import de.d3web.we.kdom.Annotation.AnnotationObject;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationStartSymbol;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
 import de.d3web.we.kdom.xcl.XCLBody;
 import de.d3web.we.kdom.xcl.XCLHead;
 import de.d3web.we.kdom.xcl.XCLRelationLineEnd;
@@ -104,9 +104,9 @@ public class d3webSectionFinderTest extends TestCase {
 		// StartSymbol, Content, EndSymbol
 		childs = childs.get(1).getChildren();
 		assertEquals(WRONG_COUNT, 3, childs.size());
-		assertEquals(WRONG_TYPE, new AnnotationStartSymbol("{{").getName(), childs.get(0).getObjectType().getName());
+		assertEquals(WRONG_TYPE, new SemanticAnnotationStartSymbol("{{").getName(), childs.get(0).getObjectType().getName());
 		assertEquals(WRONG_TYPE, new AnnotationContent().getName(), childs.get(1).getObjectType().getName());
-		assertEquals(WRONG_TYPE, new AnnotationEndSymbol("}}").getName(), childs.get(2).getObjectType().getName());
+		assertEquals(WRONG_TYPE, new SemanticAnnotationEndSymbol("}}").getName(), childs.get(2).getObjectType().getName());
 		
 		// AnnotatedString, Annotation MapSign, AnnotationObject
 		childs = childs.get(1).getChildren();
@@ -119,13 +119,13 @@ public class d3webSectionFinderTest extends TestCase {
 		childs = childs.get(2).getChildren();
 		assertEquals(WRONG_COUNT, 3, childs.size());
 		assertEquals(WRONG_TYPE, new PlainText().getName(), childs.get(0).getObjectType().getName());
-		assertEquals(WRONG_TYPE, new AnnotationProperty().getName(), childs.get(1).getObjectType().getName());
+		assertEquals(WRONG_TYPE, new SemanticAnnotationProperty().getName(), childs.get(1).getObjectType().getName());
 		assertEquals(WRONG_TYPE, new SimpleAnnotation().getName(), childs.get(2).getObjectType().getName());
 		
 		// AnnotationPropertyName, AnnotationPropertyDelimiter
 		childs = childs.get(1).getChildren();
-		assertEquals(WRONG_TYPE, new AnnotationPropertyName().getName(), childs.get(0).getObjectType().getName());
-		assertEquals(WRONG_TYPE, new AnnotationPropertyDelimiter().getName(), childs.get(1).getObjectType().getName());
+		assertEquals(WRONG_TYPE, new SemanticAnnotationPropertyName().getName(), childs.get(0).getObjectType().getName());
+		assertEquals(WRONG_TYPE, new SemanticAnnotationPropertyDelimiter().getName(), childs.get(1).getObjectType().getName());
 	}
 	
 	public void testAnnotationSectioner() {

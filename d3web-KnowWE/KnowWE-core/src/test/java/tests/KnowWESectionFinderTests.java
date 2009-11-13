@@ -31,7 +31,7 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SentenceSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationProperty;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
 import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
 import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellStart;
@@ -87,13 +87,13 @@ public class KnowWESectionFinderTests extends TestCase {
 	
 	public void testAnnotationPropertyFinder() {
 		String test = "blablub {{the currently measured mileage"
-					+ " <=> asks:: Real mileage  /100km}}bla blub";
-		AnnotationProperty.AnnotationPropertySectionFinder f = 
-					new AnnotationProperty.AnnotationPropertySectionFinder();
+					+ " <=> swrc:asks:: Real mileage  /100km}}bla blub";
+		SemanticAnnotationProperty.AnnotationPropertySectionFinder f = 
+					new SemanticAnnotationProperty.AnnotationPropertySectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(test, null);
 
 		assertEquals(WRONG_FIRST_START, 45, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 51, results.get(0).getEnd());
+		assertEquals(WRONG_FIRST_END, 56, results.get(0).getEnd());
 	}
 	
 	public void testAnnotationSubjectSectionFinder() {

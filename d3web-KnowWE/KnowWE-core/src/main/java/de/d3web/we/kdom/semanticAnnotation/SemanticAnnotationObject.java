@@ -43,12 +43,12 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
  * @author kazamatzuri
  * 
  */
-public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
-		this.childrenTypes.add(new AnnotationProperty());
-		this.childrenTypes.add(new AnnotationSubject());
+		this.childrenTypes.add(new SemanticAnnotationProperty());
+		this.childrenTypes.add(new SemanticAnnotationSubject());
 		this.childrenTypes.add(new SimpleAnnotation());
 		this.sectionFinder = new AllTextSectionFinder();
 	}
@@ -66,8 +66,8 @@ public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
 		URI prop = null;
 		URI stringa = null;
 		for (Section cur : childs) {
-			if (cur.getObjectType().getClass().equals(AnnotationProperty.class)) {
-				prop = ((AnnotationProperty) cur.getObjectType()).getOwl(cur)
+			if (cur.getObjectType().getClass().equals(SemanticAnnotationProperty.class)) {
+				prop = ((SemanticAnnotationProperty) cur.getObjectType()).getOwl(cur)
 						.getLiterals().get(0);
 			} else if (cur.getObjectType().getClass().equals(
 					SimpleAnnotation.class)) {

@@ -21,23 +21,21 @@
 package de.d3web.we.kdom.semanticAnnotation;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 
-public class AnnotationContent extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationStartSymbol extends DefaultAbstractKnowWEObjectType {
 
+    private String begin;
+    
+    	public SemanticAnnotationStartSymbol(String symbol){
+    	    super();
+    	    begin = symbol;
+    	    this.sectionFinder = new StringSectionFinder(begin, true);	
+    	}
+    	
 	@Override
-	public void init() {
-		this.childrenTypes.add(new AnnotationMapSign());
-		this.childrenTypes.add(new AnnotatedString());
-		this.childrenTypes.add(new AnnotationObject());
-		this.sectionFinder = new AllTextSectionFinder();		
-		
+	protected void init() {
+				
 	}
-
-	@Override
-	public String getName() {
-		return this.getClass().getName();
-	}
-
 
 }

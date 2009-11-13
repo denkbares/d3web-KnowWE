@@ -23,44 +23,19 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 
 /**
  * @author kazamatzuri
  *
  */
-public class AnnotationProperty extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationPropertyDelimiter extends DefaultAbstractKnowWEObjectType {
 
-     @Override
+    @Override
     public void init() {
-    	this.sectionFinder = new AnnotationPropertySectionFinder();
-    	this.childrenTypes.add(new AnnotationPropertyDelimiter());
-    	this.childrenTypes.add(new AnnotationPropertyName());
+    	this.sectionFinder = new StringSectionFinder("::");
     }
 
-    
-    public static class AnnotationPropertySectionFinder extends SectionFinder {
 
-	private String PATTERN = "[(\\w:)?\\w]*::";
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			Pattern p = Pattern.compile(PATTERN);
-			Matcher m = p.matcher(text);
-			while (m.find()) {
-				result.add(new SectionFinderResult(m.start(), m.end()));
-			}
-			return result;
-		}
-
-	}
 }

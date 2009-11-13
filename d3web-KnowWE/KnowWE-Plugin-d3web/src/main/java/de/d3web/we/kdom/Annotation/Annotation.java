@@ -28,35 +28,32 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.renderer.AnnotationInlineAnswerRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationEndSymbol;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationStartSymbol;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
 
 public class Annotation extends DefaultAbstractKnowWEObjectType {
-    private static String ANNOTATIONBEGIN = "\\{\\{";
-    private static String ANNOTATIONEND = "\\}\\}";
-    private StandardAnnotationRenderer renderer; 
-    
+	private static String ANNOTATIONBEGIN = "\\{\\{";
+	private static String ANNOTATIONEND = "\\}\\}";
+	private StandardAnnotationRenderer renderer;
+
 	public Annotation() {
-		renderer= new StandardAnnotationRenderer();
+		renderer = new StandardAnnotationRenderer();
 		renderer.addConditionalRenderer(new AnnotationInlineAnswerRenderer());
 	}
 
-
-	
-    @Override
+	@Override
 	public void init() {
-		this.childrenTypes.add(new AnnotationStartSymbol("{{"));
-		this.childrenTypes.add(new AnnotationEndSymbol("}}"));
+		this.childrenTypes.add(new SemanticAnnotationStartSymbol("{{"));
+		this.childrenTypes.add(new SemanticAnnotationEndSymbol("}}"));
 		this.childrenTypes.add(new AnnotationContent());
 		this.sectionFinder = new AnnotationSectionFinder();
 	}
 
-    public class AnnotationSectionFinder extends SectionFinder {
+	public class AnnotationSectionFinder extends SectionFinder {
 
-    	private String PATTERN = ANNOTATIONBEGIN + "[\\w\\W]*?" + ANNOTATIONEND;
+		private String PATTERN = ANNOTATIONBEGIN + "[\\w\\W]*?" + ANNOTATIONEND;
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
@@ -73,7 +70,6 @@ public class Annotation extends DefaultAbstractKnowWEObjectType {
 
 		}
 
-    }
-
+	}
 
 }

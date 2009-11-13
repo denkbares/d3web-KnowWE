@@ -22,14 +22,14 @@ package de.d3web.we.kdom.kopic.renderer;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationProperty;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class AnnotationInlineAnswerRenderer extends KnowWEDomRenderer{
 	
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
-		Section prop = sec.findSuccessor(AnnotationProperty.class);
+		Section prop = sec.findSuccessor(SemanticAnnotationProperty.class);
 		if(prop != null && prop.getOriginalText().contains("asks")) {
 			//TODO merge classes
 			new D3webAnnotationRenderer().render(sec, user, string);

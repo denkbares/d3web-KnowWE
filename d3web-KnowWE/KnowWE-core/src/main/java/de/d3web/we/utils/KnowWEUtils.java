@@ -29,6 +29,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.store.SectionStore;
+import de.d3web.we.module.DefaultTextType;
 
 public class KnowWEUtils {
 
@@ -113,6 +114,61 @@ public class KnowWEUtils {
 //		s = s.replaceAll("&apos;", "'");
 //		return(s);
 //	}
+	
+	/**
+	 * 
+	 * Unmasks output strings
+	 * 
+	 * @param htmlContent
+	 * @return
+	 */
+	public static String unmaskHTML(String htmlContent) {
+		htmlContent = htmlContent.replaceAll(
+				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_OPEN, "\\[\\{");
+		htmlContent = htmlContent.replaceAll(
+				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_CLOSE, "}]");
+
+		htmlContent = htmlContent.replaceAll(DefaultTextType.BLOB, "");
+
+		htmlContent = htmlContent.replaceAll(
+				KnowWEEnvironment.HTML_DOUBLEQUOTE, "\"");
+		htmlContent = htmlContent
+				.replaceAll(KnowWEEnvironment.HTML_QUOTE, "\'");
+		htmlContent = htmlContent.replaceAll(KnowWEEnvironment.HTML_GT, ">");
+		htmlContent = htmlContent.replaceAll(KnowWEEnvironment.HTML_ST, "<");
+
+		htmlContent = htmlContent.replaceAll(
+				KnowWEEnvironment.HTML_BRACKET_OPEN, "[");
+		htmlContent = htmlContent.replaceAll(
+				KnowWEEnvironment.HTML_BRACKET_CLOSE, "]");
+		return htmlContent;
+	}
+
+	/**
+	 * 
+	 * masks output strings
+	 * 
+	 * @param htmlContent
+	 * @return
+	 */
+	public static String maskHTML(String htmlContent) {
+		htmlContent = htmlContent.replaceAll("\\[\\{",
+				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_OPEN);
+		htmlContent = htmlContent.replaceAll("}]",
+				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_CLOSE);
+
+		htmlContent = htmlContent.replaceAll("\"",
+				KnowWEEnvironment.HTML_DOUBLEQUOTE);
+		htmlContent = htmlContent.replaceAll("'", KnowWEEnvironment.HTML_QUOTE);
+		htmlContent = htmlContent.replaceAll(">", KnowWEEnvironment.HTML_GT);
+		htmlContent = htmlContent.replaceAll("<", KnowWEEnvironment.HTML_ST);
+
+		htmlContent = htmlContent.replace("[",
+				KnowWEEnvironment.HTML_BRACKET_OPEN);
+		htmlContent = htmlContent.replace("]",
+				KnowWEEnvironment.HTML_BRACKET_CLOSE);
+		return htmlContent;
+	}
 	
 	public static String replaceUmlaut(String text) {
 		String result = text;

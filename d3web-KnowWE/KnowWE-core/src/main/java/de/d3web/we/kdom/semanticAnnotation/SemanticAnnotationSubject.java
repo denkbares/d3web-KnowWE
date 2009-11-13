@@ -37,7 +37,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * @author kazamatzuri
  * 
  */
-public class AnnotationSubject extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationSubject extends DefaultAbstractKnowWEObjectType {
 
     /*
      * (non-Javadoc)
@@ -54,7 +54,7 @@ public class AnnotationSubject extends DefaultAbstractKnowWEObjectType {
     	@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {
-			if (father.hasRightSonOfType(AnnotationProperty.class, text)) {
+			if (father.hasRightSonOfType(SemanticAnnotationProperty.class, text)) {
 				ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 				if (text.trim().length() == 0)
 					return null;

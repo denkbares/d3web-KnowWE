@@ -18,24 +18,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-/**
- * 
- */
 package de.d3web.we.kdom.semanticAnnotation;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
-/**
- * @author kazamatzuri
- *
- */
-public class AnnotationPropertyDelimiter extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationContent extends DefaultAbstractKnowWEObjectType {
 
-    @Override
-    public void init() {
-    	this.sectionFinder = new StringSectionFinder("::");
-    }
+	@Override
+	public void init() {
+		this.childrenTypes.add(new AnnotationMapSign());
+		this.childrenTypes.add(new AnnotatedString());
+		this.childrenTypes.add(new SemanticAnnotationObject());
+		this.sectionFinder = new AllTextSectionFinder();		
+		
+	}
+
+	@Override
+	public String getName() {
+		return this.getClass().getName();
+	}
 
 
 }

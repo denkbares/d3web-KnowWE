@@ -170,8 +170,7 @@ public class SemanticCore {
 				}
 
 			}
-			addlocalPropertyData(con, pm, "hasTag");
-			addlocalPropertyData(con, pm, "hasOriginValueTrue");			
+			
 
 		}
 		if (settings.get("persistence").equalsIgnoreCase("enabled")) {

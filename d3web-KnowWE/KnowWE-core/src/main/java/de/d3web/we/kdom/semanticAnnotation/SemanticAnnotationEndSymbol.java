@@ -23,11 +23,11 @@ package de.d3web.we.kdom.semanticAnnotation;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 
-public class AnnotationEndSymbol extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationEndSymbol extends DefaultAbstractKnowWEObjectType {
 
     private String end;
 
-    public AnnotationEndSymbol(String symbol) {
+    public SemanticAnnotationEndSymbol(String symbol) {
 	super();
 	end = symbol;
 	this.sectionFinder = (new StringSectionFinder(end, true));

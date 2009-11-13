@@ -21,30 +21,47 @@
 /**
  * 
  */
-package de.d3web.we.kdom.Annotation;
+package de.d3web.we.kdom.semanticAnnotation;
 
+import org.openrdf.model.URI;
+
+import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
-import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
+import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
+import de.d3web.we.module.semantic.owl.UpperOntology;
 
 /**
  * @author kazamatzuri
- *
+ * 
  */
-public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationPropertyName extends DefaultAbstractKnowWEObjectType  {
 
     @Override
     public void init() {
-    	this.childrenTypes.add(new SemanticAnnotationProperty());
-    	this.childrenTypes.add(new Finding());
-    	this.childrenTypes.add(new SimpleAnnotation());
-    	this.sectionFinder = new AllTextSectionFinder();
+	this.sectionFinder = new AllTextSectionFinder();
     }
-    
-	@Override
-	public String getName() {
-		return this.getClass().getName();
+
+    @Override
+    public IntermediateOwlObject getOwl(Section s) {
+	IntermediateOwlObject io = new IntermediateOwlObject();
+	UpperOntology uo = UpperOntology.getInstance();
+	String prop = s.getOriginalText();
+	URI property=null;
+	if (prop.equals("subClassOf") || prop.equals("subPropertyOf")){
+	    property = uo.getRDFS(prop);
+	}else if (prop.equals("type")){
+	    property = uo.getRDF(prop);
+	}else if (prop.contains(":")){
+		property=uo.getHelper().createURI(SemanticCore.getInstance().getNameSpaces().get(prop.split(":")[0]), prop.split(":")[1]);
 	}
-	
+	else
+	{
+	     property = uo.getHelper().createlocalURI(prop);
+	}
+	io.addLiteral(property); 
+	return io;
+    }
+
 }

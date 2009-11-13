@@ -198,8 +198,8 @@ public class KnowWEEnvironment {
 	public static final String HTML_QUOTE = "KNOWWEHTML_QUOTE";
 	public static final String HTML_BRACKET_OPEN = "KNOWWE_BRACKET_OPEN";
 	public static final String HTML_BRACKET_CLOSE = "KNOWWE_BRACKET_CLOSE";
-	private static final String HTML_PLUGIN_BRACKETS_OPEN = "KNOWEPLUGIN_BRACKETS_OPEN";
-	private static final String HTML_PLUGIN_BRACKETS_CLOSE = "KNOWEPLUGIN_BRACKETS_CLOSE";
+	public static final String HTML_PLUGIN_BRACKETS_OPEN = "KNOWEPLUGIN_BRACKETS_OPEN";
+	public static final String HTML_PLUGIN_BRACKETS_CLOSE = "KNOWEPLUGIN_BRACKETS_CLOSE";
 
 	/**
 	 * Name of the WikiFindings-page
@@ -840,57 +840,27 @@ public class KnowWEEnvironment {
 
 	/**
 	 * 
-	 * Unmasks output strings
+	 * use KnowWEUtils.unmaskHTML
 	 * 
 	 * @param htmlContent
 	 * @return
 	 */
+	@Deprecated
 	public static String unmaskHTML(String htmlContent) {
-		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_OPEN, "\\[\\{");
-		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_CLOSE, "}]");
 
-		htmlContent = htmlContent.replaceAll(DefaultTextType.BLOB, "");
-
-		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_DOUBLEQUOTE, "\"");
-		htmlContent = htmlContent
-				.replaceAll(KnowWEEnvironment.HTML_QUOTE, "\'");
-		htmlContent = htmlContent.replaceAll(KnowWEEnvironment.HTML_GT, ">");
-		htmlContent = htmlContent.replaceAll(KnowWEEnvironment.HTML_ST, "<");
-
-		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_BRACKET_OPEN, "[");
-		htmlContent = htmlContent.replaceAll(
-				KnowWEEnvironment.HTML_BRACKET_CLOSE, "]");
-		return htmlContent;
+		return KnowWEUtils.unmaskHTML(htmlContent);
 	}
 
 	/**
 	 * 
-	 * masks output strings
+	 * use KnowWEUtils.maskHTML
 	 * 
 	 * @param htmlContent
 	 * @return
 	 */
+	@Deprecated 
 	public static String maskHTML(String htmlContent) {
-		htmlContent = htmlContent.replaceAll("\\[\\{",
-				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_OPEN);
-		htmlContent = htmlContent.replaceAll("}]",
-				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_CLOSE);
-
-		htmlContent = htmlContent.replaceAll("\"",
-				KnowWEEnvironment.HTML_DOUBLEQUOTE);
-		htmlContent = htmlContent.replaceAll("'", KnowWEEnvironment.HTML_QUOTE);
-		htmlContent = htmlContent.replaceAll(">", KnowWEEnvironment.HTML_GT);
-		htmlContent = htmlContent.replaceAll("<", KnowWEEnvironment.HTML_ST);
-
-		htmlContent = htmlContent.replace("[",
-				KnowWEEnvironment.HTML_BRACKET_OPEN);
-		htmlContent = htmlContent.replace("]",
-				KnowWEEnvironment.HTML_BRACKET_CLOSE);
-		return htmlContent;
+		return KnowWEUtils.maskHTML(htmlContent);
 	}
 
 	public String getNodeData(String web, String topic, String nodeID) {

@@ -23,40 +23,44 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
-import org.openrdf.model.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 /**
  * @author kazamatzuri
- * 
+ *
  */
-public class AnnotationPropertyName extends DefaultAbstractKnowWEObjectType  {
+public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType {
 
-    @Override
+     @Override
     public void init() {
-	this.sectionFinder = new AllTextSectionFinder();
+    	this.sectionFinder = new AnnotationPropertySectionFinder();
+    	this.childrenTypes.add(new SemanticAnnotationPropertyDelimiter());
+    	this.childrenTypes.add(new SemanticAnnotationPropertyName());
     }
 
-    @Override
-    public IntermediateOwlObject getOwl(Section s) {
-	IntermediateOwlObject io = new IntermediateOwlObject();
-	UpperOntology uo = UpperOntology.getInstance();
-	String prop = s.getOriginalText();
-	URI property=null;
-	if (prop.equals("subClassOf") || prop.equals("subPropertyOf")){
-	    property = uo.getRDFS(prop);
-	}else if (prop.equals("type")){
-	    property = uo.getRDF(prop);
-	}else {
-	     property = uo.getHelper().createlocalURI(prop);
+    
+    public static class AnnotationPropertySectionFinder extends SectionFinder {
+
+	private String PATTERN = "[(\\w:)?\\w]*::";
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section father) {
+			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			Pattern p = Pattern.compile(PATTERN);
+			Matcher m = p.matcher(text);
+			while (m.find()) {
+				result.add(new SectionFinderResult(m.start(), m.end()));
+			}
+			return result;
+		}
+
 	}
-	io.addLiteral(property); 
-	return io;
-    }
-
 }

@@ -71,9 +71,9 @@ public class SemanticAnnotation extends DefaultAbstractKnowWEObjectType {
     @Override
     protected void init() {
     	this.setCustomRenderer(new StandardAnnotationRenderer());
-    	this.childrenTypes.add(new AnnotationStartSymbol("["));
-    	this.childrenTypes.add(new AnnotationEndSymbol("]"));
-    	this.childrenTypes.add(new AnnotationContent());
+    	this.childrenTypes.add(new SemanticAnnotationStartSymbol("["));
+    	this.childrenTypes.add(new SemanticAnnotationEndSymbol("]"));
+    	this.childrenTypes.add(new SemanticAnnotationContent());
     }
 
 }
