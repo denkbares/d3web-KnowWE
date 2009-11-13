@@ -33,6 +33,9 @@ import de.d3web.we.kdom.Annotation.FindingComparator;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.condition.ComplexFinding;
+import de.d3web.we.kdom.condition.Conjunct;
+import de.d3web.we.kdom.condition.Disjunct;
+import de.d3web.we.kdom.condition.OrOperator;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesTreeANTLR;
 import de.d3web.we.kdom.dashTree.solutions.SolutionsTreeANTLR;
 import de.d3web.we.kdom.decisionTree.QuestionTreeANTLR;
@@ -138,7 +141,7 @@ public class d3webSectionFinderTest extends TestCase {
 	 * Seems not right. finding tests only if text.contains("=")
 	 */
 	public void testComplexFindingSectionFinders() {
-		String test = "Are you hungry? = Yes OR Are you hungry? = Very very hungry [2]";
+		String test = "Are you hungry? = Yes OR Are you hungry? = Very very hungry";
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
 		KnowWEEnvironment.getInstance().getArticle("default_web", "Test_Article");
 		
@@ -152,9 +155,21 @@ public class d3webSectionFinderTest extends TestCase {
 		assertEquals(WRONG_COUNT, 1, childs.size());
 		assertEquals(WRONG_TYPE, new ComplexFinding().getName(), childs.get(0).getObjectType().getName());
 		
-		// Findings
+		// disjunctive form
 		childs = childs.get(0).getChildren();
 		assertEquals(WRONG_COUNT, 3, childs.size());
+		assertEquals(WRONG_TYPE, new Disjunct().getName(), childs.get(0).getObjectType().getName());
+		assertEquals(WRONG_TYPE, new OrOperator().getName(), childs.get(1).getObjectType().getName());
+		assertEquals(WRONG_TYPE, new Disjunct().getName(), childs.get(2).getObjectType().getName());
+		
+		//conjunctive form (trivial in this case)
+		childs = childs.get(0).getChildren();
+		assertEquals(WRONG_COUNT, 1, childs.size());
+		assertEquals(WRONG_TYPE, new Conjunct().getName(), childs.get(0).getObjectType().getName());
+		
+		//conjunctive form (trivial in this case)
+		childs = childs.get(0).getChildren();
+		assertEquals(WRONG_COUNT, 1, childs.size());
 		assertEquals(WRONG_TYPE, new Finding().getName(), childs.get(0).getObjectType().getName());
 		
 		// FindingQuestion, findingComparator, FindingAnswer
