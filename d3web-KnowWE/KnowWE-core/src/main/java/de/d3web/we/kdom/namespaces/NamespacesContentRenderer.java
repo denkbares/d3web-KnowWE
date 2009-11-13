@@ -19,17 +19,21 @@ public class NamespacesContentRenderer extends KnowWEDomRenderer {
 		ResourceBundle rb = KnowWEEnvironment.getInstance()
 				.getKwikiBundle(user);
 		String content = sec.getOriginalText();
-		HashMap<String, String> namespaces = sc.getNameSpaces();			
-		for (String line : content.split("\r\n|\r|\n")) {
-			int i = line.indexOf(":");
-			String key = line.substring(0, i).trim();
-			String val = line.substring(i + 1).trim();
-			if (!namespaces.containsKey(key)) {
-				sc.addNamespace(key, val);
+		HashMap<String, String> namespaces = sc.getNameSpaces();
+		if (content.trim().length() > 0) {
+			for (String line : content.split("\r\n|\r|\n")) {
+				if (line.contains(":")) {
+					int i = line.indexOf(":");
+					String key = line.substring(0, i).trim();
+					String val = line.substring(i + 1).trim();
+					if (!namespaces.containsKey(key)) {
+						sc.addNamespace(key, val);
+					}
+				}
 			}
 		}
 		namespaces = sc.getNameSpaces();
-		
+
 		buffy.append("<div id='knoffice-panel' class='panel'>");
 		buffy.append("<h3>" + rb.getString("KnowWE.Namespaces.Default.header")
 				+ "</h3>");

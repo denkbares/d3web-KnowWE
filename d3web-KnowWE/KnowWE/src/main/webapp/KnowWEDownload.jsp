@@ -1,5 +1,4 @@
-<%@ page import="com.ecyrd.jspwiki.*"%>
-<%@ page import="de.d3web.we.javaEnv.*"%>
+<%@page import="de.d3web.we.core.*"%><%@ page import="com.ecyrd.jspwiki.*"%>
 <%@ page import="java.util.*,java.io.*"%>
 <%!
 String findParam( PageContext ctx, String key )
@@ -43,8 +42,6 @@ String findParam( PageContext ctx, String key )
 		int bit = 256;
 
     		try {
-
-
         			while ((bit) >= 0) {
         				bit = in.read();
         				outs.write(bit);
