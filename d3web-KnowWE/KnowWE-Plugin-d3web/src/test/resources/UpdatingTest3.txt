@@ -8,7 +8,7 @@ The evalutaion of the exhaust pipe color depends on the type of fuel:
 IF (Fuel = unleaded gasoline AND Exhaust pipe color = sooty black)
 THEN Exhaust pipe color evaluation += abnormal
 
-IF (Fuel = diesel AND Exhaust pipe color = grey)
+IF (Fuel = diesel AND Exhaust pipe color = sooty black)
 THEN Exhaust pipe color evaluation += normal  
 
 IF (Exhaust pipe color = brown OR Exhaust pipe color = grey OR Exhaust pipe color = light grey)
@@ -22,7 +22,7 @@ THEN Mileage evaluation = slightly increased
 
 Mileage is definitly increased if the real mileage is more than 130 percent of the average mileage:
 
-IF "Num. Mileage evaluation" > 130
+IF "Num. Mileage evaluation" > 140
 THEN Mileage evaluation = increased  
 
 Mileage evaluation is normal when it is lower than 110 percent of average mileage:

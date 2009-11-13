@@ -195,7 +195,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 			}
 		}
 		
-		assertEquals("Some of the KnowledgeSlices of the different articles should be equal (5-6 of 7, but was " + count + "):", count > 4 && count < 7, true);
+		assertEquals("Some of the KnowledgeSlices of the different articles should be equal (5 or 6 out of 7, but was " + count + "):", count > 4 && count < 7, true);
 		
 	}
 	
