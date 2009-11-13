@@ -29,8 +29,14 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 
 public class NOT extends DefaultAbstractKnowWEObjectType {
+	
+	@Override
+	public void init() {
+		this.sectionFinder = new StringSectionFinder("NOT");
+	}
 
 	@Override
 	public KnowWEDomRenderer getRenderer() {

@@ -51,8 +51,7 @@ public class FindingQuestion extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public KnowWEDomRenderer getRenderer() {
-		return new ObjectInfoLinkRenderer(
-				FontColorRenderer.getRenderer(FontColorRenderer.COLOR6));
+		return new FindingQuestionAndAnswerRenderer(FontColorRenderer.COLOR6);
 	}
 
 	@Override

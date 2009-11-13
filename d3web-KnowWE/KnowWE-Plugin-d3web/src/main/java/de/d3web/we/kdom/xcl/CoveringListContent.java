@@ -59,37 +59,38 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 	
 	public class CoveringListContentSubTreeHandler extends D3webReviseSubTreeHandler {
 
-		KnowledgeBaseManagement kbm = null;
-		String currentWeb = "";
+//		KnowledgeBaseManagement kbm = null;
+//		String currentWeb = "";
+//		private Diagnosis currentdiag;
 		
 		@Override
 		public void reviseSubtree(Section s) {
 			
 			// Set currentWeb
-			this.currentWeb = s.getWeb();
+			String currentWeb = s.getWeb();
 			
-			kbm = getKBM(s);
+			KnowledgeBaseManagement kbm = getKBM(s);
 			
 			if (kbm != null) {
 				// Analyse s (Has XCList-Children)
 				ArrayList <Section> elements = new ArrayList<Section>(s.getChildren());
 				for (Section sec : elements) {
-					this.analyseXCList(sec);
+					this.analyseXCList(sec, kbm, currentWeb);
 				}
 			}
 
 		}
 		
-		private Diagnosis currentdiag;
 		
 		/**
 		 * Analyses a given XCList and writes
 		 * it to the KnowledgeBase.
 		 * 
 		 * @param kbm 
+		 * @param currentweb 
 		 * @param XCLList
 		 */
-		private void analyseXCList(Section xclList) {
+		private void analyseXCList(Section xclList, KnowledgeBaseManagement kbm, String currentweb) {
 			
 			// Check if xclList is XCList
 			if ((xclList.getObjectType() instanceof XCList) && (kbm != null)) {
@@ -103,17 +104,17 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				}
 				
 				// Insert Solution into KnowledgeBase when Solution doesnt exist
-				Section section = elements.get(0);
-				currentdiag = kbm.findDiagnosis(section.getOriginalText().replaceAll(p.toString(), "").trim());
+				Section head = elements.get(0);
+				Diagnosis currentdiag = kbm.findDiagnosis(head.getOriginalText().replaceAll(p.toString(), "").trim());
 				if (currentdiag == null) {
-					currentdiag = kbm.createDiagnosis(section.getOriginalText().replaceAll(p.toString(), "").trim(), kbm.getKnowledgeBase().getRootDiagnosis());
+					currentdiag = kbm.createDiagnosis(head.getOriginalText().replaceAll(p.toString(), "").trim(), kbm.getKnowledgeBase().getRootDiagnosis());
 				}
 				
 				// Insert XCLRelations belonging to current Diagnosis
 				ArrayList <Section> currentRels = new ArrayList <Section>(this.getXCLRelations(elements.get(1)));
 				
 				// insert every Relation into currentModel
-				this.insertRelations(currentRels);
+				this.insertRelations(currentRels, kbm, currentdiag, currentweb);
 				
 			}				
 		}
@@ -122,9 +123,12 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		 * Inserts Relation into currentModel
 		 * 
 		 * @param currentRels
+		 * @param kbm 
+		 * @param currentdiag 
+		 * @param currentWeb 
 		 * @return
 		 */
-		private void insertRelations(ArrayList<Section> currentRels) {
+		private void insertRelations(ArrayList<Section> currentRels, KnowledgeBaseManagement kbm, Diagnosis currentdiag, String currentWeb) {
 
 			double weight;
 			XCLRelationType relationType;
@@ -142,7 +146,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 					
 				// Insert the Relation into the currentModel
 				String kbRelId = XCLModel.insertXCLRelation(kbm.getKnowledgeBase(), cond, currentdiag, relationType, weight, rel.getId());
-				KnowWEUtils.storeSectionInfo(this.currentWeb, rel.getTitle(), rel.getId(), KBID_KEY, kbRelId);
+				KnowWEUtils.storeSectionInfo(currentWeb, rel.getTitle(), rel.getId(), KBID_KEY, kbRelId);
 			}
 			
 		}
@@ -204,7 +208,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		 * @return
 		 */
 		private List<Section> getXCLRelations(Section body) {
-			ArrayList <Section> rels = new ArrayList <Section>();
+			ArrayList <Section> rels = new ArrayList <Section>(body.getChildren().size());
 			
 			// get the XCLRelation Sections
 			// Sort out Relations only containing PlainText

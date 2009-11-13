@@ -28,6 +28,7 @@ import de.d3web.kernel.domainModel.Answer;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.qasets.QuestionNum;
+import de.d3web.kernel.domainModel.qasets.QuestionOC;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.domainModel.ruleCondition.CondAnd;
 import de.d3web.kernel.domainModel.ruleCondition.CondEqual;
@@ -38,11 +39,16 @@ import de.d3web.kernel.domainModel.ruleCondition.CondNumGreaterEqual;
 import de.d3web.kernel.domainModel.ruleCondition.CondNumLess;
 import de.d3web.kernel.domainModel.ruleCondition.CondNumLessEqual;
 import de.d3web.kernel.domainModel.ruleCondition.CondOr;
+import de.d3web.report.Message;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingComparator;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
+import de.d3web.we.kdom.filter.SectionFilter;
+import de.d3web.we.kdom.filter.TypeSectionFilter;
+import de.d3web.we.kdom.store.SectionStore;
 
 /**
  * Supplies a method for creating a condition from a
@@ -123,72 +129,71 @@ public class FindingToConditionBuilder {
 	 */
 	public static AbstractCondition analyseAnyRelation(Section f, KnowledgeBaseManagement kbm) {
 
-		if (f.findChildOfType(ComplexFinding.class) != null) {
-			return FindingToConditionBuilder.analyseComplexFinding(f.findChildOfType(ComplexFinding.class), kbm);
-		}
-			
-		if (f.findChildOfType(Finding.class) != null) {
-			return FindingToConditionBuilder.analyseFinding(f.findChildOfType(Finding.class), kbm);
-		}
-
-		if (f.findChildOfType(NegatedFinding.class) != null) {
-			return FindingToConditionBuilder.analyseNegatedFinding(f.findChildOfType(NegatedFinding.class), kbm);
-		}
-		
-		return null;
+		Section child = f.findChildOfType(ComplexFinding.class);
+		if (child != null) {
+			return FindingToConditionBuilder.analyseComplexFinding(child, kbm);
+		} else 
+			return null;
 	}
 	
-	/**
-	 * Creates a condition from a Finding like this:
-	 * Not (Complex)Finding
-	 * 
-	 * @param findChildOfType
-	 * @param kbm
-	 * @return
-	 */
-	public static AbstractCondition analyseNegatedFinding(Section f, KnowledgeBaseManagement kbm) {
-		// Structure is like this:
-		// Not (Complex)Finding
-		List <Section> fl = f.getChildren();
-		AbstractCondition c = analyseAnyFinding(fl.get(1), kbm);
-		if (c != null)
-			return new CondNot(c);
-		
-		return null;
-	}
-
-	/**
-	 * Delegates a given finding to its destination method.
-	 * 
-	 * @param f
-	 * @param kbm
-	 * @return
-	 */
-	public static AbstractCondition analyseAnyFinding(Section f, KnowledgeBaseManagement kbm) {
-		if (f.getObjectType() instanceof Finding)
-			return analyseFinding(f, kbm);
-		if (f.getObjectType() instanceof ComplexFinding)
-			return analyseComplexFinding(f,kbm);
-		if (f.getObjectType() instanceof NegatedFinding)
-			return analyseNegatedFinding(f, kbm);
-		return null;
-	}
+//	/**
+//	 * Creates a condition from a Finding like this:
+//	 * Not (Complex)Finding
+//	 * 
+//	 * @param findChildOfType
+//	 * @param kbm
+//	 * @return
+//	 */
+//	private static AbstractCondition analyseNegatedFinding(Section f, KnowledgeBaseManagement kbm) {
+//		// Structure is like this:
+//		// Not Finding
+//		List <Section> fl = f.getChildren();
+//		AbstractCondition c = analyseSimpleFinding(fl.get(1), kbm);
+//		if (c != null)
+//			return new CondNot(c);
+//		
+//		return null;
+//	}
+//
+//	/**
+//	 * A finding may either be negated or simple.
+//	 * Delegates the given finding to the appropriate method.
+//	 * 
+//	 * @param f
+//	 * @param kbm
+//	 * @return
+//	 */
+//	private static AbstractCondition analyseFinding(Section f, KnowledgeBaseManagement kbm) {
+//		
+//		if (f.getObjectType() instanceof Finding)
+//			return analyseSimpleFinding(f, kbm);
+//		else if (f.getObjectType() instanceof NegatedFinding)
+//			return analyseNegatedFinding(f, kbm);
+//		else 
+//			return null;
+//	}
 
 	/**
 	 * Creates an Condition from a Finding.
 	 * 
 	 * @param f
-	 * @return
+	 * @return s null if the question was not found by KBM, a condition otherwise.
 	 */
-	public static AbstractCondition analyseFinding(Section f, KnowledgeBaseManagement kbm) {
+	private static AbstractCondition analyseFinding(Section f, KnowledgeBaseManagement kbm) {
 	
+		if (!f.getObjectType().getClass().equals(Finding.class))
+			return null;
+		
+		boolean negated = f.findChildOfType(NOT.class) != null;
+		
+		
 		// Get Question Comparator Answer (Who? = You)
 		Section comp = f.findChildOfType(FindingComparator.class);
 		Section question = f.findChildOfType(FindingQuestion.class);
 		Section answer = f.findChildOfType(FindingAnswer.class);
 		
-		String questiontext = question.getOriginalText().replaceAll(p.toString(), "").toString();
-		String answertext = answer.getOriginalText().replaceAll(p.toString(), "").toString();
+		String questiontext = question.getOriginalText().replaceAll(p.toString(), "").trim();
+		String answertext = answer.getOriginalText().replaceAll(p.toString(), "").trim();
 
 		// Look up the Question in the KnowledgeBase
 		Question kbQuest = kbm.findQuestion(questiontext);
@@ -196,57 +201,98 @@ public class FindingToConditionBuilder {
 			// Look up the Answer for the Question
 			// Can be null if it is a Numerical Question
 			Answer kbAns = kbm.findAnswer(kbQuest, answertext);
-			return createCondition(kbQuest, kbAns, comp, question, answer);
+			
+			//TODO: errors when answer is not found for certain question types (YN, OC)
+			
+			if (kbQuest instanceof QuestionOC && kbAns == null) {
+				storeMessage("Not a valid answer for question: '" + answertext + "'.", answer);
+				return null;
+			}
+			
+			AbstractCondition condition = createCondition(kbQuest, kbAns, comp, question, answer);
+			return negated ? new CondNot(condition) : condition;
+		} else {
+			storeMessage("Question '" + question.getOriginalText() +"' not found.", question);
+			storeMessage("Question '" + question.getOriginalText() +"' not found.", answer);
+			return null;
+			
 		}
-				
-		return null;
+		
+		
+	}
+
+	private static void storeMessage(String messageText, Section section) {
+		
+		Message message = new Message(messageText);
+		
+		List<Message> messages = new ArrayList<Message>(1);
+		messages.add(message);
+		
+		((AbstractKnowWEObjectType) section.getObjectType()).storeMessages(section, messages);
+		
+		
+		
 	}
 
 	/**
 	 * Creates a Condition from a ComplexFinding
+	 * Removes every sub-condition that could not be parsed.  
 	 * 
 	 * @param cf
 	 * @param kbm 
-	 * @return
+	 * @return s the according Condition or null if neither side could be parsed
 	 */
-	public static AbstractCondition analyseComplexFinding(Section cf, KnowledgeBaseManagement kbm) {
+	private static AbstractCondition analyseComplexFinding(Section cf, KnowledgeBaseManagement kbm) {
 			
-		// Structure is like this:
-		// (Complex)Finding NonTerminalCondition (Complex)Finding or like that
-		List <Section> cfl = cf.getChildren();
-			
-		// Check if the CF is constructed with CF
-		boolean leftSide = (cfl.get(0).getObjectType() instanceof ComplexFinding);
-		boolean rightSide = (cfl.get(2).getObjectType() instanceof ComplexFinding);
-			
-		// TODO: NOT has to be treated specially
-		String c = cfl.get(1).getOriginalText().replaceAll(p.toString(), "").trim();
-		ArrayList <AbstractCondition> conds = new ArrayList <AbstractCondition>();
-			
-		// check if left or right finding is Complex
-		if (leftSide)
-			conds.add(analyseComplexFinding(cfl.get(0), kbm));
-		else
-			conds.add(analyseFinding(cfl.get(0), kbm));
-			
-		if (rightSide)
-			conds.add(analyseComplexFinding(cfl.get(2), kbm));
-		else
-			conds.add(analyseFinding(cfl.get(2), kbm));
-			
-		// Then create the Condition
-		if (c.equals("AND")) {
-			return new CondAnd(conds);
-		}
-							
-	//		else if (c.equals(" NOT "))
-	//			return new CondNot();
-			
-		else if (c.equals("OR"))
-			return new CondOr(conds);
-			
-	//		else if (c.equals(" MOFN "))
-	//			return new CondMofN();
-		return null;
+		
+		TypeSectionFilter filter = new TypeSectionFilter("Disjunct");
+		return analyseDisjunction(cf.getChildren(filter), kbm);
+		
 	}
+	
+	
+	private static AbstractCondition analyseDisjunction(List<Section> disjunction, KnowledgeBaseManagement kbm) {
+		
+		List<AbstractCondition> disjuncts = new ArrayList<AbstractCondition>();
+		TypeSectionFilter filter = new TypeSectionFilter("Conjunct");
+		
+
+		for (Section child : disjunction) {
+			AbstractCondition conjunction = analyzeConjunction(child.getChildren(filter), kbm);
+			if (conjunction != null)
+				disjuncts.add(conjunction);
+		}
+		
+		if (disjuncts.isEmpty())
+			return null;
+		else if (disjuncts.size() == 1)
+			return disjuncts.get(0); // No OR for single argument
+		else
+			return new CondOr(disjuncts);
+		
+	}
+	
+
+	private static AbstractCondition analyzeConjunction(List<Section> conjunction,
+			KnowledgeBaseManagement kbm) {
+		
+		List<AbstractCondition> conjuncts = new ArrayList<AbstractCondition>();
+		
+		for (Section section : conjunction) {
+			AbstractCondition condition = analyseFinding(section.getChildren().get(0), kbm);
+			if (condition != null)
+				conjuncts.add(condition);
+		}
+		
+		if (conjuncts.isEmpty())
+			return null;
+		else if (conjuncts.size() == 1) //no AND for single argument
+			return conjuncts.get(0); 
+		else
+			return new CondAnd(conjuncts);
+		
+	}
+	
+	
+	
 }

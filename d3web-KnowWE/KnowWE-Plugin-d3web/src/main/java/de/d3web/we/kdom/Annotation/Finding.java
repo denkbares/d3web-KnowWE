@@ -32,6 +32,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.condition.NOT;
 import de.d3web.we.kdom.filter.TypeSectionFilter;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -44,14 +45,15 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
 
 public class Finding extends DefaultAbstractKnowWEObjectType {
 
- @Override
-    public void init() {
-    	this.childrenTypes.add(new FindingComparator());
-    	this.childrenTypes.add(new FindingQuestion());
-    	this.childrenTypes.add(new FindingAnswer());
-    	this.sectionFinder = new FindingSectionFinder();
-    }
-    
+	@Override
+	public void init() {
+		this.childrenTypes.add(new NOT());
+		this.childrenTypes.add(new FindingComparator());
+		this.childrenTypes.add(new FindingQuestion());
+		this.childrenTypes.add(new FindingAnswer());
+		this.sectionFinder = new FindingSectionFinder();
+	}
+
 	@Override
 	public KnowWEDomRenderer getRenderer() {
 		return FontColorRenderer.getRenderer(FontColorRenderer.COLOR3);
@@ -61,13 +63,13 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	 * Only for XclRelation Highlighting.
 	 */
 	public KnowWEDomRenderer getBackgroundColorRenderer(String color) {
-		return FontColorBackgroundRenderer.
-					getRenderer(FontColorRenderer.COLOR5, color);
+		return FontColorBackgroundRenderer.getRenderer(
+				FontColorRenderer.COLOR5, color);
 	}
 
-    @Override
-    public IntermediateOwlObject getOwl(Section section) {
-    	UpperOntology uo = UpperOntology.getInstance();
+	@Override
+	public IntermediateOwlObject getOwl(Section section) {
+		UpperOntology uo = UpperOntology.getInstance();
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		try {
 			Section csection = section.getChildren(
@@ -116,18 +118,19 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		}
 
 		return io;
-    }
-    
-    public class FindingSectionFinder extends SectionFinder {
+	}
 
-    	@Override
-    	public List<SectionFinderResult> lookForSections(String text, Section father) {
-    		if(text.contains("=")) {
-    			return new AllTextSectionFinder().lookForSections(text, father);
-    		}
-    		return null;
-    	}
+	public class FindingSectionFinder extends SectionFinder {
 
-    }
+		@Override
+		public List<SectionFinderResult> lookForSections(String text,
+				Section father) {
+			if (text.contains(">") || text.contains("=") || text.contains("<")) { 
+				return new AllTextSectionFinder().lookForSections(text, father);
+			}
+			return null;
+		}
+
+	}
 
 }

@@ -41,6 +41,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -52,7 +53,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.childrenTypes.add(new OrOperator());
-		this.sectionFinder = new ComplexFindingANTLRSectionFinder();
+		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new Disjunct());
 	}
 

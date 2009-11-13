@@ -53,7 +53,7 @@ public class FindingAnswer extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public KnowWEDomRenderer getRenderer() {
-		return new ObjectInfoLinkRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR5));
+		return new FindingQuestionAndAnswerRenderer(FontColorRenderer.COLOR5);
 	}
 	
 	
