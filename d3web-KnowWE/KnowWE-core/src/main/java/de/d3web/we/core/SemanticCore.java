@@ -22,7 +22,6 @@ package de.d3web.we.core;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -39,7 +38,6 @@ import java.util.regex.Pattern;
 
 import org.openrdf.OpenRDFException;
 import org.openrdf.model.BNode;
-import org.openrdf.model.Namespace;
 import org.openrdf.model.Statement;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.BooleanQuery;
@@ -54,7 +52,6 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParseException;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.visitor.OWLBuilderVisitor;
@@ -122,40 +119,11 @@ public class SemanticCore {
 		if (files == null)
 			return;
 		for (File f : files) {
-			loadOwlFile(f);
+			uo.loadOwlFile(f);
 		}
 	}
 
-	/**
-	 * @param f
-	 */
-	public String loadOwlFile(File f) {
-		String output = "";
-		RepositoryConnection con = uo.getConnection();
-		try {
-			BNode filebnode = con.getValueFactory().createBNode(f.getName());
-			con.add(f, null, RDFFormat.RDFXML, filebnode);
-			con.commit();
-			contextmap.put(f.getName(), filebnode);
-		} catch (RepositoryException e) {
-			try {
-				con.rollback();
-			} catch (RepositoryException e1) {
-				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-						e1.getMessage());
-			}
-		} catch (RDFParseException e) {
-			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-					e.getMessage());
-			output = e.getMessage();
 
-		} catch (IOException e) {
-			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-					e.getMessage());
-			output = e.getMessage();
-		}
-		return output;
-	}
 
 	private void readSettings() {
 		PropertyManager pm = PropertyManager.getInstance();

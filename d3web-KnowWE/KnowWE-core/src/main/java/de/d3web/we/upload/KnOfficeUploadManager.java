@@ -118,7 +118,7 @@ public class KnOfficeUploadManager {
 						e.printStackTrace();
 					}
 					SemanticCore sc = SemanticCore.getInstance();
-					sc.loadOwlFile(file);
+					sc.getUpper().loadOwlFile(file);
 					return "redirect:Wiki.jsp?page=" + "SemanticSettings";
 				}
 			}

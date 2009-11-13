@@ -21,10 +21,14 @@
 package de.d3web.we.module.semantic.owl;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openrdf.OpenRDFException;
+import org.openrdf.model.BNode;
 import org.openrdf.model.Namespace;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
@@ -33,7 +37,9 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.config.RepositoryConfig;
 import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.sail.memory.MemoryStore;
 
@@ -65,7 +71,7 @@ public class UpperOntology {
 	private String localens;
 
 	private org.openrdf.repository.Repository myRepository;
-	private String ontfile = "file:resources/knowwe_base.owl";
+	private String ontfile = "knowwe_base.owl";
 	private OwlHelper owlhelper;
 	private RepositoryConnection repositoryConn;
 	private HashMap<String, String> settings;
@@ -77,10 +83,11 @@ public class UpperOntology {
 
 	private UpperOntology(String path) {
 		settings = new HashMap<String, String>();
-		ontfile = path + File.separatorChar + "knowwe.owl";
+		ontfile = path + File.separatorChar + ontfile;
 		settings.put("ontfile", ontfile);
 		reppath = System.getProperty("java.io.tmpdir") + File.separatorChar
 				+ "repository";
+
 		settings.put("reppath", reppath);
 		config_file = path + File.separatorChar + "owlim.ttl";
 		settings.put("config_file", config_file);
@@ -183,6 +190,7 @@ public class UpperOntology {
 				RepositoryFactory.DEFAULTREPOSITORY, settings);
 		try {
 			repositoryConn = myRepository.getConnection();
+			loadOwlFile(new File(ontfile));
 		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -247,6 +255,36 @@ public class UpperOntology {
 			e.printStackTrace();
 		}
 
+	}
+	/**
+	 * @param f
+	 */
+	public String loadOwlFile(File f) {
+		String output = "";
+		RepositoryConnection con = getConnection();
+		try {
+			BNode filebnode = con.getValueFactory().createBNode(f.getName());
+			con.add(f, null, RDFFormat.RDFXML, filebnode);
+			con.commit();
+			
+		} catch (RepositoryException e) {
+			try {
+				con.rollback();
+			} catch (RepositoryException e1) {
+				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+						e1.getMessage());
+			}
+		} catch (RDFParseException e) {
+			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+					e.getMessage());
+			output = e.getMessage();
+
+		} catch (IOException e) {
+			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+					e.getMessage());
+			output = e.getMessage();
+		}
+		return output;
 	}
 
 }

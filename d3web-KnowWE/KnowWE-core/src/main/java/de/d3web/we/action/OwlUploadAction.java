@@ -85,7 +85,7 @@ public class OwlUploadAction extends AbstractKnowWEAction {
 	    }
 	}
 	SemanticCore sc = SemanticCore.getInstance();
-	sc.loadOwlFile(uploadfile);
+	sc.getUpper().loadOwlFile(uploadfile);
 	return output;
     }
 
