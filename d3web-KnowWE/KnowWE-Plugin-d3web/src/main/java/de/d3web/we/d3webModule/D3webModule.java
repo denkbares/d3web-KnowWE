@@ -102,7 +102,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class D3webModule implements KnowWEModule {
 
 	private String defaultJarsPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/KBrepository/";
-	private String ontfile = "file:resources/d3web.owl";
+	private String ontfile = "d3web.owl";
 	private Map<Class<? extends KnowWEAction>, KnowWEAction> actionMap = new HashMap<Class<? extends KnowWEAction>, KnowWEAction>();
 
 	private List<de.d3web.we.taghandler.TagHandler> tagHandlers = new ArrayList<de.d3web.we.taghandler.TagHandler>();
@@ -202,7 +202,8 @@ public class D3webModule implements KnowWEModule {
 		}
 		// Introduce my ontology parts to the core
 		SemanticCore sc = SemanticCore.getInstance();
-		sc.loadOwlFile(new File(ontfile));
+		
+		sc.getUpper().loadOwlFile(new File(KnowWEEnvironment.getInstance().getKnowWEExtensionPath()+File.separatorChar+ontfile));
 
 		this.addAction(actionMap);
 		this.loadData(context);
