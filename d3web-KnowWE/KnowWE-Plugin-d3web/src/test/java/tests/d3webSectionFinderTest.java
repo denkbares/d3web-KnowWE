@@ -72,16 +72,17 @@ import junit.framework.TestCase;
  */
 public class d3webSectionFinderTest extends TestCase {
 
-	private final String WRONG_FIRST_START = "Wrong start at first finding";
-	private final String WRONG_FIRST_END = "Wrong end at first finding";
-	private final String WRONG_SECOND_START = "Wrong start at second finding";
-	private final String WRONG_SECOND_END = "Wrong end at second finding";
-	private final String WRONG_THIRD_START = "Wrong start at third finding";
-	private final String WRONG_THIRD_END = "Wrong end at third finding";
-	private final String WRONG_FOURTH_START = "Wrong start at fourth finding";
-	private final String WRONG_FOURTH_END = "Wrong end at fourth finding";
-	private final String WRONG_COUNT = "Children count wrong";
-	private final String WRONG_TYPE = "Wrong KnowWEObjectType";
+	private static final String WRONG_FIRST_START = "Wrong start at first finding";
+	private static final String WRONG_FIRST_END = "Wrong end at first finding";
+	private static final String WRONG_SECOND_START = "Wrong start at second finding";
+	private static final String WRONG_SECOND_END = "Wrong end at second finding";
+	private static final String WRONG_THIRD_START = "Wrong start at third finding";
+	private static final String WRONG_THIRD_END = "Wrong end at third finding";
+	private static final String WRONG_FOURTH_START = "Wrong start at fourth finding";
+	private static final String WRONG_FOURTH_END = "Wrong end at fourth finding";
+	private static final String WRONG_COUNT = "Children count wrong";
+	private static final String WRONG_TYPE = "Wrong KnowWEObjectType";
+	private static final String WRONG_TYPE_COUNT = "Wrong KnowWEObjectType  section count:";
 	
 	public void testAllAnnotationRelatedSectionFinder() {
 		
@@ -156,11 +157,13 @@ public class d3webSectionFinderTest extends TestCase {
 		assertEquals(WRONG_TYPE, new ComplexFinding().getName(), childs.get(0).getObjectType().getName());
 		
 		// disjunctive form
-		childs = childs.get(0).getChildren();
-		assertEquals(WRONG_COUNT, 3, childs.size());
-		assertEquals(WRONG_TYPE, new Disjunct().getName(), childs.get(0).getObjectType().getName());
-		assertEquals(WRONG_TYPE, new OrOperator().getName(), childs.get(1).getObjectType().getName());
-		assertEquals(WRONG_TYPE, new Disjunct().getName(), childs.get(2).getObjectType().getName());
+		Section disjunction = childs.get(0);
+		childs = disjunction.getChildren();
+		assertEquals(WRONG_COUNT, 5, childs.size());
+		
+		// TODO Test order more deeply: disj, or, disj
+		assertEquals(WRONG_TYPE_COUNT+" "+OrOperator.class.toString(),1,  disjunction.findChildrenOfType(OrOperator.class).size());
+		assertEquals(WRONG_TYPE_COUNT+" "+Disjunct.class.getName(),2, disjunction.findChildrenOfType(Disjunct.class).size());
 		
 		//conjunctive form (trivial in this case)
 		childs = childs.get(0).getChildren();
@@ -173,11 +176,13 @@ public class d3webSectionFinderTest extends TestCase {
 		assertEquals(WRONG_TYPE, new Finding().getName(), childs.get(0).getObjectType().getName());
 		
 		// FindingQuestion, findingComparator, FindingAnswer
-		childs = childs.get(0).getChildren();
-		assertEquals(WRONG_COUNT, 3, childs.size());
-		assertEquals(WRONG_TYPE, new FindingQuestion().getName(), childs.get(0).getObjectType().getName());
-		assertEquals(WRONG_TYPE, new FindingComparator().getName(), childs.get(1).getObjectType().getName());
-		assertEquals(WRONG_TYPE, new FindingAnswer().getName(), childs.get(2).getObjectType().getName());
+		Section finding = childs.get(0);
+		childs = finding.getChildren();
+		assertEquals(WRONG_COUNT, 5, childs.size());
+		assertEquals(WRONG_TYPE_COUNT+" "+FindingQuestion.class.toString(),1,  finding.findChildrenOfType(FindingQuestion.class).size());
+		assertEquals(WRONG_TYPE_COUNT+" "+FindingComparator.class.toString(),1,  finding.findChildrenOfType(FindingComparator.class).size());
+		assertEquals(WRONG_TYPE_COUNT+" "+FindingAnswer.class.toString(),1,  finding.findChildrenOfType(FindingAnswer.class).size());
+
 	}
 	
 	/** 

@@ -32,12 +32,13 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.QuotedType;
 import de.d3web.we.kdom.condition.NOT;
 import de.d3web.we.kdom.filter.TypeSectionFilter;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
@@ -49,7 +50,9 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	public void init() {
 		this.childrenTypes.add(new NOT());
 		this.childrenTypes.add(new FindingComparator());
+		this.childrenTypes.add(new QuotedType(new FindingQuestion()));
 		this.childrenTypes.add(new FindingQuestion());
+		this.childrenTypes.add(new QuotedType(new FindingAnswer()));
 		this.childrenTypes.add(new FindingAnswer());
 		this.sectionFinder = new FindingSectionFinder();
 	}
@@ -126,7 +129,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {
 			if (text.contains(">") || text.contains("=") || text.contains("<")) { 
-				return new AllTextSectionFinder().lookForSections(text, father);
+				return new AllTextFinderTrimmed().lookForSections(text, father);
 			}
 			return null;
 		}

@@ -189,11 +189,16 @@ public class FindingToConditionBuilder {
 		
 		// Get Question Comparator Answer (Who? = You)
 		Section comp = f.findChildOfType(FindingComparator.class);
-		Section question = f.findChildOfType(FindingQuestion.class);
-		Section answer = f.findChildOfType(FindingAnswer.class);
+		Section question = f.findSuccessor(FindingQuestion.class);
+		Section answer = f.findSuccessor(FindingAnswer.class);
 		
 		String questiontext = question.getOriginalText().replaceAll(p.toString(), "").trim();
+		if (answer == null) {
+			storeMessage("No answer-section found for finding: '" + f.getOriginalText() + "'.", f);
+			return null;
+		}
 		String answertext = answer.getOriginalText().replaceAll(p.toString(), "").trim();
+		
 
 		// Look up the Question in the KnowledgeBase
 		Question kbQuest = kbm.findQuestion(questiontext);

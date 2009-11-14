@@ -25,9 +25,8 @@ import java.util.List;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -39,7 +38,7 @@ public class FindingAnswer extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			if(father.hasLeftSonOfType(FindingComparator.class, text)) {
-				List<SectionFinderResult> foundsections = new AllTextSectionFinder().lookForSections(text, father);
+				List<SectionFinderResult> foundsections = new AllTextFinderTrimmed().lookForSections(text, father);
 				
 				return foundsections;
 			}

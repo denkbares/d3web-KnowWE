@@ -27,6 +27,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -39,7 +40,7 @@ public class FindingQuestion extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			if(father.hasRightSonOfType(FindingComparator.class, text)) {
-				return new AllTextSectionFinder().lookForSections(text, father);
+				return new AllTextFinderTrimmed().lookForSections(text, father);
 			}
 			return null;
 		}

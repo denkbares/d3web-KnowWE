@@ -38,6 +38,7 @@ import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -52,6 +53,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
+		this.childrenTypes.add(new RoundBracedType(this));
 		this.childrenTypes.add(new OrOperator());
 		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new Disjunct());

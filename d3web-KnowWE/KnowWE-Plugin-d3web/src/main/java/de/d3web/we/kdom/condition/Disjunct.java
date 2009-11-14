@@ -28,6 +28,8 @@ import org.openrdf.repository.RepositoryException;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.RoundBracedType;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
@@ -36,7 +38,8 @@ public class Disjunct extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
-		this.sectionFinder = new AllTextSectionFinder();
+		this.sectionFinder = new AllTextFinderTrimmed();
+		this.childrenTypes.add(new RoundBracedType(this));
 		this.childrenTypes.add(new AndOperator());
 		this.childrenTypes.add(new Conjunct());
 	}
