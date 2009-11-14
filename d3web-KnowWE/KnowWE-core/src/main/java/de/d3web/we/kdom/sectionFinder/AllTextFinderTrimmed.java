@@ -12,6 +12,7 @@ public class AllTextFinderTrimmed extends SectionFinder {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 
 		String trimmed = text.trim();
+		if(trimmed.length() == 0) return result;
 		int leadingSpaces = text.indexOf(trimmed);
 		int followingSpaces = text.length()
 				- (trimmed.length() + leadingSpaces);

@@ -20,9 +20,43 @@
 
 package de.d3web.we.kdom.basic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class Space extends DefaultAbstractKnowWEObjectType{
+public class Space extends DefaultAbstractKnowWEObjectType {
 
+	@Override
+	protected void init() {
+		this.sectionFinder = new EmbracingSpaceSectionFinder();
+	}
+
+	class EmbracingSpaceSectionFinder extends SectionFinder {
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text,
+				Section father) {
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+
+			String trimmed = text.trim();
+			int leadingSpaces = text.indexOf(trimmed);
+			int followingSpaces = text.length()
+					- (trimmed.length() + leadingSpaces);
+
+			if (leadingSpaces > 0) {
+				result.add(new SectionFinderResult(0, leadingSpaces));
+			}
+			if (followingSpaces > 0) {
+				result.add(new SectionFinderResult(text.length()
+						- followingSpaces, text.length()));
+			}
+			return result;
+		}
+
+	}
 
 }

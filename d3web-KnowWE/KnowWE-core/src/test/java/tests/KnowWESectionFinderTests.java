@@ -24,7 +24,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import de.d3web.we.kdom.basic.LineBreak;
-import de.d3web.we.kdom.owlextension.Extension;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;

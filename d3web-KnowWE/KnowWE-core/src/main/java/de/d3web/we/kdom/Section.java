@@ -28,6 +28,7 @@ import java.util.Map;
 
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.IncludedFromType;
@@ -525,6 +526,11 @@ public class Section implements Visitable, Comparable<Section> {
 	 * @return
 	 */
 	public boolean hasRightSonOfType(Class class1, String text) {
+		if(this.getObjectType() instanceof EmbracedType) {
+			if(this.getFather().hasRightSonOfType(class1, text)) {
+				return true;
+			}
+		}
 		for (Section child : children) {
 			if (child.getObjectType().getClass().equals(class1)) {
 				if (this.originalText.indexOf(text) < child
@@ -545,6 +551,11 @@ public class Section implements Visitable, Comparable<Section> {
 	 * @return
 	 */
 	public boolean hasLeftSonOfType(Class class1, String text) {
+		if(this.getObjectType() instanceof EmbracedType) {
+			if(this.getFather().hasLeftSonOfType(class1, text)) {
+				return true;
+			}
+		}
 		for (Section child : children) {
 			if (child.getObjectType().getClass().equals(class1)) {
 				if (this.originalText.indexOf(text) > child
@@ -695,6 +706,20 @@ public class Section implements Visitable, Comparable<Section> {
 		return null;
 	}
 
+	/**
+	 * Searches the Children of a Section and only the children of a Section for
+	 * a given class
+	 * 
+	 * @param section
+	 */
+	public List<Section> findChildrenOfType(Class<?> class1) {
+		List<Section> result = new ArrayList<Section>();
+		for (Section s : this.getChildren())
+			if (class1.isAssignableFrom(s.getObjectType().getClass()))
+				result.add(s);
+		return result;
+	}
+	
 	public Section findSuccessor(Class<?> class1) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
