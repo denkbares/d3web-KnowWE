@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.condition.QuotedQuestion;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -36,14 +37,12 @@ public class SetQuestionValue extends DefaultAbstractKnowWEObjectType {
 	@Override
 	public void init() {
 		this.sectionFinder = new SetQuestionValueSectionFinder();
-		QuestionClass qC = new QuestionClass();
-		qC.setSectionFinder(new QuestionDiagnosisSectionFinder());
-		this.childrenTypes.add(qC);
+		this.childrenTypes.add(new QuotedQuestion());
 		this.childrenTypes.add(new Equals());
-		AnswerAlternative aA = new AnswerAlternative();
+		AddedValue aA = new AddedValue();
 		aA.setSectionFinder(new SetValueSectionFinder());
 		this.childrenTypes.add(aA);
-		AnswerAlternative aA2 = new AnswerAlternative();
+		AddedValue aA2 = new AddedValue();
 		aA2.setSectionFinder(new WordSectionFinder());
 		this.childrenTypes.add(aA2);
 	}

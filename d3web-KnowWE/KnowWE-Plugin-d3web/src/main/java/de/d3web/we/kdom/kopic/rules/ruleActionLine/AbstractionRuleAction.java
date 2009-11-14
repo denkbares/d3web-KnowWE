@@ -36,6 +36,7 @@ public class AbstractionRuleAction extends DefaultAbstractKnowWEObjectType {
 	@Override
 	public void init() {
 		this.sectionFinder = new AbstractionRuleActionSectionFinder();
+		this.childrenTypes.add(new SimpleQCAssignment());
 		this.childrenTypes.add(new SetQuestionValue());
 		this.childrenTypes.add(new AddQuestionValue());
 	}

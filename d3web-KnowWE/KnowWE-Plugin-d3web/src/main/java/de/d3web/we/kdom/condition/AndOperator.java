@@ -31,7 +31,6 @@ public class AndOperator extends DefaultAbstractKnowWEObjectType{
 	@Override
 	public void init() {
 		this.sectionFinder = new RegexSectionFinder("AND");
-		this.childrenTypes.add(new Finding());
 	}
 	
 	@Override

@@ -128,8 +128,11 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {
-			if (text.contains(">") || text.contains("=") || text.contains("<")) { 
-				return new AllTextFinderTrimmed().lookForSections(text, father);
+			if (text.contains(">") || text.contains("=") || text.contains("<")) {
+				if (!text.contains("+=")) {  // hack excluding "+="
+					return new AllTextFinderTrimmed().lookForSections(text,
+							father);
+				}
 			}
 			return null;
 		}

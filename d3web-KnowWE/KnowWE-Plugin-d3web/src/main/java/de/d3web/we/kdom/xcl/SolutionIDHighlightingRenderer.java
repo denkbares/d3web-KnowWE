@@ -34,6 +34,7 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.D3webUtils;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -54,9 +55,9 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 
 		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
 
-		String spanStart = "<span style=\"background-color: rgb(";
-		String spanStartEnd = ";\">";
-		String spanEnd = "</span>";
+		String spanStart = KnowWEUtils.maskHTML("<span style=\"background-color: rgb(");
+		String spanStartEnd = KnowWEUtils.maskHTML(";\">");
+		String spanEnd = KnowWEUtils.maskHTML("</span>");
 		
 		if (xpsCase != null) {
 			
@@ -84,16 +85,16 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 					}
 
 					if (state == DiagnosisState.SUGGESTED) {
-						string.append(spanStart + "251, 199, 11)" + spanStartEnd);
+						string.append(spanStart + "220, 200, 11)" + spanStartEnd);
 					}
 
 					if (state == DiagnosisState.UNCLEAR) {
-						string.append(spanEnd);
+						string.append(spanStart + ")" + spanStartEnd);
 					}
 				}
 			}
 		} else {
-			string.append(spanEnd);
+			string.append("");
 		}
 		
 		new ObjectInfoLinkRenderer(

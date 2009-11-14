@@ -26,6 +26,8 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -53,7 +55,9 @@ public class FindingComparator extends DefaultAbstractKnowWEObjectType {
 			String foundOperator = "";
 			for (String operator : operators) {
 				index = text.lastIndexOf(operator);
+				
 				if (index != -1) {
+					if(operator.equals("=") && text.charAt(index-1) == '+') continue;  //hack excluding "+=" as comparator
 					foundOperator = operator;
 					break;
 				}
@@ -79,7 +83,12 @@ public class FindingComparator extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.sectionFinder = 
-			new AnnotationKnowledgeSliceObjectComparatorSectionFinder();		
+			new AnnotationKnowledgeSliceObjectComparatorSectionFinder();
+	}
+	
+	@Override
+	public KnowWEDomRenderer getRenderer() {
+		return FontColorRenderer.getRenderer(FontColorRenderer.COLOR1);
 	}
 
 }

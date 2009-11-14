@@ -20,16 +20,48 @@
 package de.d3web.we.kdom.kopic.rules.ruleActionLine;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 /**
  * @author Johannes Dienst
  *
  */
-public class GreaterEquals extends DefaultAbstractKnowWEObjectType {
-
+public class AddedValue extends DefaultAbstractKnowWEObjectType {
+	
 	@Override
 	public void init() {
-		this.sectionFinder = new RegexSectionFinder("\\+=");
+		this.sectionFinder = new BracketedQuestionClassSectionFinder();
 	}
+	
+//	/**
+//	 * Used in SetQuestionValue and SuppressAnswerAlternatives
+//	 */
+//	private class AnswerAlternativeSectionFinder extends SectionFinder {
+//
+//		@Override
+//		public List<SectionFinderResult> lookForSections(String text, Section father) {
+//			
+//			// TODO make this simpler!!!
+//			if (!text.equals("")) {
+//				List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+//				
+//				int start = 0;
+//				int end = text.length();
+//				
+//				if (text.charAt(start) == ' ') start++;
+//				if (text.charAt(end-1) == ' ') end--;
+//				if (start >= end) return null;
+//				if (text.charAt(start) == '\"' && text.charAt(end-1) == '\"') {
+//					start++;
+//					end--;
+//				}
+//
+//				if (start >= end) return null;
+//				result.add(new SectionFinderResult(start, end));
+//				return result;
+//			}
+//			
+//			return null;
+//		}
+//		
+//	}
 }

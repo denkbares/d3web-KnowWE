@@ -32,7 +32,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * @author Johannes Dienst
  *
  */
-public class DiagnosisRuleAction extends DefaultAbstractKnowWEObjectType {
+public class SolutionValueAssignment extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public void init() {

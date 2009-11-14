@@ -21,7 +21,7 @@
 package de.d3web.we.kdom.condition;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-
+@Deprecated
 public class CondKnownSyntax extends DefaultAbstractKnowWEObjectType {
 
 

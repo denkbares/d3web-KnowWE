@@ -22,7 +22,7 @@ package de.d3web.we.kdom.rules;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.AbstractionRuleAction;
-import de.d3web.we.kdom.kopic.rules.ruleActionLine.DiagnosisRuleAction;
+import de.d3web.we.kdom.kopic.rules.ruleActionLine.SolutionValueAssignment;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.IndicationRuleAction;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
@@ -31,7 +31,7 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType{
 	@Override
 	protected void init() {
 		sectionFinder = new AllTextSectionFinder();
-		this.childrenTypes.add(new DiagnosisRuleAction());
+		this.childrenTypes.add(new SolutionValueAssignment());
 		this.childrenTypes.add(new AbstractionRuleAction());
 		this.childrenTypes.add(new IndicationRuleAction());
 	}

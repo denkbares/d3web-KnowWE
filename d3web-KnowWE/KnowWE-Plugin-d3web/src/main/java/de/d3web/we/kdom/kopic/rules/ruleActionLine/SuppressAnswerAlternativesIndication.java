@@ -41,7 +41,7 @@ public class SuppressAnswerAlternativesIndication extends DefaultAbstractKnowWEO
 		qC.setSectionFinder(new QuestionDiagnosisSectionFinder());
 		this.childrenTypes.add(qC);
 		this.childrenTypes.add(new Equals());
-		this.childrenTypes.add(new AnswerAlternative());
+		this.childrenTypes.add(new AddedValue());
 	}
 	
 	private class SuppressAlternativesIndicationSectionFinder extends SectionFinder {
