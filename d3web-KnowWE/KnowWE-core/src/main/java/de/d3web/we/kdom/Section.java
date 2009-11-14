@@ -532,7 +532,7 @@ public class Section implements Visitable, Comparable<Section> {
 			}
 		}
 		for (Section child : children) {
-			if (child.getObjectType().getClass().equals(class1)) {
+			if (child.getObjectType().isAssignableFromType(class1)) {
 				if (this.originalText.indexOf(text) < child
 						.getOffSetFromFatherText()) {
 					return true;
@@ -557,7 +557,7 @@ public class Section implements Visitable, Comparable<Section> {
 			}
 		}
 		for (Section child : children) {
-			if (child.getObjectType().getClass().equals(class1)) {
+			if (child.getObjectType().isAssignableFromType(class1)) {
 				if (this.originalText.indexOf(text) > child
 						.getOffSetFromFatherText()) {
 					return true;

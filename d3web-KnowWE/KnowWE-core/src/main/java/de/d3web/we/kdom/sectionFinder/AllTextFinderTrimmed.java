@@ -6,6 +6,17 @@ import java.util.List;
 import de.d3web.we.kdom.Section;
 
 public class AllTextFinderTrimmed extends SectionFinder {
+	
+	private static AllTextFinderTrimmed instance;
+	
+	public static AllTextFinderTrimmed getInstance() {
+		if (instance == null) {
+			instance = new AllTextFinderTrimmed();
+			
+		}
+
+		return instance;
+	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
