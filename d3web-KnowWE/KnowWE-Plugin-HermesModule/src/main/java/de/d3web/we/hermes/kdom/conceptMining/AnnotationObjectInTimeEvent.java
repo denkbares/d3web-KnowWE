@@ -12,14 +12,14 @@ import org.openrdf.repository.RepositoryException;
 import de.d3web.we.hermes.kdom.TimeEventContext;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationObject;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationProperty;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationObject;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
 import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.PropertyManager;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class AnnotationObjectInTimeEvent extends AnnotationObject {
+public class AnnotationObjectInTimeEvent extends SemanticAnnotationObject {
 
 	@Override
 	public IntermediateOwlObject getOwl(Section s) {
@@ -29,8 +29,8 @@ public class AnnotationObjectInTimeEvent extends AnnotationObject {
 		URI prop = null;
 		URI stringa = null;
 		for (Section cur : childs) {
-			if (cur.getObjectType().getClass().equals(AnnotationProperty.class)) {
-				prop = ((AnnotationProperty) cur.getObjectType()).getOwl(cur)
+			if (cur.getObjectType().getClass().equals(SemanticAnnotationProperty.class)) {
+				prop = ((SemanticAnnotationProperty) cur.getObjectType()).getOwl(cur)
 						.getLiterals().get(0);
 			} else if (cur.getObjectType().getClass().equals(
 					SimpleAnnotation.class)) {

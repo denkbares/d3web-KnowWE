@@ -38,8 +38,8 @@ import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationEndSymbol;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationStartSymbol;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
@@ -52,8 +52,8 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
     protected void init() {
 	sectionFinder = new RegexSectionFinder(START_TAG + "[\\w|\\W]*?"
 		+ END_TAG);
-	this.childrenTypes.add(new AnnotationStartSymbol("<<"));
-	this.childrenTypes.add(new AnnotationEndSymbol(">>"));
+	this.childrenTypes.add(new SemanticAnnotationStartSymbol("<<"));
+	this.childrenTypes.add(new SemanticAnnotationEndSymbol(">>"));
 	this.childrenTypes.add(new TimeEventTitleType());
 	this.childrenTypes.add(new TimeEventImportanceType());
 	this.childrenTypes.add(new TimeEventDateType());

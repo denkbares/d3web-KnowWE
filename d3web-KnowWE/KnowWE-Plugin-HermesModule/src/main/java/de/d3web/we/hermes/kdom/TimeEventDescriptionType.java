@@ -27,9 +27,9 @@ import de.d3web.we.hermes.kdom.conceptMining.ConceptOccurrence;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationContent;
-import de.d3web.we.kdom.semanticAnnotation.AnnotationObject;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationContent;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationObject;
 
 public class TimeEventDescriptionType extends DefaultAbstractKnowWEObjectType {
 
@@ -56,8 +56,8 @@ public class TimeEventDescriptionType extends DefaultAbstractKnowWEObjectType {
 			List<KnowWEObjectType> allowedChildrenTypes = content.getAllowedChildrenTypes();
 			//removing usual annotationObjectType-object
 			KnowWEObjectType type = allowedChildrenTypes.remove(allowedChildrenTypes.size()-1);
-			if(! (type instanceof AnnotationObject)) {
-				throw new IllegalStateException("removed unexpected KnowWEObjectType:" +type.getClass().getName()+" instead of"+AnnotationObject.class.getName());
+			if(! (type instanceof SemanticAnnotationObject)) {
+				throw new IllegalStateException("removed unexpected KnowWEObjectType:" +type.getClass().getName()+" instead of"+SemanticAnnotationObject.class.getName());
 			}
 			//replaced by customized one
 			content.getAllowedChildrenTypes().add(new AnnotationObjectInTimeEvent());
@@ -67,7 +67,7 @@ public class TimeEventDescriptionType extends DefaultAbstractKnowWEObjectType {
 	private KnowWEObjectType findContentType(SemanticAnnotation semanticAnnotation) {
 		List<KnowWEObjectType> annoChildren = semanticAnnotation.getAllowedChildrenTypes();
 		for (KnowWEObjectType knowWEObjectType : annoChildren) {
-			if(knowWEObjectType instanceof AnnotationContent) {
+			if(knowWEObjectType instanceof SemanticAnnotationContent) {
 				return knowWEObjectType;
 			}
 		}
