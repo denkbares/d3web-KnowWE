@@ -92,12 +92,12 @@ public class FindingHTMLWriter {
 			String answerText = theQuestion.getUnknownAlternative().verbalizeValue(theCase);
 			
 			String rqst= targetUrlPrefix+"?action=SetFindingAction&namespace="+java.net.URLEncoder.encode(namespace) + "&ObjectID="
-							+ theQuestion.getId();
+							+ theQuestion.getId() + "&ValueID=" + theQuestion.getUnknownAlternative().getId();
 											
-			buffy.append("<INPUT TYPE=radio NAME='f" + timestampid+"id"
-					+ theQuestion.getId() + "' value='"
-					+ theQuestion.getUnknownAlternative().getId() + "' id='semanooc"
-					+ theQuestion.getId() + "' ");
+			buffy.append("<INPUT TYPE=radio NAME='f" + timestampid+"id" + theQuestion.getId() + "'" 
+					+ " value='" + theQuestion.getUnknownAlternative().getId() + "'" 
+					+ " id='semanooc" + theQuestion.getId() + "' "
+					+ "rel=\"{url: '"+rqst+"'}\" ");
 
 			if (theCase != null
 					&& theQuestion.getValue(theCase)
