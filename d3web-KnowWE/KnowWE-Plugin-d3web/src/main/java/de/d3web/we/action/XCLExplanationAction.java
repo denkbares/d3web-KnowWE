@@ -20,6 +20,7 @@
 
 package de.d3web.we.action;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -249,26 +250,30 @@ public class XCLExplanationAction extends AbstractKnowWEAction {
 			AbstractCondition cond = rel.getConditionedFinding();	
 			List questions = cond.getTerminalObjects();
 			ListIterator condIt = questions.listIterator();
+			List<Question> askedQuestions = new ArrayList<Question>();
 			int count = 0;
 			Question cq = null;
 			while(condIt.hasNext()){
-			cq =(Question) condIt.next();
-			cont.append(cq.getText());
 				if(count >0){
 					cont.append("<br>");
 				}
-				count = count +1;
+				cq =(Question) condIt.next();
+				if (!askedQuestions.contains(cq)) {
+					cont.append(cq.getText());
+					count = count +1;
+					askedQuestions.add(cq);
+				}
 			}
 			cont.append("</td><td>");
 			List answers = cq.getValue(this.currentCase);
 			ListIterator iterator = answers.listIterator();
 			count = 0;
 			while(iterator.hasNext()){
-				Answer a = (Answer) iterator.next();
-				cont.append(a.getValue(this.currentCase));
 				if(count > 0){
 					cont.append("<br>");
 				}
+				Answer a = (Answer) iterator.next();
+				cont.append(a.getValue(this.currentCase));
 				count = count+1;
 			}
 			cont.append("</td>");
