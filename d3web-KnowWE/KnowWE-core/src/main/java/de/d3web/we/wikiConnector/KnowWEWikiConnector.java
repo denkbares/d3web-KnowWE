@@ -20,6 +20,7 @@
 
 package de.d3web.we.wikiConnector;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -244,5 +245,18 @@ public interface KnowWEWikiConnector {
      * @return
      */
     public Map<String, Integer> getVersionCounts();
+
+    /**
+     * Stores an File as an attachment to the given page. Returns whether the
+     * operation was successful or not.
+     * 
+     * @param wikiPage
+     *            the name of the page, to which this attachment should be
+     *            stored
+     * @param attachmentFile
+     *            the attachment to be stored
+     * @return
+     */
+    boolean storeAttachment(String wikiPage, File attachmentFile);
 
 }

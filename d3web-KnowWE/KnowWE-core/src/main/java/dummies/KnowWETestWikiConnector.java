@@ -20,6 +20,7 @@
 
 package dummies;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -175,6 +176,12 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
     public Map<String, Integer> getVersionCounts() {
 	// TODO Auto-generated method stub
 	return null;
+    }
+
+    @Override
+    public boolean storeAttachment(String wikiPage, File attachmentFile) {
+	// TODO Auto-generated method stub
+	return false;
     }
 
 }
