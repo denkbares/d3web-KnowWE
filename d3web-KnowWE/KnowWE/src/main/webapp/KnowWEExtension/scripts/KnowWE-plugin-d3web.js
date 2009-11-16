@@ -10,7 +10,16 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
      */
     var KNOWWE = {};
 }
-
+if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
+ /**
+     * The KNOWWE.plugin global namespace object. If KNOWWE.plugin is already defined, the
+     * existing KNOWWE.plugin object will not be overwritten so that defined namespaces
+     * are preserved.
+     */
+    KNOWWE.plugin = function(){
+         return {  }
+    }
+}
 /**
  * Namespace: KNOWWE.plugin.d3web
  * The KNOWWE plugin d3web namespace.
@@ -417,7 +426,6 @@ KNOWWE.plugin.d3web.dialog = function(){
                 table.className = state;
                 toogleImage( img, state);
             }
-            
             KNOWWE.plugin.d3web.dialog.initAction();
             KNOWWE.plugin.d3web.solutionstate.updateSolutionstate();
         },
@@ -533,7 +541,7 @@ KNOWWE.plugin.d3web.adminconsole = function(){
          * no action in the admin console.
          */
         init : function(){
-    	    if(_KS('#admin-summarizer'))
+            if(_KS('#admin-summarizer'))
                 _KE.add('click', _KS('#admin-summarizer'), KNOWWE.plugin.d3web.adminconsole.doSumAll);
             if(_KS('#admin-reInit'))
                 _KE.add('click', _KS('#admin-reInit'), KNOWWE.plugin.d3web.adminconsole.doReInit);
@@ -629,6 +637,33 @@ KNOWWE.plugin.d3web.semantic = function(){
      */
     var sTimer = null;
     
+    /**
+     * Indicates if the current visible question is a multiple choice question.
+     * if so the popup stays visible until the user closes it or moves the mouse
+     * cursor out of the question overlay.
+     */
+    var isMC = false;
+    
+    /**
+     * Stores the request URL of the MC questions.
+     */
+    var mcUrl = null;
+    
+    /**
+     * 
+     */
+    function handleMC(){
+        var mcStorage = new Array();
+        _KS('.semano_mc').forEach(function(element){
+            if( element.checked ){
+                var rel = eval( "(" + element.getAttribute('rel') + ")");
+                mcStorage.push( rel.ValueIDS );
+            }
+        });
+        mcUrl.ValueIDS = mcStorage.join(',');
+        KNOWWE.plugin.d3web.semantic.send( mcUrl, null );
+    }
+    
     return {
         /**
          * Function: init
@@ -678,10 +713,18 @@ KNOWWE.plugin.d3web.semantic = function(){
                     }
                     if(e.getAttribute('id') == 'o-lay' || father == e){
                         clearTimeout( sTimer );
-                        sTimer = setTimeout(function(){_KS('#o-lay')._remove();}, 4000);
+                        sTimer = setTimeout(function(){
+                            if(isMC){
+                                handleMC();
+                            }
+                            _KS('#o-lay')._remove();
+                        }, 4000);
                     }
                 });
                 _KE.add('click', _KS('#o-lay-close'), function(){
+                    if(isMC){
+                        handleMC();
+                    }
                     _KS('#o-lay')._remove();
                     clearTimeout( sTimer );
                 });
@@ -697,7 +740,9 @@ KNOWWE.plugin.d3web.semantic = function(){
         handleForm : function(e){
             var el = new _KN(_KE.target(e));
             var rel = eval( "(" + el.getAttribute('rel') + ")");
-            KNOWWE.plugin.d3web.semantic.send( rel.url, null );
+            
+            isMC = true;
+            mcUrl = rel;
         },
         /**
          * Function: handleNum
@@ -712,16 +757,14 @@ KNOWWE.plugin.d3web.semantic = function(){
             if( !( key || bttn ) ) return false;
             
             var rel = null, el = null;
-            
-            
             el = new _KN(_KE.target(e));
             if( el.value=="ok" ){
                 el = el.previousSibling;
             }
             rel = eval("(" + el.getAttribute('rel') + ")");
-            
+
             if( !rel ) return;            
-            KNOWWE.plugin.d3web.semantic.send( rel.url, {ValueNum : el.value} );
+            KNOWWE.plugin.d3web.semantic.send( rel, {ValueNum : el.value} );
         },
         /**
          * Function: handleOC
@@ -733,7 +776,8 @@ KNOWWE.plugin.d3web.semantic = function(){
         handleOC : function(e){
             var el = _KE.target(e);
             var rel = eval( "(" + el.getAttribute('rel') + ")");
-            KNOWWE.plugin.d3web.semantic.send( rel.url, null );
+            
+            KNOWWE.plugin.d3web.semantic.send( rel, null );
         },
         /**
          * Function: send
@@ -745,21 +789,29 @@ KNOWWE.plugin.d3web.semantic = function(){
          *     values - The selected value
          */
         send : function( url, values ){
-
-            var tokens = [];
+            var tokens = ['action=SetFindingAction'];
+            for( keys in url ){
+                if(keys == 'url') continue;
+                tokens.push(keys + "=" + encodeURIComponent( url[keys] ));
+            }
+            
             if(values) {
                 for( keys in values ){
                     tokens.push(keys + "=" + encodeURIComponent( values[keys] ));
                 }
             }
             var options = {
-                url : url + "&" + tokens.join('&'),
+                url : url.url + "?" + tokens.join('&'),
                 action: 'none',
                 fn : KNOWWE.plugin.d3web.solutionstate.updateSolutionstate
             }
             new _KA( options ).send();
-            _KS('#o-lay')._remove();
-            clearTimeout(sTimer);
+            
+            if(!isMC){
+                _KS('#o-lay')._remove();
+                clearTimeout(sTimer);
+                isMC = false;
+            }
         },
         /**
          * Function: showOverlayQuestion
@@ -788,7 +840,7 @@ KNOWWE.plugin.d3web.semantic = function(){
             var mouseOffset = KNOWWE.helper.getMouseOffset( el, e );
             
             var olay = new KNOWWE.helper.overlay({
-            	title : 'Interview',
+                title : 'Interview',
                 cursor : {
                     top : mousePos.y - mouseOffset.y,
                     left : mousePos.x - mouseOffset.x
@@ -964,46 +1016,46 @@ KNOWWE.plugin.d3web.solutionstate = function(){
  * an answer in the dialog or in the question sheet itself.
  */
 KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
-	return {
-		/**
-		 * Function: update
-		 * Updates the question sheet after the user selected an answer in the
-		 * pop-up window.
-		 */
-		update : function( ) {
-			var topic = KNOWWE.helper.gup('page');
-		    var params = {
-		        action : 'ReRenderQuestionSheetAction',
-		        KWikiWeb : 'default_web',
-		        KWiki_Topic : topic
-		    }
-		    var url = KNOWWE.core.util.getURL( params );
-		    KNOWWE.plugin.d3web.rerenderquestionsheet.execute(url, 'questionsheet');
-		},
-		/**
-		 * Function: execute
-		 * Executes the update question sheet AJAX request
-		 * 
-		 * Parameters:
-		 *     url - The URL for the AJAX request
-		 *     id - The id of the DOM Element that should be updated.
-		 */
-		execute : function( url, id ) {
-			if(!_KS('#questionsheet-panel')) return ;
-		    var options = {
-		        url : url,
-		        response : {
-		        	action : 'insert',
-		            ids : [ id ],
-		            fn : function(){
-		            	KNOWWE.core.util.addCollabsiblePluginHeader('#questionsheet-panel');
-		            	KNOWWE.plugin.d3web.semantic.init();
-		            }
-		        }
-		    }
-		    new _KA( options ).send();
-	    }
-	}
+    return {
+        /**
+         * Function: update
+         * Updates the question sheet after the user selected an answer in the
+         * pop-up window.
+         */
+        update : function( ) {
+            var topic = KNOWWE.helper.gup('page');
+            var params = {
+                action : 'ReRenderQuestionSheetAction',
+                KWikiWeb : 'default_web',
+                KWiki_Topic : topic
+            }
+            var url = KNOWWE.core.util.getURL( params );
+            KNOWWE.plugin.d3web.rerenderquestionsheet.execute(url, 'questionsheet');
+        },
+        /**
+         * Function: execute
+         * Executes the update question sheet AJAX request
+         * 
+         * Parameters:
+         *     url - The URL for the AJAX request
+         *     id - The id of the DOM Element that should be updated.
+         */
+        execute : function( url, id ) {
+            if(!_KS('#questionsheet-panel')) return ;
+            var options = {
+                url : url,
+                response : {
+                    action : 'insert',
+                    ids : [ id ],
+                    fn : function(){
+                        KNOWWE.core.util.addCollabsiblePluginHeader('#questionsheet-panel');
+                        KNOWWE.plugin.d3web.semantic.init();
+                    }
+                }
+            }
+            new _KA( options ).send();
+        }
+    }
 }();
 
 /**

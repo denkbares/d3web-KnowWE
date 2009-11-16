@@ -21,6 +21,47 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
 KNOWWE.helper = function(){
     return {
         /**
+         * Function: containsArr
+         * Checks if a value is already in a array.
+         * 
+         * Parameters:
+         *     a - The array that maybe contains the value.
+         *     obj -  The element that should be checked for.
+         * 
+         * Returns:
+         *     TRUE if the value is found, otherwise FALSE.
+         */
+        containsArr : function(a, obj){
+            for(var i = 0; i < a.length; i++) {
+                if(a[i] === obj){
+                    return true;
+                }
+            } 
+            return false;
+        },
+        /**
+         * Function: removeArr
+         * Removes the given value from the given array.
+         * 
+         * Parameters:
+         *     a - The array the value should removed from.
+         *     obj -  The element that should be removed.
+         * 
+         * Returns:
+         *     The shrunk array.
+         */
+        removeArr : function(a, obj){
+            for(var i = 0; i < a.length; i++) {
+                if( a[i] === obj ){
+                    var r = a.slice(i + 1);
+                    a.length = i;
+                    if(r.length > 0)
+                        return a.push.apply( a, r );
+                }
+            }
+            return a;
+        },
+        /**
          * Function: enrich
          * Enriches an object by replacing its key:value pairs with those from an other
          * object. Also non existing key:value pairs from the first object are added. Key:value
@@ -1375,22 +1416,22 @@ KNOWWE.helper.overlay = function( options ){
         document.getElementsByTagName('body')[0].appendChild(o);
 
         if( oDefault.url ){
-        	var options = {
-	            url : oDefault.url,
-	            response : {
-	                action: 'insert',
-	                ids : [ oDefault.mainCSS ],
-	                fn : function(){
-	                    var olay = KNOWWE.helper.selector('#' + oDefault.id);
-	                    olay._css({top : oDefault.cursor.top + 'px', left: oDefault.cursor.left + 'px'});
-	                    olay._show();
-	                    oDefault.fn.call();
-	                }
-	            }
-	        };
+            var options = {
+                url : oDefault.url,
+                response : {
+                    action: 'insert',
+                    ids : [ oDefault.mainCSS ],
+                    fn : function(){
+                        var olay = KNOWWE.helper.selector('#' + oDefault.id);
+                        olay._css({top : oDefault.cursor.top + 'px', left: oDefault.cursor.left + 'px'});
+                        olay._show();
+                        oDefault.fn.call();
+                    }
+                }
+            };
             new KNOWWE.helper.ajax( options ).send();
         } else if(oDefault.content) {
-        	var olay = KNOWWE.helper.selector('#' + oDefault.id);
+            var olay = KNOWWE.helper.selector('#' + oDefault.id);
             olay._css({top : oDefault.cursor.top + 'px', left: oDefault.cursor.left + 'px'});
             olay._show();
             if(oDefault.fn)
@@ -1568,5 +1609,3 @@ String.prototype.toLogger = function(indent){
     var space = KNOWWE.helper.logger.space(indent);
     return space + '"' + this + '"';
 }
-
-

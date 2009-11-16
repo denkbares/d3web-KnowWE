@@ -37,7 +37,6 @@ import de.d3web.kernel.domainModel.qasets.QuestionNum;
 import de.d3web.kernel.domainModel.qasets.QuestionOC;
 import de.d3web.kernel.domainModel.qasets.QuestionYN;
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -64,53 +63,52 @@ public class FindingHTMLWriter {
 			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		QuestionChoice theQC = (QuestionChoice) theQuestion;
 		String timestampid = (new Date()).getTime() + "";
+		
+		String rel = "url : '" + targetUrlPrefix + "'," 
+			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "'," 
+			+ KnowWEAttributes.WEB + ": '" + webname + "'," 
+			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";	
+		
 		if (theQC.getAllAlternatives() != null) {
-			buffy.append("<form action='#' name='semanooc'"
-					+ theQuestion.getId() + timestampid + "'>");
+			buffy.append("<form action='#' name='semanooc'>");
 			
 			for (AnswerChoice theAnswer : theQC.getAllAlternatives()) {
-				String answerText = KnowWEUtils.convertUmlaut(theAnswer.verbalizeValue(theCase));
-
-				String rqst= targetUrlPrefix + "?action=SetFindingAction&namespace=" + java.net.URLEncoder.encode(namespace) 
-                		+ "&ObjectID=" + theQuestion.getId() + "&ValueID=" + theAnswer.getId();
+				String answerText = KnowWEUtils.convertUmlaut(theAnswer.verbalizeValue(theCase));		
 								
 				buffy.append("<INPUT TYPE='radio' NAME='f" + timestampid+"id"
 						+ theQuestion.getId() + "' " 
 						+ "value='" + theAnswer.getId() + "'" 
 						+ "id='semanooc" + theQuestion.getId() + "' " 
-						+ "rel=\"{url: '"+rqst+"'}\" ");				
-
+						+ "rel=\"{" + rel
+						+ "ObjectID : '" + theQuestion.getId() + "'," 
+						+ "ValueID : '" + theAnswer.getId() + "'"
+						+ "}\" ");				
 
 				if (theCase != null
-						&& theQuestion.getValue(theCase)
-								.contains(theAnswer)) {		
+						&& theQuestion.getValue(theCase).contains(theAnswer)) {		
 					buffy.append(" checked=\"checked\" ");
 				}
 				buffy.append("class='semano_oc'");
 				buffy.append(">"+answerText+"<br />");
 			}
-			String answerText = theQuestion.getUnknownAlternative().verbalizeValue(theCase);
-			
-			String rqst= targetUrlPrefix+"?action=SetFindingAction&namespace="+java.net.URLEncoder.encode(namespace) + "&ObjectID="
-							+ theQuestion.getId() + "&ValueID=" + theQuestion.getUnknownAlternative().getId();
+			String answerText = theQuestion.getUnknownAlternative().verbalizeValue(theCase);					
 											
 			buffy.append("<INPUT TYPE=radio NAME='f" + timestampid+"id" + theQuestion.getId() + "'" 
 					+ " value='" + theQuestion.getUnknownAlternative().getId() + "'" 
 					+ " id='semanooc" + theQuestion.getId() + "' "
-					+ "rel=\"{url: '"+rqst+"'}\" ");
+					+ "rel=\"{"+rel
+					+ "ObjectID : '" + theQuestion.getId() + "'," 
+					+ "ValueID : '" + theQuestion.getUnknownAlternative().getId() + "'"
+					+ "}\" ");
 
 			if (theCase != null
-					&& theQuestion.getValue(theCase)
-							.contains(theQuestion.getUnknownAlternative())) {		
+					&& theQuestion.getValue(theCase).contains(theQuestion.getUnknownAlternative())) {		
 				buffy.append(" checked=\"checked\" ");
 			}
 			buffy.append("class='semano_oc'");
 
 			buffy.append(">"+renderAnswerText(answerText)+"<br />");
-		}
-			
-		
-		
+		}	
 	}
 
 	private String renderAnswerText(String answerText) {
@@ -123,32 +121,31 @@ public class FindingHTMLWriter {
 	private void appendNUMAnswers(Question theQuestion, StringBuffer buffy,
 			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		String timestampid = (new Date()).getTime() + "";
+		
+		String rel = "url : '" + targetUrlPrefix + "'," 
+			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "'," 
+			+ KnowWEAttributes.WEB + ": '" + webname + "'," 
+			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";		
+		
 		if (theCase != null && theQuestion.getValue(theCase).size() > 0) {
 			AnswerNum answer = (AnswerNum) theQuestion.getValue(theCase).get(0);			
 			if (answer != null) {
 				String answerText = answer.verbalizeValue(theCase);
-				String prefix=KnowWEEnvironment.getInstance().getPathPrefix();
-				String rqst = prefix+(prefix.length()!=0?"/":"")+"KnowWE.jsp?action=SetFindingAction&namespace="
-						+ java.net.URLEncoder.encode(namespace)
-						+ "&ObjectID="
-						+ theQuestion.getId()
-						+ "&" + KnowWEAttributes.WEB + "=" + webname
-						+ "&" + KnowWEAttributes.TOPIC + "=" + topic;
-				
+						
 				buffy.append("<INPUT TYPE=text size=10 maxlength=10 " 
 						+ "NAME='num" + timestampid + theQuestion.getId() + "' " 
 						+ "value='" + answer.getValue(theCase).toString() + "' " 
-
-						+ "class=\"semano_num\"" 
-						+ "rel=\"{url : '" + rqst + "'}\" "
-						+ "");
+						+ "class=\"semano_num\""
+						+ "rel=\"{"+rel
+						+ "ObjectID : '" + theQuestion.getId() + "'"
+						+ "}\" ");
 
 				buffy.append(">");
 				buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" " 
-						+ "rel=\"{url : '" + rqst + "'}\"" 
-						+ "");
+						+ "rel=\"{"+rel
+						+ "ObjectID : '" + theQuestion.getId() + "'"
+						+ "}\" ");
 				buffy.append(answerText);
-
 				buffy.append("<br />");
 			}
 		} else {
@@ -156,30 +153,23 @@ public class FindingHTMLWriter {
 			an.setQuestion(theQuestion);
 			an.setValue(new Double(0));
 			String answerText = an.verbalizeValue(theCase);
-			String rqst = targetUrlPrefix+"?action=SetFindingAction&namespace="
-					+ namespace
-					+ "&ObjectID="
-					+ theQuestion.getId()
-					+ "&" + KnowWEAttributes.WEB + "=" + webname
-					+ "&" + KnowWEAttributes.TOPIC + "=" + topic;
 			
 			buffy.append("<INPUT TYPE=text size=10 maxlength=10 " 
 					+ "NAME='num" + timestampid + theQuestion.getId() + "' " 
 					+ "value='' " 
 					+ "class=\"semano_num\" "
-					+ "rel=\"{url : '" + rqst + "'}\" "
-					+ "");
+					+ "rel=\"{"+rel
+					+ "ObjectID : '" + theQuestion.getId() + "'" 
+					+ "}\" ");
 			buffy.append(">");
 			buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" " 
-						+ "rel=\"{url : '" + rqst + "'}\"" 
-						+ "");
+					+ "rel=\"{"+rel
+					+ "ObjectID : '" + theQuestion.getId() + "'" 
+					+ "}\" ");	
 
 			buffy.append(answerText);
-
 			buffy.append("<br />");
-
 		}
-
 	}
 
 	@SuppressWarnings("deprecation")
@@ -189,30 +179,28 @@ public class FindingHTMLWriter {
 		String timestampid = (new Date()).getTime() + "";
 
 		
+		String rel = "url : '" + targetUrlPrefix + "'," 
+			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "'," 
+			+ KnowWEAttributes.WEB + ": '" + webname + "'," 
+			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";		
 		
 		if (theMC.getAllAlternatives() != null) {
-	
-			buffy.append("<form action='#' name='semanomc'" + theQuestion.getId() + timestampid + "'>");
+			buffy.append("<form action='#' name='semanomc' id='semanomc'>");
 			for (Answer theAnswer : theMC.getAllAlternatives()) {
 				String answerText = theAnswer.verbalizeValue(theCase);
 				if (theAnswer instanceof AnswerUnknown) {
 					answerText = KnowWEUtils.convertUmlaut(rb.getString("KnowWE.answer.unknown"));
 				} else {
-					String rqst = targetUrlPrefix+"?action=SetFindingAction&namespace="
-							+ java.net.URLEncoder.encode(namespace)
-							+ "&ObjectID="
-							+ theQuestion.getId()
-							+ "&ValueID="
-							+ theAnswer.getId()
-							+ "&" + KnowWEAttributes.WEB + "=" + webname
-							+ "&" + KnowWEAttributes.TOPIC + "=" + topic;
 					
 					buffy.append("<INPUT TYPE=CHECKBOX NAME='f" + timestampid+"id"
 							+ theQuestion.getId() + "' " 
 							+ "value='" + theAnswer.getId() + "' " 
 							+ "id='semanomc" + theQuestion.getId() + "' " 
 							+ "class=\"semano_mc\" " 
-							+ "rel=\"{url: '"+rqst+"'}\" ");
+							+ " rel=\"{"+rel
+							+ "ObjectID : '" + theQuestion.getId() + "'," 
+							+ "ValueIDS : '" + theAnswer.getId() + "'"
+							+ "}\" ");
 
 					if (theCase != null && theQuestion.getValue(theCase).contains(theAnswer)) {		
 						buffy.append(" checked=\"checked\" ");
