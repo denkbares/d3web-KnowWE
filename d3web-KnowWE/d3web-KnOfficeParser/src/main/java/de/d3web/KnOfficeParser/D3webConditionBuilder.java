@@ -298,38 +298,44 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	public void knowncondition(int line, String linetext, String name,
 			String type, boolean unknown) {
 		Question q = idom.findQuestion(name);
-		if (q == null) {
-			if (lazy) {
-				if (type != null) {
-					q = D3webQuestionFactory.createQuestion(name, type, idom);
-					if (q == null) {
-						errors.add(MessageKnOfficeGenerator
-								.createTypeRecognitionError(file, line,
-										linetext, name, type));
-						condstack.push(null);
-						return;
-					}
-				} else {
-					q = idom.createQuestionOC(name, idom.getKnowledgeBase()
-							.getRootQASet(), new AnswerChoice[0]);
+		
+		// create q if not exists and lazy enabled
+		if (q == null && lazy) {
+			if (type != null) {
+				q = D3webQuestionFactory.createQuestion(name, type, idom);
+				if (q == null) {
+					errors.add(MessageKnOfficeGenerator
+							.createTypeRecognitionError(file, line,
+									linetext, name, type));
+					condstack.push(null);
+					return;
 				}
 			} else {
-				errors.add(MessageKnOfficeGenerator
-						.createQuestionNotFoundException(file, line, linetext,
-								name));
+				q = idom.createQuestionOC(name, idom.getKnowledgeBase()
+						.getRootQASet(), new AnswerChoice[0]);
 			}
 		}
-		if (!D3webQuestionFactory.checkType(q, type)) {
-			errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file,
-					line, linetext, name, type));
+		
+		// only add condition if question has been found or created lazy
+		if (q == null) {
+			// if q not exists, create an error
+			errors.add(MessageKnOfficeGenerator
+					.createQuestionNotFoundException(file, line, linetext,
+							name));
 		}
-		TerminalCondition c;
-		if (unknown) {
-			c = new CondUnknown(q);
-		} else {
-			c = new CondKnown(q);
+		else {
+			if (!D3webQuestionFactory.checkType(q, type)) {
+				errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file,
+						line, linetext, name, type));
+			}
+			TerminalCondition c;
+			if (unknown) {
+				c = new CondUnknown(q);
+			} else {
+				c = new CondKnown(q);
+			}
+			condstack.add(c);
 		}
-		condstack.add(c);
 	}
 
 	@Override
