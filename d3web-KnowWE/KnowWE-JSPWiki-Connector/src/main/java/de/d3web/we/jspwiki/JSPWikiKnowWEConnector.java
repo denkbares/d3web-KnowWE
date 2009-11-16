@@ -20,6 +20,8 @@
 
 package de.d3web.we.jspwiki;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,6 +42,7 @@ import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.attachment.Attachment;
+import com.ecyrd.jspwiki.attachment.AttachmentManager;
 import com.ecyrd.jspwiki.auth.AuthorizationManager;
 import com.ecyrd.jspwiki.auth.permissions.PagePermission;
 import com.ecyrd.jspwiki.auth.permissions.PermissionFactory;
@@ -97,10 +100,11 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
     @Override
     public LinkedList<String> getAttachments() {
-
 	try {
 	    LinkedList<String> sortedAttList = new LinkedList<String>();
-	    Collection<Attachment> attList = this.engine.getAttachmentManager()
+	    AttachmentManager attachmentManager = this.engine
+		    .getAttachmentManager();
+	    Collection<Attachment> attList = attachmentManager
 		    .getAllAttachments();
 
 	    for (Attachment p : attList) {
@@ -114,6 +118,30 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	} catch (ProviderException e) {
 	    return null;
 	}
+    }
+
+    public boolean storeAttachment(String wikiPage, File attachmentFile) {
+	try {
+	    if (!isPageLocked(wikiPage)) {
+		setPageLocked(wikiPage, "WIKI-ENGINE");
+		AttachmentManager attachmentManager = this.engine
+			.getAttachmentManager();
+
+		Attachment att = new Attachment(engine, wikiPage,
+			attachmentFile.getName());
+		attachmentManager.storeAttachment(att, attachmentFile);
+
+		undoPageLocked(wikiPage);
+		return true;
+	    } else {
+		return false;
+	    }
+	} catch (ProviderException e) {
+	    return false;
+	} catch (IOException e) {
+	    return false;
+	}
+
     }
 
     @Override
@@ -177,8 +205,9 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
     public java.util.Map<String, String> getAllArticles(String web) {
 	Map<String, String> result = new HashMap<String, String>();
 	Collection<WikiPage> pages = null;
+	PageManager pageManager = this.engine.getPageManager();
 	try {
-	    pages = this.engine.getPageManager().getProvider().getAllPages();
+	    pages = pageManager.getProvider().getAllPages();
 	} catch (ProviderException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
@@ -189,8 +218,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	for (WikiPage wikiPage : pages) {
 	    String pageContent = null;
 	    try {
-		pageContent = this.engine.getPageManager().getPageText(
-			wikiPage.getName(), wikiPage.getVersion());
+		pageContent = pageManager.getPageText(wikiPage.getName(),
+			wikiPage.getVersion());
 	    } catch (ProviderException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
