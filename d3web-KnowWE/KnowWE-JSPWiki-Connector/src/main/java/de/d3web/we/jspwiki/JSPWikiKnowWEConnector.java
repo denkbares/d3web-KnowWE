@@ -52,7 +52,7 @@ import com.ecyrd.jspwiki.providers.ProviderException;
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.TaggingMangler;
-import de.d3web.we.wikiConnector.GenericSearchResult;
+import de.d3web.we.search.GenericSearchResult;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 /**

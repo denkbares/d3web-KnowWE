@@ -40,6 +40,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.module.PageAppendHandler;
+import de.d3web.we.search.MultiSearchEngine;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 
@@ -48,7 +49,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 	private void initKnowWEEnvironmentIfNeeded(WikiEngine wEngine) {
 		if (!KnowWEEnvironment.isInitialized()) {
 			KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wEngine));
-
+			MultiSearchEngine.getInstance().addProvider(new JSPWikiSearchConnector());
 		}
 	}
 
