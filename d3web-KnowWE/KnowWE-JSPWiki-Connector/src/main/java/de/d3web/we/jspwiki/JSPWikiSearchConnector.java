@@ -43,25 +43,26 @@ import de.d3web.we.search.GenericSearchResult;
 import de.d3web.we.search.KnowWESearchProvider;
 import de.d3web.we.search.SearchTerm;
 
-public class JSPWikiSearchConnector extends KnowWESearchProvider{
+public class JSPWikiSearchConnector extends KnowWESearchProvider {
 
-	public static List<SearchResult> getJSPWikiSearchResults(Collection<SearchTerm> searchTerms , HttpServletRequest request, WikiEngine wiki) {
-		
+	public static List<SearchResult> getJSPWikiSearchResults(
+			Collection<SearchTerm> searchTerms, HttpServletRequest request,
+			WikiEngine wiki) {
+
 		// assembling query for searchTerm bag
 		String query = "";
 		for (SearchTerm searchTerm : searchTerms) {
-			query += searchTerm.getTerm() + " "; 
+			query += searchTerm.getTerm() + " ";
 		}
-		
 
 		// Create wiki context and check for authorization
 		WikiContext wikiContext = wiki.createContext(request, WikiContext.FIND);
-		
+
 		String pagereq = wikiContext.getName();
 
 		// Get the search results
 		Collection list = null;
-	//	String query = request.getParameter("query");
+		// String query = request.getParameter("query");
 
 		if (query != null) {
 			Logger.getLogger(JSPWikiSearchConnector.class).info(
@@ -103,7 +104,7 @@ public class JSPWikiSearchConnector extends KnowWESearchProvider{
 			}
 
 		}
-		
+
 		return null;
 	}
 
@@ -114,24 +115,90 @@ public class JSPWikiSearchConnector extends KnowWESearchProvider{
 
 	@Override
 	public String getVerbalization(Locale local) {
-		return "jspwiki search verbalization: "+local.toString();
+		return "jspwiki search verbalization: " + local.toString();
 	}
 
 	@Override
-	public Collection<GenericSearchResult> search(Collection<SearchTerm> words, KnowWEParameterMap map) {
-		ServletContext context = KnowWEEnvironment.getInstance().getWikiConnector().getServletContext();
-		WikiEngine engine = WikiEngine.getInstance(context,null);
-		
-		List<SearchResult> jspwikiResults = getJSPWikiSearchResults(words, map.getRequest(), engine);
-		
+	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
+			KnowWEParameterMap map) {
+		ServletContext context = KnowWEEnvironment.getInstance()
+				.getWikiConnector().getServletContext();
+		WikiEngine engine = WikiEngine.getInstance(context, null);
+
+		List<SearchResult> jspwikiResults = getJSPWikiSearchResults(words, map
+				.getRequest(), engine);
+
 		List<GenericSearchResult> knowweResult = new ArrayList<GenericSearchResult>();
-		
-		// some conversion hack to get rid of jspwiki dependencies
-		for (SearchResult result : jspwikiResults) {
-			knowweResult.add(new GenericSearchResult(result.getPage().getName(), result.getContexts(), result.getScore()));
+
+		if (jspwikiResults != null) {
+
+			// some conversion hack to get rid of jspwiki dependencies
+			for (SearchResult result : jspwikiResults) {
+				knowweResult.add(new GenericSearchResult(result.getPage()
+						.getName(), result.getContexts(), result.getScore()));
+			}
 		}
-		
+
 		return knowweResult;
 	}
+
+	@Override
+	public String renderResults(Collection<GenericSearchResult> results) {
+		StringBuffer resultBuffy = new StringBuffer();
+
+		resultBuffy.append("<div class=\"graphBars\">");
+		resultBuffy.append("<div class=\"zebra-table\">");
+
+		resultBuffy.append(" <table class=\"wikitable\" >");
+
+		resultBuffy
+				.append(" <tr>  <th align=\"left\">Page</th>     <th align=\"left\">Score</th>  </tr>");
+
+		for (GenericSearchResult genericSearchResult : results) {
+
+			String url = "";
+
+			resultBuffy.append(" <tr>");
+			resultBuffy.append("<td><a class=\"wikipage\" href=\"Wiki.jsp?page=" + genericSearchResult.getPagename() + "" + url
+					+ "\">" + genericSearchResult.getPagename() + "</a> </td>");
+			resultBuffy.append("<td><span class=\"gbar\">"
+					+ genericSearchResult.getScore() + "</span> </td>");
+
+			// resultBuffy.append(genericSearchResult.getContexts()[0]);
+			resultBuffy.append("</tr>");
+		}
+
+		resultBuffy.append("</table>");
+		resultBuffy.append("</div>");
+		resultBuffy.append("</div>");
+
+		return resultBuffy.toString();
+	}
+
+	/*
+	 * <div class="graphBars"> <div class="zebra-table">
+	 * 
+	 * <table class="wikitable" >
+	 * 
+	 * <tr> <th align="left">Page</th> <th align="left">Score</th> </tr>
+	 * 
+	 * 
+	 * <tr> <td><a class="wikipage" href="/KnowWE/Wiki.jsp?page=Main"
+	 * accesskey="" title="">Main</a></td>
+	 * 
+	 * <td><span class="gBar">7</span></td> </tr>
+	 * 
+	 * 
+	 * 
+	 * <tr> <td><a class="wikipage" href="/KnowWE/Wiki.jsp?page=CD" accesskey=""
+	 * title="">CD</a></td> <td><span class="gBar">2</span></td> </tr>
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * </table> </div> </div>
+	 */
 
 }
