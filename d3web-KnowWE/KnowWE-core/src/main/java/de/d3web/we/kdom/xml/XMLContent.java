@@ -25,7 +25,6 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -37,7 +36,12 @@ public abstract class XMLContent extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	protected abstract void init();
+	
+	@Override
+	public String getName() {
 		
+		return "";
+	}
 	
 	public class XMLContentSectionFinder extends SectionFinder {
 
@@ -47,9 +51,7 @@ public abstract class XMLContent extends DefaultAbstractKnowWEObjectType {
 			ArrayList<SectionFinderResult> result =
 						new ArrayList<SectionFinderResult>();
 			result.add(
-					new SectionFinderResult(0, text.length(),
-							new SectionID(father.getId(), "_content", father
-									.getArticle().getIDGen())));
+					new SectionFinderResult(0, text.length()));
 			return result;
 		}
 		

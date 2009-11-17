@@ -40,7 +40,7 @@ import de.d3web.we.action.ParseWebOfflineRenderer;
 import de.d3web.we.action.ReplaceKDOMNodeAction;
 import de.d3web.we.action.SetQuickEditFlagAction;
 import de.d3web.we.action.TagHandlingAction;
-import de.d3web.we.action.UpdateTableKDOMNodes;
+import de.d3web.we.action.UpdateTableKDOMNodesAction;
 import de.d3web.we.action.WordBasedRenameFinding;
 import de.d3web.we.action.WordBasedRenamingAction;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -108,7 +108,7 @@ public class KnowWEFacade {
 		registerAction(GlobalReplaceAction.class, new GlobalReplaceAction());
 
 		registerAction(ReplaceKDOMNodeAction.class, new ReplaceKDOMNodeAction());
-		registerAction(UpdateTableKDOMNodes.class, new UpdateTableKDOMNodes());
+		registerAction(UpdateTableKDOMNodesAction.class, new UpdateTableKDOMNodesAction());
 		registerAction(KnowWEObjectTypeBrowserAction.class, new KnowWEObjectTypeBrowserAction());
 		registerAction(KnowWEObjectTypeActivationAction.class, new KnowWEObjectTypeActivationAction());
 		

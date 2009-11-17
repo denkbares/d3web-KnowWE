@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
 
 public class KnowledgeRepresentationManager {
 	
@@ -78,15 +77,15 @@ public class KnowledgeRepresentationManager {
 		return this.usedHandler;
 	}
 	
-	public boolean buildKnowledge(Section s) {
-		boolean usedOldKnowledge = false;
-		for(KnowledgeRepresentationHandler handler : handlers.values()) {
-			if (handler.buildKnowledge(s)) {
-				usedOldKnowledge = true;
-			}
-		}
-		return usedOldKnowledge;
-	}
+//	public boolean buildKnowledge(Section s) {
+//		boolean usedOldKnowledge = false;
+//		for(KnowledgeRepresentationHandler handler : handlers.values()) {
+//			if (handler.buildKnowledge(s)) {
+//				usedOldKnowledge = true;
+//			}
+//		}
+//		return usedOldKnowledge;
+//	}
 
 //	public boolean isKnowledgeBuilt(String title) {
 //		boolean usingOldKnowledge = false;

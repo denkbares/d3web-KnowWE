@@ -32,8 +32,9 @@ import de.d3web.report.Report;
 import de.d3web.textParser.xclPatternParser.XCLParserHelper;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEParseResult;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.include.IncludedFromType;
+import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.kopic.renderer.SetCoveringListSectionRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -57,9 +58,9 @@ public class CoveringListSection extends AbstractKopicSection {
 	private class CoveringListSectionSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 	
-			KnowledgeBaseManagement kbm = getKBM(s);
+			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {
 				
@@ -79,7 +80,7 @@ public class CoveringListSection extends AbstractKopicSection {
 			
 			if (content != null) {
 				
-				StringBuffer buffi = new StringBuffer(IncludedFromType.removeIncludedFromTags(content.getOriginalText()));
+				StringBuffer buffi = new StringBuffer(TextInclude.removeTextIncludeTags(content.getOriginalText()));
 				Report xclRep = XCLParserHelper.getXCLModel
 					(kbm.getKnowledgeBase(), buffi);
 	
@@ -97,7 +98,7 @@ public class CoveringListSection extends AbstractKopicSection {
 	
 			Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
 			if (content != null) {
-				Reader r = new StringReader(IncludedFromType.removeIncludedFromTags(content.getOriginalText()));
+				Reader r = new StringReader(TextInclude.removeTextIncludeTags(content.getOriginalText()));
 				List<Message> col = builder.addKnowledge(r, new SingleKBMIDObjectManager(kbm),
 						null);
 				storeMessages(s,col);

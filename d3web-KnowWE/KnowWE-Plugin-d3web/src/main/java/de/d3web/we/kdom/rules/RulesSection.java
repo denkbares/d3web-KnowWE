@@ -23,6 +23,7 @@ package de.d3web.we.kdom.rules;
 import java.util.HashSet;
 
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
@@ -50,20 +51,20 @@ public class RulesSection extends AbstractKopicSection implements KnowledgeRecyc
 	private class RulesSectionSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(Section s) {
-			useOldKnowledge(s);
+		public void reviseSubtree(KnowWEArticle article, Section s) {
+			useOldKnowledge(article, s);
 		}
 
 	}
 
 	@Override
-	public void cleanKnowledge(Section s, KnowledgeBaseManagement kbm) {
+	public void cleanKnowledge(KnowWEArticle article, Section s, KnowledgeBaseManagement kbm) {
 		HashSet<Class<? extends KnowWEObjectType>> types 
 				= ((D3webTerminologyHandler) KnowledgeRepresentationManager.getInstance().getHandler("d3web"))
 					.getCleanedTypes().get(s.getTitle());
 		if (types != null && types.contains(Rule.class)) {
 			return;
 		}
-		OldRulesEraser.deleteRules(s, kbm);
+		OldRulesEraser.deleteRules(article, s, kbm);
 	}
 }

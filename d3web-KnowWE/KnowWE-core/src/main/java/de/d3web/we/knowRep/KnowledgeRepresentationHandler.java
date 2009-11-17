@@ -30,7 +30,7 @@ public abstract class KnowledgeRepresentationHandler {
 	
 	public abstract void finishArticle(KnowWEArticle art);
 	
-	public abstract boolean buildKnowledge(Section s);
+	public abstract boolean buildKnowledge(KnowWEArticle article, Section s);
 	
 //	public abstract boolean isKnowledgeBuilt(String title);
 

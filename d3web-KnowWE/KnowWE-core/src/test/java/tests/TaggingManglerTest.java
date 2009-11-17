@@ -59,7 +59,6 @@ public class TaggingManglerTest extends TestCase {
 		 */
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
 		ke=KnowWEEnvironment.getInstance();
-		ke.initArticleManager("default_web");
 		am= KnowWEEnvironment.getInstance().getArticleManager("default_web");
 		types=ke.getRootTypes();
 		

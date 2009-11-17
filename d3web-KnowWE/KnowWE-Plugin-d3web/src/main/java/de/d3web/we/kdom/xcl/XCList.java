@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -49,7 +50,7 @@ public class XCList extends DefaultAbstractKnowWEObjectType {
 			
 			Pattern p =
 				Pattern.compile(
-						"(\\s*?^\\s*?$\\s*|\\s*?\\Z|\\s*?<[/]?includedFrom[^>]*?>\\s*?)",
+						"(\\s*?^\\s*?$\\s*|\\s*?\\Z|\\s*?" + TextInclude.PATTERN_BOTH + "\\s*?)",
 						Pattern.MULTILINE);
 			
 				Matcher m = p.matcher(text);

@@ -95,8 +95,9 @@ public class QuestionnairesKDOMBuilder implements DashTreeKDOMBuilder {
 			qsection.addChild(new ExpandedSectionFinderResult(da, new Dashes(), 0));
 		}
 		
-		qsection.addChild(new ExpandedSectionFinderResult(name, new QClassID(), da.length()));
-
+		if (name != null) {
+		    qsection.addChild(new ExpandedSectionFinderResult(name, new QClassID(), da.length()));
+		}
 		
 		if (description != null) {
 			qsection.addChild(new ExpandedSectionFinderResult(" ~", new Tilde(),

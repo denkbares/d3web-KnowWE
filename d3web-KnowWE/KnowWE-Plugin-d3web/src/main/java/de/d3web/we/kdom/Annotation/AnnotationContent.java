@@ -36,11 +36,4 @@ public class AnnotationContent extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new AllTextSectionFinder();		
 		
 	}
-
-	@Override
-	public String getName() {
-		return this.getClass().getName();
-	}
-
-
 }

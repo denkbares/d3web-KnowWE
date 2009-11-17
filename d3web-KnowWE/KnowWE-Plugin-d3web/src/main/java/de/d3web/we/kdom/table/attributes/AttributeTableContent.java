@@ -26,6 +26,7 @@ import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.txttable.TxtAttributeTableBuilder;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.table.TableContentRenderer;
@@ -52,14 +53,14 @@ public class AttributeTableContent extends XMLContent {
 		}
 
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 			
-			KnowledgeBaseManagement kbm = getKBM(s);
+			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {			
 				((AbstractKnowWEObjectType) s.getFather().getObjectType()).storeMessages(s.getFather(), 
 						builder.addKnowledge(new StringReader(AbstractKopicSection
-								.removeIncludedFromTags(s.getOriginalText())), 
+								.removeTextIncludeTags(s.getOriginalText())), 
 								new SingleKBMIDObjectManager(kbm), null));
 			}
 		}

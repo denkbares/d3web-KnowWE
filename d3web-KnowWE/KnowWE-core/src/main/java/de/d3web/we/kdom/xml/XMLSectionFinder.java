@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -117,6 +118,7 @@ public class XMLSectionFinder extends SectionFinder {
 				if (depth == 0 && foundTagName.equals(new String())) {
 					
 					parameterMap.put(AbstractXMLObjectType.HEAD, tagMatcher.group());
+					parameterMap.put(AbstractXMLObjectType.TAGNAME, tagMatcher.group(2));
 					sectionStart = tagMatcher.start();
 					foundTagName = tagMatcher.group(2);
 					
@@ -146,7 +148,6 @@ public class XMLSectionFinder extends SectionFinder {
 				// it's the closing tag belonging to the first opening tag
 				if (depth == 1 && foundTagName.equals(tagMatcher.group(2))) {
 					parameterMap.put(AbstractXMLObjectType.TAIL, tagMatcher.group());
-					parameterMap.put(AbstractXMLObjectType.TAGNAME, tagMatcher.group(2));
 					result.add(makeSectionFinderResult(father, text, sectionStart, 
 							tagMatcher.end(), parameterMap));
 				}
@@ -170,13 +171,14 @@ public class XMLSectionFinder extends SectionFinder {
 
 		SectionID sectionID;
 		if (parameterMap.containsKey("id")) {
-			sectionID = new SectionID(parameterMap.get("id"), null, father.getArticle().getIDGen());
+			sectionID = new SectionID(father.getArticle(), parameterMap.get("id"));
 		} else {
-			sectionID = new SectionID(null, "_XML", father.getArticle().getIDGen());
+			sectionID = new SectionID(father, parameterMap.get(AbstractXMLObjectType.TAGNAME));
 		}
+		
 		KnowWEArticle art = father.getArticle();
 		if (art != null) {
-			KnowWEUtils.storeSectionInfo(art.getWeb(), art.getTitle(), sectionID.getID(), ATTRIBUTE_MAP_STORE_KEY, parameterMap);
+			KnowWEUtils.storeSectionInfo(art.getWeb(), art.getTitle(), sectionID.toString(), ATTRIBUTE_MAP_STORE_KEY, parameterMap);
 		}
 		
 		return new SectionFinderResult(start, end, sectionID);
@@ -184,7 +186,7 @@ public class XMLSectionFinder extends SectionFinder {
 
 	// Everything below this line is for testing only!
 	public static void main(String[] args) {
-		TestSectionFinder finder = new XMLSectionFinder().new TestSectionFinder("include");
+		TestSectionFinder finder = new XMLSectionFinder(null).new TestSectionFinder(null, "include");
 		String text = readTxtFile("D:/KFZDemo1.txt");
 		List<SectionFinderResult> results= finder.lookForSections(text, null);
 		
@@ -203,10 +205,7 @@ public class XMLSectionFinder extends SectionFinder {
 		
 		public Map<String, String> paras;
 		
-		public TestSectionFinder() {
-		}
-		
-		public TestSectionFinder(String tag) {
+		public TestSectionFinder(KnowWEObjectType type, String tag) {
 			super(tag);
 		}
 		

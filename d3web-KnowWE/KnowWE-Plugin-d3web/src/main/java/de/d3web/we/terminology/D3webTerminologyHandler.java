@@ -40,34 +40,69 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 
+/**
+ * D3webTerminologyHandler.
+ * Handles Knowledge and its recycling.
+ * 
+ * @author astriffler
+ */
 public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
-
+	
+	/**
+	 * Map for all articles an their KBMs.
+	 */
 	private Map<String, KnowledgeBaseManagement> kbms = new HashMap<String, KnowledgeBaseManagement>();
 	
+	/**
+	 * Map of the last versions of each KBM.
+	 */
 	private Map<String, KnowledgeBaseManagement> lastKbms  = new HashMap<String, KnowledgeBaseManagement>();
 	
+	/**
+	 * Stores flag, if an article currently is building a new KnowledgeBase.
+	 */
 	private Map<String, Boolean> usingNewKBM = new HashMap<String, Boolean>();
 	
+	/**
+	 * Stores flag, if an article currently is modifying and old KnowledgeBase 
+	 * instead of building a new one.
+	 */
 	private Map<String, Boolean> usingOldKBM = new HashMap<String, Boolean>();
 	
+	/**
+	 * Store whether the KnowledgeBase already got cleaned from Knowledge of
+	 * a specific ObjectType.
+	 */
 	private Map<String, HashSet<Class<? extends KnowWEObjectType>>> cleanedTypes 
 			= new HashMap<String, HashSet<Class<? extends KnowWEObjectType>>>();
 	
+	/**
+	 * Stores flag, if the Knowledge of an article is build completely.
+	 */
 	private Map<String, Boolean> finishedKBM = new HashMap<String, Boolean>();
 	
 	public Map<String, HashSet<Class<? extends KnowWEObjectType>>> getCleanedTypes() {
 		return this.cleanedTypes;
 	}
-
-	public KnowledgeBaseManagement getKBM(Section s) {
-		if (buildKnowledge(s)) {
+	
+	/**
+	 * @param article is the article you need the KBM from
+	 * @param s is the knowledge containing section you need the KBM for 
+	 * @returns the KBM or <tt>null</tt> for article <tt>article</tt>. <tt>null</tt> 
+	 * is returned if the Knowledge of the given section doesn't need to get rebuild.
+	 */
+	public KnowledgeBaseManagement getKBM(KnowWEArticle article, Section s) {
+		if (buildKnowledge(article, s)) {
 			//System.out.println("Got KBM for " + s.getObjectType().getName());
-			return kbms.get(s.getTitle());
+			return kbms.get(article.getTitle());
 		} else {
 			return null;
 		}
 	}
 
+	/**
+	 * Initializes modules, kbms, services, flags...
+	 */
 	@Override
 	public void initArticle(KnowWEArticle art) {
 		DPSEnvironment env = D3webModule.getDPSE("default_web");
@@ -79,9 +114,9 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 				broker.signoff(service);
 			}
 		}
-		KnowledgeBaseManagement oldKBM = kbms.remove(art.getTitle());
-		if (oldKBM != null) {
-			lastKbms.put(art.getTitle(), oldKBM);
+		KnowledgeBaseManagement lastKBM = kbms.remove(art.getTitle());
+		if (lastKBM != null) {
+			lastKbms.put(art.getTitle(), lastKBM);
 		}
 		usingNewKBM.put(art.getTitle(), false);
 		usingOldKBM.put(art.getTitle(), false);
@@ -89,34 +124,49 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 		finishedKBM.put(art.getTitle(), false);
 		kbms.put(art.getTitle(), KnowledgeBaseManagement.createInstance());
 	}
-
+	
+	/**
+	 * Registers complete KnowledgeBase...
+	 */
 	@Override
 	public void finishArticle(KnowWEArticle art) {
-			KnowledgeBaseManagement kbm = this.getKBM(art.getSection());
+			KnowledgeBaseManagement kbm = this.getKBM(art, art.getSection());
 			if(!isEmpty(kbm)) {
 				DistributedRegistrationManager.getInstance().registerKnowledgeBase(kbm, 
 						art.getTitle(), "default_web");
 			}
 			finishedKBM.put(art.getTitle(), true);
 	}
-
+	
+	/**
+	 * Builds or reuses and cleans Knowledge for the given article and Section 
+	 * depending on the nature of changes in the article.
+	 * 
+	 * @returns <b>true</b> if the Knowledge of the Section needs to
+	 * 	get parsed to the KnowledgeBase or  </p>
+	 * <b>false</b> if the Knowledge is already in the KnowledgeBase
+	 */
 	@Override
-	public boolean buildKnowledge(Section s) {
-		if (finishedKBM.get(s.getTitle())) {
+	public boolean buildKnowledge(KnowWEArticle article, Section s) {
+		String title = article.getTitle();
+		
+		if (finishedKBM.get(title)) {
 			return true;
 		}
-		if (usingNewKBM.get(s.getTitle())) {
+		if (usingNewKBM.get(title)) {
 			return true;
 		}
-		KnowledgeBaseManagement lastKbm = lastKbms.get(s.getTitle());
-		if (s.getArticle().getChangedSections().containsKey(s.getId()) 
-				|| s.getObjectType() instanceof KnowWEArticle) {
+		
+		KnowledgeBaseManagement lastKbm = lastKbms.get(title);
+		
+		if (s.getObjectType() instanceof KnowWEArticle 
+				|| s.getArticle().getChangedSections().containsKey(s.getId())) {
 			
-			if (usingOldKBM.get(s.getTitle())) {
+			if (usingOldKBM.get(title)) {
 				if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
-					if (!cleanedTypes.get(s.getTitle()).contains(s.getObjectType().getClass())) {
-						((KnowledgeRecyclingObjectType) s.getObjectType()).cleanKnowledge(s, kbms.get(s.getTitle()));
-						cleanedTypes.get(s.getTitle()).add(s.getObjectType().getClass());
+					if (!cleanedTypes.get(title).contains(s.getObjectType().getClass())) {
+						((KnowledgeRecyclingObjectType) s.getObjectType()).cleanKnowledge(article, s, kbms.get(title));
+						cleanedTypes.get(title).add(s.getObjectType().getClass());
 					}
 				} else if (!(s.getObjectType() instanceof KnowWEArticle)) {
 					// KnowledgeRecyclingObjectTypes should be the last ObjectTypes to parse...
@@ -127,23 +177,23 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 				return true;
 			}
 			
-			if (lastKbm != null && isEmpty(kbms.get(s.getTitle()))
+			if (lastKbm != null && isEmpty(kbms.get(title))
 					&& (s.getObjectType() instanceof KnowledgeRecyclingObjectType
 							|| s.getObjectType() instanceof KnowWEArticle)) {
-				lastKbms.remove(s.getTitle());
-				usingOldKBM.put(s.getTitle(), true);
-				kbms.put(s.getTitle(), lastKbm);
+				lastKbms.remove(title);
+				usingOldKBM.put(title, true);
+				kbms.put(title, lastKbm);
 				if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
-					((KnowledgeRecyclingObjectType) s.getObjectType()).cleanKnowledge(s, lastKbm);
-					cleanedTypes.get(s.getTitle()).add(s.getObjectType().getClass());
+					((KnowledgeRecyclingObjectType) s.getObjectType()).cleanKnowledge(article, s, lastKbm);
+					cleanedTypes.get(title).add(s.getObjectType().getClass());
 				}
 				return true;
 			} else {
-				usingNewKBM.put(s.getTitle(), true);
-				List<Section> sectionsToRevise = s.getArticle().getAllNodesParsingPostOrder();
+				usingNewKBM.put(title, true);
+				List<Section> sectionsToRevise = article.getAllNodesParsingPostOrder();
 				List<Section> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));
 				for (Section sec:strSub) {
-					sec.getObjectType().reviseSubtree(sec);
+					sec.getObjectType().reviseSubtree(article, sec);
 				}
 				return true;
 			}

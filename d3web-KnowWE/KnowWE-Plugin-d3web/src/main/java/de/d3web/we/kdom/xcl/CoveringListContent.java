@@ -64,12 +64,12 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 //		private Diagnosis currentdiag;
 		
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 			
 			// Set currentWeb
 			String currentWeb = s.getWeb();
 			
-			KnowledgeBaseManagement kbm = getKBM(s);
+			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {
 				// Analyse s (Has XCList-Children)
@@ -244,14 +244,14 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 	}
 
 	@Override
-	public void cleanKnowledge(Section s, KnowledgeBaseManagement kbm) {
+	public void cleanKnowledge(KnowWEArticle article, Section s, KnowledgeBaseManagement kbm) {
 		
 		if (kbm != null) {
-			KnowWEArticle oldArt = s.getArticle().getOldArticle();
+			KnowWEArticle lastArt = article.getLastVersionOfArticle();
 				
 			// get all XCLContent of the old article
 			List<Section> oldXCLCs = new ArrayList<Section>();
-			oldArt.getSection().findSuccessorsOfType(this.getClass(), oldXCLCs);
+			lastArt.getSection().findSuccessorsOfType(this.getClass(), oldXCLCs);
 			
 			// store all Solutions of those old XCLs, that havn't got reused in the current article
 			Set<String> xclsToDelete = new HashSet<String>();

@@ -21,6 +21,7 @@
 package de.d3web.we.terminology;
 
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -28,27 +29,28 @@ import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 
 public abstract class D3webReviseSubTreeHandler implements ReviseSubTreeHandler {
 	
-	protected KnowledgeBaseManagement getKBM(Section sec) {
+	/**
+	 * @param article is the article you need the KBM from
+	 * @param sec is the knowledge containing section you need the KBM for 
+	 * @returns the KBM or <tt>null</tt> for article <tt>article</tt>. <tt>null</tt> 
+	 * is returned if the Knowledge of the given section doesn't need to get rebuild.
+	 */
+	protected KnowledgeBaseManagement getKBM(KnowWEArticle article, Section sec) {
 		KnowledgeRepresentationHandler handler = KnowledgeRepresentationManager.getInstance().getHandler("d3web");
 		if (handler instanceof D3webTerminologyHandler) {
-			return ((D3webTerminologyHandler) handler).getKBM(sec);
+			return ((D3webTerminologyHandler) handler).getKBM(article, sec);
 		} 
 		return null;
 	}
 	
-	protected void useOldKnowledge(Section s) {
+	/**
+	 * Just uses the old Knowledge for this section from this article
+	 */
+	protected void useOldKnowledge(KnowWEArticle article, Section s) {
 		KnowledgeRepresentationHandler handler = KnowledgeRepresentationManager.getInstance().getHandler("d3web");
 		if (handler instanceof D3webTerminologyHandler) {
-			handler.buildKnowledge(s);
+			handler.buildKnowledge(article, s);
 		}
 	}
-	
-//	protected boolean isUsingOldKnowledge(Section s) {
-//		KnowledgeRepresentationHandler handler = KnowledgeRepresentationManager.getInstance().getHandler("d3web");
-//		if (handler instanceof D3webTerminologyHandler) {
-//			return ((D3webTerminologyHandler) handler).builtKBM(s);
-//		}
-//		return false;
-//	}
 
 }

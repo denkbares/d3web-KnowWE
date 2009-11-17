@@ -25,7 +25,6 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.renderer.NothingRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -54,8 +53,7 @@ public class XMLTail extends DefaultAbstractKnowWEObjectType {
 				if (text != null) {
 					int start = text2.lastIndexOf(text);
 					List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-					result.add(new SectionFinderResult(start, start + text.length(), new SectionID(father.getId(), 
-									"_tail", father.getArticle().getIDGen())));
+					result.add(new SectionFinderResult(start, start + text.length()));
 					return result;
 				}
 			}

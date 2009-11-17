@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.kopic.renderer.KopicTableSectionRenderer;
@@ -52,7 +53,7 @@ public class CoveringTableSection extends AbstractKopicSection implements ITable
 	private class CoveringTableSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 			
 			
 			// Set the headerline of the table as type SolutionHeaderLine
@@ -73,7 +74,7 @@ public class CoveringTableSection extends AbstractKopicSection implements ITable
 //	
 //				Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
 //				if (content != null) {
-//					parser.parse(removeIncludedFromTags(content.getOriginalText()));
+//					parser.parse(removeTextIncludeTags(content.getOriginalText()));
 //	
 //					List<Message> errors = builder.checkKnowledge();
 //	
@@ -83,7 +84,7 @@ public class CoveringTableSection extends AbstractKopicSection implements ITable
 //						ruleRep.add(messageKnOffice);
 //					}
 //					KnowWEParseResult result = new KnowWEParseResult(ruleRep, s
-//							.getTitle(), removeIncludedFromTags(s.getOriginalText()));
+//							.getTitle(), removeTextIncludeTags(s.getOriginalText()));
 //					s.getArticle().getReport().addReport(result);
 //				}
 //			}

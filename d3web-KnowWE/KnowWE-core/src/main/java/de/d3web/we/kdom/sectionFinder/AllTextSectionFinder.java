@@ -26,12 +26,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.include.TextInclude;
 
 public class AllTextSectionFinder extends SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		Matcher textMatcher = Pattern.compile("</?includedFrom[^>]*?>", Pattern.DOTALL).matcher(text);
+		Matcher textMatcher = Pattern.compile(TextInclude.PATTERN_BOTH).matcher(text);
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		int start = 0;
 		int end = 0;
@@ -51,14 +52,6 @@ public class AllTextSectionFinder extends SectionFinder {
 			result.add(new SectionFinderResult(0, text.length()));
 		}
 		return result;
-	}
-	
-	public static void main(String[] args) {
-		String test = "asöf</includedFrom>lköasklföl</includedFrom>aksö";
-		List<SectionFinderResult> results = new AllTextSectionFinder().lookForSections(test, null);
-		for (SectionFinderResult result:results) {
-			System.out.println(test.substring(result.getStart(), result.getEnd()));
-		}
 	}
 
 }

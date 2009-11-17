@@ -25,17 +25,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.include.IncludeSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.PairOfInts;
 
 /**
- * @author Jochen
+ * @author Jochen (some changes by astriffler)
  * 
  * This singleton contains the algorithm which parses the KDOM. The algorithm
- * searches occorrences that match the current type structure.
+ * searches occorrences that match certain types.
  * @see splitToSections
  * 
  */
@@ -79,7 +81,7 @@ public class Sectionizer {
 	 *            The text to be searched for type occorrances
 	 * @param allowedTypes
 	 *            The types that are searched for, priority ordered
-	 * @param fatherSection
+	 * @param father
 	 *            Father-node section
 	 * @param topic
 	 *            topic name
@@ -91,7 +93,7 @@ public class Sectionizer {
 	 *            IDGenerator to generate unique IDs for new nodes
 	 */
 	public void splitToSections(String text,
-			List<KnowWEObjectType> allowedTypes, Section fatherSection,
+			List<KnowWEObjectType> allowedTypes, Section father,
 			KnowWEArticle article) {
 
 		// initializes the list with just one single section
@@ -103,19 +105,12 @@ public class Sectionizer {
 
 			SectionFinder finder = ob.getSectioner();
 			if (finder == null) {
-//				Logger.getLogger(this.getClass().getName()).severe(
-//						"SectionFinder is null: Type: "
-//								+ ob.getClass().getName());
 				continue;
 			}
 
 			// thisSection is used as "pseudo-Index" to iterate over the, while
 			// its modified
 			// (avoid concurrentModificationException)
-
-			//if(sectionList.size() == 0) {
-			//	break;
-			//}
 			Section thisSection = sectionList.get(0);
 
 			while (thisSection != null) {
@@ -137,15 +132,14 @@ public class Sectionizer {
 
 				// skip sections already taken by a sectionFinder (they are not
 				// undefined anymore)
-				// if(!thisSection.getType().equals(Section.SECTION_TYPE_UNDEF))
-				// {
 				if (!(thisSection instanceof UndefinedSection)) {
 					thisSection = nextSection;
 					continue;
 				}
 
 				// find the sub-sections
-				List<SectionFinderResult> results = finder.lookForSections(thisSection.getOriginalText(), fatherSection);
+				List<SectionFinderResult> results = finder.lookForSections(thisSection.getOriginalText(),
+						father);
 				
 				if (results == null) {
 					thisSection = nextSection;
@@ -157,14 +151,25 @@ public class Sectionizer {
 				List<Section> findings = new ArrayList<Section>();		
 				for (SectionFinderResult result:results) {
 					if (result != null) {
+						Section s;
 						if (result instanceof ExpandedSectionFinderResult) {
-							findings.add(createExpandedSection((ExpandedSectionFinderResult) result, fatherSection));
+							s = createExpandedSection((ExpandedSectionFinderResult) result, father);
+						} else if (result instanceof IncludeSectionFinderResult) {
+							s = new Section(thisSection.getOriginalText().substring(result.getStart(),
+									result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
+									+ result.getStart(), article, result.getId(), false, 
+									((IncludeSectionFinderResult) result).getIncludeAddress());
+							KnowWEEnvironment.getInstance().getIncludeManager(s.getWeb()).registerInclude(s);
 						} else {
-							findings.add(Section.createSection(ob, fatherSection, 
-								thisSection, result.getStart(), result.getEnd(), article, result.getId()));
-					
+							s = new Section(thisSection.getOriginalText().substring(result.getStart(),
+									result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
+									+ result.getStart(), article, result.getId(), false, null);
 						}
+						
+						s.setPosition(new PairOfInts(result.getStart(), result.getEnd()));
+						findings.add(s);
 					}
+					
 				}
 				
 				
@@ -223,12 +228,12 @@ public class Sectionizer {
 			}
 		}
 		associateAllUndefinedSectionsToPlaintextOfFather(sectionList,
-				fatherSection, article);
+				father, article);
 	}
 
 	private Section createExpandedSection(ExpandedSectionFinderResult result, Section father) {
-		Section s = Section.createExpandedSection(result.getText(), result.getObjectType(), father,
-				result.getStart(), father.getArticle());
+		Section s = new Section(result.getText(), result.getObjectType(), father, result.getStart(), 
+				father.getArticle(), null, true, null);
 		if (s.getOffSetFromFatherText() < 0 || s.getOffSetFromFatherText() > father.getOriginalText().length() 
 				|| !father.getOriginalText().substring(s.getOffSetFromFatherText()).startsWith(s.getOriginalText())) {
 			s.setOffSetFromFatherText(father.getOriginalText().indexOf(s.getOriginalText()));
@@ -284,12 +289,12 @@ public class Sectionizer {
 	}
 
 	private void associateAllUndefinedSectionsToPlaintextOfFather(
-			ArrayList<Section> sectionList, Section fatherSection, KnowWEArticle article) {
+			ArrayList<Section> sectionList, Section father, KnowWEArticle article) {
 		for (Section section : sectionList) {
 			if (section instanceof UndefinedSection) {
 				new Section(section.getOriginalText(), PlainText.getInstance(),
-						fatherSection, section.getOffSetFromFatherText(),
-						article, new SectionID(article.getIDGen()), false);
+						father, section.getOffSetFromFatherText(),
+						article, null, false, null);
 			}
 		}
 

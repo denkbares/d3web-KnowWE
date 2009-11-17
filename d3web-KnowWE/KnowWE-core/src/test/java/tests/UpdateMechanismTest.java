@@ -40,7 +40,6 @@ public class UpdateMechanismTest extends TestCase {
 		 * Initialise KnowWEEnvironment
 		 */
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
-		KnowWEEnvironment.getInstance().initArticleManager("default_web");
 		
 		/*
 		 * Setup

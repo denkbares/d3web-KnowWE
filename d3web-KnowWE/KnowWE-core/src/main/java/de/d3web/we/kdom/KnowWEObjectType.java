@@ -71,7 +71,7 @@ public interface KnowWEObjectType extends KnowWEType{
 	 * @param section
 	 * @param kbm
 	 */
-	public abstract void reviseSubtree(Section section);
+	public abstract void reviseSubtree(KnowWEArticle article, Section section);
 	
 	public Collection<Section> getAllSectionsOfType();
 	

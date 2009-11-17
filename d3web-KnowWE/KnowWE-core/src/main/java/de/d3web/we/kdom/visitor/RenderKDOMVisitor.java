@@ -52,9 +52,11 @@ public class RenderKDOMVisitor implements Visitor {
 
 	private void renderSubtree(Section s, int i, StringBuffer buffi) {
 		buffi.append(getDashes(i));
-		buffi.append(" ");
+		buffi.append(" <span style=\"color:black\" title=\"" );
+		buffi.append(" ID: " + s.getId() + "\n");
+		buffi.append("\">");
 		buffi.append(translateHtml(s.verbalize()));
-		buffi.append("\n <br>"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
+		buffi.append("</span>\n <br>"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 		i++;
 		List<Section> children = s.getChildren();
 		if (children.size() == 1

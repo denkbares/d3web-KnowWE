@@ -179,13 +179,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	}
 	
 	/**
-	 * Returns the messages old stored messages
+	 * Returns the messages of the last version of the section
+	 * respectively article.
 	 * 
 	 * @param s
 	 * @return
 	 */
-	public List<Message> getOldMessages(Section s) {
-		return toMessages(KnowWEUtils.getOldStoredObject(KnowWEEnvironment.DEFAULT_WEB,
+	public List<Message> getLastMessages(Section s) {
+		return toMessages(KnowWEUtils.getLastStoredObject(KnowWEEnvironment.DEFAULT_WEB,
 				s.getTitle(), s.getId(), MESSAGES_STORE_KEY), s);
 		
 	}
@@ -247,8 +248,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 */
 	@Override
 	public String getName() {
-		return this.getClass().getName().substring(
-				this.getClass().getName().lastIndexOf('.') + 1);
+		return this.getClass().getSimpleName();
 	}
 
 	protected abstract void init();
@@ -292,9 +292,9 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * @see de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.Section)
 	 */
 	@Override
-	public final void reviseSubtree(Section s) {
+	public final void reviseSubtree(KnowWEArticle article, Section s) {
 		for(ReviseSubTreeHandler handler : subtreeHandler) {
-			handler.reviseSubtree(s);
+			handler.reviseSubtree(article, s);
 		}
 	}
 	

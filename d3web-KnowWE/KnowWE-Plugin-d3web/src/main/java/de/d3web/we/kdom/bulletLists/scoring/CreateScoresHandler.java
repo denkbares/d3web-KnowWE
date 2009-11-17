@@ -15,6 +15,7 @@ import de.d3web.kernel.domainModel.qasets.QuestionOC;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.domainModel.ruleCondition.CondEqual;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rules.Rule;
@@ -25,7 +26,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public class CreateScoresHandler implements ReviseSubTreeHandler {
 
 	@Override
-	public void reviseSubtree(Section s) {
+	public void reviseSubtree(KnowWEArticle article, Section s) {
 
 		Section scoringSection = KnowWEObjectTypeUtils.getAncestorOfType(s,
 				BulletScoring.class);
@@ -37,23 +38,23 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 		String defaultValue = BulletScoring.getDefaultValue(scoringSection);
 
 		for (String string : targets) {
-			createScoringRule(string, defaultValue, s);
+			createScoringRule(article, string, defaultValue, s);
 		}
 
 	}
 
-	private void createScoringRule(String string, String defaultValue, Section s) {
+	private void createScoringRule(KnowWEArticle article, String string, String defaultValue, Section s) {
 		if (string.contains("=")) {
 			String solution = string.substring(0, string.indexOf("=")).trim();
 			String score = string.substring(string.indexOf("=") + 1).trim();
 			String question = s.getOriginalText();
 
 			KnowledgeBaseManagement kbm = D3webModule.getInstance()
-					.getKnowledgeRepresentationHandler().getKBM(s);
+					.getKnowledgeRepresentationHandler().getKBM(article, s);
 
-			boolean lazy = isLazy(s);
-			
 			if(kbm == null) return; //dirty hack for testing
+			
+			boolean lazy = isLazy(s);
 			
 			Diagnosis d = kbm.findDiagnosis(solution);
 			if (d == null && lazy) {
@@ -76,9 +77,8 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 			if (scoreV != null && d != null && cond != null) {
 
 				RuleComplex rule = RuleFactory.createHeuristicPSRule(s.getId(), d, scoreV, cond);
-				
 				KnowWEUtils.storeSectionInfo(
-						s.getArticle().getWeb(), s.getTitle(), s.getId(),
+						s.getArticle().getWeb(), article.getTitle(), s.getId(),
 						Rule.KBID_KEY, rule.getId());
 				
 			} else {

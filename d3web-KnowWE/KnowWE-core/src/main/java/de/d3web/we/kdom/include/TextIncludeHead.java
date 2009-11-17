@@ -18,24 +18,33 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom;
+package de.d3web.we.kdom.include;
 
-public class IDGeneratorOutput {
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.renderer.NothingRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+
+public class TextIncludeHead extends DefaultAbstractKnowWEObjectType {
+
+	private static TextIncludeHead instance;
 	
-	private String id;
+	public static synchronized TextIncludeHead getInstance() {
+		if(instance == null) {
+			instance = new TextIncludeHead();
+		}
+		return instance;
+	}
 	
-	private boolean idConflict;
+	@Override
+	public KnowWEDomRenderer getRenderer() {
+		return NothingRenderer.getInstance();
+	}
 	
-	public IDGeneratorOutput(String id, boolean idConflict){
-		this.id = id;
-		this.idConflict = idConflict;
+	
+	@Override
+	protected void init() {
+		sectionFinder = new RegexSectionFinder(TextInclude.PATTERN_HEAD + "\\s*");
 	}
 
-	public String getID() {
-		return id;
-	}
-	
-	public boolean isIdConflict() {
-		return idConflict;
-	}
 }

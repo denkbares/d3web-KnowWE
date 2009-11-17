@@ -29,6 +29,7 @@ import de.d3web.report.Report;
 import de.d3web.textParser.xclPatternParser.XCLParserHelper;
 import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.d3webModule.DistributedRegistrationManager;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -49,9 +50,9 @@ public class XCL extends AbstractXMLObjectType {
 	private class XCLSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 			
-			KnowledgeBaseManagement kbm = getKBM(s);
+			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {
 				

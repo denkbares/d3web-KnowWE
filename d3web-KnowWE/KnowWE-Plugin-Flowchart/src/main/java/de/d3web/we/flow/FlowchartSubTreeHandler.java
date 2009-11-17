@@ -66,6 +66,7 @@ import de.d3web.we.flow.type.PositionType;
 import de.d3web.we.flow.type.SourceType;
 import de.d3web.we.flow.type.StartType;
 import de.d3web.we.flow.type.TargetType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
@@ -84,9 +85,9 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 	
 	@Override
-	public void reviseSubtree(Section s) {
+	public void reviseSubtree(KnowWEArticle article, Section s) {
 		
-		KnowledgeBaseManagement kbm = getKBM(s);
+		KnowledgeBaseManagement kbm = getKBM(article, s);
 		
 		if (kbm == null)
 			return;
@@ -101,12 +102,12 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		List<Section> sections = new ArrayList<Section>();
 		
 		content.findSuccessorsOfType(NodeType.class, sections);
-		List<INode> nodes = createNodes(sections);
+		List<INode> nodes = createNodes(article, sections);
 		
 		sections.clear();
 		
 		content.findSuccessorsOfType(EdgeType.class, sections);
-		List<IEdge> edges = createEdges(sections, nodes);
+		List<IEdge> edges = createEdges(article, sections, nodes);
 		
 		
 		Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(s);
@@ -123,7 +124,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		System.out.println(flow);
 		
-		KnowledgeBase knowledgeBase = getKBM(s).getKnowledgeBase();
+		KnowledgeBase knowledgeBase = getKBM(article, s).getKnowledgeBase();
 
 		knowledgeBase.addKnowledge(FluxSolver.class, flow, FluxSolver.DIAFLUX);
 		
@@ -144,7 +145,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 	}
 
-	private List<IEdge> createEdges(List<Section> edgeSections, List<INode> nodes) {
+	private List<IEdge> createEdges(KnowWEArticle article, List<Section> edgeSections, List<INode> nodes) {
 		List<IEdge> result = new ArrayList<IEdge>();
 		
 		
@@ -181,7 +182,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			Section guardSection = content.findChildOfType(GuardType.class);
 			
 			if (guardSection != null) {
-				condition = buildCondition(guardSection, conditionErrors);
+				condition = buildCondition(article, guardSection, conditionErrors);
 				
 				if (condition == null) {
 					condition = ConditionTrue.INSTANCE;
@@ -208,7 +209,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return result;
 	}
 
-	private AbstractCondition buildCondition(Section s, List<Message> errors) {
+	private AbstractCondition buildCondition(KnowWEArticle article, Section s, List<Message> errors) {
 		
 		String originalText = getXMLContentText(s);
 		
@@ -223,7 +224,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ComplexConditionSOLO parser = new ComplexConditionSOLO(tokens);
 		
-		IDObjectManagement idom = new RestrictedIDObjectManager(getKBM(s));
+		IDObjectManagement idom = new RestrictedIDObjectManager(getKBM(article, s));
 		
 		
 		D3webConditionBuilder builder = new D3webConditionBuilder("Parsed from article", errors, idom);
@@ -254,7 +255,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return null;
 	}
 
-	private List<INode> createNodes(List<Section> nodeSections) {
+	private List<INode> createNodes(KnowWEArticle article, List<Section> nodeSections) {
 		
 		List<INode> result = new ArrayList<INode>();
 		
@@ -285,7 +286,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			else if (nodeinfo.getObjectType() == ExitType.getInstance())
 				result.add(createEndNode(id, nodeinfo));
 			else if(nodeinfo.getObjectType() == ActionType.getInstance())
-				result.add(createActionNode(id, nodeinfo));
+				result.add(createActionNode(article, id, nodeinfo));
 			else
 				throw new UnsupportedOperationException("Unknown node type: " + nodeinfo.getObjectType());
 			
@@ -296,14 +297,14 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return result;
 	}
 
-	private INode createActionNode(String id, Section section) {
+	private INode createActionNode(KnowWEArticle article, String id, Section section) {
 		
 		RuleAction action = NoopAction.INSTANCE;
 		String string = getXMLContentText(section);
 		if (string.startsWith("ERFRAGE")) {
-			action = createQAindicationAction(section, string);
+			action = createQAindicationAction(article, section, string);
 		} else if (string.contains("=")) {
-			action = createHeuristicScoreAction(section, string);
+			action = createHeuristicScoreAction(article, section, string);
 		} else
 			action = NoopAction.INSTANCE;
 		
@@ -312,7 +313,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 	}
 
-	private RuleAction createHeuristicScoreAction(Section section,
+	private RuleAction createHeuristicScoreAction(KnowWEArticle article, Section section,
 			String string) {
 		
 		String[] split = string.split("=");
@@ -329,7 +330,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			solution = solution.substring(1, solution.length()-1);
 		
 		
-		Diagnosis diagnosis = getKBM(section).findDiagnosis(solution); 
+		Diagnosis diagnosis = getKBM(article, section).findDiagnosis(solution); 
 		
 		if (diagnosis == null)
 			Logging.getInstance().log(Level.INFO, "Diagnosis not found: " + solution);
@@ -345,12 +346,12 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return action;
 	}
 
-	private RuleAction createQAindicationAction(Section section, String string) {
+	private RuleAction createQAindicationAction(KnowWEArticle article, Section section, String string) {
 		String name = string.substring(8, string.length() - 1);
-		QASet findQuestion = getKBM(section).findQuestion(name);
+		QASet findQuestion = getKBM(article, section).findQuestion(name);
 		
 		if (findQuestion == null)
-			findQuestion = getKBM(section).findQContainer(name);
+			findQuestion = getKBM(article, section).findQContainer(name);
 			
 		if (findQuestion == null) {
 			Logging.getInstance().log(Level.WARNING, "could not find question: " + name);

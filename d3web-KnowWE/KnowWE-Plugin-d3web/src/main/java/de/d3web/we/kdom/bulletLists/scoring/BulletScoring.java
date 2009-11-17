@@ -15,7 +15,7 @@ public class BulletScoring extends AbstractXMLObjectType{
 	
 	public void init() {
 		childrenTypes.add(new ScoringListContentType());
-		this.setNotRecyclable(true);
+		//this.setNotRecyclable(true);
 	}
 	
 	public static final String TARGET_SCORING_DELIMITER = "[AND]";

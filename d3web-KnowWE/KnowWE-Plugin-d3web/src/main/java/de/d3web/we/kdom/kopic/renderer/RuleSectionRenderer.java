@@ -25,13 +25,13 @@ import java.util.List;
 
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.report.Message;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rules.Rule;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class RuleSectionRenderer extends KopicSectionRenderer {
@@ -63,13 +63,13 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 						if (msg.getMessageText().equals(rulesParsed)) {
 							parsedCount += msg.getCount();
 						} else if (msg.getMessageType() == Message.WARNING && foundWarning == false) {
-							warnings.add(KnowWEEnvironment.maskHTML("<a href=\"#\" " 
+							warnings.add(KnowWEUtils.maskHTML("<a href=\"#\" " 
 									+ "class=\"highligh-rule\" "
 									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"+r.getTitle()+"', depth: 0, breadth: 0}\""
 									+ "/>" + rnum + "</a>"));
 							foundWarning = true;
 						} else if (msg.getMessageType() == Message.ERROR && foundError == false) {
-							errors.add(KnowWEEnvironment.maskHTML("<a href=\"#\" "
+							errors.add(KnowWEUtils.maskHTML("<a href=\"#\" "
 									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"+r.getTitle()+"', depth: 0, breadth: 0}\""
 									+ "/>" + rnum + "</a>"));
 							foundError = true;
@@ -81,7 +81,7 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 				sectionMessages.add(0, MessageKnOfficeGenerator.createNoteMSGWithCount("rule", "", 0, "", parsedCount));
 				if (sectionMessages != null && !sectionMessages.isEmpty()) {
 					messagesBuilder.append("{{{");
-					messagesBuilder.append(rulesParsed + " " + parsedCount + KnowWEEnvironment.maskHTML("<br>"));
+					messagesBuilder.append(rulesParsed + " " + parsedCount + KnowWEUtils.maskHTML("<br>"));
 					if (warnings.size() > 0) {
 						messagesBuilder.append(D3webModule.getKwikiBundle_d3web()
 							.getString("KnowWE.KopicRenderer.RulesSection.warnings")  + " "+ warnings.toString());
@@ -102,7 +102,7 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 			
 			// a div containing
 			// the class SetCoveringList and the nodes id
-			result.append(KnowWEEnvironment.maskHTML("<div class=\"ReRenderSectionMarker\" id=\"" 
+			result.append(KnowWEUtils.maskHTML("<div class=\"ReRenderSectionMarker\" id=\"" 
 						  + sec.getId() + "\">"));
 			
 			// Rendering children
@@ -111,7 +111,7 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 			result.append(b.toString());
 			
 			// close the div
-			result.append(KnowWEEnvironment.maskHTML("</div>"));
+			result.append(KnowWEUtils.maskHTML("</div>"));
 			
 			result.append("/%\n");
 			

@@ -37,8 +37,9 @@ import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.include.IncludedFromType;
+import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.renderer.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -68,62 +69,37 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 	
 
 	@Override
-	public void cleanKnowledge(Section s, KnowledgeBaseManagement kbm) {
-		OldRulesEraser.deleteRules(s, kbm);
+	public void cleanKnowledge(KnowWEArticle article, Section s, KnowledgeBaseManagement kbm) {
+		OldRulesEraser.deleteRules(article, s, kbm);
 	}
 	
 	
 	private class RuleRenderer extends KnowWEDomRenderer{
-		
-//		@Override
-//		public String render(Section sec, KnowWEUserContext user) {
-//			
-//			List<Message> messages = ((Rule) sec.getObjectType()).getMessages(sec);
-//			
-//			StringBuilder result = new StringBuilder();
-//			
-//			result.append(KnowWEEnvironment.maskHTML("<pre><span id='"+sec.getId()
-//					+"' class = 'XCLRelationInList'><span id=\"\">"));
-//			
-//			if (messages != null && !messages.isEmpty()) {
-//				for (Message m : messages) {
-//					result.append(m.getMessageType()+": " + m.getMessageText() 
-//							+ (m.getMessageType().equals(Message.NOTE) ? " " + m.getCount() : " Line: " + m.getLineNo()));
-//					result.append(KnowWEEnvironment.maskHTML("\n"));
-//				}
-//				result.append(KnowWEEnvironment.maskHTML("\n"));
-//			}
-//			
-//			result.append(DelegateRenderer.getInstance().render(sec,
-//					user) + KnowWEEnvironment.maskHTML("</pre></span></span>\n"));
-//
-//			return result.toString();
-//		}
 		
 		@Override
 		public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
 			
 			List<Message> messages = ((Rule) sec.getObjectType()).getMessages(sec);
 			
-			string.append(KnowWEEnvironment.maskHTML("<pre><span id='"+sec.getId()
+			string.append(KnowWEUtils.maskHTML("<pre><span id='"+sec.getId()
 					+"' class = 'XCLRelationInList'><span id=\"\">"));
 			
 			boolean empty = true;
 			if (messages != null) {
 				for (Message m : messages) {
+					//if (!m.getMessageText().equals(MessageKnOfficeGenerator.getResourceBundle().getString("rule"))) { 	
 					if (m.getMessageType().equals(Message.ERROR)) {  // hack showing only errors, this rendering needs a complete redesign
 						empty = false;
-							string.append(KnowWEEnvironment.maskHTML(
-									"<span style='color:red'>"));
+						string.append(KnowWEUtils.maskHTML("<span style='color:red'>"));
 						string.append(m.getMessageType()+": " + m.getMessageText() 
-								+ (m.getMessageType().equals(Message.NOTE) ? " " + m.getCount() : " Line: " + m.getLineNo()));
-							string.append(KnowWEEnvironment.maskHTML(
-									"</span>"));
-						string.append(KnowWEEnvironment.maskHTML("\n"));
+								+ (m.getMessageType().equals(Message.NOTE) ? " " 
+										+ m.getCount() : " Line: " + m.getLineNo()));
+						string.append(KnowWEUtils.maskHTML("</span>"));
+						string.append(KnowWEUtils.maskHTML("\n"));
 					}
 				}
 				if (!empty)
-					string.append(KnowWEEnvironment.maskHTML("\n"));
+					string.append(KnowWEUtils.maskHTML("\n"));
 			}
 			
 			StringBuilder b = new StringBuilder();
@@ -132,14 +108,14 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 			} else {
 				DelegateRenderer.getInstance().render(sec, user, b);
 			}
-			string.append(b.toString() + KnowWEEnvironment.maskHTML("</pre></span></span>\n"));
+			string.append(b.toString() + KnowWEUtils.maskHTML("</pre></span></span>\n"));
 		}
 	}
 	
 	public class RuleSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 			
 			boolean lazy = false ;
 			Section xml = KnowWEObjectTypeUtils.getAncestorOfType(s, AbstractXMLObjectType.class);
@@ -153,7 +129,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 				}
 			}
 			
-			KnowledgeBaseManagement kbm = getKBM(s);
+			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {
 				
@@ -163,7 +139,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 				
 				if (s != null) {
 					String text = 
-						IncludedFromType.removeIncludedFromTags(s.getOriginalText());
+						TextInclude.removeTextIncludeTags(s.getOriginalText());
 					Reader r = new StringReader(text);
 					
 					List<Message> bm = 
@@ -171,7 +147,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 					
 					if (builder.getRuleIDs().size() == 1) {
 						KnowWEUtils.storeSectionInfo(
-								s.getArticle().getWeb(), s.getTitle(), s.getId(),
+								article.getWeb(), article.getTitle(), s.getId(),
 								KBID_KEY, builder.getRuleIDs().get(0));
 					}
 					
@@ -198,8 +174,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 						new ArrayList<SectionFinderResult>();
 
 			Pattern p = Pattern.compile 
-				//("(IF|WENN).*?(?=(\\s*IF|\\s*WENN|\\s*<[/]?includedFrom[^>]*?>|\\s*\\z))", Pattern.DOTALL);
-				("(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN|\\s*<[/]?includedFrom[^>]*?>|\\s*\\z))", Pattern.DOTALL);
+				("(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN|\\s*" + TextInclude.PATTERN_BOTH + "|\\s*\\z))", Pattern.DOTALL);
 			Matcher m = p.matcher(text);
 			
 			while(m.find()) {

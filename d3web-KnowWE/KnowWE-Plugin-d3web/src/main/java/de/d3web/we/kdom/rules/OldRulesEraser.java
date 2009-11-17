@@ -34,11 +34,11 @@ import de.d3web.we.utils.KnowWEUtils;
 
 public class OldRulesEraser {
 	
-	public static void deleteRules(Section s, KnowledgeBaseManagement kbm) {
+	public static void deleteRules(KnowWEArticle article, Section s, KnowledgeBaseManagement kbm) {
 
 		if (kbm != null) {
 			//long start = System.nanoTime();
-			KnowWEArticle oldArt = s.getArticle().getOldArticle();
+			KnowWEArticle oldArt = article.getLastVersionOfArticle();
 				
 			// get all Rules of the old article
 			List<Section> oldRules = new ArrayList<Section>();
@@ -48,7 +48,13 @@ public class OldRulesEraser {
 			Set<String> idsToDelete = new HashSet<String>();
 			for (Section or:oldRules) {
 				if (!or.isReused()) {
-					idsToDelete.add((String) KnowWEUtils.getOldStoredObject(oldArt.getWeb(), oldArt.getTitle(), or.getId(), Rule.KBID_KEY));
+					if (or.getTitle().equals(article.getTitle())) {
+						idsToDelete.add((String) KnowWEUtils.getLastStoredObject(or.getWeb(), 
+								or.getTitle(), or.getId(), Rule.KBID_KEY));
+					} else {
+						idsToDelete.add((String) KnowWEUtils.getStoredObject(or.getWeb(), 
+								or.getTitle(), or.getId(), Rule.KBID_KEY));
+					}
 				}
 			}
 			

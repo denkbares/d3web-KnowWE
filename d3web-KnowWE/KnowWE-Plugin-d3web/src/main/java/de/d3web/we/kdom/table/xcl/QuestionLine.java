@@ -23,6 +23,7 @@ package de.d3web.we.kdom.table.xcl;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.table.TableCellContent;
@@ -54,7 +55,7 @@ public class QuestionLine extends TableLine {
 	class QuestionLineHandler implements ReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 			
 			Section headerCell = s.findSuccessor(TableColumnHeaderCellContent.class);
 			headerCell.setType(QuestionCell.getInstance());

@@ -22,8 +22,8 @@ package de.d3web.we.kdom;
 
 
 /**
- * Abstract class for a ReviseSubtreeHandler. This handler has to be registered at some type and then
- * after each time a section of this type is created this handler is called with that section and 
+ * Abstract class for a ReviseSubtreeHandler. This handler has to be registered to a type and then,
+ * after the KDOM is build, this handler is called with that section and 
  * the subtree can be processed (e.g. translated to a target representation)
  * 
  * @author Jochen
@@ -31,6 +31,12 @@ package de.d3web.we.kdom;
  */
 public interface ReviseSubTreeHandler {
 	
-	public void reviseSubtree(Section s);
+	/**
+	 * Revises the subtree of this section.
+	 * 
+	 * @param article is the article that called this method
+	 * @param s is the root section of the subtree to revise
+	 */
+	public void reviseSubtree(KnowWEArticle article, Section s);
 
 }

@@ -33,6 +33,7 @@ import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.KnowledgeUtils;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.table.TableUtils;
@@ -43,10 +44,10 @@ public class AnswerCellHandler implements ReviseSubTreeHandler {
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
-	public void reviseSubtree(Section s) {
+	public void reviseSubtree(KnowWEArticle article, Section s) {
 		
 		KnowledgeBaseManagement mgn = D3webModule.getInstance()
-			.getKnowledgeRepresentationHandler().getKBM(s);
+			.getKnowledgeRepresentationHandler().getKBM(article, s);
 		
 		if (mgn == null) {
 			return;

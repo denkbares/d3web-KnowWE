@@ -22,23 +22,28 @@ package de.d3web.we.kdom;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
-import de.d3web.we.kdom.include.IncludedFromType;
-import de.d3web.we.kdom.include.IncludedFromTypeHead;
-import de.d3web.we.kdom.include.IncludedFromTypeTail;
+import de.d3web.we.kdom.include.Include;
+import de.d3web.we.kdom.include.IncludeAddress;
+import de.d3web.we.kdom.include.TextInclude;
+import de.d3web.we.kdom.include.TextIncludeHead;
+import de.d3web.we.kdom.include.TextIncludeTail;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.store.SectionStore;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWEUtils;
@@ -60,34 +65,26 @@ import de.d3web.we.utils.PairOfInts;
  */
 public class Section implements Visitable, Comparable<Section> {
 
-	protected KnowWEArticle article;
-
-	protected boolean isExpanded = false;
-	
 	private boolean reused = false;
 	
 	private boolean hasReusedSuccessor = false;
 
-	protected KnowWEDomRenderer renderer;
+	private PairOfInts startPosFromTmp;
 
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	public static final String SECTION_TYPE_UNDEF = "UNDEF";
+	private IncludeAddress address;
+
+	protected KnowWEArticle article;
+
+	protected boolean isExpanded = false;
+
+	protected KnowWEDomRenderer renderer;
 
 	/**
 	 * The id of this node, unique in an article
 	 */
 	protected String id;
 	
-	protected String idSuffix;
-
-	/**
-	 * If the parsed id for this section is already assigned to another section,
-	 * this section gets a generated id and this boolean get the value true;
-	 */
-	protected boolean idConflict = false;
+	private String specificID;
 
 	/**
 	 * Contains the text of this KDOM-node
@@ -99,7 +96,7 @@ public class Section implements Visitable, Comparable<Section> {
 	 */
 	protected List<Section> children = new ArrayList<Section>();
 	
-	private List<Section> childrenParsingOrder = new ArrayList<Section>();
+	private LinkedList<Section> childrenParsingOrder = new LinkedList<Section>();
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through
@@ -120,8 +117,6 @@ public class Section implements Visitable, Comparable<Section> {
 	 * @see KnowWEObjectType Each type has its own parser and renderer
 	 */
 	protected KnowWEObjectType objectType;
-
-	PairOfInts startPosFromTmp;
 
 	protected int absolutePositionStartInArticle = -1;
 
@@ -152,93 +147,54 @@ public class Section implements Visitable, Comparable<Section> {
 	}
 
 	/**
-	 * Without id;
-	 */
-	static Section createSection(KnowWEObjectType objectType, Section father,
-			Section tmp, int beginIndex, int endIndex, KnowWEArticle article) {
-		return createSection(objectType, father, tmp, beginIndex, endIndex,
-				article, new SectionID(article.getIDGen()));
-
-	}
-
-	/**
-	 * With id.
-	 */
-	static Section createSection(KnowWEObjectType objectType, Section father,
-			Section tmp, int beginIndex, int endIndex, KnowWEArticle article,
-			SectionID id) {
-
-		if (id == null)
-			id = new SectionID(article.getIDGen());
-
-		Section s = new Section(tmp.getOriginalText().substring(beginIndex,
-				endIndex), objectType, father, tmp.getOffSetFromFatherText()
-				+ beginIndex, article, id, false);
-		s.setPosition(new PairOfInts(beginIndex, endIndex));
-		return s;
-	}
-
-	/**
-	 * Constructor for Sections with automatically generated ids.
-	 */
-	static Section createExpandedSection(String text,
-			KnowWEObjectType objectType, Section father, int beginIndexFather,
-			KnowWEArticle article) {
-		return new Section(text, objectType, father, beginIndexFather, article,
-				new SectionID(article.getIDGen()), true);
-	}
-
-	/**
-	 * DO USE THE FACTORY METHODS TO CREATE SECTIONS!
 	 * 
-	 * Constructor of a node Important: parses itself recursivly by getting the
+	 * Constructor of a node Important: parses itself recursively by getting the
 	 * allowed childrenTypes of the local type
 	 * 
-	 * @param type
-	 *            deprecated - use objectType
-	 * @param text
-	 *            the part of (article-source) text of the node
+	 * @param text 
+	 * 			the part of (article-source) text of the node
 	 * @param objectType
-	 *            type of the node
+	 *          type of the node
 	 * @param father
 	 * @param beginIndexFather
 	 * @param article
-	 *            is the article this section is hooked in
+	 *          is the article this section is hooked in
+	 * @param address
 	 */
-	/**
-	 * @param text
-	 * @param objectType
-	 * @param father
-	 * @param beginIndexFather
-	 * @param article
-	 * @param sectionID
-	 * @param isExpanded
-	 */
-	Section(String text, KnowWEObjectType objectType, Section father,
+	 protected Section(String text, KnowWEObjectType objectType, Section father,
 			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
-			boolean isExpanded) {
+			boolean isExpanded, IncludeAddress address) {
 		
 
 		this.article = article;
 		this.isExpanded = isExpanded;
-
+		this.address = address;
+		
 		this.father = father;
 		if (father != null)
 			father.addChild(this);
 		this.originalText = text == null ? "null" : text;
 		this.objectType = objectType;
 		offSetFromFatherText = beginIndexFather;
-
-		this.id = sectionID.toString();
-		this.idSuffix = sectionID.getSuffix();
-		this.idConflict = sectionID.isIdConflict();
-
+		
+		if (sectionID == null) {
+			if (objectType instanceof KnowWEArticle) {
+				this.id = new SectionID(getTitle()).toString();
+			} else {
+				this.id = new SectionID(father, objectType).toString();
+			}
+		} else {
+			this.id = sectionID.toString();
+			this.specificID = sectionID.getSpecificID();
+		}
+		
+		// Update mechanism
 		// try to get unchanged Sections from old article
-		if (article.getOldArticle() != null && !isExpanded
+		if (article.getLastVersionOfArticle() != null && !isExpanded
 				&& !objectType.isNotRecyclable()
 				&& !objectType.isLeafType()) {
 			
-			Map<String, Section> sectionsOfSameType = article.getOldArticle()
+			Map<String, Section> sectionsOfSameType = article.getLastVersionOfArticle()
 					.findChildrenOfTypeMap(getPathFromArticleToThis());
 			
 			Section match = sectionsOfSameType.remove(getOriginalText());
@@ -261,62 +217,56 @@ public class Section implements Visitable, Comparable<Section> {
 				this.childrenParsingOrder = match.childrenParsingOrder;
 			
 				List<Section> newNodes = new ArrayList<Section>();
-				getAllNodesParsingPreOrder(newNodes);
+				getAllNodesParsingPreOrderWithoutIncludes(newNodes);
 				for (Section node:newNodes) {
+					
+					if (!node.getTitle().equals(getTitle())) {
+						continue;
+					}
+					
+					if (node.getObjectType() instanceof Include) {
+						article.getIncludeSections().add(node);
+					}
 					
 					node.article = this.article;
 					
-					SectionStore oldStore = KnowWEUtils.getOldSectionStore(getWeb(), getTitle(), 
-							node == this ? match.id : node.id);
+					SectionStore oldStore = KnowWEUtils.getLastSectionStore(node.getWeb(), node.getTitle(), node.id);
 					
 					if (node != this) {
-						if (article.getIDGen().isAssignedID(node.id)) {
-							node.id = article.getIDGen().createID(null, node.idSuffix);
+						if (node.specificID == null) {
+							node.id = new SectionID(node.father, node.objectType).toString();
 						} else {
-							if (node.idSuffix != null && node.idSuffix.length() != 0) {
-								if (node.father.getObjectType() instanceof AbstractXMLObjectType 
-										&& !node.id.startsWith(node.father.id)
-										&& !article.getIDGen().isAssignedID(node.father.id + node.idSuffix)) {
-									node.id = node.father.id + node.idSuffix;
-								}
-								if (!article.getIDGen().isAssignedID(node.getIdWithoutSuffix())) {
-									article.getIDGen().assignID(node.getIdWithoutSuffix());
-									article.getIDGen().increaseIndexNumberBy(1);
-								} else {
-									article.getIDGen().assignID(node.id);
-								}
-							} else {
-								article.getIDGen().increaseIndexNumberBy(1);
-							}
-							article.getIDGen().assignID(node.id);
+							node.id = new SectionID(node.getArticle(), node.specificID).toString();
 						}
 					}
 					
 					node.reused = true;
 					
-					//System.out.print(oldStore.getAllObjects().isEmpty() ? "" : "#" + node.getId() + " " + node.getObjectType().getName() + " put " + oldStore.getAllObjects() + "\n");
-					KnowWEUtils.putSectionStore(getWeb(), getTitle(), node.id, oldStore);
+					//System.out.print(oldStore.getAllObjects().isEmpty() ? "" : "#" + node.getId() + " put " + oldStore.getAllObjects() + "\n");
+					KnowWEUtils.putSectionStore(node.getWeb(), node.getTitle(), node.id, oldStore);
 				}
 				
-				article.getUnchangedSubTrees().put(id, this);
+				//article.getUnchangedSubTrees().put(id, this);
 				//System.out.println("Used old " + this.getObjectType().getName());
 				return;
 			}
 		}
 
 		//fetches the allowed children types of the local type
-		List<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();
+		List<KnowWEObjectType> types = new LinkedList<KnowWEObjectType>();
 
 		if (objectType != null && objectType.getAllowedChildrenTypes() != null) {
 			types.addAll(objectType.getAllowedChildrenTypes());
 		}
 
 		if (objectType != null
-				&& !objectType.equals(IncludedFromTypeHead.getInstance())
-				&& !objectType.equals(IncludedFromTypeTail.getInstance())
+				&& !objectType.equals(TextIncludeHead.getInstance())
+				&& !objectType.equals(TextIncludeTail.getInstance())
+				&& !objectType.equals(Include.getInstance())
 				&& !objectType.equals(PlainText.getInstance())) {
-			types.add(IncludedFromTypeHead.getInstance());
-			types.add(IncludedFromTypeTail.getInstance());
+			types.add(TextIncludeHead.getInstance());
+			types.add(TextIncludeTail.getInstance());
+			types.add(Include.getInstance());
 
 		}
 		
@@ -341,12 +291,15 @@ public class Section implements Visitable, Comparable<Section> {
 		 * searches for children types and splits recursively
 		 */
 		if (!(this instanceof UndefinedSection)
-				&& !(objectType.equals(PlainText.getInstance())) && !isExpanded) {
+				&& !objectType.equals(PlainText.getInstance()) 
+				&& !objectType.equals(Include.getInstance())
+				&& !isExpanded) {
 			Sectionizer.getInstance().splitToSections(originalText, types, this,
 					article);
 		}
 		
 		childrenParsingOrder.addAll(children);
+		sortChildrenParsingOrder();
 		
 		/**
 		 * sort children sections in text-order
@@ -354,6 +307,10 @@ public class Section implements Visitable, Comparable<Section> {
 		Collections.sort(children, new TextOrderComparator());
 		
 		article.getChangedSections().put(id, this);
+		
+		if (objectType instanceof Include) {
+			article.getIncludeSections().add(this);
+		}
 	}
 
 	protected Section(KnowWEArticle article) {
@@ -361,12 +318,12 @@ public class Section implements Visitable, Comparable<Section> {
 	}
 
 	/**
-	 * don't allow Sections without a KnowWEArticle
+	 * don't allow Sections without a KnowWEArticle and ids
 	 */
 	private Section() {
 
 	}
-
+	
 	/*
 	 * verbalizes this node
 	 */
@@ -397,7 +354,6 @@ public class Section implements Visitable, Comparable<Section> {
 	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 * 
-	 * @param s
 	 */
 	public void addChild(Section s) {
 		if (s.getOffSetFromFatherText() == -1) {
@@ -416,7 +372,11 @@ public class Section implements Visitable, Comparable<Section> {
 	public String getOriginalText() {
 		return originalText;
 	}
-
+	
+	public IncludeAddress getIncludeAddress() {
+		return this.address;
+	}
+	
 	/**
 	 * Sets the text of this node. This IS an article source edit operation!
 	 * TODO: Important - propagate changes through the whole tree OR ReIinit
@@ -430,12 +390,15 @@ public class Section implements Visitable, Comparable<Section> {
 	}
 
 	/**
-	 * return the list of child nodes
-	 * 
-	 * @return
+	 * @return the list of child nodes
 	 */
 	public List<Section> getChildren() {
-		return children;
+		if (objectType instanceof Include) {
+			return KnowWEEnvironment.getInstance().getIncludeManager(getWeb()).getChildrenForSection(this);
+		} else {
+			return children;
+		}
+		
 	}
 
 	/**
@@ -447,11 +410,123 @@ public class Section implements Visitable, Comparable<Section> {
 	 */
 	public List<Section> getChildren(SectionFilter filter) {
 		ArrayList<Section> list = new ArrayList<Section>();
-		for (Section current : children) {
+		for (Section current : getChildren()) {
 			if (filter.accept(current))
 				list.add(current);
 		}
 		return list;
+	}
+	
+	public void getAllNodesPreOrder(List<Section> nodes) {
+		nodes.add(this);
+		if (this.getChildren() != null) {
+			for (Section child : this.getChildren()) {
+				child.getAllNodesPreOrder(nodes);
+			}
+		}
+	}
+	
+	public void getAllNodesParsingPostOrder(List<Section> nodes) {
+		for (Section node:this.getChildrenParsingOrder()) {
+			if (node.isExpanded) {
+				node.getAllNodesPreOrder(nodes);
+			} else {
+				node.getAllNodesParsingPostOrder(nodes);
+			}
+		}
+		nodes.add(this);
+	}
+	
+	public void getAllNodesParsingPreOrderWithoutIncludes(List<Section> nodes) {
+		nodes.add(this);
+		if (!(objectType instanceof Include)) {
+			for (Section node:this.getChildrenParsingOrder()) {
+				if (node.isExpanded) {
+					node.getAllNodesPreOrder(nodes);
+				} else {
+					node.getAllNodesParsingPreOrderWithoutIncludes(nodes);
+				}
+			}
+		}
+	}
+	
+	public void getAllNodesParsingPreOrder(List<Section> nodes) {
+		nodes.add(this);
+		for (Section node:this.getChildrenParsingOrder()) {
+			if (node.isExpanded) {
+				node.getAllNodesPreOrder(nodes);
+			} else {
+				node.getAllNodesParsingPreOrder(nodes);
+			}
+		}
+	}
+	
+	/**
+	 * @return the list of child nodes in parsing order
+	 */
+	public List<Section> getChildrenParsingOrder() {
+		if (objectType instanceof Include) {
+			return getChildren();
+		} else {
+			return childrenParsingOrder;
+		}
+	}
+	
+	/**
+	 * Sorts children to parsing order regarding Includes. Includes per definitions
+	 * get parsed last, but the Section they are including may normally get parsed 
+	 * earlier. Since the correct order is important for the ReviseSubTreeHandler,
+	 * the Includes get sorted to the position in the List where the Section they are
+	 * including normally is positioned.
+	 */
+	private void sortChildrenParsingOrder() {
+		if (childrenParsingOrder.size() < 2) {
+			// already sorted
+			return;
+		}
+		// for every ObjectType a list with all Includes that include a Section with this ObjectType
+		Map<KnowWEObjectType, List<Section>> includes = new HashMap<KnowWEObjectType, List<Section>>();
+		// all ObjectTypes that are possible in the children list
+		Set<KnowWEObjectType> types = new HashSet<KnowWEObjectType>(getObjectType().getAllowedChildrenTypes());
+		
+		for (Section sec:childrenParsingOrder) {
+			// store the Includes to the map
+			if (sec.getObjectType() instanceof Include && types.contains(sec.getChildren().get(0).getObjectType())) {
+				KnowWEObjectType includedType = sec.getChildren().get(0).getObjectType();
+				List<Section> includesOfType = includes.get(includedType);
+				if (includesOfType == null) {
+					includesOfType = new ArrayList<Section>();
+					includes.put(includedType, includesOfType);
+				}
+				includesOfType.add(sec);
+				
+			}
+		}
+		if (includes.isEmpty() || childrenParsingOrder.isEmpty() 
+				|| includes.size() == childrenParsingOrder.size()) {
+			// nothing to sort here
+			return;
+		}
+		for (List<Section> incList:includes.values()) {
+			// remove the Includes from the children list
+			childrenParsingOrder.removeAll(incList);
+		}
+		// and sort them back in
+		// for each ObjectType move the pivot to the position behind the last Section
+		// with this Type and then insert Includes that include a Section with the same
+		// ObjectType (if given) 
+		for(KnowWEObjectType type:getObjectType().getAllowedChildrenTypes()) {
+			int i = 0; // pivot
+			while (i <= childrenParsingOrder.size() 
+					&& childrenParsingOrder.get(i).getObjectType().isAssignableFromType(type.getClass())) {
+				i++;
+			}
+			List<Section> includesOfType = includes.get(type);
+			if (includesOfType != null) {
+				childrenParsingOrder.addAll(i, includesOfType);
+				i += includesOfType.size();
+			}
+		}		
 	}
 
 	/**
@@ -462,7 +537,7 @@ public class Section implements Visitable, Comparable<Section> {
 	public Section getFather() {
 		return father;
 	}
-
+	
 	/**
 	 * returns the type of this node
 	 * 
@@ -531,7 +606,7 @@ public class Section implements Visitable, Comparable<Section> {
 				return true;
 			}
 		}
-		for (Section child : children) {
+		for (Section child : getChildren()) {
 			if (child.getObjectType().isAssignableFromType(class1)) {
 				if (this.originalText.indexOf(text) < child
 						.getOffSetFromFatherText()) {
@@ -556,7 +631,7 @@ public class Section implements Visitable, Comparable<Section> {
 				return true;
 			}
 		}
-		for (Section child : children) {
+		for (Section child : getChildren()) {
 			if (child.getObjectType().isAssignableFromType(class1)) {
 				if (this.originalText.indexOf(text) > child
 						.getOffSetFromFatherText()) {
@@ -587,13 +662,16 @@ public class Section implements Visitable, Comparable<Section> {
 	public String verbalize() {
 		StringBuffer buffi = new StringBuffer();
 		buffi.append(this.getObjectType().getClass().getSimpleName());
-		buffi.append(", ID: " + this.id + (idConflict ? " (ID conflict)" : ""));
+		//TODO: Show more of the IDs...
+		buffi.append(", ID: " + (id.contains("/") ? ".." + id.substring(id.lastIndexOf("/")) : id));
 		buffi.append(", length: " + this.getOriginalText().length() + " ("
-				+ offSetFromFatherText + ")" + ", children: " + children.size());
+				+ offSetFromFatherText + ")" + ", children: " + getChildren().size());
 		buffi.append(", \"" + replaceNewlines(getShortText(50)));
 		buffi.append("\"");
 		return buffi.toString();
 	}
+	
+	
 
 	private String replaceNewlines(String shortText) {
 		return shortText.replaceAll("\\n", "\\\\n");
@@ -607,10 +685,6 @@ public class Section implements Visitable, Comparable<Section> {
 
 	public String getId() {
 		return id;
-	}
-	
-	public String getIdWithoutSuffix() {
-		return id.substring(0, id.length() - idSuffix.length());
 	}
 
 	@Override
@@ -631,7 +705,7 @@ public class Section implements Visitable, Comparable<Section> {
 	public Section getNode(String nodeID) {
 		if (this.id.equals(nodeID))
 			return this;
-		for (Section child : children) {
+		for (Section child : getChildren()) {
 			Section s = child.getNode(nodeID);
 			if (s != null)
 				return s;
@@ -653,7 +727,7 @@ public class Section implements Visitable, Comparable<Section> {
 	public Section findChild(String id2) {
 		if (this.id.equals(id2))
 			return this;
-		for (Section child : children) {
+		for (Section child : getChildren()) {
 			Section s = child.findChild(id2);
 			if (s != null)
 				return s;
@@ -667,7 +741,7 @@ public class Section implements Visitable, Comparable<Section> {
 		if (nodeStart <= start && nodeStart + originalText.length() >= end
 				&& (!(this.getObjectType() instanceof PlainText))) {
 			s = this;
-			for (Section sec : children) {
+			for (Section sec : getChildren()) {
 				Section sub = sec.findSmallestNodeContaining(start, end);
 				if (sub != null && (!(s.getObjectType() instanceof PlainText))) {
 					s = sub;
@@ -682,7 +756,7 @@ public class Section implements Visitable, Comparable<Section> {
 		if (this.getOriginalText().contains(text)
 				&& (!(this.getObjectType() instanceof PlainText))) {
 			s = this;
-			for (Section sec : children) {
+			for (Section sec : getChildren()) {
 				Section sub = sec.findSmallestNodeContaining(text);
 				if (sub != null && (!(s.getObjectType() instanceof PlainText))) {
 					s = sub;
@@ -725,7 +799,7 @@ public class Section implements Visitable, Comparable<Section> {
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
 			return this;
 		}
-		for (Section sec : children) {
+		for (Section sec : getChildren()) {
 			Section s = sec.findSuccessor(class1);
 			if (s != null)
 				return s;
@@ -743,11 +817,10 @@ public class Section implements Visitable, Comparable<Section> {
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
 			found.add(this);
 		}
-		for (Section sec : children) {
+		for (Section sec : getChildren()) {
 			sec.findSuccessorsOfType(class1, found);
 		}
 	}
-	
 	
 	/**
 	 * Finds all successors of type <code>class1</code> in the KDOM below this
@@ -761,7 +834,7 @@ public class Section implements Visitable, Comparable<Section> {
 				found.put(this.getOriginalText(), this);
 			}
 		}
-		for (Section sec : children) {
+		for (Section sec : getChildren()) {
 			sec.findSuccessorsOfType(class1, found);
 		}
 
@@ -780,7 +853,7 @@ public class Section implements Visitable, Comparable<Section> {
 		if (depth == 0) {
 			return;
 		}
-		for (Section sec : children) {
+		for (Section sec : getChildren()) {
 			sec.findSuccessorsOfType(class1, depth--, found);
 		}
 
@@ -801,7 +874,7 @@ public class Section implements Visitable, Comparable<Section> {
 			Map<String, Section> found) {
 
 		if (index < path.size() - 1 && path.get(index).isAssignableFrom(this.getObjectType().getClass())) {
-			for (Section sec : children) {
+			for (Section sec : getChildren()) {
 				sec.findSuccessorsOfTypeAtTheEndOfPath(path, index + 1, found);
 			}
 		} else if (index == path.size() - 1 && path.get(index).isAssignableFrom(this.getObjectType().getClass())) {
@@ -819,14 +892,13 @@ public class Section implements Visitable, Comparable<Section> {
 	 * Stores found successors in a List of Sections
 	 * 
 	 */
-
 	public void findSuccessorsOfTypeAtTheEndOfPath(
 			List<Class<? extends KnowWEObjectType>> path,
 			int index,
 			List<Section> found) {
 
 		if (index < path.size() - 1 && path.get(index).isAssignableFrom(this.getObjectType().getClass())) {
-			for (Section sec : children) {
+			for (Section sec : getChildren()) {
 				sec.findSuccessorsOfTypeAtTheEndOfPath(path, index + 1, found);
 			}
 		} else if (index == path.size() - 1 && path.get(index).isAssignableFrom(this.getObjectType().getClass())) {
@@ -880,8 +952,8 @@ public class Section implements Visitable, Comparable<Section> {
 	}
 
 	public void collectTextsFromLeaves(StringBuilder buffi) {
-		if (this.children != null && this.children.size() > 0) {
-			for (Section s : children) {
+		if (this.getChildren() != null && this.getChildren().size() > 0) {
+			for (Section s : getChildren()) {
 				s.collectTextsFromLeaves(buffi);
 			}
 		} else {
@@ -909,40 +981,9 @@ public class Section implements Visitable, Comparable<Section> {
 		return father.hasQuickEditModeSet(user);
 	}
 
-	public void getAllNodesPreOrder(List<Section> nodes) {
-		nodes.add(this);
-		if (this.getChildren() != null) {
-			for (Section child : this.getChildren()) {
-				child.getAllNodesPreOrder(nodes);
-			}
-		}
-	}
-	
-	public void getAllNodesParsingPostOrder(List<Section> nodes) {
-		for (Section node:this.childrenParsingOrder) {
-			if (node.isExpanded) {
-				node.getAllNodesPreOrder(nodes);
-			} else {
-				node.getAllNodesParsingPostOrder(nodes);
-			}
-		}
-		nodes.add(this);
-	}
-	
-	public void getAllNodesParsingPreOrder(List<Section> nodes) {
-		nodes.add(this);
-		for (Section node:this.childrenParsingOrder) {
-			if (node.isExpanded) {
-				node.getAllNodesPreOrder(nodes);
-			} else {
-				node.getAllNodesParsingPreOrder(nodes);
-			}
-		}
-	}
-
 	public boolean isEmpty() {
 		String text = getOriginalText();
-		text = text.replaceAll(IncludedFromType.PATTERN_BOTH, "");
+		text = text.replaceAll(TextInclude.PATTERN_BOTH, "");
 		text = text.replaceAll("\\s", "");
 		return text.length() == 0;
 	}
@@ -958,7 +999,7 @@ public class Section implements Visitable, Comparable<Section> {
 	public void resetStateRecursively() {
 		reused = false;
 		hasReusedSuccessor = false;
-		for (Section child:children) {
+		for (Section child:getChildren()) {
 			child.resetStateRecursively();
 		}
 	}
@@ -982,10 +1023,23 @@ public class Section implements Visitable, Comparable<Section> {
 	public boolean setType(KnowWEObjectType newType) {
 		if(objectType.getClass() != (newType.getClass()) && objectType.getClass().isAssignableFrom(newType.getClass())) {
 			this.objectType = newType;
-			newType.reviseSubtree(this);
+			newType.reviseSubtree(getArticle(), this);
 			return true;
 		}
 		return false;
 	}
+	
+	private class TextOrderComparator implements Comparator<Section> {
 
+		@Override
+		public int compare(Section arg0, Section arg1) {
+			if(arg0.getOffSetFromFatherText() > arg1.getOffSetFromFatherText()) return 1;
+			if(arg0.getOffSetFromFatherText() < arg1.getOffSetFromFatherText()) return -1;
+			return 0;
+			
+			
+		}
+		
+	}
+	
 }

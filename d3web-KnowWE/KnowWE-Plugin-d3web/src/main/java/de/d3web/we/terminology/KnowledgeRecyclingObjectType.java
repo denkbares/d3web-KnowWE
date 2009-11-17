@@ -21,11 +21,12 @@
 package de.d3web.we.terminology;
 
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
 
 public interface KnowledgeRecyclingObjectType {
 	
-	public void cleanKnowledge(Section s, KnowledgeBaseManagement kbm);
+	public void cleanKnowledge(KnowWEArticle article, Section s, KnowledgeBaseManagement kbm);
 
 }

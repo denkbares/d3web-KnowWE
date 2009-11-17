@@ -21,7 +21,6 @@
 package de.d3web.we.core;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,8 +45,6 @@ public class KnowWEArticleManager {
 	 * Stores KnowWEArticles for article-names
 	 */
 	private HashMap<String, KnowWEArticle> articleMap = new java.util.HashMap<String, KnowWEArticle>();
-
-	private List<String> initializingArticles = new ArrayList<String>();
 
 	protected KnowWESectionInfoStorage typeStore = new KnowWESectionInfoStorage();
 
@@ -111,8 +108,7 @@ public class KnowWEArticleManager {
 	/**
 	 * Replaces a KDOM-node with the given text
 	 * 
-	 * by now generates new KDOM from changed text TODO: implement proper
-	 * algorithm to reuse old tree
+	 * by now generates new KDOM from changed text
 	 * 
 	 * @param map
 	 * @param articleName
@@ -142,8 +138,7 @@ public class KnowWEArticleManager {
 	/**
 	 * Replaces a KDOM-node with the given text
 	 * 
-	 * by now generates new KDOM from changed text TODO: implement proper
-	 * algorithm to reuse old tree
+	 * by now generates new KDOM from changed text 
 	 * 
 	 * @param map
 	 * @param articleName
@@ -210,17 +205,12 @@ public class KnowWEArticleManager {
 		// store new article
 		articleMap.put(art.getTitle(), art);
 
+		KnowWEEnvironment.getInstance().getIncludeManager(webname).updateIncludesToArticle(art.getTitle());
+		KnowWEEnvironment.getInstance().getIncludeManager(webname).removeInactiveIncludesForArticle(art.getTitle());
+		
 		sc.update(art.getTitle(), art);
-
+		
 		return art.getReport();
 	}
-
-	public List<String> getInitializingArticles() {
-		return initializingArticles;
-	}
-
-	public void addInitializingArticle(String article) {
-		this.initializingArticles.add(article);
-	}
-
+	
 }

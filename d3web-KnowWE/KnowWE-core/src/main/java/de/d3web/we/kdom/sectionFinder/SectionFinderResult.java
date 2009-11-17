@@ -24,6 +24,7 @@ import de.d3web.we.kdom.SectionID;
 
 
 
+
 public class SectionFinderResult implements Comparable<SectionFinderResult>{
 	
 	protected int start = Integer.MIN_VALUE;

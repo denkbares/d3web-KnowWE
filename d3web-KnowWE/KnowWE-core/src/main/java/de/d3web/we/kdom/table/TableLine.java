@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
@@ -81,7 +82,7 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 	private class TableLineHandler implements ReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 			Section colHeaderCell = s.findSuccessor(TableCell.class);
 			if (colHeaderCell != null) {
 

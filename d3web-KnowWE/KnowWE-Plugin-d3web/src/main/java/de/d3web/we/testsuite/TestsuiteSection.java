@@ -30,6 +30,7 @@ import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEParseResult;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
@@ -59,9 +60,9 @@ public class TestsuiteSection extends AbstractKopicSection{
 	private class TestsuiteSectionSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 	
-			KnowledgeBaseManagement kbm = getKBM(s);
+			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {
 				
@@ -70,7 +71,7 @@ public class TestsuiteSection extends AbstractKopicSection{
 	
 				if (content != null) {
 	
-					Reader r = new StringReader(removeIncludedFromTags(content.getOriginalText()));
+					Reader r = new StringReader(removeTextIncludeTags(content.getOriginalText()));
 					IDObjectManagement idom = new SingleKBMIDObjectManager(kbm);
 					TestsuiteBuilder builder = new TestsuiteBuilder("", idom);
 					

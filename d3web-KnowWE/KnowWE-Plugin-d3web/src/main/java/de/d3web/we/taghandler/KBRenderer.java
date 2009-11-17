@@ -62,7 +62,7 @@ public class KBRenderer extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,Map<String,String> values, String web) {
 		D3webKnowledgeService service = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);
-		
+
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 		
 		StringBuilder text = new StringBuilder("<div id=\"knowledge-panel\" class=\"panel\"><h3>" + rb.getString("KnowWE.KBRenderer.header") + "</h3>");
@@ -125,9 +125,9 @@ public class KBRenderer extends AbstractTagHandler {
 						KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
 								.getSection().findSuccessorsOfType(Rule.class, allRules);
 						KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
-						.getSection().findSuccessorsOfType(BulletContentType.class, allRules);
+								.getSection().findSuccessorsOfType(BulletContentType.class, allRules);
 						for (Section rule:allRules) {
-							String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), rule.getTitle(), 
+							String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), topic, 
 									rule.getId(), Rule.KBID_KEY);
 							idMap.put(kbRuleId, rule.getId());
 						}

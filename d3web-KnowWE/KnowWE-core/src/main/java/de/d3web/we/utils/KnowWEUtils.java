@@ -65,16 +65,16 @@ public class KnowWEUtils {
 		return getStoredObject(s.getWeb(), s.getTitle(), s.getId(), key);
 	}
 	
-	public static Object getOldStoredObject(String web, String article, String kdomid, String key) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getOldStoredObject(article, kdomid, key);
+	public static Object getLastStoredObject(String web, String article, String kdomid, String key) {
+		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getLastStoredObject(article, kdomid, key);
 	}
 	
 	public static SectionStore getSectionStore(String web, String article, String kdomid) {
 		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObjects(article, kdomid);
 	}
 	
-	public static SectionStore getOldSectionStore(String web, String article, String kdomid) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getOldStoredObjects(article, kdomid);
+	public static SectionStore getLastSectionStore(String web, String article, String kdomid) {
+		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getLastStoredObjects(article, kdomid);
 	}
 	
 	public static String convertUmlaut(String text) {

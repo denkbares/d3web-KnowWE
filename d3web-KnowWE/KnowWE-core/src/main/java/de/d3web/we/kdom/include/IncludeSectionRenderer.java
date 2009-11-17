@@ -20,18 +20,28 @@
 
 package de.d3web.we.kdom.include;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class IncludedFromSectionRenderer extends KnowWEDomRenderer {
+public class IncludeSectionRenderer extends KnowWEDomRenderer {
 
 	
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
-		String src = sec instanceof IncludedFromSection ? ((IncludedFromSection) sec).getSrc() 
-				: "Unknown Source";
+		String srclink;
+		if (sec instanceof TextIncludeSection) {
+			String src = ((TextIncludeSection) sec).getSrc();
+			srclink = createLink(src.substring(0, src.indexOf("/")), 
+					"txtInclude: src=\"" + src + "\"");
+		} else if (sec.getObjectType() instanceof Include && sec.getIncludeAddress() != null) {
+			srclink = createLink(sec.getIncludeAddress().getTargetArticle(),  
+						"include: src=\"" + sec.getIncludeAddress().getOriginalAddress() + "\"");
+		} else {
+			srclink = createLink(sec.getTitle(), "Unknown Source");
+		}
+		
 		StringBuilder content = new StringBuilder();
 		StringBuilder b = new StringBuilder();
 		int i = 0;
@@ -46,18 +56,17 @@ public class IncludedFromSectionRenderer extends KnowWEDomRenderer {
 		}
 
 		//renderedContent = DefaultDelegateRenderer.getInstance().render(sec, user, web, topic);
-		string.append(wrapIncludeFrame(b.toString(), src));		
+		string.append(wrapIncludeFrame(b.toString(), srclink));		
 	}
 	
-	protected String wrapIncludeFrame(String renderedContent, String src) {
+	protected String createLink(String articleName, String linkText) {
+		return "<a class=\"wikipage\" href=\"/KnowWE/Wiki.jsp?page=" + articleName + "\">" + linkText + "</a>";
+	}
+	
+	protected String wrapIncludeFrame(String renderedContent, String srclink) {
 		
-		//relies on src begin 'src="article/section"'
-		String articleName = src.substring(5, src.indexOf('/'));
-		String linkText = src.substring(5, src.length() - 1);
-		
-		String srclink = KnowWEEnvironment.getInstance().getWikiConnector().createWikiLink(articleName, linkText);
-		return KnowWEEnvironment.maskHTML("<div style=\"text-align:left; padding-top:5px; padding-right:5px; padding-left:5px; border:thin solid #99CC99\">") 
-			+ renderedContent + KnowWEEnvironment.maskHTML("<div style=\"text-align:right\"><font size=\"1\">")+ "From: " + srclink + KnowWEEnvironment.maskHTML("</font></div></div><p>");
+		return KnowWEUtils.maskHTML("<div style=\"text-align:left; padding-top:5px; padding-right:5px; padding-left:5px; border:thin solid #99CC99\">") 
+			+ renderedContent + KnowWEUtils.maskHTML("<div style=\"text-align:right\"><font size=\"1\">" + srclink + "</font></div></div><p>");
 	}
 
 }

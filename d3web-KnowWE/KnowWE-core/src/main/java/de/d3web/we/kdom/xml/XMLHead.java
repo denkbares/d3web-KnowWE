@@ -25,7 +25,6 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.renderer.NothingRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -53,7 +52,7 @@ public class XMLHead extends DefaultAbstractKnowWEObjectType {
 				String text = AbstractXMLObjectType.getAttributeMapFor(father).get(AbstractXMLObjectType.HEAD);
 				if (text != null) {
 					List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-					result.add(new SectionFinderResult(0, text.length(), new SectionID(father.getId(), "_head", father.getArticle().getIDGen())));
+					result.add(new SectionFinderResult(0, text.length()));
 					return result;
 				}
 			}

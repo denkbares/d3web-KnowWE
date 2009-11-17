@@ -29,6 +29,7 @@ import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEParseResult;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
@@ -50,9 +51,9 @@ public class QuestionnairesSection extends AbstractKopicSection {
 	private class QuestionnairesSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 			
-			KnowledgeBaseManagement kbm = getKBM(s);
+			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {
 				
@@ -60,7 +61,7 @@ public class QuestionnairesSection extends AbstractKopicSection {
 				Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
 				if (content != null) {
 					List<de.d3web.report.Message> messages = QuestionnaireBuilder
-					.parse(new StringReader(removeIncludedFromTags(content.getOriginalText())), new SingleKBMIDObjectManager(kbm));
+					.parse(new StringReader(removeTextIncludeTags(content.getOriginalText())), new SingleKBMIDObjectManager(kbm));
 					
 					storeMessages(s,messages);
 					Report ruleRep = new Report();
@@ -68,7 +69,7 @@ public class QuestionnairesSection extends AbstractKopicSection {
 						ruleRep.add(messageKnOffice);
 					}
 					KnowWEParseResult result = new KnowWEParseResult(ruleRep, s
-							.getTitle(), removeIncludedFromTags(s.getOriginalText()));
+							.getTitle(), removeTextIncludeTags(s.getOriginalText()));
 					s.getArticle().getReport().addReport(result);				
 				}
 			}

@@ -20,69 +20,85 @@
 
 package de.d3web.we.kdom;
 
+import de.d3web.we.kdom.xml.XMLContent;
+import de.d3web.we.kdom.xml.XMLHead;
+import de.d3web.we.kdom.xml.XMLTail;
+
+
 public class SectionID {
-	
+
 	private String id;
 	
-	private String suffix;
+	private String specificID;
 	
-	private boolean idConflict;
+	public static final String SEPARATOR = "/";
 	
-	/**
-	 * Generates a new unique SectionID.
-	 */
-	public SectionID(SectionIDGen idGen) {
-		this.id = idGen.createID("", "");
-		this.suffix = "";
-		this.idConflict = false;
-	}
+	public static final String CONTENT_SUFFIX = "_content";
+	
+	public static final String HEAD_SUFFIX = "_head";
+	
+	public static final String TAIL_SUFFIX = "_tail";
 	
 	/**
-	 * SectionID assures uniqueness of IDs. If the String resulting in the
-	 * concatenation of id and suffix already got assigned by the
-	 * given SectionIDGen, the given ID in this instantiation will get replaced by
-	 * a generated ID. The suffix will stay the same.
-	 * 
-	 * If no suffix is needed, set suffix to <code>null</code>.
-	 * If suffix but no special ID is needed, set id to <code>null</code>.
-	 * 
+	 * This Constructor should be used for assigning <b>nonspecific</b> IDs
 	 */
-	public SectionID(String id, String suffix, SectionIDGen idGen){
-		this.id = idGen.createID(id, suffix);
-		if (suffix == null)
-			suffix = "";
-		this.suffix = suffix;
-		if (id == null) {
-			this.idConflict = false;
+	public SectionID(Section father, KnowWEObjectType type) {
+		String typename;
+		if (type instanceof XMLContent) {
+			typename = getEndOfId(father.getId()) + CONTENT_SUFFIX;
+		} else if (type instanceof XMLHead) {
+			typename = getEndOfId(father.getId()) + HEAD_SUFFIX;
+		} else  if (type instanceof XMLTail) {
+			typename = getEndOfId(father.getId()) + TAIL_SUFFIX;
 		} else {
-			if (suffix == null) {
-				this.idConflict = !this.id.equals(id);
-			} else {
-				this.idConflict = !this.id.equals(id + suffix);
-			}
+			typename = type.getName();
 		}
+		createID(father.getArticle(), father.getId() + SEPARATOR + typename);
 	}
 	
 	/**
-	 * Returns the id. It already includes the suffix.
+	 * This Constructor should be used for assigning <b>nonspecific</b> IDs
 	 */
+	public SectionID(Section father, String id) {
+		createID(father.getArticle(), father.getId() + SEPARATOR + id);
+	}
+	
+	/**
+	 * This Constructor should be used for assigning <b>specific</b> IDs
+	 */
+	public SectionID(KnowWEArticle article, String id) {
+		this.specificID = id;
+		createID(article, article.getTitle() + SEPARATOR + id);
+	}
+	/**
+	 * THIS SHOULD ONLY BE USED FOR THE ROOT SECTION OF THE ARTICLE!
+	 */
+	protected SectionID(String title) {
+		this.id = title;
+	}
+
+	private void createID(KnowWEArticle article, String lid) {
+		int idNum = article.checkID(lid);
+		if (idNum > 1) {
+			lid = lid + idNum;
+		}
+		this.id = lid;
+	}
+	
+	private String getEndOfId(String id) {
+		return id.substring(id.lastIndexOf(SEPARATOR)+1);
+	}
+	
 	public String getID() {
-		return id;
+		return this.id;
 	}
 	
-	/**
-	 * Returns the suffix of this id without the acutal id.
-	 */
-	public String getSuffix() {
-		return suffix;
-	}
-	
-	public boolean isIdConflict() {
-		return idConflict;
+	public String getSpecificID() {
+		return this.specificID;
 	}
 	
 	@Override
 	public String toString() {
 		return getID();
 	}
-}
+}	

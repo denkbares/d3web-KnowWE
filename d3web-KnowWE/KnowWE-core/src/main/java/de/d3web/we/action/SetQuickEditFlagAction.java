@@ -29,6 +29,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -48,7 +49,7 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 		
 		String web = parameterMap.getWeb();
 		String nodeID = parameterMap.get(KnowWEAttributes.TARGET);
-		nodeID = nodeID.replace("_content", "");
+		nodeID = nodeID.substring(0, nodeID.lastIndexOf(SectionID.SEPARATOR));
 		
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.getUser();

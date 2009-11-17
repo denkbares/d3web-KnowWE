@@ -29,6 +29,7 @@ import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEParseResult;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
@@ -50,9 +51,9 @@ public class SolutionsSection extends AbstractKopicSection {
 	private class SolutionsSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 	
-			KnowledgeBaseManagement kbm = getKBM(s);
+			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {
 	
@@ -61,7 +62,7 @@ public class SolutionsSection extends AbstractKopicSection {
 				if (content != null) {
 	
 					List<de.d3web.report.Message> messages = SolutionsBuilder
-							.parse(new StringReader(removeIncludedFromTags(content.getOriginalText())), kbm, new SingleKBMIDObjectManager(kbm));
+							.parse(new StringReader(removeTextIncludeTags(content.getOriginalText())), kbm, new SingleKBMIDObjectManager(kbm));
 	
 					
 					storeMessages(s,messages);
@@ -78,27 +79,4 @@ public class SolutionsSection extends AbstractKopicSection {
 			}
 		}
 	}
-	
-//	public void reviseSubtreeOld(Section s, KnowledgeRepresentationManager tm, String web,
-//			KnowWEDomParseReport rep) {
-//
-//		KnowledgeRepresentationHandler handler = tm.getHandler("d3web");
-//		if (handler instanceof D3webTerminologyHandler) {
-//			KnowledgeBaseManagement kbm = ((D3webTerminologyHandler) handler)
-//					.getKBM(s.getTopic());
-//			Reader r = new StringReader(removeIncludedFromTags(s.getOriginalText()));
-//			de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner dhs = new de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner(
-//					r);
-//			de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser dhp = new de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser(
-//					dhs, kbm.getKnowledgeBase(), false);
-//			dhp.Parse();
-//			List<Message> l = dhp.getErrorMessages();
-//
-//			rep.addReport(new KnowWEParseResult(new Report(l), s.getTopic(), 
-//					removeIncludedFromTags(s.getOriginalText())));
-//
-//		}
-//	}
-
-
 }

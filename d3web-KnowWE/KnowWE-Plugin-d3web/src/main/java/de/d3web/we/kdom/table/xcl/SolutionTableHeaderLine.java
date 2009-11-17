@@ -23,6 +23,7 @@ package de.d3web.we.kdom.table.xcl;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
@@ -55,7 +56,7 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 		 * 
 		 */
 		@Override
-		public void reviseSubtree(Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 
 
 			List<Section> cells = new ArrayList<Section>();

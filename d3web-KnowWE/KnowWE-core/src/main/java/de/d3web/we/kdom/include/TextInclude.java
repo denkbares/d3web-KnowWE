@@ -21,29 +21,42 @@
 package de.d3web.we.kdom.include;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.renderer.NothingRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
-public class IncludedFromTypeTail extends DefaultAbstractKnowWEObjectType {
 
-	private static IncludedFromTypeTail instance;
+public class TextInclude extends DefaultAbstractKnowWEObjectType {
+
+	/**
+	 * The tagName of the TextIncludeType
+	 */
+	public static final String TAG = "txtinclude";
 	
-	public static synchronized IncludedFromTypeTail getInstance() {
-		if(instance == null) {
-			instance = new IncludedFromTypeTail();
-		}
-		return instance;
-	}
+	/**
+	 * Pattern that matches both Tags of the TextIncludeType
+	 */
+	public static final String PATTERN_BOTH = "</?" + TAG + "[^>]*>";
+
+	/**
+	 * Pattern that matches the HEAD of the TextInclude
+	 */
+	public static final String PATTERN_HEAD = "<" + TAG + " [^>]*>";
 	
-	@Override
-	public KnowWEDomRenderer getRenderer() {
-		return NothingRenderer.getInstance();
-	}
+	/**
+	 * Pattern that matches the TAIL of the TextInclude
+	 */
+	public static final String PATTERN_TAIL = "</" + TAG + ">";
 	
 	@Override
 	protected void init() {
-		sectionFinder = new RegexSectionFinder(IncludedFromType.PATTERN_TAIL + "\\s*");
+		this.setCustomRenderer(new IncludeSectionRenderer());
 	}
+	
+	public static String removeTextIncludeTags(String s) {
+		s = s.replaceAll(PATTERN_BOTH, "");
+		return s;
+	}
+	
+	
+	
 
+	
 }

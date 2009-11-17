@@ -129,6 +129,12 @@ public class KnowWEEnvironment {
 	private Map<String, KnowWEArticleManager> articleManagers = new HashMap<String, KnowWEArticleManager>();
 
 	/**
+	 * An include manager for each web. In case of JSPWiki there is only on web
+	 * ('default_web')
+	 */
+	private Map<String, KnowWEIncludeManager> includeManagers = new HashMap<String, KnowWEIncludeManager>();
+
+	/**
 	 * The registered KnowWE-modules. Initialized in initModules() by
 	 * constructor
 	 */
@@ -278,15 +284,7 @@ public class KnowWEEnvironment {
 	 * @return
 	 */
 	public KnowWEArticle getArticle(String web, String topic) {
-		KnowWEArticleManager mgr = this.articleManagers.get(web);
-		if (mgr == null)
-			initArticleManager(web);
-		return this.articleManagers.get(web).getArticle(topic);
-	}
-
-	public void initArticleManager(String web) {
-		this.articleManagers.put(web, new KnowWEArticleManager(this, web));
-
+		return getArticleManager(web).getArticle(topic);
 	}
 
 	/**
@@ -296,12 +294,27 @@ public class KnowWEEnvironment {
 	 * @return
 	 */
 	public KnowWEArticleManager getArticleManager(String web) {
-		KnowWEArticleManager knowWEArticleManager = this.articleManagers.get(web);
-		if (knowWEArticleManager == null) {
-			initArticleManager(web);
-			knowWEArticleManager = this.articleManagers.get(web);
+		KnowWEArticleManager mgr = this.articleManagers.get(web);
+		if (mgr == null) {
+			mgr = new KnowWEArticleManager(this, web);
+			articleManagers.put(web, mgr);
 		}
-		return knowWEArticleManager;
+		return mgr;
+	}
+	
+	/**
+	 * returns the ArtilceManager for a given web
+	 * 
+	 * @param web
+	 * @return
+	 */
+	public KnowWEIncludeManager getIncludeManager(String web) {
+		KnowWEIncludeManager mgr = this.includeManagers.get(web);
+		if (mgr == null) {
+			mgr = new KnowWEIncludeManager(web);
+			includeManagers.put(web, mgr);
+		}
+		return mgr;
 	}
 
 	/**

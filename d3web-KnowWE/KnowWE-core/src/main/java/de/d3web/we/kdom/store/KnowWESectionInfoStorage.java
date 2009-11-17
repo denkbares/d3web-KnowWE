@@ -27,7 +27,7 @@ public class KnowWESectionInfoStorage {
 	
 	private Map<String, InfoStorePerArticle> articleStores = new HashMap<String, InfoStorePerArticle>();
 	
-	private Map<String, InfoStorePerArticle> oldArticleStores = new HashMap<String, InfoStorePerArticle>();
+	private Map<String, InfoStorePerArticle> lastArticleStores = new HashMap<String, InfoStorePerArticle>();
 	
 	private InfoStorePerArticle getStoreForArticle(String articleName) {
 		InfoStorePerArticle store =  articleStores.get(articleName);
@@ -39,11 +39,11 @@ public class KnowWESectionInfoStorage {
 		
 	}
 	
-	private InfoStorePerArticle getStoreForOldArticle(String articleName) {
-		InfoStorePerArticle store =  oldArticleStores.get(articleName);
+	private InfoStorePerArticle getStoreForLastVersionOfArticle(String articleName) {
+		InfoStorePerArticle store =  lastArticleStores.get(articleName);
 		if(store == null) {
 			store = new InfoStorePerArticle();
-			oldArticleStores.put(articleName, store);
+			lastArticleStores.put(articleName, store);
 		}
 		return store;
 		
@@ -55,8 +55,8 @@ public class KnowWESectionInfoStorage {
 			
 	}
 	
-	public Object getOldStoredObject(String articleName, String kdomid, String key) {
-		InfoStorePerArticle oldArtStore = this.getStoreForOldArticle(articleName);
+	public Object getLastStoredObject(String articleName, String kdomid, String key) {
+		InfoStorePerArticle oldArtStore = this.getStoreForLastVersionOfArticle(articleName);
 		return oldArtStore.getObject(kdomid, key);
 			
 	}
@@ -67,8 +67,8 @@ public class KnowWESectionInfoStorage {
 			
 	}
 	
-	public SectionStore getOldStoredObjects(String articleName, String kdomid) {
-		InfoStorePerArticle oldArtStore = this.getStoreForOldArticle(articleName);
+	public SectionStore getLastStoredObjects(String articleName, String kdomid) {
+		InfoStorePerArticle oldArtStore = this.getStoreForLastVersionOfArticle(articleName);
 		return oldArtStore.getStoreForKDOMID(kdomid);
 			
 	}
@@ -85,6 +85,6 @@ public class KnowWESectionInfoStorage {
 	}
 	
 	public void clearStoreForArticle(String articleName) {
-		this.oldArticleStores.put(articleName, this.articleStores.remove(articleName));
+		this.lastArticleStores.put(articleName, this.articleStores.remove(articleName));
 	}
 }

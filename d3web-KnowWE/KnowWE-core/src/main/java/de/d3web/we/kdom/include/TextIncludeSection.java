@@ -20,8 +20,39 @@
 
 package de.d3web.we.kdom.include;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import java.util.List;
 
-public class IncludeType2 extends DefaultAbstractKnowWEObjectType {
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Section;
+
+public class TextIncludeSection extends Section {
+	
+	private String src;
+	
+	/**
+	 * Special Section for TextIncludes
+	 * -> Skips recursive creating of children!
+	 */
+	public TextIncludeSection(Section father, String text, String src, int offset, List<Section> children, KnowWEArticle article) {
+		super(article);
+		this.objectType = new TextInclude();
+		this.father = father;
+		this.children = children;
+		this.originalText = text;
+		this.id = "blubb";
+		this.offSetFromFatherText = offset;
+		this.src = src;
+		
+		int childOffset = 0;
+		for (Section child:children) {
+			child.setFather(this);
+			child.setOffSetFromFatherText(childOffset);
+			childOffset += child.getOriginalText().length();
+		}
+	}
+	
+	public String getSrc() {
+		return this.src;
+	}
 
 }

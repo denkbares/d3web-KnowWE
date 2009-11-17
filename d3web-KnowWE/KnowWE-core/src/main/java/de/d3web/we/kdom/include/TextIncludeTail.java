@@ -20,40 +20,30 @@
 
 package de.d3web.we.kdom.include;
 
-import java.util.List;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.renderer.NothingRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionID;
+public class TextIncludeTail extends DefaultAbstractKnowWEObjectType {
 
-public class IncludedFromSection extends Section {
+	private static TextIncludeTail instance;
 	
-	private String src;
-	
-	/**
-	 * Special class for IncludedFromSections
-	 * -> Skips rekursive creating of children!
-	 */
-	public IncludedFromSection(Section father, String text, String src, int offset, List<Section> children, KnowWEArticle article) {
-		super(article);
-		this.objectType = new IncludedFromType();
-		this.father = father;
-		this.children = children;
-		this.originalText = text;
-		this.id = new SectionID(article.getIDGen()).toString();
-		this.offSetFromFatherText = offset;
-		this.src = src;
-		
-		int childOffset = 0;
-		for (Section child:children) {
-			child.setFather(this);
-			child.setOffSetFromFatherText(childOffset);
-			childOffset += child.getOriginalText().length();
+	public static synchronized TextIncludeTail getInstance() {
+		if(instance == null) {
+			instance = new TextIncludeTail();
 		}
+		return instance;
 	}
 	
-	public String getSrc() {
-		return this.src;
+	@Override
+	public KnowWEDomRenderer getRenderer() {
+		return NothingRenderer.getInstance();
+	}
+	
+	@Override
+	protected void init() {
+		sectionFinder = new RegexSectionFinder(TextInclude.PATTERN_TAIL + "\\s*");
 	}
 
 }
