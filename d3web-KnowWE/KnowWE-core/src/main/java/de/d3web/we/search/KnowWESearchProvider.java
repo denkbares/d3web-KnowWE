@@ -32,5 +32,9 @@ public abstract class KnowWESearchProvider {
 	public abstract String getID();
 	
 	public abstract String getVerbalization(Locale local);
+	
+	public abstract String renderResults(Collection<GenericSearchResult> results);
+		
+	
 
 }
