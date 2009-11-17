@@ -589,12 +589,12 @@ public class KnowWEEnvironment {
 			}
 		}
 
-		DefaultTextType defaultTextType = new DefaultTextType();
+		DefaultTextType defaultTextType = DefaultTextType.getInstance();
 
 		// add the default TextType (as this type takes all non-claimed
 		// sections, this type has to be last!
 
-		this.rootTypes.add(defaultTextType);
+		//this.rootTypes.add(defaultTextType);
 		this.rootTypes.add(new Table());
 		this.rootTypes.add(new CSS());
 		this.rootTypes.add(new TagHandlerType());
@@ -654,7 +654,7 @@ public class KnowWEEnvironment {
 		}
 
 		// ensuring it is last in list
-		this.rootTypes.remove(defaultTextType);
+		//this.rootTypes.remove(defaultTextType);
 		this.rootTypes.add(defaultTextType);
 
 	}

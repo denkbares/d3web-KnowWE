@@ -64,7 +64,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		
 		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();;
 		types.add(new Kopic());
-		types.add(new DefaultTextType());
+		types.add(DefaultTextType.getInstance());
 		
 		D3webTerminologyHandler d3Handler =  new D3webTerminologyHandler();
 		KnowledgeRepresentationManager.getInstance().registerHandler("d3web", d3Handler);

@@ -48,7 +48,7 @@ public class UpdateMechanismTest extends TestCase {
 		
 		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();;
 		types.add(new GenericXMLObjectType());
-		types.add(new DefaultTextType());
+		types.add(DefaultTextType.getInstance());
 		
 		/*
 		 * Init first Article

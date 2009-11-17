@@ -59,6 +59,10 @@ public class DefaultTextType extends DefaultAbstractKnowWEObjectType {
 
 		return instance;
 	}
+	
+	private DefaultTextType() {
+		
+	}
 
 	public void addActionRenderer(
 			Map<Class<? extends KnowWEAction>, KnowWEAction> map) {

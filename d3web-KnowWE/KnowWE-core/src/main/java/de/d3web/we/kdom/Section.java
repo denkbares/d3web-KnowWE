@@ -44,6 +44,7 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.store.SectionStore;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
+import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWEUtils;
@@ -267,7 +268,10 @@ public class Section implements Visitable, Comparable<Section> {
 			types.add(TextIncludeHead.getInstance());
 			types.add(TextIncludeTail.getInstance());
 			types.add(Include.getInstance());
-
+		}
+		// hack... TODO: find nicer, more efficient way
+		if (types.remove(DefaultTextType.getInstance())) {
+			types.add(DefaultTextType.getInstance());
 		}
 		
 		/**
@@ -299,6 +303,9 @@ public class Section implements Visitable, Comparable<Section> {
 		}
 		
 		childrenParsingOrder.addAll(children);
+		if (objectType instanceof KnowWEArticle) {
+			System.out.print("");
+		}
 		sortChildrenParsingOrder();
 		
 		/**
