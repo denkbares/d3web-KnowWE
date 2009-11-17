@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.tagging.TagsContent;
-import de.d3web.we.wikiConnector.GenericSearchResult;
+import de.d3web.we.search.GenericSearchResult;
 
 /**
  * Centralised management of tags. Takes care of adding/removing tags. And

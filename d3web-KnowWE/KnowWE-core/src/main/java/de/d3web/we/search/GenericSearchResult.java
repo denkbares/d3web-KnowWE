@@ -1,4 +1,4 @@
-package de.d3web.we.wikiConnector;
+package de.d3web.we.search;
 
 public class GenericSearchResult {
 	private String pagename;

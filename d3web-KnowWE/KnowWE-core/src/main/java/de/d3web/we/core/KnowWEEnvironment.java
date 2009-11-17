@@ -60,6 +60,8 @@ import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.module.PageAppendHandler;
+import de.d3web.we.search.KnowWESearchProvider;
+import de.d3web.we.search.MultiSearchEngine;
 import de.d3web.we.taghandler.FactSheet;
 import de.d3web.we.taghandler.ImportKnOfficeHandler;
 import de.d3web.we.taghandler.KDOMRenderer;

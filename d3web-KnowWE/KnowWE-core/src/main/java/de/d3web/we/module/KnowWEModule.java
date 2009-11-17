@@ -59,6 +59,7 @@ public interface KnowWEModule {
 	/**
 	 * Is called once per page on save
 	 */
+	@Deprecated
 	void onSave(String topic) ;	
 	
 	

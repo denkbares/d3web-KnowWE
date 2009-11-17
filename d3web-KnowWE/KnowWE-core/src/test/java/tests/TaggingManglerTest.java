@@ -36,7 +36,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.TaggingMangler;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.wikiConnector.GenericSearchResult;
+import de.d3web.we.search.GenericSearchResult;
 import dummies.KnowWETestWikiConnector;
 
 /**

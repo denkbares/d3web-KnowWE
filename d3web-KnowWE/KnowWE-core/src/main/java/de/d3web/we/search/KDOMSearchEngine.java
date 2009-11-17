@@ -37,12 +37,12 @@ import de.d3web.we.kdom.Section;
  * KDOM Search Engine
  * @author Alex Legler
  */
-public class SearchEngine {
+public class KDOMSearchEngine {
 	private KnowWEArticleManager articleManager;
 	
-	private List<SearchOption> options = new LinkedList<SearchOption>();
+	private List<KDOMSearchOption> options = new LinkedList<KDOMSearchOption>();
 	
-	public SearchEngine(KnowWEArticleManager articleManager) {
+	public KDOMSearchEngine(KnowWEArticleManager articleManager) {
 		if (articleManager == null) {
 			throw new IllegalArgumentException("An article manager is needed.");
 		}
@@ -55,14 +55,14 @@ public class SearchEngine {
 	 * @param query Query string
 	 * @return Collection containing all articles and results
 	 */
-	public Map<KnowWEArticle, Collection<Result>> search(String query) {
+	public Map<KnowWEArticle, Collection<KDOMSearchResult>> search(String query) {
 		Iterator<KnowWEArticle> iter = articleManager.getArticleIterator();
-		Map<KnowWEArticle, Collection<Result>> results = new HashMap<KnowWEArticle, Collection<Result>>();
+		Map<KnowWEArticle, Collection<KDOMSearchResult>> results = new HashMap<KnowWEArticle, Collection<KDOMSearchResult>>();
 				
 		while (iter.hasNext()) {
 			KnowWEArticle article = iter.next();
 			
-			Collection<Result> articleResults = search(query, article);
+			Collection<KDOMSearchResult> articleResults = search(query, article);
 			
 			if (articleResults.size() > 0) {
 				results.put(article, articleResults);
@@ -78,18 +78,18 @@ public class SearchEngine {
 	 * @param article Article to search in
 	 * @return List of all results on the article
 	 */
-	public Collection<Result> search(String query, KnowWEArticle article) {
+	public Collection<KDOMSearchResult> search(String query, KnowWEArticle article) {
 		if (article == null || query == null) {
 			throw new IllegalArgumentException("Need an article and a query");
 		}
 				
-		Collection<Result> results = new LinkedList<Result>();
+		Collection<KDOMSearchResult> results = new LinkedList<KDOMSearchResult>();
 		
 		// Enable the usual wild card characters * and ?
 		String queryString = Pattern.quote(query).replaceAll("\\*", ".*?").replaceAll("\\?", ".");
 		
 		Pattern p;
-		if (options.contains(SearchOption.CASE_INSENSITIVE))
+		if (options.contains(KDOMSearchOption.CASE_INSENSITIVE))
 			p = Pattern.compile(queryString, Pattern.CASE_INSENSITIVE);
 		else
 			p = Pattern.compile(queryString);
@@ -99,13 +99,13 @@ public class SearchEngine {
 		while (m.find()) {
 			Section s = article.findSmallestNodeContaining(m.start(), m.end());
 			
-			results.add(new Result(query, article, s));
+			results.add(new KDOMSearchResult(query, article, s));
 		}
 		
 		return results;
 	}
 	
-	public SearchEngine setOption(SearchOption option) {
+	public KDOMSearchEngine setOption(KDOMSearchOption option) {
 		options.add(option);
 		return this;
 	}
