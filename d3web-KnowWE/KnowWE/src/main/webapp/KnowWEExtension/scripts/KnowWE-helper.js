@@ -385,7 +385,7 @@ KNOWWE.helper.ajax = function ( options ) {
                     }
                     break;
                 case 'replace':
-                    KNOWWE.util.replace( ids, http.responseText );
+                    KNOWWE.core.util.replace( ids, http.responseText );
                     break;
                 case 'create':
                     if( oDefault.create ){
@@ -401,7 +401,8 @@ KNOWWE.helper.ajax = function ( options ) {
                          info._injectTop(document.getElementById( ids[0]));
                     }
                     if( http.responseText.startsWith('@replace@')){
-                        KNOWWE.core.util.replace( ids, http.responseText.replace(/@replace@/, '') );    
+                    	var html = http.responseText.replace(/@replace@/, '');
+                        KNOWWE.core.util.replace( ids, html );    
                     }
                     break;
                 default:

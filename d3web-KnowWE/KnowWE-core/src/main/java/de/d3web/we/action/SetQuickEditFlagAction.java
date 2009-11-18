@@ -32,6 +32,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.user.UserSettingsManager;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
@@ -70,7 +71,7 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 				connector.setPageLocked( topic, user );
 			}
 			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user, topic);
-			String result = KnowWEEnvironment.unmaskHTML( refreshKDOMElement(web, topic, new KnowWEUserContextImpl(user,parameterMap), nodeID) );
+			String result = KnowWEUtils.unmaskHTML( refreshKDOMElement(web, topic, new KnowWEUserContextImpl(user,parameterMap), nodeID) );
 			return "@replace@" + result;
 		}
 		else{

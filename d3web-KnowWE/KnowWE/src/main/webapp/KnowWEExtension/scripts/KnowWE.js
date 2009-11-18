@@ -54,8 +54,8 @@ KNOWWE.core.actions = function(){
                 } else if( els[i]._hasClass( 'default') ) {
                     _KE.add('click', els[i], function(e){
                         var el = _KE.target(e);
-                        var id = el.parentNode.id;
-                        KNOWWE.core.actions.enableQuickEdit( null, id );
+                        var rel = eval("(" + el.getAttribute('rel') + ")");
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id );
                     });
                 }
             }
@@ -478,6 +478,60 @@ KNOWWE.core.util.tablesorter = function(){
             tblHeader[columnID].classname = sortingType;
         }       
     }   
+}();
+/**
+ * Namespace: KNOWWE.core.edit
+ * The KNOWWE quick edit namespace.
+ */
+KNOWWE.core.edit = function(){
+	return {
+        /**
+         * Function: init
+         * Initializes some wuick edit default functionality.
+         */		
+	    init : function(){
+            var elements = _KS('.quickedit .default');
+            for(var i = 0; i < elements.length; i++){
+                _KE.removeEvents('click', elements[i]);
+                _KE.add('click', elements[i], function(e){
+                    var el = _KE.target(e);
+                    var rel = eval("(" + el.getAttribute('rel') + ")");
+                    KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id);
+                });
+                
+            	var rel = eval("(" + elements[i].getAttribute('rel') + ")");
+            	var bttns = _KS('#'+rel.id + ' input[type=submit]');
+            	_KE.add('click', bttns[0], KNOWWE.core.edit.onSave ); 
+            }  				
+	    },
+        /**
+         * Function: onSave
+         * Triggered when the changes to the quick edit element in edit mode should be saved.
+         * 
+         * Parameters:
+         *     e - The occurred event.
+         */	    
+	    onSave : function( e ){
+            var el = _KE.target(e);
+            var rel = eval("(" + el.getAttribute('rel') + ")");
+            var params = {
+                action : 'UpdateKDOMNodesAction',
+                TargetNamespace : rel.id + "::" +_KS('#default-edit-area').value,
+                KWiki_Topic : KNOWWE.helper.gup('page')
+            }
+
+            var options = {
+                url : KNOWWE.core.util.getURL ( params ),
+                response : {
+                    action : 'none',
+                    fn : function(){ 
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id);
+                    }
+                }
+            }
+            new _KA( options ).send();	    	
+	    }
+	}
 }();
 
 /**
