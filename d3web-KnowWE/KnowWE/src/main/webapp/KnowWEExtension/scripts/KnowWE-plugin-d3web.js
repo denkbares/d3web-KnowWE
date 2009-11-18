@@ -716,6 +716,7 @@ KNOWWE.plugin.d3web.semantic = function(){
                         sTimer = setTimeout(function(){
                             if(isMC){
                                 handleMC();
+                                isMC = false;
                             }
                             _KS('#o-lay')._remove();
                         }, 4000);
@@ -724,6 +725,7 @@ KNOWWE.plugin.d3web.semantic = function(){
                 _KE.add('click', _KS('#o-lay-close'), function(){
                     if(isMC){
                         handleMC();
+                        isMC = false;
                     }
                     _KS('#o-lay')._remove();
                     clearTimeout( sTimer );
@@ -810,7 +812,6 @@ KNOWWE.plugin.d3web.semantic = function(){
             if(!isMC){
                 _KS('#o-lay')._remove();
                 clearTimeout(sTimer);
-                isMC = false;
             }
         },
         /**
