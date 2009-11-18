@@ -269,7 +269,7 @@ public class Section implements Visitable, Comparable<Section> {
 			types.add(TextIncludeTail.getInstance());
 			types.add(Include.getInstance());
 		}
-		// hack... TODO: find nicer, more efficient way
+		
 		if (types.remove(DefaultTextType.getInstance())) {
 			types.add(DefaultTextType.getInstance());
 		}
@@ -303,9 +303,9 @@ public class Section implements Visitable, Comparable<Section> {
 		}
 		
 		childrenParsingOrder.addAll(children);
-		if (objectType instanceof KnowWEArticle) {
-			System.out.print("");
-		}
+//		if (objectType.getClass().getSimpleName().equals("KopicContent")) {
+//			System.out.print("");
+//		}
 		sortChildrenParsingOrder();
 		
 		/**
@@ -522,8 +522,8 @@ public class Section implements Visitable, Comparable<Section> {
 		// for each ObjectType move the pivot to the position behind the last Section
 		// with this Type and then insert Includes that include a Section with the same
 		// ObjectType (if given) 
+		int i = 0; // pivot
 		for(KnowWEObjectType type:getObjectType().getAllowedChildrenTypes()) {
-			int i = 0; // pivot
 			while (i <= childrenParsingOrder.size() 
 					&& childrenParsingOrder.get(i).getObjectType().isAssignableFromType(type.getClass())) {
 				i++;

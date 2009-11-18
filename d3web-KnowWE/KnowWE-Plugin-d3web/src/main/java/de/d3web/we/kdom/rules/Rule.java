@@ -30,11 +30,9 @@ import java.util.regex.Pattern;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.rule.D3ruleBuilder;
-import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -87,13 +85,12 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements KnowledgeRe
 			boolean empty = true;
 			if (messages != null) {
 				for (Message m : messages) {
-					//if (!m.getMessageText().equals(MessageKnOfficeGenerator.getResourceBundle().getString("rule"))) { 	
-					if (m.getMessageType().equals(Message.ERROR)) {  // hack showing only errors, this rendering needs a complete redesign
+					if (m.getMessageType().equals(Message.ERROR)
+							|| m.getMessageType().equals(Message.WARNING)) {  // hack showing only errors, this rendering needs a complete redesign
 						empty = false;
 						string.append(KnowWEUtils.maskHTML("<span style='color:red'>"));
-						string.append(m.getMessageType()+": " + m.getMessageText() 
-								+ (m.getMessageType().equals(Message.NOTE) ? " " 
-										+ m.getCount() : " Line: " + m.getLineNo()));
+						string.append(m.getMessageType() + ": " + m.getMessageText() 
+								+ " Line: " + m.getLineNo());
 						string.append(KnowWEUtils.maskHTML("</span>"));
 						string.append(KnowWEUtils.maskHTML("\n"));
 					}

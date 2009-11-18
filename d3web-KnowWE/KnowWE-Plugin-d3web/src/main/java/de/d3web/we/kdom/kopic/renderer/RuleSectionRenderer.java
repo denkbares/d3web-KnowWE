@@ -60,17 +60,21 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 					boolean foundWarning = false;
 					boolean foundError = false;
 					for (Message msg:rmsgs) {
-						if (msg.getMessageText().equals(rulesParsed)) {
+						if (msg.getMessageText().substring(0, msg.getMessageText().length() - 2)
+								.equals(rulesParsed.substring(0, rulesParsed.length() - 4))) {
 							parsedCount += msg.getCount();
 						} else if (msg.getMessageType() == Message.WARNING && foundWarning == false) {
-							warnings.add(KnowWEUtils.maskHTML("<a href=\"#\" " 
+							warnings.add(KnowWEUtils.maskHTML("<a "//href=\"#\" " 
 									+ "class=\"highligh-rule\" "
-									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"+r.getTitle()+"', depth: 0, breadth: 0}\""
+									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"
+									+ r.getTitle()+"', depth: 0, breadth: 0}\""
 									+ "/>" + rnum + "</a>"));
 							foundWarning = true;
 						} else if (msg.getMessageType() == Message.ERROR && foundError == false) {
-							errors.add(KnowWEUtils.maskHTML("<a href=\"#\" "
-									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"+r.getTitle()+"', depth: 0, breadth: 0}\""
+							errors.add(KnowWEUtils.maskHTML("<a "//href=\"#\" " 
+									+ "class=\"highligh-rule\" "
+									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"
+									+ r.getTitle()+"', depth: 0, breadth: 0}\""
 									+ "/>" + rnum + "</a>"));
 							foundError = true;
 						}
@@ -78,10 +82,9 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 					rnum++;
 				}
 				
-				sectionMessages.add(0, MessageKnOfficeGenerator.createNoteMSGWithCount("rule", "", 0, "", parsedCount));
-				if (sectionMessages != null && !sectionMessages.isEmpty()) {
+				if (sectionMessages != null) {
 					messagesBuilder.append("{{{");
-					messagesBuilder.append(rulesParsed + " " + parsedCount + KnowWEUtils.maskHTML("<br>"));
+					messagesBuilder.append(MessageKnOfficeGenerator.createNoteMSG("rule", "", 0, "", parsedCount).getMessageText() + " " + KnowWEUtils.maskHTML("<br>"));
 					if (warnings.size() > 0) {
 						messagesBuilder.append(D3webModule.getKwikiBundle_d3web()
 							.getString("KnowWE.KopicRenderer.RulesSection.warnings")  + " "+ warnings.toString());
