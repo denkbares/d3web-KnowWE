@@ -216,35 +216,31 @@ public class Section implements Visitable, Comparable<Section> {
 				}
 				this.children = oldChildren;
 				this.childrenParsingOrder = match.childrenParsingOrder;
-			
+
 				List<Section> newNodes = new ArrayList<Section>();
-				getAllNodesParsingPreOrderWithoutIncludes(newNodes);
+				getAllNodesPreOrder(newNodes);
 				for (Section node:newNodes) {
-					
-					if (!node.getTitle().equals(getTitle())) {
-						continue;
-					}
-					
+						
 					if (node.getObjectType() instanceof Include) {
 						article.getIncludeSections().add(node);
 					}
 					
-					node.article = this.article;
+					SectionStore oldStore = KnowWEUtils.getLastSectionStore(node.getWeb(), getTitle(), node.id);
 					
-					SectionStore oldStore = KnowWEUtils.getLastSectionStore(node.getWeb(), node.getTitle(), node.id);
-					
-					if (node != this) {
-						if (node.specificID == null) {
-							node.id = new SectionID(node.father, node.objectType).toString();
-						} else {
-							node.id = new SectionID(node.getArticle(), node.specificID).toString();
+					if (node.getTitle().equals(getTitle())) {
+						node.article = this.article;
+						node.reused = true;
+						if (node != this) {
+							if (node.specificID == null) {
+								node.id = new SectionID(node.father, node.objectType).toString();
+							} else {
+								node.id = new SectionID(node.getArticle(), node.specificID).toString();
+							}
 						}
 					}
 					
-					node.reused = true;
-					
 					//System.out.print(oldStore.getAllObjects().isEmpty() ? "" : "#" + node.getId() + " put " + oldStore.getAllObjects() + "\n");
-					KnowWEUtils.putSectionStore(node.getWeb(), node.getTitle(), node.id, oldStore);
+					KnowWEUtils.putSectionStore(node.getWeb(), getTitle(), node.id, oldStore);
 				}
 				
 				//article.getUnchangedSubTrees().put(id, this);

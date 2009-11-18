@@ -48,13 +48,8 @@ public class OldRulesEraser {
 			Set<String> idsToDelete = new HashSet<String>();
 			for (Section or:oldRules) {
 				if (!or.isReused()) {
-					if (or.getTitle().equals(article.getTitle())) {
-						idsToDelete.add((String) KnowWEUtils.getLastStoredObject(or.getWeb(), 
-								or.getTitle(), or.getId(), Rule.KBID_KEY));
-					} else {
-						idsToDelete.add((String) KnowWEUtils.getStoredObject(or.getWeb(), 
-								or.getTitle(), or.getId(), Rule.KBID_KEY));
-					}
+					idsToDelete.add((String) KnowWEUtils.getLastStoredObject(or.getWeb(), 
+						article.getTitle(), or.getId(), Rule.KBID_KEY));
 				}
 			}
 			

@@ -166,8 +166,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		}
 		
 		// call SubTreeHandler for all Sections
-		reviseArticle();	
-		sec.resetStateRecursively();
+		reviseArticle();
 		
 		Logger.getLogger(this.getClass().getName())
 			.log(Level.INFO,"<- Finished Knowledge for article '" + title + "' in " 

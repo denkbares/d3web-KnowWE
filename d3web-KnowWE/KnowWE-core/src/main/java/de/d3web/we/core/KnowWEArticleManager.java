@@ -207,6 +207,7 @@ public class KnowWEArticleManager {
 
 		KnowWEEnvironment.getInstance().getIncludeManager(webname).updateIncludesToArticle(art.getTitle());
 		KnowWEEnvironment.getInstance().getIncludeManager(webname).removeInactiveIncludesForArticle(art.getTitle());
+		art.getSection().resetStateRecursively();
 		
 		sc.update(art.getTitle(), art);
 		
