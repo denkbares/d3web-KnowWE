@@ -28,7 +28,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.kdom.rules.Rule;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ReRenderContentPartAction extends AbstractKnowWEAction  {
@@ -55,32 +55,13 @@ public class ReRenderContentPartAction extends AbstractKnowWEAction  {
 		
 		Section root = article.getSection();
 		Section secWithNodeID = getSectionFromCurrentID( nodeID, root );
-		
-		// TODO secWithNodeID should be RuleCondLine
-//		if (secWithNodeID.getObjectType() instanceof Rule) {
-//			secWithNodeID = secWithNodeID.findChildOfType(RuleCondLine.class);
-//			RuleConditionHighlightingRenderer renderer = RuleConditionHighlightingRenderer.getInstance();
-//			renderer.setReRenderFlag(true);
-//			return KnowWEEnvironment.unmaskHTML(renderer.
-//					render(secWithNodeID, user, web, topic));
-//		}
-		
-
-	
+			
 		if( secWithNodeID != null ) {
 			
 			StringBuilder b = new StringBuilder();
 			DelegateRenderer.getInstance().render(secWithNodeID, user, b);
 			
-			if (secWithNodeID.getObjectType() instanceof Rule) {
-				return "<span id=\"\">"
-						+ KnowWEEnvironment.unmaskHTML(b.toString())
-						+ "</span>";
-			}
-
-			String result = b.toString();
-			result = KnowWEEnvironment.unmaskHTML(result);
-			return KnowWEEnvironment.unmaskHTML(result);
+			return KnowWEUtils.unmaskHTML( b.toString() );
 		}
 		return null;
 	}
