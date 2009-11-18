@@ -28,6 +28,17 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.Section;
 
 public class LineSectionFinder extends SectionFinder {
+	
+	private static LineSectionFinder instance;
+	
+	public static LineSectionFinder getInstance() {
+		if (instance == null) {
+			instance = new LineSectionFinder();
+			
+		}
+
+		return instance;
+	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {

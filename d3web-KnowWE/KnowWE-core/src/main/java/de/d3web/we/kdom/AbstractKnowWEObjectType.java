@@ -34,56 +34,51 @@ import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
-	
-	
+
 	/**
-	 * This is just a (conventional) key under which messages can be 
-	 * stored (and then be found again) in the sectionStore
+	 * This is just a (conventional) key under which messages can be stored (and
+	 * then be found again) in the sectionStore
 	 * 
 	 */
 	public static final String MESSAGES_STORE_KEY = "messages";
 
 	/**
-	 * the children types of the type. Used to serve the getAllowedChildrenTypes of 
-	 * the KnowWEObjectType interface
+	 * the children types of the type. Used to serve the getAllowedChildrenTypes
+	 * of the KnowWEObjectType interface
+	 * 
 	 * @see KnowWEObjectType#getAllowedChildrenTypes()
 	 * 
 	 */
 	protected List<KnowWEObjectType> childrenTypes = new ArrayList<KnowWEObjectType>();
-	
-	
-	//protected List<KnowWEObjectType> priorityChildrenTypes = new ArrayList<KnowWEObjectType>();
-	
-	
-	
+
+	// protected List<KnowWEObjectType> priorityChildrenTypes = new
+	// ArrayList<KnowWEObjectType>();
+
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
+	 * 
 	 * @see ReviseSubTreeHandler
 	 */
 	protected List<ReviseSubTreeHandler> subtreeHandler = new ArrayList<ReviseSubTreeHandler>();
-	
-	
-	
-	
+
 	/**
-	 * types can be activated and deactivated in KnowWE
-	 * this field is holding the current state
+	 * types can be activated and deactivated in KnowWE this field is holding
+	 * the current state
 	 */
 	protected boolean isActivated = true;
-	
+
 	/**
-	 * a flag for the updating mechanism, which mananges translations to explicit knowledge formats
+	 * a flag for the updating mechanism, which mananges translations to
+	 * explicit knowledge formats
 	 */
 	private boolean isNotRecyclable = false;
-	
-	
+
 	/**
-	 * specifies whether there is a enumeration of siblings defined for this type
-	 * (e.g., to add line numbers to line-based sections)
+	 * specifies whether there is a enumeration of siblings defined for this
+	 * type (e.g., to add line numbers to line-based sections)
 	 */
 	protected boolean isNumberedType = false;
-	
-	
+
 	public boolean isNumberedType() {
 		return isNumberedType;
 	}
@@ -92,16 +87,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		this.isNumberedType = isNumberedType;
 	}
 
-	
 	/**
 	 * The sectionFinder of this type, used to serve the getSectionFinder-method
 	 * of the KnowWEObjectType interface
+	 * 
 	 * @see KnowWEObjectType#getSectioner()
 	 */
 	protected SectionFinder sectionFinder;
-	
-	
-	
+
 	/**
 	 * Allows to set a specific sectionFinder for this type
 	 * 
@@ -111,11 +104,10 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		this.sectionFinder = sectionFinder;
 	}
 
-
 	/**
-	 * allows to set a custom renderer for a type (at initialization)
-	 * if a custom renderer is set, it is used to present the type content
-	 * in the wiki view
+	 * allows to set a custom renderer for a type (at initialization) if a
+	 * custom renderer is set, it is used to present the type content in the
+	 * wiki view
 	 */
 	protected KnowWEDomRenderer customRenderer = null;
 
@@ -124,11 +116,10 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 */
 	public AbstractKnowWEObjectType() {
-		
+
 		init();
 	}
-	
-	
+
 	/**
 	 * Returns the list of the registered ReviseSubtreeHandlers
 	 * 
@@ -138,7 +129,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return subtreeHandler;
 	}
 
-
 	/**
 	 * Can be used to register new ReviseSubtreeHandlers
 	 * 
@@ -147,25 +137,28 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	public void addReviseSubtreeHandler(ReviseSubTreeHandler handler) {
 		subtreeHandler.add(handler);
 	}
-	
+
 	/**
-	 * A mechanism to help clean up old information, when a new version of a page is saved
+	 * A mechanism to help clean up old information, when a new version of a
+	 * page is saved
 	 * 
 	 * @param articleName
 	 * @param clearedTypes
 	 */
-	public void clearTypeStoreRecursivly(String articleName, Set<KnowWEType> clearedTypes) {
+	public void clearTypeStoreRecursivly(String articleName,
+			Set<KnowWEType> clearedTypes) {
 		cleanStoredInfos(articleName);
 		clearedTypes.add(this);
-		
-		for(KnowWEObjectType type : childrenTypes) {
-			if(type instanceof AbstractKnowWEObjectType && !clearedTypes.contains(type)) {
-				((AbstractKnowWEObjectType)type).clearTypeStoreRecursivly(articleName,clearedTypes);
+
+		for (KnowWEObjectType type : childrenTypes) {
+			if (type instanceof AbstractKnowWEObjectType
+					&& !clearedTypes.contains(type)) {
+				((AbstractKnowWEObjectType) type).clearTypeStoreRecursivly(
+						articleName, clearedTypes);
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Returns all the messages stored for this section
 	 * 
@@ -173,26 +166,28 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * @return
 	 */
 	public List<Message> getMessages(Section s) {
-		return toMessages(KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB,
-				s.getTitle(), s.getId(), MESSAGES_STORE_KEY), s);
-		
+		return toMessages(KnowWEUtils.getStoredObject(
+				KnowWEEnvironment.DEFAULT_WEB, s.getTitle(), s.getId(),
+				MESSAGES_STORE_KEY), s);
+
 	}
-	
+
 	/**
-	 * Returns the messages of the last version of the section
-	 * respectively article.
+	 * Returns the messages of the last version of the section respectively
+	 * article.
 	 * 
 	 * @param s
 	 * @return
 	 */
 	public List<Message> getLastMessages(Section s) {
-		return toMessages(KnowWEUtils.getLastStoredObject(KnowWEEnvironment.DEFAULT_WEB,
-				s.getTitle(), s.getId(), MESSAGES_STORE_KEY), s);
-		
+		return toMessages(KnowWEUtils.getLastStoredObject(
+				KnowWEEnvironment.DEFAULT_WEB, s.getTitle(), s.getId(),
+				MESSAGES_STORE_KEY), s);
+
 	}
-	
+
 	private List<Message> toMessages(Object o, Section s) {
-		if(o instanceof List) {
+		if (o instanceof List) {
 			return (List<Message>) o;
 		}
 		if (o == null) {
@@ -202,7 +197,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Stores a list of messages under to message-store-key
 	 * 
@@ -210,40 +205,53 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * @param messages
 	 */
 	public void storeMessages(Section s, List<Message> messages) {
-		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB,
-				s.getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
+		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, s
+				.getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#deactivateType()
 	 */
 	public void deactivateType() {
 		isActivated = false;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#activateType()
 	 */
 	public void activateType() {
 		isActivated = true;
-	}	
-	
-	/* (non-Javadoc)
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getActivationStatus()
 	 */
 	public boolean getActivationStatus() {
 		return isActivated;
 	}
-	
+
 	public void findTypeInstances(Class clazz, List<KnowWEObjectType> instances) {
+		boolean foundNew = false;
 		if (this.getClass().equals(clazz)) {
 			instances.add(this);
+			foundNew = true;
 		}
-		for (KnowWEObjectType knowWEObjectType : childrenTypes) {
-			knowWEObjectType.findTypeInstances(clazz, instances);
+		if (foundNew) {
+			for (KnowWEObjectType knowWEObjectType : childrenTypes) {
+				knowWEObjectType.findTypeInstances(clazz, instances);
+			}
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getName()
 	 */
 	@Override
@@ -253,7 +261,9 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	protected abstract void init();
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getSectioner()
 	 */
 	@Override
@@ -264,14 +274,15 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getAllowedChildrenTypes()
 	 */
 	@Override
 	public List<KnowWEObjectType> getAllowedChildrenTypes() {
 		return this.childrenTypes;
 	}
-	
 
 	@Override
 	@Deprecated
@@ -279,26 +290,30 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return null;
 	}
 
+	// public static String spanColorTitle(String text, String color, String
+	// title) {
+	// return KnowWEEnvironment.HTML_ST + "span title='" + title
+	// + "' style='background-color:" + color + ";'"
+	// + KnowWEEnvironment.HTML_GT + text + KnowWEEnvironment.HTML_ST
+	// + "/span" + KnowWEEnvironment.HTML_GT;
+	// }
 
-//	public static String spanColorTitle(String text, String color, String title) {
-//		return KnowWEEnvironment.HTML_ST + "span title='" + title
-//				+ "' style='background-color:" + color + ";'"
-//				+ KnowWEEnvironment.HTML_GT + text + KnowWEEnvironment.HTML_ST
-//				+ "/span" + KnowWEEnvironment.HTML_GT;
-//	}
-
-
-	/* (non-Javadoc)
-	 * @see de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.Section)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.Section)
 	 */
 	@Override
 	public final void reviseSubtree(KnowWEArticle article, Section s) {
-		for(ReviseSubTreeHandler handler : subtreeHandler) {
+		for (ReviseSubTreeHandler handler : subtreeHandler) {
 			handler.reviseSubtree(article, s);
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEType#getRenderer()
 	 */
 	@Override
@@ -322,12 +337,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		this.customRenderer = renderer;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getOwl(de.d3web.we.kdom.Section)
 	 */
 	public IntermediateOwlObject getOwl(Section s) {
 		IntermediateOwlObject io = new IntermediateOwlObject();
-		
+
 		for (Section cur : s.getChildren()) {
 			if (cur.getObjectType() instanceof AbstractKnowWEObjectType) {
 				AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) cur
@@ -337,8 +354,10 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		}
 		return io;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEType#isAssignableFromType(java.lang.Class)
 	 */
 	@Override
@@ -346,15 +365,19 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return clazz.isAssignableFrom(this.getClass());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEType#isType(java.lang.Class)
 	 */
 	@Override
 	public boolean isType(Class<? extends KnowWEObjectType> clazz) {
 		return clazz.equals(this.getClass());
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#isLeafType()
 	 */
 	@Override
@@ -362,24 +385,28 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		List<KnowWEObjectType> types = getAllowedChildrenTypes();
 		return types == null || types.size() == 0;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#isNotRecyclable()
 	 */
 	@Override
 	public boolean isNotRecyclable() {
 		return isNotRecyclable;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#setNotRecyclable(boolean)
 	 */
 	@Override
 	public final void setNotRecyclable(boolean notRecyclable) {
 		this.isNotRecyclable = notRecyclable;
-		for (KnowWEObjectType type:childrenTypes) {
+		for (KnowWEObjectType type : childrenTypes) {
 			type.setNotRecyclable(notRecyclable);
 		}
-		
+
 	}
 }
