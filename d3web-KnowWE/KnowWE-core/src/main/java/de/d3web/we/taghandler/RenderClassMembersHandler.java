@@ -37,6 +37,9 @@ public class RenderClassMembersHandler extends AbstractTagHandler{
 		
 		String className = values.get("class");
 		
+		if (className == null) {
+			return "No class given for list class members tag!";
+		}
 		String querystring = TIME_SPARQL.replaceAll("CLASS", className);
 
 		
