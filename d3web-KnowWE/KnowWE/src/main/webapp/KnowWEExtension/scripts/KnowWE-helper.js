@@ -865,7 +865,7 @@ KNOWWE.helper.selector = function(selector, context){
  * ElementSelector. 
  */
 KNOWWE.helper.selector.regex = {
-    ID : /^#[A-Za-z]+([A-Za-z0-9\-\_:\.])*$/,
+    ID : /^#[A-Za-z]+([A-Za-z0-9\-\/\_:\.])*$/,
     TAG : /^([A-Za-z0-9])+$/,
     CLASS : /^\.[A-Za-z0-9\-\_]+$/,
     ATTR : /^(\w+)?\[(\w+)=?(\w+)?\]$/
