@@ -96,8 +96,8 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 			}
 			Matcher m = null;
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-//			if (KnowWEUtils.isEmpty(text))
-//				return result;
+			if (KnowWEUtils.isEmpty(text))
+				return result;
 			try {
 				m = Pattern.compile("^" + dashesPrefix + "[^-]+",
 						Pattern.MULTILINE).matcher(text);
