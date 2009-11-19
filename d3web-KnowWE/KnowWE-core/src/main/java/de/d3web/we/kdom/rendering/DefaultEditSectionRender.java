@@ -62,7 +62,7 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 	private String generateQuickEdit(String id, boolean isEditable) {
 		StringBuilder b = new StringBuilder();
 		b.append( "<div class=\"right\">" );
-		b.append( "<img src=\"KnowWEExtension/images/pencil.png\" title=\"Set QuickEdit-Mode\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\"/><br />");
+		b.append( "<img src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\"Set QuickEdit-Mode\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\"/><br />");
 		if( isEditable ){
 		    b.append( "<input rel=\"{id : '" + id + "'}\" type=\"submit\" value=\"save\"/>" );
 		}

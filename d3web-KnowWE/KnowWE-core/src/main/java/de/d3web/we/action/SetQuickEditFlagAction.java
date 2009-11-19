@@ -50,7 +50,7 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 		
 		String web = parameterMap.getWeb();
 		String nodeID = parameterMap.get(KnowWEAttributes.TARGET);
-		nodeID = nodeID.substring(0, nodeID.lastIndexOf(SectionID.SEPARATOR));
+		
 		
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.getUser();
