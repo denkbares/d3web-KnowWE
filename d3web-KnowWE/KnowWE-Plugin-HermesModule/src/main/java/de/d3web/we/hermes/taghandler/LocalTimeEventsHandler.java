@@ -1,4 +1,4 @@
-package de.d3web.we.hermes.kdom.renderer;
+package de.d3web.we.hermes.taghandler;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

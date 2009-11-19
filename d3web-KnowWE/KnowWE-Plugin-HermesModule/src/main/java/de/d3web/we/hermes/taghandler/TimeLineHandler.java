@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.hermes.kdom.renderer;
+package de.d3web.we.hermes.taghandler;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
