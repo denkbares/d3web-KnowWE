@@ -1,0 +1,118 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+    	<artifactId>d3web-KnowWE</artifactId>
+    	<groupId>de.uniwue.d3web</groupId>
+    	<version>0-SNAPSHOT</version>
+  	</parent>
+	<groupId>de.uniwue.d3web</groupId>
+	<artifactId>KnowWE-Plugin-SeleniumTest</artifactId>
+	<packaging>jar</packaging>
+	<name>SeleniumTest</name>
+	<version>0-SNAPSHOT</version>
+	<url>http://www.d3web.de/</url>
+	<issueManagement>
+		<system>Trac</system>
+		<url>http://knowwetrac.informatik.uni-wuerzburg.de/</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Hudson</system>
+		<url>https://isci.informatik.uni-wuerzburg.de/hudson/</url>
+	</ciManagement>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License, version 3</name>
+			<url>http://www.gnu.org/licenses/lgpl.txt</url>
+		</license>
+	</licenses>
+	<build>
+		<defaultGoal>package</defaultGoal>
+		<plugins>
+			<!-- Set Java 1.6 as source and target -->
+			<!-- Ignore test failures -->
+
+		</plugins>
+	</build>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<repositories>
+		<repository>
+			<id>infovi-artifactory</id>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/repo/
+			</url>
+		</repository>
+		<repository>
+			<id>knowwe-snapshots</id>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/knowwe-snapshots/
+			</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>ignore</checksumPolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>contrib</id>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/infovi-contrib/
+			</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-core</artifactId>
+			<version>0-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>6.0.20</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium.client-drivers</groupId>
+			<artifactId>selenium-java-client-driver</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.kohsuke.junit</groupId>
+			<artifactId>parallel-junit</artifactId>
+			<version>0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>compile</scope>
+		</dependency>
+
+	</dependencies>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>knowwe-snapshots</id>
+			<name>d3web Snapshots</name>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/knowwe-snapshots/
+			</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<organization>
+		<name>Universität Würzburg</name>
+		<url>http://uni-wuerzburg.de/</url>
+	</organization>
+</project>
