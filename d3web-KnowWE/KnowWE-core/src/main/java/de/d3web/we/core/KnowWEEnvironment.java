@@ -46,6 +46,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.css.CSS;
+import de.d3web.we.kdom.dashTree.XMLDashTree;
 import de.d3web.we.kdom.edit.Edit;
 import de.d3web.we.kdom.namespaces.Namespaces;
 import de.d3web.we.kdom.owlextension.Extension;
@@ -594,6 +595,7 @@ public class KnowWEEnvironment {
 		// sections, this type has to be last!
 
 		//this.rootTypes.add(defaultTextType);
+		this.rootTypes.add(new XMLDashTree());
 		this.rootTypes.add(new Table());
 		this.rootTypes.add(new Edit());
 		this.rootTypes.add(new CSS());

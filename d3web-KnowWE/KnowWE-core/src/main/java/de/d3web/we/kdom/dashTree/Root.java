@@ -47,7 +47,7 @@ public class Root extends DefaultAbstractKnowWEObjectType {
 				int index = 0;
 				
 				//Search for first non-empty line --> todo
-				while (index < lookForSections.size() - 1) {
+				while (index < lookForSections.size()) {
 					SectionFinderResult sectionFinderResult = lookForSections
 							.get(index);
 					index++;
