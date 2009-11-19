@@ -27,12 +27,12 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.utils.Patterns;
 
 public class XCList extends DefaultAbstractKnowWEObjectType {
-
+	
 	@Override
 	public void init() {
 		this.sectionFinder = new XCListSectionFinder();
@@ -44,27 +44,22 @@ public class XCList extends DefaultAbstractKnowWEObjectType {
 	
 	public class XCListSectionFinder extends SectionFinder {
 
+		private final Pattern pattern;
+		
+		public XCListSectionFinder() {
+			pattern = Pattern.compile(Patterns.XCLIST, Pattern.MULTILINE);
+		}
+
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			List<SectionFinderResult> matches = new ArrayList<SectionFinderResult>();
 			
-			Pattern p =
-				Pattern.compile(
-						"(\\s*?^\\s*?$\\s*|\\s*?\\Z|\\s*?" + TextInclude.PATTERN_BOTH + "\\s*?)",
-						Pattern.MULTILINE);
+			Matcher m = pattern.matcher(text);
 			
-				Matcher m = p.matcher(text);
-				
-				int start = 0;
-				int end = 0;
-				while (m.find()) {
-					end = m.start();
-					if (text.substring(start, end).replaceAll(
-							"\\s", "").length() > 0 && start < end) {
-						matches.add(new SectionFinderResult(start, end));
-					}
-					start = m.end();
-				}
+			while (m.find()) {
+				matches.add(new SectionFinderResult(m.start(), m.end()));
+			}
+			
 			return matches;
 		}
 	}

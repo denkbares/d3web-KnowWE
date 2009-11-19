@@ -58,12 +58,14 @@ public class FindingQuestionAndAnswerRenderer extends KnowWEDomRenderer {
 
 		List<Message> messages = ((AbstractKnowWEObjectType) sec.getObjectType()).getMessages(sec);
 		
-		if (messages.isEmpty()) {
+		if (messages.isEmpty() || messages.get(0).getMessageText().equals("")) {
 			delegate.render(sec, user, string);
 		} else {
 			
 			//TODO: atm just the first is used, rest ignored
 			Message message = messages.get(0);
+			
+			
 			
 			string.append("<span title=\"" + message +"\">");
 			

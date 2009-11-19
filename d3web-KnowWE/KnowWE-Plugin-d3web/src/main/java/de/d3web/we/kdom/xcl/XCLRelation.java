@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
@@ -42,13 +41,12 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.Patterns;
 
 public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 
 	@Override
-	public void init() {
-		this.childrenTypes.add(new XCLRelationLineEnd());
-		this.childrenTypes.add(new XCLRelationWhiteSpaces());
+	protected  void init() {
 		this.childrenTypes.add(new XCLRelationWeight());
 		this.childrenTypes.add(new ComplexFinding());
 		this.sectionFinder = new XCLRelationSectionFinder();
@@ -56,105 +54,28 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 	}
 	
 	
-	public static List<String> splitUnquoted(String conditionText2,
-			String operatorGreaterEqual) {
-		boolean quoted = false;
-		List<String> parts = new ArrayList<String>();
-		StringBuffer actualPart = new StringBuffer();
-		for (int i = 0; i < conditionText2.length(); i++) {
-
-			if (conditionText2.charAt(i) == '"') {
-				quoted = !quoted;
-			}
-			if (quoted) {
-				actualPart.append(conditionText2.charAt(i));
-				continue;
-			}
-			if ((i + operatorGreaterEqual.length() <= conditionText2.length())
-					&& conditionText2.subSequence(
-							i, i + operatorGreaterEqual.length()).
-							equals(operatorGreaterEqual)) {
-				parts.add(actualPart.toString().trim());
-				actualPart = new StringBuffer();
-				i += operatorGreaterEqual.length() - 1;
-				continue;
-			}
-			actualPart.append(conditionText2.charAt(i));
-
-		}
-		parts.add(actualPart.toString().trim());
-		return parts;
-	}
-
-
+	
 	public class XCLRelationSectionFinder extends SectionFinder {
 		
+		private final Pattern relPattern;
+		
+		public XCLRelationSectionFinder() {
+			relPattern = Pattern.compile("\\s*((?:" + Patterns.QUOTEDSTRING + "|[^,]+)+),");
+		}
+
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			Pattern relPattern = Pattern.compile(", *\\r?\\n");
 			Matcher m = relPattern.matcher(text);
-			int start = 0;
-			int end;
 			while (m.find()) {
-				end = m.end();
-				if (containsData(text.substring(start, end)))
-					result.add(new SectionFinderResult(start, end));
-				start = end;
+				result.add(new SectionFinderResult(m.start(1), m.end(1)));
 			}
 			return result;
 		}
 		
-		private boolean containsData(String string) {
-		int index = 0;
-		while (index < string.length()) {
-			char charAt = string.charAt(index);
-			if (charAt != ' ' && charAt != '\n' && charAt != '\r'
-					&& charAt != '}') {
-				return true;
-			}
-			index++;
-		}
-
-		return false;
+		
 	}
 		
-		
-		
-//		public XCLRelationSectionFinder(KnowWEObjectType type) {
-//			super(type);
-//		}
-//
-//		@Override
-//		public List<Section> lookForSections(Section tmp, Section father) {
-//			String text = tmp.getOriginalText();
-//			List<Section> result = new ArrayList<Section>();
-//			List<String> lines = splitUnquoted(text, ",");
-//			for (String string : lines) {
-//				if (containsData(string)) {
-//					int indexOf = text.indexOf(string);
-//					result.add(Section.createSection(this.getType(), father,
-//							tmp, indexOf, indexOf + string.length(), father.getArticle()));
-//				}
-//			}
-//
-//			return result;
-//		}
-//
-//		private boolean containsData(String string) {
-//			int index = 0;
-//			while (index < string.length()) {
-//				char charAt = string.charAt(index);
-//				if (charAt != ' ' && charAt != '\n' && charAt != '\r'
-//						&& charAt != '}') {
-//					return true;
-//				}
-//				index++;
-//			}
-//
-//			return false;
-//		}
-	}
 
 	@Override
 	/*

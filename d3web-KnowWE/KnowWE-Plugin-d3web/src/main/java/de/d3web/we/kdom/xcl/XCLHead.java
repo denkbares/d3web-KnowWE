@@ -22,6 +22,8 @@ package de.d3web.we.kdom.xcl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
@@ -39,38 +41,35 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
+import de.d3web.we.utils.Patterns;
 
 public class XCLHead extends DefaultAbstractKnowWEObjectType {
 
 	
 	public class XCLHeadSectionFinder extends SectionFinder{
 		
+		private final Pattern pattern;
+		
+		public XCLHeadSectionFinder() {
+			pattern = Pattern.compile("^[\\t ]*(" + Patterns.D3IDENTIFIER + ")[\\t ]*\\{");
+		}
+
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			if(text.length() == 0) return null;
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			if(text.length() == 0) 
+				return null;
 			
-			int start = 0;
-			while(text.charAt(start) == ' ' || text.charAt(start) == '\n'
-						|| text.charAt(start) == '\r') {
-				start++;
-				if(start == text.length()) break;
-			}
-			int end=text.indexOf('{');
-						
+			Matcher matcher = pattern.matcher(text);
 			
-			if(start <= end) {
-			    String solution=text.substring(start,end).trim();
-				result.add(new SectionFinderResult(start, end));				
+			if (matcher.lookingAt()) {
+				List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);
+				result.add(new SectionFinderResult(matcher.start(1), matcher.end(1)));
 				
-				if (father != null) {
-					DefaultSubjectContext con=new DefaultSubjectContext();
-					con.setSubject(solution);
-					ContextManager.getInstance().attachContext(father, con);
-				}
+				return result;
+			} else {
+				return null;
 			}
-			
-			return result;
+				
 		}
 	}
 

@@ -28,17 +28,16 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.Section;
 
 public class RegexSectionFinder extends SectionFinder {
-	private int patternmod;
-	private String pattern;
+
 	
+	private final Pattern pattern;
+
 	public RegexSectionFinder(String p) {
-		this.pattern = p;
-		this.patternmod=0;
+		this(p, 0);
 	}
 	
 	public RegexSectionFinder(String p, int patternmod) {
-		this.pattern = p;
-		this.patternmod = patternmod;
+		pattern = Pattern.compile(p, patternmod); 
 	}
 
 	@Override
@@ -46,15 +45,8 @@ public class RegexSectionFinder extends SectionFinder {
 		
 		ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		
-	
-		Pattern p = null; 
-		if (patternmod != 0) {
-		    p= Pattern.compile(pattern, patternmod);
-		} else {
-		    p = Pattern.compile(pattern);
-		}
 		
-		Matcher m = p.matcher(text);
+		Matcher m = pattern.matcher(text);
 
 		while (m.find()) {
 			result.add(createSectionFinderResult(m));

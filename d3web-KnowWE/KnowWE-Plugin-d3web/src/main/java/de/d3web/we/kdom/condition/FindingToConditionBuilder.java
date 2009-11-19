@@ -49,6 +49,7 @@ import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.filter.TypeSectionFilter;
 import de.d3web.we.kdom.store.SectionStore;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * Supplies a method for creating a condition from a
@@ -79,46 +80,53 @@ public class FindingToConditionBuilder {
 		if (comp == null)
 			return null;
 		
-		String c = comp.getOriginalText().replaceAll(p.toString(), "").trim();
-		String a = answer.getOriginalText().replaceAll(p.toString(), "").trim();
+		String comparator = comp.getOriginalText().replaceAll(p.toString(), "").trim();
+		String answerText = answer.getOriginalText().replaceAll(p.toString(), "").trim();
 		
 		// CondEqual and CondNumEqual have same Comparator
-		if (c.equals("=")) {
-			if (a.equals("Yes") || a.equals("No") || answerIsString(a))
-				return new CondEqual(kbQuest, kbAns);
-			return new CondNumEqual((QuestionNum)kbQuest, Double.valueOf(a));
-		}
-	
-		else if (c.equals(">"))
-			return new CondNumGreater((QuestionNum)kbQuest, Double.valueOf(a));
 		
-		else if (c.equals(">="))
-			return new CondNumGreaterEqual((QuestionNum)kbQuest, Double.valueOf(a));
+		if (kbQuest instanceof QuestionNum) {
+
+			Double valueOf = parseNumAnswer(answerText, answer);
 			
-		else if (c.equals("<"))
-			return new CondNumLess((QuestionNum)kbQuest, Double.valueOf(a));
+			QuestionNum questionNum = (QuestionNum) kbQuest;
+			
+			if (comparator.equals("="))
+				return new CondNumEqual(questionNum, valueOf);
+			else if (comparator.equals(">"))
+				return new CondNumGreater(questionNum, valueOf);
+			else if (comparator.equals(">="))
+				return new CondNumGreaterEqual(questionNum, valueOf);
+			else if (comparator.equals("<"))
+				return new CondNumLess(questionNum, valueOf);
+			else if (comparator.equals("<="))
+				return new CondNumLessEqual(questionNum, valueOf);
+			else {
+				storeMessage("Unkown comparator '" + comparator +"'.", comp);
+				return null;
+			}
+		} else {
+			if (comparator.equals("="))
+				return new CondEqual(kbQuest, kbAns);
+			else { 
+				storeMessage("Unkown comparator '" + comparator +"'.", comp);
+				return null;
+			}
+		}
+	
 		
-		else if (c.equals("<="))
-			return new CondNumLessEqual((QuestionNum)kbQuest, Double.valueOf(a));
+	}
+
+	private static Double parseNumAnswer(String value, Section answer) {
+		try {
+			return Double.valueOf(value);
+		} catch (NumberFormatException e) {
+			storeMessage("Numerical value expected, got: '" + value +"'.", answer);
+			return new Double(-1);
+		}
 		
-		return null;
 	}
 	
-    /**
-     * Tests if text is a Double.
-     * 
-     * @param text
-     * @return
-     */
-	private static boolean answerIsString(String text) {
-		try {
-			Double.valueOf(text);
-			return false;
-		} catch (Exception e) {
-			// Do Nothing
-		}
-		return true;
-	}
 	
 	/**
 	 * Delegates the finding of a XCLRelation to its destination method.
@@ -183,6 +191,7 @@ public class FindingToConditionBuilder {
 	
 		if (!f.getObjectType().getClass().equals(Finding.class))
 			return null;
+	
 		
 		boolean negated = f.findChildOfType(NOT.class) != null;
 		
@@ -191,6 +200,9 @@ public class FindingToConditionBuilder {
 		Section comp = f.findChildOfType(FindingComparator.class);
 		Section question = f.findSuccessor(FindingQuestion.class);
 		Section answer = f.findSuccessor(FindingAnswer.class);
+
+		storeMessage("", question);
+		storeMessage("", answer);
 		
 		String questiontext = question.getOriginalText().replaceAll(p.toString(), "").trim();
 		if (answer == null) {
@@ -198,7 +210,6 @@ public class FindingToConditionBuilder {
 			return null;
 		}
 		String answertext = answer.getOriginalText().replaceAll(p.toString(), "").trim();
-		
 
 		// Look up the Question in the KnowledgeBase
 		Question kbQuest = kbm.findQuestion(questiontext);
@@ -235,7 +246,7 @@ public class FindingToConditionBuilder {
 		
 		((AbstractKnowWEObjectType) section.getObjectType()).storeMessages(section, messages);
 		
-		
+
 		
 	}
 

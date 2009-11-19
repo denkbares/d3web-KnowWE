@@ -22,11 +22,13 @@ package de.d3web.we.kdom.xcl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.utils.Patterns;
 
 public class XCLTail extends DefaultAbstractKnowWEObjectType {
 	
@@ -34,11 +36,12 @@ public class XCLTail extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			List<SectionFinderResult> matches = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> matches = new ArrayList<SectionFinderResult>(1);
+			
 			
 			int end = text.lastIndexOf('}');
 			if(text.lastIndexOf('[') > end) {
-				matches.add(new SectionFinderResult(end+1, text.length()));
+				matches.add(new SectionFinderResult(end+1, text.lastIndexOf(']') + 1));
 			}
 			
 			return matches;

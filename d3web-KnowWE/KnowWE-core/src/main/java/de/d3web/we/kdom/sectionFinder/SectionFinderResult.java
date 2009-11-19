@@ -64,5 +64,10 @@ public class SectionFinderResult implements Comparable<SectionFinderResult>{
 				.compareTo(Integer.valueOf(o.getStart()));
 	}
 	
+	@Override
+	public String toString() {
+		return super.toString() + " [" + getStart() + " - " + getEnd() + "]";
+	}
+	
 
 }

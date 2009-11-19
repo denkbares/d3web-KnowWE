@@ -25,16 +25,19 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.CommentLineType;
+import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class XCLBody extends DefaultAbstractKnowWEObjectType{
 	
 	@Override
-	public void init() {
+	protected void init() {
 		
 		this.childrenTypes.add(new XCListBodyEndSymbol());
 		this.childrenTypes.add(new XCListBodyStartSymbol());
+		this.childrenTypes.add(new CommentLineType());
 		this.childrenTypes.add(new XCLRelation());
 		this.sectionFinder = new XCLBodySectionFinder();
 	}
@@ -43,7 +46,7 @@ public class XCLBody extends DefaultAbstractKnowWEObjectType{
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			List<SectionFinderResult> matches = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> matches = new ArrayList<SectionFinderResult>(1);
 
 			if (text.indexOf('{') >= 0) {
 				matches.add(

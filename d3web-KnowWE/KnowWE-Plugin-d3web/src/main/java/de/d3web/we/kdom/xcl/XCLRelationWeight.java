@@ -37,12 +37,17 @@ public class XCLRelationWeight extends DefaultAbstractKnowWEObjectType  {
 	
 	public class XCLRelationWeightSectionFinder extends SectionFinder {
 		
+		private final Pattern pattern;
+		
+		public XCLRelationWeightSectionFinder() {
+			pattern = Pattern.compile("\\[(\\d|--|\\+\\+|\\!)\\]");
+		}
+
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();		
-			Pattern relWeightPattern = Pattern.compile(" *\\[(\\d|--|\\+\\+|\\!)\\]");
-			Matcher m = relWeightPattern.matcher(text);
+			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);		
+			Matcher m = pattern.matcher(text);
 			while (m.find()) {
 				result.add(new SectionFinderResult(m.start(), m.end()));
 			}
@@ -56,10 +61,5 @@ public class XCLRelationWeight extends DefaultAbstractKnowWEObjectType  {
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR6));		
 	}
 	
-//	@Override
-//	public KnowWEDomRenderer getRenderer() {
-//		return FontColorRenderer.getRenderer(FontColorRenderer.COLOR6);
-//	}
-
 
 }

@@ -41,11 +41,19 @@ public class StringSectionFinder extends SectionFinder {
 	
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		int index = text.indexOf(string); 
-		if(last) index = text.lastIndexOf(string);
 		
-		if(index == -1) return null;
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+		int index;
+		
+		if(last) 
+			index = text.lastIndexOf(string);
+		else 
+			index = text.indexOf(string);
+		
+		
+		if(index == -1) 
+			return null;
+		
+		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);
 		result.add(new SectionFinderResult(index, index + string.length()));		
 		return result;
 	}
