@@ -635,7 +635,7 @@ KNOWWE.plugin.d3web.semantic = function(){
      * Type:
      *     Object
      */
-    var sTimer = null;
+    var sTimer = undefined;
     
     /**
      * Indicates if the current visible question is a multiple choice question.
@@ -647,7 +647,7 @@ KNOWWE.plugin.d3web.semantic = function(){
     /**
      * Stores the request URL of the MC questions.
      */
-    var mcUrl = null;
+    var mcUrl = undefined;
     
     /**
      * 
@@ -662,6 +662,8 @@ KNOWWE.plugin.d3web.semantic = function(){
         });
         mcUrl.ValueIDS = mcStorage.join(',');
         KNOWWE.plugin.d3web.semantic.send( mcUrl, null );
+        mcUrl = false;
+        isMC = false;
     }
     
     return {
@@ -716,7 +718,6 @@ KNOWWE.plugin.d3web.semantic = function(){
                         sTimer = setTimeout(function(){
                             if(isMC){
                                 handleMC();
-                                isMC = false;
                             }
                             _KS('#o-lay')._remove();
                         }, 4000);
@@ -725,7 +726,6 @@ KNOWWE.plugin.d3web.semantic = function(){
                 _KE.add('click', _KS('#o-lay-close'), function(){
                     if(isMC){
                         handleMC();
-                        isMC = false;
                     }
                     _KS('#o-lay')._remove();
                     clearTimeout( sTimer );
@@ -822,6 +822,13 @@ KNOWWE.plugin.d3web.semantic = function(){
          *     e - The latest event object
          */
         showOverlayQuestion : function(e){
+            
+            if(isMC){
+                clearTimeout( sTimer );
+                handleMC();
+                _KS('#o-lay')._remove();
+            }
+            
             var el = _KE.target( e );
             if(!el.getAttribute('rel')) return;
             
