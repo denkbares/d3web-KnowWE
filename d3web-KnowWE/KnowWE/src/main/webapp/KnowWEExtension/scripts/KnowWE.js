@@ -276,7 +276,9 @@ KNOWWE.core.util = function(){
                 tmpDiv._injectBefore( old );
                 tmpDiv._setHTML( value );
                 old._remove();
-                _KS('#' + ids[i])._injectAfter( _KS('#KnowWE-temp') );
+                var old2 =_KS('#' + ids[i]);
+                var tmp = _KS('#KnowWE-temp'); 
+                old2._injectAfter(tmp );
                 tmpDiv._remove();
             }
         }
@@ -515,7 +517,7 @@ KNOWWE.core.edit = function(){
             var el = _KE.target(e);
             var rel = eval("(" + el.getAttribute('rel') + ")");
             var params = {
-                action : 'UpdateKDOMNodesAction',
+                action : 'UpdateKDOMNodeAction',
                 TargetNamespace : rel.id + "::" +_KS('#default-edit-area').value,
                 KWiki_Topic : KNOWWE.helper.gup('page')
             }
