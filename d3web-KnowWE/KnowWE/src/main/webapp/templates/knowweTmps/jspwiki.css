@@ -18,6 +18,8 @@
 
 /* +++ 010 LAYOUT of main ID blocks +++ */
 #wikibody {
+	background: #FFF url(../../KnowWEExtension/images/background-torus.jpg) 0 0 repeat;
+    border: 1px solid #C8C7C3; 
 	margin:1em 2em; 
 	padding:0.25em;
 }
@@ -361,13 +363,14 @@ img.attlink {
 } 
 .applicationlogo a {
 	display:block;
-	height:76px;
-	width:264px;
+	height:105px;
+	width:105px;
 	overflow:hidden;
 	margin-left:auto;
 	margin-right:auto;
 	text-indent:-1000px;
-	background:url(../../KnowWEExtension/images/knowwe_logo.png) +10px 0 no-repeat;
+	background:url(../../KnowWEExtension/images/EuleVonAthen.png) +10px 0 no-repeat;
+	background-position:0 0;
 }
 .applicationlogo a:hover {
 	background-position:0 0;
