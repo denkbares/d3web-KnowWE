@@ -34,6 +34,7 @@ public class TimeEventSPARQLUtils {
     // private static final String TIME_SPARQL =
     // "SELECT ?t ?title ?desc ?imp WHERE {  ?t lns:hasTitle ?title . ?t lns:hasDescription ?desc . ?t lns:hasImportance ?imp  . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}}";
 
+    private static final String CONCEPT_SPARQL = "SELECT  ?t ?title ?topic ?imp ?desc ?encodedTime ?y ?kdomid ?topic WHERE {  ?t rdfs:isDefinedBy ?to . ?to ns:hasTopic ?topic . ?to ns:hasNode ?kdomid . ?t lns:hasDateDescription ?encodedTime . ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:involves CONCEPT .}";
     private static final String SOURCE_SPARQL = "SELECT ?source WHERE { <*URI*> lns:hasSource ?source .}";
 
     public static List<TimeEvent> findTimeEventsFromTo(int yearFrom, int yearTo) {
@@ -44,6 +45,17 @@ public class TimeEventSPARQLUtils {
 		.toString(yearFrom));
 	querystring = querystring
 		.replaceAll("YEARTO", Integer.toString(yearTo));
+
+	TupleQueryResult result = executeQuery(querystring);
+	return buildTimeEvents(result);
+    }
+
+    public static List<TimeEvent> findTimeInvolvingConcept(String conceptName) {
+
+	String querystring = null;
+
+	querystring = CONCEPT_SPARQL
+		.replaceAll("CONCEPT", "lns:" + conceptName);
 
 	TupleQueryResult result = executeQuery(querystring);
 	return buildTimeEvents(result);
