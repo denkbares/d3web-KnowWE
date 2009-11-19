@@ -22,6 +22,12 @@ package de.d3web.we.kdom.dashTree;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLContent;
 
+/**
+ * @author Jochen
+ * 
+ * An xml-wrapper-type for a dashTree
+ *
+ */
 public class XMLDashTree extends AbstractXMLObjectType{
 	
 	public XMLDashTree() {

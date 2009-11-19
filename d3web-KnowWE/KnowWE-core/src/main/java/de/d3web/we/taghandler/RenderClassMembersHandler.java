@@ -15,7 +15,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.SemanticCore;
-import de.d3web.we.kdom.sparql.DefaultRenderer;
+import de.d3web.we.kdom.sparql.DefaultSparqlRenderer;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -63,7 +63,8 @@ public class RenderClassMembersHandler extends AbstractTagHandler{
 		try {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
-				return KnowWEEnvironment.maskHTML(DefaultRenderer.getInstance().render(result, values));
+				values.put("render", "links");
+				return KnowWEEnvironment.maskHTML(DefaultSparqlRenderer.getInstance().render(result, values));
 			} else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
 				return "graphquery ouput implementation: TODO";

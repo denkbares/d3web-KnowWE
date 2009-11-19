@@ -25,17 +25,17 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
-import de.d3web.we.kdom.dashTree.Root;
+import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class SubClassingRoot extends Root {
+public class SubClassingDashTreeElement extends DashTreeElement {
 
 	@Override
 	public IntermediateOwlObject getOwl(Section s) {
 		IntermediateOwlObject io = new IntermediateOwlObject();
-		if (s.getObjectType().isAssignableFromType(Root.class)) {
-			Section father = Root.getDashTreeFather(s);
+		if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
+			Section father = DashTreeElement.getDashTreeFather(s);
 			if (father != null) {
 				Section fatherElement = father
 						.findChildOfType(DashTreeElementContent.class);

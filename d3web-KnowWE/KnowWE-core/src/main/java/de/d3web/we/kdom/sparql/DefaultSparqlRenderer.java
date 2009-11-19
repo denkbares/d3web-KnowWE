@@ -32,18 +32,16 @@ import org.openrdf.query.TupleQueryResult;
 
 import de.d3web.we.core.KnowWEEnvironment;
 
-public class DefaultRenderer implements SparqlRenderer {
-	
-	private static DefaultRenderer instance;
-	
-	public static DefaultRenderer getInstance() {
-		if(instance == null) {
-			instance = new DefaultRenderer();
+public class DefaultSparqlRenderer implements SparqlRenderer {
+
+	private static DefaultSparqlRenderer instance;
+
+	public static DefaultSparqlRenderer getInstance() {
+		if (instance == null) {
+			instance = new DefaultSparqlRenderer();
 		}
 		return instance;
 	}
-	
-	  
 
 	public String render(TupleQueryResult result, Map<String, String> params) {
 
@@ -76,7 +74,10 @@ public class DefaultRenderer implements SparqlRenderer {
 					if (erg.split("#").length == 2)
 						erg = erg.split("#")[1];
 					if (links) {
-						erg = "[" + KnowWEEnvironment.maskHTML(erg) + "]";
+						if (KnowWEEnvironment.getInstance().getWikiConnector()
+								.doesPageExist(erg)) {
+							erg = "<a href=\"Wiki.jsp?page=" + erg+ "\">"+erg+"</a>";
+						}
 					}
 					try {
 						erg = URLDecoder.decode(erg, "UTF-8");

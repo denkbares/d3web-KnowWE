@@ -26,6 +26,13 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
+/**
+ * @author Jochen
+ * 
+ * A simple DashTree. It takes all and tries to build a (dash-) SubTree (which is defined
+ * recursivly).
+ *
+ */
 public class DashTree extends DefaultAbstractKnowWEObjectType{
 	
 	@Override

@@ -25,11 +25,18 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.dashTree.DashTree;
-import de.d3web.we.kdom.dashTree.Root;
+import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.SubTree;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLContent;
 
+/**
+ * @author Jochen
+ * 
+ * An XML-Wrapper Type for a DashTree, that creates RDFS.subClassOf relations
+ * from the dashTree-hierarchy structure
+ *
+ */
 public class SubClassing extends AbstractXMLObjectType{
 	
 	public SubClassing() {
@@ -38,7 +45,7 @@ public class SubClassing extends AbstractXMLObjectType{
 	
 	@Override
 	protected void init() {
-		this.childrenTypes.add(new SubclassingContent());// TODO Auto-generated method stub
+		this.childrenTypes.add(new SubclassingContent());
 	}
 	
 	class SubclassingContent extends XMLContent {
@@ -56,7 +63,7 @@ public class SubClassing extends AbstractXMLObjectType{
 			for (KnowWEObjectType knowWEObjectType : types) {
 				if(knowWEObjectType instanceof SubTree) {		
 					try {
-						((AbstractKnowWEObjectType)knowWEObjectType).replaceChildType(new SubClassingRoot(), Root.class);
+						((AbstractKnowWEObjectType)knowWEObjectType).replaceChildType(new SubClassingDashTreeElement(), DashTreeElement.class);
 					} catch (InvalidKDOMSchemaModificationOperation e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

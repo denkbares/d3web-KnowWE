@@ -52,7 +52,7 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 
 	private SparqlDelegateRenderer() {
 		renderers = new HashMap<String, SparqlRenderer>();
-		renderers.put("default", new DefaultRenderer());
+		renderers.put("default", new DefaultSparqlRenderer());
 	}
 
 	public static synchronized SparqlDelegateRenderer getInstance() {

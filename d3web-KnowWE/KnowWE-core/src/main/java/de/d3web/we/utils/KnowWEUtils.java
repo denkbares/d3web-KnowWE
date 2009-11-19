@@ -90,6 +90,25 @@ public class KnowWEUtils {
 		return result;
 	}
 	
+	/**
+	 * returns whether a text contains nothing except spaces and newlines
+	 * 
+	 * @param text
+	 * @return
+	 */
+	public static boolean isEmpty(String text) {
+		if(text == null) return true;
+		if(text.length() == 0) return true;
+		text = text.replaceAll("\r", "");
+		text = text.replaceAll("\n", "");
+		text = text.replaceAll(" ", "");
+		
+		if(text.length() == 0) return true;
+		
+		return false;
+		
+	}
+	
 //	public static String getVariablePath(ServletContext context, String realPath) {
 //		String varPath = context.getRealPath("");
 //		varPath = varPath.replace('\\', '/');
