@@ -19,26 +19,40 @@
  */
 package de.d3web.we.kdom.dashTree;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.kdom.xml.XMLContent;
+import java.util.ArrayList;
+import java.util.List;
 
-public class XMLDashTree extends AbstractXMLObjectType{
-	
-	public XMLDashTree() {
-		super("DashTree");
-		this.childrenTypes.add(new XMLDashTreeContent());
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+
+public class DashesPrefix extends DefaultAbstractKnowWEObjectType{
+
+	@Override
+	protected void init() {
+		this.sectionFinder = new DashesPrefixFinder();
+		
 	}
 	
 	
-	
-	
-	class XMLDashTreeContent extends XMLContent {
+	class DashesPrefixFinder extends SectionFinder {
 
 		@Override
-		protected void init() {
-			this.childrenTypes.add(new DashTree());
+		public List<SectionFinderResult> lookForSections(String text,
+				Section father) {
+			int index = 0;
+			while(text.charAt(index) == '-') {
+				index ++;
+			}
+			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			result.add(new SectionFinderResult(0,index));
 			
+			return result;
 		}
 		
 	}
+
+
+
 }

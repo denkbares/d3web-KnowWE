@@ -19,26 +19,14 @@
  */
 package de.d3web.we.kdom.dashTree;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.kdom.xml.XMLContent;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 
-public class XMLDashTree extends AbstractXMLObjectType{
+public class DashTreeElementContent extends DefaultAbstractKnowWEObjectType{
 	
-	public XMLDashTree() {
-		super("DashTree");
-		this.childrenTypes.add(new XMLDashTreeContent());
+	@Override
+	protected void init() {
+		this.sectionFinder = AllTextFinderTrimmed.getInstance();
 	}
-	
-	
-	
-	
-	class XMLDashTreeContent extends XMLContent {
 
-		@Override
-		protected void init() {
-			this.childrenTypes.add(new DashTree());
-			
-		}
-		
-	}
 }

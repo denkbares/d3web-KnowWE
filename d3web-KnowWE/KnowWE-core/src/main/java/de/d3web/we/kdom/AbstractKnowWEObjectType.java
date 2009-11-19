@@ -197,6 +197,23 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		}
 		return null;
 	}
+	
+	
+	public void replaceChildType(KnowWEObjectType type, Class<? extends KnowWEObjectType> c) throws InvalidKDOMSchemaModificationOperation{
+		if(c.isAssignableFrom(type.getClass())) {
+			KnowWEObjectType toReplace = null;
+			for (KnowWEObjectType child : childrenTypes) {
+				if(child.getClass().equals(c)) {
+					toReplace = child;
+				}
+			}
+			childrenTypes.set(childrenTypes.indexOf(toReplace),type);
+			
+		}else {
+			throw new InvalidKDOMSchemaModificationOperation("class"+c.toString()+" may not be replaced by: "+type.getClass().toString()+" since it isnt a subclass of former");
+		}
+		
+	}
 
 	/**
 	 * Stores a list of messages under to message-store-key
