@@ -188,7 +188,29 @@ public class TaggingManglerTest extends TestCase {
 		assertEquals(new Integer(20),tags.get("leben"));
 		assertEquals( new Integer(10),tags.get("tod"));		
 	}
-
+	
+	/**
+	 * Test method for {@link de.d3web.we.core.TaggingMangler#getCloudList(int, int)}.
+	 */
+	public void testGetCloudList2() {
+		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
+				types, "default_web");
+		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
+				types, "default_web");
+		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
+				types, "default_web");
+		am.saveUpdatedArticle(article1);
+		am.saveUpdatedArticle(article2);
+		am.saveUpdatedArticle(article3);
+		tm.addTag("Tag1", "tag", params);
+		tm.addTag("Tag2", "leben", params);	
+		tm.addTag("Tag3", "tod", params);		
+		HashMap<String, Integer>tags=tm.getCloudList(10, 20);
+		assertEquals(new Integer(15),tags.get("leben"));
+		assertEquals( new Integer(15),tags.get("tod"));		
+		assertEquals( new Integer(15),tags.get("tag"));
+	}
+	
 
 	/**
 	 * Test method for {@link de.d3web.we.core.TaggingMangler#setTags(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}.

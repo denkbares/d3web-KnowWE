@@ -200,6 +200,11 @@ public class TaggingMangler {
 	 * @return
 	 */
 	public HashMap<String, Integer> getCloudList(int minSize, int maxSize) {
+		if (minSize>maxSize){
+			int t=minSize;
+			minSize=maxSize;
+			maxSize=t;
+		}
 		HashMap<String, Integer> result = new HashMap<String, Integer>();
 		HashMap<String, Float> weighted = getAllTagsWithWeight();
 		float factor = maxSize - minSize;
@@ -222,7 +227,9 @@ public class TaggingMangler {
 		for (String cur : tags) {
 			float c= 0;
 			if (countlist.get(cur) == null){
-				countlist.put(cur, new Float(1));}
+				countlist.put(cur, new Float(1));
+				c=1;
+				}
 			else {
 				c = countlist.get(cur) + 1;
 				countlist.put(cur, c);
@@ -230,10 +237,9 @@ public class TaggingMangler {
 			max = c > max ? c : max;
 		}
 		
-		HashMap<String, Float> weighted = new HashMap<String, Float>();
-		max=max==0?1:max;
+		HashMap<String, Float> weighted = new HashMap<String, Float>();		
 		for (Entry<String, Float> cur : countlist.entrySet()) {
-			weighted.put(cur.getKey(), (cur.getValue()-1) / (max-1));
+			weighted.put(cur.getKey(), new Float(max-1==0?0.5:(cur.getValue()-1) / (max-1)));
 		}
 		return weighted;
 	}
