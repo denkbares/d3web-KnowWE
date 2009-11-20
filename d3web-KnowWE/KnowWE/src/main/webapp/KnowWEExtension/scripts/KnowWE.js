@@ -227,9 +227,18 @@ KNOWWE.core.util = function(){
             var tokens = [];
         
             if( !params && typeof params != 'object') return baseURL;
-            
+                        
             for( keys in params ){
                 tokens.push(keys + "=" + encodeURIComponent( params[keys] ));
+            }
+            
+            //parse the url to add special token like debug etc.
+            var p = document.location.search.replace('?','').split('&');
+            for(var i = 0; i < p.length; i++){
+            	var t = p[i].split('=');
+            	if(!KNOWWE.helper.containsArr(tokens,t[0])){
+            		tokens.push(p[i]);
+            	}
             }
             tokens.push('tstamp='+new Date().getTime());            
             return baseURL + '?' + tokens.join('&');
