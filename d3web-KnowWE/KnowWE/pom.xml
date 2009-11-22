@@ -305,7 +305,7 @@
 								<id>deploy</id>
 								<phase>package</phase>
 								<goals>
-									<goal>tomcat:deploy</goal>
+									<goal>deploy</goal>
 								</goals>
 							</execution>
 						</executions>
