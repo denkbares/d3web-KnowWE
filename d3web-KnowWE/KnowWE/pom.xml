@@ -298,6 +298,28 @@
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>isci-jspwiki</id>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<phase>process-resources</phase>
+
+								<configuration>
+									<tasks>
+										<copy
+											file="/var/www/knowwe/jspwiki.properties"
+											todir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>tomcat-maven-plugin</artifactId>
 						<executions>
