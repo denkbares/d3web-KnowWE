@@ -43,7 +43,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<repositories>
 		<repository>
 			<id>knowwe-snapshots</id>
@@ -57,7 +57,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 
 	<profiles>
 		<profile>
@@ -89,7 +89,7 @@
 					<name>comment-plugin</name>
 				</property>
 			</activation>
-			
+
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
@@ -117,7 +117,9 @@
 										<copy todir="${project.build.directory}/${pom.name}-${pom.version}/">
 											<fileset dir="../KnowWE-Plugin-Comment/src/main/webapp" />
 										</copy>
-										<copy file="../KnowWE-Plugin-Comment/src/main/wikiplugin/de.d3web.we.plugin.comment.CommentModule.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
+										<copy
+											file="../KnowWE-Plugin-Comment/src/main/wikiplugin/de.d3web.we.plugin.comment.CommentModule.module"
+											todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/" />
 									</tasks>
 								</configuration>
 							</execution>
@@ -126,7 +128,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<!-- Calendar plugin -->
 		<profile>
 			<id>calendar-plugin</id>
@@ -135,7 +137,7 @@
 					<name>calendar-plugin</name>
 				</property>
 			</activation>
-			
+
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
@@ -163,7 +165,9 @@
 										<copy todir="${project.build.directory}/${pom.name}-${pom.version}">
 											<fileset dir="../KnowWE-Plugin-Calendar/src/main/webapp" />
 										</copy>
-										<copy file="../KnowWE-Plugin-Calendar/src/main/wikiplugin/de.d3web.we.plugin.calendar.CalendarModule.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
+										<copy
+											file="../KnowWE-Plugin-Calendar/src/main/wikiplugin/de.d3web.we.plugin.calendar.CalendarModule.module"
+											todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/" />
 									</tasks>
 								</configuration>
 							</execution>
@@ -172,7 +176,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<!-- Hermes Module -->
 		<profile>
 			<id>hermes-plugin</id>
@@ -181,7 +185,7 @@
 					<name>hermes-plugin</name>
 				</property>
 			</activation>
-			
+
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
@@ -209,7 +213,9 @@
 										<copy todir="${project.build.directory}/${pom.name}-${pom.version}">
 											<fileset dir="../KnowWE-Plugin-HermesModule/src/main/webapp" />
 										</copy>
-										<copy file="../KnowWE-Plugin-HermesModule/src/main/wikiplugin/de.d3web.we.hermes.HermesPlugin.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
+										<copy
+											file="../KnowWE-Plugin-HermesModule/src/main/wikiplugin/de.d3web.we.hermes.HermesPlugin.module"
+											todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/" />
 									</tasks>
 								</configuration>
 							</execution>
@@ -217,8 +223,8 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>		
-		
+		</profile>
+
 		<!-- Flowchart Module -->
 		<profile>
 			<id>flowchart-plugin</id>
@@ -227,7 +233,7 @@
 					<name>flowchart-plugin</name>
 				</property>
 			</activation>
-			
+
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
@@ -252,26 +258,31 @@
 
 								<configuration>
 									<tasks>
-										<copy file="../KnowWE-Plugin-Flowchart/src/main/wikiplugin/de.d3web.we.flow.FlowchartPlugin.module" todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/"/>
-										
-										<property name="flowchartDir" value="${basedir}/../KnowWE-Plugin-Flowchart" />
-										<mkdir dir="${project.build.directory}/${pom.name}-${pom.version}/cc"/>
-										<copy todir="${project.build.directory}/${pom.name}-${pom.version}/cc">
+										<copy
+											file="../KnowWE-Plugin-Flowchart/src/main/wikiplugin/de.d3web.we.flow.FlowchartPlugin.module"
+											todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/" />
+
+										<property name="flowchartDir"
+											value="${basedir}/../KnowWE-Plugin-Flowchart" />
+										<mkdir
+											dir="${project.build.directory}/${pom.name}-${pom.version}/cc" />
+										<copy
+											todir="${project.build.directory}/${pom.name}-${pom.version}/cc">
 											<fileset dir="../KnowWE-Plugin-Flowchart/src/main/webapp/html">
-												<include name="**/*.js"/>
-												<include name="**/*.css"/>
-												<include name="**/*.html"/>
-												<include name="**/*.gif"/>
-												<include name="**/*.png"/>
-												<include name="**/*.jpg"/>
+												<include name="**/*.js" />
+												<include name="**/*.css" />
+												<include name="**/*.html" />
+												<include name="**/*.gif" />
+												<include name="**/*.png" />
+												<include name="**/*.jpg" />
 											</fileset>
 										</copy>
 										<copy todir="${project.build.directory}/${pom.name}-${pom.version}">
-											<fileset dir="../KnowWE-Plugin-Flowchart/src/main/webapp/jsp"/>
+											<fileset dir="../KnowWE-Plugin-Flowchart/src/main/webapp/jsp" />
 											<!-- fileset dir="${flowchartDir}/src/main/webapp/jsp"/-->
-										</copy>		
-										
-										
+										</copy>
+
+
 									</tasks>
 								</configuration>
 							</execution>
@@ -279,8 +290,34 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>		
-		
+		</profile>
+
+		<!-- ISCI profile. Do not change. -->
+		<profile>
+			<id>isci</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>tomcat-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>deploy</id>
+								<phase>package</phase>
+								<goals>
+									<goal>tomcat:deploy</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<server>isci</server>
+							<path>/KnowWE-nightly</path>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+
+		</profile>
 
 	</profiles>
 
