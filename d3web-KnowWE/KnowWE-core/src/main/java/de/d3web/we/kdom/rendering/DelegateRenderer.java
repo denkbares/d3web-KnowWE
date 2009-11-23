@@ -21,9 +21,11 @@
 package de.d3web.we.kdom.rendering;
 
 import java.util.List;
+import java.util.Map;
 
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class DelegateRenderer extends KnowWEDomRenderer {
@@ -85,13 +87,17 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 //			}
 //
 //		}
-//
+// 
 //		return result.toString();
 //	}
 
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder builder) {
-
+		
+		boolean renderTypes = isRenderTypes(user.getUrlParameterMap());
+		if (renderTypes)
+			builder.append(KnowWEUtils.maskHTML("<sub>&lt;" + sec.getObjectType().getName() + "&gt;</sub>"));
+		
 		List<Section> subsecs = sec.getChildren();
 		if (subsecs.size() == 0) {
 			builder.append(sec.getOriginalText());
@@ -125,5 +131,15 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 				e.printStackTrace();
 			}
 		}
+		
+		if (renderTypes)
+			builder.append(KnowWEUtils.maskHTML("<sub>&lt;/" + sec.getObjectType().getName() + "&gt;</sub>"));
+	}
+
+	private boolean isRenderTypes(Map<String, String> urlParameterMap) {
+		String debug = urlParameterMap.get("renderTypes"); 
+		return debug != null && debug.equals("true");
+		
+//		return false;
 	}
 }
