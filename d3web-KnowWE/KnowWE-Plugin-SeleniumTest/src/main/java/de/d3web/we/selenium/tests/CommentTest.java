@@ -24,10 +24,6 @@ public class CommentTest extends KnowWETestCase{
 	
 	
 	public void testNewCommentEntry() throws Exception{
-		selenium.open("");
-		assertEquals("KnowWE: Main", selenium.getTitle());
-		loadAndWait("link=Selenium-Test");
-		
 		openWindowBlank(rb.getString("KnowWE.SeleniumTest.server") + 
 				"Wiki.jsp?page=Selenium-Comment", "KnowWE: Selenium-Comment");
 		assertTrue(selenium.getTitle().contains("KnowWE: Selenium-Comment"));

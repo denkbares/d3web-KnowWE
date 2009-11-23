@@ -58,7 +58,9 @@ public class SeleniumMainTest extends TestSuite {
 		TestSuite mainSuite = new SeleniumMainTest();
 		
 		//Add here the serial startup tests
-		mainSuite.addTestSuite(SetUpWikiPages.class);
+		//The needed wikipages are checked out automatically into
+		//the wiki (d3web-KnowWE/KnowWE/src/misc/resources/core-pages/)
+//		mainSuite.addTestSuite(SetUpWikiPages.class);
 
 		TestSuite parallelSuite = new ParallelTestSuite("Testsuite for all parallel units");
 		
