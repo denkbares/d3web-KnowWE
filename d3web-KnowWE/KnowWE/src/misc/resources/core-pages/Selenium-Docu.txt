@@ -1,0 +1,3 @@
+<forum name="Selenium-Docu" ref="Wiki.jsp?page=Selenium-Test#Selenium-Docu">
+<box name=Guest; date=23.11.2009 14:45>Add some appointments</box>
+</forum>

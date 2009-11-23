@@ -1,0 +1,8 @@
+!!! Das ist der Selenium-Test fuer KnowWE2
+
+[Car-Diagnosis-Test]
+
+<COMMENT1 Selenium-Comment:Comments on this Test?>
+<DOCU1 Selenium-Docu:Add some appointments>
+
+[{KnowWEPlugin calendar}]
