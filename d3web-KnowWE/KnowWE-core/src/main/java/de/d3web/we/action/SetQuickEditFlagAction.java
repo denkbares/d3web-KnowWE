@@ -31,6 +31,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -42,43 +43,46 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 
 	private static ResourceBundle rb;
-	
+
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
-		
-		rb = KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest());
-		
+
+		rb = KnowWEEnvironment.getInstance().getKwikiBundle(
+				parameterMap.getRequest());
+
 		String web = parameterMap.getWeb();
 		String nodeID = parameterMap.get(KnowWEAttributes.TARGET);
-		
-		
+
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.getUser();
-		
-		KnowWEWikiConnector connector = KnowWEEnvironment.getInstance().getWikiConnector();
-		
-		if( connector.userCanEditPage( topic, parameterMap.getRequest() )) {
-			boolean existsPageLock = connector.isPageLocked( topic ); 
-			boolean lockedByCurrentUser = connector.isPageLockedCurrentUser( topic, user);
-			
-			if( existsPageLock ){
-				if( lockedByCurrentUser ){
-					connector.undoPageLocked( topic );				
+
+		KnowWEWikiConnector connector = KnowWEEnvironment.getInstance()
+				.getWikiConnector();
+
+		if (connector.userCanEditPage(topic, parameterMap.getRequest())) {
+			boolean existsPageLock = connector.isPageLocked(topic);
+			boolean lockedByCurrentUser = connector.isPageLockedCurrentUser(
+					topic, user);
+
+			if (existsPageLock) {
+				if (lockedByCurrentUser) {
+					connector.undoPageLocked(topic);
 				} else {
-					return getMessage( topic );
+					return getMessage(topic);
 				}
 			} else {
-				connector.setPageLocked( topic, user );
+				connector.setPageLocked(topic, user);
 			}
-			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user, topic);
-			String result = KnowWEUtils.unmaskHTML( refreshKDOMElement(web, topic, new KnowWEUserContextImpl(user,parameterMap), nodeID) );
+			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user,
+					topic);
+			String result = KnowWEUtils.unmaskHTML(refreshKDOMElement(web,
+					topic, new KnowWEUserContextImpl(user, parameterMap),
+					nodeID));
 			return "@replace@" + result;
-		}
-		else{
-			return getMessage( topic );
+		} else {
+			return getMessage(topic);
 		}
 	}
-
 
 	/**
 	 * Searches the element the user set the QuickEditFlag to and renders it.
@@ -90,55 +94,67 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 	 * @param nodeID
 	 * @return
 	 */
-	private String refreshKDOMElement(String web, String topic, KnowWEUserContext user, String nodeID) {
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager( web );
-		KnowWEArticle article = mgr.getArticle( topic );
-		
-		if( article == null)
-			return "<p class=\"error box\"> " + rb.getString("KnowWE.qedit.noarticle") + " </p>";
-		
+	private String refreshKDOMElement(String web, String topic,
+			KnowWEUserContext user, String nodeID) {
+		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance()
+				.getArticleManager(web);
+		KnowWEArticle article = mgr.getArticle(topic);
+
+		if (article == null)
+			return "<p class=\"error box\"> "
+					+ rb.getString("KnowWE.qedit.noarticle") + " </p>";
+
 		Section root = article.getSection();
-		Section secWithNodeID = getSectionFromCurrentID( nodeID, root );
-		
-		if( secWithNodeID != null ) {
+		Section secWithNodeID = getSectionFromCurrentID(nodeID, root);
+
+		if (secWithNodeID != null) {
+			KnowWEDomRenderer renderer = secWithNodeID.getObjectType().getRenderer();
 			StringBuilder b = new StringBuilder();
-			DelegateRenderer.getInstance().render(secWithNodeID, user, b);
+			if (renderer != null) {
+				renderer.render(secWithNodeID, user, b);
+			} else {
+				
+				DelegateRenderer.getInstance().render(secWithNodeID, user, b);
+			}
 			String result = b.toString();
 			return result;
 		}
-		return "<p class=\"error box\"> " + rb.getString("KnowWE.qedit.nokdomidfound") + "</p>";
+		return "<p class=\"error box\"> "
+				+ rb.getString("KnowWE.qedit.nokdomidfound") + "</p>";
 	}
-	
+
 	/**
-	 * Searches for a section with the node id from the <code>SetQuickEditFlagAction</code>.
-	 * The resulting section will be re-rendered and updated in the view.
+	 * Searches for a section with the node id from the
+	 * <code>SetQuickEditFlagAction</code>. The resulting section will be
+	 * re-rendered and updated in the view.
 	 * 
 	 * @param nodeID
 	 * @param root
 	 * @param found
 	 */
-	private Section getSectionFromCurrentID( String nodeID, Section root ) {		
-	    if( root.getId().equals( nodeID ))
-	    	return root;
-	 
+	private Section getSectionFromCurrentID(String nodeID, Section root) {
+		if (root.getId().equals(nodeID))
+			return root;
+
 		Section found = null;
 		List<Section> children = root.getChildren();
 		for (Section section : children) {
-			found = getSectionFromCurrentID( nodeID, section );
-			if( found != null) return found;
+			found = getSectionFromCurrentID(nodeID, section);
+			if (found != null)
+				return found;
 		}
 		return found;
 	}
 
 	/**
-	 * Returns a short info message which informs the user, that he can not edit 
+	 * Returns a short info message which informs the user, that he can not edit
 	 * the page and therefore is not allowed to use the quick-edit mode.
 	 * 
 	 * @param articlename
 	 * @return
 	 */
-	private String getMessage( String articlename ) {
-		String error = rb.getString("KnowWE.qedit.editingdenied");		
+	private String getMessage(String articlename) {
+		String error = rb.getString("KnowWE.qedit.editingdenied");
 		return "@info@" + error;
 	}
 }
