@@ -520,7 +520,7 @@ public class Section implements Visitable, Comparable<Section> {
 		// ObjectType (if given) 
 		int i = 0; // pivot
 		for(KnowWEObjectType type:getObjectType().getAllowedChildrenTypes()) {
-			while (i <= childrenParsingOrder.size() 
+			while (i < childrenParsingOrder.size() 
 					&& childrenParsingOrder.get(i).getObjectType().isAssignableFromType(type.getClass())) {
 				i++;
 			}
