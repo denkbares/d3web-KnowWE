@@ -81,15 +81,11 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 			String comparator = ((FindingComparator) csection.getObjectType())
 					.getComparator(csection);
 
-			Section qsection = section.getChildren(
-					new TypeSectionFilter(new FindingQuestion().getName()))
-					.get(0);
+			Section qsection = section.findSuccessor(FindingQuestion.class);
 			String question = ((FindingQuestion) qsection.getObjectType())
 					.getQuestion(qsection);
 
-			Section asection = section.getChildren(
-					new TypeSectionFilter(new FindingAnswer().getName()))
-					.get(0);
+			Section asection = section.findSuccessor(FindingAnswer.class);
 			String answer = ((FindingAnswer) asection.getObjectType())
 					.getAnswer(asection);
 
@@ -130,7 +126,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				Section father) {
 			if (text.contains(">") || text.contains("=") || text.contains("<")) {
 				if (!text.contains("+=")) {  // hack excluding "+="
-					return new AllTextFinderTrimmed().lookForSections(text,
+					return AllTextFinderTrimmed.getInstance().lookForSections(text,
 							father);
 				}
 			}

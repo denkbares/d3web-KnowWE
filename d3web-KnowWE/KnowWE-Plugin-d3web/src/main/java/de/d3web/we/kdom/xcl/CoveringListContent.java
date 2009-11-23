@@ -23,6 +23,8 @@ package de.d3web.we.kdom.xcl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -117,7 +119,47 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				// insert every Relation into currentModel
 				this.insertRelations(currentRels, kbm, currentdiag, currentweb);
 				
+				//tail with thresholds
+				if (elements.size() == 3) {
+					Section tail = elements.get(2);
+					if (tail.getObjectType() instanceof XCLTail)
+						setThresholds(kbm, currentdiag, tail);
+						
+				}
+				
+				
 			}				
+		}
+
+
+		private void setThresholds(KnowledgeBaseManagement kbm,
+				Diagnosis currentdiag, Section tail) {
+			
+			List knowledge = (List) kbm.getKnowledgeBase().getKnowledge(PSMethodXCL.class, XCLModel.XCLMODEL);
+			
+			Iterator iterator = knowledge.iterator();
+			
+			while (iterator.hasNext()) {
+				XCLModel model = (XCLModel) iterator.next();
+				if (model.getSolution().equals(currentdiag)) {
+					
+					double suggestedThreshold = XCLTail.getSuggestedThreshold(tail);
+					if (suggestedThreshold != -1)
+						model.setSuggestedThreshold(suggestedThreshold);
+					
+					double establishedThreshold = XCLTail.getEstablisehdThreshold(tail);
+					if (establishedThreshold != -1)
+						model.setEstablishedThreshold(establishedThreshold);
+
+					double minsupport = XCLTail.getMinSupport(tail);
+					if (minsupport != -1)
+						model.setMinSupport(minsupport);
+					
+					
+				}
+					
+					
+			}
 		}
 
 		/**
@@ -131,14 +173,10 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		 */
 		private void insertRelations(ArrayList<Section> currentRels, KnowledgeBaseManagement kbm, Diagnosis currentdiag, String currentWeb) {
 
-			double weight;
-			XCLRelationType relationType;
 			
 			for (Section rel : currentRels) {
-				// set weight and relationType
-				weight = this.getWeight(rel);
-				relationType = this.getRelationType(rel);
-				
+				double weight = this.getWeight(rel);
+				XCLRelationType relationType = this.getRelationType(rel);
 				// Get the Conditions
 				AbstractCondition cond = FindingToConditionBuilder.analyseAnyRelation(rel, kbm);
 				
@@ -148,7 +186,9 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				// Insert the Relation into the currentModel
 				String kbRelId = XCLModel.insertXCLRelation(kbm.getKnowledgeBase(), cond, currentdiag, relationType, weight, rel.getId());
 				KnowWEUtils.storeSectionInfo(currentWeb, rel.getTitle(), rel.getId(), KBID_KEY, kbRelId);
+				
 			}
+			
 			
 		}
 

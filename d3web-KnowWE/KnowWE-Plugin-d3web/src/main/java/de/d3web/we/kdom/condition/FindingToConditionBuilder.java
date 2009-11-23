@@ -46,10 +46,7 @@ import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingComparator;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
-import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.filter.TypeSectionFilter;
-import de.d3web.we.kdom.store.SectionStore;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * Supplies a method for creating a condition from a
@@ -144,42 +141,7 @@ public class FindingToConditionBuilder {
 			return null;
 	}
 	
-//	/**
-//	 * Creates a condition from a Finding like this:
-//	 * Not (Complex)Finding
-//	 * 
-//	 * @param findChildOfType
-//	 * @param kbm
-//	 * @return
-//	 */
-//	private static AbstractCondition analyseNegatedFinding(Section f, KnowledgeBaseManagement kbm) {
-//		// Structure is like this:
-//		// Not Finding
-//		List <Section> fl = f.getChildren();
-//		AbstractCondition c = analyseSimpleFinding(fl.get(1), kbm);
-//		if (c != null)
-//			return new CondNot(c);
-//		
-//		return null;
-//	}
-//
-//	/**
-//	 * A finding may either be negated or simple.
-//	 * Delegates the given finding to the appropriate method.
-//	 * 
-//	 * @param f
-//	 * @param kbm
-//	 * @return
-//	 */
-//	private static AbstractCondition analyseFinding(Section f, KnowledgeBaseManagement kbm) {
-//		
-//		if (f.getObjectType() instanceof Finding)
-//			return analyseSimpleFinding(f, kbm);
-//		else if (f.getObjectType() instanceof NegatedFinding)
-//			return analyseNegatedFinding(f, kbm);
-//		else 
-//			return null;
-//	}
+
 
 	/**
 	 * Creates an Condition from a Finding.

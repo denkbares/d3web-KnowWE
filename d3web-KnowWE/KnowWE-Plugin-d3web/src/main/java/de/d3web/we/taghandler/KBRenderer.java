@@ -34,6 +34,7 @@ import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.domainModel.RuleComplex;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
+import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
@@ -166,7 +167,18 @@ public class KBRenderer extends AbstractTagHandler {
 						appendedXCLHeadline = true;
 					}
 					de.d3web.kernel.psMethods.xclPattern.XCLModel model = ((de.d3web.kernel.psMethods.xclPattern.XCLModel) slice);
-					text.append("<p /> " + model.getSolution().getText()
+					
+					//adds tresholds if different from default
+					String thresholds = "";
+					if (model.getEstablishedThreshold() != XCLModel.defaultEstablishedThreshold || 
+							model.getSuggestedThreshold() != XCLModel.defaultSuggestedThreshold ||
+							model.getMinSupport() != XCLModel.defaultMinSupport) {
+						thresholds = " [" + model.getSuggestedThreshold() + ", " + model.getEstablishedThreshold() + ", " + model.getMinSupport() + "]";
+						
+					}
+						
+					
+					text.append("<p /> " + model.getSolution().getText() + thresholds
 							+ ": <br />");
 
 					Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
