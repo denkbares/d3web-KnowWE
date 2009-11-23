@@ -137,6 +137,9 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 			
 			List knowledge = (List) kbm.getKnowledgeBase().getKnowledge(PSMethodXCL.class, XCLModel.XCLMODEL);
 			
+			if (knowledge == null)
+				return;
+			
 			Iterator iterator = knowledge.iterator();
 			
 			while (iterator.hasNext()) {
