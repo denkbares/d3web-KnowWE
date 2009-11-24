@@ -24,6 +24,7 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * <p>UpdateTableKDOMNodes class.</p>
@@ -33,26 +34,23 @@ import de.d3web.we.core.KnowWEParameterMap;
  * @see KnowWEAction
  */
 public class UpdateKDOMNodeAction extends AbstractKnowWEAction {
-	
-	private final static String UPDATE_NODE_SEPERATOR = "::";
-	
+		
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) 
 	{
 		String web = parameterMap.getWeb();
-		String nodes = parameterMap.get(KnowWEAttributes.TARGET);
+		String text = parameterMap.get(KnowWEAttributes.TARGET);
 		String name = parameterMap.getTopic();
+		String id = parameterMap.get(KnowWEAttributes.SECTION_ID);
 		
 		String newSourceText = "";
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 
-		if( nodes != "" )
+		if( text != "" )
 		{
-			if( nodes.contains( UPDATE_NODE_SEPERATOR )) 
+			if( id != null ) 
 			{
-				//0: id; 1: article content
-				String[] tokens = nodes.split( UPDATE_NODE_SEPERATOR );
-				newSourceText = mgr.replaceKDOMNodeWithoutSave(parameterMap, name, tokens[0], tokens[1]);
+				newSourceText = mgr.replaceKDOMNodeWithoutSave(parameterMap, name, id, text);
 				KnowWEEnvironment.getInstance().saveArticle(web, name, newSourceText, parameterMap);
 			}
 		}

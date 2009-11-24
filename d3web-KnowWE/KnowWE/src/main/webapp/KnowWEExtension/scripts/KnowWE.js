@@ -510,9 +510,12 @@ KNOWWE.core.edit = function(){
                     KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id);
                 });
                 
-            	var rel = eval("(" + elements[i].getAttribute('rel') + ")");
+           		var rel = eval("(" + elements[i].getAttribute('rel') + ")");
             	var bttns = _KS('#'+rel.id + ' input[type=submit]');
-            	_KE.add('click', bttns[0], KNOWWE.core.edit.onSave ); 
+            	if( bttns.length != 0 ){
+            		console.log( bttns );
+            		_KE.add('click', bttns[0], KNOWWE.core.edit.onSave );
+                } 
             }  				
 	    },
         /**
@@ -527,7 +530,8 @@ KNOWWE.core.edit = function(){
             var rel = eval("(" + el.getAttribute('rel') + ")");
             var params = {
                 action : 'UpdateKDOMNodeAction',
-                TargetNamespace : rel.id + "::" +_KS('#default-edit-area').value,
+                TargetNamespace : _KS('#default-edit-area').value,
+                SectionID :  rel.id,
                 KWiki_Topic : KNOWWE.helper.gup('page')
             }
 
@@ -536,6 +540,7 @@ KNOWWE.core.edit = function(){
                 response : {
                     action : 'none',
                     fn : function(){ 
+                    	console.log( rel.id );
                         KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id);
                     }
                 }
