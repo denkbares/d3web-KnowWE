@@ -346,7 +346,7 @@ KNOWWE.plugin.d3web.dialog = function(){
         getQContainerVisibilityState : function(){
             var states = [];
             var tables = _KS('#dialog table');
-                
+                            
             for(var i = 0; i < tables.length; i++){
                 var qContainerId = tables[i].parentNode.id;
                    
@@ -385,9 +385,6 @@ KNOWWE.plugin.d3web.dialog = function(){
             var tbl = _KS('#' + id + ' table')[0];
             var img = _KS('#' + id + ' img')[0];
             
-            if( qContainerStates === '' ){
-                qContainerStates = KNOWWE.plugin.d3web.dialog.getQContainerVisibilityState();
-            }
             var search = '', replace = '';
             if(tbl.className == 'visible'){
                 search  = '1' + id + ';';
@@ -400,8 +397,6 @@ KNOWWE.plugin.d3web.dialog = function(){
                                 
                 tbl.className = 'visible';
             }
-
-            qContainerStates = qContainerStates.replace(new RegExp(search), replace);
             toogleImage( img, tbl.className ); 
         }, 
         /**
@@ -501,6 +496,7 @@ KNOWWE.plugin.d3web.dialog = function(){
                     }
                 }
             }
+            qContainerStates = KNOWWE.plugin.d3web.dialog.getQContainerVisibilityState();          
             new _KA( options ).send();         
         },  
         /**
