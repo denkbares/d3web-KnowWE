@@ -513,7 +513,6 @@ KNOWWE.core.edit = function(){
            		var rel = eval("(" + elements[i].getAttribute('rel') + ")");
             	var bttns = _KS('#'+rel.id + ' input[type=submit]');
             	if( bttns.length != 0 ){
-            		console.log( bttns );
             		_KE.add('click', bttns[0], KNOWWE.core.edit.onSave );
                 } 
             }  				
@@ -540,7 +539,6 @@ KNOWWE.core.edit = function(){
                 response : {
                     action : 'none',
                     fn : function(){ 
-                    	console.log( rel.id );
                         KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id);
                     }
                 }
