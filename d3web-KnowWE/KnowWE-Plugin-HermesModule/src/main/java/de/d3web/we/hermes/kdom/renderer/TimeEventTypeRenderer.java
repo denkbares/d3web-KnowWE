@@ -32,11 +32,11 @@ import de.d3web.we.hermes.kdom.TimeEventImportanceType;
 import de.d3web.we.hermes.kdom.TimeEventSourceType;
 import de.d3web.we.hermes.kdom.TimeEventTitleType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class TimeEventTypeRenderer extends KnowWEDomRenderer {
+public class TimeEventTypeRenderer extends DefaultEditSectionRender {
 
 	private static TimeEventTypeRenderer instance;
 
@@ -48,7 +48,7 @@ public class TimeEventTypeRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder result) {
+	public void renderContent(Section sec, KnowWEUserContext user, StringBuilder result) {
 
 		// check filter Level
 		int filterLevel = getFilterLevel(user);
@@ -149,5 +149,7 @@ public class TimeEventTypeRenderer extends KnowWEDomRenderer {
 			return -1;
 		}
 	}
+
+
 
 }

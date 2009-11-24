@@ -59,12 +59,12 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 	this.childrenTypes.add(new TimeEventDateType());
 	this.childrenTypes.add(new TimeEventSourceType());
 	this.childrenTypes.add(new TimeEventDescriptionType());
+	
+	this.setCustomRenderer(TimeEventTypeRenderer.getInstance());
+	
     }
 
-    @Override
-    public KnowWEDomRenderer getRenderer() {
-	return TimeEventTypeRenderer.getInstance();
-    }
+   
 
     @Override
     public IntermediateOwlObject getOwl(Section section) {
