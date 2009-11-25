@@ -76,7 +76,11 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 	}
 
 	public String getTopic() {
-		return this.get(KnowWEAttributes.TOPIC);
+		String page = this.get(KnowWEAttributes.TOPIC);
+		if(page == null) {
+			page = this.get("page");
+		}
+		return page;
 	}
 
 	public HttpServletRequest getRequest() {

@@ -146,6 +146,7 @@ public class Sectionizer {
 					continue;
 				}
 				
+				Collections.sort(results);
 				validateResults(results, secText, ob);
 				
 				List<Section> findings = new ArrayList<Section>();		
