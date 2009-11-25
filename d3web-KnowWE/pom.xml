@@ -46,6 +46,20 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1-beta-1-uniwue-1</version>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.1</version>
+				<executions>
+					<execution>
+						<id>sources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>			
 		</plugins>
 	</build>
 	<properties>
