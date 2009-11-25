@@ -5,9 +5,7 @@ function sendRefactoringRequest() {
 	//alert(document.refactoringform.refactoringselect.value);
 	var params = {
 		action : 'RefactoringAction',
-		KnowledgeElement : document.refactoringform.refactoringselect.value,
-		topic : document.refactoringform.topic.value,
-		web : document.refactoringform.web.value
+		KnowledgeElement : document.refactoringform.refactoringselect.value
 	//        TargetNamespace : _KS('#renameInputField').value,
 	//        KWikiFocusedTerm : _KS('#replaceInputField').value,
 	//        ContextPrevious : _KS('#renamePreviousInputContext').value,

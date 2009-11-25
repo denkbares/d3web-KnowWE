@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.d3web.we.action.AbstractKnowWEAction;
+import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -44,38 +45,42 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		String id = parameterMap.get("KnowledgeElement");
-		String topic = parameterMap.get("topic");
-		String web = parameterMap.get("web");
-		Section articleSection = RefactoringTagHandler.getArticleSection(topic, web);
+		String topic = parameterMap.getTopic();
+		String web = parameterMap.getWeb();
+		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(web);
+		KnowWEArticle article = articleManager.getArticle(topic);
+		Section articleSection = article.getSection();
+
 		// Section mit der id holen
-		Section section = articleSection.findChild(id); 
+		Section knowledgeSection = articleSection.findChild(id);
+		
 		// Alle Finding 's dieser Section holen
-		List<Section> findingList = RefactoringTagHandler.getSectionList(section, Finding.class);
+		List<Section> findingSections = new ArrayList<Section>();
+		knowledgeSection.findSuccessorsOfType(Finding.class, findingSections); 
+		
 		// SolutionID holen
-		Section solutionID = section.findSuccessor(SolutionID.class);
+		Section solutionID = knowledgeSection.findSuccessor(SolutionID.class);
+		
 		// Regelstring bauen
-		StringBuilder sb = new StringBuilder("IF ");
-		for(Iterator<Section> iter = findingList.iterator(); iter.hasNext(); ) {
+		StringBuilder sb = new StringBuilder("\nIF ");
+		for(Iterator<Section> iter = findingSections.iterator(); iter.hasNext(); ) {
 			Section sec = iter.next();
 			sb.append(sec.getOriginalText() + " ");
 			if (iter.hasNext())
 				sb.append("\nAND ");
 		}
 		sb.append("\nTHEN ");
-		sb.append(solutionID.getOriginalText() + " = P7");
-		//Lösche entsprechende XCList
-		section.getFather().removeChild(section);
-		Section rulesSectionContent = RefactoringTagHandler.getSectionList(articleSection, RulesSectionContent.class).get(0);
-		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic);
-		List<KnowWEObjectType> allowedTypes = new ArrayList<KnowWEObjectType>();
-		allowedTypes.add(new Rule());
-		Sectionizer.getInstance().splitToSections(sb.toString(), allowedTypes, rulesSectionContent, article);
+		sb.append(solutionID.getOriginalText() + " = P7\n");
 		
-		//speichern
-		String text = article.collectTextsFromLeaves();
-		KnowWEEnvironment.getInstance().saveArticle(web, article.getTitle(), text, parameterMap);
-		KnowWEEnvironment.getInstance().getArticleManager(web).saveUpdatedArticle(new KnowWEArticle(text, article.getTitle(), KnowWEEnvironment
-				.getInstance().getRootTypes(),web));
+		//Lösche entsprechende XCList
+		articleManager.replaceKDOMNodeWithoutSave(parameterMap, topic, knowledgeSection.getId(), "\n");
+		
+		//Füge Regel ein und speichere Artikel
+		List<Section> rulesSectionContentSections = new ArrayList<Section>();
+		articleSection.findSuccessorsOfType(RulesSectionContent.class, rulesSectionContentSections);
+		Section rulesSectionContent = rulesSectionContentSections.get(0);
+		articleManager.replaceKDOMNode(parameterMap, topic, rulesSectionContent.getId(), rulesSectionContent.getOriginalText() + sb.toString());
+		
 		return "";
 	}
 

@@ -48,8 +48,11 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-		Section articleSection = getArticleSection(topic, web);
-		List<Section> sections = getSectionList(articleSection, XCList.class); 		
+		KnowWEArticle article = KnowWEEnvironment.getInstance()
+						.getArticleManager(web).getArticle(topic);
+				Section articleSection = article.getSection();
+		List<Section> sections = new ArrayList<Section>();
+		articleSection.findSuccessorsOfType(XCList.class, sections);
 		StringBuilder html = new StringBuilder();
 		KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
 		// oder veraltete Möglichkeit: html.append("<script type=text/javascript src=KnowWEExtension/scripts/RefactoringPlugin.js></script>\n");
@@ -57,34 +60,18 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 		html.append("<div id='refactoring'><div id='refactoring-panel' class='panel'><h3>Refactoring Konsole</h3><fieldset><div class='left'>");
 		html.append("<p>Es wurden <strong>x</strong> Refactorings gefunden. Bitte wählen Sie das gewünschte Refactoring aus.</p></div>");
 		html.append("<div style='clear:both'></div><form name='refactoringform'><div class='left'><label for='article'>Refactoring</label>");
-		html.append("<input type='hidden' name='topic' value='" + topic +"'>");
-		html.append("<input type='hidden' name='web' value='" + web +"'>");
 		html.append("<select name='refactoringselect'>");
 		for(Section s:sections) {
 			html.append("<option value='");
 			html.append(s.getId());
 			html.append("'>");
-			html.append(getSectionList(s,SolutionID.class).get(0).getOriginalText());
+			List<Section> ls = new ArrayList<Section>();
+			s.findSuccessorsOfType(SolutionID.class, ls);
+			html.append(ls.get(0).getOriginalText());
 			html.append("</option>");
 		}                
 		html.append("</select></div><div><input type='button' value='» Ausführen' name='submit' class='button' onclick='sendRefactoringRequest();'/></div></fieldset></form></div> </div>");
 
 		return html.toString();
 	}
-
-
-
-	public static List<Section> getSectionList(Section articleSection, Class<?> c) {
-		List<Section> sections = new ArrayList<Section>();
-		articleSection.findSuccessorsOfType(c, sections);
-		return sections;
-	}
-
-	public static Section getArticleSection(String topic, String web) {
-		KnowWEArticle article = KnowWEEnvironment.getInstance()
-				.getArticleManager(web).getArticle(topic);
-		Section articleSection = article.getSection();
-		return articleSection;
-	}
-	
 }
