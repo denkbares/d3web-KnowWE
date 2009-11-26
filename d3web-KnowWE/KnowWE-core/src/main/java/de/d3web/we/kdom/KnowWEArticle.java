@@ -142,6 +142,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		sec = new Section(text, this, null, 0, this,
 				null, false, null);
 		sec.absolutePositionStartInArticle = 0;
+		sec.setReusedSuccessorStateRecursively(false);
 
 		try {
 			refactorTextIncludeObjects();

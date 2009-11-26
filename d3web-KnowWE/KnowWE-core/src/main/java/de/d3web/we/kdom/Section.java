@@ -1018,11 +1018,17 @@ public class Section implements Visitable, Comparable<Section> {
 		reusedBy.put(title, reused);
 	}
 	
-	public void resetStateRecursively() {
-		setReusedBy(getTitle(), false);
-		hasReusedSuccessor = false;
+	public void setReusedStateRecursively(String title, boolean reused) {
+		setReusedBy(title, reused);
 		for (Section child:getChildren()) {
-			child.resetStateRecursively();
+			child.setReusedStateRecursively(title, reused);
+		}
+	}
+	
+	public void setReusedSuccessorStateRecursively(boolean reused) {
+		this.hasReusedSuccessor = reused;
+		for (Section child:getChildren()) {
+			child.setReusedSuccessorStateRecursively(reused);
 		}
 	}
 

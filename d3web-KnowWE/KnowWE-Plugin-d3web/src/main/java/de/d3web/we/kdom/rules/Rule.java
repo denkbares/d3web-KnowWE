@@ -79,45 +79,34 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 		public void render(Section sec, KnowWEUserContext user,
 				StringBuilder string) {
 
-			// List<Message> messages = ((Rule)
-			// sec.getObjectType()).getMessages(sec);
-			// quick fix by Jochen : only show first/single error
-			Message error = getErrorMessage(sec);
+			List<Message> errors = getErrorMessages(sec);
 
 			string.append(KnowWEUtils.maskHTML("<pre><span id='" + sec.getId()
 					+ "' class = 'XCLRelationInList'><span id=\"\">"));
 
 			boolean empty = true;
-			if (error != null) {
-				if (error.getMessageType().equals(Message.ERROR)
-						|| error.getMessageType().equals(Message.WARNING)) { // hack
-																				// showing
-																				// only
-																				// errors,
-																				// this
-																				// rendering
-																				// needs
-																				// a
-																				// complete
-																				// redesign
-					empty = false;
-					string.append(KnowWEUtils
-							.maskHTML("<span style='color:red'>"));
-					string
-							.append(error.getMessageType()
-									+ ": "
-									+ error.getMessageText()
-									+ (error.getMessageType().equals(
-											Message.NOTE) ? " "
-											+ error.getCount() : " Line: "
-											+ error.getLineNo()));
-					
-					string.append(KnowWEUtils.maskHTML("</span>"));
-					string.append(KnowWEUtils.maskHTML("\n"));
-
+			if (errors != null) {
+				for (Message error:errors) {
+					if (error != null) {
+							// hack showing only errors, this rendering needs a complete redesign
+						empty = false;
+						string.append(KnowWEUtils
+								.maskHTML("<span style='color:red'>"));
+						string.append(error.getMessageType() + ": "
+										+ error.getMessageText()
+										+ (error.getMessageType().equals(
+												Message.NOTE) ? " "
+												+ error.getCount() : " Line: "
+												+ error.getLineNo()));
+						
+						string.append(KnowWEUtils.maskHTML("</span>"));
+						string.append(KnowWEUtils.maskHTML("\n"));
+		
+					}
 				}
-				if (!empty)
-					string.append(KnowWEUtils.maskHTML("\n"));
+			}
+			if (!empty) {
+				string.append(KnowWEUtils.maskHTML("\n"));
 			}
 
 			StringBuilder b = new StringBuilder();
@@ -174,11 +163,17 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 					}
 
 					((Rule) s.getObjectType()).storeMessages(s, bm);
+					List<Message> errors = new ArrayList<Message>();
 					for (Message message : bm) {
-						if (message.getMessageType().equals(Message.ERROR)) {
-							storeErrorMessage(s, message);
-							break;
+						if (message.getMessageType().equals(Message.ERROR)
+								|| message.getMessageType().equals(Message.WARNING)) {
+							errors.add(message);
 						}
+					}
+					if (errors.isEmpty()) {
+						storeErrorMessages(s, null);
+					} else {
+						storeErrorMessages(s, errors);
 					}
 
 					Report ruleRep = new Report();
@@ -192,7 +187,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 			} else {
 				// store empty message to prevent surviving of old errors due to
 				// update-inconstistencies
-				storeErrorMessage(s, null);
+				storeErrorMessages(s, null);
 			}
 		}
 	}
@@ -205,7 +200,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	 * @param s
 	 * @param message
 	 */
-	public static void storeErrorMessage(Section s, Message message) {
+	public static void storeErrorMessages(Section s, List<Message> message) {
 		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, s
 				.getTitle(), s.getId(), RULE_ERROR_MESSAGE_STORE_KEY, message);
 	}
@@ -216,8 +211,8 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	 * @param s
 	 * @param message
 	 */
-	public static Message getErrorMessage(Section s) {
-		return (Message) KnowWEUtils.getStoredObject(
+	public static List<Message> getErrorMessages(Section s) {
+		return (List<Message>) KnowWEUtils.getStoredObject(
 				KnowWEEnvironment.DEFAULT_WEB, s.getTitle(), s.getId(),
 				RULE_ERROR_MESSAGE_STORE_KEY);
 	}

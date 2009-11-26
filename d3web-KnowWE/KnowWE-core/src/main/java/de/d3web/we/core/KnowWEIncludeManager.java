@@ -290,6 +290,8 @@ public class KnowWEIncludeManager {
 			// the active Includes of this article, it is out of use
 			if (inc.getTitle().equals(title) && !activeIncludes.contains(inc)) {
 				String targetTitle = src2target.get(inc).getTitle();
+				Section targetSection = src2target.get(inc);
+				targetSection.setReusedStateRecursively(inc.getTitle(), false);
 				src2target.remove(inc);
 				// also delete the Include from the set of Includes of
 				// the target article
