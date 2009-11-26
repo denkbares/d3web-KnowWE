@@ -1,5 +1,6 @@
 package de.d3web.we.utils;
 
+import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
 import org.openrdf.query.QueryEvaluationException;
@@ -13,6 +14,43 @@ import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 
 public class SPARQLUtil {
+	
+	
+	/**
+	 * Executes a boolean sparql-query (like 'ASK {...}')
+	 * 
+	 * @param q
+	 * @return
+	 */
+	public static Boolean executeBooleanQuery(String q) {
+		SemanticCore sc = SemanticCore.getInstance();
+		RepositoryConnection con = sc.getUpper().getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (RepositoryException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Query query = null;
+		try {
+			query = con.prepareQuery(QueryLanguage.SPARQL, SparqlDelegateRenderer.addNamespaces(q,""));
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
+		try {
+			if (query instanceof BooleanQuery) {
+				boolean result = ((BooleanQuery) query).evaluate();
+				return Boolean.valueOf(result);
+			}
+		} catch (QueryEvaluationException e) {
+			e.printStackTrace();
+		} finally {
+
+		}
+		return null;
+	}
 	
 	public static TupleQueryResult executeTupleQuery(String q, String topic) {
 		SemanticCore sc = SemanticCore.getInstance();
