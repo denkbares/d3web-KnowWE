@@ -22,8 +22,10 @@ package de.d3web.we.kdom.rules;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
@@ -44,13 +46,26 @@ public class OldRulesEraser {
 			List<Section> oldRules = new ArrayList<Section>();
 			oldArt.getSection().findSuccessorsOfType(Rule.class, oldRules);
 			
+			// get new Rules if necessary
+			Map<String, Section> newRules = new HashMap<String, Section>();
+			if (!article.getIncludeSections().isEmpty()) {
+				article.getSection().findSuccessorsOfType(Rule.class, newRules);
+			}
+			
 			// store all KnowledgeBase-Ids of those old Rules, that havn't got reused in the current article
 			Set<String> idsToDelete = new HashSet<String>();
 			for (Section or:oldRules) {
-				if (!or.isReused()) {
-					idsToDelete.add((String) KnowWEUtils.getLastStoredObject(or.getWeb(), 
-						article.getTitle(), or.getId(), Rule.KBID_KEY));
-				}
+//				if (or.getTitle().equals(article.getTitle())){
+					if (!or.isReusedBy(article.getTitle())) {
+						idsToDelete.add((String) KnowWEUtils.getLastStoredObject(or.getWeb(), 
+							article.getTitle(), or.getId(), Rule.KBID_KEY));
+					}
+//				} else {
+//					if (!newRules.containsKey(or.getOriginalText())) {
+//						idsToDelete.add((String) KnowWEUtils.getLastStoredObject(or.getWeb(), 
+//								article.getTitle(), or.getId(), Rule.KBID_KEY));
+//					}
+//				}
 			}
 			
 			// delete the rules from the KnowledgeBase

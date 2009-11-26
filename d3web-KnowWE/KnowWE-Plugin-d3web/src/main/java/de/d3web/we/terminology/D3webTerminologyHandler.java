@@ -160,7 +160,7 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 		KnowledgeBaseManagement lastKbm = lastKbms.get(title);
 		
 		if (s.getObjectType() instanceof KnowWEArticle 
-				|| s.getArticle().getChangedSections().containsKey(s.getId())) {
+				|| !s.isReusedBy(title)) {
 			
 			if (usingOldKBM.get(title)) {
 				if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {

@@ -196,6 +196,11 @@ public class KnowWEIncludeManager {
 			getIncludingSectionsForArticle(address.getTargetArticle()).add(src);
 			Section oldTarget = src2target.get(src);
 			if (oldTarget == target) {
+				List<Section> nodes = new ArrayList<Section>();
+				target.getAllNodesPreOrder(nodes);
+				for (Section node:nodes) {
+					node.setReusedBy(src.getTitle(), true);
+				}
 				return false;
 			} else {
 				src2target.put(src, target);
@@ -218,7 +223,7 @@ public class KnowWEIncludeManager {
 			if (registerInclude(inc)) {
 				reviseArticles.put(inc.getTitle(), inc.getArticle());
 				Section target = src2target.get(inc);
-				target.getArticle().getChangedSections().put(target.getId(), target);
+				//target.getArticle().getChangedSections().put(target.getId(), target);
 				// since an included Section can get included by another Include
 				// this needs to be recursive
 				updateIncludesToArticle(inc.getTitle());

@@ -66,7 +66,9 @@ import de.d3web.we.utils.PairOfInts;
  */
 public class Section implements Visitable, Comparable<Section> {
 
-	private boolean reused = false;
+//	private boolean reused = false;
+	
+	private Map<String, Boolean> reusedBy = new HashMap<String, Boolean>();
 	
 	private boolean hasReusedSuccessor = false;
 
@@ -200,9 +202,9 @@ public class Section implements Visitable, Comparable<Section> {
 			
 			Section match = sectionsOfSameType.remove(getOriginalText());
 			
-			if (match != null && (!match.reused && !match.hasReusedSuccessor)) {
+			if (match != null && (!match.isReusedBy(getTitle()) && !match.hasReusedSuccessor)) {
 				
-				match.reused = true;
+				match.setReusedBy(getTitle(), true);
 				
 				Section ancestor = match.getFather();
 				while (ancestor != null) {
@@ -229,7 +231,7 @@ public class Section implements Visitable, Comparable<Section> {
 					
 					if (node.getTitle().equals(getTitle())) {
 						node.article = this.article;
-						node.reused = true;
+						node.setReusedBy(getTitle(), true);
 						if (node != this) {
 							if (node.specificID == null) {
 								node.id = new SectionID(node.father, node.objectType).toString();
@@ -299,7 +301,7 @@ public class Section implements Visitable, Comparable<Section> {
 		}
 		
 		childrenParsingOrder.addAll(children);
-//		if (objectType.getClass().getSimpleName().equals("KopicContent")) {
+//		if (getTitle().equals("CDEmptyBattery") && objectType.getClass().getSimpleName().equals("KnowWEArticle")) {
 //			System.out.print("");
 //		}
 		sortChildrenParsingOrder();
@@ -309,7 +311,7 @@ public class Section implements Visitable, Comparable<Section> {
 		 */
 		Collections.sort(children, new TextOrderComparator());
 		
-		article.getChangedSections().put(id, this);
+//		article.getChangedSections().put(id, this);
 		
 		if (objectType instanceof Include) {
 			article.getIncludeSections().add(this);
@@ -488,14 +490,17 @@ public class Section implements Visitable, Comparable<Section> {
 			return;
 		}
 		// for every ObjectType a list with all Includes that include a Section with this ObjectType
-		Map<KnowWEObjectType, List<Section>> includes = new HashMap<KnowWEObjectType, List<Section>>();
+		Map<Class<? extends KnowWEObjectType>, List<Section>> includes = new HashMap<Class<? extends KnowWEObjectType>, List<Section>>();
 		// all ObjectTypes that are possible in the children list
-		Set<KnowWEObjectType> types = new HashSet<KnowWEObjectType>(getObjectType().getAllowedChildrenTypes());
-		
+		Set<Class<? extends KnowWEObjectType>> types = new HashSet<Class<? extends KnowWEObjectType>>();
+		for (KnowWEObjectType type:getObjectType().getAllowedChildrenTypes()) {
+			types.add(type.getClass());
+		}
 		for (Section sec:childrenParsingOrder) {
 			// store the Includes to the map
-			if (sec.getObjectType() instanceof Include && types.contains(sec.getChildren().get(0).getObjectType())) {
-				KnowWEObjectType includedType = sec.getChildren().get(0).getObjectType();
+			if (sec.getObjectType() instanceof Include 
+					&& types.contains(sec.getChildren().get(0).getObjectType().getClass())) {
+				Class<? extends KnowWEObjectType> includedType = sec.getChildren().get(0).getObjectType().getClass();
 				List<Section> includesOfType = includes.get(includedType);
 				if (includesOfType == null) {
 					includesOfType = new ArrayList<Section>();
@@ -524,7 +529,7 @@ public class Section implements Visitable, Comparable<Section> {
 					&& childrenParsingOrder.get(i).getObjectType().isAssignableFromType(type.getClass())) {
 				i++;
 			}
-			List<Section> includesOfType = includes.get(type);
+			List<Section> includesOfType = includes.get(type.getClass());
 			if (includesOfType != null) {
 				childrenParsingOrder.addAll(i, includesOfType);
 				i += includesOfType.size();
@@ -833,7 +838,9 @@ public class Section implements Visitable, Comparable<Section> {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
 			Section tmp = found.get(this.getOriginalText());
-			if (tmp == null || (tmp.reused && !this.reused)) {
+			// only replace the finding by this Section, if this Section is not reused
+			// but the Section already in the map is reused
+			if (tmp == null || (tmp.isReusedBy(getTitle()) && !this.isReusedBy(getTitle()))) {
 				found.put(this.getOriginalText(), this);
 			}
 		}
@@ -995,12 +1002,24 @@ public class Section implements Visitable, Comparable<Section> {
 		return isExpanded;
 	}
 	
-	public boolean isReused() {
+//	public boolean isReused() {
+//		return reused;
+//	}
+	
+	public boolean isReusedBy(String title) {
+		Boolean reused = reusedBy.get(title);
+		if (reused == null) {
+			reused = false;
+		}
 		return reused;
 	}
 	
+	public void setReusedBy(String title, boolean reused) {
+		reusedBy.put(title, reused);
+	}
+	
 	public void resetStateRecursively() {
-		reused = false;
+		setReusedBy(getTitle(), false);
 		hasReusedSuccessor = false;
 		for (Section child:getChildren()) {
 			child.resetStateRecursively();

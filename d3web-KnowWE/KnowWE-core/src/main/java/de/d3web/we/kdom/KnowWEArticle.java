@@ -84,7 +84,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	
 	private Map<String, Integer> idMap = new HashMap<String, Integer>();
 	
-	private Map<String, Section> changedSections = new HashMap<String, Section>();
+//	private Map<String, Section> changedSections = new HashMap<String, Section>();
 	
 	private Set<Section> includeSections = new HashSet<Section>();
 	
@@ -448,9 +448,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 //		return this.unchangedSubTrees;
 //	}
 	
-	public Map<String, Section> getChangedSections() {
-		return this.changedSections;
-	}
+//	public Map<String, Section> getChangedSections() {
+//		return this.changedSections;
+//	}
 	
 	public Set<Section> getIncludeSections() {
 		return this.includeSections;

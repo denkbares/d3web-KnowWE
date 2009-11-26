@@ -298,7 +298,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 			// store all Solutions of those old XCLs, that havn't got reused in the current article
 			Set<String> xclsToDelete = new HashSet<String>();
 			for (Section os:oldXCLCs) {
-				if (!os.isReused()) {
+				if (!os.isReusedBy(article.getTitle())) {
 					List<Section> heads = new ArrayList<Section>();
 					os.findSuccessorsOfType(XCLHead.class, heads);
 					for (Section head:heads) {
