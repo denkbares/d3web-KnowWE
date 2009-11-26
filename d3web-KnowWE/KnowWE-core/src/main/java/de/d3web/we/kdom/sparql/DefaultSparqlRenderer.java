@@ -34,98 +34,103 @@ import de.d3web.we.core.KnowWEEnvironment;
 
 public class DefaultSparqlRenderer implements SparqlRenderer {
 
-	private static DefaultSparqlRenderer instance;
+    private static DefaultSparqlRenderer instance;
 
-	public static DefaultSparqlRenderer getInstance() {
-		if (instance == null) {
-			instance = new DefaultSparqlRenderer();
-		}
-		return instance;
+    public static DefaultSparqlRenderer getInstance() {
+	if (instance == null) {
+	    instance = new DefaultSparqlRenderer();
 	}
+	return instance;
+    }
 
-	public String render(TupleQueryResult result, Map<String, String> params) {
+    public String render(TupleQueryResult result, Map<String, String> params) {
 
-		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle();
-		boolean empty = true;
-		StringBuffer table = new StringBuffer();
-		String output = "";
-		boolean links = false;
-		if (params.containsKey("render")) {
-			links = params.get("render").equals("links");
-		}
-		boolean tablemode = false;
+	boolean links = false;
+	if (params.containsKey("render")) {
+	    links = params.get("render").equals("links");
+	}
+	return renderResults(result, links);
+    }
 
-		table.append(KnowWEEnvironment.maskHTML("<ul>"));
+    public static String renderResults(TupleQueryResult result, boolean links) {
+	ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle();
+	boolean empty = true;
+	StringBuffer table = new StringBuffer();
+	String output = "";
+	boolean tablemode = false;
 
-		try {
-			while (result.hasNext()) {
-				BindingSet b = result.next();
-				empty = false;
-				Set<String> names = b.getBindingNames();
-				if (!tablemode) {
-					tablemode = names.size() > 1;
-				}
-				if (tablemode) {
-					table.append(KnowWEEnvironment.maskHTML("<tr>"));
-				}
+	table.append(KnowWEEnvironment.maskHTML("<ul>"));
 
-				for (String cur : names) {
-					String erg = b.getBinding(cur).getValue().toString();
-					if (erg.split("#").length == 2)
-						erg = erg.split("#")[1];
-					if (links) {
-						if (KnowWEEnvironment.getInstance().getWikiConnector()
-								.doesPageExist(erg)) {
-							erg = "<a href=\"Wiki.jsp?page=" + erg+ "\">"+erg+"</a>";
-						}
-					}
-					try {
-						erg = URLDecoder.decode(erg, "UTF-8");
-					} catch (UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if (tablemode) {
-						table.append(KnowWEEnvironment.maskHTML("<td>") + erg
-								+ KnowWEEnvironment.maskHTML("</td>"));
-					} else {
-						table.append(KnowWEEnvironment.maskHTML("<li>") + erg
-								+ KnowWEEnvironment.maskHTML("</li>\n"));
-					}
-
-				}
-
-				if (tablemode) {
-					table.append(KnowWEEnvironment.maskHTML("</tr>\n"));
-				}
-			}
-		} catch (QueryEvaluationException e) {
-			return rb.getString("KnowWE.owl.query.evalualtion.error") + ":"
-					+ e.getMessage();
-		} finally {
-			try {
-				result.close();
-			} catch (QueryEvaluationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+	try {
+	    while (result.hasNext()) {
+		BindingSet b = result.next();
+		empty = false;
+		Set<String> names = b.getBindingNames();
 		if (!tablemode) {
-			table.append(KnowWEEnvironment.maskHTML("</ul>"));
+		    tablemode = names.size() > 1;
+		}
+		if (tablemode) {
+		    table.append(KnowWEEnvironment.maskHTML("<tr>"));
 		}
 
-		if (empty) {
-			output += rb.getString("KnowWE.owl.query.no_result");
-			return KnowWEEnvironment.maskHTML(output);
-		} else {
-			if (tablemode) {
-				output += KnowWEEnvironment.maskHTML("<table>") + table
-						+ KnowWEEnvironment.maskHTML("</table>");
-			} else {
-				output += table.toString();
+		for (String cur : names) {
+		    String erg = b.getBinding(cur).getValue().toString();
+		    if (erg.split("#").length == 2)
+			erg = erg.split("#")[1];
+		    if (links) {
+			if (KnowWEEnvironment.getInstance().getWikiConnector()
+				.doesPageExist(erg)) {
+			    erg = "<a href=\"Wiki.jsp?page=" + erg + "\">"
+				    + erg + "</a>";
 			}
+		    }
+		    try {
+			erg = URLDecoder.decode(erg, "UTF-8");
+		    } catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		    }
+		    if (tablemode) {
+			table.append(KnowWEEnvironment.maskHTML("<td>") + erg
+				+ KnowWEEnvironment.maskHTML("</td>"));
+		    } else {
+			table.append(KnowWEEnvironment.maskHTML("<li>") + erg
+				+ KnowWEEnvironment.maskHTML("</li>\n"));
+		    }
+
 		}
-		return output;
+
+		if (tablemode) {
+		    table.append(KnowWEEnvironment.maskHTML("</tr>\n"));
+		}
+	    }
+	} catch (QueryEvaluationException e) {
+	    return rb.getString("KnowWE.owl.query.evalualtion.error") + ":"
+		    + e.getMessage();
+	} finally {
+	    try {
+		result.close();
+	    } catch (QueryEvaluationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
 	}
+
+	if (!tablemode) {
+	    table.append(KnowWEEnvironment.maskHTML("</ul>"));
+	}
+
+	if (empty) {
+	    output += rb.getString("KnowWE.owl.query.no_result");
+	    return KnowWEEnvironment.maskHTML(output);
+	} else {
+	    if (tablemode) {
+		output += KnowWEEnvironment.maskHTML("<table>") + table
+			+ KnowWEEnvironment.maskHTML("</table>");
+	    } else {
+		output += table.toString();
+	    }
+	}
+	return output;
+    }
 }
