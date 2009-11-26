@@ -18,12 +18,14 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
-public class ConceptFinder extends SectionFinder {
+public abstract class ConceptFinder extends SectionFinder {
 	
 	
 	private static final String INSTANCE_SPARQL = "SELECT ?x WHERE { ?x rdf:type lns:CLASS .}";
 		
-	private static String [] classes = {"Person", "Begriff"};
+	
+	
+	protected abstract String[] getClassNames();
 	
 	private Set<String> objectNames = null;
 	
@@ -55,6 +57,8 @@ public class ConceptFinder extends SectionFinder {
 
 	private void fillObjectNameList() {
 		objectNames = new HashSet<String>();
+		
+		String[] classes = this.getClassNames();
 		for (String clazz : classes) {
 			String query = INSTANCE_SPARQL.replace("CLASS", clazz);
 			

@@ -2,6 +2,8 @@ package de.d3web.we.hermes.kdom.conceptMining;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openrdf.model.URI;
 import org.openrdf.query.BindingSet;
@@ -17,11 +19,9 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
-
+public abstract class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> lns:hasTitle ?title }";
-
 
 	@Override
 	public void render(Section arg0, KnowWEUserContext arg1, StringBuilder arg2) {
@@ -32,9 +32,10 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				DefaultSubjectContext.CID);
 
 		String subjectString = "error: subject not found!";
-
+		URI subjectURI = null;
+		
 		if (subjectContext != null) {
-			URI subjectURI = ((DefaultSubjectContext) subjectContext)
+			 subjectURI =((DefaultSubjectContext) subjectContext)
 					.getSolutionURI();
 			subjectString = subjectURI.getLocalName();
 			TupleQueryResult result = SPARQLUtil.executeTupleQuery(TITLE_QUERY
@@ -59,19 +60,35 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				}
 			}
 		}
-		
-		//<img src='KnowWEExtension/images/question.gif' width='12' />
-// id='" + arg0.getId() + "'
-		
-		String htmlContent1 = "<b>" + arg0.getOriginalText() + "</b>"
+
+		// <img src='KnowWEExtension/images/question.gif' width='12' />
+		// id='" + arg0.getId() + "'
+
+		String htmlContent1 = "<b>"
+				+ arg0.getOriginalText()
+				+ "</b>"
 				+ "<span   "
-				+ ">" + "<img rel=\"{type: '" + conceptName + "', id: '" + arg0.getId()
-				+ "', termName: '" + conceptName + "', user:'"
-				+ arg1.getUsername() + "'}\" class=\"conceptLink\" id='" + arg0.getId() + "' src='KnowWEExtension/images/question.gif' width='12' ></img> " + "</span><span id='"
+				+ ">"
+				+ "<img rel=\"{type: '"
+				+ conceptName
+				+ "', id: '"
 				+ arg0.getId()
+				+ "', termName: '"
+				+ conceptName
+				+ "', user:'"
+				+ arg1.getUsername()
+				+ "'}\" class=\"conceptLink\" id='"
+				+ arg0.getId()
+				+ "' src='KnowWEExtension/images/question.gif' width='12' ></img> "
+				+ "</span><span id='" + arg0.getId()
 				+ "_popupcontent' style='visibility:hidden;position:fixed' >";
 
-		String popupContent = generatePopupContent(arg0, subjectString);
+		String popupContent = generatePopupContent(arg0, subjectURI, subjectString);
+		
+		if(popupContent == null) {
+			arg2.append("__"+conceptName+"__"); 
+			return;
+		}
 
 		String htmlContentTail = "</span>";
 		arg2.append(KnowWEEnvironment.maskHTML(htmlContent1));
@@ -80,39 +97,75 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 	}
 
-	private String generatePopupContent(Section arg0, String subject) {
+	protected abstract String[] getPossibleProperties(URI subject,
+			String object);
+
+	private String generatePopupContent(Section arg0, URI subject, String subjectTitle) {
 		StringBuffer buffy = new StringBuffer();
 
 		buffy.append("<div style='padding:10px' class=\"confirmPanel\" >");
 
-		buffy.append("<span style='font-weight:bold' >"
-				+ subject + "</span><br>");
+		buffy.append("<span style='font-weight:bold' >" + subjectTitle
+				+ "</span><br>");
 
 		buffy.append("<div style='padding:10px' class=\"options\" >");
 
-		String[] opts = { "involves"};
+		String originalText = arg0.getOriginalText();
+		String[] opts = getPossibleProperties(subject, originalText);
+
+		String[] newOpts = filterOpts(subject, originalText, opts);
 		
+		if(newOpts.length == 0) return null;
+
 		String[] defaultOpts = { "concept missmatch", "dont ask again" };
 
-		for (String string : opts) {
-			buffy.append("<li><div class=\"confirmOption\" kdomid='"+arg0.getId()+"' subject='"+subject+"' rel='"+string+"' object='"+arg0.getOriginalText()+"' name='" + string + "'>");
-			buffy.append("" + string +"  "+ "");
-			buffy.append("<span style='font-style:italic'  class='confirmobject'>"+arg0.getOriginalText()+" </span>");
+		
+		
+		for (String string : newOpts) {
+			buffy.append("<li><div class=\"confirmOption\" kdomid='"
+					+ arg0.getId() + "' subject='" + subject + "' rel='"
+					+ string + "' object='" + originalText + "' name='"
+					+ string + "'>");
+			buffy.append("" + string + "  " + "");
+			buffy
+					.append("<span style='font-style:italic'  class='confirmobject'>"
+							+ originalText + " </span>");
 			buffy.append("<span style='font-style:italic'> ? </span>");
 			buffy.append("</div></li>");
 		}
 
 		buffy.append("<br>");
-		
+
 		for (String string : defaultOpts) {
-			buffy.append("<li><div class=\"confirmOption\" name='" + string + "'>");
-			buffy.append("" + string +"  "+ "");
+			buffy.append("<li><div class=\"confirmOption\" name='" + string
+					+ "'>");
+			buffy.append("" + string + "  " + "");
 			buffy.append("</div></li>");
 		}
-		
+
 		buffy.append("</div>");
 		buffy.append("</div>");
 		return buffy.toString();
+	}
+
+	private static final String RELATION_QUERY = "ASK { SUBJECT lns:RELATION lns:OBJECT .}";
+
+	private String[] filterOpts(URI subject, String originalText,
+			String[] opts) {
+		
+		List<String> goodOpts = new ArrayList<String>();
+		
+		for (String relation : opts) {
+
+			String q = RELATION_QUERY.replaceAll("SUBJECT", "<"+subject.stringValue()+">");
+			q = q.replaceAll("RELATION", relation);
+			q = q.replaceAll("OBJECT", originalText);
+			Boolean result = SPARQLUtil.executeBooleanQuery(q);
+			if(result != null && !result.booleanValue()) {
+				goodOpts.add(relation);
+			}
+		}
+		return goodOpts.toArray(new String[goodOpts.size()]);
 	}
 
 }

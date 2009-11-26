@@ -23,7 +23,8 @@ package de.d3web.we.hermes.kdom;
 import java.util.List;
 
 import de.d3web.we.hermes.kdom.conceptMining.AnnotationObjectInTimeEvent;
-import de.d3web.we.hermes.kdom.conceptMining.ConceptOccurrence;
+import de.d3web.we.hermes.kdom.conceptMining.LocationOccurrence;
+import de.d3web.we.hermes.kdom.conceptMining.PersonOccurrence;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
@@ -43,7 +44,8 @@ public class TimeEventDescriptionType extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(semanticAnnotation);
 		
 		// then search for un-annotated concepts
-		this.childrenTypes.add(new ConceptOccurrence());
+		this.childrenTypes.add(new PersonOccurrence());
+		this.childrenTypes.add(new LocationOccurrence());
 		
 		sectionFinder = new AllTextSectionFinder();
 	}
