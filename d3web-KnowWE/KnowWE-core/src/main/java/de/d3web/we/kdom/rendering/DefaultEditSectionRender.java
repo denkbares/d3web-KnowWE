@@ -1,5 +1,7 @@
 package de.d3web.we.kdom.rendering;
 
+import java.util.Map;
+
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -22,22 +24,55 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 
 	@Override
 	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
-				
-		string.append( KnowWEUtils.maskHTML( "<div id=\"" + sec.getId() + "\">" ));
+		
+		
 		
 		boolean isEditable = sec.hasQuickEditModeSet( user.getUsername() ); 
+		boolean highlight = false;
+		Map<String, String> urlParameterMap = user.getUrlParameterMap();
+		
+		
+		String highlightKDOMID = urlParameterMap.get("highlight");
+		if(highlightKDOMID != null) {
+			if(highlightKDOMID.equals(sec.getId())) {
+				highlight = true;
+			}
+		}
+		
+		String editKDOMID = urlParameterMap.get("edit");
+		if(editKDOMID != null) {
+			if(editKDOMID.equals(sec.getId())) {
+				isEditable = true;
+			}
+		}
+	
+		if(highlight && !isEditable) {
+			string.append(KnowWEUtils.maskHTML("<div class=\"searchword\">"));
+		}
+		string.append( KnowWEUtils.maskHTML( "<a name=\""+sec.getId()+"\"></a><div id=\"" + sec.getId() + "\">" ));
+		
+		
 		string.append( KnowWEUtils.maskHTML( this.generateQuickEdit( sec.getId(), isEditable) ));
 		
 		if ( isEditable ) {
 			String str = sec.getOriginalText();
+			if(!user.getUrlParameterMap().containsKey("action")) {  // is not ajax action add verbatim for jspwiki render pipeline
+				string.append(KnowWEUtils.maskHTML("{{{"));
+			}
 			string.append( KnowWEUtils.maskHTML( "<textarea name=\"default-edit-area\" id=\"default-edit-area\" style=\"width:95%; height:"+this.getHeight(str)+"px;\">" ));
-			string.append( KnowWEUtils.maskHTML( str ));
+			string.append( str );
 			string.append( KnowWEUtils.maskHTML( "</textarea>" ));
+			if(!user.getUrlParameterMap().containsKey("action")) {// is not ajax action add verbatim for jspwiki render pipeline
+				string.append(KnowWEUtils.maskHTML("}}}"));
+			}
 			string.append( KnowWEUtils.maskHTML( "<div class=\"default-edit-handle\"></div>" ));
 		} else {
 			renderContent( sec, user, string );
 		}
 		string.append( KnowWEUtils.maskHTML( "</div>" ));
+		if(highlight && !isEditable) {
+			string.append(KnowWEUtils.maskHTML("</div>"));
+		}
 	}
 		
 	/**
