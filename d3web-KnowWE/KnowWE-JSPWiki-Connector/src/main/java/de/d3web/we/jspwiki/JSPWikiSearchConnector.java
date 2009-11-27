@@ -43,7 +43,7 @@ import de.d3web.we.search.GenericSearchResult;
 import de.d3web.we.search.KnowWESearchProvider;
 import de.d3web.we.search.SearchTerm;
 
-public class JSPWikiSearchConnector extends KnowWESearchProvider {
+public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
 	public static List<SearchResult> getJSPWikiSearchResults(
 			Collection<SearchTerm> searchTerms, HttpServletRequest request,

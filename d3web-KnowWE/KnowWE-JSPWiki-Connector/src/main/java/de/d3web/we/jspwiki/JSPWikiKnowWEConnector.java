@@ -482,6 +482,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
     }
 
     @Override
+    @Deprecated // why should this be in the jspwiki-dependant project?? 
+    // how should knowwe call this not knowing the class SearchResultImpl nor its interface???
     public Collection findPages(String query) {
 	ArrayList<SearchResult> result = new ArrayList<SearchResult>();
 	if (query.contains("#")) {
