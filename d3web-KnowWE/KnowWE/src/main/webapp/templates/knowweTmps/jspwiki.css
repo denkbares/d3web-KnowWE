@@ -1659,9 +1659,10 @@ div.collapse li {
 
 /* +++ collapsebox +++ */
 .collapsebox {
-    clear:right; /* avoid clash with intern floated bullet */
+    /*clear:right; /* avoid clash with intern floated bullet */
 	border:1px solid #ddd;
 	margin:0 0 0.5em 0;
+	width:99%;
 }  
 .collapsetitle {
 	margin:0;
