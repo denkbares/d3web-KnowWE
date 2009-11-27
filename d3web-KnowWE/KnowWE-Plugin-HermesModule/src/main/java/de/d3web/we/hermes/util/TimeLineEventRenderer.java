@@ -1,5 +1,7 @@
 package de.d3web.we.hermes.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import de.d3web.we.core.KnowWEEnvironment;
@@ -34,6 +36,17 @@ public class TimeLineEventRenderer {
 	// if no renderedString is cached, render now
 	StringBuffer sb = new StringBuffer("<div class='panel'>\n");
 
+	String encodedKDOMID = te.getTextOriginNode();
+//	try {
+//		encodedKDOMID = URLEncoder.encode(te.getTextOriginNode(), "UTF-8");
+//	} catch (UnsupportedEncodingException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+	
+	//+"&highlight="+encodedKDOMID
+	//+"#"+encodedKDOMID
+	
 	sb
 		.append("<h3 "
 			+ styleTag
@@ -42,10 +55,10 @@ public class TimeLineEventRenderer {
 			+ "</i> - "
 			+ te.getTitle()
 			+ " <a class=\"wikipage\" href=\"Wiki.jsp?page="
-			+ te.getTopic()
+			+ te.getTopic()+"&highlight="+encodedKDOMID+"#"+encodedKDOMID
 			+ "\"><img src=\"./images/goto.jpg\" alt=\"Zum Wiki\" title=\"Zum Wiki\"/></a>"
-			+ " <a class=\"wikipage\" href=\"Edit.jsp?page="
-			+ te.getTopic()
+			+ " <a class=\"wikipage\" href=\"Wiki.jsp?page="
+			+ te.getTopic()+"&edit="+encodedKDOMID+"#"+encodedKDOMID
 			+ "\"><img src=\"./images/edit.gif\" alt=\"Bearbeiten\" title=\"Bearbeiten\"/></a>"
 			+ "</h3>");
 
