@@ -221,6 +221,7 @@ public interface KnowWEWikiConnector {
     public Locale getLocale(HttpServletRequest request);
 
     @SuppressWarnings("unchecked")
+    @Deprecated //What is this for ???
     public Collection findPages(String query);
 
     /**

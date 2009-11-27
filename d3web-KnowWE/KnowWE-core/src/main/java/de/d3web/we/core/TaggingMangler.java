@@ -23,14 +23,18 @@ package de.d3web.we.core;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.tagging.TagsContent;
 import de.d3web.we.search.GenericSearchResult;
+import de.d3web.we.search.KnowWESearchProvider;
+import de.d3web.we.search.SearchTerm;
 
 /**
  * Centralised management of tags. Takes care of adding/removing tags. And
@@ -39,7 +43,7 @@ import de.d3web.we.search.GenericSearchResult;
  * @author Fabian Haupt
  * 
  */
-public class TaggingMangler {
+public class TaggingMangler implements KnowWESearchProvider {
 
 	private static TaggingMangler me;
 
@@ -347,23 +351,50 @@ public class TaggingMangler {
 	}
 	
 	public String getResultPanel(String querystring){
-		StringBuffer html=new StringBuffer();
+		
 		if (querystring != null) {
 			ArrayList<GenericSearchResult> pages = TaggingMangler.getInstance()
 					.searchPages(querystring);
-
-			for (GenericSearchResult cur : pages) {
-				String link = "<a href=\"Wiki.jsp?page=" + cur.getPagename()
-						+ "\">" + cur.getPagename() + "</a>";
-				String score = cur.getScore() + "";
-				html.append("<div class='left'>");
-				html.append("<b>" + link + "</b>" + " (Score:" + score + ")");
-				html.append("</div><br>");
-
-			}
+			return renderResults(pages);
 		} else {	
-			html.append("no query");
+			return ("no query");
+		}
+	}
+
+	public String renderResults(Collection<GenericSearchResult> pages) {
+		StringBuffer html=new StringBuffer();
+		for (GenericSearchResult cur : pages) {
+			String link = "<a href=\"Wiki.jsp?page=" + cur.getPagename()
+					+ "\">" + cur.getPagename() + "</a>";
+			String score = cur.getScore() + "";
+			html.append("<div class='left'>");
+			html.append("<b>" + link + "</b>" + " (Score:" + score + ")");
+			html.append("</div><br>");
+
 		}
 		return html.toString();
+	}
+
+	@Override
+	public String getID() {
+		return "TAG_SEARCH";
+	}
+
+	@Override
+	public String getVerbalization(Locale local) {
+		// TODO verbalize
+		return "Tag-Suche";
+	}
+
+
+
+	@Override
+	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
+			KnowWEParameterMap map) {
+		StringBuffer buffy = new StringBuffer();
+		for (SearchTerm searchTerm : words) {
+			buffy.append(searchTerm.getTerm()+" ");
+		}
+		return searchPages(buffy.toString());
 	}
 } 

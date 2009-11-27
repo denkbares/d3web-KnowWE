@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 import org.openrdf.OpenRDFException;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Statement;
+import org.openrdf.query.Binding;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.GraphQuery;
@@ -508,7 +509,9 @@ public class SemanticCore {
 			try {
 				while (result.hasNext()) {
 					BindingSet b = result.next();
-					String tag = b.getBinding(targetbinding).toString();
+					Binding binding = b.getBinding(targetbinding);
+					if(binding == null) continue;
+					String tag = binding.toString();
 					if (tag.split("#").length == 2)
 						tag = tag.split("#")[1];
 					try {

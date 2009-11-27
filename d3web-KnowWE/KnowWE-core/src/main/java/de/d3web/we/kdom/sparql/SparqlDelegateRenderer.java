@@ -99,6 +99,7 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 			string.append(sec.getOriginalText());
 	}
 
+	@Deprecated
 	public static String addNamespaces(String value, String topic) {
 		String topicenc = null;
 		try {
@@ -110,6 +111,14 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 		if (value == null)
 			value = "";
 		value = value.replaceAll("\\$this", "\"" + topicenc + "\"");
+		String rawquery = value.trim();
+		String querystring = SemanticCore.getInstance().getSparqlNamespaceShorts()+rawquery;
+		return querystring;
+	}
+	
+	public static String addNamespaces(String value) {
+		if (value == null)
+			value = "";
 		String rawquery = value.trim();
 		String querystring = SemanticCore.getInstance().getSparqlNamespaceShorts()+rawquery;
 		return querystring;

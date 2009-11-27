@@ -15,6 +15,7 @@ import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 
 public class SPARQLUtil {
 	
+	@Deprecated
 	
 	/**
 	 * Executes a boolean sparql-query (like 'ASK {...}')
@@ -64,6 +65,36 @@ public class SPARQLUtil {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, SparqlDelegateRenderer.addNamespaces(q,topic));
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		} catch (MalformedQueryException e) {
+			e.printStackTrace();
+		}
+		try {
+			if (query instanceof TupleQuery) {
+				TupleQueryResult result = ((TupleQuery) query).evaluate();
+				return result;
+			} 
+		} catch (QueryEvaluationException e) {
+			e.printStackTrace();
+		} finally {
+
+		}
+		return null;
+	}
+	
+	public static TupleQueryResult executeTupleQuery(String q) {
+		SemanticCore sc = SemanticCore.getInstance();
+		RepositoryConnection con = sc.getUpper().getConnection();
+		try {
+			con.setAutoCommit(false);
+		} catch (RepositoryException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Query query = null;
+		try {
+			query = con.prepareQuery(QueryLanguage.SPARQL, SparqlDelegateRenderer.addNamespaces(q));
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 		} catch (MalformedQueryException e) {

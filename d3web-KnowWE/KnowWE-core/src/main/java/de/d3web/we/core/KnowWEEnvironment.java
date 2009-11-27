@@ -63,6 +63,7 @@ import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.module.PageAppendHandler;
+import de.d3web.we.search.MultiSearchEngine;
 import de.d3web.we.taghandler.FactSheet;
 import de.d3web.we.taghandler.ImportKnOfficeHandler;
 import de.d3web.we.taghandler.KDOMRenderer;
@@ -354,15 +355,9 @@ public class KnowWEEnvironment {
 				knowweExtensionPath=userdir+"/../KnowWE/src/main/webapp/KnowWEExtension/";
 				
 			}
-			// TODO: warn me, if any of these == null
-
-			// set topic Loader & dispatcher
-			//this.topicLoader = wiki.getLoader(); //
-
-			// this.dispatcher = wiki.getActionDispatcher(); //
-			// dispatcher.setEnv(KnowWEFacade.getInstance());
-
-			// initModules(context);
+			
+			//adding TaggingMangler as SearchProvider to KnowWE-MultiSearch
+			MultiSearchEngine.getInstance().addProvider(TaggingMangler.getInstance());
 
 			initDefaultTagHandlers();
 			// loadData(context);

@@ -25,7 +25,7 @@ import java.util.Locale;
 
 import de.d3web.we.core.KnowWEParameterMap;
 
-public abstract class KnowWESearchProvider {
+public interface KnowWESearchProvider {
 	
 	public abstract Collection<GenericSearchResult> search(Collection<SearchTerm> words, KnowWEParameterMap map);
 	
