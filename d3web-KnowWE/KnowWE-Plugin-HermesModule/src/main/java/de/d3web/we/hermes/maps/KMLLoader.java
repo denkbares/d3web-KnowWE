@@ -54,8 +54,8 @@ public class KMLLoader {
 		    .getChild("Point", namespace).getChild("coordinates",
 			    namespace).getText();
 	    String[] coordinates = coordinateString.split(",");
-	    double longitude = Double.parseDouble(coordinates[0].trim());
-	    double latitude = Double.parseDouble(coordinates[1].trim());
+	    double longitude = Double.parseDouble(coordinates[1].trim());
+	    double latitude = Double.parseDouble(coordinates[0].trim());
 
 	    Placemark placemark = new Placemark(name, longitude, latitude);
 	    result.add(placemark);

@@ -26,7 +26,7 @@ public class ShowTimeEventsForConceptTagHandler extends AbstractTagHandler {
 	}
 
 	List<TimeEvent> events = TimeEventSPARQLUtils
-		.findTimeInvolvingConcept(concept);
+		.findTimeEventsInvolvingConcept(concept);
 	Collections.sort(events);
 
 	StringBuffer result = new StringBuffer();

@@ -22,6 +22,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.hermes.TimeEvent;
+import de.d3web.we.hermes.maps.Placemark;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 
 public class TimeEventSPARQLUtils {
@@ -35,6 +36,7 @@ public class TimeEventSPARQLUtils {
     // "SELECT ?t ?title ?desc ?imp WHERE {  ?t lns:hasTitle ?title . ?t lns:hasDescription ?desc . ?t lns:hasImportance ?imp  . ?t lns:hasStartDate ?y . FILTER ( ?y > \"YEARFROM\" ^^xsd:double ) . FILTER ( ?y < \"YEARTO\" ^^xsd:double) .}}";
 
     private static final String CONCEPT_SPARQL = "SELECT  ?t ?title ?topic ?imp ?desc ?encodedTime ?y ?kdomid ?topic WHERE {  ?t rdfs:isDefinedBy ?to . ?to ns:hasTopic ?topic . ?to ns:hasNode ?kdomid . ?t lns:hasDateDescription ?encodedTime . ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:involves CONCEPT .}";
+    private static final String PLACEMARK_SPARQL = "SELECT  ?long ?lat ?t ?title ?topic ?imp ?desc ?encodedTime ?y ?kdomid ?topic WHERE {  ?t rdfs:isDefinedBy ?to . ?to ns:hasTopic ?topic . ?to ns:hasNode ?kdomid . ?t lns:hasDateDescription ?encodedTime . ?t lns:hasDescription ?desc . ?t lns:hasTitle ?title . ?t lns:hasImportance ?imp . ?t lns:involves CONCEPT . ?t lns:takesPlaceAt ?loc . ?loc lns:hasLatitude ?lat . ?loc lns:hasLongitude ?long .}";
     private static final String SOURCE_SPARQL = "SELECT ?source WHERE { <*URI*> lns:hasSource ?source .}";
 
     public static List<TimeEvent> findTimeEventsFromTo(int yearFrom, int yearTo) {
@@ -50,7 +52,8 @@ public class TimeEventSPARQLUtils {
 	return buildTimeEvents(result);
     }
 
-    public static List<TimeEvent> findTimeInvolvingConcept(String conceptName) {
+    public static List<TimeEvent> findTimeEventsInvolvingConcept(
+	    String conceptName) {
 
 	String querystring = null;
 
@@ -190,4 +193,111 @@ public class TimeEventSPARQLUtils {
 	return events;
     }
 
+    public static List<Placemark> findLocationsOfTimeEventsInvolvingConcept(
+	    String concept) {
+	String querystring = null;
+
+	querystring = PLACEMARK_SPARQL.replaceAll("CONCEPT", "lns:" + concept);
+
+	TupleQueryResult result = executeQuery(querystring);
+	return buildPlacemarks(result);
+    }
+
+    private static List<Placemark> buildPlacemarks(TupleQueryResult result) {
+	// List<String> bindings = result.getBindingNames();
+
+	List<Placemark> placemarks = new ArrayList<Placemark>();
+	try {
+	    while (result.hasNext()) {
+
+		BindingSet set = result.next();
+
+		Binding tB = set.getBinding("t");
+		String tURI = tB.getValue().stringValue();
+
+		Binding titleB = set.getBinding("title");
+		String kdomid = set.getBinding("kdomid").getValue()
+			.stringValue();
+		String topic = set.getBinding("topic").getValue().stringValue();
+
+		Binding impB = set.getBinding("imp");
+		// Binding textOriginB = set.getBinding("textOrigin");
+
+		String time = set.getBinding("encodedTime").getValue()
+			.stringValue();
+		String desc = set.getBinding("desc").getValue().stringValue();
+		String title = titleB.getValue().stringValue();
+		String imp = impB.getValue().stringValue();
+
+		String latString = set.getBinding("lat").getValue()
+			.stringValue();
+		String longString = set.getBinding("long").getValue()
+			.stringValue();
+
+		Set<String> sources = new HashSet<String>();
+
+		String query = SOURCE_SPARQL.replace("*URI*", tURI);
+		TupleQueryResult sourcesResult = executeQuery(query.replaceAll(
+			"TITLE", title));
+
+		while (sourcesResult.hasNext()) {
+		    // for some reason every source appears twice in this loop
+		    // ;p
+		    // thus using a set
+		    BindingSet set2 = sourcesResult.next();
+		    Binding sourceBinding = set2.getBinding("source");
+		    String aSource = sourceBinding.getValue().stringValue();
+		    try {
+			aSource = URLDecoder.decode(aSource, "UTF-8");
+		    } catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		    }
+		    if (aSource != null) {
+			sources.add(aSource);
+		    }
+		}
+
+		try {
+		    title = URLDecoder.decode(title, "UTF-8");
+		    imp = URLDecoder.decode(imp, "UTF-8");
+		    time = URLDecoder.decode(time, "UTF-8");
+		    desc = URLDecoder.decode(desc, "UTF-8");
+		    topic = URLDecoder.decode(topic, "UTF-8");
+		    kdomid = URLDecoder.decode(kdomid, "UTF-8");
+		    latString = URLDecoder.decode(latString, "UTF-8");
+		    longString = URLDecoder.decode(longString, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+		double latitude = Double.parseDouble(latString.replaceAll(",",
+			"."));
+		double longitude = Double.parseDouble(longString.replaceAll(
+			",", "."));
+
+		imp = imp.substring(1, 2);
+
+		int parseInt = 3;
+
+		try {
+		    parseInt = Integer.parseInt(imp);
+		} catch (NumberFormatException e) {
+		    // TODO
+		}
+		List<String> resultSources = new ArrayList<String>();
+		resultSources.addAll(sources);
+
+		placemarks.add(new Placemark(title, latitude, longitude, desc));
+
+	    }
+	} catch (QueryEvaluationException e) {
+	    // return
+	    // kwikiBundle.getString("KnowWE.owl.query.evalualtion.error")
+	    // + ":" + e.getMessage();
+	}
+
+	// return buffy.toString();
+
+	return placemarks;
+    }
 }
