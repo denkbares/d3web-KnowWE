@@ -20,6 +20,7 @@
 
 package de.d3web.we.testsuite;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -28,7 +29,7 @@ public class TestsuiteSectionRenderer extends KnowWEDomRenderer {
 
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		// TODO Auto-generated method stub
 	}
 

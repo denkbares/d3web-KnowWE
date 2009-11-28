@@ -41,6 +41,7 @@ import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
+import de.d3web.we.utils.KnowWEUtils;
 
 public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 
@@ -101,7 +102,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 
 		try {
 
-			htmlContent = KnowWEEnvironment.unmaskHTML(htmlContent);
+			htmlContent = KnowWEUtils.unmaskHTML(htmlContent);
 
 			return htmlContent;
 		} catch (Exception e) {
@@ -180,7 +181,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 			}
 			
 			// RENDER PAGE
-			article.getRenderer().render(article.getSection(), userContext, articleString);
+			article.getRenderer().render(article, article.getSection(), userContext, articleString);
 			
 			// Render Post-PageAppendHandlers
 			for (PageAppendHandler pageAppendHandler : ap) {
@@ -195,7 +196,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 			KnowWEScriptLoader.getInstance().add("KnowWE-helper.js", true);
 			
 			String jsModuleIncludes = KnowWEScriptLoader.getInstance().getIncludes();
-			articleString.append( KnowWEEnvironment.maskHTML(jsModuleIncludes) );
+			articleString.append( KnowWEUtils.maskHTML(jsModuleIncludes) );
 				
 
 			// long timeEnde = System.currentTimeMillis();

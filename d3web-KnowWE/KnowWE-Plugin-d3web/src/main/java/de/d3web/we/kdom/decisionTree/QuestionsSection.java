@@ -52,9 +52,9 @@ public class QuestionsSection extends AbstractKopicSection {
 	private class QuestionsSectionSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle text, Section s) {
+		public void reviseSubtree(KnowWEArticle article, Section s) {
 	
-			KnowledgeBaseManagement kbm = getKBM(text, s);
+			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {
 				
@@ -64,7 +64,7 @@ public class QuestionsSection extends AbstractKopicSection {
 					List<de.d3web.report.Message> messages = D3DTBuilder
 							.parse(new StringReader(removeTextIncludeTags(content.getOriginalText())), new SingleKBMIDObjectManager(kbm));
 	
-					storeMessages(s,messages);
+					storeMessages(article, s,messages);
 					Report ruleRep = new Report();
 					for (Message messageKnOffice : messages) {
 						ruleRep.add(messageKnOffice);

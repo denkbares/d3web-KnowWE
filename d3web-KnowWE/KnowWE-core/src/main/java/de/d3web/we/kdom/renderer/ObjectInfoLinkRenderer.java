@@ -22,9 +22,10 @@ package de.d3web.we.kdom.renderer;
 
 import java.net.URLEncoder;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ObjectInfoLinkRenderer extends KnowWEDomRenderer {
@@ -37,19 +38,19 @@ public class ObjectInfoLinkRenderer extends KnowWEDomRenderer {
 	}
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
 		StringBuilder b = new StringBuilder();
-		renderer.render(sec, user, b);
+		renderer.render(article, sec, user, b);
 		
 		if (sec.getTitle().equals("ObjectInfoPage")) {			
-			string.append(KnowWEEnvironment.maskHTML("<a href=\"Wiki.jsp?page="
+			string.append(KnowWEUtils.maskHTML("<a href=\"Wiki.jsp?page="
 								+ sec.getTitle() + "\">"
 								+ b.toString()
 								+ "</a>"));
 		} else {
 			// TODO: Maybe make the page name non-hardcoded
-			string.append(KnowWEEnvironment.maskHTML(
+			string.append(KnowWEUtils.maskHTML(
 								"<a href=\"Wiki.jsp?page=ObjectInfoPage&objectname="
 								+ URLEncoder.encode(sec.getOriginalText())
 								+ "\">"

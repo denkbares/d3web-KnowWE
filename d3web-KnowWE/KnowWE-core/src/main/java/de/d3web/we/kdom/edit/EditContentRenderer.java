@@ -1,5 +1,6 @@
 package de.d3web.we.kdom.edit;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -18,7 +19,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class EditContentRenderer extends DefaultEditSectionRender {
 
 	@Override
-	public void renderContent(Section sec, KnowWEUserContext user, StringBuilder string) {
-		DelegateRenderer.getInstance().render(sec, user, string);
+	public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+		DelegateRenderer.getInstance().render(article, sec, user, string);
 	}
+
 }

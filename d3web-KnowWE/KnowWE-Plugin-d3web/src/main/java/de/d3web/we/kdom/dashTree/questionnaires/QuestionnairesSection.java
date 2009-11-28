@@ -63,7 +63,7 @@ public class QuestionnairesSection extends AbstractKopicSection {
 					List<de.d3web.report.Message> messages = QuestionnaireBuilder
 					.parse(new StringReader(removeTextIncludeTags(content.getOriginalText())), new SingleKBMIDObjectManager(kbm));
 					
-					storeMessages(s,messages);
+					storeMessages(article, s,messages);
 					Report ruleRep = new Report();
 					for (Message messageKnOffice : messages) {
 						ruleRep.add(messageKnOffice);

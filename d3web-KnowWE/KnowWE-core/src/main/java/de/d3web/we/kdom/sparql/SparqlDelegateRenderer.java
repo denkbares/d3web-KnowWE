@@ -39,6 +39,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.SemanticCore;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -67,7 +68,7 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String renderengine = "default";
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
 		SparqlRenderer currentrenderer = renderers.get(renderengine);

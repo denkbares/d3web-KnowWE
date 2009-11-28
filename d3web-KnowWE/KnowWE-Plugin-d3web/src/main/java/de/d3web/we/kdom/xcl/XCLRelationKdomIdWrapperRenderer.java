@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.xcl;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -43,11 +44,11 @@ public class XCLRelationKdomIdWrapperRenderer extends KnowWEDomRenderer {
 	}
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {	
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {	
 		// Span is for kdom id.
 		// id can be found by the class.
 		StringBuilder b = new StringBuilder();
-		XCLRelationHighlightingRenderer.getInstance().render(sec, user, b);
+		XCLRelationHighlightingRenderer.getInstance().render(article, sec, user, b);
 		string.append(KnowWEUtils.maskHTML("<span id='"+sec.getId()+"' class = 'XCLRelationInList'>"
 										  + b.toString()
 										  + "</span>"));

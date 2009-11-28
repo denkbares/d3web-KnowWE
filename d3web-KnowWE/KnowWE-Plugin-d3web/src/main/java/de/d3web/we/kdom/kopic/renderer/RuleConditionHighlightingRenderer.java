@@ -25,6 +25,7 @@ import java.util.Collection;
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
@@ -34,8 +35,8 @@ import de.d3web.we.kdom.condition.Conjunct;
 import de.d3web.we.kdom.condition.Disjunct;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
@@ -101,7 +102,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 //	}
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder result) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
 		
 		// get the rule: Eval it and highlight the condition
 		Section rule = KnowWEObjectTypeUtils.getAncestorOfType(sec, Rule.class);
@@ -115,7 +116,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 				
 				if (slice.getId().equals(kbRuleId)) {
 					RuleComplex rc = (RuleComplex) slice;
-					this.renderConditionLine(sec, rc, xpsCase, user, result);
+					this.renderConditionLine(article, sec, rc, xpsCase, user, result);
 				}
 			}
 		}
@@ -153,7 +154,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 //	}
 	
 	
-	private void renderConditionLine(Section sec, RuleComplex rc, XPSCase xpsCase,
+	private void renderConditionLine(KnowWEArticle article, Section sec, RuleComplex rc, XPSCase xpsCase,
 			KnowWEUserContext user, StringBuilder buffi) {
 		
 		KnowWEObjectType type;
@@ -162,10 +163,10 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 			if (type instanceof Finding || type instanceof ComplexFinding
 					|| type instanceof ComplexFindingBraced || type instanceof Conjunct
 					|| type instanceof Disjunct)
-				buffi.append(this.highlightCondition(child, rc, xpsCase, user));
+				buffi.append(this.highlightCondition(article, child, rc, xpsCase, user));
 			else {
 				StringBuilder b = new StringBuilder();
-				DelegateRenderer.getInstance().render(child, user, b);
+				DelegateRenderer.getInstance().render(article, child, user, b);
 				buffi.append(b.toString());
 			}
 		}
@@ -180,7 +181,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	 * @param xpsCase
 	 * @return
 	 */
-	private String highlightCondition(Section sec, RuleComplex rc, XPSCase xpsCase,
+	private String highlightCondition(KnowWEArticle article, Section sec, RuleComplex rc, XPSCase xpsCase,
 			KnowWEUserContext user) {
 		
 		StringBuilder buffi = new StringBuilder();		
@@ -195,15 +196,15 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 			if (rc.getCondition().eval(xpsCase))
 				FontColorBackgroundRenderer.getRenderer(
 								FontColorRenderer.COLOR5, "#33FF33").
-								render(sec, user, buffi);
+								render(article, sec, user, buffi);
 			else
 				FontColorBackgroundRenderer.getRenderer(
 								FontColorRenderer.COLOR5, "#FF9900").
-								render(sec, user, buffi);
+								render(article, sec, user, buffi);
 		} catch (Exception e) {
 			FontColorBackgroundRenderer.getRenderer(
 							FontColorRenderer.COLOR5, null).
-							render(sec, user, buffi);
+							render(article, sec, user, buffi);
 		}
 		if (braced)
 			buffi.append(")");

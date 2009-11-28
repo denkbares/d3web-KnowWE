@@ -21,6 +21,7 @@
 
 package de.d3web.we.terminology;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,9 +78,19 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			= new HashMap<String, HashSet<Class<? extends KnowWEObjectType>>>();
 	
 	/**
-	 * Stores flag, if the Knowledge of an article is build completely.
+	 * Stores flag, if the knowledge of an article is build completely.
 	 */
 	private Map<String, Boolean> finishedKBM = new HashMap<String, Boolean>();
+	
+	/**
+	 * Stores the number of knowledge containing Sections in an article
+	 */
+	private Map<String, Integer> knowledgeSectionsCount = new HashMap<String, Integer>();
+	
+	/**
+	 * Stores the number of knowledge containing Sections in the last version of an article
+	 */
+	private Map<String, Integer> lastKnowledgeSectionsCount	= new HashMap<String, Integer>();
 	
 	public Map<String, HashSet<Class<? extends KnowWEObjectType>>> getCleanedTypes() {
 		return this.cleanedTypes;
@@ -118,10 +129,15 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 		if (lastKBM != null) {
 			lastKbms.put(art.getTitle(), lastKBM);
 		}
+		Integer lastCount = knowledgeSectionsCount.remove(art.getTitle());
+		if (lastCount != null) {
+			lastKnowledgeSectionsCount.put(art.getTitle(), lastCount);
+		}
 		usingNewKBM.put(art.getTitle(), false);
 		usingOldKBM.put(art.getTitle(), false);
-		cleanedTypes.put(art.getTitle(), new HashSet<Class<? extends KnowWEObjectType>>());
 		finishedKBM.put(art.getTitle(), false);
+		cleanedTypes.put(art.getTitle(), new HashSet<Class<? extends KnowWEObjectType>>());
+		knowledgeSectionsCount.put(art.getTitle(), 0);
 		kbms.put(art.getTitle(), KnowledgeBaseManagement.createInstance());
 	}
 	
@@ -154,6 +170,9 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			return true;
 		}
 		if (usingNewKBM.get(title)) {
+			if (!(s.getObjectType() instanceof KnowledgeRecyclingObjectType)) {
+				knowledgeSectionsCount.put(title, knowledgeSectionsCount.get(title) + 1);
+			}
 			return true;
 		}
 		
@@ -173,13 +192,19 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 					Logger.getLogger(this.getClass().getName())
 						.log(Level.WARNING, "Wrong order of parsing for ObjectType '" +
 								s.getObjectType() + "'!");
+				} else if (lastKnowledgeSectionsCount.get(title) != knowledgeSectionsCount.get(title)) {
+					System.out.println(knowledgeSectionsCount.get(title));
+					kbms.put(title, KnowledgeBaseManagement.createInstance());
+					useNewKBM(article, s);
 				}
 				return true;
 			}
 			
 			if (lastKbm != null && isEmpty(kbms.get(title))
 					&& (s.getObjectType() instanceof KnowledgeRecyclingObjectType
-							|| s.getObjectType() instanceof KnowWEArticle)) {
+							|| (s.getObjectType() instanceof KnowWEArticle 
+								&& lastKnowledgeSectionsCount.get(title) 
+									== knowledgeSectionsCount.get(title)))) {
 				lastKbms.remove(title);
 				usingOldKBM.put(title, true);
 				kbms.put(title, lastKbm);
@@ -189,16 +214,23 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 				}
 				return true;
 			} else {
-				usingNewKBM.put(title, true);
-				List<Section> sectionsToRevise = article.getAllNodesParsingPostOrder();
-				List<Section> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));
-				for (Section sec:strSub) {
-					sec.getObjectType().reviseSubtree(article, sec);
-				}
+				useNewKBM(article, s);
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	private void useNewKBM(KnowWEArticle article, Section s) {
+		usingNewKBM.put(article.getTitle(), true);
+		List<Section> sectionsToRevise = article.getAllNodesParsingPostOrder();
+		List<Section> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));
+		for (Section sec:strSub) {
+			sec.getObjectType().reviseSubtree(article, sec);
+		}
+		if (!(s.getObjectType() instanceof KnowledgeRecyclingObjectType)) {
+			knowledgeSectionsCount.put(article.getTitle(), knowledgeSectionsCount.get(article.getTitle()) + 1);
+		}
 	}
 
 	private boolean isEmpty(KnowledgeBaseManagement kbm) {

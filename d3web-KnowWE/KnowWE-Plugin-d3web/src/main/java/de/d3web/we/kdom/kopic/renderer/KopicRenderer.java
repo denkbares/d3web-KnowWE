@@ -23,22 +23,24 @@ package de.d3web.we.kdom.kopic.renderer;
 import java.net.URLEncoder;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 
 public class KopicRenderer extends KnowWEDomRenderer {
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String title = "Knowledge "
 						+ generateLinkIcons(user.getUsername(), sec.getTitle(), 
 						KnowWEEnvironment.generateDefaultID(
 								sec.getTitle()), sec.getWeb(), false, sec.getId());
 		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(sec, user, b);
+		DelegateRenderer.getInstance().render(article, sec, user, b);
 		string.append(wrapCollapsebox(title, b.toString()));
 	}
 
@@ -67,7 +69,7 @@ public class KopicRenderer extends KnowWEDomRenderer {
 	private String generateJarLink(String topic2, String id, String web2) {
 		String icon = "<img src=KnowWEExtension/images/drive_disk.png title='Download jar file' /></img>";
 
-		return KnowWEEnvironment
+		return KnowWEUtils
 				.maskHTML("<a href='KnowWEExtension/KBrepository/" + web2 + "/"
 						+ topic2 + ".." + id + ".jar' >" + icon + "</a>");
 	}
@@ -81,7 +83,7 @@ public class KopicRenderer extends KnowWEDomRenderer {
 				+ topic2 + "&nodeID=" + nodeID + "&filename=" + topic2
 				+ "_kopic.txt' >" + icon + "</a>";
 
-		return KnowWEEnvironment.maskHTML(result);
+		return KnowWEUtils.maskHTML(result);
 	}
 
 	public String generateDialogLink(String user, String topic, String actualID) {

@@ -24,18 +24,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.core.KnowWEAttributes;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.FlowchartType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		List<Section> lines = new ArrayList<Section>(); 
 		sec.findSuccessorsOfType(TextLine.class, lines);
 		FlowchartType section = (FlowchartType)sec.getObjectType();
@@ -46,7 +47,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 		String web = sec.getArticle().getWeb();
 		
 		String editLink = generateQuickEditLink(topic,sec.getId(), web, user.getUsername());
-		String content = createPreview(sec, user, web, topic, string); //wrappContent(SpecialDelegateRenderer.getInstance().render(sec, user, web, topic));
+		String content = createPreview(article, sec, user, web, topic, string); //wrappContent(SpecialDelegateRenderer.getInstance().render(sec, user, web, topic));
 		
 //		string.append("%%collapsebox-closed \n! " + title + editLink + " \n" + content + "/%\n");
 		string.append("%%collapsebox-closed \n! ");
@@ -57,13 +58,13 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 		string.append("/%\n");
 	}
 	
-	private String createPreview(Section sec, KnowWEUserContext user, String web, String topic, StringBuilder builder) {
+	private String createPreview(KnowWEArticle article, Section sec, KnowWEUserContext user, String web, String topic, StringBuilder builder) {
 		// dirty xml parsing hack for quick results
 		String xml = sec.getOriginalText();
 		int startPos = xml.lastIndexOf("<preview mimetype=\"text/html\">");
 		int endPos = xml.lastIndexOf("</preview>");
 		if (startPos >= 0 && endPos >= 0) {
-			return KnowWEEnvironment
+			return KnowWEUtils
 			.maskHTML(
 				"<div style='zoom: 50%; cursor: pointer;' onclick='window.open(\""+createEditURL(sec.getId(), topic)+"\", \""+sec.getId()+"\").focus();'>" +
 				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>" +
@@ -82,7 +83,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 		else {
 			StringBuilder buffy = new StringBuilder();
 			buffy.append("\n{{{");
-			DelegateRenderer.getInstance().render(sec, user, buffy);
+			DelegateRenderer.getInstance().render(article, sec, user, buffy);
 			buffy.append("}}}\n");
 			return buffy.toString();
 		}
@@ -91,7 +92,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 	private String generateQuickEditLink(String topic, String id, String web2, String user) {
 		String icon = " <img src=KnowWEExtension/images/pencil.png title='Start Flowchart Editor' onclick='setQuickEditFlag(&quot;"+id+"&quot;,&quot;"+topic+"&quot;);window.open(&quot;"+createEditURL(id, topic)+"&quot;, &quot;"+id+"&quot;).focus();'></img>";
 
-		return KnowWEEnvironment
+		return KnowWEUtils
 		.maskHTML("<a>"+icon+"</a>");
 		
 	}

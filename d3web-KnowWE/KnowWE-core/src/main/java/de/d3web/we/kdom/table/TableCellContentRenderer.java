@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -64,7 +65,7 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer {
 	}
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		string.append(wrappContent(sec.getOriginalText(), sec, user));
 	}
 		

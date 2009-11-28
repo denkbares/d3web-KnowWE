@@ -76,10 +76,10 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	private class RuleRenderer extends KnowWEDomRenderer {
 
 		@Override
-		public void render(Section sec, KnowWEUserContext user,
-				StringBuilder string) {
+		public void render(KnowWEArticle article, Section sec,
+				KnowWEUserContext user, StringBuilder string) {
 
-			List<Message> errors = getErrorMessages(sec);
+			List<Message> errors = getErrorMessages(article, sec);
 
 			string.append(KnowWEUtils.maskHTML("<pre><span id='" + sec.getId()
 					+ "' class = 'XCLRelationInList'><span id=\"\">"));
@@ -111,9 +111,9 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 			StringBuilder b = new StringBuilder();
 			if (!empty) {
-				DefaultTextRenderer.getInstance().render(sec, user, b);
+				DefaultTextRenderer.getInstance().render(article, sec, user, b);
 			} else {
-				DelegateRenderer.getInstance().render(sec, user, b);
+				DelegateRenderer.getInstance().render(article, sec, user, b);
 			}
 			string.append(b.toString()
 					+ KnowWEUtils.maskHTML("</pre></span></span>\n"));
@@ -140,7 +140,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 					}
 				}
 			}
-
+			
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 
 			if (kbm != null) {
@@ -162,7 +162,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 								.getRuleIDs().get(0));
 					}
 
-					((Rule) s.getObjectType()).storeMessages(s, bm);
+					((Rule) s.getObjectType()).storeMessages(article, s, bm);
 					List<Message> errors = new ArrayList<Message>();
 					for (Message message : bm) {
 						if (message.getMessageType().equals(Message.ERROR)
@@ -171,9 +171,9 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 						}
 					}
 					if (errors.isEmpty()) {
-						storeErrorMessages(s, null);
+						storeErrorMessages(article, s, null);
 					} else {
-						storeErrorMessages(s, errors);
+						storeErrorMessages(article, s, errors);
 					}
 
 					Report ruleRep = new Report();
@@ -187,7 +187,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 			} else {
 				// store empty message to prevent surviving of old errors due to
 				// update-inconstistencies
-				storeErrorMessages(s, null);
+				storeErrorMessages(article, s, null);
 			}
 		}
 	}
@@ -200,8 +200,8 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	 * @param s
 	 * @param message
 	 */
-	public static void storeErrorMessages(Section s, List<Message> message) {
-		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, s
+	public static void storeErrorMessages(KnowWEArticle article, Section s, List<Message> message) {
+		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, article
 				.getTitle(), s.getId(), RULE_ERROR_MESSAGE_STORE_KEY, message);
 	}
 
@@ -211,9 +211,9 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	 * @param s
 	 * @param message
 	 */
-	public static List<Message> getErrorMessages(Section s) {
+	public static List<Message> getErrorMessages(KnowWEArticle article, Section s) {
 		return (List<Message>) KnowWEUtils.getStoredObject(
-				KnowWEEnvironment.DEFAULT_WEB, s.getTitle(), s.getId(),
+				KnowWEEnvironment.DEFAULT_WEB, article.getTitle(), s.getId(),
 				RULE_ERROR_MESSAGE_STORE_KEY);
 	}
 

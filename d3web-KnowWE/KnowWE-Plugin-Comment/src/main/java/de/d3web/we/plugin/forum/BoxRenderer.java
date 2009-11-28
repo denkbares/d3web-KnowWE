@@ -25,12 +25,14 @@ import java.util.Map;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLHead;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class BoxRenderer extends KnowWEDomRenderer {
@@ -41,13 +43,9 @@ public class BoxRenderer extends KnowWEDomRenderer {
 		if(instance == null) instance = new BoxRenderer();
 		return instance;
 	}
-	
-	private static String maskHTML(String s) {
-		return KnowWEEnvironment.maskHTML(s);
-	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		String name;
 		String date;
@@ -103,14 +101,14 @@ public class BoxRenderer extends KnowWEDomRenderer {
 			}
 		} 
 
-		string.append(maskHTML("<table class=wikitable width=95% border=0>\n"));
-		string.append(maskHTML("<tr><th align=left>" + name
+		string.append(KnowWEUtils.maskHTML("<table class=wikitable width=95% border=0>\n"));
+		string.append(KnowWEUtils.maskHTML("<tr><th align=left>" + name
 				+ "</th><th align=right width=150>" + date + "</th></tr>\n"));
-		string.append(maskHTML("<tr><td colspan=2>"));
+		string.append(KnowWEUtils.maskHTML("<tr><td colspan=2>"));
 		
-		DelegateRenderer.getInstance().render(contentSec, user, string);
+		DelegateRenderer.getInstance().render(article, contentSec, user, string);
 		
-		string.append(maskHTML("</td></tr>\n</table>\n"));
+		string.append(KnowWEUtils.maskHTML("</td></tr>\n</table>\n"));
 	}
 
 }

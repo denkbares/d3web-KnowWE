@@ -25,6 +25,7 @@ import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
@@ -54,12 +55,12 @@ public class FindingQuestionAndAnswerRenderer extends KnowWEDomRenderer {
 	
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
-		List<Message> messages = ((AbstractKnowWEObjectType) sec.getObjectType()).getMessages(sec);
+		List<Message> messages = ((AbstractKnowWEObjectType) sec.getObjectType()).getMessages(article, sec);
 		
 		if (messages.isEmpty() || messages.get(0).getMessageText().equals("")) {
-			delegate.render(sec, user, string);
+			delegate.render(article, sec, user, string);
 		} else {
 			
 			//TODO: atm just the first is used, rest ignored
@@ -69,12 +70,9 @@ public class FindingQuestionAndAnswerRenderer extends KnowWEDomRenderer {
 			
 			string.append("<span title=\"" + message +"\">");
 			
-			FontColorBackgroundRenderer.getRenderer(FontColorRenderer.COLOR6, "red").render(sec, user, string);
+			FontColorBackgroundRenderer.getRenderer(FontColorRenderer.COLOR6, "red").render(article, sec, user, string);
 
 			string.append("</span>");
-			
-			
-			
 		} 
 		
 		

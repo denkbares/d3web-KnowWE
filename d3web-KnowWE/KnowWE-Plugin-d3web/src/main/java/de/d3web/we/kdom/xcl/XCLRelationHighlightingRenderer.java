@@ -27,20 +27,14 @@ import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.condition.ComplexFinding;
-import de.d3web.we.kdom.condition.NegatedFinding;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -73,13 +67,13 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 	}
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		String kbrelId = (String)KnowWEUtils.getStoredObject(sec.getArticle().getWeb(), sec.getTitle(), sec.getId(), CoveringListContent.KBID_KEY);
 		
 		StringBuilder buffi = new StringBuilder();
 		if (kbrelId == null) {
-			DelegateRenderer.getInstance().render(sec, user, buffi);
+			DelegateRenderer.getInstance().render(article, sec, user, buffi);
 			string.append(new StringBuilder(KnowWEUtils.maskHTML(buffi.toString())));
 			return;
 		}
@@ -101,7 +95,7 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 						try {
 							boolean fulfilled = relation.eval(xpsCase);
 							// Highlight Relation
-							string.append( this.renderRelation(sec, user, fulfilled));
+							string.append( this.renderRelation(article, sec, user, fulfilled));
 							return;
 						} catch (Exception e) {
 							// Call the XCLRelationMarkerHighlightingRenderer
@@ -112,17 +106,17 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 				}
 			} 		
 		} 
-		string.append(this.renderText(sec, user));
+		string.append(this.renderText(article, sec, user));
 		
 	}
 	
 	
-	private String renderText(Section sec, KnowWEUserContext user) {
+	private String renderText(KnowWEArticle article, Section sec, KnowWEUserContext user) {
 
 		StringBuilder buffi = new StringBuilder();
 		
-		FontColorBackgroundRenderer.getRenderer(null, null).render(sec, user, buffi);
-		return KnowWEEnvironment.maskHTML(buffi.toString());
+		FontColorBackgroundRenderer.getRenderer(null, null).render(article, sec, user, buffi);
+		return KnowWEUtils.maskHTML(buffi.toString());
 		
 		
 	}
@@ -139,7 +133,7 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 	 * @param fulfilled 
 	 * @return
 	 */
-	private String renderRelation(Section sec, KnowWEUserContext user, boolean fulfilled) {
+	private String renderRelation(KnowWEArticle article, Section sec, KnowWEUserContext user, boolean fulfilled) {
 
 		StringBuilder buffi = new StringBuilder();
 		
@@ -148,39 +142,39 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 			// Iterate over children of the relation.
 			// When (Complex)Finding call the FontcolorBackgroundRenderer
 			for (Section s: sec.getChildren()) {
-				buffi.append(this.renderRelationChild(s, fulfilled, user, "#33FF33"));
+				buffi.append(this.renderRelationChild(article, s, fulfilled, user, "#33FF33"));
 			}
 			
 		} else {
 			// b false: Color red
 			for (Section s: sec.getChildren()) {
-				buffi.append(this.renderRelationChild(s, fulfilled, user, "#FF9900"));
+				buffi.append(this.renderRelationChild(article, s, fulfilled, user, "#FF9900"));
 			}
 			
 		}
-		return KnowWEEnvironment.maskHTML(buffi.toString());
+		return KnowWEUtils.maskHTML(buffi.toString());
 	}
 
 	
 	
 	
-	private String renderRelationChild(Section sec, boolean fulfilled, KnowWEUserContext user, String color) {
+	private String renderRelationChild(KnowWEArticle article, Section sec, boolean fulfilled, KnowWEUserContext user, String color) {
 		StringBuilder buffi = new StringBuilder();
 		KnowWEObjectType type = sec.getObjectType();
 		
 		if (type instanceof ComplexFinding) {
 			((ComplexFinding)type).
-				getBackgroundColorRenderer(color).render(sec, user, buffi);
+				getBackgroundColorRenderer(color).render(article, sec, user, buffi);
 		} else if (type instanceof XCLRelationWeight) { //renders contradiction in red if fulfilled
 			
 			if (fulfilled && sec.getOriginalText().trim().equals("[--]")) {
-				FontColorBackgroundRenderer.getRenderer(FontColorRenderer.COLOR2, null).render(sec, user, buffi);
+				FontColorBackgroundRenderer.getRenderer(FontColorRenderer.COLOR2, null).render(article, sec, user, buffi);
 			} else {
-				type.getRenderer().render(sec, user, buffi);
+				type.getRenderer().render(article, sec, user, buffi);
 			}
 			
 		} else {
-			type.getRenderer().render(sec, user, buffi);
+			type.getRenderer().render(article, sec, user, buffi);
 		}
 
 		return buffi.toString();

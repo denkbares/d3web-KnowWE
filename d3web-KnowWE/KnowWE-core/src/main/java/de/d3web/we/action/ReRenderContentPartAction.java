@@ -59,7 +59,7 @@ public class ReRenderContentPartAction extends AbstractKnowWEAction  {
 		if( secWithNodeID != null ) {
 			
 			StringBuilder b = new StringBuilder();
-			DelegateRenderer.getInstance().render(secWithNodeID, user, b);
+			DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
 			
 			return KnowWEUtils.unmaskHTML( b.toString() );
 		}

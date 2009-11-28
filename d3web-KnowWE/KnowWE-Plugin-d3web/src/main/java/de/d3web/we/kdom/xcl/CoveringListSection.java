@@ -20,25 +20,8 @@
 
 package de.d3web.we.kdom.xcl;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.List;
-
-import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
-import de.d3web.KnOfficeParser.xcl.XCLd3webBuilder;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.report.Message;
-import de.d3web.report.Report;
-import de.d3web.textParser.xclPatternParser.XCLParserHelper;
-import de.d3web.we.core.KnowWEDomParseReport;
-import de.d3web.we.core.KnowWEParseResult;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.kopic.renderer.SetCoveringListSectionRenderer;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 
 public class CoveringListSection extends AbstractKopicSection {
 
@@ -55,61 +38,61 @@ public class CoveringListSection extends AbstractKopicSection {
 		setCustomRenderer(new SetCoveringListSectionRenderer());
 	}
 	
-	private class CoveringListSectionSubTreeHandler extends D3webReviseSubTreeHandler {
-	
-		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
-	
-			KnowledgeBaseManagement kbm = getKBM(article, s);
-			
-			if (kbm != null) {
-				
-				if (AbstractXMLObjectType.getAttributeMapFor(s).containsKey("parser-version")
-						&& AbstractXMLObjectType.getAttributeMapFor(s).get("parser-version").trim().equals("1")) {
-					callOldParser(s, s.getReport(), kbm);
-				} else {
-					callNewParser(s, s.getReport(), kbm);
-				}
-			}
-		}
-	
-		private void callOldParser(Section s, KnowWEDomParseReport rep,
-				KnowledgeBaseManagement kbm) {
-	
-			Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
-			
-			if (content != null) {
-				
-				StringBuffer buffi = new StringBuffer(TextInclude.removeTextIncludeTags(content.getOriginalText()));
-				Report xclRep = XCLParserHelper.getXCLModel
-					(kbm.getKnowledgeBase(), buffi);
-	
-				KnowWEParseResult result = new KnowWEParseResult(xclRep, s
-						.getTitle(), s.getOriginalText());
-				rep.addReport(result);
-			}
-		}
-	
-		private void callNewParser(Section s, KnowWEDomParseReport rep,
-				KnowledgeBaseManagement kbm) {
-			
-			XCLd3webBuilder builder = new XCLd3webBuilder(s.getId(), true,
-					false, new SingleKBMIDObjectManager(kbm));
-	
-			Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
-			if (content != null) {
-				Reader r = new StringReader(TextInclude.removeTextIncludeTags(content.getOriginalText()));
-				List<Message> col = builder.addKnowledge(r, new SingleKBMIDObjectManager(kbm),
-						null);
-				storeMessages(s,col);
-				Report xclRep = new Report();
-				for (Message messageKnOffice : col) {
-					xclRep.add(messageKnOffice);
-				}
-				KnowWEParseResult result = new KnowWEParseResult(xclRep, s
-						.getTitle(), s.getOriginalText());
-				rep.addReport(result);
-			}
-		}
-	}
+//	private class CoveringListSectionSubTreeHandler extends D3webReviseSubTreeHandler {
+//	
+//		@Override
+//		public void reviseSubtree(KnowWEArticle article, Section s) {
+//	
+//			KnowledgeBaseManagement kbm = getKBM(article, s);
+//			
+//			if (kbm != null) {
+//				
+//				if (AbstractXMLObjectType.getAttributeMapFor(s).containsKey("parser-version")
+//						&& AbstractXMLObjectType.getAttributeMapFor(s).get("parser-version").trim().equals("1")) {
+//					callOldParser(s, s.getReport(), kbm);
+//				} else {
+//					callNewParser(s, s.getReport(), kbm);
+//				}
+//			}
+//		}
+//	
+//		private void callOldParser(Section s, KnowWEDomParseReport rep,
+//				KnowledgeBaseManagement kbm) {
+//	
+//			Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
+//			
+//			if (content != null) {
+//				
+//				StringBuffer buffi = new StringBuffer(TextInclude.removeTextIncludeTags(content.getOriginalText()));
+//				Report xclRep = XCLParserHelper.getXCLModel
+//					(kbm.getKnowledgeBase(), buffi);
+//	
+//				KnowWEParseResult result = new KnowWEParseResult(xclRep, s
+//						.getTitle(), s.getOriginalText());
+//				rep.addReport(result);
+//			}
+//		}
+//	
+//		private void callNewParser(Section s, KnowWEDomParseReport rep,
+//				KnowledgeBaseManagement kbm) {
+//			
+//			XCLd3webBuilder builder = new XCLd3webBuilder(s.getId(), true,
+//					false, new SingleKBMIDObjectManager(kbm));
+//	
+//			Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
+//			if (content != null) {
+//				Reader r = new StringReader(TextInclude.removeTextIncludeTags(content.getOriginalText()));
+//				List<Message> col = builder.addKnowledge(r, new SingleKBMIDObjectManager(kbm),
+//						null);
+//				storeMessages(s,col);
+//				Report xclRep = new Report();
+//				for (Message messageKnOffice : col) {
+//					xclRep.add(messageKnOffice);
+//				}
+//				KnowWEParseResult result = new KnowWEParseResult(xclRep, s
+//						.getTitle(), s.getOriginalText());
+//				rep.addReport(result);
+//			}
+//		}
+//	}
 }

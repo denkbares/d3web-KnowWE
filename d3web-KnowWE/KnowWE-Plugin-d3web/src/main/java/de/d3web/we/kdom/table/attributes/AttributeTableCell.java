@@ -26,6 +26,7 @@ import java.util.List;
 import de.d3web.KnOfficeParser.txttable.TxtAttributeTableBuilder;
 import de.d3web.KnOfficeParser.txttable.TxtTableParser;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.kdom.table.TableCellSectionFinder;
@@ -43,7 +44,7 @@ public class AttributeTableCell extends DefaultAbstractKnowWEObjectType {
 	protected class TxtAttributeTableCellRenderer extends TableCellContentRenderer {
 		
 		@Override
-		public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+		public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 			string.append(wrappContent(TxtTableParser.compile(sec.getOriginalText()), sec, user));
 		}
 		

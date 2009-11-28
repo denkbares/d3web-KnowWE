@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.rendering;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -28,11 +29,14 @@ public abstract class KnowWEDomRenderer {
 	/**
 	 * All rendered Sections will be appended to string.
 	 * 
+	 * @param article is the article this Section is displayed in... not necessarily
+	 * 		the article the Section is hooked into directly, since Sections can also be included!
 	 * @param sec
 	 * @param user
 	 * @param string
+	 * 
 	 * @return
 	 */
-	public abstract void render(Section sec, KnowWEUserContext user, StringBuilder string);
+	public abstract void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string);
 
 }

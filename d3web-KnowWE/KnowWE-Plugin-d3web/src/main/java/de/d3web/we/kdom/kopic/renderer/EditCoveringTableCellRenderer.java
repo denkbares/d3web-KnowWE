@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.kopic.renderer;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -31,7 +32,7 @@ public class EditCoveringTableCellRenderer extends KnowWEDomRenderer {
 				{ "  ", "ja", "! ", "--", "++", "1 ", "2 ", "3 ", "4 ", "5 ", "10" };
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String currentOp = sec.getOriginalText().trim();
 		String secID = sec.getId();
 

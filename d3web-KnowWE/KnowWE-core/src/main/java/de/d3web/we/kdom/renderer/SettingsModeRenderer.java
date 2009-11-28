@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.renderer;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -35,12 +36,12 @@ public class SettingsModeRenderer extends KnowWEDomRenderer{
 	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		if(sec.hasQuickEditModeSet(user.getUsername())) {
-			quickEditRenderer.render(sec, user, string);
+			quickEditRenderer.render(article, sec, user, string);
 			return;
 		}
-		defaultRenderer.render(sec, user, string);
+		defaultRenderer.render(article, sec, user, string);
 	}
 
 }

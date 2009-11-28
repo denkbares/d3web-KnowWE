@@ -27,6 +27,7 @@ import java.util.Map;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -59,7 +60,7 @@ public class CommentRenderer extends KnowWEDomRenderer{
 	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		Map<String, String> commentTypes = CommentModule.getCommentTypes();
 		

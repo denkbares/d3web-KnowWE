@@ -20,9 +20,10 @@
 
 package de.d3web.we.kdom.renderer;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -65,13 +66,13 @@ public class FontColorBackgroundRenderer extends StyleRenderer {
 	}
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(sec, user, b);
+		DelegateRenderer.getInstance().render(article, sec, user, b);
 		
 		if (this.background != null) {
-			string.append(KnowWEEnvironment.maskHTML(
+			string.append(KnowWEUtils.maskHTML(
 							"<span style='"+this.getStyle()
 							+ ";background-color:"
 							+ this.background
@@ -81,7 +82,7 @@ public class FontColorBackgroundRenderer extends StyleRenderer {
 			return;
 		}
 		
-		string.append(KnowWEEnvironment.maskHTML(
+		string.append(KnowWEUtils.maskHTML(
 						"<span style='"
 						+ this.getStyle()
 						+ "'><span id=''>"

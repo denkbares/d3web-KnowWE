@@ -26,6 +26,7 @@ import java.util.List;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
@@ -37,7 +38,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class RuleSectionRenderer extends KopicSectionRenderer {
 		
 		@Override
-		public void render(Section sec, KnowWEUserContext user, StringBuilder result) {
+		public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
 			List<Section> lines = new ArrayList<Section>(); 
 			sec.findSuccessorsOfType(TextLine.class, lines);
 			
@@ -56,7 +57,7 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 				String rulesParsed = MessageKnOfficeGenerator.getResourceBundle().getString("rule");
 				int rnum = 1;
 				for (Section r:rules) {
-					List<Message> rmsgs = ((Rule) r.getObjectType()).getMessages(r);
+					List<Message> rmsgs = ((Rule) r.getObjectType()).getMessages(article, r);
 					boolean foundWarning = false;
 					boolean foundError = false;
 					for (Message msg:rmsgs) {
@@ -110,7 +111,7 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 			
 			// Rendering children
 			StringBuilder b = new StringBuilder();
-			DelegateRenderer.getInstance().render(sec,user, b);
+			DelegateRenderer.getInstance().render(article,sec, user, b);
 			result.append(b.toString());
 			
 			// close the div

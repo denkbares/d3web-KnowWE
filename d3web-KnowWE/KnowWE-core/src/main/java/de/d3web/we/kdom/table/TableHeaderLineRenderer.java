@@ -20,24 +20,25 @@
 
 package de.d3web.we.kdom.table;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TableHeaderLineRenderer extends KnowWEDomRenderer {
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		StringBuilder b = new StringBuilder();
 		StringBuilder buffi = new StringBuilder();
-		DelegateRenderer.getInstance().render(sec, user, b);
+		DelegateRenderer.getInstance().render(article, sec, user, b);
 		buffi.append( "<tr style='background-color:#BBBBBB;'>" );
 		buffi.append( b.toString() );
 		buffi.append( "\n</tr>" );
 						
-		string.append(KnowWEEnvironment.maskHTML( buffi.toString() ));
+		string.append(KnowWEUtils.maskHTML( buffi.toString() ));
 	}
 
 }

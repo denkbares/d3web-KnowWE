@@ -1,5 +1,6 @@
 package de.d3web.we.kdom.rendering;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -15,7 +16,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public abstract class AnchorKDOMRender extends KnowWEDomRenderer{
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String head = "<a name=\"" + sec.getId() + "\" id=\"" + sec.getId() + "\"></a>";
 		string.append( head );
 		

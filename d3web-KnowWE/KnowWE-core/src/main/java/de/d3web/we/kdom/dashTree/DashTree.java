@@ -20,6 +20,7 @@
 package de.d3web.we.kdom.dashTree;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -45,11 +46,11 @@ public class DashTree extends DefaultAbstractKnowWEObjectType{
 	class PreRenderer extends KnowWEDomRenderer {
 
 		@Override
-		public void render(Section sec, KnowWEUserContext user,
-				StringBuilder string) {
+		public void render(KnowWEArticle article, Section sec,
+				KnowWEUserContext user, StringBuilder string) {
 
 			string.append("{{{");
-			DelegateRenderer.getInstance().render(sec, user, string);
+			DelegateRenderer.getInstance().render(article, sec, user, string);
 			string.append("}}}");
 			
 		}

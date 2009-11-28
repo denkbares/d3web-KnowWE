@@ -20,9 +20,10 @@
 
 package de.d3web.we.kdom.renderer;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class HighlightRenderer extends ColorRenderer{
@@ -36,11 +37,11 @@ public class HighlightRenderer extends ColorRenderer{
 	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String title = "Marker";
 		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(sec, user, b);
-		string.append(KnowWEEnvironment.maskHTML("<span id=\"uniqueMarker\">"
+		DelegateRenderer.getInstance().render(article, sec, user, b);
+		string.append(KnowWEUtils.maskHTML("<span id=\"uniqueMarker\">"
 						+ spanColorTitle(b.toString(), "yellow", title)
 				        + "</span>"));
 	}

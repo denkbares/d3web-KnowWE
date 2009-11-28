@@ -26,6 +26,7 @@ package de.d3web.we.kdom.semanticFactSheet;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -59,7 +60,7 @@ public class InfoRenderer extends KnowWEDomRenderer {
      * , java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+    public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
     	boolean verbose = false;
 		Map<String, String> params =
 				AbstractXMLObjectType.getAttributeMapFor(sec.getFather());

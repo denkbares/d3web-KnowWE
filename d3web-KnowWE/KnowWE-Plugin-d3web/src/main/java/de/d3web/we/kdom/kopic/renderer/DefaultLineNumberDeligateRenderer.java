@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.kopic.renderer;
 
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -28,7 +29,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class DefaultLineNumberDeligateRenderer extends KnowWEDomRenderer {
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		int lineNum = 1;
 		for (Section child:sec.getChildren()) {
@@ -41,10 +42,10 @@ public class DefaultLineNumberDeligateRenderer extends KnowWEDomRenderer {
 					numberString = " " + numberString;
 				}
 				string.append(numberString + " | ");
-				child.getObjectType().getRenderer().render(child, user, string);
+				child.getObjectType().getRenderer().render(article, child, user, string);
 				lineNum++;
 			} else {
-				child.getObjectType().getRenderer().render(child, user, string);
+				child.getObjectType().getRenderer().render(article, child, user, string);
 			}			
 		}
 	}

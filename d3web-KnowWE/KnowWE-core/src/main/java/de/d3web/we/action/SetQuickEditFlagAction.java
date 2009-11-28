@@ -29,11 +29,9 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.user.UserSettingsManager;
-import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
@@ -103,10 +101,10 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 			KnowWEDomRenderer renderer = secWithNodeID.getObjectType().getRenderer();
 			StringBuilder b = new StringBuilder();
 			if (renderer != null) {
-				renderer.render(secWithNodeID, user, b);
+				renderer.render(article, secWithNodeID, user, b);
 			} else {
 				
-				DelegateRenderer.getInstance().render(secWithNodeID, user, b);
+				DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
 			}
 			String result = b.toString();
 			return result;

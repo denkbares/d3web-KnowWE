@@ -26,6 +26,7 @@ import java.util.List;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -78,7 +79,7 @@ public class TableCellStart extends DefaultAbstractKnowWEObjectType {
 		class TableCellStartRenderer extends KnowWEDomRenderer {
 			
 			@Override
-			public void render(Section sec, KnowWEUserContext user, StringBuilder string) {								
+			public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {								
 				string.append(KnowWEEnvironment.maskHTML( "" ));
 			}
 		}

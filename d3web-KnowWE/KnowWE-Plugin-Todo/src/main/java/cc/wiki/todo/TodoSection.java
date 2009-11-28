@@ -22,6 +22,7 @@ package cc.wiki.todo;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -49,8 +50,8 @@ public class TodoSection extends DefaultAbstractKnowWEObjectType {
 		return new KnowWEDomRenderer() {
 			
 			@Override
-			public void render(Section sec, KnowWEUserContext user,
-					StringBuilder string) {
+			public void render(KnowWEArticle article, Section sec,
+					KnowWEUserContext user, StringBuilder string) {
 				
 				
 				string.append(KnowWEEnvironment.maskHTML("<div class='information'>"));

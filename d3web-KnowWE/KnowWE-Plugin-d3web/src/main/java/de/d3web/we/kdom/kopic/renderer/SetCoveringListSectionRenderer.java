@@ -25,20 +25,21 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.report.Message;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		List<Section> lines = new ArrayList<Section>(); 
 		sec.findSuccessorsOfType(TextLine.class, lines);
@@ -54,11 +55,11 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 		if (sec.getObjectType() instanceof AbstractKnowWEObjectType) {
 			KnowWEObjectType type = sec.getObjectType();
 			Collection<Message> messages = ((AbstractKnowWEObjectType) type)
-												.getMessages(sec);
+												.getMessages(article, sec);
 			if (messages != null && !messages.isEmpty()) {
 				string.append("{{{");
 				for (Message m : messages) {
-					string.append(m.getMessageType()+": "+m.getMessageText()+" Line: "+m.getLineNo()+KnowWEEnvironment.maskHTML("<br>"));
+					string.append(m.getMessageType()+": "+m.getMessageText()+" Line: "+m.getLineNo()+KnowWEUtils.maskHTML("<br>"));
 					if(m.getMessageType().equals(Message.ERROR)) {
 						insertErrorRenderer(sec, m, user.getUsername());
 					}
@@ -69,16 +70,16 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 		
 		// a pre containing
 		// the class SetCoveringList and the nodes id
-		string.append(KnowWEEnvironment.maskHTML(
+		string.append(KnowWEUtils.maskHTML(
 				"<pre class=\"ReRenderSectionMarker\" id=\"" + sec.getId() + "\">"));
 		
 		// Rendering children
 		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(sec, user, b);
+		DelegateRenderer.getInstance().render(article, sec, user, b);
 		string.append(b.toString());
 		
 		// close the pre
-		string.append(KnowWEEnvironment.maskHTML("</pre>"));
+		string.append(KnowWEUtils.maskHTML("</pre>"));
 		
 		string.append("/%\n");
 	}

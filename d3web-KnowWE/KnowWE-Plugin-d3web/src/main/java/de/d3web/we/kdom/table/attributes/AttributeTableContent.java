@@ -58,7 +58,7 @@ public class AttributeTableContent extends XMLContent {
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {			
-				((AbstractKnowWEObjectType) s.getFather().getObjectType()).storeMessages(s.getFather(), 
+				((AbstractKnowWEObjectType) s.getFather().getObjectType()).storeMessages(article, s.getFather(), 
 						builder.addKnowledge(new StringReader(AbstractKopicSection
 								.removeTextIncludeTags(s.getOriginalText())), 
 								new SingleKBMIDObjectManager(kbm), null));

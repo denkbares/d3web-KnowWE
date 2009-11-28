@@ -41,6 +41,7 @@ import de.d3web.kernel.domainModel.ruleCondition.CondNumLessEqual;
 import de.d3web.kernel.domainModel.ruleCondition.CondOr;
 import de.d3web.report.Message;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
@@ -68,7 +69,7 @@ public class FindingToConditionBuilder {
 	 * @param answer
 	 * @return
 	 */
-	private static AbstractCondition createCondition(Question kbQuest, Answer kbAns, Section comp, Section question, Section answer) {
+	private static AbstractCondition createCondition(KnowWEArticle article, Question kbQuest, Answer kbAns, Section comp, Section question, Section answer) {
 		// CondEqual(Yes/No), CondNumEqual, CondNumGreater, CondNumGreaterEqual,
 		// CondNumLess, CondNumLessEqual
 		// Unhandled Conditions: CondKnown, CondNumIn, CondTextContains, CondTextEqual, CondUnknown
@@ -84,7 +85,7 @@ public class FindingToConditionBuilder {
 		
 		if (kbQuest instanceof QuestionNum) {
 
-			Double valueOf = parseNumAnswer(answerText, answer);
+			Double valueOf = parseNumAnswer(article, answerText, answer);
 			
 			QuestionNum questionNum = (QuestionNum) kbQuest;
 			
@@ -99,14 +100,14 @@ public class FindingToConditionBuilder {
 			else if (comparator.equals("<="))
 				return new CondNumLessEqual(questionNum, valueOf);
 			else {
-				storeMessage("Unkown comparator '" + comparator +"'.", comp);
+				storeMessage(article, "Unkown comparator '" + comparator +"'.", comp);
 				return null;
 			}
 		} else {
 			if (comparator.equals("="))
 				return new CondEqual(kbQuest, kbAns);
 			else { 
-				storeMessage("Unkown comparator '" + comparator +"'.", comp);
+				storeMessage(article, "Unkown comparator '" + comparator +"'.", comp);
 				return null;
 			}
 		}
@@ -114,11 +115,11 @@ public class FindingToConditionBuilder {
 		
 	}
 
-	private static Double parseNumAnswer(String value, Section answer) {
+	private static Double parseNumAnswer(KnowWEArticle article, String value, Section answer) {
 		try {
 			return Double.valueOf(value);
 		} catch (NumberFormatException e) {
-			storeMessage("Numerical value expected, got: '" + value +"'.", answer);
+			storeMessage(article, "Numerical value expected, got: '" + value +"'.", answer);
 			return new Double(-1);
 		}
 		
@@ -132,11 +133,11 @@ public class FindingToConditionBuilder {
 	 * @param kbm
 	 * @return
 	 */
-	public static AbstractCondition analyseAnyRelation(Section f, KnowledgeBaseManagement kbm) {
+	public static AbstractCondition analyseAnyRelation(KnowWEArticle article, Section f, KnowledgeBaseManagement kbm) {
 
 		Section child = f.findChildOfType(ComplexFinding.class);
 		if (child != null) {
-			return FindingToConditionBuilder.analyseComplexFinding(child, kbm);
+			return FindingToConditionBuilder.analyseComplexFinding(article, child, kbm);
 		} else 
 			return null;
 	}
@@ -149,7 +150,7 @@ public class FindingToConditionBuilder {
 	 * @param f
 	 * @return s null if the question was not found by KBM, a condition otherwise.
 	 */
-	private static AbstractCondition analyseFinding(Section f, KnowledgeBaseManagement kbm) {
+	private static AbstractCondition analyseFinding(KnowWEArticle article, Section f, KnowledgeBaseManagement kbm) {
 	
 		if (!f.getObjectType().getClass().equals(Finding.class))
 			return null;
@@ -163,12 +164,12 @@ public class FindingToConditionBuilder {
 		Section question = f.findSuccessor(FindingQuestion.class);
 		Section answer = f.findSuccessor(FindingAnswer.class);
 
-		storeMessage("", question);
-		storeMessage("", answer);
+		storeMessage(article, "", question);
+		storeMessage(article, "", answer);
 		
 		String questiontext = question.getOriginalText().replaceAll(p.toString(), "").trim();
 		if (answer == null) {
-			storeMessage("No answer-section found for finding: '" + f.getOriginalText() + "'.", f);
+			storeMessage(article, "No answer-section found for finding: '" + f.getOriginalText() + "'.", f);
 			return null;
 		}
 		String answertext = answer.getOriginalText().replaceAll(p.toString(), "").trim();
@@ -183,15 +184,15 @@ public class FindingToConditionBuilder {
 			//TODO: errors when answer is not found for certain question types (YN, OC)
 			
 			if (kbQuest instanceof QuestionOC && kbAns == null) {
-				storeMessage("Not a valid answer for question: '" + answertext + "'.", answer);
+				storeMessage(article, "Not a valid answer for question: '" + answertext + "'.", answer);
 				return null;
 			}
 			
-			AbstractCondition condition = createCondition(kbQuest, kbAns, comp, question, answer);
+			AbstractCondition condition = createCondition(article, kbQuest, kbAns, comp, question, answer);
 			return negated ? new CondNot(condition) : condition;
 		} else {
-			storeMessage("Question '" + question.getOriginalText() +"' not found.", question);
-			storeMessage("Question '" + question.getOriginalText() +"' not found.", answer);
+			storeMessage(article, "Question '" + question.getOriginalText() +"' not found.", question);
+			storeMessage(article, "Question '" + question.getOriginalText() +"' not found.", answer);
 			return null;
 			
 		}
@@ -199,14 +200,14 @@ public class FindingToConditionBuilder {
 		
 	}
 
-	private static void storeMessage(String messageText, Section section) {
+	private static void storeMessage(KnowWEArticle article, String messageText, Section section) {
 		
 		Message message = new Message(messageText);
 		
 		List<Message> messages = new ArrayList<Message>(1);
 		messages.add(message);
 		
-		((AbstractKnowWEObjectType) section.getObjectType()).storeMessages(section, messages);
+		((AbstractKnowWEObjectType) section.getObjectType()).storeMessages(article, section, messages);
 		
 
 		
@@ -220,23 +221,23 @@ public class FindingToConditionBuilder {
 	 * @param kbm 
 	 * @return s the according Condition or null if neither side could be parsed
 	 */
-	private static AbstractCondition analyseComplexFinding(Section cf, KnowledgeBaseManagement kbm) {
+	private static AbstractCondition analyseComplexFinding(KnowWEArticle article, Section cf, KnowledgeBaseManagement kbm) {
 			
 		
 		TypeSectionFilter filter = new TypeSectionFilter("Disjunct");
-		return analyseDisjunction(cf.getChildren(filter), kbm);
+		return analyseDisjunction(article, cf.getChildren(filter), kbm);
 		
 	}
 	
 	
-	private static AbstractCondition analyseDisjunction(List<Section> disjunction, KnowledgeBaseManagement kbm) {
+	private static AbstractCondition analyseDisjunction(KnowWEArticle article, List<Section> disjunction, KnowledgeBaseManagement kbm) {
 		
 		List<AbstractCondition> disjuncts = new ArrayList<AbstractCondition>();
 		TypeSectionFilter filter = new TypeSectionFilter("Conjunct");
 		
 
 		for (Section child : disjunction) {
-			AbstractCondition conjunction = analyzeConjunction(child.getChildren(filter), kbm);
+			AbstractCondition conjunction = analyzeConjunction(article, child.getChildren(filter), kbm);
 			if (conjunction != null)
 				disjuncts.add(conjunction);
 		}
@@ -251,13 +252,13 @@ public class FindingToConditionBuilder {
 	}
 	
 
-	private static AbstractCondition analyzeConjunction(List<Section> conjunction,
+	private static AbstractCondition analyzeConjunction(KnowWEArticle article, List<Section> conjunction,
 			KnowledgeBaseManagement kbm) {
 		
 		List<AbstractCondition> conjuncts = new ArrayList<AbstractCondition>();
 		
 		for (Section section : conjunction) {
-			AbstractCondition condition = analyseFinding(section.getChildren().get(0), kbm);
+			AbstractCondition condition = analyseFinding(article, section.getChildren().get(0), kbm);
 			if (condition != null)
 				conjuncts.add(condition);
 		}

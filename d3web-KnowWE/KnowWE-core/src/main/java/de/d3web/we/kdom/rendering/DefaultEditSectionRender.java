@@ -2,6 +2,7 @@ package de.d3web.we.kdom.rendering;
 
 import java.util.Map;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -23,7 +24,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		
 		
@@ -67,7 +68,7 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 			}
 			string.append( KnowWEUtils.maskHTML( "<div class=\"default-edit-handle\"></div>" ));
 		} else {
-			renderContent( sec, user, string );
+			renderContent(article, sec, user, string );
 		}
 		string.append( KnowWEUtils.maskHTML( "</div>" ));
 		if(highlight && !isEditable) {
@@ -81,7 +82,7 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 	 * @param user
 	 * @param string
 	 */
-	public abstract void renderContent(Section sec, KnowWEUserContext user, StringBuilder string);
+	public abstract void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string);
 	
 	
 	/**

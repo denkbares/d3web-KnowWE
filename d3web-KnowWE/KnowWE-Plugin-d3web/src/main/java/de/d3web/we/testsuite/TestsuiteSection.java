@@ -79,7 +79,7 @@ public class TestsuiteSection extends AbstractKopicSection{
 					List<de.d3web.report.Message> messages = builder.addKnowledge(r, idom, null);
 					
 					// Reporting
-					storeMessages(s,messages);
+					storeMessages(article, s,messages);
 					Report testsuiteRep = new Report();
 					
 					for (Message messageKnOffice : messages) {

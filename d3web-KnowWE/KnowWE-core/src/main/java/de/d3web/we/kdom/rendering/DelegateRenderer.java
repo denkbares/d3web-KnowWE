@@ -23,6 +23,7 @@ package de.d3web.we.kdom.rendering;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
@@ -92,7 +93,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 //	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder builder) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder builder) {
 		
 		boolean renderTypes = isRenderTypes(user.getUrlParameterMap());
 		if (renderTypes)
@@ -115,7 +116,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 			
 				// TODO is section right here: Was sec befor
 				// Johannes
-				renderer.render(section, user, builder);
+				renderer.render(article, section, user, builder);
 //				/* Once we have completely switched to new render-method
 //				 * deprecated call will be removed (also from the interface)
 //				 */	

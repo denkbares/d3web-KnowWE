@@ -29,6 +29,7 @@ import de.d3web.kernel.domainModel.DiagnosisState;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
@@ -50,7 +51,7 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 	private static SolutionIDHighlightingRenderer instance;
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String solution = sec.getOriginalText().replace("\"", "").trim();
 
 		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
@@ -99,7 +100,7 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 		
 		new ObjectInfoLinkRenderer(
 				FontColorRenderer.getRenderer(FontColorRenderer.COLOR1)).
-					render(sec, user, string);
+					render(article, sec, user, string);
 		string.append(spanEnd);
 	}
 	

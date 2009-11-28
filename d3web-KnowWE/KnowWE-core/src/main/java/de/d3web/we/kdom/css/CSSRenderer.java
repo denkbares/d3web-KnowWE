@@ -23,6 +23,7 @@ package de.d3web.we.kdom.css;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -41,7 +42,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class CSSRenderer extends KnowWEDomRenderer {
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		Map<String, String> mapFor = AbstractXMLObjectType.getAttributeMapFor(sec);
 		String style = mapFor.get("style");
 		
@@ -49,7 +50,7 @@ public class CSSRenderer extends KnowWEDomRenderer {
 		
 		for (Section section : sec.getChildren()) {
 			if ( section.getObjectType() instanceof PlainText) {
-				DelegateRenderer.getInstance().render(sec, user, b);
+				DelegateRenderer.getInstance().render(article, sec, user, b);
 			}
 		}
 		string.append(wrapWithCSS(b.toString(), style));

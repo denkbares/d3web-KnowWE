@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.kopic.renderer;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.ColorRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -36,10 +37,10 @@ public class ErrorRenderer extends ColorRenderer{
 	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String title = "Error";
 		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(sec, user, b);
+		DelegateRenderer.getInstance().render(article, sec, user, b);
 		string.append(spanColorTitle(b.toString(), "red", title));
 	}
 	

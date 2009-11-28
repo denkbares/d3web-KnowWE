@@ -26,6 +26,7 @@ import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.AnnotationObject;
 import de.d3web.we.kdom.Annotation.StandardAnnotationRenderer;
@@ -40,7 +41,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
 		String question = null;
 		Section qAChild = sec.findSuccessor(SimpleAnnotation.class);
@@ -64,7 +65,7 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 		try {
 			text = sec.findSuccessor(AnnotatedString.class).getOriginalText();
 		} catch (NullPointerException e) {
-			new StandardAnnotationRenderer().render(sec, user, string);
+			new StandardAnnotationRenderer().render(article, sec, user, string);
 		}
 
 		D3webKnowledgeService service =
@@ -78,7 +79,7 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 		if (middle != null) {
 			string.append(middle);
 		} else {
-			new StandardAnnotationRenderer().render(sec, user, string);
+			new StandardAnnotationRenderer().render(article, sec, user, string);
 		}
 	}
 

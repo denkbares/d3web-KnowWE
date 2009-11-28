@@ -34,7 +34,8 @@ public interface ReviseSubTreeHandler {
 	/**
 	 * Revises the subtree of this section.
 	 * 
-	 * @param article is the article that called this method
+	 * @param article is the article that called this method... not necessarily the
+	 * 		article the Section is hooked into directly, since Sections can also be included!
 	 * @param s is the root section of the subtree to revise
 	 */
 	public void reviseSubtree(KnowWEArticle article, Section s);

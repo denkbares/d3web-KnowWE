@@ -65,7 +65,7 @@ public class SolutionsSection extends AbstractKopicSection {
 							.parse(new StringReader(removeTextIncludeTags(content.getOriginalText())), kbm, new SingleKBMIDObjectManager(kbm));
 	
 					
-					storeMessages(s,messages);
+					storeMessages(article, s,messages);
 					
 					
 					Report ruleRep = new Report();

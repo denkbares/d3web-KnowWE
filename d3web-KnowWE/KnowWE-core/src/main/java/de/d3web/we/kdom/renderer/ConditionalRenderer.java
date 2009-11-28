@@ -23,6 +23,7 @@ package de.d3web.we.kdom.renderer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -36,10 +37,10 @@ public abstract class ConditionalRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		StringBuilder b = new StringBuilder();
 		for(KnowWEDomRenderer r : conditionalRenderers) {
-			r.render(sec, user, b);
+			r.render(article, sec, user, b);
 			// TODO is test null or "". Johannes
 			String test = b.toString();
 			if(test != null || test.equals("")) {

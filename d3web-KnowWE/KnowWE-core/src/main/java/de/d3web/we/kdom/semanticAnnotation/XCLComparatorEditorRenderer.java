@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.semanticAnnotation;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -30,7 +31,7 @@ public class XCLComparatorEditorRenderer extends KnowWEDomRenderer {
 	private static String[] comps = { "=", "<=", ">=", ">", "<" };
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String currentOp = sec.getOriginalText().trim();
 		
 		StringBuilder buffi = new StringBuilder();

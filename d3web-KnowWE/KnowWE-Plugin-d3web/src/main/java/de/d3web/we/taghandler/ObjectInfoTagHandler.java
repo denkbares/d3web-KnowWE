@@ -167,7 +167,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			
 			for (Result r : items) {
 				StringBuilder b = new StringBuilder();
-				r.getSection().getObjectType().getRenderer().render(r.getSection(), user, b);
+				r.getSection().getObjectType().getRenderer().render(article, r.getSection(), user, b);
 				
 				if (fuzzy) {
 					buffy.append("<tr><td><strong>" + r.getSection().getObjectType().getName() + "</strong></td>" +

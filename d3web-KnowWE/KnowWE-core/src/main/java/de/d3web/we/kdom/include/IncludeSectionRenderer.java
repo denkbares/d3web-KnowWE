@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.include;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -29,7 +30,7 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 
 	
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String srclink;
 		if (sec instanceof TextIncludeSection) {
 			String src = ((TextIncludeSection) sec).getSrc();
@@ -47,7 +48,7 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 		int i = 0;
 		for (Section child:sec.getChildren()) {
 			if (!((i < 2 || i > sec.getChildren().size() - 3) && child.isEmpty())) {
-				child.getObjectType().getRenderer().render(child, user, content);
+				child.getObjectType().getRenderer().render(article, child, user, content);
 				b.append(content.toString());
 				// make content empty, so no new Object has to be created
 				content.delete(0, content.length());

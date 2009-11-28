@@ -28,24 +28,26 @@ import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class KopicSectionRenderer extends KnowWEDomRenderer {
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
 		string.append("%%collapsebox-closed \n");
 		
 		StringBuilder messagesBuilder = new StringBuilder();
 		if (sec.getObjectType() instanceof AbstractKnowWEObjectType) {
 			Collection<Message> messages = ((AbstractKnowWEObjectType) sec
-					.getObjectType()).getMessages(sec);
+					.getObjectType()).getMessages(article, sec);
 			boolean errors = false;
 			if (messages != null && !messages.isEmpty()) {
 				messagesBuilder.append(wrappMessages(generateMessages(messages, sec, user)));
@@ -61,7 +63,7 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 		}
 		
 		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(sec,user, b);
+		DelegateRenderer.getInstance().render(article,sec, user, b);
 		string.append(wrappContent(b.toString()));
 		string.append("/%\n");
 	}
@@ -99,7 +101,7 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 		for (Message m : messages) {
 			result.append(m.getMessageType() + ": " + m.getMessageText()
 					+ (m.getMessageType().equals(Message.NOTE) ? "" : " Line: " + m.getLineNo()) 
-					+ KnowWEEnvironment.maskHTML("<br>"));
+					+ KnowWEUtils.maskHTML("<br>"));
 			if(m.getMessageType().equals(Message.ERROR)) {
 				insertErrorRenderer(lines, m, user.getUsername());
 			}
@@ -110,13 +112,13 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 	protected String generateTitle(Section sec, KnowWEUserContext user, boolean errors) {
 		String title = "";
 		if (errors) {
-			title += KnowWEEnvironment.maskHTML("<img src=KnowWEExtension/images/statisticsError.gif title='" 
+			title += KnowWEUtils.maskHTML("<img src=KnowWEExtension/images/statisticsError.gif title='" 
 					+ D3webModule.getKwikiBundle_d3web().getString("KnowWE.KopicRenderer.errorTooltip") 
 					+ "'></img> ");
 		}
 		title += ((AbstractXMLObjectType)sec.getObjectType()).getXMLTagName() + " ";
 		if (errors) {
-			title = KnowWEEnvironment.maskHTML("<a style='color:rgb(255, 0, 0)' title='" 
+			title = KnowWEUtils.maskHTML("<a style='color:rgb(255, 0, 0)' title='" 
 					+ D3webModule.getKwikiBundle_d3web().getString("KnowWE.KopicRenderer.errorTooltip") + "'>" 
 					+ title
 					+ "</a>");

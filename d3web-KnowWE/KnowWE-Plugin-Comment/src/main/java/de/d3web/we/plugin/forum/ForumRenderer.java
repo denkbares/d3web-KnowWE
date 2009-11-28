@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -81,7 +82,7 @@ public class ForumRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 			//load css-file:
 			string.append(maskHTML("<link rel=stylesheet type=text/css href=KnowWEExtension/css/forum.css>\n"));
@@ -115,7 +116,7 @@ public class ForumRenderer extends KnowWEDomRenderer {
 				
 				//add first-comment
 				Section section0 = contentSectionList.get(0);
-				section0.getObjectType().getRenderer().render(section0, user, string);
+				section0.getObjectType().getRenderer().render(article, section0, user, string);
 				
 				boolean canEditPage = false;
 				if(user.getUsername() != "Guest") { // causes endless loop
@@ -145,14 +146,14 @@ public class ForumRenderer extends KnowWEDomRenderer {
 			    if(sortUpwards) {
 					for(int i = 1; i < contentSectionList.size(); i++) {	
 						Section sectionI = contentSectionList.get(i);
-						sectionI.getObjectType().getRenderer().render(sectionI, user, string);
+						sectionI.getObjectType().getRenderer().render(article, sectionI, user, string);
 					}
 					string.append(maskHTML("<div id=newBox></div>"));
 				} else {
 					string.append(maskHTML("<div id=newBox></div>"));
 					for(int i = contentSectionList.size() - 1; i > 0; i--) {	
 						Section sectionI = contentSectionList.get(i);
-						sectionI.getObjectType().getRenderer().render(sectionI, user, string);
+						sectionI.getObjectType().getRenderer().render(article, sectionI, user, string);
 					}
 				}
 			    

@@ -179,7 +179,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				double weight = this.getWeight(rel);
 				XCLRelationType relationType = this.getRelationType(rel);
 				// Get the Conditions
-				AbstractCondition cond = FindingToConditionBuilder.analyseAnyRelation(rel, kbm);
+				AbstractCondition cond = FindingToConditionBuilder.analyseAnyRelation(article, rel, kbm);
 				
 				if (cond == null)
 					continue;
