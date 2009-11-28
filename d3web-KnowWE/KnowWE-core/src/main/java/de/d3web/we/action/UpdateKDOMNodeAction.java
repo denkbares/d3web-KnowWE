@@ -24,7 +24,6 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * <p>UpdateTableKDOMNodes class.</p>

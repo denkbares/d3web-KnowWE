@@ -49,13 +49,13 @@ KNOWWE.core.actions = function(){
                     _KE.add('click', els[i], function(e){
                         var el = _KE.target(e);
                         var id = el.parentNode.id;
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id );
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id, null );
                     });
                 } else if( els[i]._hasClass( 'default') ) {
                     _KE.add('click', els[i], function(e){
                         var el = _KE.target(e);
                         var rel = eval("(" + el.getAttribute('rel') + ")");
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id );
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, null );
                     });
                 }
             }
@@ -134,11 +134,12 @@ KNOWWE.core.actions = function(){
          *     fn - The function that should be executed afterwards.
          *     id - The id of the element the quick edit flag should set to.
          */        
-        enableQuickEdit : function( fn, id ){
+        enableQuickEdit : function( fn, id, view){
             var params = {
                 action : 'SetQuickEditFlagAction',
                 TargetNamespace : id,
-                KWiki_Topic : KNOWWE.helper.gup('page')
+                KWiki_Topic : KNOWWE.helper.gup('page'),
+                ajaxToHTML : view
             }   
             
             var options = {
@@ -503,18 +504,25 @@ KNOWWE.core.edit = function(){
 	    init : function(){
             var elements = _KS('.quickedit .default');
             for(var i = 0; i < elements.length; i++){
-                _KE.removeEvents('click', elements[i]);
-                _KE.add('click', elements[i], function(e){
-                    var el = _KE.target(e);
-                    var rel = eval("(" + el.getAttribute('rel') + ")");
-                    KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id);
-                });
-                
-           		var rel = eval("(" + elements[i].getAttribute('rel') + ")");
-            	var bttns = _KS('#'+rel.id + ' input[type=submit]');
-            	if( bttns.length != 0 ){
-            		_KE.add('click', bttns[0], KNOWWE.core.edit.onSave );
-                } 
+            	var rel, bttns;
+            	
+            	_KE.removeEvents('click', elements[i]);
+                rel = eval("(" + elements[i].getAttribute('rel') + ")");
+                bttns = _KS('#'+rel.id + ' input[type=submit]');
+                if( bttns.length != 0 ){
+                    _KE.add('click', bttns[0], KNOWWE.core.edit.onSave );
+	                _KE.add('click', elements[i], function(e){
+	                    var el = _KE.target(e);
+	                    var rel = eval("(" + el.getAttribute('rel') + ")");
+	                    KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render");
+                    });
+                }  else {           	
+	                _KE.add('click', elements[i], function(e){
+	                    var el = _KE.target(e);
+	                    var rel = eval("(" + el.getAttribute('rel') + ")");
+	                    KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, null);
+	                });
+                }
             }  				
 	    },
         /**
@@ -539,7 +547,7 @@ KNOWWE.core.edit = function(){
                 response : {
                     action : 'none',
                     fn : function(){ 
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id);
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render");
                     }
                 }
             }
@@ -576,7 +584,7 @@ KNOWWE.core.table = function(){
                     _KE.add('click', elements[i], function(e){
                         var el = _KE.target(e);
                         var id = el.parentNode.id;
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id);
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id, null);
                     });
                 }                
             }
@@ -631,7 +639,7 @@ KNOWWE.core.table = function(){
                 response : {
                     action : 'none',
                     fn : function(){ 
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id);
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id, "render");
                     }
                 }
             }

@@ -1,4 +1,4 @@
-<%@ page import="com.ecyrd.jspwiki.*" %><%@ page import="de.d3web.we.jspwiki.*" %><%@ page import="de.d3web.we.core.*" %><%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %><%!
+<%@ page import="com.ecyrd.jspwiki.*" %><%@ page import="de.d3web.we.jspwiki.*" %><%@ page import="de.d3web.we.core.*" %><%@ page import="de.d3web.we.utils.*" %><%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %><%!
 String findParam( PageContext ctx, String key )
     {
         ServletRequest req = ctx.getRequest();
@@ -27,5 +27,10 @@ String findParam( PageContext ctx, String key )
 		//map.put("KWiki_Topic", wikiContext.getPage().getName());
 	}
 	String result = env.getDispatcher().performAction(map);
-
-%><%=result%><wiki:Include page="<%=\"\"%>" />
+	
+	String ajaxToHTML = map.get( "ajaxToHTML" );
+	if( ajaxToHTML != null && !ajaxToHTML.equals("null") ){
+		result = wiki.textToHTML(wikiContext, result);
+	}
+    result = KnowWEUtils.unmaskHTML( result );
+%><%=result%><wiki:Include page="<%=\"\"%>"/>

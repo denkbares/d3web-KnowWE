@@ -47,8 +47,7 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 
-		rb = KnowWEEnvironment.getInstance().getKwikiBundle(
-				parameterMap.getRequest());
+		rb = KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest());
 
 		String web = parameterMap.getWeb();
 		String nodeID = parameterMap.get(KnowWEAttributes.TARGET);
@@ -56,8 +55,7 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.getUser();
 
-		KnowWEWikiConnector connector = KnowWEEnvironment.getInstance()
-				.getWikiConnector();
+		KnowWEWikiConnector connector = KnowWEEnvironment.getInstance().getWikiConnector();
 
 		if (connector.userCanEditPage(topic, parameterMap.getRequest())) {
 			boolean existsPageLock = connector.isPageLocked(topic);
@@ -73,11 +71,8 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 			} else {
 				connector.setPageLocked(topic, user);
 			}
-			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user,
-					topic);
-			String result = KnowWEUtils.unmaskHTML(refreshKDOMElement(web,
-					topic, new KnowWEUserContextImpl(user, parameterMap),
-					nodeID));
+			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user, topic);
+			String result = this.rerenderKDOMElement(web, topic, new KnowWEUserContextImpl(user, parameterMap),nodeID);
 			return "@replace@" + result;
 		} else {
 			return getMessage(topic);
@@ -94,15 +89,12 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 	 * @param nodeID
 	 * @return
 	 */
-	private String refreshKDOMElement(String web, String topic,
-			KnowWEUserContext user, String nodeID) {
-		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance()
-				.getArticleManager(web);
+	private String rerenderKDOMElement(String web, String topic, KnowWEUserContext user, String nodeID) {
+		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = mgr.getArticle(topic);
 
 		if (article == null)
-			return "<p class=\"error box\"> "
-					+ rb.getString("KnowWE.qedit.noarticle") + " </p>";
+			return "<p class=\"error box\"> " + rb.getString("KnowWE.qedit.noarticle") + " </p>";
 
 		Section root = article.getSection();
 		Section secWithNodeID = getSectionFromCurrentID(nodeID, root);
@@ -119,8 +111,7 @@ public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 			String result = b.toString();
 			return result;
 		}
-		return "<p class=\"error box\"> "
-				+ rb.getString("KnowWE.qedit.nokdomidfound") + "</p>";
+		return "<p class=\"error box\"> " + rb.getString("KnowWE.qedit.nokdomidfound") + "</p>";
 	}
 
 	/**

@@ -399,10 +399,11 @@ KNOWWE.helper.ajax = function ( options ) {
                          var info = new _KN('p', { 'class' : 'box info' });
                          info._setHTML( http.responseText.replace(/@info@/, '') );
                          info._injectTop(document.getElementById( ids[0]));
-                    }
-                    if( http.responseText.startsWith('@replace@')){
+                    } else if( http.responseText.startsWith('@replace@')){
                     	var html = http.responseText.replace(/@replace@/, '');
                         KNOWWE.core.util.replace( ids, html );    
+                    } else {
+                    	window.location.reload();
                     }
                     break;
                 default:
