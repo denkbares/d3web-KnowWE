@@ -376,13 +376,13 @@ public class d3webSectionFinderTest extends TestCase {
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 87, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 90, results.get(0).getEnd());
+		assertEquals(WRONG_FIRST_END, 88, results.get(0).getEnd());
 		
 		assertEquals(WRONG_SECOND_START, 124, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 127, results.get(1).getEnd());
+		assertEquals(WRONG_SECOND_END, 125, results.get(1).getEnd());
 		
 		assertEquals(WRONG_THIRD_START, 155, results.get(2).getStart());
-		assertEquals(WRONG_THIRD_END, 158, results.get(2).getEnd());
+		assertEquals(WRONG_THIRD_END, 156, results.get(2).getEnd());
 	}
 	
 	public void testXCLRelationSectionFinder() {
@@ -396,13 +396,13 @@ public class d3webSectionFinderTest extends TestCase {
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 69, results.get(0).getEnd());
+		assertEquals(WRONG_FIRST_END, 70, results.get(0).getEnd());
 		
 		assertEquals(WRONG_SECOND_START, 72, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 106, results.get(1).getEnd());
+		assertEquals(WRONG_SECOND_END, 107, results.get(1).getEnd());
 		
 		assertEquals(WRONG_THIRD_START, 109, results.get(2).getStart());
-		assertEquals(WRONG_THIRD_END, 137, results.get(2).getEnd());
+		assertEquals(WRONG_THIRD_END, 138, results.get(2).getEnd());
 	}
 	
 	public void testXCLRelationWeightSectionFinder() {
