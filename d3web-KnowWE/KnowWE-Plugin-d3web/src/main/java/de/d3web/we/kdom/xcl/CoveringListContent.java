@@ -76,7 +76,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				// Analyse s (Has XCList-Children)
 				ArrayList <Section> elements = new ArrayList<Section>(s.getChildren());
 				for (Section sec : elements) {
-					this.analyseXCList(sec, kbm, currentWeb);
+					this.analyseXCList(article, sec, kbm, currentWeb);
 				}
 			}
 
@@ -91,7 +91,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		 * @param currentweb 
 		 * @param XCLList
 		 */
-		private void analyseXCList(Section xclList, KnowledgeBaseManagement kbm, String currentweb) {
+		private void analyseXCList(KnowWEArticle article, Section xclList, KnowledgeBaseManagement kbm, String currentweb) {
 			
 			// Check if xclList is XCList
 			if ((xclList.getObjectType() instanceof XCList) && (kbm != null)) {
@@ -115,7 +115,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				ArrayList <Section> currentRels = new ArrayList <Section>(this.getXCLRelations(elements.get(1)));
 				
 				// insert every Relation into currentModel
-				this.insertRelations(currentRels, kbm, currentdiag, currentweb);
+				this.insertRelations(article, currentRels, kbm, currentdiag, currentweb);
 				
 				//tail with thresholds
 				if (elements.size() == 3) {
@@ -172,7 +172,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		 * @param currentWeb 
 		 * @return
 		 */
-		private void insertRelations(ArrayList<Section> currentRels, KnowledgeBaseManagement kbm, Diagnosis currentdiag, String currentWeb) {
+		private void insertRelations(KnowWEArticle article, ArrayList<Section> currentRels, KnowledgeBaseManagement kbm, Diagnosis currentdiag, String currentWeb) {
 
 			
 			for (Section rel : currentRels) {
@@ -186,7 +186,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 					
 				// Insert the Relation into the currentModel
 				String kbRelId = XCLModel.insertXCLRelation(kbm.getKnowledgeBase(), cond, currentdiag, relationType, weight, rel.getId());
-				KnowWEUtils.storeSectionInfo(currentWeb, rel.getTitle(), rel.getId(), KBID_KEY, kbRelId);
+				KnowWEUtils.storeSectionInfo(currentWeb, article.getTitle(), rel.getId(), KBID_KEY, kbRelId);
 				
 			}
 			

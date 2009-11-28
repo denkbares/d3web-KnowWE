@@ -47,6 +47,7 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected  void init() {
+		this.childrenTypes.add(new XCLRelationLineEnd());
 		this.childrenTypes.add(new XCLRelationWeight());
 		this.childrenTypes.add(new ComplexFinding());
 		this.sectionFinder = new XCLRelationSectionFinder();
@@ -60,7 +61,7 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 		private final Pattern relPattern;
 		
 		public XCLRelationSectionFinder() {
-			relPattern = Pattern.compile("\\s*((?:" + Patterns.QUOTEDSTRING + "|[^,]+)+),");
+			relPattern = Pattern.compile("\\s*((?:" + Patterns.QUOTEDSTRING + "|[^,]+)+,)");
 		}
 
 		@Override

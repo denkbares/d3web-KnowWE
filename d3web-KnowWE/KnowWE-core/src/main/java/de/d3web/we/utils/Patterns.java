@@ -21,6 +21,8 @@ package de.d3web.we.utils;
 
 import java.util.regex.Pattern;
 
+import de.d3web.we.kdom.include.TextInclude;
+
 /**
  *
  * Class for storing often reused regular expression.
@@ -71,12 +73,6 @@ public final class Patterns {
 		WORD + "|" +			// or single word
 		WORDS;					// or words separated by spaces
 	
-	/**
-	 * Pattern that matches both Tags of the TextIncludeType
-	 */
-	public static final String INCLUDE_BOTH = "</?txtinclude[^>]*>";
-	
-	
 	
 	/**
 	 * RegEx for an XCL. 
@@ -91,7 +87,7 @@ public final class Patterns {
 		"(?:" +					// the content of the XCL:
 		QUOTEDSTRING + "|" +	// anything quoted 
 		"[^\\}\"]*" + 			// or anything except unquoted '}' or single '"'
-		"|\\s*?" + INCLUDE_BOTH + "\\s*?" + //or include
+		"|\\s*?" + TextInclude.PATTERN_BOTH+ "\\s*?" + //or include
 		")*" + 					// many of the above, ends content
 		"\\}" + SPACETABS +		// closing bracket and whitespaces TODO allowed just space before thresholds??
 		"(?:\\[[^\\[\\]\\{\\}]*\\])?" +  	//optional threshold in SBs, anything except brackets 

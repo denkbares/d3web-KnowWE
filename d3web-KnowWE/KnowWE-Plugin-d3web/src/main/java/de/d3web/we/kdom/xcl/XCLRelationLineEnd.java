@@ -30,6 +30,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.utils.Patterns;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class XCLRelationLineEnd extends DefaultAbstractKnowWEObjectType {
@@ -54,7 +55,7 @@ public class XCLRelationLineEnd extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			Pattern relPattern = Pattern.compile(", *\\r?\\n");
+			Pattern relPattern = Pattern.compile(",");
 			Matcher m = relPattern.matcher(text);
 			while (m.find()) {
 				result.add(new SectionFinderResult(m.start(), m.end()));

@@ -20,9 +20,9 @@
 
 package de.d3web.we.kdom.xcl;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -48,7 +48,7 @@ public class XCLRelationKdomIdWrapperRenderer extends KnowWEDomRenderer {
 		// id can be found by the class.
 		StringBuilder b = new StringBuilder();
 		XCLRelationHighlightingRenderer.getInstance().render(sec, user, b);
-		string.append(KnowWEEnvironment.maskHTML("<span id='"+sec.getId()+"' class = 'XCLRelationInList'>"
+		string.append(KnowWEUtils.maskHTML("<span id='"+sec.getId()+"' class = 'XCLRelationInList'>"
 										  + b.toString()
 										  + "</span>"));
 	}

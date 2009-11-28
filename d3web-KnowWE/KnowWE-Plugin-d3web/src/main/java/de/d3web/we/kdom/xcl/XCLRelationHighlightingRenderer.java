@@ -80,7 +80,7 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 		StringBuilder buffi = new StringBuilder();
 		if (kbrelId == null) {
 			DelegateRenderer.getInstance().render(sec, user, buffi);
-			string.append(new StringBuilder(KnowWEEnvironment.maskHTML(buffi.toString())));
+			string.append(new StringBuilder(KnowWEUtils.maskHTML(buffi.toString())));
 			return;
 		}
 
@@ -92,7 +92,6 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 			Collection<KnowledgeSlice> models = xpsCase.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
 			for (KnowledgeSlice knowledgeSlice : models) {
 				if(knowledgeSlice instanceof XCLModel) {
-					
 					// Check if model contains the relation
 					XCLRelation relation = ((XCLModel)knowledgeSlice).findRelation(kbrelId);
 					
