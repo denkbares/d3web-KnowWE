@@ -169,10 +169,12 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 		if (finishedKBM.get(title)) {
 			return true;
 		}
+		
+		if (!(s.getObjectType() instanceof KnowledgeRecyclingObjectType)) {
+			knowledgeSectionsCount.put(title, knowledgeSectionsCount.get(title) + 1);
+		}
+		
 		if (usingNewKBM.get(title)) {
-			if (!(s.getObjectType() instanceof KnowledgeRecyclingObjectType)) {
-				knowledgeSectionsCount.put(title, knowledgeSectionsCount.get(title) + 1);
-			}
 			return true;
 		}
 		
@@ -193,7 +195,6 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 						.log(Level.WARNING, "Wrong order of parsing for ObjectType '" +
 								s.getObjectType() + "'!");
 				} else if (lastKnowledgeSectionsCount.get(title) != knowledgeSectionsCount.get(title)) {
-					System.out.println(knowledgeSectionsCount.get(title));
 					kbms.put(title, KnowledgeBaseManagement.createInstance());
 					useNewKBM(article, s);
 				}
@@ -227,9 +228,6 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 		List<Section> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));
 		for (Section sec:strSub) {
 			sec.getObjectType().reviseSubtree(article, sec);
-		}
-		if (!(s.getObjectType() instanceof KnowledgeRecyclingObjectType)) {
-			knowledgeSectionsCount.put(article.getTitle(), knowledgeSectionsCount.get(article.getTitle()) + 1);
 		}
 	}
 

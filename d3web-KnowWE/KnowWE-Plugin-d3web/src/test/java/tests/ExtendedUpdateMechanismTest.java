@@ -72,7 +72,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		/*
 		 * Init first Article
 		 */
-		KnowWEArticle article1 = new KnowWEArticle(content, "UpdatingTest",
+		KnowWEArticle article1 = new KnowWEArticle(content, "UpdatingTest1",
 				types, "default_web");
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article1);
 		
@@ -83,7 +83,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		/*
 		 * Init a second, identical Article
 		 */
-		KnowWEArticle article2 = new KnowWEArticle(content, "UpdatingTest",
+		KnowWEArticle article2 = new KnowWEArticle(content, "UpdatingTest1",
 				types, "default_web");
 		
 		List<Section> sections2 = article2.getAllNodesPreOrder();
