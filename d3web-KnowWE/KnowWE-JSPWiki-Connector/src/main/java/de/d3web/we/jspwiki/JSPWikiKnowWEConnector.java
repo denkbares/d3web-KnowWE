@@ -89,6 +89,10 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	    HttpServletRequest req = map.getRequest();
 	    WikiContext context = engine.createContext(req, WikiContext.EDIT);
 	    context.setPage(engine.getPage(name));
+	    
+	    WikiPage page = context.getPage();
+	    page.setAuthor( context.getCurrentUser().getName() );
+	    
 	    engine.saveText(context, text);
 	    // engine.saveText(map.getContext(), text);
 	    return true;
