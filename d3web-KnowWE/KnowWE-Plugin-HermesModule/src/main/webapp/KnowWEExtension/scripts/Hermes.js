@@ -97,7 +97,6 @@ KNOWWE.plugin.hermes.conceptPopup = function() {
 		init : function() {
 			if (_KS('.conceptLink').length != 0) {
 				var array = _KS('.conceptLink');
-				console.log(array);
 				array
 						.each(function(element) {
 
@@ -260,7 +259,7 @@ KNOWWE.plugin.hermes.conceptPopup = function() {
 
 			var kdomid = el.id;
 			var contentElement = _KS('#' + kdomid + '_popupcontent');
-			var contentT = contentElement.textContent;
+			var contentT = contentElement.textContent || contentElement.innerText;
 
 			if (!el.getAttribute('rel'))
 				return;

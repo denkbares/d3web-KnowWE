@@ -78,9 +78,9 @@ public abstract class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				+ conceptName
 				+ "', user:'"
 				+ arg1.getUsername()
-				+ "'}\" class=\"conceptLink\" id='"
+				+ "'}\" class=\"conceptLink pointer\" id='"
 				+ arg0.getId()
-				+ "' src='KnowWEExtension/images/question.gif' width='12' ></img> "
+				+ "' src='KnowWEExtension/images/question.gif' width='12' /> "
 				+ "</span><span id='" + arg0.getId()
 				+ "_popupcontent' style='visibility:hidden;position:fixed' >";
 
