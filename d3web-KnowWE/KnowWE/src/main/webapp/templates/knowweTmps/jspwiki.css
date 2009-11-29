@@ -261,7 +261,7 @@ code, tt, pre {
 	overflow:auto;
 }
 pre {
-	clear:both;
+	/* clear:both; */
 	white-space:pre;
 	margin:1em 2.5%;
 	padding:0.5em;

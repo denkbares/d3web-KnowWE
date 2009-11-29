@@ -40,8 +40,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.renderer.DefaultTextRenderer;
+import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -73,16 +73,16 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 		OldRulesEraser.deleteRules(article, s, kbm);
 	}
 
-	private class RuleRenderer extends KnowWEDomRenderer {
+	private class RuleRenderer extends DefaultEditSectionRender {
 
 		@Override
-		public void render(KnowWEArticle article, Section sec,
+		public void renderContent(KnowWEArticle article, Section sec,
 				KnowWEUserContext user, StringBuilder string) {
 
 			List<Message> errors = getErrorMessages(article, sec);
 
 			string.append(KnowWEUtils.maskHTML("<pre><span id='" + sec.getId()
-					+ "' class = 'XCLRelationInList'><span id=\"\">"));
+					+ "' class = 'XCLRelationInList'>"));
 
 			boolean empty = true;
 			if (errors != null) {
@@ -116,7 +116,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 				DelegateRenderer.getInstance().render(article, sec, user, b);
 			}
 			string.append(b.toString()
-					+ KnowWEUtils.maskHTML("</pre></span></span>\n"));
+					+ KnowWEUtils.maskHTML("</pre></span>\n"));
 		}
 
 	}

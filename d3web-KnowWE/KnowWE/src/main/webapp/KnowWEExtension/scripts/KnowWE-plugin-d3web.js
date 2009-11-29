@@ -128,7 +128,7 @@ KNOWWE.plugin.d3web.actions = function(){
             // Restore the Highlighting that was before
             var restore = document.getElementById('uniqueMarker');
             if (restore) {
-                KNOWWE.plugin.d3web.rerendercontent.updateNode(restore.className, rel.topic);
+                KNOWWE.core.rerendercontent.updateNode(restore.className, rel.topic);
             }
             KNOWWE.plugin.d3web.actions.highlightNode(rel.kdomid, rel.topic, rel.depth, rel.breadth, event);
         },
@@ -145,7 +145,7 @@ KNOWWE.plugin.d3web.actions = function(){
             // Restore the Highlighting that was before
             var restore = document.getElementById('uniqueMarker');
             if (restore) {
-                KNOWWE.plugin.d3web.rerendercontent.updateNode(restore.className, rel.topic);
+                KNOWWE.core.rerendercontent.updateNode(restore.className, rel.topic);
             }
             KNOWWE.plugin.d3web.actions.highlightNode(rel.kdomid, rel.topic, rel.depth, rel.breadth, event);
         },
@@ -910,7 +910,7 @@ KNOWWE.plugin.d3web.solutionstate = function(){
                                 _KE.add('click', element, KNOWWE.plugin.d3web.solutionstate.showSolutionLog);
                             });
                         }
-                        KNOWWE.plugin.d3web.rerendercontent.update();
+                        KNOWWE.core.rerendercontent.update();
                         KNOWWE.plugin.d3web.rerenderquestionsheet.update();
                     }
                 }
@@ -936,7 +936,7 @@ KNOWWE.plugin.d3web.solutionstate = function(){
             }
             if( _KS('#sstate-result') ) {
                 new _KA( options ).send();
-                KNOWWE.plugin.d3web.rerendercontent.update();
+                KNOWWE.core.rerendercontent.update();
                 KNOWWE.plugin.d3web.rerenderquestionsheet.update();
             }   
         },
@@ -1059,151 +1059,6 @@ KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
             }
             new _KA( options ).send();
         }
-    }
-}();
-
-/**
- * Namespace: KNOWWE.plugin.d3web.rerendercontent
- * Rerenders parts of the article.
- */
-KNOWWE.plugin.d3web.rerendercontent = function(){
-    return {
-        /**
-         * Function: updateNode
-         * Updates a node.
-         * 
-         * Parameters:
-         *     node - The node that should be updated.
-         *     topic - The name of the page that contains the node.
-         */
-        updateNode : function(node, topic) {
-            var params = {
-                action : 'ReRenderContentPartAction',
-                KWikiWeb : 'default_web',
-                KdomNodeId : node,
-                KWiki_Topic : topic
-            }
-            var url = KNOWWE.core.util.getURL( params );
-            KNOWWE.plugin.d3web.rerendercontent.execute(url, node);
-        },
-        /**
-         * Function: update
-         * 
-         */
-        update : function() {
-            var topic = KNOWWE.helper.gup('page');
-            var classlist = _KS('.ReRenderSectionMarker');             
-            
-            if ( classlist.length != 0 ) {
-                for (var i = 0; i < classlist.length; i++) {
-                    var kdomnodeid = classlist[i].id;
-                    var params = {
-                        action : 'ReRenderContentPartAction',
-                        KWikiWeb : 'default_web',
-                        KdomNodeId : kdomnodeid,
-                        KWiki_Topic : topic
-                    }           
-                    var url = KNOWWE.core.util.getURL( params );
-                    KNOWWE.plugin.d3web.rerendercontent.execute(url, kdomnodeid);
-                }
-            }
-        },
-        /**
-         * Function: execute
-         * Sends the rerendercontent AJAX request.
-         * 
-         * Parameters:
-         *     url - The URL for the AJAX request.
-         *     id - The id of the node that should be updated.
-         */
-        execute : function( url, id ) {
-            var options = {
-                url : url,
-                action : 'replace',
-                response : {
-                    ids : [ id ]
-                }
-            }
-            new _KA( options ).send();
-        },
-        /**
-         * Function: updateForXCLRelation
-         * Updates a XCLRelation.
-         * 
-         * Parameters:
-         *     node - is the tag that has the marker under it
-         *     topic - 
-         *     depth - means the tag that has the marker as first child.
-         *     breadth -
-         */
-        updateForXCLRelation : function (node, topic, depth, breadth) {
-            topic = KNOWWE.helper.gup('page');
-            var classlist = _KS( '.ReRenderSectionMarker' );
-            
-            if ( classlist.length != 0 ) {
-                for (var i = 0; i < classlist.length; i++) {
-                    var kdomnodeid = classlist[i].id;
-                    var params = {
-                        action : 'ReRenderContentPartAction',
-                        KWikiWeb : 'default_web',
-                        KdomNodeId : kdomnodeid,
-                        KWiki_Topic : topic
-                    }           
-                    var url = KNOWWE.core.util.getURL( params );
-                    KNOWWE.plugin.d3web.rerendercontent.executeForXCLRelation
-                                (url, kdomnodeid, node, topic, depth, breadth);
-                }
-            }       
-        },
-        /**
-         * Function: executeForXCLRelation
-         * Executes the update XCLRelation AJAX request.
-         * 
-         * Parameters:
-         *     url - 
-         *     id - 
-         *     node - is the tag that has the marker under it
-         *     topic - 
-         *     depth - means the tag that has the marker as first child.
-         *     breadth -
-         */
-        executeForXCLRelation : function(url, id, node, topic, depth, breadth) {
-            var options = {
-                url : url,
-                action : 'replace',
-                response : {
-                    ids : [ id ]
-                }
-            }
-            new _KA( options ).send();
-            setTimeout(function () {KNOWWE.plugin.d3web.rerendercontent.sleepForXCLRelation(node, topic, depth, breadth)}, 500);
-        },
-        /**
-         * Function: sleepForXCLRelation
-         * 
-         * Parameters:
-         *     node - is the tag that has the marker under it
-         *     topic - 
-         *     depth - means the tag that has the marker as first child.
-         *     breadth -
-         */
-        sleepForXCLRelation : function(node, topic, depth, breadth) {
-    
-            if (document.getElementById('uniqueMarker')) {
-                setTimeout(function () {KNOWWE.plugin.d3web.rerendercontent.sleepForXCLRelation(node, topic, depth, breadth)}, 500);
-            } else {
-                
-                if (document.getElementById(node)) {
-                    var restore = document.getElementById('uniqueMarker');
-                    if (restore) {
-                        KNOWWE.plugin.d3web.rerendercontent.updateNode(restore.className, topic);
-                    }
-                    KNOWWE.plugin.d3web.rerendercontent.highlightNode(node, topic, depth, breadth);
-                    } else {
-                        setTimeout(function () {KNOWWE.plugin.d3web.rerendercontent.sleepForXCLRelation(node, topic, depth, breadth)}, 100);
-                    }
-            }
-        }       
     }
 }();
 

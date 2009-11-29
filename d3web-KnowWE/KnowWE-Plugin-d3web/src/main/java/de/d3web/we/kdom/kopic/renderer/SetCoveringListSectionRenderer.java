@@ -30,16 +30,16 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
+import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
+public class SetCoveringListSectionRenderer extends DefaultEditSectionRender {
 	
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		List<Section> lines = new ArrayList<Section>(); 
 		sec.findSuccessorsOfType(TextLine.class, lines);
@@ -50,7 +50,7 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 		if(sec.getObjectType() instanceof AbstractXMLObjectType) {
 			title = ((AbstractXMLObjectType)sec.getObjectType()).getXMLTagName()+" ";
 		}
-		title += generateQuickEditLink(sec.getTitle(),sec.getId(), sec.getWeb(), user.getUsername());
+
 		string.append("! " +title + " \n");
 		if (sec.getObjectType() instanceof AbstractKnowWEObjectType) {
 			KnowWEObjectType type = sec.getObjectType();
@@ -68,30 +68,18 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 			}
 		}
 		
-		// a pre containing
-		// the class SetCoveringList and the nodes id
 		string.append(KnowWEUtils.maskHTML(
-				"<pre class=\"ReRenderSectionMarker\" id=\"" + sec.getId() + "\">"));
+				"<pre class=\"ReRenderSectionMarker\" id=\"" + sec.getId() + "-pre\" rel=\"{id:'"+sec.getId()+"'}\">"));
 		
-		// Rendering children
 		StringBuilder b = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
 		string.append(b.toString());
 		
-		// close the pre
 		string.append(KnowWEUtils.maskHTML("</pre>"));
 		
 		string.append("/%\n");
 	}
-	
-	protected String generateQuickEditLink(String topic, String id, String web2, String user) {
-//		String icon = " <img src=KnowWEExtension/images/pencil.png title='Set QuickEdit-Mode' onclick=setQuickEditFlag('"+id+"','"+topic+"'); ></img>";
-//
-//		return KnowWEEnvironment
-//				.maskHTML("<a>"+icon+"</a>");
-		return "";
-	}
-	
+		
 	protected void insertErrorRenderer(Section sec, Message m, String user) {
 		String text = m.getLine();
 		if(text == null || text.length() == 0) return;

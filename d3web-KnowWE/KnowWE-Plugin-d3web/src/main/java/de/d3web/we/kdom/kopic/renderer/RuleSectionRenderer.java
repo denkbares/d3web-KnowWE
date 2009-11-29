@@ -107,7 +107,7 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 			// a div containing
 			// the class SetCoveringList and the nodes id
 			result.append(KnowWEUtils.maskHTML("<div class=\"ReRenderSectionMarker\" id=\"" 
-						  + sec.getId() + "\">"));
+					+ sec.getId() + "-pre\" rel=\"{id:'"+sec.getId()+"'}\">"));
 			
 			// Rendering children
 			StringBuilder b = new StringBuilder();

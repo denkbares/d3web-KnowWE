@@ -238,7 +238,7 @@ KNOWWE.helper = function(){
             if(!pages || pages.constructor !== Array) return false;
             
             var path = window.location.pathname;
-          //quick fix for checking if init actions should apply to start page
+            //quick fix for checking if init actions should apply to start page
             if(path == '/KnowWE/') return true; 
             
             var path = path.split('/');
@@ -258,7 +258,7 @@ KNOWWE.helper = function(){
  * The KNOWWE event namespace. Used to add and remove events to certain DOM elements.
  * This is based on the mootools framework and simply wraps the event functions.
  */
-KNOWWE.helper.event = function( ){
+KNOWWE.helper.event = function(){
     return {
         /**
          * Function: add
@@ -384,9 +384,6 @@ KNOWWE.helper.ajax = function ( options ) {
                         document.getElementById(ids[i]).innerHTML = http.responseText;
                     }
                     break;
-                case 'replace':
-                    KNOWWE.core.util.replace( ids, http.responseText );
-                    break;
                 case 'create':
                     if( oDefault.create ){
                         var el = oDefault.create.fn.call();
@@ -400,10 +397,10 @@ KNOWWE.helper.ajax = function ( options ) {
                          info._setHTML( http.responseText.replace(/@info@/, '') );
                          info._injectTop(document.getElementById( ids[0]));
                     } else if( http.responseText.startsWith('@replace@')){
-                    	var html = http.responseText.replace(/@replace@/, '');
+                        var html = http.responseText.replace(/@replace@/, '');
                         KNOWWE.core.util.replace( ids, html );    
                     } else {
-                    	window.location.reload();
+                        window.location.reload();
                     }
                     break;
                 default:
@@ -825,7 +822,12 @@ KNOWWE.helper.selector = function(selector, context){
         }
         t1 = t3 || find( m, context );      
     }
-    if(!t1) return null;
+    if(!t1){
+        //quick fix: wiki page names containing whitespaces
+        var el = document.getElementById(selector.replace(/#/, ""));
+        if(el) return el
+        return null;
+    }
     
     var tmp = new Array();
     var k = KNOWWE.helper.element;
@@ -867,7 +869,7 @@ KNOWWE.helper.selector = function(selector, context){
  * ElementSelector. 
  */
 KNOWWE.helper.selector.regex = {
-    ID : /^#[A-Za-z]+([A-Za-z0-9\-\/\_:\.])*$/,
+    ID : /^#[A-Za-z]+([A-Za-z0-9\s\-\/\_:\.])*$/,
     TAG : /^([A-Za-z0-9])+$/,
     CLASS : /^\.[A-Za-z0-9\-\_]+$/,
     ATTR : /^(\w+)?\[(\w+)=?(\w+)?\]$/
@@ -1381,7 +1383,7 @@ KNOWWE.helper.overlay = function( options ){
     var oDefault = {
        id : 'o-lay',
        mainCSS : 'o-lay-body',
-       title : '',
+       title : '&nbsp;',
        css : {
            display : 'none',
            position : 'absolute',

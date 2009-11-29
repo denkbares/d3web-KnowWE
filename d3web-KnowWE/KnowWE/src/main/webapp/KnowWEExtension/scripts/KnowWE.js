@@ -45,6 +45,7 @@ KNOWWE.core.actions = function(){
             //init quickedit actions
             var els = _KS('.quickedit');
             for (var i = 0; i < els.length; i++){
+                _KE.removeEvents('click', els[i]);
                 if( els[i]._hasClass( 'table' )){
                     _KE.add('click', els[i], function(e){
                         var el = _KE.target(e);
@@ -193,7 +194,7 @@ KNOWWE.core.util = function(){
                 
                 var heading = panels[i].getElementsByTagName('h3')[0];
                 if(!heading.innerHTML.startsWith('<span>')){
-                	 span._injectTop( heading );
+                     span._injectTop( heading );
                 }
                 _KE.add('click', heading , function(){
                     var el = new _KN( this );
@@ -236,10 +237,10 @@ KNOWWE.core.util = function(){
             //parse the url to add special token like debug etc.
             var p = document.location.search.replace('?','').split('&');
             for(var i = 0; i < p.length; i++){
-            	var t = p[i].split('=');
-            	if(!KNOWWE.helper.containsArr(tokens,t[0])){
-            		tokens.push(p[i]);
-            	}
+                var t = p[i].split('=');
+                if(!KNOWWE.helper.containsArr(tokens,t[0])){
+                    tokens.push(p[i]);
+                }
             }
             tokens.push('tstamp='+new Date().getTime());            
             return baseURL + '?' + tokens.join('&');
@@ -496,43 +497,43 @@ KNOWWE.core.util.tablesorter = function(){
  * The KNOWWE quick edit namespace.
  */
 KNOWWE.core.edit = function(){
-	return {
+    return {
         /**
          * Function: init
          * Initializes some wuick edit default functionality.
-         */		
-	    init : function(){
+         */     
+        init : function(){
             var elements = _KS('.quickedit .default');
             for(var i = 0; i < elements.length; i++){
-            	var rel, bttns;
-            	
-            	_KE.removeEvents('click', elements[i]);
+                var rel, bttns;
+                
+                _KE.removeEvents('click', elements[i]);
                 rel = eval("(" + elements[i].getAttribute('rel') + ")");
                 bttns = _KS('#'+rel.id + ' input[type=submit]');
                 if( bttns.length != 0 ){
                     _KE.add('click', bttns[0], KNOWWE.core.edit.onSave );
-	                _KE.add('click', elements[i], function(e){
-	                    var el = _KE.target(e);
-	                    var rel = eval("(" + el.getAttribute('rel') + ")");
-	                    KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render");
+                    _KE.add('click', elements[i], function(e){
+                        var el = _KE.target(e);
+                        var rel = eval("(" + el.getAttribute('rel') + ")");
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render");
                     });
-                }  else {           	
-	                _KE.add('click', elements[i], function(e){
-	                    var el = _KE.target(e);
-	                    var rel = eval("(" + el.getAttribute('rel') + ")");
-	                    KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, null);
-	                });
+                }  else {               
+                    _KE.add('click', elements[i], function(e){
+                        var el = _KE.target(e);
+                        var rel = eval("(" + el.getAttribute('rel') + ")");
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, null);
+                    });
                 }
-            }  				
-	    },
+            }               
+        },
         /**
          * Function: onSave
          * Triggered when the changes to the quick edit element in edit mode should be saved.
          * 
          * Parameters:
          *     e - The occurred event.
-         */	    
-	    onSave : function( e ){
+         */     
+        onSave : function( e ){
             var el = _KE.target(e);
             var rel = eval("(" + el.getAttribute('rel') + ")");
             var params = {
@@ -551,9 +552,9 @@ KNOWWE.core.edit = function(){
                     }
                 }
             }
-            new _KA( options ).send();	    	
-	    }
-	}
+            new _KA( options ).send();          
+        }
+    }
 }();
 
 /**
@@ -1070,7 +1071,75 @@ KNOWWE.core.codecompletion = function(){
     }
 }();
 
-
+/**
+ * Namespace: KNOWWE.core.rerendercontent
+ * Rerenders parts of the article.
+ */
+KNOWWE.core.rerendercontent = function(){
+    return {
+        /**
+         * Function: updateNode
+         * Updates a node.
+         * 
+         * Parameters:
+         *     node - The node that should be updated.
+         *     topic - The name of the page that contains the node.
+         */
+        updateNode : function(node, topic) {
+            var params = {
+                action : 'ReRenderContentPartAction',
+                KWikiWeb : 'default_web',
+                KdomNodeId : node,
+                KWiki_Topic : topic
+            }
+            var url = KNOWWE.core.util.getURL( params );
+            this.execute(url, node);
+        },
+        /**
+         * Function: update
+         * 
+         */
+        update : function() {
+            var classlist = _KS('.ReRenderSectionMarker');             
+            
+            if ( classlist.length != 0 ) {
+                for (var i = 0; i < classlist.length; i++) {
+                    var rel = classlist[i].getAttribute('rel');
+                    if(!rel) continue;
+                    rel = eval("(" + rel + ")" );
+                    
+                    var params = {
+                        action : 'ReRenderContentPartAction',
+                        KWikiWeb : 'default_web',
+                        KdomNodeId : rel.id,
+                        KWiki_Topic : KNOWWE.helper.gup('page')
+                    }           
+                    var url = KNOWWE.core.util.getURL( params );
+                    this.execute(url, classlist[i].id);
+                }
+            }
+        },
+        /**
+         * Function: execute
+         * Sends the rerendercontent AJAX request.
+         * 
+         * Parameters:
+         *     url - The URL for the AJAX request.
+         *     id - The id of the node that should be updated.
+         */
+        execute : function( url, id ) {
+            var options = {
+                url : url,
+                action : 'insert',
+                response : {
+                    ids : [ id ],
+                    fn : KNOWWE.core.actions.init
+                }
+            }
+            new _KA( options ).send();
+        }
+    }
+}();
 
 /**
  * Namespace: KNOWWE.plugin
