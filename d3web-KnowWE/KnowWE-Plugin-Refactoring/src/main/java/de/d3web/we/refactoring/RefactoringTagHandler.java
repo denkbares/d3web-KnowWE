@@ -21,20 +21,16 @@
 package de.d3web.we.refactoring;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-
 import de.d3web.we.kdom.decisionTree.SolutionID;
-import de.d3web.we.kdom.xcl.*;
+import de.d3web.we.kdom.xcl.XCList;
 import de.d3web.we.taghandler.AbstractTagHandler;
-import de.d3web.we.taghandler.TagHandlerType;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**

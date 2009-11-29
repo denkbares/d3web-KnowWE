@@ -20,9 +20,10 @@
 
 package de.d3web.we.refactoring;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -38,9 +39,9 @@ public class RefactoringRenderer extends KnowWEDomRenderer {
 	 * 
 	 */
 	@Override
-	public void render(Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		string.append("Hello Refactoring!");
-		string.append(KnowWEEnvironment.maskHTML("<img src=\"KnowWEExtension/images/helloworld.png\" alt=\":)\"/>"));
+		string.append(KnowWEUtils.maskHTML("<img src=\"KnowWEExtension/images/helloworld.png\" alt=\":)\"/>"));
 		
 	}
 
