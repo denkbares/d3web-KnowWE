@@ -23,7 +23,6 @@ package de.d3web.we.hermes.kdom.renderer;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.hermes.HermesUserManagement;
 import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.kdom.TimeEventDateType;
@@ -31,9 +30,11 @@ import de.d3web.we.hermes.kdom.TimeEventDescriptionType;
 import de.d3web.we.hermes.kdom.TimeEventImportanceType;
 import de.d3web.we.hermes.kdom.TimeEventSourceType;
 import de.d3web.we.hermes.kdom.TimeEventTitleType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TimeEventTypeRenderer extends DefaultEditSectionRender {
@@ -48,7 +49,7 @@ public class TimeEventTypeRenderer extends DefaultEditSectionRender {
 	}
 
 	@Override
-	public void renderContent(Section sec, KnowWEUserContext user, StringBuilder result) {
+	public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
 
 		// check filter Level
 		int filterLevel = getFilterLevel(user);
@@ -86,7 +87,7 @@ public class TimeEventTypeRenderer extends DefaultEditSectionRender {
 			style = "color:rgb(235, 235, 20)";
 		}
 
-		title = KnowWEEnvironment.maskHTML("<span style='" + style + "'>") + title + KnowWEEnvironment.maskHTML("</span>");
+		title = KnowWEUtils.maskHTML("<span style='" + style + "'>") + title + KnowWEUtils.maskHTML("</span>");
 		titleHeader = title + "   :   ";
 		titleHeader += date;
 		// titleHeader += " " + importance;
@@ -94,7 +95,7 @@ public class TimeEventTypeRenderer extends DefaultEditSectionRender {
 
 		result.append("! " + titleHeader + " \n");
 
-		DelegateRenderer.getInstance().render(descriptionSection, user, result);
+		DelegateRenderer.getInstance().render(article, descriptionSection, user, result);
 
 		if (sources.size() > 0) {
 			result.append("\\\\__Quellen:__\n\n");

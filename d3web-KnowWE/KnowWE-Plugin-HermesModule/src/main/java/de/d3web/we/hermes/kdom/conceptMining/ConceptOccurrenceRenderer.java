@@ -10,12 +10,13 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -24,7 +25,7 @@ public abstract class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> lns:hasTitle ?title }";
 
 	@Override
-	public void render(Section arg0, KnowWEUserContext arg1, StringBuilder arg2) {
+	public void render(KnowWEArticle article, Section arg0, KnowWEUserContext arg1, StringBuilder arg2) {
 
 		String conceptName = arg0.getOriginalText();
 
@@ -91,9 +92,9 @@ public abstract class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		}
 
 		String htmlContentTail = "</span>";
-		arg2.append(KnowWEEnvironment.maskHTML(htmlContent1));
+		arg2.append(KnowWEUtils.maskHTML(htmlContent1));
 		arg2.append(popupContent);
-		arg2.append(KnowWEEnvironment.maskHTML(htmlContentTail));
+		arg2.append(KnowWEUtils.maskHTML(htmlContentTail));
 
 	}
 

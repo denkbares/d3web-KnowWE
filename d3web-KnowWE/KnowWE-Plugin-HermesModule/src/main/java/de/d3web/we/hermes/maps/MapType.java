@@ -10,6 +10,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -95,7 +96,7 @@ public class MapType extends AbstractXMLObjectType {
 
     private class MapRenderer extends KnowWEDomRenderer {
 	@Override
-	public void render(Section sec, KnowWEUserContext user,
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user,
 		StringBuilder string) {
 	    string.append("<div id=\"map\" class=\"panel\">");
 	    string.append("<h3>Karte</h3>");
