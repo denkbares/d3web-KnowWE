@@ -22,11 +22,14 @@ package tests;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Annotation;
+import de.d3web.we.kdom.Annotation.AnnotationContent;
+import de.d3web.we.kdom.Annotation.AnnotationObject;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingComparator;
@@ -43,25 +46,21 @@ import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.kdom.rules.RuleActionLine;
 import de.d3web.we.kdom.rules.RuleCondLine;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.Annotation.AnnotationContent;
 import de.d3web.we.kdom.semanticAnnotation.AnnotatedString;
-import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
 import de.d3web.we.kdom.semanticAnnotation.AnnotationMapSign;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationPropertyDelimiter;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationPropertyName;
-import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
-import de.d3web.we.kdom.Annotation.AnnotationObject;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
+import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
 import de.d3web.we.kdom.xcl.XCLBody;
 import de.d3web.we.kdom.xcl.XCLHead;
-import de.d3web.we.kdom.xcl.XCLRelationLineEnd;
 import de.d3web.we.kdom.xcl.XCLRelationWeight;
 import de.d3web.we.kdom.xcl.XCLRelationWhiteSpaces;
 import de.d3web.we.kdom.xcl.XCLTail;
 import de.d3web.we.kdom.xcl.XCList;
 import dummies.KnowWETestWikiConnector;
-import junit.framework.TestCase;
 
 /**
  * Especially for the d3web-SectionFinder which
@@ -364,27 +363,6 @@ public class d3webSectionFinderTest extends TestCase {
 		assertEquals(WRONG_FIRST_END, 461, results.get(0).getEnd());
 	}
 	
-	public void testXCLRelationLineEndSectionFinder() {
-		String text = "Buy some food { \r\n"
-			+ "Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],\r\n"
-			+ "Are you hungry? = Very very hungry,\r\n"
-			+ "What do you like? = Shopping,\r\n"
-			+ "} \r\n \r\n \r \n";
-		
-		XCLRelationLineEnd.XCLRelationLineEndSectionFinder f =
-			new XCLRelationLineEnd().new XCLRelationLineEndSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
-		assertEquals(WRONG_FIRST_START, 87, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 88, results.get(0).getEnd());
-		
-		assertEquals(WRONG_SECOND_START, 124, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 125, results.get(1).getEnd());
-		
-		assertEquals(WRONG_THIRD_START, 155, results.get(2).getStart());
-		assertEquals(WRONG_THIRD_END, 156, results.get(2).getEnd());
-	}
-	
 	public void testXCLRelationSectionFinder() {
 		String text = "Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],\r\n"
 			+ "Are you hungry? = Very very hungry,\r\n"
@@ -396,13 +374,13 @@ public class d3webSectionFinderTest extends TestCase {
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 70, results.get(0).getEnd());
+		assertEquals(WRONG_FIRST_END, 69, results.get(0).getEnd());
 		
 		assertEquals(WRONG_SECOND_START, 72, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 107, results.get(1).getEnd());
+		assertEquals(WRONG_SECOND_END, 106, results.get(1).getEnd());
 		
 		assertEquals(WRONG_THIRD_START, 109, results.get(2).getStart());
-		assertEquals(WRONG_THIRD_END, 138, results.get(2).getEnd());
+		assertEquals(WRONG_THIRD_END, 137, results.get(2).getEnd());
 	}
 	
 	public void testXCLRelationWeightSectionFinder() {
