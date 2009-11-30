@@ -34,6 +34,7 @@ import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeAddress;
@@ -252,6 +253,7 @@ public class Section implements Visitable, Comparable<Section> {
 		}
 
 		//fetches the allowed children types of the local type
+		// TODO: Clean up here... maybe merge Include types with global types?
 		List<KnowWEObjectType> types = new LinkedList<KnowWEObjectType>();
 
 		if (objectType != null && objectType.getAllowedChildrenTypes() != null) {
@@ -262,7 +264,8 @@ public class Section implements Visitable, Comparable<Section> {
 				&& !objectType.equals(TextIncludeHead.getInstance())
 				&& !objectType.equals(TextIncludeTail.getInstance())
 				&& !objectType.equals(Include.getInstance())
-				&& !objectType.equals(PlainText.getInstance())) {
+				&& !objectType.equals(PlainText.getInstance())
+				&& !objectType.equals(VerbatimType.getInstance())) {
 			types.add(TextIncludeHead.getInstance());
 			types.add(TextIncludeTail.getInstance());
 			types.add(Include.getInstance());

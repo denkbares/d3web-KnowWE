@@ -488,7 +488,7 @@ public class KnowWEEnvironment {
 	private void initModules(ServletContext context) {
 		// add the default modules
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
-		this.rootTypes.add(new VerbatimType());
+		this.rootTypes.add(VerbatimType.getInstance());
 
 		// Loading modules from the single files in modules/
 		ArrayList<String> moduleStrings = new ArrayList<String>();

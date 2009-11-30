@@ -33,7 +33,19 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  * 
  */
 public class VerbatimType extends DefaultAbstractKnowWEObjectType {
-
+	
+	public static VerbatimType instance;
+	
+	public static synchronized VerbatimType getInstance() {
+		if (instance == null) {
+			instance = new VerbatimType();
+		}
+		return instance;
+	}
+	
+	private VerbatimType() {
+		
+	}
     /*
      * (non-Javadoc)
      * 

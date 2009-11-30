@@ -65,7 +65,7 @@ public class Include extends AbstractXMLObjectType {
 				IncludeAddress a = new IncludeAddress(parameterMap.get("src"));
 				return new IncludeSectionFinderResult(start, end, a);
 			}
-			return new SectionFinderResult(start, end);
+			return new IncludeSectionFinderResult(start, end, null);
 		}
 		
 	}

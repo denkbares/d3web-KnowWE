@@ -92,9 +92,14 @@ public class KnowWEIncludeManager {
 			// yet build but the Include Sections wants to include from
 			// it. If these initializing Articles directly or indirectly include
 			// this article, which isn't completely build itself, we got a loop.)
-			if (initializingArticles.contains(address.getTargetArticle())) {
+			if (address == null) {
 				
-				target = new IncludeErrorSection("Error: Expand loop dedected", 
+				target = new IncludeErrorSection("Error: No valid address found in '" + 
+						src.getOriginalText().trim() + "'.", src, src.getArticle());
+				
+			} else if (initializingArticles.contains(address.getTargetArticle())) {
+				
+				target = new IncludeErrorSection("Error: Expand loop dedected.", 
 						src, src.getArticle());
 				
 			} else {
@@ -193,7 +198,9 @@ public class KnowWEIncludeManager {
 			}
 			
 			// add Include Section and target Section to their maps
-			getIncludingSectionsForArticle(address.getTargetArticle()).add(src);
+			if (address != null) {
+				getIncludingSectionsForArticle(address.getTargetArticle()).add(src);
+			}
 			Section oldTarget = src2target.get(src);
 			if (oldTarget == target) {
 				List<Section> nodes = new ArrayList<Section>();
@@ -222,7 +229,7 @@ public class KnowWEIncludeManager {
 			// check if the target of the Include Section has changed
 			if (registerInclude(inc)) {
 				reviseArticles.put(inc.getTitle(), inc.getArticle());
-				Section target = src2target.get(inc);
+				//Section target = src2target.get(inc);
 				//target.getArticle().getChangedSections().put(target.getId(), target);
 				// since an included Section can get included by another Include
 				// this needs to be recursive
