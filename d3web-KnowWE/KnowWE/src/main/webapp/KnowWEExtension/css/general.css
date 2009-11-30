@@ -29,24 +29,13 @@ used colors
 /* -------------- general settings    --------------- */
 /* ################################################## */
 a {
-    color: blue;
-    cursor: pointer;
-    text-decoration:none;
-}
-a:link {
     color: #003366;
     cursor: pointer;
     text-decoration:none;
-}
-a:visited{ 
-    color: #003366;
 }
 a:hover {
     color: #003DF5;
     text-decoration: underline;
-}
-a:active{
-    color: blue;
 }
 /* #CCFF00; */
 
