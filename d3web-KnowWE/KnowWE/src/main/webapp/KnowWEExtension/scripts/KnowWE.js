@@ -59,6 +59,14 @@ KNOWWE.core.actions = function(){
                         KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, null );
                     });
                 }
+                //check for save button in case the user reloads the page during quick edit
+                rel = eval("(" + els[i].getAttribute('rel') + ")");
+                if(rel) {
+                    bttns = _KS('#'+rel.id + ' input[type=submit]');
+                    if( bttns.length != 0 ){
+                        _KE.add('click', bttns[0], KNOWWE.core.edit.onSave );
+                    }
+                }        
             }
             
             //init show extend panel
