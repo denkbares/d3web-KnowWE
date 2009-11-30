@@ -205,6 +205,7 @@ public class RenamingTagHandler extends AbstractTagHandler {
 				HashSet<String> usedType = (HashSet<String>) usedTypeOrig.clone();
 				if (koType != null) {
 					String koTypeName = koType.getName();
+					if (koTypeName.equals("")) koTypeName = "unbekannter Typ";
 					if (usedType.add(koTypeName)) {
 						ulHasChildren = true;
 						//füge im dom hinzu
