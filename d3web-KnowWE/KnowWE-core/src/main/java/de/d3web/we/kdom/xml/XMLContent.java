@@ -40,7 +40,7 @@ public abstract class XMLContent extends DefaultAbstractKnowWEObjectType {
 	@Override
 	public String getName() {
 		
-		return "";
+		return "XMLContent";
 	}
 	
 	public class XMLContentSectionFinder extends SectionFinder {
