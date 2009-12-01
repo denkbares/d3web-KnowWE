@@ -20,15 +20,24 @@
 package de.d3web.we.kdom.owlextension;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringBufferInputStream;
 import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.helpers.StatementCollector;
+import org.openrdf.rio.rdfxml.RDFXMLParser;
 
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.Section;
@@ -50,8 +59,8 @@ public class ExtensionContent extends XMLContent{
 	@Override
 	public IntermediateOwlObject getOwl(Section s) {
 		String text=s.getOriginalText();
-		extend(text,s);
-		IntermediateOwlObject io = new IntermediateOwlObject();
+		
+		IntermediateOwlObject io = extend(text,s);;
 		return io;
 	}
 	
@@ -71,18 +80,26 @@ public class ExtensionContent extends XMLContent{
 		return header+s+footer;
 	}
 	
-	private void extend(String value,Section s){	    
+	private IntermediateOwlObject extend(String value,Section s){
+		IntermediateOwlObject io=new IntermediateOwlObject();
 		SemanticCore sc=SemanticCore.getInstance();
 		UpperOntology uo = UpperOntology.getInstance();
 		RepositoryConnection con = uo.getConnection();
 		String output="";
 		boolean error=false;
 		try {
-			Reader r = new StringReader(inlcudeDefaultNS(value));
-			con.setAutoCommit(false);
-			con.add(r,uo.getLocaleNS(),RDFFormat.RDFXML);		
-			output+=value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");			
-			con.commit();
+			StringBufferInputStream is =new StringBufferInputStream(inlcudeDefaultNS(value));
+			System.setProperty("org.xml.sax.driver","org.apache.xerces.parsers.SAXParser");
+			RDFParser parser=new RDFXMLParser();
+			RDFHandler handler=new StatementCollector();
+			parser.setRDFHandler(handler);
+			//parser.setParseErrorListener(arg0);
+			parser.setVerifyData(true);			
+			parser.parse(is,"");
+			for (Statement cur:((StatementCollector)handler).getStatements()){
+				io.addStatement(cur);	
+			}
+			
 		} catch (RDFParseException e){
 			output+=e.getMessage();
 			error=true;
@@ -90,14 +107,6 @@ public class ExtensionContent extends XMLContent{
 				con.rollback();
 			} catch (RepositoryException e1) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());				
-			}
-		} catch (RepositoryException e){
-			error=true;
-			output+=e.getMessage();
-			try {
-				con.rollback();
-			} catch (RepositoryException e1) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());
 			}
 		} catch (IOException e) {
 			error=true;
@@ -107,6 +116,9 @@ public class ExtensionContent extends XMLContent{
 			} catch (RepositoryException e1) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());
 			}
+		} catch (RDFHandlerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		output+="";
 		if(error){
@@ -114,5 +126,6 @@ public class ExtensionContent extends XMLContent{
 		}else {
 			KnowWEUtils.storeSectionInfo(s,Extension.EXTENSION_RESULT_KEY,"success");
 		}
+		return io;
 	}
 }
