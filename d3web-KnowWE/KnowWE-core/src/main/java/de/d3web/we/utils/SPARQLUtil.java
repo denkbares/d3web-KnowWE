@@ -1,5 +1,6 @@
 package de.d3web.we.utils;
 
+import org.openrdf.model.URI;
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
@@ -112,5 +113,12 @@ public class SPARQLUtil {
 		}
 		return null;
 	}
+	
+	private static final String CLASS_SPARQL = "SELECT ?x WHERE { <URI> rdf:type ?x.} ";
+	
+	public static TupleQueryResult findClassesOfEntity(URI uri) {
+		return executeTupleQuery(CLASS_SPARQL.replaceAll("URI", uri.toString()));
+	}
+	
 
 }

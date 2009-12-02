@@ -1,0 +1,138 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+package de.d3web.we.kdom.dashTree.propertyDefinition;
+
+import org.openrdf.model.URI;
+import org.openrdf.model.vocabulary.OWL;
+import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
+import org.openrdf.repository.RepositoryException;
+
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.RoundBracedType;
+import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.dashTree.DashTreeElementContent;
+import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
+import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
+
+/**
+ * @author Jochen
+ * 
+ * This DashTreeElementContent generates the property-definitions in OWL.
+ * For spefification of range and domain restrictions it contains (in round brackets)
+ * a PropertyDetails type in addition to the PropertyIDDefinition containing the name
+ * of the property.
+ *
+ */
+public class PropertyDashTreeElementContent extends DashTreeElementContent {
+
+	@Override
+	protected void init() {
+		super.init();
+		RoundBracedType e = new RoundBracedType(new PropertyDetails());
+		e.setSteal(true);
+		this.childrenTypes.add(e);
+		this.childrenTypes.add(new PropertyIDDefinition());
+	}
+
+	/* (non-Javadoc)
+	 * @see de.d3web.we.kdom.AbstractKnowWEObjectType#getOwl(de.d3web.we.kdom.Section)
+	 */
+	@Override
+	public IntermediateOwlObject getOwl(Section s) {
+		if (s.getObjectType() instanceof PropertyDashTreeElementContent) {
+			Section propIDSection = s.findSuccessor(PropertyIDDefinition.class);
+			if (propIDSection != null) {
+				String propertyName = propIDSection.getOriginalText();
+				String rangeDef = null;
+				String domainDef = null;
+				Section domainDefS = s.findSuccessor(DomainDefinition.class);
+				if (domainDefS != null) {
+					domainDef = domainDefS.getOriginalText();
+				}
+
+				Section rangeDefS = s.findSuccessor(RangeDefinition.class);
+				if (rangeDefS != null) {
+					rangeDef = rangeDefS.getOriginalText();
+				}
+
+				UpperOntology uo = UpperOntology.getInstance();
+				IntermediateOwlObject io = new IntermediateOwlObject();
+
+				OwlHelper helper = uo.getHelper();
+				URI propURI = helper.createlocalURI(propertyName.trim());
+				try {
+					
+					// creates an Object-Property (in any case)
+					io.addStatement(helper.createStatement(propURI, RDF.TYPE,
+							OWL.OBJECTPROPERTY));
+					
+					
+					// creates a Subproperty relation IF father exists
+					Section fatherElement = DashTreeElement.getDashTreeFather(s.getFather());
+					if(fatherElement != null) {
+						Section fatherID  = fatherElement.findSuccessor(PropertyIDDefinition.class);
+						if(fatherID != null) {
+							io.addStatement(helper.createStatement(
+									propURI, RDFS.SUBPROPERTYOF, helper
+											.createlocalURI(fatherID.getOriginalText()
+													.trim())));
+						}
+					}
+					
+					//creates Domain restriction if defined
+					if (domainDef != null) {
+						String[] classes = domainDef.split(",");
+						for (String string : classes) {
+							if (string.trim().length() > 0) {
+								io.addStatement(helper.createStatement(
+												propURI, RDFS.DOMAIN, helper
+														.createlocalURI(string
+																.trim())));
+							}
+						}
+					}
+
+					//creates Range restriction if defined
+					if (rangeDef != null) {
+						String[] classes = rangeDef.split(",");
+						for (String string : classes) {
+							if (string.trim().length() > 0) {
+								io.addStatement(helper.createStatement(
+												propURI, RDFS.RANGE, helper
+														.createlocalURI(string
+																.trim())));
+							}
+						}
+					}
+					return io;
+				} catch (RepositoryException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		}
+		return null;
+	}
+
+}

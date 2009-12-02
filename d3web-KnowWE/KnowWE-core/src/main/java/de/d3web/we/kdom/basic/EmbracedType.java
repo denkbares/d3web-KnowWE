@@ -11,6 +11,16 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class EmbracedType extends DefaultAbstractKnowWEObjectType {
 
+	boolean steal = false;
+
+	public boolean isSteal() {
+		return steal;
+	}
+
+	public void setSteal(boolean steal) {
+		this.steal = steal;
+	}
+
 	public EmbracedType(KnowWEObjectType bodyType, String start, String end) {
 		this.childrenTypes.add(new EmbraceStart(start));
 		this.childrenTypes.add(new EmbraceEnd(end));
@@ -33,20 +43,35 @@ public class EmbracedType extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {
-
 			String trimmed = text.trim();
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			if (trimmed.startsWith(start) && trimmed.endsWith(end)) {
-				String body = trimmed.substring(start.length(), trimmed
-						.length()
-						- end.length());
-				List<SectionFinderResult> lookAheadSections = bodyType.getSectioner().lookForSections(body, father);
-				if (lookAheadSections != null && lookAheadSections.size() > 0) {
-					result.add(new SectionFinderResult(text.indexOf(trimmed),
-							text.indexOf(trimmed) + trimmed.length()));
+			if (steal) {
+				if (trimmed.contains(start) && trimmed.contains(end)) {
+					String body = trimmed.substring(trimmed.indexOf(start)
+							+ start.length(), trimmed.indexOf(end) + 1
+							- end.length());
+					List<SectionFinderResult> lookAheadSections = bodyType
+							.getSectioner().lookForSections(body, father);
+					if (lookAheadSections != null
+							&& lookAheadSections.size() > 0) {
+						result.add(new SectionFinderResult(text.indexOf(start),
+								text.indexOf(end) + end.length()));
+					}
+				}
+
+			}else {
+				
+				if (trimmed.startsWith(start) && trimmed.endsWith(end)) {
+					String body = trimmed.substring(start.length(), trimmed
+							.length()
+							- end.length());
+					List<SectionFinderResult> lookAheadSections = bodyType.getSectioner().lookForSections(body, father);
+					if (lookAheadSections != null && lookAheadSections.size() > 0) {
+						result.add(new SectionFinderResult(text.indexOf(trimmed),
+								text.indexOf(trimmed) + trimmed.length()));
+					}
 				}
 			}
-
 			return result;
 		}
 
