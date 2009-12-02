@@ -42,6 +42,7 @@ import de.d3web.we.hermes.taghandler.ShowTimeEventsForConceptTagHandler;
 import de.d3web.we.hermes.taghandler.TimeLineHandler;
 import de.d3web.we.hermes.taghandler.VersionCountTagHandler;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.dashTree.propertyDefinition.PropertyDefinitionType;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
 import de.d3web.we.module.AbstractDefaultKnowWEModule;
 import de.d3web.we.module.PageAppendHandler;
@@ -94,6 +95,7 @@ public class HermesPlugin extends AbstractDefaultKnowWEModule {
 	// in initModule() by a hack to gather higher priority
 	rootTypes.add(new TimeEventType());
 	rootTypes.add(new MapType());
+	rootTypes.add(new PropertyDefinitionType());
 	return rootTypes;
     }
 

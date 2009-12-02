@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openrdf.model.URI;
+import org.openrdf.query.Binding;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
@@ -17,12 +18,13 @@ import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public abstract class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
+public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> lns:hasTitle ?title }";
 
@@ -95,9 +97,64 @@ public abstract class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 	}
 
-	protected abstract String[] getPossibleProperties(URI subject,
-			String object);
-
+	private static final String PROP_SPARQL = "SELECT ?x WHERE {  " +
+	"?x rdf:type owl:ObjectProperty .   " +
+	"?x rdfs:domain <SUBJECT> .		   " +
+	"?x rdfs:range <OBJECT>." +
+	"} ";
+	
+	protected String[] getPossibleProperties(URI subject, String object) {
+		
+		TupleQueryResult subjectClasses = SPARQLUtil.findClassesOfEntity(subject);
+		
+		TupleQueryResult objectClasses = SPARQLUtil.findClassesOfEntity(UpperOntology.getInstance().getHelper().createlocalURI(object));
+		
+		try {
+			while(subjectClasses.hasNext()) {
+				BindingSet subjectClass = subjectClasses.next();
+				String subjectClazzString = subjectClass.getBinding("x").getValue().stringValue();
+				
+				while(objectClasses.hasNext()){
+					BindingSet objectClass = objectClasses.next();
+					String objectClassString = objectClass.getBinding("x").getValue().toString();
+					
+					
+					String q = PROP_SPARQL.replaceAll("SUBJECT", subjectClazzString);
+					q = q.replaceAll("OBJECT", objectClassString);
+					TupleQueryResult result = SPARQLUtil.executeTupleQuery(q);
+					
+					List<String> propList = new ArrayList<String>();
+					
+					if (result != null) {
+						try {
+							while (result.hasNext()) {
+								BindingSet binding = result.next();
+								Binding propB = binding.getBinding("x");
+								String propName = propB.getValue().toString();
+								
+								try {
+									propName = URLDecoder.decode(propName, "UTF-8");
+								} catch (UnsupportedEncodingException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								propList.add(propName.substring(propName.lastIndexOf('#')+1));
+							}
+						} catch (QueryEvaluationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return propList.toArray(new String[propList.size()]);
+					}
+				}
+				
+			}
+		} catch (QueryEvaluationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return new String[]{};
+	}
 	private String generatePopupContent(Section arg0, URI subject, String subjectTitle) {
 		StringBuffer buffy = new StringBuffer();
 

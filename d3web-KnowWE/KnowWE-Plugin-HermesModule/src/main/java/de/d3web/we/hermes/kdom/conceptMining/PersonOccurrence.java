@@ -8,20 +8,12 @@ public class PersonOccurrence extends DefaultAbstractKnowWEObjectType {
 
     @Override
     public void init() {
-	this.setCustomRenderer(new PersonOccurrenceRenderer());
+	this.setCustomRenderer(new ConceptOccurrenceRenderer());
 	this.sectionFinder = new PersonFinder();
     }
 }
 
-class PersonOccurrenceRenderer extends ConceptOccurrenceRenderer {
 
-    private static String[] personProps = new String[] { "involves" };
-
-    @Override
-    protected String[] getPossibleProperties(URI subject, String object) {
-	return personProps;
-    }
-}
 
 class PersonFinder extends ConceptFinder {
 
