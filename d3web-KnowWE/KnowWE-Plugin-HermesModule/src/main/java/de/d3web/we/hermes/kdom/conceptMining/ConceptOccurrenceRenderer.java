@@ -10,12 +10,14 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
+import de.d3web.we.hermes.kdom.TimeEventType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -68,16 +70,11 @@ public abstract class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		String htmlContent1 = "<b>"
 				+ arg0.getOriginalText()
 				+ "</b>"
-				+ "<span   "
-				+ ">"
-				+ "<img rel=\"{type: '"
-				+ conceptName
-				+ "', id: '"
-				+ arg0.getId()
-				+ "', termName: '"
-				+ conceptName
-				+ "', user:'"
-				+ arg1.getUsername()
+				+ "<span>"
+				+ "<img rel=\"{type: '"	+ conceptName
+				+ "', id: '" + arg0.getId()
+				+ "', termName: '" + conceptName
+				+ "', user:'" + arg1.getUsername()
 				+ "'}\" class=\"conceptLink pointer\" id='"
 				+ arg0.getId()
 				+ "' src='KnowWEExtension/images/question.gif' width='12' /> "
@@ -106,8 +103,7 @@ public abstract class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		buffy.append("<div style='padding:10px' class=\"confirmPanel\" >");
 
-		buffy.append("<span style='font-weight:bold' >" + subjectTitle
-				+ "</span><br>");
+		buffy.append("<span style='font-weight:bold' >" + subjectTitle + "</span>");
 
 		buffy.append("<div style='padding:10px' class=\"options\" >");
 
@@ -120,22 +116,21 @@ public abstract class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		String[] defaultOpts = { "concept missmatch", "dont ask again" };
 
-		
+		Section ancestor = KnowWEObjectTypeUtils.getAncestorOfType( arg0, TimeEventType.class.getName() );
 		
 		for (String string : newOpts) {
-			buffy.append("<li><div class=\"confirmOption\" kdomid='"
-					+ arg0.getId() + "' subject='" + subject + "' rel='"
-					+ string + "' object='" + originalText + "' name='"
-					+ string + "'>");
+			
+			String options =  "kdomid='" + arg0.getId() + "' subject='" + subject 
+				+ "' rel='"	+ string + "' object='" + originalText 
+				+ "' name='" + string + "' " + "ancestor='" + ancestor.getId() + "'";
+			
+			
+			buffy.append("<li><div class=\"confirmOption pointer\" " + options + ">");
 			buffy.append("" + string + "  " + "");
-			buffy
-					.append("<span style='font-style:italic'  class='confirmobject'>"
-							+ originalText + " </span>");
+			buffy.append("<span style='font-style:italic' class='confirmobject' "+options+">" + originalText + " </span>");
 			buffy.append("<span style='font-style:italic'> ? </span>");
 			buffy.append("</div></li>");
 		}
-
-		buffy.append("<br>");
 
 		for (String string : defaultOpts) {
 			buffy.append("<li><div class=\"confirmOption\" name='" + string
