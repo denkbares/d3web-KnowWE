@@ -43,7 +43,7 @@ KNOWWE.plugin.d3web.actions = function(){
          */ 
         init : function(){
             //update solutions
-            KNOWWE.plugin.d3web.solutionstate.updateSolutionstate();
+            this.update();
             
             //init KnowledgeBasesGenerator
             if(_KS('#KnowledgeBasesGenerator')) {
@@ -206,7 +206,15 @@ KNOWWE.plugin.d3web.actions = function(){
                 }
             }
             new _KA( options ).send();
-        }        
+        },
+        /**
+         * Function: update
+         */
+        update : function(){
+            KNOWWE.plugin.d3web.solutionstate.updateSolutionstate();
+            KNOWWE.plugin.d3web.rerenderquestionsheet.update();         
+            KNOWWE.core.rerendercontent.update();
+        }
     }
 }();
 
@@ -428,7 +436,7 @@ KNOWWE.plugin.d3web.dialog = function(){
                 toogleImage( img, state);
             }
             KNOWWE.plugin.d3web.dialog.initAction();
-            KNOWWE.plugin.d3web.solutionstate.updateSolutionstate();
+            KNOWWE.plugin.d3web.actions.update();
         },
         /**
          * Function: answerClicked
@@ -438,8 +446,10 @@ KNOWWE.plugin.d3web.dialog = function(){
          *     event - The user click event on an answer.
          */
         answerClicked : function( e ) {
-
-            var rel = eval("(" + _KE.target( e ).getAttribute('rel') + ")");
+            var el = _KE.target(e);
+            if(el.tagName.toLowerCase() == "input") return;
+            
+            var rel = eval("(" + el.getAttribute('rel') + ")");
             _KE.cancel( e );
             if( !rel ) return;
             var answerID = rel.oid;
@@ -545,11 +555,11 @@ KNOWWE.plugin.d3web.adminconsole = function(){
          */
         init : function(){
             if(_KS('#admin-summarizer'))
-                _KE.add('click', _KS('#admin-summarizer'), KNOWWE.plugin.d3web.adminconsole.doSumAll);
+                _KE.add('click', _KS('#admin-summarizer'), this.doSumAll);
             if(_KS('#admin-reInit'))
-                _KE.add('click', _KS('#admin-reInit'), KNOWWE.plugin.d3web.adminconsole.doReInit);
+                _KE.add('click', _KS('#admin-reInit'), this.doReInit);
             if(_KS('#admin-parseWeb'))
-                _KE.add('click', _KS('#admin-parseWeb'), KNOWWE.plugin.d3web.adminconsole.doParseWeb);
+                _KE.add('click', _KS('#admin-parseWeb'), this.doParseWeb);
         },
         /**
          * Function: doReInit
@@ -657,7 +667,7 @@ KNOWWE.plugin.d3web.semantic = function(){
      */
     function handleMC(){
         var mcStorage = new Array();
-        _KS('.semano_mc').forEach(function(element){
+        _KS('.semano_mc').each(function(element){
             if( element.checked ){
                 var rel = eval( "(" + element.getAttribute('rel') + ")");
                 mcStorage.push( rel.ValueIDS );
@@ -689,21 +699,21 @@ KNOWWE.plugin.d3web.semantic = function(){
          */
         overlayActions : function(){
             if(_KS('.semano_mc').length != 0){
-                _KS('.semano_mc').forEach(function(element){
+                _KS('.semano_mc').each(function(element){
                     _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleForm);
                 });
             }
 
             if(_KS('.semano_oc').length != 0){
-                _KS('.semano_oc').forEach(function(element){
+                _KS('.semano_oc').each(function(element){
                     _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleOC);
                 });         
             }
             if(_KS('.semano_num').length != 0){
-                _KS('.semano_num').forEach(function(element){
+                _KS('.semano_num').each(function(element){
                     _KE.add('keydown', element, KNOWWE.plugin.d3web.semantic.handleNum);
                 });
-                 _KS('.semano_ok').forEach(function(element){
+                 _KS('.semano_ok').each(function(element){
                     _KE.add('click', element, KNOWWE.plugin.d3web.semantic.handleNum);
                 });
             }
@@ -807,8 +817,10 @@ KNOWWE.plugin.d3web.semantic = function(){
             }
             var options = {
                 url : url.url + "?" + tokens.join('&'),
-                action: 'none',
-                fn : KNOWWE.plugin.d3web.solutionstate.updateSolutionstate
+                response : {
+                    action: 'none',
+                    fn : KNOWWE.plugin.d3web.actions.update
+                }
             }
             new _KA( options ).send();
             
@@ -876,17 +888,17 @@ KNOWWE.plugin.d3web.solutionstate = function(){
         init : function(){
             var el = _KS('#sstate-update');
             if( el ){
-                _KE.add('click', el, KNOWWE.plugin.d3web.solutionstate.updateSolutionstate);
+                _KE.add('click', el, this.updateSolutionstate);
             }
             
             el = _KS('#sstate-findings');
             if( el ){
-                _KE.add('click', el, KNOWWE.plugin.d3web.solutionstate.showFindings);
+                _KE.add('click', el, this.showFindings);
             }
             
             el = _KS('#sstate-clear'); 
             if( el ){
-                _KE.add('click', el, KNOWWE.plugin.d3web.solutionstate.clearSolutionstate);
+                _KE.add('click', el, this.clearSolutionstate);
             }
         },
         /**
@@ -900,6 +912,7 @@ KNOWWE.plugin.d3web.solutionstate = function(){
                 action : 'DPSSolutionsAction',
                 KWikiWeb : 'default_web'
             }
+
             var id = 'sstate-result';
             var options = {
                 url : KNOWWE.core.util.getURL( params ),
@@ -917,8 +930,6 @@ KNOWWE.plugin.d3web.solutionstate = function(){
                                 _KE.add('click', element, KNOWWE.plugin.d3web.solutionstate.showSolutionLog);
                             });
                         }
-                        KNOWWE.core.rerendercontent.update();
-                        KNOWWE.plugin.d3web.rerenderquestionsheet.update();
                     }
                 }
             }
