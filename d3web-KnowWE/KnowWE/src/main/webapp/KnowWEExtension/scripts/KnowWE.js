@@ -1093,12 +1093,14 @@ KNOWWE.core.rerendercontent = function(){
          *     node - The node that should be updated.
          *     topic - The name of the page that contains the node.
          */
-        updateNode : function(node, topic) {
+        updateNode : function(node, topic, ajaxToHTML) {
             var params = {
                 action : 'ReRenderContentPartAction',
                 KWikiWeb : 'default_web',
                 KdomNodeId : node,
-                KWiki_Topic : topic
+                KWiki_Topic : topic,
+				ajaxToHTML : ajaxToHTML
+
             }
             var url = KNOWWE.core.util.getURL( params );
             this.execute(url, node);

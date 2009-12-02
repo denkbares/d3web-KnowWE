@@ -312,7 +312,11 @@ KNOWWE.helper.event = function(){
         target : function( e ){
             e = e || window.event;
             return e.target || e.srcElement ;
-        }        
+        },
+        cancel : function( e ){
+        	e.cancelBubble = true;
+			if (e.stopPropagation) e.stopPropagation();
+        }
     }
 }();
 

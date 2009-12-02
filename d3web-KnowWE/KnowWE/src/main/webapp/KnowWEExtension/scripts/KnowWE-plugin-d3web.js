@@ -128,7 +128,7 @@ KNOWWE.plugin.d3web.actions = function(){
             // Restore the Highlighting that was before
             var restore = document.getElementById('uniqueMarker');
             if (restore) {
-                KNOWWE.core.rerendercontent.updateNode(restore.className, rel.topic);
+                KNOWWE.core.rerendercontent.updateNode(restore.className, rel.topic, null);
             }
             KNOWWE.plugin.d3web.actions.highlightNode(rel.kdomid, rel.topic, rel.depth, rel.breadth, event);
         },
@@ -145,7 +145,7 @@ KNOWWE.plugin.d3web.actions = function(){
             // Restore the Highlighting that was before
             var restore = document.getElementById('uniqueMarker');
             if (restore) {
-                KNOWWE.core.rerendercontent.updateNode(restore.className, rel.topic);
+                KNOWWE.core.rerendercontent.updateNode(restore.className, rel.topic, null);
             }
             KNOWWE.plugin.d3web.actions.highlightNode(rel.kdomid, rel.topic, rel.depth, rel.breadth, event);
         },
@@ -287,15 +287,21 @@ KNOWWE.plugin.d3web.dialog = function(){
         initAction : function(){
             _KS('.qcontainerName').each(function(element){
                 _KE.add('click', element, KNOWWE.plugin.d3web.dialog.showElement);
+                var p = element.parentNode;
+                var tbl = _KS('#tbl'+p.id, p);
+                _KE.add('click', tbl, KNOWWE.plugin.d3web.dialog.answerClicked);                
             });
                         
             if(_KS('#xcl-save-as')){
                 _KE.add('click', _KS('#xcl-save-as'), KNOWWE.plugin.d3web.dialog.saveAsXCL);
             }
                         
-            _KS('span .fieldcell').each(function( element ){
+            /*
+             _KS('span .fieldcell').each(function( element ){
                 _KE.add('click', element, KNOWWE.plugin.d3web.dialog.answerClicked);
             });
+            * */
+            
             _KS('.num-cell-down').each(function( element ){
                 _KE.add('keydown', element, KNOWWE.plugin.d3web.dialog.numInput);
             });
@@ -431,9 +437,10 @@ KNOWWE.plugin.d3web.dialog = function(){
          * Parameters:
          *     event - The user click event on an answer.
          */
-        answerClicked : function( event ) {
-            new Event( event ).stopPropagation();
-            var rel = eval("(" + _KE.target( event ).getAttribute('rel') + ")");
+        answerClicked : function( e ) {
+
+            var rel = eval("(" + _KE.target( e ).getAttribute('rel') + ")");
+            _KE.cancel( e );
             if( !rel ) return;
             var answerID = rel.oid;
             KNOWWE.plugin.d3web.dialog.send( rel.web, rel.ns, rel.qid, 'undefined', {ValueID: answerID});
