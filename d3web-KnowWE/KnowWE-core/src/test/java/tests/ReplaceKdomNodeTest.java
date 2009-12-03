@@ -67,7 +67,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		 */
 		KnowWEArticle article = _env.getArticle("default_web", "Test_Article");
 		Section artSec = article.getSection();
-		String toReplace = artSec.getChildren().get(0).getId();
+		String toReplace = ((Section) artSec.getChildren().get(0)).getId();
 		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, "default_web");
 		map.put(KnowWEAttributes.TARGET, toReplace);
 		map.put(KnowWEAttributes.TOPIC, "Test_Article");
@@ -93,7 +93,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		/**
 		 * 2. Build new subtree.
 		 */
-		toReplace = artSec.getChildren().get(0).getId();
+		toReplace = ((Section) artSec.getChildren().get(0)).getId();
 		map.put(KnowWEAttributes.TARGET, toReplace);
 		map.put(KnowWEAttributes.TOPIC, "Test_Article");
 		map.put(KnowWEAttributes.TEXT, "-aa-");
@@ -112,7 +112,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		actual = original.equals(content);
 		assertEquals("Original equals replaced", false, actual);
 		
-		artSec = artSec.getChildren().get(0);
+		artSec = (Section) artSec.getChildren().get(0);
 		String objectTypeName = artSec.getObjectType().getName();
 		assertEquals("SplitObjectType not contained", "SplitObjectType", objectTypeName);		
 	}

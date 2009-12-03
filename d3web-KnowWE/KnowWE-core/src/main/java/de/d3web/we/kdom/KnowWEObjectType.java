@@ -75,7 +75,7 @@ public interface KnowWEObjectType extends KnowWEType{
 	
 	public Collection<Section> getAllSectionsOfType();
 	
-	public IntermediateOwlObject getOwl(Section s);
+	public <T extends KnowWEObjectType>IntermediateOwlObject getOwl(Section<T> s);
 
 	public abstract void findTypeInstances(Class clazz,
 			List<KnowWEObjectType> instances);

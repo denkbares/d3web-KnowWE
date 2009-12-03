@@ -259,7 +259,8 @@ public class Validator {
 		
 		if (node.getChildren() != null && node.getChildren().size() > 0) {
 			StringBuilder builder = new StringBuilder();
-			for (Section child:node.getChildren()) {
+			List<Section> children = node.getChildren();
+			for (Section child:children) {
 				if (child != null) {
 					if (child.getOriginalText() != null) {
 						builder.append(child.getOriginalText());

@@ -24,6 +24,7 @@ public class BulletListItemLine extends DefaultAbstractKnowWEObjectType {
 
 	class BulletListItemLineFinder extends SectionFinder {
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {

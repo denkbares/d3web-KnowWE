@@ -83,7 +83,7 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public void reviseSubtree(KnowWEArticle article, Section s) {
-			Section colHeaderCell = s.findSuccessor(TableCell.class);
+			Section colHeaderCell = s.findSuccessor(new TableCell());
 			if (colHeaderCell != null) {
 
 				Section content = colHeaderCell

@@ -131,36 +131,36 @@ public class XMLSectionFinderTest extends TestCase {
 
 		// Test children counts
 		int expected = 3;
-		Section artChild = artSec.getChildren().get(0);
+		Section artChild = (Section) artSec.getChildren().get(0);
 		assertEquals("ArticleSection: Childcount wrong", expected, artChild.getChildren().size());
 		
-		artChild = artChild.getChildren().get(1);
+		artChild = (Section) artChild.getChildren().get(1);
 		expected = 2;
 		assertEquals("Wrong subtree count",expected, artChild.getChildren().size());
 		
 		// Test left subtree
-		Section subRoot = artChild.getChildren().get(0);
+		Section subRoot = (Section) artChild.getChildren().get(0);
 		expected = 3;
 		assertEquals("Error in Left subtree:", expected, subRoot.getChildren().size());
 		
-		subRoot = subRoot.getChildren().get(1);
+		subRoot = (Section) subRoot.getChildren().get(1);
 		expected = 3;
 		assertEquals("Error in Left subtree:", expected, subRoot.getChildren().size());
 		
 		expected = 3;
-		assertEquals("Error in Left subtree:", expected, subRoot.getChildren().get(0).getChildren().size());
+		assertEquals("Error in Left subtree:", expected, ((Section) subRoot.getChildren().get(0)).getChildren().size());
 		
 		expected = 3;
-		assertEquals("Error in Left subtree:", expected, subRoot.getChildren().get(1).getChildren().size());
+		assertEquals("Error in Left subtree:", expected, ((Section) subRoot.getChildren().get(1)).getChildren().size());
 		
 		expected = 3;
-		subRoot = subRoot.getChildren().get(2);
-		subRoot = subRoot.getChildren().get(1);
-		subRoot = subRoot.getChildren().get(0);
+		subRoot = (Section) subRoot.getChildren().get(2);
+		subRoot = (Section) subRoot.getChildren().get(1);
+		subRoot = (Section) subRoot.getChildren().get(0);
 		assertEquals("Error in Left subtree:", expected, subRoot.getChildren().size());
 		
 		// Test right subtree
-		subRoot = artChild.getChildren().get(1);
+		subRoot = (Section) artChild.getChildren().get(1);
 		expected = 3;
 		assertEquals("Error in right subtree", expected, subRoot.getChildren().size());
 		

@@ -197,35 +197,42 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		}
 		return null;
 	}
-	
-	
-	public void replaceChildType(KnowWEObjectType type, Class<? extends KnowWEObjectType> c) throws InvalidKDOMSchemaModificationOperation{
-		if(c.isAssignableFrom(type.getClass())) {
+
+	public void replaceChildType(KnowWEObjectType type,
+			Class<? extends KnowWEObjectType> c)
+			throws InvalidKDOMSchemaModificationOperation {
+		if (c.isAssignableFrom(type.getClass())) {
 			KnowWEObjectType toReplace = null;
 			for (KnowWEObjectType child : childrenTypes) {
-				if(child.getClass().equals(c)) {
+				if (child.getClass().equals(c)) {
 					toReplace = child;
 				}
 			}
-			childrenTypes.set(childrenTypes.indexOf(toReplace),type);
-			
-		}else {
-			throw new InvalidKDOMSchemaModificationOperation("class"+c.toString()+" may not be replaced by: "+type.getClass().toString()+" since it isnt a subclass of former");
+			childrenTypes.set(childrenTypes.indexOf(toReplace), type);
+
+		} else {
+			throw new InvalidKDOMSchemaModificationOperation("class"
+					+ c.toString() + " may not be replaced by: "
+					+ type.getClass().toString()
+					+ " since it isnt a subclass of former");
 		}
-		
+
 	}
 
 	/**
 	 * Stores a list of messages under to message-store-key
 	 * 
-	 * @param article is the article, the message is getting stored for.
-	 * 		Be aware, that this is not automatically the article the section
-	 * 		is directly linked to (because this Section might be included), but the
-	 * 		article that is calling this for example while revising.
+	 * @param article
+	 *            is the article, the message is getting stored for. Be aware,
+	 *            that this is not automatically the article the section is
+	 *            directly linked to (because this Section might be included),
+	 *            but the article that is calling this for example while
+	 *            revising.
 	 * @param s
 	 * @param messages
 	 */
-	public void storeMessages(KnowWEArticle article, Section s, List<Message> messages) {
+	public void storeMessages(KnowWEArticle article, Section s,
+			List<Message> messages) {
 		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, article
 				.getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
 	}
@@ -363,10 +370,10 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getOwl(de.d3web.we.kdom.Section)
 	 */
-	public IntermediateOwlObject getOwl(Section s) {
+	public <T extends KnowWEObjectType>IntermediateOwlObject getOwl(Section<T> s) {
 		IntermediateOwlObject io = new IntermediateOwlObject();
-
-		for (Section cur : s.getChildren()) {
+		List<Section> childrenList = s.getChildren();
+		for (Section cur : childrenList) {
 			if (cur.getObjectType() instanceof AbstractKnowWEObjectType) {
 				AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) cur
 						.getObjectType();

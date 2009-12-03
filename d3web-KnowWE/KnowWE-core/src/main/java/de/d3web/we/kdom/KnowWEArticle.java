@@ -80,7 +80,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * The section representing the root-node of the KDOM-tree
 	 */
-	private Section sec;
+	private Section<KnowWEArticle> sec;
 	
 	private Map<String, Integer> idMap = new HashMap<String, Integer>();
 	
@@ -139,8 +139,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		startTime = System.currentTimeMillis();
 
 		// create new Section, here KDOM is created recursively
-		sec = new Section(text, this, null, 0, this,
-				null, false, null);
+//		sec = new Section(text, this, null, 0, this,
+//				null, false, null);
+		sec = Section.createTypedSection(text, this, null, 0, this,
+				null, false, null, this);
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
 
@@ -371,7 +373,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 
 
-	public Section getSection() {
+	public Section<KnowWEArticle> getSection() {
 		return sec;
 	}
 
@@ -394,7 +396,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * 
 	 * @return Map of Sections, using their originalText as key.
 	 */
-	public Map<String, Section> findChildrenOfTypeMap(LinkedList<Class<? extends KnowWEObjectType>> path) {
+	public Map<String, Section> findChildrenOfTypeMap(List<Class<? extends KnowWEObjectType>> path) {
 		String stringPath = path.toString();
 		Map<String, Section> foundChildren = knownResults.get(stringPath);
 		if (foundChildren == null) {
@@ -722,30 +724,32 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 				// get the nodes between TextIncludedHead and TextIncludedTail
 				List<Section> newChildren = new ArrayList<Section>();
-				int headPos = commonAncestor.getChildren().indexOf(
+				List<Section> children = commonAncestor.getChildren();
+				int headPos = children.indexOf(
 						fathers1.get(fathers1.indexOf(commonAncestor) - 1));
-				int tailPos = commonAncestor.getChildren().indexOf(
+				int tailPos = children.indexOf(
 						fathers2.get(fathers2.indexOf(commonAncestor) - 1)) + 1;
 
 				// fail-safe (happens with bad SectionFinders...)
 				if (headPos == -1 || tailPos == -1) {
 					headPos = 0;
-					tailPos = commonAncestor.getChildren().size() - 1;
+					tailPos = children.size() - 1;
 				}
 
 				// children for the new TextIncludeSection
-				newChildren.addAll(commonAncestor.getChildren().subList(
+				newChildren.addAll(children.subList(
 						headPos, tailPos));
-				commonAncestor.getChildren().removeAll(newChildren);
+				children.removeAll(newChildren);
 
 				StringBuilder text = new StringBuilder();
 				for (Section s : newChildren) {
 					text.append(s.getOriginalText());
 				}
+				
 
 				int offset = 0;
 				for (int c = 0; c < headPos; c++) {
-					offset += commonAncestor.getChildren().get(c)
+					offset += children.get(c)
 							.getOriginalText().length();
 				}
 
@@ -753,7 +757,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 						commonAncestor, text.toString(), src, offset,
 						newChildren, this);
 
-				commonAncestor.getChildren().add(headPos, newIncludeSection);
+				children.add(headPos, newIncludeSection);
 			}
 		}
 	}

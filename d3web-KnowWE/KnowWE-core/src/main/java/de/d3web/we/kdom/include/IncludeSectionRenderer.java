@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom.include;
 
+import java.util.List;
+
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -46,7 +48,8 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 		StringBuilder content = new StringBuilder();
 		StringBuilder b = new StringBuilder();
 		int i = 0;
-		for (Section child:sec.getChildren()) {
+		List<Section> children = sec.getChildren();
+		for (Section child:children) {
 			if (!((i < 2 || i > sec.getChildren().size() - 3) && child.isEmpty())) {
 				child.getObjectType().getRenderer().render(article, child, user, content);
 				b.append(content.toString());

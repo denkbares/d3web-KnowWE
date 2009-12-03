@@ -40,7 +40,8 @@ public class TableUtils {
 	 * @return
 	 */
 	public static List<Section> getCertainSections( Section section, String classname, List<Section> sections ) {
-		for( Section child : section.getChildren() ) {
+		List<Section> children = section.getChildren();
+		for( Section child : children ) {
 			try {
 				if( Class.forName( classname ).isAssignableFrom( child.getObjectType().getClass()) ) {
 					sections.add( child );
@@ -61,7 +62,7 @@ public class TableUtils {
 	 *             current section
 	 * @return
 	 */
-	public static int getColumn( Section section )
+	public static int getColumn( Section<TableCellContent> section )
 	{
 		Section tableLine = KnowWEObjectTypeUtils.getAncestorOfType( section, TableLine.class.getName() );
 		List<Section> tmpSections = new ArrayList<Section>();
@@ -77,9 +78,9 @@ public class TableUtils {
 	 *             current section
 	 * @return
 	 */
-	public static int getRow( Section section )
+	public static int getRow( Section<TableCellContent> section )
 	{
-		Section tableContent = KnowWEObjectTypeUtils.getAncestorOfType( section, TableContent.class.getName() );
+		Section tableContent = KnowWEObjectTypeUtils.getAncestorOfType( section, TableContent.class );
 		
 		List<Section> sections = new ArrayList<Section>();
 		getCertainSections( tableContent, TableLine.class.getName(), sections );
@@ -106,7 +107,7 @@ public class TableUtils {
 	 *            value of the column table attribute
 	 * @return
 	 */
-	public static boolean isEditable( Section section, String rows, String cols )
+	public static boolean isEditable( Section<TableCellContent> section, String rows, String cols )
 	{
 		if( rows == null && cols == null ) return true;
 		

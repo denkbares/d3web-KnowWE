@@ -75,7 +75,7 @@ public class SectionizerTest extends TestCase {
 		assertEquals("Wrong children count", expected, child.getChildren().size());
 		
 		expected = 3;
-		Section child2 =child.getChildren().get(0);
+		Section child2 =(Section) child.getChildren().get(0);
 		assertEquals("Wrong children count",expected, child2.getChildren().size());		
 		
 		child = children.get(2);
@@ -83,7 +83,7 @@ public class SectionizerTest extends TestCase {
 		assertEquals("Wrong children count", expected, child.getChildren().size());
 		
 		expected = 3;
-		child2 = child.getChildren().get(0);
+		child2 = (Section) child.getChildren().get(0);
 		assertEquals("Wrong children count", expected, child2.getChildren().size());		
 		
 		expected = 7;
@@ -97,10 +97,10 @@ public class SectionizerTest extends TestCase {
 		child = children.get(0);
 		String cont = child.getOriginalText();
 		assertEquals("WordObjectType expected", "aaa", cont);
-		child = child.getChildren().get(0);
+		child = (Section) child.getChildren().get(0);
 		cont = child.getOriginalText();
 		assertEquals("AStarObjectType expected", "aaa", cont);
-		child = child.getChildren().get(1);
+		child = (Section) child.getChildren().get(1);
 		cont = child.getOriginalText();
 		assertEquals("AObjectType expected", "a", cont);
 		

@@ -50,7 +50,7 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 	 * @param s
 	 * @return
 	 */
-	public static int getLevel(Section s) {
+	public static int getLevel(Section<? extends DashTreeElement> s) {
 		if (s == null)
 			return -1;
 		if (DashTreeElement.class.isAssignableFrom(s.getObjectType().getClass())) {
@@ -67,13 +67,13 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	public static Section getDashTreeFather(Section s) {
+	public static Section<? extends DashTreeElement> getDashTreeFather(Section<? extends DashTreeElement> s) {
 		if(s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
 			Section father = s.getFather();
 			if(father != null) {
 				Section grandFather = father.getFather();
 				if(grandFather != null) {
-					return grandFather.findChildOfType(DashTreeElement.class);
+					return grandFather.findChildOfType(new DashTreeElement());
 				}
 			}
 		}

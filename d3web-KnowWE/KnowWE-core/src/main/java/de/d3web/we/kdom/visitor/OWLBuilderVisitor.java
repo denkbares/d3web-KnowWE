@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom.visitor;
 
+import java.util.List;
+
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -38,8 +40,9 @@ public class OWLBuilderVisitor {
 		if (type instanceof AbstractKnowWEObjectType) {
 		    AbstractKnowWEObjectType owlsec=(AbstractKnowWEObjectType)type;
 		    io.merge(owlsec.getOwl(s));
-		} else {			
-			for (Section cur : s.getChildren()) {
+		} else {	
+			List<Section> children = s.getChildren();
+			for (Section cur : children) {
 			    io.merge(visit(cur));
 			}
 		}

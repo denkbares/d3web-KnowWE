@@ -109,8 +109,8 @@ public class SearchEngine {
 			if (section.getChildren().size() == 0)
 				results.add(new Result(query.pattern(), section.getArticle(), section));
 		}
-		
-		for (Section child : section.getChildren()) {
+		List<Section> children = section.getChildren();
+		for (Section child : children) {
 			results.addAll(search(query, child));
 		}
 		

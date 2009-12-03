@@ -87,6 +87,17 @@ class DomainFinder extends SectionFinder {
 
 class RangeDefinition extends DefaultAbstractKnowWEObjectType{
 
+	private static RangeDefinition defaultInstance = null;
+	
+	public static RangeDefinition getDefaultInstance() {
+		if (defaultInstance == null) {
+			defaultInstance = new RangeDefinition();
+			
+		}
+
+		return defaultInstance;
+	}
+
 	@Override
 	protected void init() {
 		this.sectionFinder = AllTextFinderTrimmed.getInstance();
@@ -108,6 +119,17 @@ class RangeRenderer extends KnowWEDomRenderer {
 }
 class DomainDefinition extends DefaultAbstractKnowWEObjectType{
 
+private static DomainDefinition defaultInstance = null;
+	
+	public static DomainDefinition getDefaultInstance() {
+		if (defaultInstance == null) {
+			defaultInstance = new DomainDefinition();
+			
+		}
+
+		return defaultInstance;
+	}
+	
 	@Override
 	protected void init() {
 		this.sectionFinder = new DomainFinder();

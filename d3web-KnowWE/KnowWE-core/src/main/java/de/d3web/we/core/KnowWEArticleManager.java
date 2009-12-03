@@ -123,7 +123,7 @@ public class KnowWEArticleManager {
 		KnowWEArticle art = this.getArticle(articleName);
 		if (art == null)
 			return "article not found: " + articleName;
-		Section root = art.getSection();
+		Section<KnowWEArticle> root = art.getSection();
 		StringBuffer newText = new StringBuffer();
 		appendTextReplaceNode(root, nodeID, text, newText);
 

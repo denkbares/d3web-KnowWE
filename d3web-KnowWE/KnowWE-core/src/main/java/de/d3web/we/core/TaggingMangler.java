@@ -77,8 +77,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				pagename);
-		ArrayList<Section> tagslist = new ArrayList<Section>();
-		article.getSection().findSuccessorsOfType(TagsContent.class, tagslist);
+		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
+		article.getSection().findSuccessorsOfType(new TagsContent(), tagslist);
 		HashSet<String> tags = new HashSet<String>();
 		if (tagslist.size() > 0) {
 			boolean multiple = tagslist.size() > 1;

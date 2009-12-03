@@ -32,6 +32,7 @@ import java.util.Set;
 
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
+
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.VerbatimType;
@@ -65,7 +66,7 @@ import de.d3web.we.utils.PairOfInts;
  * OWL, User-feedback-DBs etc.
  * 
  */
-public class Section implements Visitable, Comparable<Section> {
+public class Section<T> implements Visitable, Comparable<Section> {
 
 //	private boolean reused = false;
 	
@@ -121,7 +122,18 @@ public class Section implements Visitable, Comparable<Section> {
 	 * @see KnowWEObjectType Each type has its own parser and renderer
 	 */
 	protected KnowWEObjectType objectType;
+	
+	protected T t;
 
+	 public void add(T t) {
+	        this.t = t;
+	    }
+
+	    public T get() {
+	        return t;
+	    }
+
+	
 	protected int absolutePositionStartInArticle = -1;
 
 	/**
@@ -149,6 +161,10 @@ public class Section implements Visitable, Comparable<Section> {
 	public void setPosition(PairOfInts startPosFromTmp) {
 		this.startPosFromTmp = startPosFromTmp;
 	}
+	
+	public static <T extends KnowWEObjectType>Section<T> createTypedSection(String text, KnowWEObjectType o, Section father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded, IncludeAddress adress, T type) {
+        return new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded,adress);
+    }
 
 	/**
 	 * 
@@ -165,7 +181,7 @@ public class Section implements Visitable, Comparable<Section> {
 	 *          is the article this section is hooked in
 	 * @param address
 	 */
-	 protected Section(String text, KnowWEObjectType objectType, Section father,
+	 private Section(String text, KnowWEObjectType objectType, Section father,
 			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
 			boolean isExpanded, IncludeAddress address) {
 		
@@ -501,9 +517,10 @@ public class Section implements Visitable, Comparable<Section> {
 		}
 		for (Section sec:childrenParsingOrder) {
 			// store the Includes to the map
+			List<Section> children2 = sec.getChildren();
 			if (sec.getObjectType() instanceof Include 
-					&& types.contains(sec.getChildren().get(0).getObjectType().getClass())) {
-				Class<? extends KnowWEObjectType> includedType = sec.getChildren().get(0).getObjectType().getClass();
+					&& types.contains(children2.get(0).getObjectType().getClass())) {
+				Class<? extends KnowWEObjectType> includedType = children2.get(0).getObjectType().getClass();
 				List<Section> includesOfType = includes.get(includedType);
 				if (includesOfType == null) {
 					includesOfType = new ArrayList<Section>();
@@ -783,11 +800,19 @@ public class Section implements Visitable, Comparable<Section> {
 	 * 
 	 * @param section
 	 */
-	public Section findChildOfType(Class<?> class1) {
+	public Section findChildOfType(Class class1) {
 
 		for (Section s : this.getChildren())
 			if (class1.isAssignableFrom(s.getObjectType().getClass()))
 				return s;
+		return null;
+	}
+	
+	public <T extends KnowWEObjectType>Section<T> findChildOfType(T t) {
+
+		for (Section s : this.getChildren())
+			if (t.getClass().isAssignableFrom(s.getObjectType().getClass()))
+				return (Section<T>)s;
 		return null;
 	}
 
@@ -797,6 +822,7 @@ public class Section implements Visitable, Comparable<Section> {
 	 * 
 	 * @param section
 	 */
+	@Deprecated
 	public List<Section> findChildrenOfType(Class<?> class1) {
 		List<Section> result = new ArrayList<Section>();
 		for (Section s : this.getChildren())
@@ -805,6 +831,35 @@ public class Section implements Visitable, Comparable<Section> {
 		return result;
 	}
 	
+	/**
+	 * Searches the Children of a Section and only the children of a Section for
+	 * a given class
+	 * 
+	 * @param section
+	 */
+	public List<Section<T>> findChildrenOfType(T t) {
+		List<Section<T>> result = new ArrayList<Section<T>>();
+		for (Section s : this.getChildren())
+			if (t.getClass().isAssignableFrom(s.getObjectType().getClass()))
+				result.add(s);
+		return result;
+	}
+	
+	public <T extends KnowWEObjectType>Section<T> findSuccessor(T t) {
+		Class<?> class1 = t.getClass();
+		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
+			return (Section<T>) this;
+		}
+		for (Section sec : getChildren()) {
+			Section<T> s = sec.findSuccessor(t);
+			if (s != null)
+				return s;
+		}
+
+		return null;
+	}
+	
+	@Deprecated
 	public Section findSuccessor(Class<?> class1) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
@@ -823,6 +878,7 @@ public class Section implements Visitable, Comparable<Section> {
 	 * Finds all successors of type <code>class1</code> in the KDOM below this
 	 * Section.
 	 */
+	@Deprecated
 	public void findSuccessorsOfType(Class<?> class1, List<Section> found) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
@@ -833,10 +889,21 @@ public class Section implements Visitable, Comparable<Section> {
 		}
 	}
 	
+	public <T extends KnowWEObjectType>void findSuccessorsOfType(T t, List<Section<T>> found) {
+		Class<?> class1 = t.getClass();
+		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
+			found.add((Section<T>)this);
+		}
+		for (Section sec : getChildren()) {
+			sec.findSuccessorsOfType(t, found);
+		}
+	}
+	
 	/**
 	 * Finds all successors of type <code>class1</code> in the KDOM below this
 	 * Section and stores them in a Map, using their originalText as key.
 	 */
+	@Deprecated
 	public void findSuccessorsOfType(Class<?> class1, Map<String, Section> found) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
@@ -852,11 +919,32 @@ public class Section implements Visitable, Comparable<Section> {
 		}
 
 	}
+	
+	/**
+	 * Finds all successors of type <code>class1</code> in the KDOM below this
+	 * Section and stores them in a Map, using their originalText as key.
+	 */
+	public <T extends KnowWEObjectType>void findSuccessorsOfType(T t, Map<String, Section<T>> found) {
+
+		if (t.getClass().isAssignableFrom(this.getObjectType().getClass())) {
+			Section tmp = found.get(this.getOriginalText());
+			// only replace the finding by this Section, if this Section is not reused
+			// but the Section already in the map is reused
+			if (tmp == null || (tmp.isReusedBy(getTitle()) && !this.isReusedBy(getTitle()))) {
+				found.put(this.getOriginalText(), (Section<T>)this);
+			}
+		}
+		for (Section sec : getChildren()) {
+			sec.findSuccessorsOfType(t, found);
+		}
+
+	}
 
 	/**
 	 * Finds all successors of type <code>class1</code> in the KDOM to the depth
 	 * of <code>depth</code> below this Section.
 	 */
+	@Deprecated
 	public void findSuccessorsOfType(Class<?> class1, int depth,
 			List<Section> found) {
 
@@ -868,6 +956,25 @@ public class Section implements Visitable, Comparable<Section> {
 		}
 		for (Section sec : getChildren()) {
 			sec.findSuccessorsOfType(class1, depth--, found);
+		}
+
+	}
+	
+	/**
+	 * Finds all successors of type <code>class1</code> in the KDOM to the depth
+	 * of <code>depth</code> below this Section.
+	 */
+	public <T extends KnowWEObjectType> void findSuccessorsOfType(T t, int depth,
+			List<Section<T>> found) {
+
+		if (t.getClass().isAssignableFrom(this.getObjectType().getClass())) {
+			found.add((Section<T>)this);
+		}
+		if (depth == 0) {
+			return;
+		}
+		for (Section sec : getChildren()) {
+			sec.findSuccessorsOfType(t, depth--, found);
 		}
 
 	}
@@ -895,6 +1002,8 @@ public class Section implements Visitable, Comparable<Section> {
 		}
 
 	}
+	
+
 	
 	/**
 	 * Finds all successors of type <tt>class1</tt> in the KDOM at the end of the
@@ -925,7 +1034,7 @@ public class Section implements Visitable, Comparable<Section> {
 	 * @return a List of ObjectTypes beginning at the KnowWWEArticle and ending
 	 *         at this Section. Returns <tt>null</tt> if no path is found.
 	 */
-	public LinkedList<Class<? extends KnowWEObjectType>> getPathFromArticleToThis() {
+	public List<Class<? extends KnowWEObjectType>> getPathFromArticleToThis() {
 		LinkedList<Class<? extends KnowWEObjectType>> path = new LinkedList<Class<? extends KnowWEObjectType>>();
 		
 		path.add(getObjectType().getClass());
@@ -947,7 +1056,7 @@ public class Section implements Visitable, Comparable<Section> {
 	 * @return a List of ObjectTypes beginning at the given Section and ending
 	 *         at this Section. Returns <tt>null</tt> if no path is found.
 	 */
-	public LinkedList<Class<? extends KnowWEObjectType>> getPathFromGivenSectionToThis(Section sec) {
+	public List<Class<? extends KnowWEObjectType>> getPathFromGivenSectionToThis(Section sec) {
 		LinkedList<Class<? extends KnowWEObjectType>> path = new LinkedList<Class<? extends KnowWEObjectType>>();
 
 		Section father = getFather();

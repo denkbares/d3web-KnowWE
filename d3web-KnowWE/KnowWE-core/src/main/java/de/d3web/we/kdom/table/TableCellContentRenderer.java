@@ -72,7 +72,7 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer {
 	/**
 	 * Wraps the content of the cell (sectionText) with the HTML-Code needed for the table
 	 */
-	protected String wrappContent(String sectionText, Section sec, KnowWEUserContext user) {
+	protected String wrappContent(String sectionText, Section<TableCellContent> sec, KnowWEUserContext user) {
 	
 		String sectionID = sec.getId();
 		StringBuilder html = new StringBuilder();
@@ -85,7 +85,7 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer {
 	}
 
 
-	protected void generateContent(String sectionText, Section sec,
+	protected void generateContent(String sectionText, Section<TableCellContent> sec,
 			KnowWEUserContext user, String sectionID, StringBuilder html) {
 		if( sec.hasQuickEditModeSet( user.getUsername() ) ) {
 			Section father = KnowWEObjectTypeUtils.getAncestorOfType( sec , ITable.class.getName());

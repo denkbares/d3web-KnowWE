@@ -47,19 +47,19 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 			StringBuilder string) {
 
 		String object = "no object found";
-		Section objectSection = sec.findSuccessor(SimpleAnnotation.class);
+		Section objectSection = sec.findSuccessor(new SimpleAnnotation());
 		if (objectSection != null) {
 			object = objectSection.getOriginalText();
 		}
 
-		Section astring = sec.findSuccessor(AnnotatedString.class);
+		Section astring = sec.findSuccessor(new AnnotatedString());
 		String text = "";
 		if (astring != null)
 			text = "''" + astring.getOriginalText() + "''";
 		else
 			text = "<b>" + object + "</b>";
-		Section content = sec.findSuccessor(SemanticAnnotationContent.class);
-		Section propSection = sec.findSuccessor(SemanticAnnotationPropertyName.class);
+		Section content = sec.findSuccessor(new SemanticAnnotationContent());
+		Section propSection = sec.findSuccessor(new SemanticAnnotationPropertyName());
 
 		String property = "no property found";
 		if (propSection != null) {
@@ -68,7 +68,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 		String subject = "no subject found";
 
-		Section subjectSectin = sec.findSuccessor(SemanticAnnotationSubject.class);
+		Section subjectSectin = sec.findSuccessor(new SemanticAnnotationSubject());
 		if (subjectSectin != null
 				&& subjectSectin.getOriginalText().trim().length() > 0) {
 			subject = subjectSectin.getOriginalText();

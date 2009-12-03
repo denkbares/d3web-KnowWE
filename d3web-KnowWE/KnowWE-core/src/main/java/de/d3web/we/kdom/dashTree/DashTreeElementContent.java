@@ -24,6 +24,17 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class DashTreeElementContent extends DefaultAbstractKnowWEObjectType{
 	
+	private static DashTreeElementContent defaultInstance = null;
+	
+	public static DashTreeElementContent getDefaultInstance() {
+		if (defaultInstance == null) {
+			defaultInstance = new DashTreeElementContent();
+			
+		}
+
+		return defaultInstance;
+	}
+	
 	@Override
 	protected void init() {
 		this.sectionFinder = AllTextFinderTrimmed.getInstance();

@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.css;
 
+import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
@@ -47,8 +48,8 @@ public class CSSRenderer extends KnowWEDomRenderer {
 		String style = mapFor.get("style");
 		
 		StringBuilder b = new StringBuilder();
-		
-		for (Section section : sec.getChildren()) {
+		List<Section> children = sec.getChildren();
+		for (Section section :  children) {
 			if ( section.getObjectType() instanceof PlainText) {
 				DelegateRenderer.getInstance().render(article, sec, user, b);
 			}

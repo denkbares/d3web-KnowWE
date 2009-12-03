@@ -32,15 +32,16 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
 public class SubClassingDashTreeElement extends DashTreeElement {
 
 	@Override
-	public IntermediateOwlObject getOwl(Section s) {
+	public IntermediateOwlObject getOwl(Section s) {   //warning
+		Section<DashTreeElement> element = (Section<DashTreeElement>)s;  //warning 
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
-			Section father = DashTreeElement.getDashTreeFather(s);
+			Section<? extends DashTreeElement> father = DashTreeElement.getDashTreeFather(element);
 			if (father != null) {
-				Section fatherElement = father
-						.findChildOfType(DashTreeElementContent.class);
-				createSubClassRelation(s
-						.findChildOfType(DashTreeElementContent.class),
+				Section<DashTreeElementContent> fatherElement = father
+						.findChildOfType(new DashTreeElementContent());
+				Section<DashTreeElementContent> childElement = element.findChildOfType(DashTreeElementContent.getDefaultInstance());
+				createSubClassRelation(childElement,
 						fatherElement, io);
 			}
 		}
@@ -48,7 +49,7 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 		return io;
 	}
 
-	private void createSubClassRelation(Section child, Section fatherElement,
+	private void createSubClassRelation(Section<? extends DashTreeElementContent> child, Section<? extends DashTreeElementContent> fatherElement,
 			IntermediateOwlObject io) {
 		UpperOntology uo = UpperOntology.getInstance();
 		URI localURI = uo.getHelper().createlocalURI(child.getOriginalText());

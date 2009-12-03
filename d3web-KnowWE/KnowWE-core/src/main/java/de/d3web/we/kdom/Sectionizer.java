@@ -38,6 +38,7 @@ import de.d3web.we.utils.PairOfInts;
  * 
  * This singleton contains the algorithm which parses the KDOM. The algorithm
  * searches occorrences that match certain types.
+ * @param <T>
  * @see splitToSections
  * 
  */
@@ -156,15 +157,15 @@ public class Sectionizer {
 						if (result instanceof ExpandedSectionFinderResult) {
 							s = createExpandedSection((ExpandedSectionFinderResult) result, father);
 						} else if (result instanceof IncludeSectionFinderResult) {
-							s = new Section(thisSection.getOriginalText().substring(result.getStart(),
+							s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
 									result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
 									+ result.getStart(), article, result.getId(), false, 
-									((IncludeSectionFinderResult) result).getIncludeAddress());
+									((IncludeSectionFinderResult) result).getIncludeAddress(),ob);
 							KnowWEEnvironment.getInstance().getIncludeManager(s.getWeb()).registerInclude(s);
 						} else {
-							s = new Section(thisSection.getOriginalText().substring(result.getStart(),
+							s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
 									result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
-									+ result.getStart(), article, result.getId(), false, null);
+									+ result.getStart(), article, result.getId(), false, null,ob);
 						}
 						
 						s.setPosition(new PairOfInts(result.getStart(), result.getEnd()));
@@ -233,8 +234,8 @@ public class Sectionizer {
 	}
 
 	private Section createExpandedSection(ExpandedSectionFinderResult result, Section father) {
-		Section s = new Section(result.getText(), result.getObjectType(), father, result.getStart(), 
-				father.getArticle(), null, true, null);
+		Section s = Section.createTypedSection(result.getText(), result.getObjectType(), father, result.getStart(), 
+				father.getArticle(), null, true, null,result.getObjectType());
 		if (s.getOffSetFromFatherText() < 0 || s.getOffSetFromFatherText() > father.getOriginalText().length() 
 				|| !father.getOriginalText().substring(s.getOffSetFromFatherText()).startsWith(s.getOriginalText())) {
 			s.setOffSetFromFatherText(father.getOriginalText().indexOf(s.getOriginalText()));
@@ -293,9 +294,9 @@ public class Sectionizer {
 			ArrayList<Section> sectionList, Section father, KnowWEArticle article) {
 		for (Section section : sectionList) {
 			if (section instanceof UndefinedSection) {
-				new Section(section.getOriginalText(), PlainText.getInstance(),
+				Section.createTypedSection(section.getOriginalText(), PlainText.getInstance(),
 						father, section.getOffSetFromFatherText(),
-						article, null, false, null);
+						article, null, false, null,PlainText.getInstance());
 			}
 		}
 

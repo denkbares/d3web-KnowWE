@@ -36,6 +36,17 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  *
  */
 public class PropertyIDDefinition extends DefaultAbstractKnowWEObjectType{
+	
+	private static PropertyIDDefinition defaultInstance = null;
+	
+	public static PropertyIDDefinition getDefaultInstance() {
+		if (defaultInstance == null) {
+			defaultInstance = new PropertyIDDefinition();
+			
+		}
+
+		return defaultInstance;
+	}
 
 	
 	@Override

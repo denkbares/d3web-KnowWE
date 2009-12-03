@@ -26,6 +26,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
@@ -59,18 +60,19 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent {
 	 */
 	@Override
 	public IntermediateOwlObject getOwl(Section s) {
+		Section<PropertyDashTreeElementContent> sec = (Section<PropertyDashTreeElementContent>)s;
 		if (s.getObjectType() instanceof PropertyDashTreeElementContent) {
-			Section propIDSection = s.findSuccessor(PropertyIDDefinition.class);
+			Section<PropertyIDDefinition> propIDSection = sec.findSuccessor(PropertyIDDefinition.getDefaultInstance());
 			if (propIDSection != null) {
 				String propertyName = propIDSection.getOriginalText();
 				String rangeDef = null;
 				String domainDef = null;
-				Section domainDefS = s.findSuccessor(DomainDefinition.class);
+				Section<DomainDefinition> domainDefS = sec.findSuccessor(DomainDefinition.getDefaultInstance());
 				if (domainDefS != null) {
 					domainDef = domainDefS.getOriginalText();
 				}
 
-				Section rangeDefS = s.findSuccessor(RangeDefinition.class);
+				Section<RangeDefinition> rangeDefS = sec.findSuccessor(RangeDefinition.getDefaultInstance());
 				if (rangeDefS != null) {
 					rangeDef = rangeDefS.getOriginalText();
 				}
@@ -88,9 +90,9 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent {
 					
 					
 					// creates a Subproperty relation IF father exists
-					Section fatherElement = DashTreeElement.getDashTreeFather(s.getFather());
+					Section<? extends DashTreeElement> fatherElement = DashTreeElement.getDashTreeFather((Section<DashTreeElement>)sec.getFather());
 					if(fatherElement != null) {
-						Section fatherID  = fatherElement.findSuccessor(PropertyIDDefinition.class);
+						Section fatherID  = fatherElement.findSuccessor(PropertyIDDefinition.getDefaultInstance());
 						if(fatherID != null) {
 							io.addStatement(helper.createStatement(
 									propURI, RDFS.SUBPROPERTYOF, helper
