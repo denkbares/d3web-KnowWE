@@ -18,6 +18,7 @@ import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.table.TableUtils;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -31,6 +32,10 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section arg0, KnowWEUserContext arg1, StringBuilder arg2) {
 
+		Section<PersonOccurrence> personSection = (Section<PersonOccurrence>)arg0;
+		
+		//TableUtils.getRow(arg0);
+		
 		String conceptName = arg0.getOriginalText();
 
 		Context subjectContext = ContextManager.getInstance().getContext(arg0,

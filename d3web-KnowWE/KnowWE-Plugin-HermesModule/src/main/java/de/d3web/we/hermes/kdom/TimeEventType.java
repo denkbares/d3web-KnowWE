@@ -64,6 +64,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public IntermediateOwlObject getOwl(Section section) {
 		UpperOntology uo = UpperOntology.getInstance();
@@ -182,8 +183,8 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 		}
-
-		for (Section cur : section.getChildren()) {
+		List<Section> children = section.getChildren();
+		for (Section cur : children) {
 			if (cur.getObjectType() instanceof AbstractKnowWEObjectType) {
 				AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) cur
 						.getObjectType();
