@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.xcl;
 
 import java.util.Collection;
+import java.util.List;
 
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
@@ -141,13 +142,15 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 		if (fulfilled) {
 			// Iterate over children of the relation.
 			// When (Complex)Finding call the FontcolorBackgroundRenderer
-			for (Section s: sec.getChildren()) {
+			 List<Section> children = sec.getChildren();
+			for (Section s: children) {
 				buffi.append(this.renderRelationChild(article, s, fulfilled, user, "#33FF33"));
 			}
 			
 		} else {
 			// b false: Color red
-			for (Section s: sec.getChildren()) {
+			 List<Section> children = sec.getChildren();
+			for (Section s: children) {
 				buffi.append(this.renderRelationChild(article, s, fulfilled, user, "#FF9900"));
 			}
 			

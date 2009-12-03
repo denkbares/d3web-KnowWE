@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom.condition;
 
+import java.util.List;
+
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
@@ -54,7 +56,8 @@ public class Disjunct extends DefaultAbstractKnowWEObjectType {
 	    URI compositeexpression=uo.getHelper().createlocalURI(s.getTitle()+".."+s.getId());
 		io.addStatement(uo.getHelper().createStatement(compositeexpression,RDF.TYPE,uo.getHelper().createURI("Disjunction")));
 	    io.addLiteral(compositeexpression);
-	    for (Section current:s.getChildren()){
+	    List<Section> children = s.getChildren();
+	    for (Section current:children){
 		if (current.getObjectType() instanceof AbstractKnowWEObjectType) {
 		    AbstractKnowWEObjectType handler=(AbstractKnowWEObjectType) current.getObjectType();
 		    IntermediateOwlObject iohandler = handler.getOwl(current);

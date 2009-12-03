@@ -75,7 +75,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		UpperOntology uo = UpperOntology.getInstance();
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		try {
-			Section csection = section.getChildren(
+			Section csection = (Section) section.getChildren(
 					new TypeSectionFilter(new FindingComparator().getName()))
 					.get(0);
 			String comparator = ((FindingComparator) csection.getObjectType())

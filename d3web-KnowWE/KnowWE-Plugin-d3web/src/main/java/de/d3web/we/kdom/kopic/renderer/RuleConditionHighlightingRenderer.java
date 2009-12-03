@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.kopic.renderer;
 
 import java.util.Collection;
+import java.util.List;
 
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
@@ -158,7 +159,8 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 			KnowWEUserContext user, StringBuilder buffi) {
 		
 		KnowWEObjectType type;
-		for (Section child : sec.getChildren()) {
+		 List<Section> children = sec.getChildren();
+		for (Section child : children) {
 			type = child.getObjectType();
 			if (type instanceof Finding || type instanceof ComplexFinding
 					|| type instanceof ComplexFindingBraced || type instanceof Conjunct
@@ -189,7 +191,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 		if (sec.getObjectType() instanceof ComplexFindingBraced) {
 			braced = true;
 			buffi.append("(");
-			sec = sec.getChildren().get(1);
+			sec = (Section) sec.getChildren().get(1);
 		}
 		
 		try {

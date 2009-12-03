@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom.kopic.renderer;
 
+import java.util.List;
+
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -32,7 +34,8 @@ public class DefaultLineNumberDeligateRenderer extends KnowWEDomRenderer {
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		int lineNum = 1;
-		for (Section child:sec.getChildren()) {
+		 List<Section> children = sec.getChildren();
+		for (Section child:children) {
 			if (((AbstractKnowWEObjectType) child.getObjectType()).isNumberedType()) {
 				String numberString = Integer.toString(lineNum);
 				if(numberString.length() == 1) {

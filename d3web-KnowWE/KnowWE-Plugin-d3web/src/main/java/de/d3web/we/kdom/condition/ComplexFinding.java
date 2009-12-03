@@ -84,7 +84,8 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
 					uo.getHelper().createlocalURI(
 							s.getTitle() + ".." + s.getId()));
 			io.addLiteral(complexfinding);
-			for (Section current : s.getChildren()) {
+			List<Section> children = s.getChildren();
+			for (Section current : children) {
 				if (current.getObjectType() instanceof AbstractKnowWEObjectType) {
 					AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) current
 							.getObjectType();

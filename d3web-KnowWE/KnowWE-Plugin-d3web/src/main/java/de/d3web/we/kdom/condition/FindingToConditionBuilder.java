@@ -258,7 +258,7 @@ public class FindingToConditionBuilder {
 		List<AbstractCondition> conjuncts = new ArrayList<AbstractCondition>();
 		
 		for (Section section : conjunction) {
-			AbstractCondition condition = analyseFinding(article, section.getChildren().get(0), kbm);
+			AbstractCondition condition = analyseFinding(article, (Section) section.getChildren().get(0), kbm);
 			if (condition != null)
 				conjuncts.add(condition);
 		}

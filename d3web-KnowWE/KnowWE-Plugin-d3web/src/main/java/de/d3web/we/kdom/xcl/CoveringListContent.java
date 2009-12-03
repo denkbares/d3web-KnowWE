@@ -254,7 +254,8 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 			
 			// get the XCLRelation Sections
 			// Sort out Relations only containing PlainText
-			for (Section sec : body.getChildren()) {
+			 List<Section> children = body.getChildren();
+			for (Section sec : children) {
 				if (sec.getObjectType() instanceof XCLRelation) {
 					if ((sec.findChildOfType(ComplexFinding.class) != null)
 							|| (sec.findChildOfType(Finding.class) != null)

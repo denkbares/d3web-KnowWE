@@ -98,7 +98,8 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 
 			io.addStatement(uo.getHelper().createStatement(explainsdings, RDF.TYPE, uo
 				.getHelper().createURI("Explains")));
-			for (Section current : s.getChildren()) {
+			 List<Section> children = s.getChildren();
+			for (Section current : children) {
 				if (current.getObjectType() instanceof ComplexFinding||current.getObjectType() instanceof Finding) {
 					AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) current
 							.getObjectType();
