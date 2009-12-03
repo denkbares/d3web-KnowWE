@@ -151,7 +151,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		for (Section section : edgeSections) {
 			
-			Section content = section.getChildren().get(1); //get edgecontent-section
+			Section content = (Section) section.getChildren().get(1); //get edgecontent-section
 			
 			String sourceID = getXMLContentText(content.findChildOfType(SourceType.class));
 			
@@ -242,7 +242,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	}
 
 	private String getXMLContentText(Section s) {
-		return s.getChildren().get(1).getOriginalText();
+		List<Section> children = s.getChildren();
+		return children.get(1).getOriginalText();
 	}
 
 	private INode getNodeByID(String nodeID, List<INode> nodes) {
@@ -262,7 +263,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		for (Section section : nodeSections) {
 			
-			Section nodeContent = section.getChildren().get(1); //Section of NodeContentType
+			Section nodeContent = (Section) section.getChildren().get(1); //Section of NodeContentType
 			
 			// get the important info 
 			List<Section> children = nodeContent.getChildren(new SectionFilter() { 
@@ -374,13 +375,15 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	}
 
 	private INode createEndNode(String id, Section section) {
-		String name = section.getChildren().get(0).getOriginalText();
+		List<Section> children = section.getChildren();
+		String name = children.get(0).getOriginalText();
 		
 		return FlowFactory.getInstance().createEndNode(id, name);
 	}
 
 	private INode createStartNode(String id, Section section) {
-		String name = section.getChildren().get(0).getOriginalText();
+		List<Section> children = section.getChildren();
+		String name = children.get(0).getOriginalText();
 		
 		return FlowFactory.getInstance().createStartNode(id, name);
 		
