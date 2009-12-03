@@ -293,6 +293,8 @@ function ActionEditor(parent, action, style) {
 	this.objectSelect = null;
 	this.selectableActions = null;
 	this.setVisible(true);
+	
+	this.answers = [];
 }
 
 ActionEditor.prototype.getDOM = function() {
@@ -313,6 +315,10 @@ ActionEditor.prototype.getAction = function() {
 		this.selectedAction.setValueString('('+this.dom.select('.input')[0].value+')');
 	}
 	return this.selectedAction;
+}
+
+ActionEditor.prototype.getAnswers = function() {
+	return this.answers;
 }
 
 ActionEditor.prototype.handleObjectSelected = function() {
@@ -387,6 +393,268 @@ ActionEditor.prototype.render = function() {
 	return dom;
 }
 
+//creates the Dropdown Menu, with the answer values
+ActionEditor.createQuestionDropdown = function(addedQuestionText, addedQuestionType, possibleAnswers) {
+	var name = addedQuestionText;	
+	var result = [];
+	
+	result.push('---- Frage stellen ----');			
+	// questions can be asked
+	result.push(new Action('KnOffice', 'ERFRAGE['+name.toJSON()+']'));
+	result.push(new Action('KnOffice', 'INSTANT['+name.toJSON()+']'));
+
+	result.push('---- Wert abfragen ----');			
+	result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));			
+	result.push('---- Wert zuweisen ----');			
+	switch (addedQuestionType) {
+			// add yes/no value
+		case 'yn':
+			result.push(new Action('KnOffice', Action._createExpression(name, 'yes')));
+			result.push(new Action('KnOffice', Action._createExpression(name, 'no')));
+			break;
+			
+
+		case 'oc':
+		case 'mc':
+		case 'num':
+			for (var i = 0; i < possibleAnswers.length; i++) {
+				result.push(new Action('KnOffice', Action._createExpression(name, possibleAnswers[i])));
+			}
+			break;
+	}	
+	return result;
+}
+
+// AJAX-Request for adding questions and their answers to the article
+ActionEditor.updateQuestions = function(addedQuestionText, addedQuestionType, possibleAnswers) {
+
+		var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
+		var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
+		var answersToLine = "";
+		for (var i = 0; i < possibleAnswers.length; i++) {
+			if (i != possibleAnswers.length -1) {
+				answersToLine += possibleAnswers[i] + ',';
+			} else {
+				answersToLine += possibleAnswers[i];
+			}
+		}
+		var infos = '&infos=' + addedQuestionText + ',' + addedQuestionType + ',' + pageName + ',' + answersToLine;
+
+		
+		var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.UpdateQuestions" + infos;
+		
+		new Ajax.Request(url, {
+			method: 'get',
+			onSuccess: function(transport) {
+			
+			},
+			onFailure: function() {
+				CCMessage.warn(
+					'AJAX Verbindungs-Fehler', 
+					'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
+					'In sp?teren Aktionen k?nnte auch das Speichern der ?nderungen fehlschlagen.');
+			},
+			onException: function(transport, exception) {
+				CCMessage.warn(
+					'AJAX interner Fehler',
+					exception
+					);
+			}
+		}); 
+}
+
+// creates the Dropwdown menu for solutions
+ActionEditor.createSolutionDropdown = function(solutionText) {
+	var name = solutionText;	
+	var result = [];
+	
+	result.push('---- Loesung bewerten ----');			
+	result.push(new Action('KnOffice', Action._createExpression(name, 'P7')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'P6')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'P5')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'P4')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'P3')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'P2')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'P1')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'N1')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'N2')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'N3')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'N4')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'N5')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'N6')));
+	result.push(new Action('KnOffice', Action._createExpression(name, 'N7')));
+	
+	return result;
+}
+
+
+//AJAX-Request for adding solutions to the article
+ActionEditor.updateSolutions = function(solutionText) {
+
+	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
+	var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
+	var infos = '&infos=' + solutionText + ',' + pageName;
+
+	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.UpdateSolutions" + infos;
+	
+	new Ajax.Request(url, {
+		method: 'get',
+		onSuccess: function(transport) {
+		
+		},
+		onFailure: function() {
+			CCMessage.warn(
+				'AJAX Verbindungs-Fehler', 
+				'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
+				'In sp?teren Aktionen k?nnte auch das Speichern der ?nderungen fehlschlagen.');
+		},
+		onException: function(transport, exception) {
+			CCMessage.warn(
+				'AJAX interner Fehler',
+				exception
+				);
+		}
+	}); 
+}
+
+
+ActionEditor.getQuestionType = function () {
+	var qType;
+	if (document.choseQuestionType.questionType[0].checked) {
+		qType = document.choseQuestionType.questionType[0].value;
+	} else if (document.choseQuestionType.questionType[1].checked) {
+		qType = document.choseQuestionType.questionType[1].value;
+	} else if (document.choseQuestionType.questionType[2].checked) {
+		qType = document.choseQuestionType.questionType[2].value;
+	} else if (document.choseQuestionType.questionType[3].checked) {
+		qType = document.choseQuestionType.questionType[3].value;
+	} else if (document.choseQuestionType.questionType[4].checked) {
+		qType = document.choseQuestionType.questionType[4].value;
+	}
+	return qType;
+}
+
+// puts everything together, e.g. the question, the type and the answers
+// also calls the AJAX request
+ActionEditor.prototype.createNewQuestion = function() {
+	var root = this.dom.select('.value')[0];
+	var qText = document.choseQuestionText.questionText.value;
+	var qType = ActionEditor.getQuestionType();
+	var answers = this.getAnswers();
+	var actions;
+	
+	// if the object is a question, do the right ajax-request and create the dropdown
+	if (qType != "Solution") {
+		ActionEditor.updateQuestions(qText, qType, answers);
+		actions = ActionEditor.createQuestionDropdown(qText, qType, answers);
+	
+	// else it is a solution, do the right ajax-request and create the dropdown
+	} else {
+		ActionEditor.updateSolutions(qText);
+		actions = ActionEditor.createSolutionDropdown(qText);
+	}
+	
+	this.selectableActions = [];
+	var valueToSelect = this.selectedAction ? this.selectedAction.getValueString() : '';
+	var indexToSelect = -1; // select first one if no match available
+	var isFormula = this.selectedAction ? this.selectedAction.isFormula() : false;
+	this.selectedAction = null;
+
+	if (!actions) {
+		root.innerHTML = '<i>Keine Aktionen verfuegbar</i>';
+		if (this.objectSelect) this.selectedAction = new Action('NOP', this.objectSelect.getValue());
+		return;
+	}
+
+	for (var i=0; i<actions.length; i++) {
+		var action = actions[i];
+		if (!Object.isString(action)) {
+			this.selectableActions.push(action);
+			// ein Wert wird dann selektiert wenn der Wert gleich ist 
+			// oder beides eine Formel ist (da dann der Wert in der Drop-Down-Liste leer ist)
+			// Ausserdem wird die erste Action gemerkt, da eventuell keine passende mehr nachfolgt
+			if ((indexToSelect == -1) 
+					|| (action.getValueString() == valueToSelect)
+					|| (action.getValueString() == '()' && isFormula)
+					) {
+				indexToSelect = i;
+				// bei Formeln der Wert uebernehmen
+				if (isFormula) {
+					this.selectedAction = Object.clone(action);
+					this.selectedAction.setValueString(valueToSelect);
+				}
+				else {
+					this.selectedAction = action;
+				}
+			}
+		}
+	}
+
+	var html = '<select ' +
+			'onchange="this.parentNode.parentNode.__ActionEditor.handleValueSelected(this);this.blur();" ' +
+			'onfocus="this.parentNode.parentNode.__ActionEditor.hasInputFocus = true;" ' +
+			'onblur="this.parentNode.parentNode.__ActionEditor.hasInputFocus = false;">';
+	for (var i=0, value=0; i<actions.length; i++) {
+		var action = actions[i];
+		if (Object.isString(action)) {
+			html +=  '<optgroup label="'+action+'"></optgroup>';
+		}
+		else {
+			html += '<option value=' + (value++) + 
+				(indexToSelect == i ? ' selected' : '') + 
+				'>' +
+				action.getDisplayText() + 
+				'</option>';
+		}
+	}
+	html += '</select>';
+	root.innerHTML = html + '<br \>';
+	this.updateInputField();
+}
+
+// add additional answers to a question
+ActionEditor.prototype.addAnswer = function() {
+	var root = this.dom.select('.value')[0];
+	var questionText = document.choseQuestionText.questionText.value;
+	var questionType = ActionEditor.getQuestionType();
+	
+	// if its a yn question or a solution there is no need for custom answers
+	if (questionType === "yn" || questionType === "num" || questionType ===  "Solution") {
+		return this.createNewQuestion();
+	}
+	
+	var newAnswer = '<input type="text" size="30" name="answer"><br \>';
+	var buttonWeiter = '<input type="button" value="Weiter" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.createNewQuestion()"';
+	var buttonOK = '<input type="button" value="Hinzufügen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.answerValue()"';
+	root.innerHTML = '<i>Lösungsvorschläge für</i><br\>' + questionText + ' [' + questionType + ']<br\><i>hinzufügen</i><br\><form name="addAnswer" id="addAnswer" method="get">' + newAnswer + buttonOK + buttonWeiter + '</form><i>bisherige Vorschläge:</i>';
+}
+
+
+// TODO filter empty answers
+ActionEditor.prototype.answerValue = function() {
+	var root = this.dom.select('.value')[0];
+	var answer = document.addAnswer.answer.value;
+	if (!this.answers.contains(answer) && (answer !== '\s*')) {
+		root.innerHTML += '<br \>' + answer;
+		this.answers.push(answer);
+	}
+}
+ 
+
+// asks the object type
+ActionEditor.prototype.askQuestionType = function() {
+	var root = this.dom.select('.value')[0];
+	var questionText = document.choseQuestionText.questionText.value;
+	var multipleChoice = '<input type="radio" id="mc" name="questionType" value="mc">Question [mc]<br>';
+	var oneChoice = '<input type="radio" id="oc" name="questionType" value="oc">Question [oc]<br>';
+	var yn = '<input type="radio" id="yn" name="questionType" value="yn">Question [yn]<br>';
+	var num = '<input type="radio" id="num" name="questionType" value="num">Question [num]<br>';
+	var solution = '<input type="radio" id="Solution" name="questionType" value="Solution">Solution<br>';
+	var buttonOK = '<input type="button" value="Erstellen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.addAnswer()"';
+	root.innerHTML = '<i>Bitte Objekttyp auswählen für</i><br\>' + questionText + '<br\><form name="choseQuestionType" id="choseQuestionType" method="get">' + multipleChoice + oneChoice + yn  + num + solution + "<br\>" + buttonOK + "</form>";
+	return;
+}
+
 ActionEditor.prototype.refreshValueInput = function() {
 	if (!this.isVisible()) return;
 	// remove existing input method
@@ -395,10 +663,13 @@ ActionEditor.prototype.refreshValueInput = function() {
 	// check if object is in cache
 	var infoObject = (this.objectSelect) ? this.objectSelect.getMatchedItem() : null;
 	if (!infoObject) {
-		root.innerHTML = "<i>Objekt nicht bekannt</i>" 
+		var buttonOK = '<button class="ok" onclick="this.parentNode.parentNode.__ActionEditor.askQuestionType()">Ok</button>';
+		var question = '<form name="choseQuestionText" id="choseQuestionText" method="get"><input type="text" id="questionText" name="questionText"></form>';
+		root.innerHTML = "<i>Objekt nicht bekannt<br\>Objekt erstellen?<br\></i>" + question + "<br\>" + buttonOK;
 		if (this.objectSelect) this.selectedAction = new Action('NOP', this.objectSelect.getValue());
 		return;
 	}
+
 
 	// iterate all actions	
 	// create drop down list for existing info object
