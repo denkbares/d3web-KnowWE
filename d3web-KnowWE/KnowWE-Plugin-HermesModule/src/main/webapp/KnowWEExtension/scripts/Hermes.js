@@ -164,11 +164,10 @@ KNOWWE.plugin.hermes.conceptPopup = function() {
                     action : 'none',
                     ids : [ 'hermesSearchResult' ],
                     fn : function(){
-                    	window.location.reload();
-                        //var node, topic;
-                        //node = element.getAttribute('ancestor');
-                        //topic = KNOWWE.helper.gup('page');
-                        //KNOWWE.core.rerendercontent.updateNode(node, topic, "render");
+                        var node, topic;
+                        node = element.getAttribute('ancestor');
+                        topic = KNOWWE.helper.gup('page');
+                        KNOWWE.core.rerendercontent.updateNode(node, topic, "render");
                     }
                 }
             }
@@ -241,7 +240,7 @@ KNOWWE.plugin.hermes.conceptPopup = function() {
             var options = {
                 url : url + "&" + tokens.join('&'),
                 action : 'none',
-                fn : KNOWWE.plugin.d3web.solutionstate.updateSolutionstate
+                fn : KNOWWE.plugin.d3web.actions.update
             }
             new _KA(options).send();
             _KS('#o-lay')._remove();
@@ -284,7 +283,6 @@ KNOWWE.plugin.hermes.conceptPopup = function() {
     if (KNOWWE.helper.loadCheck( [ 'Wiki.jsp' ])) {
         window.addEvent('domready', function() {
             KNOWWE.plugin.hermes.conceptPopup.init();
-
         });
     }
 }());
