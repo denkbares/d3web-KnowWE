@@ -22,6 +22,7 @@ package de.d3web.we.kdom.kopic.rules.ruleActionLine;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.we.kdom.D3IdentifierSectionFinder;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -38,7 +39,7 @@ public class SuppressAnswerAlternativesIndication extends DefaultAbstractKnowWEO
 		this.sectionFinder = new SuppressAlternativesIndicationSectionFinder();
 		this.childrenTypes.add(new Hide());
 		QuestionClass qC = new QuestionClass();
-		qC.setSectionFinder(new QuestionDiagnosisSectionFinder());
+		qC.setSectionFinder(new D3IdentifierSectionFinder());
 		this.childrenTypes.add(qC);
 		this.childrenTypes.add(new Equals());
 		this.childrenTypes.add(new AddedValue());

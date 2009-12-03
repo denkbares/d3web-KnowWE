@@ -100,10 +100,10 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 		this.sectionFinder = new XCLHeadSectionFinder();
 		SolutionID sID = new SolutionID();
-		sID.setSectionFinder(new SolutionIDSectionFinder());
 		sID.setCustomRenderer(SolutionIDHighlightingRenderer.getInstance());
 		this.childrenTypes.add(sID);
 		this.childrenTypes.add(new LineBreak());
+		
 	}
 
 }

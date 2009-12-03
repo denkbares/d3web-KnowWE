@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.decisionTree;
 
+import de.d3web.we.kdom.D3IdentifierSectionFinder;
 import de.d3web.we.kdom.basic.LineContent;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
@@ -29,6 +30,7 @@ public class SolutionID extends LineContent {
 	@Override
 	public void init() {
 		setCustomRenderer(new ObjectInfoLinkRenderer(new FontColorRenderer(FontColorRenderer.COLOR1)));
+		setSectionFinder(new D3IdentifierSectionFinder());
 	}
 	
 }

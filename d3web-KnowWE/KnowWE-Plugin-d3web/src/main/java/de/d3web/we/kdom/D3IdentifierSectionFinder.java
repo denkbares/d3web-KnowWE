@@ -17,28 +17,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.kopic.rules.ruleActionLine;
+package de.d3web.we.kdom;
 
-import java.util.List;
-
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.decisionTree.SolutionID;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.utils.Patterns;
 
 /**
- * ATM unused
- * @author Johannes Dienst
- *
+ * SectionFinder for one valid d3 identifier. Either:
+ * 	* one word
+ *  * many words separate by spaces
+ *  * anything quoted
+ *  
+ * Leading and trailing whitespaces are allowed.
+ * 
+ * @author Reinhard Hatko
+ * Created on: 03.12.2009
  */
-public class FormulaExpression extends DefaultAbstractKnowWEObjectType {
+public class D3IdentifierSectionFinder extends RegexSectionFinder {
 
-	@Override
-	public void init() {
-		this.childrenTypes.add(new SolutionID());
-		this.childrenTypes.add(new Equals());
+	public D3IdentifierSectionFinder() {
+		super("[\\t ]*(" + Patterns.D3IDENTIFIER + ")[\\t ]*");
 	}
 	
-
+	
 }

@@ -37,9 +37,7 @@ public class SolutionValueAssignment extends DefaultAbstractKnowWEObjectType {
 	@Override
 	public void init() {
 		this.sectionFinder = new DiagnosisRuleActionSectionFinder();
-		SolutionID sID = new SolutionID();
-		sID.setSectionFinder(new QuestionDiagnosisSectionFinder());
-		this.childrenTypes.add(sID);
+		this.childrenTypes.add(new SolutionID());
 		this.childrenTypes.add(new Equals());
 		this.childrenTypes.add(new ScorePoint());
 	}
