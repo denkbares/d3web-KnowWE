@@ -30,6 +30,7 @@ String findParam( PageContext ctx, String key )
 	
 	String ajaxToHTML = map.get( "ajaxToHTML" );
 	if( ajaxToHTML != null && !ajaxToHTML.equals("null") ){
+		result = result.replaceAll("((\r\n)|\n){2}", KnowWEUtils.maskHTML("<br />"));
 		result = wiki.textToHTML(wikiContext, result);
 	}
     result = KnowWEUtils.unmaskHTML( result );

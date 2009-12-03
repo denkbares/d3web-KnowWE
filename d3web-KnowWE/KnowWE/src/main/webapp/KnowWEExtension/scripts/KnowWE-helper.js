@@ -337,6 +337,7 @@ KNOWWE.helper.ajax = function ( options ) {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'text/javascript, text/html, application/xml, text/xml'
         },
+        loader : false,
         fn : handleResponse,
         encoding : 'utf-8',
         urlEncoded : true,      
@@ -371,6 +372,20 @@ KNOWWE.helper.ajax = function ( options ) {
         oDefault = KNOWWE.helper.enrich( options, oDefault );
     }
     
+    /**
+     * Function: createLoader
+     * Creates an AJAX loading image.
+     */
+    function createLoader(){
+        var loading = document.createElement('div');
+        var domID = document.createAttribute('id');
+        domID.nodeValue = 'KNOWWE-ajax-loader';
+        loading.setAttributeNode( domID );
+        loading.innerHTML = "<img src=\"KnowWEExtension/images/ajax-loader.gif\" width=\"32\" height=\"32\"/>";
+        
+        document.getElementsByTagName("body")[0].appendChild( loading );     	
+    }
+    
     /** 
      * Function: handleResponse
      * Handles the response from the AJAX request. If the AJAX request ended 
@@ -400,11 +415,10 @@ KNOWWE.helper.ajax = function ( options ) {
                          var info = new _KN('p', { 'class' : 'box info' });
                          info._setHTML( http.responseText.replace(/@info@/, '') );
                          info._injectTop(document.getElementById( ids[0]));
-                    } else if( http.responseText.startsWith('@replace@')){
+                    } 
+                    if( http.responseText.startsWith('@replace@')){
                         var html = http.responseText.replace(/@replace@/, '');
                         KNOWWE.core.util.replace( ids, html );    
-                    } else {
-                        window.location.reload();
                     }
                     break;
                 default:
@@ -412,6 +426,11 @@ KNOWWE.helper.ajax = function ( options ) {
             }
             if( !oDefault.response.fn ){ return; }
             oDefault.response.fn.call();
+            
+            if(oDefault.loader) {
+            	var loader = document.getElementById('KNOWWE-ajax-loader');
+            	loader.parentNode.removeChild( loader );
+            }
         }  
     }    
     
@@ -435,8 +454,11 @@ KNOWWE.helper.ajax = function ( options ) {
             http.setRequestHeader(k, v);
         }); 
         
-        http.onreadystatechange = oDefault.fn;
+        http.onreadystatechange = oDefault.fn;       
         http.send(oDefault.method);
+        if(oDefault.loader){
+        	createLoader();
+        }
     }
     /**
      * Function: getResponse

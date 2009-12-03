@@ -734,3 +734,12 @@ font-size:120%;
     padding:0.2em;
     margin: 5px 0 5px 2px;
 }
+
+
+
+#KNOWWE-ajax-loader{
+    position: fixed;
+    top: 50%;
+    left:50%;
+    z-index: 2000;	
+}

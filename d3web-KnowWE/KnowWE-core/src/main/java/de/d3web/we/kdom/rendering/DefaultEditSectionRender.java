@@ -27,7 +27,6 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		
-		
 		boolean isEditable = sec.hasQuickEditModeSet( user.getUsername() ); 
 		boolean highlight = false;
 		Map<String, String> urlParameterMap = user.getUrlParameterMap();
@@ -52,8 +51,9 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 		}
 		string.append( KnowWEUtils.maskHTML( "<a name=\""+sec.getId()+"\"></a><div id=\"" + sec.getId() + "\">" ));
 		
-		
-		string.append( KnowWEUtils.maskHTML( this.generateQuickEdit( sec.getId(), isEditable) ));
+		if( sec.getArticle().equals( article ) ) {
+			string.append( KnowWEUtils.maskHTML( this.generateQuickEdit( sec.getId(), isEditable) ));
+		}
 		
 		if ( isEditable ) {
 			String str = sec.getOriginalText();

@@ -28,7 +28,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ReRenderContentPartAction extends AbstractKnowWEAction  {
@@ -57,11 +57,14 @@ public class ReRenderContentPartAction extends AbstractKnowWEAction  {
 		Section secWithNodeID = getSectionFromCurrentID( nodeID, root );
 			
 		if( secWithNodeID != null ) {
-			
 			StringBuilder b = new StringBuilder();
-			DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
-			
-			return KnowWEUtils.unmaskHTML( b.toString() );
+			KnowWEDomRenderer renderer = secWithNodeID.getObjectType().getRenderer();
+			if( renderer != null ){
+				renderer.render(article, secWithNodeID, user, b);
+			} else {
+				DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
+			}
+			return b.toString();
 		}
 		return null;
 	}

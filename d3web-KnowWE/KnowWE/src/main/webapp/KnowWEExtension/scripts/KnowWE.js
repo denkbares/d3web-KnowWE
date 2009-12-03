@@ -156,7 +156,10 @@ KNOWWE.core.actions = function(){
                 response : {
                     action : 'string',
                     ids : [id],
-                    fn : fn
+                    fn : function(){
+                    	fn.call();
+                    	Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
+                    }
                 }
             }
             new _KA( options ).send();
@@ -553,10 +556,12 @@ KNOWWE.core.edit = function(){
 
             var options = {
                 url : KNOWWE.core.util.getURL ( params ),
+                loader : true,
                 response : {
                     action : 'none',
                     fn : function(){ 
                         KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render");
+                        Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
                     }
                 }
             }
@@ -645,6 +650,7 @@ KNOWWE.core.table = function(){
 
             var options = {
                 url : KNOWWE.core.util.getURL ( params ),
+                loader : true,
                 response : {
                     action : 'none',
                     fn : function(){ 
@@ -1103,7 +1109,7 @@ KNOWWE.core.rerendercontent = function(){
 
             }
             var url = KNOWWE.core.util.getURL( params );
-            this.execute(url, node);
+            this.execute(url, node, 'insert');
         },
         /**
          * Function: update
@@ -1122,10 +1128,11 @@ KNOWWE.core.rerendercontent = function(){
                         action : 'ReRenderContentPartAction',
                         KWikiWeb : 'default_web',
                         KdomNodeId : rel.id,
-                        KWiki_Topic : KNOWWE.helper.gup('page')
+                        KWiki_Topic : KNOWWE.helper.gup('page'),
+                        ajaxToHTML : "render"
                     }           
                     var url = KNOWWE.core.util.getURL( params );
-                    this.execute(url, classlist[i].id);
+                    this.execute(url, rel.id, 'replace');
                 }
             }
         },
@@ -1137,13 +1144,16 @@ KNOWWE.core.rerendercontent = function(){
          *     url - The URL for the AJAX request.
          *     id - The id of the node that should be updated.
          */
-        execute : function( url, id ) {
+        execute : function( url, id, action) {
             var options = {
                 url : url,
-                action : 'insert',
+                action : action,
                 response : {
                     ids : [ id ],
-                    fn : KNOWWE.core.actions.init
+                    fn : function(){
+                    	KNOWWE.core.actions.init();
+                        Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
+            		}
                 }
             }
             new _KA( options ).send();
