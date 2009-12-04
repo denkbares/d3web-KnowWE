@@ -26,8 +26,18 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
 public class DefaultSubjectContext extends StringContext {
-    	private URI soluri;
+
 	public final static String CID="SOLUTIONCONTEXT";
+	
+	private URI soluri;
+	
+	public DefaultSubjectContext(String sol) {
+		setSubject(sol);
+	}
+	
+	public DefaultSubjectContext() {
+	}
+	
 	
 	public void setSubject(String sol){
 		attributes.put("solution", sol);

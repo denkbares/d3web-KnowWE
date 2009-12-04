@@ -22,6 +22,7 @@ package de.d3web.we.kdom.xcl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +32,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.contexts.ContextManager;
@@ -38,13 +40,55 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.logging.Logging;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
+import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.utils.Patterns;
 
 public class XCLHead extends DefaultAbstractKnowWEObjectType {
 
+	
+	@Override
+	protected void init() {
+		this.sectionFinder = new XCLHeadSectionFinder();
+		SolutionID sID = new SolutionID();
+		sID.setCustomRenderer(SolutionIDHighlightingRenderer.getInstance());
+		this.childrenTypes.add(sID);
+		this.childrenTypes.add(new LineBreak());
+		addReviseSubtreeHandler(new XCLHeadSubtreeHandler());
+		
+	}
+	
+	
+	private class XCLHeadSubtreeHandler extends D3webReviseSubTreeHandler {
+		
+
+		public void reviseSubtree(KnowWEArticle article, Section s) {
+			
+			Section father = s.getFather();
+			
+			if (!father.getObjectType().getClass().equals(XCList.class)) {
+				Logging.getInstance().log(Level.WARNING, "Expected different fathertype: XCList");
+				return;
+			}
+			
+			String string = s.getOriginalText().trim();
+			
+			if (string.startsWith("\"")) {
+				string = string.substring(1, string.length() - 1);
+			}
+			
+			DefaultSubjectContext context = new DefaultSubjectContext(string);
+			ContextManager.getInstance().attachContext(father, context);
+			
+			
+		}
+		
+	}
+	
+	
 	
 	public class XCLHeadSectionFinder extends SectionFinder{
 		
@@ -95,15 +139,5 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	}
 
 
-
-	@Override
-	protected void init() {
-		this.sectionFinder = new XCLHeadSectionFinder();
-		SolutionID sID = new SolutionID();
-		sID.setCustomRenderer(SolutionIDHighlightingRenderer.getInstance());
-		this.childrenTypes.add(sID);
-		this.childrenTypes.add(new LineBreak());
-		
-	}
 
 }

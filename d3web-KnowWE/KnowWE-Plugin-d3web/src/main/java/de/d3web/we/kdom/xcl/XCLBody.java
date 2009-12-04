@@ -38,6 +38,7 @@ public class XCLBody extends DefaultAbstractKnowWEObjectType{
 		this.childrenTypes.add(new XCListBodyEndSymbol());
 		this.childrenTypes.add(new XCListBodyStartSymbol());
 		this.childrenTypes.add(new CommentLineType());
+		this.childrenTypes.add(new DCPropertyType());
 		this.childrenTypes.add(new XCLRelation());
 		this.sectionFinder = new XCLBodySectionFinder();
 	}

@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -31,13 +32,22 @@ public class RegexSectionFinder extends SectionFinder {
 
 	
 	private final Pattern pattern;
+	private final int group;
 
 	public RegexSectionFinder(String p) {
 		this(p, 0);
 	}
 	
 	public RegexSectionFinder(String p, int patternmod) {
+		this(p, patternmod, 0); 
+	}
+
+	/**
+	 * creates sections that reflect the content of the group <code>group</code>.
+	 */
+	public RegexSectionFinder(String p, int patternmod, int group) {
 		pattern = Pattern.compile(p, patternmod); 
+		this.group = group;
 	}
 
 	@Override
@@ -55,6 +65,6 @@ public class RegexSectionFinder extends SectionFinder {
 	}
 	
 	protected SectionFinderResult createSectionFinderResult(Matcher m) {
-		return new SectionFinderResult(m.start(), m.end());
+		return new SectionFinderResult(m.start(group), m.end(group));
 	}
 }

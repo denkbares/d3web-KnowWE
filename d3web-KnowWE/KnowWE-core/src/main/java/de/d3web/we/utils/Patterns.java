@@ -42,7 +42,7 @@ public final class Patterns {
 	 * RegEx for many german words, no leading or trailing 
 	 * spaces are allowed, just between words (many are allowed).  
 	 */
-	public static final String WORDS = "(?:" + WORD + "+ +)*" + WORD;
+	public static final String WORDS = "(?:" + WORD + " +)+" + WORD;
 	
 	/**
 	 * RegEx for a linebreak: optional \r followed by \n
@@ -70,24 +70,37 @@ public final class Patterns {
 	 */
 	public static final String D3IDENTIFIER = 
 		QUOTEDSTRING + "|" +	// anything quoted
-		WORD + "|" +			// or single word
-		WORDS;					// or words separated by spaces
+		WORDS					// or words separated by spaces (including 1 word with no spaces) 
+		+ "|" +	WORD;			// or single word
 	
+	/**
+	 * RegEx for inline definition of diagnosis properties in an XCL.
+	 */
+	public static final String DCPROPERTY = 
+		"@" + 					//start
+		WORD +					//Property name
+		SPACETABS +
+		"\\{" +					//Start 
+		"(?>[^\\{\\}]*)" +
+		"\\}";					//End text
+		
+		
 	
 	/**
 	 * RegEx for an XCL. 
 	 */
 	public static String XCLIST =
-		"^" +SPACETABS + 	// at line start there may be nb-whitespace,
+		"^" +SPACETABS + 		// at line start there may be nb-whitespace,
 		"(?:" + 				//diagnosis
 		D3IDENTIFIER +			
 		")" +  					//end diagnosis
 		SPACETABS + "\\{" + 	// then maybe whitespace and the bracket 
 		SPACETABS + LINEBREAK + //then a newline HAS to come, whitespaces before are allowed
 		"(?:" +					// the content of the XCL:
+		DCPROPERTY + "|" +		// or DCProperty
 		QUOTEDSTRING + "|" +	// anything quoted 
-		"[^\\}\"]*" + 			// or anything except unquoted '}' or single '"'
-		"|\\s*?" + TextInclude.PATTERN_BOTH+ "\\s*?" + //or include
+		"[^@\\}\"]*|" + 		// or anything except unquoted '}', '@' or single '"'
+//		"\\s*?" + TextInclude.PATTERN_BOTH+ "\\s*?" + //or include
 		")*" + 					// many of the above, ends content
 		"\\}" + SPACETABS +		// closing bracket and whitespaces TODO allowed just space before thresholds??
 		"(?:\\[[^\\[\\]\\{\\}]*\\])?" +  	//optional threshold in SBs, anything except brackets 

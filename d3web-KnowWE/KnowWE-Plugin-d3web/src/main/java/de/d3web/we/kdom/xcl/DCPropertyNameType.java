@@ -19,41 +19,30 @@
  */
 package de.d3web.we.kdom.xcl;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.utils.Patterns;
 
 /**
- * @author Johannes Dienst
- * 
+ *
+ * @author Reinhard Hatko
+ * Created on: 03.12.2009
  */
-public class SolutionIDSectionFinder extends SectionFinder{
+public class DCPropertyNameType extends DefaultAbstractKnowWEObjectType {
 
+	
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		if (text.length() == 0)
-			return null;
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-
-		text = text.trim();
-		int start = 0;
-		while (text.charAt(start) == ' ' || text.charAt(start) == '\n'
-				|| text.charAt(start) == '\r' || text.charAt(start) == '"') {
-			start++;
-			if (start == text.length())
-				break;
-		}
-		int end = text.lastIndexOf('"');
-		if (end == -1)
-			end = text.length();
-		else
-			end = text.length() - 1;
-			
-		result.add(new SectionFinderResult(start, end));
-		return result;
+	protected void init() {
+		super.init();
+		
+		setSectionFinder(new RegexSectionFinder("@(" + Patterns.WORD + ")", 0, 1));
 	}
-
+	
+	
+		
 }
