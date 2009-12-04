@@ -35,6 +35,7 @@ import de.d3web.we.hermes.action.SetFilterLevelAction;
 import de.d3web.we.hermes.kdom.TimeEventType;
 import de.d3web.we.hermes.maps.MapType;
 import de.d3web.we.hermes.maps.ShowMapForConceptHandler;
+import de.d3web.we.hermes.maps.ShowMapForTopicHandler;
 import de.d3web.we.hermes.maps.ShowMapHandler;
 import de.d3web.we.hermes.taghandler.LocalTimeEventsHandler;
 import de.d3web.we.hermes.taghandler.SetTimeEventFilterLevelHandler;
@@ -108,6 +109,7 @@ public class HermesPlugin extends AbstractDefaultKnowWEModule {
 	list.add(new ShowTimeEventsForConceptTagHandler());
 	list.add(new ShowMapHandler());
 	list.add(new ShowMapForConceptHandler());
+	list.add(new ShowMapForTopicHandler());
 	list.add(new SetTimeEventFilterLevelHandler());
 	list.add(new VersionCountTagHandler());
 	return list;
