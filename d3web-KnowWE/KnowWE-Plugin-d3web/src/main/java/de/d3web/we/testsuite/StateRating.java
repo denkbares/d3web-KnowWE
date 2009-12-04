@@ -59,7 +59,7 @@ public class StateRating extends DefaultAbstractKnowWEObjectType {
 			}
 			
 			end = text.lastIndexOf(")");
-			while (text.charAt(start)==' ') {
+			while (start < text.length() && text.charAt(start)==' ') {
 				start++;
 			}
 			while (end - 1 > 0 && text.charAt(end - 1)==' ') {

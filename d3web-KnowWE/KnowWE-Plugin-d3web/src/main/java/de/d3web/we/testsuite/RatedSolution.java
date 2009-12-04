@@ -33,9 +33,9 @@ public class RatedSolution extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public void init() {
+		childrenTypes.add(new StateRating());
 		childrenTypes.add(new SolutionID());
 //		childrenTypes.add(new ScoreRating());
-		childrenTypes.add(new StateRating());
 		this.sectionFinder = new RatedSolutionSectionFinder();
 	}
 	
