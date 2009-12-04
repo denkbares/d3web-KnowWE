@@ -1,6 +1,6 @@
 <Knowledge>
 	<solution>
-		<name><![CDATA["böse Zeichen {}<>"]]></name>
+		<name><![CDATA["bÃ¶se Zeichen {}<>"]]></name>
 		<finding weight="">
 			<matching>
 				<question><![CDATA[FSK]]></question>
@@ -1983,7 +1983,7 @@
 		</finding>
 	</solution>
 	<solution>
-		<name><![CDATA[Deutschland ein Sommermärchen]]></name>
+		<name><![CDATA[Deutschland ein Sommermï¿½rchen]]></name>
 		<finding weight="!">
 			<matching>
 				<question><![CDATA[FSK]]></question>
@@ -2391,7 +2391,7 @@
 		</finding>
 	</solution>
 	<solution>
-		<name><![CDATA[Düstere Legenden]]></name>
+		<name><![CDATA[Dï¿½stere Legenden]]></name>
 		<finding weight="!">
 			<matching>
 				<question><![CDATA[FSK]]></question>
@@ -2952,7 +2952,7 @@
 		</finding>
 	</solution>
 	<solution>
-		<name><![CDATA[Ich weiß was du letzten Sommer getan hast]]></name>
+		<name><![CDATA[Ich weiï¿½ was du letzten Sommer getan hast]]></name>
 		<finding weight="!">
 			<matching>
 				<question><![CDATA[FSK]]></question>
