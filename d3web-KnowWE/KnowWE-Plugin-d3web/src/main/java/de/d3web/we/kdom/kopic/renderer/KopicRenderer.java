@@ -93,7 +93,7 @@ public class KopicRenderer extends KnowWEDomRenderer {
 				+ "a target=kwiki-dialog href="
 				+ prefix
 				+ (prefix.length() != 0 ? "/" : "")
-				+ "KnowWE.jsp?renderer=KWiki_dialog&KWikisessionid="
+				+ "KnowWE.jsp?renderer=KWiki_dialog&action=RequestDialogRenderer&KWikisessionid="
 				+ URLEncoder.encode(topic)
 				+ ".."
 				+ URLEncoder.encode(actualID)
