@@ -55,16 +55,11 @@ public class ParseWebOfflineRenderer extends AbstractKnowWEAction {
 				reports.append("<p class=\"box ok\">");
 			}
 			reports.append(rb.getString("webparser.info.parsing")
-					+ createLink(name, webname) + ": "
-					+ object.getShortStatus() + "<br />");
+					+ createLink(name, webname)+ "<br />");
 			if (object.hasErrors()) {
 				problems++;
 				reports.append("<br />\n");
-			} else {
-
-				reports.append(rb.getString("webparser.info.saved")
-						+ " </p>");
-			}
+			} 
 		}
 		
 		String converted = KnowWEUtils.convertUmlaut(reports.toString());
@@ -86,6 +81,7 @@ public class ParseWebOfflineRenderer extends AbstractKnowWEAction {
 	@Override
 	public boolean isAdminAction() {
 		return true;
+		//return false;  //for local testing
 	}
 
 }

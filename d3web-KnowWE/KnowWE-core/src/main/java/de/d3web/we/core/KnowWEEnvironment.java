@@ -70,6 +70,7 @@ import de.d3web.we.taghandler.KDOMRenderer;
 import de.d3web.we.taghandler.KnowWEObjectTypeBrowserHandler;
 import de.d3web.we.taghandler.KnowWETypeActivationHandler;
 import de.d3web.we.taghandler.OwlDownloadHandler;
+import de.d3web.we.taghandler.ParseAllButton;
 import de.d3web.we.taghandler.RenamingTagHandler;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.taghandler.TagHandlerType;
@@ -438,6 +439,10 @@ public class KnowWEEnvironment {
 		TagHandler owlDownloadHandler = new OwlDownloadHandler();
 		this.tagHandlers.put(owlDownloadHandler.getTagName(),
 				owlDownloadHandler);
+		
+		TagHandler parseButton = new ParseAllButton();
+		this.tagHandlers.put(parseButton.getTagName(), parseButton);
+		
 
 		// read ModuleNames from taghandler.txt:
 		ArrayList<String> handlerStrings = new ArrayList<String>();
