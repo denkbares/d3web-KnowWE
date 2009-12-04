@@ -77,6 +77,11 @@ KNOWWE.core.actions = function(){
                 });
             }
             
+            //init parseAll action
+            _KS('.parseAllButton').each(function(element){
+                    _KE.add('click', element, KNOWWE.core.actions.parseAll); 
+            });
+            
             //enable clearHTML
             _KS('.clear-element').each(function(element){
                 _KE.add('click', element, KNOWWE.core.actions.clearHTML);
@@ -160,6 +165,26 @@ KNOWWE.core.actions = function(){
                     	fn.call();
                     	Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
                     }
+                }
+            }
+            new _KA( options ).send();
+        },
+        
+        /**
+         * Function: enableQuickEdit
+         * parses all pages
+         */  
+        parseAll : function(){
+            var params = {
+                action : 'ParseWebOfflineRenderer',
+                KWiki_Topic : KNOWWE.helper.gup('page'),
+            }   
+            
+            var options = {
+                url : KNOWWE.core.util.getURL( params ),
+                response : {
+                    action : 'insert',
+                    ids : ['parseAllResult'],
                 }
             }
             new _KA( options ).send();
