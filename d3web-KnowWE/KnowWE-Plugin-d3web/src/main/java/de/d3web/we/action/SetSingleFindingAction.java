@@ -142,6 +142,11 @@ public class SetSingleFindingAction extends AbstractKnowWEAction {
 				}
 			}
 		}
+		
+		//HOTFIX for answer not set in mc-question.
+		// Occurred just once, dont know why exactly.
+		if (qid == null) 
+			qid = objectid;
 
 		boolean contains = false;
 		boolean mc = (D3webUtils.getQuestion(kss, qid) instanceof QuestionMC);
