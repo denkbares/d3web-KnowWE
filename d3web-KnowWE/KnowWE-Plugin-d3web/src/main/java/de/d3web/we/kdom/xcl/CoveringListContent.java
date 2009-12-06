@@ -342,7 +342,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				}
 				
 			}
-			System.out.println("Cleaned XCLs in " + (System.currentTimeMillis() - startTime) + "ms");
+			//System.out.println("Cleaned XCLs in " + (System.currentTimeMillis() - startTime) + "ms");
 		}
 	}
 }

@@ -234,7 +234,11 @@ public class KnowWEIncludeManager {
 			// check if the target of the Include Section has changed
 			Section<? extends KnowWEObjectType> target = findTarget(article, inc);
 			Section<? extends KnowWEObjectType> lastTarget = src2target.get(inc);
-			if (lastTarget != target) {
+			// if the target of an Include changes, the article needs to get rebuild
+			// if the target stays the same but contains an Include, it is possible, 
+			// that the target of that Include has changed and therefore the article
+			// also needs to get rebuild
+			if (lastTarget != target || target.findSuccessor(Include.getInstance()) != null) {
 				if (lastTarget != null) {
 					// since the target has changed, the including article doesn't 
 					// reuse the last target

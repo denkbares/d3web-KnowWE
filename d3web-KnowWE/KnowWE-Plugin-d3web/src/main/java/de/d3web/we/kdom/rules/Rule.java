@@ -109,7 +109,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 				}
 			}
 			
-			System.out.println("Cleaned Rules in " + (System.currentTimeMillis() - startTime) + "ms");
+			//System.out.println("Cleaned Rules in " + (System.currentTimeMillis() - startTime) + "ms");
 			//System.out.println("Deleted old Rules in " + (System.nanoTime() - start) + "ns");
 			
 		}
