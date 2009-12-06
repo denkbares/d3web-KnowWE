@@ -22,15 +22,20 @@ package de.d3web.we.kdom;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.store.SectionStore;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.PairOfInts;
 
 /**
@@ -113,9 +118,8 @@ public class Sectionizer {
 			// its modified
 			// (avoid concurrentModificationException)
 			Section thisSection = sectionList.get(0);
-
 			while (thisSection != null) {
-
+				
 				// the position of the current section in sectionList
 				int index = sectionList.indexOf(thisSection);
 
@@ -137,9 +141,8 @@ public class Sectionizer {
 					thisSection = nextSection;
 					continue;
 				}
-
 				// find the sub-sections
-				List<SectionFinderResult> results = finder.lookForSections(thisSection.getOriginalText(),
+				List<SectionFinderResult> results = finder.lookForSections(secText,
 						father);
 				
 				if (results == null) {
@@ -153,25 +156,87 @@ public class Sectionizer {
 				List<Section> findings = new ArrayList<Section>();		
 				for (SectionFinderResult result:results) {
 					if (result != null) {
-						Section s;
-						if (result instanceof ExpandedSectionFinderResult) {
-							s = createExpandedSection((ExpandedSectionFinderResult) result, father);
-						} else if (result instanceof IncludeSectionFinderResult) {
-							s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
-									result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
-									+ result.getStart(), article, result.getId(), false, 
-									((IncludeSectionFinderResult) result).getIncludeAddress(),ob);
-							KnowWEEnvironment.getInstance().getIncludeManager(s.getWeb()).registerInclude(s);
-						} else {
-							s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
-									result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
-									+ result.getStart(), article, result.getId(), false, null,ob);
-						}
+						Section s = null;
 						
+						// Update mechanism
+						// try to get unchanged Sections from old article
+						if (article.getLastVersionOfArticle() != null 
+								&& !(result instanceof ExpandedSectionFinderResult)
+								&& !ob.isNotRecyclable()
+								&& !(ob.isLeafType() && !(ob instanceof Include))) {
+							
+							List<Class<? extends KnowWEObjectType>> path = father.getPathFromArticleToThis();
+							path.add(ob.getClass());
+							Map<String, Section> sectionsOfSameType = article.getLastVersionOfArticle()
+									.findChildrenOfTypeMap(path);
+							
+							Section match = sectionsOfSameType.remove(secText
+									.substring(result.getStart(), result.getEnd()));
+							
+							if (match != null && (!match.isReusedBy(match.getTitle()) && !match.hasReusedSuccessor)) {
+								
+								match.setReusedBy(match.getTitle(), true);
+								
+								Section ancestor = match.getFather();
+								while (ancestor != null) {
+									ancestor.hasReusedSuccessor = true;
+									ancestor = ancestor.getFather();
+								}
+								
+								s = match;
+								s.setOffSetFromFatherText(thisSection.getOffSetFromFatherText()
+										+ result.getStart());
+								s.setFather(father);
+								father.addChild(s);
+								
+								//System.out.println("Used old " + s.getObjectType().getName());
+								List<Section> newNodes = new ArrayList<Section>();
+								s.getAllNodesPreOrder(newNodes);
+								for (Section node:newNodes) {
+
+									if (node.getObjectType() instanceof Include) {
+										article.getIncludeSections().add(node);
+									}
+									
+									SectionStore oldStore = KnowWEUtils.getLastSectionStore(node.getWeb(), father.getTitle(), node.id);
+									
+									if (node.getTitle().equals(father.getTitle())) {
+										node.setReusedBy(node.getTitle(), true);	
+										node.article = father.article;
+										//if (node != this) {
+											if (node.specificID == null) {
+												node.id = new SectionID(node.father, node.objectType).toString();
+											} else {
+												node.id = new SectionID(node.getArticle(), node.specificID).toString();
+											}
+										//}
+									}
+									
+									//System.out.print(oldStore.getAllObjects().isEmpty() ? "" : "#" + node.getId() + " put " + oldStore.getAllObjects() + "\n");
+									KnowWEUtils.putSectionStore(node.getWeb(), father.getTitle(), node.id, oldStore);
+								}
+							}
+								
+						}
+						if (s == null) {
+							if (result instanceof ExpandedSectionFinderResult) {
+								s = createExpandedSection((ExpandedSectionFinderResult) result, father);
+							} else if (result instanceof IncludeSectionFinderResult) {
+								s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
+										result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
+										+ result.getStart(), article, result.getId(), false, 
+										((IncludeSectionFinderResult) result).getIncludeAddress(),ob);
+								KnowWEEnvironment.getInstance().getIncludeManager(s.getWeb()).registerInclude(s);
+							} else {
+								s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
+										result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
+										+ result.getStart(), article, result.getId(), false, null,ob);
+							}
+						
+						}
 						s.setPosition(new PairOfInts(result.getStart(), result.getEnd()));
 						findings.add(s);
 					}
-					
 				}
 				
 				

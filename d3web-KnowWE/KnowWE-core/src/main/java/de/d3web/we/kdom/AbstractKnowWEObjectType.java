@@ -337,6 +337,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		for (ReviseSubTreeHandler handler : subtreeHandler) {
 			handler.reviseSubtree(article, s);
 		}
+		s.setReusedBy(article.getTitle(), true);
 	}
 
 	/*

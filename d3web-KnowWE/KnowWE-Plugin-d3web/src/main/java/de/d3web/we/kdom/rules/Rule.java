@@ -23,14 +23,18 @@ package de.d3web.we.kdom.rules;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.rule.D3ruleBuilder;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -68,9 +72,47 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	}
 
 	@Override
-	public void cleanKnowledge(KnowWEArticle article, Section s,
-			KnowledgeBaseManagement kbm) {
-		OldRulesEraser.deleteRules(article, s, kbm);
+	public void cleanKnowledge(KnowWEArticle article, KnowledgeBaseManagement kbm) {
+		
+		if (kbm != null) {
+			long startTime = System.currentTimeMillis();
+//			KnowWEArticle oldArt = article.getLastVersionOfArticle();
+//				
+//			// get all Rules of the old article
+//			List<Section> oldRules = new ArrayList<Section>();
+//			oldArt.getSection().findSuccessorsOfType(Rule.class, oldRules);
+			
+			// get new Rules if necessary
+			List<Section> newRules = new ArrayList<Section>();
+			article.getSection().findSuccessorsOfType(Rule.class, newRules);
+			
+			Set<String> kbIDs = new HashSet<String>();
+			for (Section r:newRules) {
+				kbIDs.add((String) KnowWEUtils.getStoredObject(article.getWeb(), article
+						.getTitle(), r.getId(), Rule.KBID_KEY));
+			}
+//			// store all KnowledgeBase-Ids of those old Rules, that havn't got reused in the current article
+//			Set<String> idsToDelete = new HashSet<String>();
+//			for (Section r:newRules) {
+//				if (!or.isReusedBy(article.getTitle())) {
+//					idsToDelete.add((String) KnowWEUtils.getLastStoredObject(or.getWeb(), 
+//						article.getTitle(), or.getId(), Rule.KBID_KEY));
+//				}
+//			}
+			
+			// delete the rules from the KnowledgeBase
+			Collection<KnowledgeSlice> ruleComplexes = kbm.getKnowledgeBase().getAllKnowledgeSlices();
+			for (KnowledgeSlice rc:ruleComplexes) {
+				if (!kbIDs.contains(rc.getId())) {
+					rc.remove();
+					//System.out.println("Deleted Rule: " + rc.getId());
+				}
+			}
+			
+			System.out.println("Cleaned Rules in " + (System.currentTimeMillis() - startTime) + "ms");
+			//System.out.println("Deleted old Rules in " + (System.nanoTime() - start) + "ns");
+			
+		}
 	}
 
 	private class RuleRenderer extends DefaultEditSectionRender {

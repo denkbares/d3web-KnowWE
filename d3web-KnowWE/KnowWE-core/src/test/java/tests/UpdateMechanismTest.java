@@ -63,9 +63,9 @@ public class UpdateMechanismTest extends TestCase {
 		KnowWEArticle article2 = new KnowWEArticle(content, "UpdatingTest",
 				types, "default_web");
 		
-		List<Section> sections1 = article1.getAllNodesPreOrder();
+		List<Section<? extends KnowWEObjectType>> sections1 = article1.getAllNodesPreOrder();
 		
-		List<Section> sections2 = article2.getAllNodesPreOrder();
+		List<Section<? extends KnowWEObjectType>> sections2 = article2.getAllNodesPreOrder();
 		
 		assertEquals("Articles dont have the same amount of sections:", sections1.size(), sections2.size());
 		

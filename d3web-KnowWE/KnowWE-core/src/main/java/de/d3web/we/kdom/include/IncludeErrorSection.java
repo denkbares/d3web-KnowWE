@@ -23,9 +23,9 @@ package de.d3web.we.kdom.include;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
-public class IncludeErrorSection extends Section {
+public class IncludeErrorSection extends Section<IncludeError> {
 
-	public IncludeErrorSection(String text, Section father,  KnowWEArticle article) {
+	public IncludeErrorSection(String text, Section father, KnowWEArticle article) {
 		//super(text, new IncludeError(), father, 0, article, null, false, null);
 		super(article);
 		this.objectType = IncludeError.getInstance();

@@ -172,7 +172,8 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		 * @param currentWeb 
 		 * @return
 		 */
-		private void insertRelations(KnowWEArticle article, ArrayList<Section> currentRels, KnowledgeBaseManagement kbm, Diagnosis currentdiag, String currentWeb) {
+		private void insertRelations(KnowWEArticle article, ArrayList<Section> currentRels, 
+				KnowledgeBaseManagement kbm, Diagnosis currentdiag, String currentWeb) {
 
 			
 			for (Section rel : currentRels) {
@@ -287,35 +288,61 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 	}
 
 	@Override
-	public void cleanKnowledge(KnowWEArticle article, Section s, KnowledgeBaseManagement kbm) {
+	public void cleanKnowledge(KnowWEArticle article, KnowledgeBaseManagement kbm) {
 		
 		if (kbm != null) {
-			KnowWEArticle lastArt = article.getLastVersionOfArticle();
-				
-			// get all XCLContent of the old article
-			List<Section> oldXCLCs = new ArrayList<Section>();
-			lastArt.getSection().findSuccessorsOfType(this.getClass(), oldXCLCs);
+//			KnowWEArticle lastArt = article.getLastVersionOfArticle();
+//				
+//			// get all XCLContent of the old article
+//			List<Section> oldXCLCs = new ArrayList<Section>();
+//			lastArt.getSection().findSuccessorsOfType(this.getClass(), oldXCLCs);
+//			
+//			// store all Solutions of those old XCLs, that havn't got reused in the current article
+//			Set<String> xclsToDelete = new HashSet<String>();
+//			for (Section os:oldXCLCs) {
+//				if (!os.isReusedBy(article.getTitle())) {
+//					List<Section> heads = new ArrayList<Section>();
+//					os.findSuccessorsOfType(XCLHead.class, heads);
+//					for (Section head:heads) {
+//						xclsToDelete.add(head.getOriginalText().replaceAll(p.toString(), "").trim());
+//					}
+//				}
+//			}
+//			
+//			// delete the xcls from the KnowledgeBase
+//			Collection<KnowledgeSlice> slices = kbm.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
+//			for (KnowledgeSlice slice:slices) {
+//				if (xclsToDelete.contains(((XCLModel) slice).getSolution().getText())) {
+//					kbm.getKnowledgeBase().remove(slice);
+//					//System.out.println("Deleted XCL " + slice.getId());
+//				}
+//			}
 			
-			// store all Solutions of those old XCLs, that havn't got reused in the current article
-			Set<String> xclsToDelete = new HashSet<String>();
-			for (Section os:oldXCLCs) {
-				if (!os.isReusedBy(article.getTitle())) {
-					List<Section> heads = new ArrayList<Section>();
-					os.findSuccessorsOfType(XCLHead.class, heads);
-					for (Section head:heads) {
-						xclsToDelete.add(head.getOriginalText().replaceAll(p.toString(), "").trim());
-					}
-				}
+			long startTime = System.currentTimeMillis();
+			
+			List<Section> newXCLs = new ArrayList<Section>();
+			article.getSection().findSuccessorsOfType(XCLRelation.class, newXCLs);
+			
+			Set<String> kbIDs = new HashSet<String>();
+			for (Section xcl:newXCLs) {
+				kbIDs.add((String) KnowWEUtils.getStoredObject(article.getWeb(), article
+						.getTitle(), xcl.getId(), CoveringListContent.KBID_KEY));
 			}
-			
 			// delete the xcls from the KnowledgeBase
 			Collection<KnowledgeSlice> slices = kbm.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
 			for (KnowledgeSlice slice:slices) {
-				if (xclsToDelete.contains(((XCLModel) slice).getSolution().getText())) {
-					kbm.getKnowledgeBase().remove(slice);
-					//System.out.println("Deletet XCL " + slice.getId());
+				XCLModel model = (XCLModel) slice;
+				for (String id:model.getAllRelations().keySet()) {
+					if (!kbIDs.contains(id)) {
+						model.removeRelation(id);
+					}
 				}
+				if (model.getAllRelations().isEmpty()) {
+					kbm.getKnowledgeBase().remove(slice);
+				}
+				
 			}
+			System.out.println("Cleaned XCLs in " + (System.currentTimeMillis() - startTime) + "ms");
 		}
 	}
 }

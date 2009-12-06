@@ -76,7 +76,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 				types, "default_web");
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article1);
 		
-		List<Section> sections1 = article1.getAllNodesPreOrder();
+		List<Section<? extends KnowWEObjectType>> sections1 = article1.getAllNodesPreOrder();
 		
 		KnowledgeBase kb1 =  d3Handler.getKBM(article1, article1.getSection()).getKnowledgeBase();
 		
@@ -86,7 +86,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		KnowWEArticle article2 = new KnowWEArticle(content, "UpdatingTest1",
 				types, "default_web");
 		
-		List<Section> sections2 = article2.getAllNodesPreOrder();
+		List<Section<? extends KnowWEObjectType>> sections2 = article2.getAllNodesPreOrder();
 		
 		KnowledgeBase kb2 =  d3Handler.getKBM(article2, article2.getSection()).getKnowledgeBase();
 		
@@ -128,7 +128,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		KnowWEArticle article1 = new KnowWEArticle(content1, "UpdatingTest",
 				types, "default_web");
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article1);
-		List<Section> sections1 = article1.getAllNodesPreOrder();		
+		List<Section<? extends KnowWEObjectType>> sections1 = article1.getAllNodesPreOrder();		
 		KnowledgeBase kb1 = d3Handler.getKBM(article1, article1.getSection()).getKnowledgeBase();
 		
 		/*
@@ -137,7 +137,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		KnowWEArticle article2 = new KnowWEArticle(content2, "UpdatingTest",
 				types, "default_web");
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article2);		
-		List<Section> sections2 = article2.getAllNodesPreOrder();		
+		List<Section<? extends KnowWEObjectType>> sections2 = article2.getAllNodesPreOrder();		
 		KnowledgeBase kb2 = d3Handler.getKBM(article2, article2.getSection()).getKnowledgeBase();		
 		Collection<KnowledgeSlice> slices2 = kb2.getAllKnowledgeSlices();
 		
@@ -171,7 +171,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		KnowWEArticle article3 = new KnowWEArticle(content3, "UpdatingTest",
 				types, "default_web");
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article3);	
-		List<Section> sections3 = article3.getAllNodesPreOrder();
+		List<Section<? extends KnowWEObjectType>> sections3 = article3.getAllNodesPreOrder();
 		KnowledgeBase kb3 = d3Handler.getKBM(article3, article3.getSection()).getKnowledgeBase();
 		Collection<KnowledgeSlice> slices3 = kb2.getAllKnowledgeSlices();
 		

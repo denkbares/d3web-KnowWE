@@ -39,8 +39,7 @@ public abstract class XMLContent extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public String getName() {
-		
-		return "XMLContent";
+		return this.getClass().getSimpleName();
 	}
 	
 	public class XMLContentSectionFinder extends SectionFinder {

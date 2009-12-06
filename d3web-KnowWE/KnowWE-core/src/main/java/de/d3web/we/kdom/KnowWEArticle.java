@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.KnowWEIncludeManager;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.include.TextInclude;
@@ -90,6 +91,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	
 	private KnowWEArticle lastVersion;
 	
+	private long startTimeOverall;
+	
 	/**
 	 * Constructor: starts recursive parsing by creating new Section object
 	 * 
@@ -105,13 +108,11 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 		
 		long startTime = System.currentTimeMillis();
-		long startTimeOverall = System.currentTimeMillis();
+		startTimeOverall = System.currentTimeMillis();
 		
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
 		
 		KnowWEArticleManager articleManager = instance.getArticleManager(web);
-		
-		instance.getIncludeManager(web).addInitializingArticle(title);
 
 		text = expand(text, web);
 		
@@ -137,7 +138,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 					+ (System.currentTimeMillis() - startTime) + "ms <-");
 	
 		startTime = System.currentTimeMillis();
-
+		
+		instance.getIncludeManager(web).addSectionizingArticle(title);
 		// create new Section, here KDOM is created recursively
 //		sec = new Section(text, this, null, 0, this,
 //				null, false, null);
@@ -145,20 +147,22 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				null, false, null, this);
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
-
+		
 		try {
 			refactorTextIncludeObjects();
 		} catch (Exception e) {
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.SEVERE,
-					"Exception while refactoring Includes. "
+					"Exception while refactoring TxtIncludes. "
 							+ e.getLocalizedMessage());
 		}
+		instance.getIncludeManager(web).removeInactiveIncludesForArticle(getTitle(), includeSections);
+		instance.getIncludeManager(web).getSectionizingArticles().remove(title);
 		
 		Logger.getLogger(this.getClass().getName())
 			.log(Level.INFO,"<- Finished KDOM for article '" + title + "' in " 
 				+ (System.currentTimeMillis() - startTime) + "ms <-");
-		
+	
 		startTime = System.currentTimeMillis();
 		
 		// create default solution context as title name
@@ -198,15 +202,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			.log(Level.INFO,"<- Finished JAR for article '" + title + "' in " 
 					+ (System.currentTimeMillis() - startTime) + "ms <-");
 		
-		
-		instance.getIncludeManager(web).getInitializingArticles().remove(title);
-		
 		// prevent memory leak
 		lastVersion = null;
-		
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<----- Finished building article '" + title + "' in " 
-				+ (System.currentTimeMillis() - startTimeOverall) + "ms <-----");
 	
 	}
 
@@ -356,6 +353,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return lastVersion;
 	}
 	
+	public long getStartTime() {
+		return this.startTimeOverall;
+	}
+	
 	/**
 	 * Since the article is managed by the wiki there is no need for parsing it
 	 * out article is root node, so no sectioner necessary
@@ -435,8 +436,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return buffi.toString();
 	}
 
-	public List<Section> getAllNodesPreOrder() {
-		List<Section> nodes = new ArrayList<Section>();
+	public List<Section<? extends KnowWEObjectType>> getAllNodesPreOrder() {
+		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
 		sec.getAllNodesPreOrder(nodes);
 		return nodes;
 	}
@@ -447,13 +448,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return nodes;
 	}
 	
-//	public Map<String, Section> getUnchangedSubTrees() {
-//		return this.unchangedSubTrees;
-//	}
-	
-//	public Map<String, Section> getChangedSections() {
-//		return this.changedSections;
-//	}
+	@Override
+	public String toString() {
+		return sec.getOriginalText();
+	}
 	
 	public Set<Section> getIncludeSections() {
 		return this.includeSections;
@@ -502,20 +500,15 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 				
 				
-				List<String> initializingArts = KnowWEEnvironment.getInstance().getIncludeManager(web)
-					.getInitializingArticles();
+				Set<String> initializingArts = KnowWEEnvironment.getInstance().getIncludeManager(web)
+					.getSectionizingArticles();
 				// check for include loops
 				if (initializingArts.contains(srcMatcher.group(2))) {
-					
-					StringBuilder b = new StringBuilder();
-					for (String artName : initializingArts) {
-						b.append(artName + " -> ");
-					}
-					b.append(initializingArts.get(0));
+
 					Logger.getLogger(this.getClass().getName()).log(
 							Level.SEVERE,
-							"Expand loop dedected: " + b.toString());
-					finding = "Error: Expand loop dedected: \"" + b.toString() + "\"";
+							"Expand loop detected!");
+					finding = "Error: Expand loop dedected!";
 					
 				} else {
 					// no loops found then
@@ -556,7 +549,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 							}
 						} else {
 							// seach by objectType name
-							List<Section> allNodes = art.getAllNodesPreOrder();
+							List<Section<? extends KnowWEObjectType>> allNodes = art.getAllNodesPreOrder();
 							List<Section> matchingNodes = new ArrayList<Section>();
 							for (Section node : allNodes) {
 								if (node.getObjectType().getClass()

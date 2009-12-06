@@ -21,6 +21,7 @@
 
 package de.d3web.we.terminology;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +37,6 @@ import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DistributedRegistrationManager;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 
@@ -73,8 +73,14 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 	 * Store whether the KnowledgeBase already got cleaned from Knowledge of
 	 * a specific ObjectType.
 	 */
-	private Map<String, HashSet<Class<? extends KnowWEObjectType>>> cleanedTypes 
-			= new HashMap<String, HashSet<Class<? extends KnowWEObjectType>>>();
+	private Map<String, HashSet<Class<? extends KnowledgeRecyclingObjectType>>> typesToClean 
+			= new HashMap<String, HashSet<Class<? extends KnowledgeRecyclingObjectType>>>();
+	
+	/**
+	 * Store all KnowledgeRecyclingObjectTypes present in an article
+	 */
+	private Map<String, HashSet<Class<? extends KnowledgeRecyclingObjectType>>> recyclingTypes 
+			= new HashMap<String, HashSet<Class<? extends KnowledgeRecyclingObjectType>>>();
 	
 	/**
 	 * Stores flag, if the knowledge of an article is build completely.
@@ -82,17 +88,30 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 	private Map<String, Boolean> finishedKBM = new HashMap<String, Boolean>();
 	
 	/**
-	 * Stores the number of knowledge containing Sections in an article
+	 * Stores the number of terminology containing Sections in an article
 	 */
-	private Map<String, Integer> knowledgeSectionsCount = new HashMap<String, Integer>();
+	private Map<String, Integer> terminologySectionsCount = new HashMap<String, Integer>();
 	
 	/**
-	 * Stores the number of knowledge containing Sections in the last version of an article
+	 * Stores the number of terminology containing Sections in the last version of an article
 	 */
-	private Map<String, Integer> lastKnowledgeSectionsCount	= new HashMap<String, Integer>();
+	private Map<String, Integer> lastTerminologySectionsCount	= new HashMap<String, Integer>();
 	
-	public Map<String, HashSet<Class<? extends KnowWEObjectType>>> getCleanedTypes() {
-		return this.cleanedTypes;
+	/**
+	 * Stores for each KnowledgeRecyclingObjectType the number of Sections with it in an article
+	 */
+	private Map<String, Map<Class<? extends KnowledgeRecyclingObjectType>, Integer>> knowledgeSectionsCount 
+			= new HashMap<String, Map<Class<? extends KnowledgeRecyclingObjectType>, Integer>>();
+	
+	/**
+	 * Stores for each KnowledgeRecyclingObjectType the number of Sections with it in the last 
+	 * version of an article
+	 */
+	private Map<String, Map<Class<? extends KnowledgeRecyclingObjectType>, Integer>> lastKnowledgeSectionsCount	
+			= new HashMap<String, Map<Class<? extends KnowledgeRecyclingObjectType>, Integer>>();
+	
+	public Map<String, HashSet<Class<? extends KnowledgeRecyclingObjectType>>> getCleanedTypes() {
+		return this.typesToClean;
 	}
 	
 	/**
@@ -128,15 +147,22 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 		if (lastKBM != null) {
 			lastKbms.put(art.getTitle(), lastKBM);
 		}
-		Integer lastCount = knowledgeSectionsCount.remove(art.getTitle());
-		if (lastCount != null) {
-			lastKnowledgeSectionsCount.put(art.getTitle(), lastCount);
+		Integer lastTerCount = terminologySectionsCount.remove(art.getTitle());
+		if (lastTerCount != null) {
+			lastTerminologySectionsCount.put(art.getTitle(), lastTerCount);
+		}
+		Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> lastKnowCountMap 
+				= knowledgeSectionsCount.remove(art.getTitle());
+		if (lastKnowCountMap != null) {
+			lastKnowledgeSectionsCount.put(art.getTitle(), lastKnowCountMap);
 		}
 		usingNewKBM.put(art.getTitle(), false);
 		usingOldKBM.put(art.getTitle(), false);
 		finishedKBM.put(art.getTitle(), false);
-		cleanedTypes.put(art.getTitle(), new HashSet<Class<? extends KnowWEObjectType>>());
-		knowledgeSectionsCount.put(art.getTitle(), 0);
+		typesToClean.put(art.getTitle(), new HashSet<Class<? extends KnowledgeRecyclingObjectType>>());
+		recyclingTypes.put(art.getTitle(), new HashSet<Class<? extends KnowledgeRecyclingObjectType>>());
+		terminologySectionsCount.put(art.getTitle(), 0);
+		knowledgeSectionsCount.put(art.getTitle(), new HashMap<Class<? extends KnowledgeRecyclingObjectType>, Integer>());
 		kbms.put(art.getTitle(), KnowledgeBaseManagement.createInstance());
 	}
 	
@@ -169,8 +195,17 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			return true;
 		}
 		
-		if (!(s.getObjectType() instanceof KnowledgeRecyclingObjectType)) {
-			knowledgeSectionsCount.put(title, knowledgeSectionsCount.get(title) + 1);
+		if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
+			recyclingTypes.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
+			
+			Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> countMap = knowledgeSectionsCount.get(title);
+			if (!countMap.containsKey(s.getObjectType().getClass())) {
+				countMap.put(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass(), 0);
+			}
+			countMap.put(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass(), 
+					countMap.get(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass()) + 1);
+		} else {
+			terminologySectionsCount.put(title, terminologySectionsCount.get(title) + 1);
 		}
 		
 		if (usingNewKBM.get(title)) {
@@ -184,18 +219,17 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			
 			if (usingOldKBM.get(title)) {
 				if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
-					if (!cleanedTypes.get(title).contains(s.getObjectType().getClass())) {
-						((KnowledgeRecyclingObjectType) s.getObjectType()).cleanKnowledge(article, s, kbms.get(title));
-						cleanedTypes.get(title).add(s.getObjectType().getClass());
-					}
+					typesToClean.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
 				} else if (!(s.getObjectType() instanceof KnowWEArticle)) {
 					// KnowledgeRecyclingObjectTypes should be the last ObjectTypes to parse...
 					Logger.getLogger(this.getClass().getName())
 						.log(Level.WARNING, "Wrong order of parsing for ObjectType '" +
 								s.getObjectType() + "'!");
-				} else if (lastKnowledgeSectionsCount.get(title) != knowledgeSectionsCount.get(title)) {
+				} else if (lastTerminologySectionsCount.get(title) != terminologySectionsCount.get(title)) {
 					kbms.put(title, KnowledgeBaseManagement.createInstance());
 					useNewKBM(article, s);
+				} else {
+					cleanKnowledge(article);
 				}
 				return true;
 			}
@@ -203,14 +237,16 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			if (lastKbm != null && isEmpty(kbms.get(title))
 					&& (s.getObjectType() instanceof KnowledgeRecyclingObjectType
 							|| (s.getObjectType() instanceof KnowWEArticle 
-								&& lastKnowledgeSectionsCount.get(title) 
-									== knowledgeSectionsCount.get(title)))) {
+								&& lastTerminologySectionsCount.get(title) 
+									== terminologySectionsCount.get(title)))) {
 				lastKbms.remove(title);
 				usingOldKBM.put(title, true);
 				kbms.put(title, lastKbm);
 				if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
-					((KnowledgeRecyclingObjectType) s.getObjectType()).cleanKnowledge(article, s, lastKbm);
-					cleanedTypes.get(title).add(s.getObjectType().getClass());
+						typesToClean.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
+				}
+				if (s.getObjectType() instanceof KnowWEArticle) {
+					cleanKnowledge(article);
 				}
 				return true;
 			} else {
@@ -219,6 +255,25 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			}
 		}
 		return false;
+	}
+	
+	private void cleanKnowledge(KnowWEArticle article) {
+		Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> countMap = knowledgeSectionsCount.get(article.getTitle());
+		Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> lastCountMap = lastKnowledgeSectionsCount.get(article.getTitle());
+		for (Class<? extends KnowledgeRecyclingObjectType> clazz:lastCountMap.keySet()) {
+			if (countMap.get(clazz) == null || !countMap.get(clazz).equals(lastCountMap.get(clazz))) {
+				typesToClean.get(article.getTitle()).add(clazz);
+			}
+		}
+		for (Class<? extends KnowledgeRecyclingObjectType> type:typesToClean.get(article.getTitle())) {
+			try {
+				type.newInstance().cleanKnowledge(article, kbms.get(article.getTitle()));
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private void useNewKBM(KnowWEArticle article, Section s) {

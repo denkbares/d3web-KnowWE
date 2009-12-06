@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -52,7 +54,7 @@ public class KnowWEArticleManager {
 		return typeStore;
 	}
 
-	private String webname;
+	private String web;
 	private SemanticCore sc;
 
 	public String jarsPath;
@@ -66,7 +68,7 @@ public class KnowWEArticleManager {
 			.getBundle("WebParserConfig");
 
 	public KnowWEArticleManager(KnowWEEnvironment env, String webname) {
-		this.webname = webname;
+		this.web = webname;
 		if (!(env.getWikiConnector() instanceof KnowWETestWikiConnector)) {
 			jarsPath = KnowWEUtils.getRealPath(env.getWikiConnector()
 					.getServletContext(), rb.getString("path_to_jars"));
@@ -84,7 +86,7 @@ public class KnowWEArticleManager {
 	}
 
 	public String getWebname() {
-		return webname;
+		return web;
 	}
 
 	/**
@@ -131,7 +133,7 @@ public class KnowWEArticleManager {
 		KnowWEEnvironment.getInstance().saveArticle(web, articleName,
 				newArticleSourceText, map);
 		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
-				KnowWEEnvironment.getInstance().getRootTypes(), this.webname));
+				KnowWEEnvironment.getInstance().getRootTypes(), this.web));
 		return "done";
 	}
 
@@ -157,7 +159,7 @@ public class KnowWEArticleManager {
 
 		String newArticleSourceText = newText.toString();
 		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
-				KnowWEEnvironment.getInstance().getRootTypes(), this.webname));
+				KnowWEEnvironment.getInstance().getRootTypes(), this.web));
 		return newArticleSourceText;
 	}
 
@@ -204,12 +206,23 @@ public class KnowWEArticleManager {
 	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle art) {
 		// store new article
 		articleMap.put(art.getTitle(), art);
+		sc.update(art.getTitle(), art);
+		long startTime = System.currentTimeMillis();
+		
+		Logger.getLogger(this.getClass().getName())
+			.log(Level.INFO,"-> Starting to update Includes to article '" + art.getTitle() + "' ->");
+		
+		KnowWEEnvironment.getInstance().getIncludeManager(web).updateIncludesToArticle(art);
+		
+		Logger.getLogger(this.getClass().getName())
+			.log(Level.INFO,"<- Finished updating Includes to article '" + art.getTitle() + "' in " 
+				+ (System.currentTimeMillis() - startTime) + "ms <-");
 
-		KnowWEEnvironment.getInstance().getIncludeManager(webname).updateIncludesToArticle(art.getTitle());
-		KnowWEEnvironment.getInstance().getIncludeManager(webname).removeInactiveIncludesForArticle(art.getTitle());
 		art.getSection().setReusedStateRecursively(art.getTitle(), false);
 		
-		sc.update(art.getTitle(), art);
+		Logger.getLogger(this.getClass().getName())
+			.log(Level.INFO,"<----- Finished building article '" + art.getTitle() + "' in " 
+				+ (System.currentTimeMillis() - art.getStartTime()) + "ms <-----");
 		
 		return art.getReport();
 	}

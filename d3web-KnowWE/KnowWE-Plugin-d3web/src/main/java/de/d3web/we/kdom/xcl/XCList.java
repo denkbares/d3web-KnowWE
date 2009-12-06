@@ -20,10 +20,15 @@
 
 package de.d3web.we.kdom.xcl;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import utils.Utils;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -62,5 +67,34 @@ public class XCList extends DefaultAbstractKnowWEObjectType {
 			
 			return matches;
 		}
+	}
+	
+	public static void main(String[] args) {
+		
+		String text = readTxtFile("C:\\Users\\Public\\Documents\\Test.txt");
+		Pattern pattern = Pattern.compile(Patterns.XCLIST, Pattern.MULTILINE);
+		Matcher m = pattern.matcher(text);	
+		
+		while (m.find()) {
+			System.out.println(m.group());
+		}
+		
+	}
+	
+	public static String readTxtFile(String fileName) {
+		StringBuffer inContent = new StringBuffer();
+		try {
+			BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader(new FileInputStream(fileName), "UTF8"));
+			int char1 = bufferedReader.read();
+			while (char1 != -1) {
+				inContent.append((char) char1);
+				char1 = bufferedReader.read();
+			}
+			bufferedReader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return inContent.toString();
 	}
 }
