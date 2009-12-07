@@ -49,6 +49,8 @@ public class Logging {
     public static Logging getInstance() {
         return instance;
     }
+    
+    
         
     public void log(Level level, String message) {
         log(level, message, null, null);
@@ -83,6 +85,62 @@ public class Logging {
 		getLogger().logp(level, getClassName(),
 				getCurrentMethodName(), message);
 	}
+    
+    /**
+     * logs a message with Level.SEVERE
+     * @param message
+     */
+    public void severe(String message) {
+    	log(Level.SEVERE, message);
+    }
+
+    /**
+     * logs a message with WARNING
+     * @param message
+     */
+    public void warning(String message) {
+		log(Level.WARNING, message);
+    }
+
+    /**
+     * logs a message with Level.INFO
+     * @param message
+     */
+    public void info(String message) {
+    	log(Level.INFO, message);
+    }
+
+    /**
+     * logs a message with Level.CONFIG
+     * @param message
+     */
+    public void config(String message) {
+    	log(Level.CONFIG, message);
+    }
+
+    /**
+     * logs a message with Level.FINE
+     * @param message
+     */
+    public void fine(String message) {
+		log(Level.FINE, message);
+    }
+
+    /**
+     * logs a message with Level.FINER
+     * @param message
+     */
+    public void finer(String message) {
+    	log(Level.FINER, message);
+    }
+
+    /**
+     * logs a message with Level.FINEST
+     * @param message
+     */
+    public void finest(String message) {
+    	log(Level.FINEST, message);
+    }
 
     /**
      * gets the Logger of a specified class
