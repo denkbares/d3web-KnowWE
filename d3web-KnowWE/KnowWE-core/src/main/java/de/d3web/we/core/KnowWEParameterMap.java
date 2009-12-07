@@ -20,6 +20,8 @@
 
 package de.d3web.we.core;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -49,9 +51,16 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 		if ((paramNames != null)) {
 			while ((paramNames.hasMoreElements())) {
 				String name = paramNames.nextElement();
-				this.put(name, r.getParameter(name));
+				
+				String value = "";
+				try {
+					value = URLDecoder.decode( r.getParameter(name) ,"UTF-8");
+				} catch (UnsupportedEncodingException e1) {
+					value = r.getParameter(name);
+				}
+				this.put(name, value);
 			}
-		}
+		} 
 	}
 
 	public KnowWEParameterMap(String name, String value) {

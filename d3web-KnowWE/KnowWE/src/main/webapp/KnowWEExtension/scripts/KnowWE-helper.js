@@ -217,9 +217,10 @@ KNOWWE.helper = function(){
             if( results ) { 
                 return results[1];
             }
-            else { 
-                return '';
+            if(name === 'page') { //fix for url parameter topic on Main page  
+                return 'Main';
             }
+            return null;
         },
         /**
          * Function: loadCheck
