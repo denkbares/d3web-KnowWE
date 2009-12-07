@@ -233,7 +233,8 @@ public class Logging {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		
 		for (int i = 2; i < stackTrace.length; i++) {
-			if (!stackTrace[i].getMethodName().equals("log")) {
+			if (!stackTrace[i].getMethodName().equals("log") && (!stackTrace[i].getClassName().equals(
+			"de.d3web.we.logging.Logging"))) {
 				methodName = stackTrace[i].getMethodName();
 
 				break;
