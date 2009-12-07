@@ -66,6 +66,7 @@ import de.d3web.kernel.domainModel.ruleCondition.CondAnd;
 import de.d3web.kernel.domainModel.ruleCondition.CondDState;
 import de.d3web.kernel.domainModel.ruleCondition.CondEqual;
 import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
+import de.d3web.kernel.psMethods.heuristic.PSMethodHeuristic;
 import de.d3web.kernel.supportknowledge.DCElement;
 import de.d3web.kernel.supportknowledge.DCMarkup;
 import de.d3web.kernel.supportknowledge.MMInfoObject;
@@ -452,7 +453,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				} else {
 					state = DiagnosisState.UNCLEAR;
 				}
-				TerminalCondition c = new CondDState(diag, state, null);
+				TerminalCondition c = new CondDState(diag, state, PSMethodHeuristic.class);
 				conditionStack.push(c);
 				conddashstack.push(dashes);
 			}
@@ -610,6 +611,16 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					linetext);
 
 		}
+		// Wenn die Frage eine Folgefrage auf eine Diagnose ist, diese der
+		// Antwort zuordnen
+		if ((dashes != 1) && (dashes == questionStack.peek().first + 3)) {
+			AbstractCondition abscon = getCondPath(line, linetext);
+			addQuestionOrQuestionclassIndication(currentQuestion, abscon, line,
+					linetext);
+
+		}
+		
+		
 		questionStack
 				.push(new Tupel<Integer, Question>(dashes, currentQuestion));
 		if (idlink != null) {
@@ -654,7 +665,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			if (statecond.getStatus() == DiagnosisState.ESTABLISHED) {
 				RuleFactory.createRefinementRule(newRuleID, action, statecond
 						.getDiagnosis(), statecond);
-			} else if (statecond.getStatus() == DiagnosisState.ESTABLISHED) {
+			} else if (statecond.getStatus() == DiagnosisState.SUGGESTED) {
 				RuleFactory.createClarificationRule(newRuleID, action,
 						statecond.getDiagnosis(), statecond);
 			} else {
@@ -777,7 +788,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			// Antwort zuordnen
 			if (dashes == questionStack.peek().first + 2) {
 				AbstractCondition abs = getCondPath(line, linetext);
-				addQuestionOrQuestionclassIndication(currentQuestionclass, abs,
+				addQuestionOrQuestionclassIndication(currentQuestion, abs,
 						line, linetext);
 			}
 		}
