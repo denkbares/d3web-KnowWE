@@ -267,7 +267,7 @@ KNOWWE.core.util = function(){
             if( !params && typeof params != 'object') return baseURL;
                         
             for( keys in params ){
-                tokens.push(keys + "=" + encodeURIComponent( params[keys] ));
+                tokens.push(keys + "=" + escape(encodeURIComponent( params[keys] )));
             }
             
             //parse the url to add special token like debug etc.
