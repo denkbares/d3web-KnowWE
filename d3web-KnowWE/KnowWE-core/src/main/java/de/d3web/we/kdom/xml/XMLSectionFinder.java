@@ -139,8 +139,9 @@ public class XMLSectionFinder extends SectionFinder {
 						continue;
 					}
 				}
-				// following opening tags get counted as the depth of the nesting
-				if (foundTagName.equals(tagMatcher.group(2)))
+				// opening tags that are no single-tags 
+				// get counted as the depth of the nesting
+				if (foundTagName.equals(tagMatcher.group(2)) && tagMatcher.group(4) == null)
 					depth++;
 				
 			// found closing tag
