@@ -91,7 +91,7 @@
 
 <xml id="ajaxKBInfo" style="display:none;">
 	<kbinfo>
-		<flowchart name="Wait" id="sh_wait">
+		<flowchart name="Warten" id="sh_wait">
 			<start>30 sec</start>
 			<start>2 min</start>
 			<start>5 min</start>
@@ -99,27 +99,10 @@
 			<start>1h</start>
 			<start>2h</start>
 			<start>10 min</start>
-			<exit>passed</exit>
+			<exit>abgeblaufen</exit>
+			<exit>unterbrochen</exit>
 		</flowchart>
-		<flowchart name="Admission" id="sh_adm">
-			<start>start</start>
-			<exit>admitted</exit>
-			<exit>not admitted</exit>
-			<exit>aborted</exit>
-		</flowchart>
-		<flowchart name="Adaptation" id="sh_ada">
-			<start>start</start>
-			<exit>aborted</exit>
-		</flowchart>
-		<flowchart name="Observation" id="sh_obs">
-			<start>start</start>
-		</flowchart>
-		<flowchart name="adjust I:E ratio" id="sh_adj_IE">
-			<start>start</start>
-			<exit>ok</exit>
-			<exit>adjusted</exit>
-			<exit>not applicable</exit>
-		</flowchart>
+		
 	</kbinfo>
 </xml>
 
@@ -199,8 +182,8 @@
 					<li><b>Entscheidung Indirekt</b>: Verwenden einer benannten Bedingungskette(�foo� WENN x>20; �bar� WENN y>20; �foobar� SONST;)
 					<li><b>Zuweisung</b>: Setzen des Wertes einer Interpretation; automatisch auch ein Entscheidungsknoten
 					<li><b>Dialog</b>: eine Frage oder mehrere Fragen oder einen Fragebogen stellen; bei einer Frage automatisch auch ein Entscheidungsknoten
-					<li><b>L�sungsbewertung</b>: Bewerten einer L�sung; automatisch auch ein Entscheidungsknoten mit den etablierungsgraden als m�gliche Werte sowie �io� (�best�tigt�) und �nio� (�verworfen�)
-					<li><b>Flussdiagramm</b>: wie Entscheidungsknoten mit m�glichen Exit-Knoten als Optionen (und m�glichen Start-Knoten als Aktivierungen)
+					<li><b>Loesungsbewertung</b>: Bewerten einer Loesung; automatisch auch ein Entscheidungsknoten mit den Etablierungsgraden als moeglichen Werte sowie 'io' (bestaetigt) und 'nio' (verworfen)
+					<li><b>Flussdiagramm</b>: wie Entscheidungsknoten mit moeglichen Exit-Knoten als Optionen (und moeglichen Start-Knoten als Aktivierungen)
 					<li><b>Exit</b>: Endknoten des Flussdiagramms (eventuell benannt wenn mehrere vorhanden sind)
 				</ol>
 			</div>

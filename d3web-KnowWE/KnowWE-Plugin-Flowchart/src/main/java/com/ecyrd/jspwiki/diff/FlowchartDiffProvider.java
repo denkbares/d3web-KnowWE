@@ -49,13 +49,11 @@ import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.i18n.InternationalizationManager;
 
+import de.d3web.we.flow.FlowchartUtils;
 import de.d3web.we.flow.diff.FlowchartEdge;
 import de.d3web.we.flow.diff.FlowchartNode;
 import de.d3web.we.flow.diff.FlowchartNodeType;
 import de.d3web.we.logging.Logging;
-
-
-
 
 public class FlowchartDiffProvider implements DiffProvider
 {
@@ -178,30 +176,34 @@ public class FlowchartDiffProvider implements DiffProvider
                     s += "changed Edges:<br />" + changedEdges + "<br />";
                 }
 
-                v1 = removeHighlighting(v1);
-                v2 = removeHighlighting(v2);
-                
-                v1 = removeArrows(v1);
-                v2 = removeArrows(v2);
-                
-                v1 = removeBoxes(v1);
-                v2 = removeBoxes(v2);
-                
-                v2 = colorNodes(v2, changedNodes, FlowchartChangeType.changed);
-                v2 = colorNodes(v2, addedNodes, FlowchartChangeType.added);
-                v1 = colorNodes(v1, changedNodes, FlowchartChangeType.changed);
-                v1 = colorNodes(v1, removedNodes, FlowchartChangeType.removed);  
+                String preview1 = FlowchartUtils.extractPreview(v1);
+                String preview2 = FlowchartUtils.extractPreview(v2);
 
-                v1 = colorEdges(v1, changedEdges, FlowchartChangeType.changed);
-                v1 = colorEdges(v1, removedEdges, FlowchartChangeType.removed); 
-                v2 = colorEdges(v2, changedEdges, FlowchartChangeType.changed);
-                v2 = colorEdges(v2, addedEdges, FlowchartChangeType.added);
+                preview1 = removeHighlighting(preview1);
+                preview2 = removeHighlighting(preview2);
+                
+                preview1 = removeArrows(preview1);
+                preview2 = removeArrows(preview2);
+                
+                preview1 = removeBoxes(preview1);
+                preview2 = removeBoxes(preview2);
+                
+                
+                preview2 = colorNodes(preview2, changedNodes, FlowchartChangeType.changed);
+                preview2 = colorNodes(preview2, addedNodes, FlowchartChangeType.added);
+                preview1 = colorNodes(preview1, changedNodes, FlowchartChangeType.changed);
+                preview1 = colorNodes(preview1, removedNodes, FlowchartChangeType.removed);  
+
+                preview1 = colorEdges(preview1, changedEdges, FlowchartChangeType.changed);
+                preview1 = colorEdges(preview1, removedEdges, FlowchartChangeType.removed); 
+                preview2 = colorEdges(preview2, changedEdges, FlowchartChangeType.changed);
+                preview2 = colorEdges(preview2, addedEdges, FlowchartChangeType.added);
                 
 //                Logging.getInstance().log(Level.INFO, "v1: " + v1);
 //                Logging.getInstance().log(Level.INFO, "v2: " + v2);
                                 
-                return s + "<br \\>" + "<br \\>" + createPreview( v1 ) + "<br \\>" + "<br \\>" + "<br \\>" + "<br \\>"
-                       + createPreview( v2 );
+                return s + "<br \\>" + "<br \\>" + FlowchartUtils.createPreview( preview1 ) + "<br \\>" + "<br \\>" + "<br \\>" + "<br \\>"
+                       + FlowchartUtils.createPreview( preview2 );
             }
             return ret.toString();
         }
@@ -214,29 +216,6 @@ public class FlowchartDiffProvider implements DiffProvider
         return diffResult;
     }
     
-    private String createPreview(String version) {
-        String xml = version;
-        int startPos = xml.lastIndexOf("<preview mimetype=\"text/html\">");
-        int endPos = xml.lastIndexOf("</preview>");
-        if (startPos >= 0 && endPos >= 0) {
-            return 
-                "<div style='zoom: 50%; cursor: pointer;'>" +
-                "<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>" +
-                "<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>" +
-                "<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>" +
-                "<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>" +
-                "<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>" +
-                "<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>" +
-                "<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" +
-                "<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>" +
-                "<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>" +
-                "<style type='text/css'>div, span, a { cursor: pointer !important; }</style>" + 
-                xml.substring(startPos+43, endPos-8) + 
-                "</div>";
-        }
-        return "you shouldn't read this :(";
-
-    }
     
     /**
      * gets all nodes from the xml
@@ -490,11 +469,11 @@ public class FlowchartDiffProvider implements DiffProvider
     	}
     	
     	
-        String temp = version;
+        String result = version;
         
-        // get the lower part of the flowchart
-        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
-        version = version.substring(version.indexOf(">") + 1);
+//        // get the lower part of the flowchart
+//        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
+//        version = version.substring(version.indexOf(">") + 1);
       
         // get all the nodes
         String[] nodes = version.split("<DIV class=\"Node\" id=\"");
@@ -512,13 +491,13 @@ public class FlowchartDiffProvider implements DiffProvider
                 if (id.equals( nID )) {
   	
                 	// if yes, add the additional class
-                	String inputHelper1 = temp.substring(0, temp.indexOf(nodes[i]) - 6);
-                	String inputHelper2 = temp.substring(temp.indexOf(nodes[i]));
-                	temp = inputHelper1 + alteration + "\" id=\"" + inputHelper2;
+                	String inputHelper1 = result.substring(0, result.indexOf(nodes[i]) - 6);
+                	String inputHelper2 = result.substring(result.indexOf(nodes[i]));
+                	result = inputHelper1 + alteration + "\" id=\"" + inputHelper2;
                 }
             }
         }
-        return temp;
+        return result;
     }
     
         
@@ -576,8 +555,8 @@ public class FlowchartDiffProvider implements DiffProvider
         String temp = version;
         
         // get the lower part of the flowchart
-        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
-        version = version.substring(version.indexOf(">") + 1);
+//        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
+//        version = version.substring(version.indexOf(">") + 1);
       
         // get all the nodes
         String[] edges = version.split("<DIV class=\"Rule\" id=\"");
@@ -625,9 +604,9 @@ public class FlowchartDiffProvider implements DiffProvider
 		String temp = version;
 
 		// get the lower part of the flowchart
-		version = version
-				.substring(version.indexOf("<DIV class=\"Flowchart\""));
-		version = version.substring(version.indexOf(">") + 1);
+//		version = version
+//				.substring(version.indexOf("<DIV class=\"Flowchart\""));
+//		version = version.substring(version.indexOf(">") + 1);
 
 		// get all the arrows
 		String[] arrows = version.split("<DIV class=\"ArrowTool\"");
@@ -654,9 +633,9 @@ public class FlowchartDiffProvider implements DiffProvider
 		String temp = version;
 
 		// get the lower part of the flowchart
-		version = version
-				.substring(version.indexOf("<DIV class=\"Flowchart\""));
-		version = version.substring(version.indexOf(">") + 1);
+//		version = version
+//				.substring(version.indexOf("<DIV class=\"Flowchart\""));
+//		version = version.substring(version.indexOf(">") + 1);
 
 		// get all the boxes
 		String[] boxes = version.split("<SELECT");

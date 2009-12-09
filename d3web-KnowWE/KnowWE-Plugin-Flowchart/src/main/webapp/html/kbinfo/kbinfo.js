@@ -189,7 +189,7 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 			CCMessage.warn(
 				'AJAX Verbindungs-Fehler', 
 				'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
-				'In sp�teren Aktionen k�nnte auch das Speichern der �nderungen fehlschlagen.');
+				'In spaeteren Aktionen koennte auch das Speichern der Aenderungen fehlschlagen.');
 		},
 		onException: function(transport, exception) {
 			CCMessage.warn(

@@ -266,9 +266,9 @@ Node.prototype.edit = function() {
 		// wenn editor bereits sichtbar, dann nichts machen
 		return;
 	}
-	// eventuell vorhandene Artefakte (nach cancel) aufräumen
+	// eventuell vorhandene Artefakte (nach cancel) aufraeumen
 	this.stopEdit();
-	// und neuen Editor öffnen
+	// und neuen Editor oeffnen
 //	var modalBackground = Builder.node('div', {
 //		style: 'position: fixed; left: 0; top: 0; width: 100%; height: 100%; ' +
 //				'z-index: 1000; background-color:#333333; ' +

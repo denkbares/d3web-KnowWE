@@ -172,7 +172,7 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 			}
 			else if (infoObject.getClassInstance() == KBInfo.Flowchart) {
 				var startName = (infoObject.getStartNames().length > 0) ? infoObject.getStartNames()[0] : '---';
-				action = {markup: 'KnOffice', expression: '"'+infoObject.getName()+'" = "' + startName + '"' };
+				action = {markup: 'KnOffice', expression: 'CALL['+infoObject.getName()+'(' + startName + ')]' };
 			}
 			else {
 				action = {markup: 'KnOffice', expression: 'ERFRAGE['+infoObject.getName()+']' };

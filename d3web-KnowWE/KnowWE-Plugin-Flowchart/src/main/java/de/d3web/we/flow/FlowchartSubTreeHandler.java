@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -49,9 +50,11 @@ import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.domainModel.ruleCondition.CondAnd;
 import de.d3web.kernel.psMethods.diaFlux.ConditionTrue;
 import de.d3web.kernel.psMethods.diaFlux.FluxSolver;
+import de.d3web.kernel.psMethods.diaFlux.actions.CallFlowAction;
 import de.d3web.kernel.psMethods.diaFlux.actions.NoopAction;
 import de.d3web.kernel.psMethods.diaFlux.flow.Flow;
 import de.d3web.kernel.psMethods.diaFlux.flow.FlowFactory;
+import de.d3web.kernel.psMethods.diaFlux.flow.FlowSet;
 import de.d3web.kernel.psMethods.diaFlux.flow.IEdge;
 import de.d3web.kernel.psMethods.diaFlux.flow.INode;
 import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
@@ -97,17 +100,17 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		if (content == null) 
 			return;
 		
-		
+		List<Message> errors = new ArrayList<Message>();
 		
 		List<Section> sections = new ArrayList<Section>();
 		
 		content.findSuccessorsOfType(NodeType.class, sections);
-		List<INode> nodes = createNodes(article, sections);
+		List<INode> nodes = createNodes(article, sections, errors);
 		
 		sections.clear();
 		
 		content.findSuccessorsOfType(EdgeType.class, sections);
-		List<IEdge> edges = createEdges(article, sections, nodes);
+		List<IEdge> edges = createEdges(article, sections, nodes, errors);
 		
 		
 		Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(s);
@@ -122,30 +125,32 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
 		
-		System.out.println(flow);
 		
 		KnowledgeBase knowledgeBase = getKBM(article, s).getKnowledgeBase();
 
-		knowledgeBase.addKnowledge(FluxSolver.class, flow, FluxSolver.DIAFLUX);
+		List slices = (List) knowledgeBase.getKnowledge(FluxSolver.class, FluxSolver.DIAFLUX);
 		
 		
+		FlowSet flows;
+		if (slices == null || slices.size() == 0 ) {
+			flows = new FlowSet(s.getTitle());
+			knowledgeBase.addKnowledge(FluxSolver.class, flows, FluxSolver.DIAFLUX);
+			
+		} else {
+			flows = (FlowSet) slices.get(0);
+		}
 		
-//		FluxSolver fluxSolver = new FluxSolver();
-//		XPSCase theCase = CaseFactory.createXPSCase(knowledgeBase);
-//		fluxSolver.init(theCase);
-//		
-//		List<PropagationEntry> changes = new ArrayList<PropagationEntry>();
+		flows.put(flow);
 		
-//		changes.add(new PropagationEntry(object, oldValue, newValue));
-//		
-//		fluxSolver.propagate(theCase, changes);
-		
-		
+		if (!errors.isEmpty())
+			System.out.println(errors);
+		else
+			System.out.println("No errors");
 		
 		
 	}
 
-	private List<IEdge> createEdges(KnowWEArticle article, List<Section> edgeSections, List<INode> nodes) {
+	private List<IEdge> createEdges(KnowWEArticle article, List<Section> edgeSections, List<INode> nodes, List<Message> errors) {
 		List<IEdge> result = new ArrayList<IEdge>();
 		
 		
@@ -178,16 +183,16 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			
 			AbstractCondition condition;
 			
-			List<Message> conditionErrors = new ArrayList<Message>();
+			
 			Section guardSection = content.findChildOfType(GuardType.class);
 			
 			if (guardSection != null) {
-				condition = buildCondition(article, guardSection, conditionErrors);
+				condition = buildCondition(article, guardSection, errors);
 				
 				if (condition == null) {
 					condition = ConditionTrue.INSTANCE;
 					
-					System.out.println("Could not parse condition: " + guardSection.getOriginalText());
+					errors.add(new Message("Could not parse condition: " + guardSection.getOriginalText()));
 					
 				}
 				
@@ -195,11 +200,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			else
 				condition = ConditionTrue.INSTANCE;
 			
-			System.out.println(conditionErrors);
-			
 			
 			result.add(FlowFactory.getInstance().createEdge(id, source, target, condition));
-			
 			
 			
 		}
@@ -224,8 +226,12 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ComplexConditionSOLO parser = new ComplexConditionSOLO(tokens);
 		
-		IDObjectManagement idom = new RestrictedIDObjectManager(getKBM(article, s));
+		RestrictedIDObjectManager idom = new RestrictedIDObjectManager(getKBM(article, s));
 		
+		//For creating conditions in edges coming out from call nodes
+		//TODO explicitly create oc-question for all FCs
+		idom.setLazyAnswers(true);
+		idom.setLazyQuestions(true);
 		
 		D3webConditionBuilder builder = new D3webConditionBuilder("Parsed from article", errors, idom);
 		
@@ -242,8 +248,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	}
 
 	private String getXMLContentText(Section s) {
-		List<Section> children = s.getChildren();
-		return children.get(1).getOriginalText();
+		return ((Section) s.getChildren().get(1)).getOriginalText();
 	}
 
 	private INode getNodeByID(String nodeID, List<INode> nodes) {
@@ -256,7 +261,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return null;
 	}
 
-	private List<INode> createNodes(KnowWEArticle article, List<Section> nodeSections) {
+	private List<INode> createNodes(KnowWEArticle article, List<Section> nodeSections, List<Message> errors) {
 		
 		List<INode> result = new ArrayList<INode>();
 		
@@ -287,9 +292,10 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			else if (nodeinfo.getObjectType() == ExitType.getInstance())
 				result.add(createEndNode(id, nodeinfo));
 			else if(nodeinfo.getObjectType() == ActionType.getInstance())
-				result.add(createActionNode(article, id, nodeinfo));
+				result.add(createActionNode(article, id, nodeinfo, errors));
 			else
-				throw new UnsupportedOperationException("Unknown node type: " + nodeinfo.getObjectType());
+				errors.add(new Message("Unknown node type: " + nodeinfo.getObjectType()));
+//				throw new UnsupportedOperationException();
 			
 			
 		}
@@ -298,7 +304,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return result;
 	}
 
-	private INode createActionNode(KnowWEArticle article, String id, Section section) {
+	private INode createActionNode(KnowWEArticle article, String id, Section section, List<Message> errors) {
 		
 		RuleAction action = NoopAction.INSTANCE;
 		String string = getXMLContentText(section);
@@ -306,12 +312,27 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			action = createQAindicationAction(article, section, string);
 		} else if (string.contains("=")) {
 			action = createHeuristicScoreAction(article, section, string);
-		} else
+		} else if (string.startsWith("CALL[")) {
+			action = createCallFlowAction(section, string, errors);
+		}
+		else
 			action = NoopAction.INSTANCE;
 		
-//		D3WebAction action = new ChangeDiagnosisStateAction(diagnosis, state);
 		return FlowFactory.getInstance().createNode(id, action);
 		
+	}
+
+	private RuleAction createCallFlowAction(Section section, String string, List<Message> errors) {
+		int nodenameStart = string.indexOf('(');
+		int nodenameEnd = string.indexOf(')');
+
+		String flowName = string.substring(5, nodenameStart);
+		String nodeName = string.substring(nodenameStart + 1, nodenameEnd);
+		
+		
+		
+		
+		return new CallFlowAction(flowName, nodeName);
 	}
 
 	private RuleAction createHeuristicScoreAction(KnowWEArticle article, Section section,
@@ -322,6 +343,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		String score = split[1].trim();
 		
 		RuleComplex rule = new RuleComplex();
+		rule.setId("FlowchartRule" + System.currentTimeMillis());
 		
 		ActionHeuristicPS action = new ActionHeuristicPS(rule);
 		rule.setAction(action);
@@ -375,15 +397,13 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	}
 
 	private INode createEndNode(String id, Section section) {
-		List<Section> children = section.getChildren();
-		String name = children.get(0).getOriginalText();
+		String name = ((Section) section.getChildren().get(0)).getOriginalText();
 		
 		return FlowFactory.getInstance().createEndNode(id, name);
 	}
 
 	private INode createStartNode(String id, Section section) {
-		List<Section> children = section.getChildren();
-		String name = children.get(0).getOriginalText();
+		String name = ((Section) section.getChildren().get(0)).getOriginalText();
 		
 		return FlowFactory.getInstance().createStartNode(id, name);
 		

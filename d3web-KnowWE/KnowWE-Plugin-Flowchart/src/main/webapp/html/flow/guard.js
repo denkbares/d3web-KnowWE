@@ -93,16 +93,22 @@ Guard.inject = function(text, values) {
 Guard.createPossibleGuards = function(nodeModel) {
 	if (!nodeModel) return null;
 	// no guards for start/exit allowed
-	if (nodeModel.start) return null;
-	if (nodeModel.exit) return null;
+	if (nodeModel.start) 
+		return null;
+	
+	if (nodeModel.exit) 
+		return null;
 	
 	// create action and lookup info object
-	if (!nodeModel.action) return null;
+	if (!nodeModel.action)
+		return null;
+	
 	var action = new Action(nodeModel.action.markup, nodeModel.action.expression);
 	var infoObject = KBInfo.lookupInfoObject(action.getInfoObjectName());
 	
 	// if no info Object is available, no guards can be provided
-	if (!infoObject) return null;
+	if (!infoObject) 
+		return null;
 	
 	// ok, so now we build the possible guards
 	var result = [];
@@ -173,11 +179,13 @@ Guard.createPossibleGuards = function(nodeModel) {
 			}
 		}
 		result.push('Allgemein');
-		result.push(new Guard('KnOffice', 'BEKANNT["'+infoObject.getName()+'"]', 'processed'));
+		result.push(new Guard('KnOffice', 'BEKANNT["'+infoObject.getName()+'"]', 'abgearbeitet'));
+		result.push(new Guard('NOP', ' ', ' '));
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('Allgemein');
-		result.push(new Guard('KnOffice', 'BEKANNT["'+infoObject.getName()+'"]', 'answered'));
+		result.push(new Guard('KnOffice', 'BEKANNT["'+infoObject.getName()+'"]', 'beantwortet'));
+		result.push(new Guard('NOP', ' ', ' '));
 	}
 	
 	return result;

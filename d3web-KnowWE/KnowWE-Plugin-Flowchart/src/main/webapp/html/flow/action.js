@@ -27,13 +27,13 @@ Action.prototype.getExpression = function() {
 
 Action.prototype.getDisplayText = function() {
 	if (this.markup == 'NOP')		return '---';
-	if (this.valueString == "ERFRAGE")	return 'ask';
-	if (this.valueString == "INSTANT")	return 'always ask';
-	if (this.valueString == "P7")		return 'established';
-	if (this.valueString == "N7")		return 'excluded';
-	if (this.valueString == "YES")		return 'yes';
-	if (this.valueString == "NO")		return 'no';
-	if (this.valueString == "()")		return 'Formula: f(x)='; // nur leere Formel so anzeigen
+	if (this.valueString == "ERFRAGE")	return 'fragen';
+	if (this.valueString == "INSTANT")	return 'immer fragen';
+	if (this.valueString == "P7")		return 'etabliert';
+	if (this.valueString == "N7")		return 'ausgeschlossen';
+	if (this.valueString == "YES")		return 'ja';
+	if (this.valueString == "NO")		return 'nein';
+	if (this.valueString == "()")		return 'Formel: f(x)='; // nur leere Formel so anzeigen
 	return this.valueString;
 }
 
@@ -104,9 +104,19 @@ Action.prototype._extractInfoObjectName = function(string) {
 	if (result && result.length > 1 && result[1]) return result[1];
 
 	// third try 'KEYWORD' '[' <name> ']'
-	nameExpr = /^\s*[\w!]+\["?([^"]+)"?\]\s*$/i;
+//	nameExpr = /^\s*[\w!]+\["?([^"]+)"?\]\s*$/i;
+//	result = nameExpr.exec(string);
+//	if (result && result.length > 1 && result[1]) return result[1];
+	
+	// third try 'KEYWORD' '[' <name> ']'
+	nameExpr = /^\s*([\w!]+)\[([^\(\)]+)\]\s*$/i;
 	result = nameExpr.exec(string);
-	if (result && result.length > 1 && result[1]) return result[1];
+	if (result && result.length > 2 && result[2]) return result[2];
+	
+	// 'KEYWORD' '[' <name> '(' <value> ')' ']'
+	nameExpr = /^\s*([\w!]+)\[(.+)\((.+)\)\]\s*$/i;
+	result = nameExpr.exec(string);
+	if (result && result.length > 3 && result[2]) return result[2];
 	
 	// last try only ["] <name> ["]
 	nameExpr = /^\s*"?(.*)"?\s*$/i;
@@ -138,13 +148,20 @@ Action.prototype._extractValueString = function(string) {
 	if (result && result.length > 1 && result[1]) return result[1];
 
 	// third try 'KEYWORD' '[' <name> ']'
-	nameExpr = /^\s*([\w!]+)\[.+\]\s*$/i;
+	nameExpr = /^\s*([\w!]+)\[([^\(\)]+)\]\s*$/i;
 	result = nameExpr.exec(string);
-	if (result && result.length > 1 && result[1]) return result[1].toUpperCase();
-
-	nameExpr = /^\s*"?(.*)"?\s*$/i;
+	if (result && result.length > 2 && result[1]) return result[1];
+	
+	// 'KEYWORD' '[' <name> '(' <value> ')' ']'
+//	nameExpr = /^\s*([\w!]+)\[(\w+)\((\w+)\)\]\s*$/i;
+	nameExpr = /^\s*([\w!]+)\[(.+)\((.+)\)\]\s*$/i;
 	result = nameExpr.exec(string);
-	if (result && result.length > 1 && result[1]) return 'ERFRAGE'; // we do have an implicit value	
+	if (result && result.length > 3 && result[3]) return result[3];
+	
+	
+//	nameExpr = /^\s*"?(.*)"?\s*$/i;
+//	result = nameExpr.exec(string);
+//	if (result && result.length > 1 && result[1]) return 'ERFRAGE'; // we do have an implicit value	
 
 	this.error = "Die Aktion kann nicht identifiziert werden.";
 	return null;
@@ -208,8 +225,9 @@ Action.createPossibleActions = function(infoObject) {
 		if (!infoObject.isAbstract()) {
 			result.push('---- Frage stellen ----');			
 			// questions can be asked
-			result.push(new Action('KnOffice', 'ERFRAGE['+name.toJSON()+']'));
-			result.push(new Action('KnOffice', 'INSTANT['+name.toJSON()+']'));
+			//removed conversion to json-string @20091102
+			result.push(new Action('KnOffice', 'ERFRAGE['+name+']'));
+			result.push(new Action('KnOffice', 'INSTANT['+name+']'));
 		}
 		result.push('---- Wert abfragen ----');			
 		result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));			
@@ -260,13 +278,16 @@ Action.createPossibleActions = function(infoObject) {
 		result.push('---- Startknoten aufrufen ----');			
 		var options = infoObject.getStartNames();
 		for (var i=0; i<options.length; i++) {
-			result.push(new Action('KnOffice', Action._createExpression(name, options[i])));
+//			result.push(new Action('KnOffice', Action._createExpression(name, options[i])));
+			
+			result.push(new Action('KnOffice', 'CALL[' + name + '(' + options[i] + ')' + ']'));
 		}
 	}
 	else if (infoObject.getClassInstance() == KBInfo.QSet) {
 		result.push('---- Fragebogen stellen ----');			
-		result.push(new Action('KnOffice', 'ERFRAGE['+name.toJSON()+']'));
-		result.push(new Action('KnOffice', 'INSTANT['+name.toJSON()+']'));
+		//removed conversion to json-string @20091102
+		result.push(new Action('KnOffice', 'ERFRAGE['+name+']'));
+		result.push(new Action('KnOffice', 'INSTANT['+name+']'));
 	}
 	
 	return result;
@@ -743,7 +764,7 @@ ActionEditor.prototype.destroy = function() {
 
 
 /**
- * ActionPane ist eine Klasse zur Anzeige einer Aktion ohne Editierm�glichkeit. 
+ * ActionPane ist eine Klasse zur Anzeige einer Aktion ohne Editiermoeglichkeit. 
  * Neben dem Rendern der Inhalte ueberwacht ActionPane auch den KBInfo Cache.
  */
  
@@ -822,7 +843,8 @@ ActionPane.prototype.render = function() {
 	var valueText = null;
 	var valueError = null;
 	if (this.action && !this.action.isDecision()) {
-		valueText = this.action.getDisplayText();
+//		valueText = this.action.getDisplayText();
+		valueText = ' ';
 		valueError = this.action.getError();
 	}
 	

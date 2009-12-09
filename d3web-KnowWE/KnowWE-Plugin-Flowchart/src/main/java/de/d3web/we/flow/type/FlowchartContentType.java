@@ -47,6 +47,7 @@ public class FlowchartContentType extends XMLContent{
 	protected void init() {
 		this.childrenTypes.add(NodeType.getInstance());
 		this.childrenTypes.add(EdgeType.getInstance());
+		this.childrenTypes.add(FlowchartPreviewType.getInstance());
 		
 	}
 
