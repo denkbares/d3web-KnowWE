@@ -22,14 +22,17 @@ package de.d3web.we.flow;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
+
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.module.AbstractDefaultKnowWEModule;
-
-
+import de.d3web.we.taghandler.TagHandler;
 
 
 public class FlowchartPlugin extends AbstractDefaultKnowWEModule{
+
+	private List<de.d3web.we.taghandler.TagHandler> tagHandlers = new ArrayList<de.d3web.we.taghandler.TagHandler>();
 
 	@Override
 	public List<KnowWEObjectType> getRootTypes() {
@@ -48,5 +51,18 @@ public class FlowchartPlugin extends AbstractDefaultKnowWEModule{
 
 		return instance;
 	}
+	
+	@Override
+	public void initModule(ServletContext context) {
+		this.addTagHandler(new FlowchartTagHandler());
+	}
+
+	protected void addTagHandler(de.d3web.we.taghandler.TagHandler handler) {
+		this.tagHandlers.add(handler);
+	}
+	
+	public List<TagHandler> getTagHandlers() {
+		return this.tagHandlers;
+	} 
 
 }
