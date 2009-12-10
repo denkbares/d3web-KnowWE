@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.knowledgeExporter.testutils;
+package de.d3web.knowledgeExporter.tests.utils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -34,64 +34,61 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.report.Report;
-
 public class HelperClass {
 
 	public HelperClass(){
 		
 	}
 	
-	public KnowledgeBaseAndReport createKnowledgeBase(String dHierarchy,
-			String qHierarchy, String decisionTree) {
-		Report report;
-		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();
-		KnowledgeBase kb = kbm.getKnowledgeBase();
-		report = parseDiagnosisHierarchy(dHierarchy, kb);
-		report.addAll(parseQContainerHierarchy(qHierarchy, kb));
-		report.addAll(parseExtDecisionTree(decisionTree, kb));
-		return new KnowledgeBaseAndReport(kb, report);
-	}
-	
-	private Report parseExtDecisionTree(String decisionTree, KnowledgeBase kb) {
-		Report decisionTreeReport = new Report();
-		de.d3web.textParser.cocor.extDecisionTreeParser.Scanner dts = 
-			new de.d3web.textParser.cocor.extDecisionTreeParser.Scanner(
-				this.getStream(decisionTree));
-		de.d3web.textParser.cocor.extDecisionTreeParser.Parser dtp = 
-			new de.d3web.textParser.cocor.extDecisionTreeParser.Parser(
-				dts, kb, false);
-		dtp.Parse();
-		decisionTreeReport.addAll(dtp.getErrorMessages());
-		return decisionTreeReport;
-	}
-	private Report parseQContainerHierarchy(String qHierarchy, KnowledgeBase kb) {
-		Report qContainerReport = new Report();
-		de.d3web.textParser.cocor.qContainerHierarchyParser.Scanner qchs = 
-			new de.d3web.textParser.cocor.qContainerHierarchyParser.Scanner(
-				this.getStream(qHierarchy));
-		de.d3web.textParser.cocor.qContainerHierarchyParser.Parser qchp = 
-			new de.d3web.textParser.cocor.qContainerHierarchyParser.Parser(
-				qchs, kb, false);
-		qchp.Parse();
-		qContainerReport.addAll(qchp.getErrorMessages());
-		return qContainerReport;
-	}
-
-	private Report parseDiagnosisHierarchy(String dHierarchy, KnowledgeBase kb) {
-		Report diagnosisReport = new Report();
-		de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner dhs = 
-			new de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner(
-				this.getStream(dHierarchy));
-		de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser dhp = 
-			new de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser(
-				dhs, kb, false);
-		dhp.Parse();
-		diagnosisReport.addAll(dhp.getErrorMessages());
-		return diagnosisReport;
-	}
+//	public KnowledgeBaseAndReport createKnowledgeBase(String dHierarchy,
+//			String qHierarchy, String decisionTree) {
+//		Report report;
+//		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();
+//		KnowledgeBase kb = kbm.getKnowledgeBase();
+//		report = parseDiagnosisHierarchy(dHierarchy, kb);
+//		report.addAll(parseQContainerHierarchy(qHierarchy, kb));
+//		report.addAll(parseExtDecisionTree(decisionTree, kb));
+//		return new KnowledgeBaseAndReport(kb, report);
+//	}
+//	
+//	private Report parseExtDecisionTree(String decisionTree, KnowledgeBase kb) {
+//		Report decisionTreeReport = new Report();
+//		de.d3web.textParser.cocor.extDecisionTreeParser.Scanner dts = 
+//			new de.d3web.textParser.cocor.extDecisionTreeParser.Scanner(
+//				this.getStream(decisionTree));
+//		de.d3web.textParser.cocor.extDecisionTreeParser.Parser dtp = 
+//			new de.d3web.textParser.cocor.extDecisionTreeParser.Parser(
+//				dts, kb, false);
+//		dtp.Parse();
+//		decisionTreeReport.addAll(dtp.getErrorMessages());
+//		return decisionTreeReport;
+//	}
+//	
+//	private Report parseQContainerHierarchy(String qHierarchy, KnowledgeBase kb) {
+//		Report qContainerReport = new Report();
+//		de.d3web.textParser.cocor.qContainerHierarchyParser.Scanner qchs = 
+//			new de.d3web.textParser.cocor.qContainerHierarchyParser.Scanner(
+//				this.getStream(qHierarchy));
+//		de.d3web.textParser.cocor.qContainerHierarchyParser.Parser qchp = 
+//			new de.d3web.textParser.cocor.qContainerHierarchyParser.Parser(
+//				qchs, kb, false);
+//		qchp.Parse();
+//		qContainerReport.addAll(qchp.getErrorMessages());
+//		return qContainerReport;
+//	}
+//
+//	private Report parseDiagnosisHierarchy(String dHierarchy, KnowledgeBase kb) {
+//		Report diagnosisReport = new Report();
+//		de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner dhs = 
+//			new de.d3web.textParser.cocor.diagnosisHierarchyParser.Scanner(
+//				this.getStream(dHierarchy));
+//		de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser dhp = 
+//			new de.d3web.textParser.cocor.diagnosisHierarchyParser.Parser(
+//				dhs, kb, false);
+//		dhp.Parse();
+//		diagnosisReport.addAll(dhp.getErrorMessages());
+//		return diagnosisReport;
+//	}
 	
 	private InputStream getStream(String ressource) {
 		InputStream stream;

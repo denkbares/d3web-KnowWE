@@ -223,16 +223,16 @@ public class KnowledgeManager {
 	
 	public static ResourceBundle getResourceBundle() {
 		if (rb == null) {
-			rb = ResourceBundle.getBundle("properties.KnowledgeExporter", 
-					locale, KnowledgeManager.class.getClassLoader());
+			rb = ResourceBundle.getBundle("properties.KnowledgeExporter", locale);
+			//rb = ResourceBundle.getBundle("config_DT");
 		}		
 		return rb;
 	}
 	
 	public static void setLocale(Locale l) {
 		locale = l;
-		rb = ResourceBundle.getBundle("properties.KnowledgeExporter",
-				locale, KnowledgeManager.class.getClassLoader());
+		rb = ResourceBundle.getBundle("properties.KnowledgeExporter", locale);
+		//rb = ResourceBundle.getBundle("config_DT");
 	}
 	
 	public static Locale getLocale() {

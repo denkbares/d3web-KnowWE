@@ -20,16 +20,9 @@
 
 package de.d3web.knowledgeExporter.tests;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-import junit.framework.TestCase;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
@@ -41,24 +34,18 @@ import de.d3web.kernel.domainModel.qasets.QuestionOC;
 import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.knowledgeExporter.KnowledgeManager;
-import de.d3web.knowledgeExporter.testutils.HelperClass;
+import de.d3web.knowledgeExporter.tests.utils.HelperClass;
 import de.d3web.knowledgeExporter.txtWriters.XCLWriter;
-import de.d3web.knowledgeExporter.xlsWriters.SetCoveringTableWriter;
 import de.d3web.report.Report;
-import de.d3web.textParser.KBTextInterpreter;
-import de.d3web.textParser.casesTable.TextParserResource;
 import de.d3web.textParser.xclPatternParser.XCLParserHelper;
 
 
-public class XCLWriterTest extends TestCase {
+public class XCLWriterTest extends KnowledgeExporterTest {
 	
-	private KBTextInterpreter kbTxtInterpreter;
-	private Map<String, TextParserResource> input;
 	private Map<String, Report> output;
 	private KnowledgeBase kb;
 	private KnowledgeManager manager;
 	private XCLWriter writer;
-	private SetCoveringTableWriter tableWriter;
 	private HelperClass hc = new HelperClass(); 
 	
 	XCLModel model;
@@ -238,75 +225,60 @@ public class XCLWriterTest extends TestCase {
 	
 	
 	
-	public void testExampleFiles() {
-		
-		String diagnosis = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Loesungen.txt");
-		String initQuestion = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Frageklassen.txt");
-		String decisionTree = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Fragebaum.txt");
-		String xcl = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "XCL.txt");
-		setUpKB(diagnosis, initQuestion, decisionTree, xcl);
-		assertEquals("Wrong export: ", xcl, writer.writeText());
-		
-	}
-	
-	public void testSCTWriter() {
-		String diagnosis = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Loesungen.txt");
-		String initQuestion = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Frageklassen.txt");
-		String decisionTree = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Fragebaum.txt");
-		String xcl = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "XCL.txt");
-		setUpKB(diagnosis, initQuestion, decisionTree, xcl);
-		try {
-			tableWriter.writeFile(new File("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "SetCoveringTable.xls"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	
-	private void setUpKB(String diagnosis, String initQuestion, String questions, String xcl) {
-		
-		kbTxtInterpreter = new KBTextInterpreter();
-		input = new HashMap<String, TextParserResource>();
-		output = new HashMap<String, Report>();
-		//hole ressourcen
-		TextParserResource ressource;
+//	public void testExampleFiles() {
+//		
+//		String diagnosis = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Loesungen.txt");
+//		String initQuestion = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Frageklassen.txt");
+//		String decisionTree = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "Fragebaum.txt");
+//		String xcl = hc.readTxtFile("src" + File.separator + "doc" + File.separator + "examples" + File.separator + "xclTest" + File.separator + "XCL.txt");
+//		setUpKB(diagnosis, initQuestion, decisionTree, null, xcl);
+//		assertEquals("Wrong export: ", xcl, writer.writeText());
+//		
+//	}
 
-		if (questions != null) {
-			ressource = new TextParserResource(getStream(questions));
-			input.put(KBTextInterpreter.QU_DEC_TREE, ressource);
-		}
-		if (diagnosis != null) {
-			ressource = new TextParserResource(getStream(diagnosis));
-			input.put(KBTextInterpreter.DH_HIERARCHY, ressource);
-		}
-		if (initQuestion != null) {
-			ressource = new TextParserResource(getStream(initQuestion));
-			input.put(KBTextInterpreter.QCH_HIERARCHY, ressource);
-		}
-		if (xcl != null) {
-			ressource = new TextParserResource(getStream(xcl));
-			input.put(KBTextInterpreter.SET_COVERING_LIST, ressource);
-		}
-
-		output = kbTxtInterpreter.interpreteKBTextReaders(input, "JUnit-KB",
-				false, false);
-		//System.out.println(output.get(KBTextInterpreter.SET_COVERING_LIST).getAllMessagesAsString());
-		kb = kbTxtInterpreter.getKnowledgeBase();
-		//System.out.println(output);
-		manager = new KnowledgeManager(kb);
-		KnowledgeManager.setLocale(Locale.ENGLISH);
-		writer = new XCLWriter(manager);
-		tableWriter = new SetCoveringTableWriter(manager);
+	@Override
+	protected void setUpWriter() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	
-	private InputStream getStream(String ressource) {
-		InputStream stream;
-		stream = new ByteArrayInputStream(ressource.getBytes());
-		return stream;
-	}
 	
+//	private void setUpKB(String diagnosis, String initQuestion, String questions, String xcl) {
+//		
+//		kbTxtInterpreter = new KBTextInterpreter();
+//		input = new HashMap<String, TextParserResource>();
+//		output = new HashMap<String, Report>();
+//		//hole ressourcen
+//		TextParserResource ressource;
+//
+//		if (questions != null) {
+//			ressource = new TextParserResource(getStream(questions));
+//			input.put(KBTextInterpreter.QU_DEC_TREE, ressource);
+//		}
+//		if (diagnosis != null) {
+//			ressource = new TextParserResource(getStream(diagnosis));
+//			input.put(KBTextInterpreter.DH_HIERARCHY, ressource);
+//		}
+//		if (initQuestion != null) {
+//			ressource = new TextParserResource(getStream(initQuestion));
+//			input.put(KBTextInterpreter.QCH_HIERARCHY, ressource);
+//		}
+//		if (xcl != null) {
+//			ressource = new TextParserResource(getStream(xcl));
+//			input.put(KBTextInterpreter.SET_COVERING_LIST, ressource);
+//		}
+//
+//		output = kbTxtInterpreter.interpreteKBTextReaders(input, "JUnit-KB",
+//				false, false);
+//		//System.out.println(output.get(KBTextInterpreter.SET_COVERING_LIST).getAllMessagesAsString());
+//		kb = kbTxtInterpreter.getKnowledgeBase();
+//		//System.out.println(output);
+//		manager = new KnowledgeManager(kb);
+//		KnowledgeManager.setLocale(Locale.ENGLISH);
+//		writer = new XCLWriter(manager);
+//		tableWriter = new SetCoveringTableWriter(manager);
+//	}
 	
 
 }
