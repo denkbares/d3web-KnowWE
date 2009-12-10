@@ -37,6 +37,10 @@ import de.d3web.we.hermes.maps.MapType;
 import de.d3web.we.hermes.maps.ShowMapForConceptHandler;
 import de.d3web.we.hermes.maps.ShowMapForTopicHandler;
 import de.d3web.we.hermes.maps.ShowMapHandler;
+import de.d3web.we.hermes.quiz.QuizHandler;
+import de.d3web.we.hermes.quiz.SetAnswerAction;
+import de.d3web.we.hermes.quiz.StartQuizAction;
+import de.d3web.we.hermes.quiz.StopQuizAction;
 import de.d3web.we.hermes.taghandler.LocalTimeEventsHandler;
 import de.d3web.we.hermes.taghandler.SetTimeEventFilterLevelHandler;
 import de.d3web.we.hermes.taghandler.ShowTimeEventsForConceptTagHandler;
@@ -51,81 +55,85 @@ import de.d3web.we.taghandler.TagHandler;
 
 public class HermesPlugin extends AbstractDefaultKnowWEModule {
 
-    private static HermesPlugin instance;
+	private static HermesPlugin instance;
 
-    public static HermesPlugin getInstance() {
-	if (instance == null) {
-	    instance = new HermesPlugin();
-	}
-	return instance;
-    }
-
-    @Override
-    public void initModule(ServletContext context) {
-
-	// KDOM-types hack to having TimeEventType have higher priority than
-	// standard SemanticAnnotation
-	// to allow for SemanticAnnotation inside TimeEvents (without destroying
-	// those)
-	List<KnowWEObjectType> rootTypes = KnowWEEnvironment.getInstance()
-		.getRootTypes();
-	int index = -1;
-	for (KnowWEObjectType knowWEObjectType : rootTypes) {
-	    if (knowWEObjectType instanceof SemanticAnnotation) {
-		index = rootTypes.indexOf(knowWEObjectType);
-	    }
-	}
-	if (index != -1) {
-	    rootTypes.add(index - 1, new TimeEventType());
+	public static HermesPlugin getInstance() {
+		if (instance == null) {
+			instance = new HermesPlugin();
+		}
+		return instance;
 	}
 
-	KnowWEScriptLoader.getInstance().add("Hermes.js", false);
+	@Override
+	public void initModule(ServletContext context) {
 
-    }
+		// KDOM-types hack to having TimeEventType have higher priority than
+		// standard SemanticAnnotation
+		// to allow for SemanticAnnotation inside TimeEvents (without destroying
+		// those)
+		List<KnowWEObjectType> rootTypes = KnowWEEnvironment.getInstance()
+				.getRootTypes();
+		int index = -1;
+		for (KnowWEObjectType knowWEObjectType : rootTypes) {
+			if (knowWEObjectType instanceof SemanticAnnotation) {
+				index = rootTypes.indexOf(knowWEObjectType);
+			}
+		}
+		if (index != -1) {
+			rootTypes.add(index - 1, new TimeEventType());
+		}
 
-    /**
-     * @see de.d3web.we.module.AbstractDefaultKnowWEModule#getRootTypes() The
-     *      Type 'DemoSectionType' is registered to the KnowWE-type system. This
-     *      method is called once at initialization of KnowWE(-Modules)
-     */
-    @Override
-    public List<KnowWEObjectType> getRootTypes() {
-	List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
-	// not really necessary anymore because type TimeEventType is already
-	// registered
-	// in initModule() by a hack to gather higher priority
-	rootTypes.add(new TimeEventType());
-	rootTypes.add(new MapType());
-	rootTypes.add(new PropertyDefinitionType());
-	return rootTypes;
-    }
+		KnowWEScriptLoader.getInstance().add("Hermes.js", false);
 
-    @Override
-    public List<TagHandler> getTagHandlers() {
-	List<TagHandler> list = new ArrayList<TagHandler>();
-	list.add(new TimeLineHandler());
-	list.add(new LocalTimeEventsHandler());
-	list.add(new TimeEventSearchHandler());
-	list.add(new ShowTimeEventsForConceptTagHandler());
-	list.add(new ShowMapHandler());
-	list.add(new ShowMapForConceptHandler());
-	list.add(new ShowMapForTopicHandler());
-	list.add(new SetTimeEventFilterLevelHandler());
-	list.add(new VersionCountTagHandler());
-	return list;
-    }
+	}
 
-    @Override
-    public List<PageAppendHandler> getPageAppendHandlers() {
-	List<PageAppendHandler> handlers = new ArrayList<PageAppendHandler>();
-	handlers.add(new AppendTagEditHandler());
-	return handlers;
-    }
+	/**
+	 * @see de.d3web.we.module.AbstractDefaultKnowWEModule#getRootTypes() The
+	 *      Type 'DemoSectionType' is registered to the KnowWE-type system. This
+	 *      method is called once at initialization of KnowWE(-Modules)
+	 */
+	@Override
+	public List<KnowWEObjectType> getRootTypes() {
+		List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
+		// not really necessary anymore because type TimeEventType is already
+		// registered
+		// in initModule() by a hack to gather higher priority
+		rootTypes.add(new TimeEventType());
+		rootTypes.add(new MapType());
+		rootTypes.add(new PropertyDefinitionType());
+		return rootTypes;
+	}
 
-    @Override
-    public void addAction(Map<Class<? extends KnowWEAction>, KnowWEAction> map) {
-	map.put(SearchTimeEventsAction.class, new SearchTimeEventsAction());
-	map.put(SetFilterLevelAction.class, new SetFilterLevelAction());
-	map.put(InsertRelationAction.class, new InsertRelationAction());
-    }
+	@Override
+	public List<TagHandler> getTagHandlers() {
+		List<TagHandler> list = new ArrayList<TagHandler>();
+		list.add(new TimeLineHandler());
+		list.add(new LocalTimeEventsHandler());
+		list.add(new TimeEventSearchHandler());
+		list.add(new ShowTimeEventsForConceptTagHandler());
+		list.add(new ShowMapHandler());
+		list.add(new ShowMapForConceptHandler());
+		list.add(new ShowMapForTopicHandler());
+		list.add(new SetTimeEventFilterLevelHandler());
+		list.add(new VersionCountTagHandler());
+		list.add(new QuizHandler());
+		return list;
+	}
+
+	@Override
+	public List<PageAppendHandler> getPageAppendHandlers() {
+		List<PageAppendHandler> handlers = new ArrayList<PageAppendHandler>();
+		handlers.add(new AppendTagEditHandler());
+		return handlers;
+	}
+
+	@Override
+	public void addAction(Map<Class<? extends KnowWEAction>, KnowWEAction> map) {
+		map.put(SearchTimeEventsAction.class, new SearchTimeEventsAction());
+		map.put(SetFilterLevelAction.class, new SetFilterLevelAction());
+		map.put(InsertRelationAction.class, new InsertRelationAction());
+		map.put(StartQuizAction.class, new StartQuizAction());
+		map.put(StopQuizAction.class, new StopQuizAction());
+		map.put(SetAnswerAction.class, new SetAnswerAction());
+	}
 }

@@ -222,6 +222,7 @@ public class TimeEventSPARQLUtils {
     private static Collection<? extends Placemark> buildPlacemarksForTopic(
 	    TupleQueryResult result) {
 	List<Placemark> placemarks = new ArrayList<Placemark>();
+	if(result == null) return placemarks;
 	try {
 	    while (result.hasNext()) {
 

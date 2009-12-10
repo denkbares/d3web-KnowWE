@@ -77,6 +77,74 @@ function sendFilterLevel(level, user) {
 }
 
 /**
+ * starts the hermes quiz.
+ */
+function startQuiz(user) {
+
+    var params = {
+        action : 'StartQuizAction',
+        user : user,
+    }
+
+    var options = {
+        url : KNOWWE.core.util.getURL(params),
+        response : {
+            action : 'insert',
+            ids : [ 'quiz' ],
+        }
+    }
+
+    new _KA(options).send();
+
+}
+
+
+/**
+ * starts the hermes quiz.
+ */
+function quizAnswer(user, answer) {
+
+    var params = {
+        action : 'SetAnswerAction',
+        user : user,
+        answer : answer,
+    }
+
+    var options = {
+        url : KNOWWE.core.util.getURL(params),
+        response : {
+            action : 'insert',
+            ids : [ 'quiz' ],
+        }
+    }
+
+    new _KA(options).send();
+
+}
+
+/**
+ * stops the hermes quiz.
+ */
+function stopQuiz(user) {
+
+    var params = {
+        action : 'StopQuizAction',
+        user : user,
+    }
+
+    var options = {
+        url : KNOWWE.core.util.getURL(params),
+        response : {
+            action : 'insert',
+            ids : [ 'quiz' ],
+        }
+    }
+
+    new _KA(options).send();
+
+}
+
+/**
  * Namespace: KNOWWE.plugin.hermes.conceptPopup The namespace of popup for
  * semi-automated formalization.
  */
