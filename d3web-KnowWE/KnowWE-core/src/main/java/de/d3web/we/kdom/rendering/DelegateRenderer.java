@@ -32,10 +32,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class DelegateRenderer extends KnowWEDomRenderer {
 
 	private static DelegateRenderer instance;
+	
+	static {
+		instance = new DelegateRenderer();
+	}
 
-	public static synchronized DelegateRenderer getInstance() {
-		if (instance == null)
-			instance = new DelegateRenderer();
+	public static DelegateRenderer getInstance() {
 		return instance;
 	}
 
@@ -140,7 +142,5 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	private boolean isRenderTypes(Map<String, String> urlParameterMap) {
 		String debug = urlParameterMap.get("renderTypes"); 
 		return debug != null && debug.equals("true");
-		
-//		return false;
 	}
 }
