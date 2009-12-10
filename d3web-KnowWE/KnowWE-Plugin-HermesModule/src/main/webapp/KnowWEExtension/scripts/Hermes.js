@@ -325,7 +325,7 @@ KNOWWE.plugin.hermes.conceptPopup = function() {
 
             var kdomid = el.id;
             var contentElement = _KS('#' + kdomid + '_popupcontent');
-            var contentT = contentElement.textContent || contentElement.innerText;
+            var contentT = contentElement.innerHTML || contentElement.innerText;
 
             if (!el.getAttribute('rel'))
                 return;
