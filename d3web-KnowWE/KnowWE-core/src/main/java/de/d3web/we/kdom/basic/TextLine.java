@@ -29,7 +29,7 @@ public class TextLine extends DefaultAbstractKnowWEObjectType {
 		this.setNumberedType(true);
 		childrenTypes.add(new LineBreak());
 		childrenTypes.add(new LineContent());
-		sectionFinder = new LineSectionFinder();
+		sectionFinder = LineSectionFinder.getInstance();
 	}
 	
 }

@@ -100,13 +100,14 @@ public final class Patterns {
 		DCPROPERTY + "|" +		// or DCProperty
 		QUOTEDSTRING + "|" +	// anything quoted 
 		"[^@\\}\"]*|" + 		// or anything except unquoted '}', '@' or single '"'
-//		"\\s*?" + TextInclude.PATTERN_BOTH+ "\\s*?" + //or include
+		"\\s*?" + TextInclude.PATTERN_BOTH+ "\\s*?" + //or include
 		")*" + 					// many of the above, ends content
 		"\\}" + SPACETABS +		// closing bracket and whitespaces TODO allowed just space before thresholds??
 		"(?:\\[[^\\[\\]\\{\\}]*\\])?" +  	//optional threshold in SBs, anything except brackets 
 											// (would otherwise match up to closing SB of next XCList)
 		SPACETABS +				// space after thresholds
-		LINEBREAK; 				// XCL has to be terminated by newline
+//		LINEBREAK +				// XCL has to be terminated by newline
+		""; 				
 
 	
 	

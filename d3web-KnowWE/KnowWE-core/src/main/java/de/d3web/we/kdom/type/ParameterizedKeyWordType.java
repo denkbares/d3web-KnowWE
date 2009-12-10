@@ -17,29 +17,52 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.xcl;
+package de.d3web.we.kdom.type;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.basic.SquareBracedType;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.utils.Patterns;
 
 /**
- *
+ * A type that finds a subtype in [] after a keyword.
+ * E.g. KNOWN[Question1], INSTANT[Questionnaire1]
+ * 
  * @author Reinhard Hatko
- * Created on: 03.12.2009
+ * Created on: 10.12.2009
  */
-public class DCPropertyNameType extends DefaultAbstractKnowWEObjectType {
-
+public abstract class ParameterizedKeyWordType extends DefaultAbstractKnowWEObjectType {
 	
-	@Override
-	protected void init() {
-		super.init();
-		
-		setSectionFinder(new RegexSectionFinder("@(" + Patterns.WORD + ")", 0, 1));
-		setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR6));
+	private final String keyword;
+	private final KnowWEObjectType type;
+	
+	
+	public ParameterizedKeyWordType(String keyword, KnowWEObjectType type) {
+		this.keyword = keyword;
+		this.type = type;
+		initintern();
+	}
+
+
+	public void init() {
+		setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR2));
+	}
+	
+	//ugly, but only workaround to configure according to constructor parameters
+	private void initintern() {
+		this.sectionFinder = new RegexSectionFinder(keyword + "\\[[^\\]]*]");
+		this.childrenTypes.add(new KeywordType(keyword));
+		this.childrenTypes.add(new SquareBracedType(type));
+
 	}
 	
 	
+	private static class KeywordType extends DefaultAbstractKnowWEObjectType {
+		public KeywordType(String keyword) {
+			this.sectionFinder = new RegexSectionFinder(keyword);
+		}
 		
+	}
+
 }

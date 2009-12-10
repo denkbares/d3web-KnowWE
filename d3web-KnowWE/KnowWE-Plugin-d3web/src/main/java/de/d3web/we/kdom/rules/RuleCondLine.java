@@ -20,48 +20,25 @@
 
 package de.d3web.we.kdom.rules;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.kopic.renderer.RuleConditionHighlightingRenderer;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 public class RuleCondLine extends DefaultAbstractKnowWEObjectType{
 
 	@Override
 	protected void init() {
-		sectionFinder = new RuleCondLineSectionFinder();
+		sectionFinder = new RegexSectionFinder("(IF|WENN).+", Pattern.DOTALL);
 		setCustomRenderer(RuleConditionHighlightingRenderer.getInstance());
 		childrenTypes.add(new LineBreak());
 		childrenTypes.add(new If());
 		childrenTypes.add(new RuleCondition());
 	}
 	
-	public class RuleCondLineSectionFinder extends SectionFinder {
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			
-			String lineRegex = "(IF|WENN).+";
-			Pattern linePattern = Pattern.compile( lineRegex , Pattern.DOTALL);
-			
-	        Matcher tagMatcher = linePattern.matcher(text);		
-	        ArrayList<SectionFinderResult> resultRegex =
-	        			new ArrayList<SectionFinderResult>();
-	        
-	        while (tagMatcher.find()) {
-	        	resultRegex.add(new SectionFinderResult(
-	        			tagMatcher.start(), tagMatcher.end()));
-			}
-			return resultRegex;
-		}
-	}
+	
 }
 
 

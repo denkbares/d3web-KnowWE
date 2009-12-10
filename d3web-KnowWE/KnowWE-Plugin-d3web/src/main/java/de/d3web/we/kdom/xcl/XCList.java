@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.Patterns;
@@ -38,34 +39,13 @@ public class XCList extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public void init() {
-		this.sectionFinder = new XCListSectionFinder();
+		this.sectionFinder = new RegexSectionFinder(Patterns.XCLIST, Pattern.MULTILINE);
 		childrenTypes.add(new XCLHead());
 		childrenTypes.add(new XCLTail());
 		childrenTypes.add(new XCLBody());
 	}
 	
 	
-	public class XCListSectionFinder extends SectionFinder {
-
-		private final Pattern pattern;
-		
-		public XCListSectionFinder() {
-			pattern = Pattern.compile(Patterns.XCLIST, Pattern.MULTILINE);
-		}
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			List<SectionFinderResult> matches = new ArrayList<SectionFinderResult>();
-			
-			Matcher m = pattern.matcher(text);
-			
-			while (m.find()) {
-				matches.add(new SectionFinderResult(m.start(), m.end()));
-			}
-			
-			return matches;
-		}
-	}
 	
 	public static void main(String[] args) {
 		
@@ -78,6 +58,7 @@ public class XCList extends DefaultAbstractKnowWEObjectType {
 		}
 		
 	}
+	
 	
 	public static String readTxtFile(String fileName) {
 		StringBuffer inContent = new StringBuffer();

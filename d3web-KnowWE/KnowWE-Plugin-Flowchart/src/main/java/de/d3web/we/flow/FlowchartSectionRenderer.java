@@ -37,8 +37,6 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 	
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		List<Section> lines = new ArrayList<Section>(); 
-		sec.findSuccessorsOfType(TextLine.class, lines);
 		FlowchartType section = (FlowchartType)sec.getObjectType();
 		
 		String title = "Flowchart '" + section.getFlowchartName(sec) + "'";

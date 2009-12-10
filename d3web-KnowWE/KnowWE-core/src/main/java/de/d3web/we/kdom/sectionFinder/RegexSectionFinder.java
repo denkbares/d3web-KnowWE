@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -62,9 +61,11 @@ public class RegexSectionFinder extends SectionFinder {
 			result.add(createSectionFinderResult(m));
 		}
 		return result;
+	
 	}
 	
 	protected SectionFinderResult createSectionFinderResult(Matcher m) {
 		return new SectionFinderResult(m.start(group), m.end(group));
 	}
+	
 }

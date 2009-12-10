@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.decisionTree.QClassID;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -38,7 +39,7 @@ public class QuestionIndication extends DefaultAbstractKnowWEObjectType {
 	@Override
 	public void init() {
 		this.sectionFinder = new QuestionIndicationSectionFinder();
-		QuestionClass qC = new QuestionClass();
+		QClassID qC = new QClassID();
 		qC.setSectionFinder(new SeperatedQuestionClassSectionFinder());
 		this.childrenTypes.add(qC);
 	}

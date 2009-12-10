@@ -28,6 +28,7 @@ import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SentenceSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
@@ -115,7 +116,7 @@ public class KnowWESectionFinderTests extends TestCase {
 		String text = " There goes the cow\r\n"
 					+ " and there it goes not"
 					+ "perhaps it dont want to go \r\n";
-		LineBreak.LineBreakSectionFinder f = new LineBreak().new LineBreakSectionFinder();
+		SectionFinder f = new LineBreak().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 19, results.get(0).getStart());
@@ -129,7 +130,7 @@ public class KnowWESectionFinderTests extends TestCase {
 		String text = " There goes the cow\r\n"
 			+ " and there it goes not"
 			+ "perhaps it dont want to go \r\n";
-		LineSectionFinder f = new LineSectionFinder();
+		SectionFinder f = LineSectionFinder.getInstance();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());

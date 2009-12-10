@@ -78,6 +78,7 @@ public class QuestionnairesKDOMBuilder implements DashTreeKDOMBuilder {
 
 	@Override
 	public void newLine() {
+		//TODO change to system property "linebreak"??
 		sections.push(new ExpandedSectionFinderResult("\n", new TextLine(), sections.size() * (-1)));
 	}
 

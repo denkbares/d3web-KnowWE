@@ -45,6 +45,7 @@ import de.d3web.we.kdom.decisionTree.QuestionTreeANTLR;
 import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.kdom.rules.RuleActionLine;
 import de.d3web.we.kdom.rules.RuleCondLine;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.semanticAnnotation.AnnotatedString;
 import de.d3web.we.kdom.semanticAnnotation.AnnotationMapSign;
@@ -247,8 +248,8 @@ public class d3webSectionFinderTest extends TestCase {
 	
 	public void testRuleCondLineSectionFinder() {
 		String text = " yoyo IF (Fuel = unleaded gasoline AND Exhaust pipe color = sooty black)";
-		RuleCondLine.RuleCondLineSectionFinder f =
-			new RuleCondLine().new RuleCondLineSectionFinder();
+		SectionFinder f =
+			new RuleCondLine().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 6, results.get(0).getStart());
@@ -258,7 +259,7 @@ public class d3webSectionFinderTest extends TestCase {
 	public void testRuleSectionFinder() {
 		String text = " yoyo IF (Fuel = diesel AND Exhaust pipe color = sooty black)\r\n"
 					+ "THEN Exhaust pipe color evaluation += normal";
-		Rule.RuleSectionFinder f = new Rule().new RuleSectionFinder();
+		SectionFinder f = new Rule().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 6, results.get(0).getStart());
@@ -296,14 +297,14 @@ public class d3webSectionFinderTest extends TestCase {
 		    	    + "What do you like? = Meeting people,\r\n"
 		    		+ "}\r\n";
 		
-		XCList.XCListSectionFinder f = new XCList().new XCListSectionFinder();
+		SectionFinder f = new XCList().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 200, results.get(0).getEnd());
+		assertEquals(WRONG_FIRST_END, 198, results.get(0).getEnd());
 		
 		assertEquals(WRONG_SECOND_START, 203, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 452, results.get(1).getEnd());
+		assertEquals(WRONG_SECOND_END, 450, results.get(1).getEnd());
 	}
 	
 	public void testXCLBodySectionFinder() {

@@ -39,8 +39,6 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 		
 		@Override
 		public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
-			List<Section> lines = new ArrayList<Section>(); 
-			sec.findSuccessorsOfType(TextLine.class, lines);
 			
 			StringBuilder messagesBuilder = new StringBuilder();
 			

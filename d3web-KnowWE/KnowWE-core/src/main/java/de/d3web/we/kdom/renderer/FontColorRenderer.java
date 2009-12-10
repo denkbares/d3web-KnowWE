@@ -37,12 +37,12 @@ public class FontColorRenderer extends StyleRenderer {
 	private static Map<String, FontColorRenderer> renderers = new HashMap<String, FontColorRenderer>();
 	
 	public static FontColorRenderer getRenderer(String color) {
-		if(renderers.containsKey(color)) {
-			return renderers.get(color);
-		}else {
+
+		if (!renderers.containsKey(color)) {
 			renderers.put(color, new FontColorRenderer(color));
-			return renderers.get(color);
 		}
+		
+		return renderers.get(color);
 	}
 
 	public FontColorRenderer(String s) {

@@ -20,14 +20,8 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import de.d3web.we.kdom.Section;
-
-public class LineSectionFinder extends SectionFinder {
+public class LineSectionFinder extends SplittingSectionFinder {
 	
 	private static LineSectionFinder instance;
 	
@@ -39,20 +33,10 @@ public class LineSectionFinder extends SectionFinder {
 
 		return instance;
 	}
-
-	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		
-		String lineRegex = "\\r\\n";
-		Pattern linePattern = Pattern.compile(lineRegex);
-		
-        Matcher tagMatcher = linePattern.matcher(text);		
-        ArrayList<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
-        int lastStart = 0;
-        while (tagMatcher.find()) {
-        	resultRegex.add(new SectionFinderResult(lastStart, tagMatcher.end()));
-        	lastStart = tagMatcher.end();
-		}
-		return resultRegex;
+	
+	private LineSectionFinder() {
+		super("\\r\\n");
 	}
+
+	
 }

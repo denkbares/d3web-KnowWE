@@ -20,33 +20,14 @@
 
 package de.d3web.we.kdom.basic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 public class LineBreak extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		this.sectionFinder = new LineBreakSectionFinder();
+		this.sectionFinder = new RegexSectionFinder(" *[\\r\\n]+");
 	}
 	
-	public class LineBreakSectionFinder extends SectionFinder{
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			Matcher m = Pattern.compile(" *[\\r\\n]+").matcher(text);
-			while (m.find()) {
-				result.add(new SectionFinderResult(m.start(), m.end()));
-			}
-			return result;
-		}
-	}
 }

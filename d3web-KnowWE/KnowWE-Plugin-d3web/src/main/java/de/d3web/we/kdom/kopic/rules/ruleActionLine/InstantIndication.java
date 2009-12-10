@@ -19,57 +19,35 @@
  */
 package de.d3web.we.kdom.kopic.rules.ruleActionLine;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.basic.SquareBracedType;
+import de.d3web.we.kdom.condition.QuotedQuestion;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.type.ParameterizedKeyWordType;
 
 /**
  * @author Johannes Dienst
  *
  */
-public class InstantIndication extends DefaultAbstractKnowWEObjectType {
+public class InstantIndication extends ParameterizedKeyWordType {
 
-	@Override
-	public void init() {
-		this.sectionFinder = new InstantIndicationSectionFinder();
-		this.childrenTypes.add(new Instant());
-		QuestionClass qC = new QuestionClass();
-		qC.setSectionFinder(new BracketedQuestionClassSectionFinder());
-		this.childrenTypes.add(qC);
+	public InstantIndication() {
+		super("INSTANT", new QuotedQuestion());
 	}
+	
+//	public void init() {
+//		this.sectionFinder = new RegexSectionFinder("INSTANT\\[[^\\]]*]");
+//		this.childrenTypes.add(new InstantKey());
+//		this.childrenTypes.add(new SquareBracedType(new QuotedQuestion()));
+//		setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR2));
+//	}
+//	
+//	
+//	class InstantKey extends DefaultAbstractKnowWEObjectType {
+//		public void init() {
+//			this.sectionFinder = new RegexSectionFinder("INSTANT");
+//		}
+//	}
 
-	/**
-	 * Checks for String "INSTANT"
-	 */
-	private class InstantIndicationSectionFinder extends SectionFinder {
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			
-			if (text.contains("INSTANT")) {
-
-				int start = 0;
-				int end = text.length();
-				while (text.charAt(start) == ' ' || text.charAt(start) == '"') {
-					start++;
-					if (start >= end-1) return null;
-				}
-				while (text.charAt(end-1) == ' ' || text.charAt(end-1) == '"') {
-					end--;
-					if (start >= end-1) return null;
-				}
-				
-				List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-				result.add(new SectionFinderResult(start, end));
-				return result;
-			}
-
-			return null;
-		}
-		
-	}
 }

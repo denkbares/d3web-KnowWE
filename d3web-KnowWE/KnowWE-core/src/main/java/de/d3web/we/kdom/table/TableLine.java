@@ -39,7 +39,6 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * 
  * Represents a line of a WIKI table.
  * 
- * @see TextLine
  */
 public class TableLine extends DefaultAbstractKnowWEObjectType {
 

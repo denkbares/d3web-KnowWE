@@ -41,9 +41,6 @@ public class SetCoveringListSectionRenderer extends DefaultEditSectionRender {
 	@Override
 	public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
-		List<Section> lines = new ArrayList<Section>(); 
-		sec.findSuccessorsOfType(TextLine.class, lines);
-		
 		string.append("%%collapsebox-closed \n");
 		
 		String title = "";

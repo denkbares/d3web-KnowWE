@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom.rules;
 
-public class RuleLine extends de.d3web.we.kdom.basic.TextLine {
+import de.d3web.we.kdom.basic.TextLine;
+
+public class RuleLine extends TextLine {
 
 }

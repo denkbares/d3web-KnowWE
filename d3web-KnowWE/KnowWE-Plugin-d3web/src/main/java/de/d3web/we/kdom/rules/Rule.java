@@ -46,6 +46,7 @@ import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.renderer.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -64,7 +65,9 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	@Override
 	protected void init() {
 		subtreeHandler.add(new RuleSubTreeHandler());
-		sectionFinder = new RuleSectionFinder();
+		sectionFinder = new RegexSectionFinder("(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN|\\s*"
+				+ TextInclude.PATTERN_BOTH + "|\\s*\\z))",
+				Pattern.DOTALL);
 		setCustomRenderer(new RuleRenderer());
 		this.childrenTypes.add(new RuleActionLine());
 		this.childrenTypes.add(new RuleCondLine());
@@ -134,12 +137,13 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 						empty = false;
 						string.append(KnowWEUtils
 								.maskHTML("<span style='color:red'>"));
-						string.append(error.getMessageType() + ": "
+						string.append(KnowWEUtils
+								.maskHTML(error.getMessageType() + ": "
 										+ error.getMessageText()
 										+ (error.getMessageType().equals(
 												Message.NOTE) ? " "
 												+ error.getCount() : " Line: "
-												+ error.getLineNo()));
+												+ error.getLineNo())));
 						
 						string.append(KnowWEUtils.maskHTML("</span>"));
 						string.append(KnowWEUtils.maskHTML("\n"));
@@ -259,26 +263,5 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 				RULE_ERROR_MESSAGE_STORE_KEY);
 	}
 
-	public class RuleSectionFinder extends SectionFinder {
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
-
-			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-
-			Pattern p = Pattern.compile(
-					"(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN|\\s*"
-							+ TextInclude.PATTERN_BOTH + "|\\s*\\z))",
-					Pattern.DOTALL);
-			Matcher m = p.matcher(text);
-
-			while (m.find()) {
-				result.add(new SectionFinderResult(m.start(), m.end()));
-			}
-
-			return result;
-		}
-	}
 
 }
