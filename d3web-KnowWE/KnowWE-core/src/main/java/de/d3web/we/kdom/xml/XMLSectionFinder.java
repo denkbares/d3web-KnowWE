@@ -44,16 +44,43 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public class XMLSectionFinder extends SectionFinder {
 	
+	public static final String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
+
 	private String tagNamePattern;
 	
-	public static String ATTRIBUTE_MAP_STORE_KEY = "attributeMap";
+	/**
+	 * RegEx-Description 1:
+	 * 
+	 * For this example, tagNamePattern = Test
+	 * 
+	 * - Has to start with '<Test'
+	 * - Optionally after '<Test' there can be attributes (-> RegEx-Description 2)
+	 * - The first '>' after '<Test' terminates the attributes part and start the content part
+	 * - The first sequence of '</Test> terminates the content part and the match
+	 */
+	private Pattern tagPattern;
+	
+	/**
+	 * RegEx-Description 2:
+	 * 
+	 * Attribute format: attributeName="value"
+	 *  
+	 *  - Delimiter for attributes are white space characters
+	 *  - Inside the attributeName and value (between the quotes) no white space characters,
+	 *  quotes and equals signs are allowed
+	 *  - Around the '=' and before and after the attributeName and value, spaces
+	 *  are allowed
+	 */
+	private Pattern attributePattern;
+	
+	
 	
 	/**
 	 * Finds any XML-Section.
 	 * The name of the XML-Section must not contain ' ', '>' and '/'.
 	 */
 	public XMLSectionFinder() {
-		this.tagNamePattern = getTagNamePatternString(null);
+		this(null);
 	}
 	
 	/**
@@ -61,6 +88,10 @@ public class XMLSectionFinder extends SectionFinder {
 	 */
 	public XMLSectionFinder(String tagName) {
 		this.tagNamePattern = getTagNamePatternString(tagName);
+		
+		tagPattern = Pattern.compile("<(/)?(" + tagNamePattern + ")((?:\\s+)[^>]*?)?(/)?> *\\r?\\n?");
+		
+		attributePattern = Pattern.compile("([^=\"\\s]+) *= *\"([^\"]*)\"");
 	}
 
 	private String getTagNamePatternString(String tagName) {
@@ -74,31 +105,6 @@ public class XMLSectionFinder extends SectionFinder {
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
 		
-		/**
-		 * RegEx-Description 1:
-		 * 
-		 * For this example, tagNamePattern = Test
-		 * 
-		 * - Has to start with '<Test'
-		 * - Optionally after '<Test' there can be attributes (-> RegEx-Description 2)
-		 * - The first '>' after '<Test' terminates the attributes part and start the content part
-		 * - The first sequence of '</Test> terminates the content part and the match
-		 */
-		Pattern tagPattern = 
-			Pattern.compile("<(/)?(" + tagNamePattern + ")((?:\\s+)[^>]*?)?(/)?> *\\r?\\n?");
-
-		/**
-		 * RegEx-Description 2:
-		 * 
-		 * Attribute format: attributeName="value"
-		 *  
-		 *  - Delimiter for attributes are white space characters
-		 *  - Inside the attributeName and value (between the quotes) no white space characters,
-		 *  quotes and equals signs are allowed
-		 *  - Around the '=' and before and after the attributeName and value, spaces
-		 *  are allowed
-		 */
-		Pattern attributePattern = Pattern.compile("([^=\"\\s]+) *= *\"([^\"]*)\"");
 		
 		Matcher tagMatcher = tagPattern.matcher(text);
 		
