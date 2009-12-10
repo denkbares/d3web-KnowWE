@@ -94,6 +94,8 @@ public class DecisionTreeExportTest extends KnowledgeExporterTest {
 			+ "--- answer 1 (P7)\n"
 			+ "-- No\n"
 			+ "--- answer 2 (P7)\n";
+		
+		KnowledgeManager.setLocale(Locale.ENGLISH);
 		setUpKB(diagnosis, initQuestion, questions, null, null);
 		assertEquals("Wrong export: ", questions, writer.writeText());
 		
