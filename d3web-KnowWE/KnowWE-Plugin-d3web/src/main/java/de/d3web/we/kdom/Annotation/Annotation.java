@@ -36,12 +36,7 @@ import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
 public class Annotation extends DefaultAbstractKnowWEObjectType {
 	private static String ANNOTATIONBEGIN = "\\{\\{";
 	private static String ANNOTATIONEND = "\\}\\}";
-	private StandardAnnotationRenderer renderer;
 
-	public Annotation() {
-		renderer = new StandardAnnotationRenderer();
-		renderer.addConditionalRenderer(new AnnotationInlineAnswerRenderer());
-	}
 
 	@Override
 	public void init() {
@@ -49,6 +44,7 @@ public class Annotation extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new SemanticAnnotationEndSymbol("}}"));
 		this.childrenTypes.add(new AnnotationContent());
 		this.sectionFinder = new AnnotationSectionFinder();
+		this.setCustomRenderer(new AnnotationInlineAnswerRenderer());
 	}
 
 	public class AnnotationSectionFinder extends SectionFinder {

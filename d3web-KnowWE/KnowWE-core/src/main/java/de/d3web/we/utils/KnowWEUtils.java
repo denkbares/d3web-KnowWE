@@ -160,6 +160,10 @@ public class KnowWEUtils {
 				KnowWEEnvironment.HTML_BRACKET_OPEN, "[");
 		htmlContent = htmlContent.replaceAll(
 				KnowWEEnvironment.HTML_BRACKET_CLOSE, "]");
+		htmlContent = htmlContent.replace(
+				KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN, "{");
+		htmlContent = htmlContent.replace(
+				KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE, "}");
 		return htmlContent;
 	}
 
@@ -186,6 +190,10 @@ public class KnowWEUtils {
 				KnowWEEnvironment.HTML_BRACKET_OPEN);
 		htmlContent = htmlContent.replace("]",
 				KnowWEEnvironment.HTML_BRACKET_CLOSE);
+		htmlContent = htmlContent.replace("{", 
+				KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN);
+		htmlContent = htmlContent.replace("}", 
+				KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE);
 		return htmlContent;
 	}
 	

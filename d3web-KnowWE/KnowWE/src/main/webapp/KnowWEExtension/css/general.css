@@ -743,3 +743,17 @@ font-size:120%;
     left:50%;
     z-index: 2000;	
 }
+
+/* ################################################## */
+/* -------------- Annotation styling  --------------- */
+/* ################################################## */
+
+.semLink {
+	color:#003366;
+	cursor:pointer;
+	text-decoration:none;
+}
+
+.semLink:hover {
+	text-decoration:underline;
+}
