@@ -397,13 +397,13 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	}
 
 	private INode createEndNode(String id, Section section) {
-		String name = ((Section) section.getChildren().get(0)).getOriginalText();
+		String name = ((Section) section.getChildren().get(1)).getOriginalText();
 		
 		return FlowFactory.getInstance().createEndNode(id, name);
 	}
 
 	private INode createStartNode(String id, Section section) {
-		String name = ((Section) section.getChildren().get(0)).getOriginalText();
+		String name = ((Section) section.getChildren().get(1)).getOriginalText();
 		
 		return FlowFactory.getInstance().createStartNode(id, name);
 		
