@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.utils.KnowWEUtils;
 import dummies.KnowWETestWikiConnector;
@@ -184,11 +185,10 @@ public class KnowWEArticleManager {
 			return;
 		}
 		List<Section> children = sec.getChildren();
-		if (children.size() == 0) {
+		if (children == null || children.isEmpty() || sec.getObjectType() instanceof Include) {
 			newText.append(sec.getOriginalText());
 			return;
 		}
-
 		for (Section section : children) {
 			appendTextReplaceNode(section, nodeID, text, newText);
 		}
