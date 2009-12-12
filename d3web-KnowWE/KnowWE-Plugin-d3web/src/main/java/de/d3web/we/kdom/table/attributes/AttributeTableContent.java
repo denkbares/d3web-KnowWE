@@ -59,8 +59,7 @@ public class AttributeTableContent extends XMLContent {
 			
 			if (kbm != null) {			
 				((AbstractKnowWEObjectType) s.getFather().getObjectType()).storeMessages(article, s.getFather(), 
-						builder.addKnowledge(new StringReader(AbstractKopicSection
-								.removeTextIncludeTags(s.getOriginalText())), 
+						builder.addKnowledge(new StringReader(s.getOriginalText()), 
 								new SingleKBMIDObjectManager(kbm), null));
 			}
 		}

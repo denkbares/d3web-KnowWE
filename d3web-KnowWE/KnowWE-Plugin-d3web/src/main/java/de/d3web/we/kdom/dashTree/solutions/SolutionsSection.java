@@ -62,7 +62,7 @@ public class SolutionsSection extends AbstractKopicSection {
 				if (content != null) {
 	
 					List<de.d3web.report.Message> messages = SolutionsBuilder
-							.parse(new StringReader(removeTextIncludeTags(content.getOriginalText())), kbm, new SingleKBMIDObjectManager(kbm));
+							.parse(new StringReader(content.getOriginalText()), kbm, new SingleKBMIDObjectManager(kbm));
 	
 					
 					storeMessages(article, s,messages);

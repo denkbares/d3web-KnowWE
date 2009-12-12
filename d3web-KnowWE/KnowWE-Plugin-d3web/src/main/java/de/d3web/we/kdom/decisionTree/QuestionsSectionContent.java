@@ -20,16 +20,12 @@
 
 package de.d3web.we.kdom.decisionTree;
 
-import de.d3web.we.kdom.include.TextIncludeHead;
-import de.d3web.we.kdom.include.TextIncludeTail;
 import de.d3web.we.kdom.xml.XMLContent;
 
 public class QuestionsSectionContent extends XMLContent{
 	
 	@Override
 	protected void init() {
-		childrenTypes.add(TextIncludeHead.getInstance()); // hotfix!
-		childrenTypes.add(TextIncludeTail.getInstance()); // hotfix!
 		childrenTypes.add(new QuestionTreeANTLR());
 	}
 

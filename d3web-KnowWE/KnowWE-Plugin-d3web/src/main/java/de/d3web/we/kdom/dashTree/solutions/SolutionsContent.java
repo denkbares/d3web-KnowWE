@@ -20,16 +20,12 @@
 
 package de.d3web.we.kdom.dashTree.solutions;
 
-import de.d3web.we.kdom.include.TextIncludeHead;
-import de.d3web.we.kdom.include.TextIncludeTail;
 import de.d3web.we.kdom.xml.XMLContent;
 
 public class SolutionsContent extends XMLContent {
 	
 	@Override
 	protected void init() {
-		childrenTypes.add(TextIncludeHead.getInstance()); // hotfix!
-		childrenTypes.add(TextIncludeTail.getInstance()); // hotfix!
 		childrenTypes.add(new SolutionsTreeANTLR());
 	}
 	

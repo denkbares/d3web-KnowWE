@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.kopic;
 
-import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.kopic.renderer.KopicSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -29,12 +28,6 @@ public abstract class AbstractKopicSection extends AbstractXMLObjectType {
 	
 	public AbstractKopicSection(String type) {
 		super(type);
-	}
-	
-
-	public static String removeTextIncludeTags(String s) {
-		s = s.replaceAll(TextInclude.PATTERN_BOTH, "");
-		return s;
 	}
 	
     @Override 	 

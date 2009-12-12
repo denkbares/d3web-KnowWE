@@ -71,7 +71,7 @@ public class TestsuiteSection extends AbstractKopicSection{
 	
 				if (content != null) {
 	
-					Reader r = new StringReader(removeTextIncludeTags(content.getOriginalText()));
+					Reader r = new StringReader(content.getOriginalText());
 					IDObjectManagement idom = new SingleKBMIDObjectManager(kbm);
 					TestsuiteBuilder builder = new TestsuiteBuilder("", idom);
 					

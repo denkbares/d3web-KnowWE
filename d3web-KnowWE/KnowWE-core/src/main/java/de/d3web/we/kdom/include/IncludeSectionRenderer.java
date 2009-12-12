@@ -34,11 +34,7 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String srclink;
-		if (sec instanceof TextIncludeSection) {
-			String src = ((TextIncludeSection) sec).getSrc();
-			srclink = createLink(src.substring(0, src.indexOf("/")), 
-					"txtInclude: src=\"" + src + "\"");
-		} else if (sec.getObjectType() instanceof Include && sec.getIncludeAddress() != null) {
+		if (sec.getObjectType() instanceof Include && sec.getIncludeAddress() != null) {
 			srclink = createLink(sec.getIncludeAddress().getTargetArticle(),  
 						"include: src=\"" + sec.getIncludeAddress().getOriginalAddress() + "\"");
 		} else {

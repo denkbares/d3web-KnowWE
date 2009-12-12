@@ -32,16 +32,12 @@ import java.util.Set;
 
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
-
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeAddress;
-import de.d3web.we.kdom.include.TextInclude;
-import de.d3web.we.kdom.include.TextIncludeHead;
-import de.d3web.we.kdom.include.TextIncludeTail;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
@@ -215,13 +211,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 
 		if (objectType != null
-				&& !objectType.equals(TextIncludeHead.getInstance())
-				&& !objectType.equals(TextIncludeTail.getInstance())
 				&& !objectType.equals(Include.getInstance())
 				&& !objectType.equals(PlainText.getInstance())
 				&& !objectType.equals(VerbatimType.getInstance())) {
-			types.add(TextIncludeHead.getInstance());
-			types.add(TextIncludeTail.getInstance());
 			types.add(Include.getInstance());
 		}
 		
@@ -1038,7 +1030,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public boolean isEmpty() {
 		String text = getOriginalText();
-		text = text.replaceAll(TextInclude.PATTERN_BOTH, "");
 		text = text.replaceAll("\\s", "");
 		return text.length() == 0;
 	}

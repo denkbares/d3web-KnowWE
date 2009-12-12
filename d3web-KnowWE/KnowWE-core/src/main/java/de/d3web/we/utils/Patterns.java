@@ -19,9 +19,6 @@
  */
 package de.d3web.we.utils;
 
-import java.util.regex.Pattern;
-
-import de.d3web.we.kdom.include.TextInclude;
 
 /**
  *
@@ -99,8 +96,7 @@ public final class Patterns {
 		"(?:" +					// the content of the XCL:
 		DCPROPERTY + "|" +		// or DCProperty
 		QUOTEDSTRING + "|" +	// anything quoted 
-		"[^@\\}\"]*|" + 		// or anything except unquoted '}', '@' or single '"'
-		"\\s*?" + TextInclude.PATTERN_BOTH+ "\\s*?" + //or include
+		"[^@\\}\"]*" + 		// or anything except unquoted '}', '@' or single '"'
 		")*" + 					// many of the above, ends content
 		"\\}" + SPACETABS +		// closing bracket and whitespaces TODO allowed just space before thresholds??
 		"(?:\\[[^\\[\\]\\{\\}]*\\])?" +  	//optional threshold in SBs, anything except brackets 

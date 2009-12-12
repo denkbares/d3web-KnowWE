@@ -61,7 +61,7 @@ public class QuestionnairesSection extends AbstractKopicSection {
 				Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
 				if (content != null) {
 					List<de.d3web.report.Message> messages = QuestionnaireBuilder
-					.parse(new StringReader(removeTextIncludeTags(content.getOriginalText())), new SingleKBMIDObjectManager(kbm));
+					.parse(new StringReader(content.getOriginalText()), new SingleKBMIDObjectManager(kbm));
 					
 					storeMessages(article, s,messages);
 					Report ruleRep = new Report();
@@ -69,7 +69,7 @@ public class QuestionnairesSection extends AbstractKopicSection {
 						ruleRep.add(messageKnOffice);
 					}
 					KnowWEParseResult result = new KnowWEParseResult(ruleRep, s
-							.getTitle(), removeTextIncludeTags(s.getOriginalText()));
+							.getTitle(), s.getOriginalText());
 					s.getArticle().getReport().addReport(result);				
 				}
 			}

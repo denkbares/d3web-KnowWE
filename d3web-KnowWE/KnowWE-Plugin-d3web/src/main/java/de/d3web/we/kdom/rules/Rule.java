@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
@@ -42,13 +41,10 @@ import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.renderer.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.terminology.KnowledgeRecyclingObjectType;
@@ -65,8 +61,8 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	@Override
 	protected void init() {
 		subtreeHandler.add(new RuleSubTreeHandler());
-		sectionFinder = new RegexSectionFinder("(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN|\\s*"
-				+ TextInclude.PATTERN_BOTH + "|\\s*\\z))",
+		sectionFinder = new RegexSectionFinder("(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN"
+				+ "|\\s*\\z))",
 				Pattern.DOTALL);
 		setCustomRenderer(new RuleRenderer());
 		this.childrenTypes.add(new RuleActionLine());
@@ -195,8 +191,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 						new SingleKBMIDObjectManager(kbm));
 
 				if (s != null) {
-					String text = TextInclude.removeTextIncludeTags(s
-							.getOriginalText());
+					String text = s.getOriginalText();
 					Reader r = new StringReader(text);
 
 					List<Message> bm = builder.addKnowledge(r,

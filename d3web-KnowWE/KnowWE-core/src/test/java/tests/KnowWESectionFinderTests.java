@@ -24,7 +24,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import de.d3web.we.kdom.basic.LineBreak;
-import de.d3web.we.kdom.include.TextInclude;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -57,17 +56,11 @@ public class KnowWESectionFinderTests extends TestCase {
 	
 	
 	public void testAllTextFinder() {
-		String test = "asof</" + TextInclude.TAG + ">lkoasklfol</" + TextInclude.TAG + ">akso";
+		String test = "asoflkoasklfolakso";
 		List<SectionFinderResult> results = new AllTextSectionFinder().lookForSections(test, null);
 		
-		assertEquals(WRONG_FIRST_START,0, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 4, results.get(0).getEnd());
-		
-		assertEquals(WRONG_SECOND_START, 4 + TextInclude.TAG.length() + 3, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 4 + TextInclude.TAG.length() + 3 + 10, results.get(1).getEnd());
-		
-		assertEquals(WRONG_THIRD_START, 4 + TextInclude.TAG.length() + 3 + 10 + TextInclude.TAG.length() + 3, results.get(2).getStart());
-		assertEquals(WRONG_THIRD_END, 4 + TextInclude.TAG.length() + 3 + 10 + TextInclude.TAG.length() + 3 + 4, results.get(2).getEnd());
+		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
+		assertEquals(WRONG_FIRST_END, test.length(), results.get(0).getEnd());
 	}	
 	
 	public void testAnnotationKnowledgeSliceObjectAnswerSectionFinder() {

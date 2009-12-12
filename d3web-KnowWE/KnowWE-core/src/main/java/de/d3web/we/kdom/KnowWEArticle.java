@@ -31,24 +31,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEIncludeManager;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
-import de.d3web.we.kdom.include.TextInclude;
-import de.d3web.we.kdom.include.TextIncludeHead;
-import de.d3web.we.kdom.include.TextIncludeSection;
-import de.d3web.we.kdom.include.TextIncludeTail;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.validation.Validator;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.KnowWEModule;
 
@@ -113,8 +104,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
 		
 		KnowWEArticleManager articleManager = instance.getArticleManager(web);
-
-		text = expand(text, web);
+		
+		instance.getIncludeManager(web).addSectionizingArticle(title);
 		
 		this.title = title;
 		this.web = web;
@@ -139,7 +130,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	
 		startTime = System.currentTimeMillis();
 		
-		instance.getIncludeManager(web).addSectionizingArticle(title);
 		// create new Section, here KDOM is created recursively
 //		sec = new Section(text, this, null, 0, this,
 //				null, false, null);
@@ -148,14 +138,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
 		
-		try {
-			refactorTextIncludeObjects();
-		} catch (Exception e) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.SEVERE,
-					"Exception while refactoring TxtIncludes. "
-							+ e.getLocalizedMessage());
-		}
 		instance.getIncludeManager(web).removeInactiveIncludesForArticle(getTitle(), includeSections);
 		instance.getIncludeManager(web).getSectionizingArticles().remove(title);
 		
@@ -464,294 +446,4 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private String expand(String text, String web) {
-
-		List<List<String>> replacementList = new ArrayList<List<String>>();
-
-		Pattern includePattern = Pattern.compile("<" + TextInclude.TAG + " ([^>]+)/>");
-		Matcher includeMatcher = includePattern.matcher(text);
-		
-		Pattern highlightingPattern = Pattern.compile("highlighting\\s*=\\s*\"(\\w+?)\"");
-		
-		Pattern srcPattern = Pattern
-			.compile("src\\s*=\\s*\"(([^/\"]+?)/(@id=)?(([^/\"]+?)(_content)?))\"");
-		
-		while (includeMatcher.find()) {
-			isDirty = true;
-			
-			Matcher highlightingMatcher = highlightingPattern
-					.matcher(includeMatcher.group(1));
-
-			boolean highlighting = true;
-			if (highlightingMatcher.find()) {
-				if (highlightingMatcher.group(1).compareToIgnoreCase("false") == 0) {
-					highlighting = false;
-				}
-			}
-			
-			Matcher srcMatcher = srcPattern.matcher(includeMatcher.group(1));
-
-			// find all include tags
-			if (srcMatcher.find()) {
-
-				String finding = "";
-				ArrayList<String> replacement = new ArrayList<String>();
-				replacement.add(includeMatcher.group());
-
-				
-				
-				Set<String> initializingArts = KnowWEEnvironment.getInstance().getIncludeManager(web)
-					.getSectionizingArticles();
-				// check for include loops
-				if (initializingArts.contains(srcMatcher.group(2))) {
-
-					Logger.getLogger(this.getClass().getName()).log(
-							Level.SEVERE,
-							"Expand loop detected!");
-					finding = "Error: Expand loop dedected!";
-					
-				} else {
-					// no loops found then
-					KnowWEArticle art = KnowWEEnvironment.getInstance()
-							.getArticle(KnowWEEnvironment.DEFAULT_WEB,
-									srcMatcher.group(2));
-	
-					// perhaps the searched Article is not yet initialized...
-					if (art == null) {
-						if (KnowWEEnvironment.getInstance().getWikiConnector()
-								.doesPageExist(srcMatcher.group(2))) {
-							String artSrc = KnowWEEnvironment.getInstance()
-									.getWikiConnector().getArticleSource(
-											srcMatcher.group(2));
-							if (artSrc != null) {
-								art = new KnowWEArticle(artSrc, srcMatcher
-										.group(2), KnowWEEnvironment
-										.getInstance().getRootTypes(), web);
-								KnowWEEnvironment.getInstance()
-										.getArticleManager(web)
-										.saveUpdatedArticle(art);
-							}
-						}
-					}
-	
-					if (art != null) {
-						// search by ID
-						if (srcMatcher.group(3) != null) {
-							Section section = art.findSection(srcMatcher
-									.group(4));
-							if (section == null) {
-								finding = "Error: Include '"
-										+ srcMatcher.group(4)
-										+ "' not found in Article '"
-										+ srcMatcher.group(2) + "'.";
-							} else {
-								finding = section.getOriginalText();
-							}
-						} else {
-							// seach by objectType name
-							List<Section<? extends KnowWEObjectType>> allNodes = art.getAllNodesPreOrder();
-							List<Section> matchingNodes = new ArrayList<Section>();
-							for (Section node : allNodes) {
-								if (node.getObjectType().getClass()
-										.getSimpleName().compareToIgnoreCase(
-												srcMatcher.group(5)) == 0) {
-									matchingNodes.add(node);
-								}
-							}
-							if (matchingNodes.size() == 1) {
-								Section locatedNode = matchingNodes.get(0);
-								if (srcMatcher.group(6) != null) {
-									if (locatedNode.getObjectType() instanceof AbstractXMLObjectType
-											&& locatedNode.findChildOfType(XMLContent.class) != null) {
-										finding = locatedNode.findChildOfType(XMLContent.class)
-												.getOriginalText();
-									} else {
-										finding = "Error: No content section found for Include '"
-												+ srcMatcher.group(4) + "'.";
-									}
-								} else {
-									finding = locatedNode.getOriginalText();
-								}
-							} else if (matchingNodes.isEmpty()) {
-								finding = "Error: Include '"
-										+ srcMatcher.group(4)
-										+ "' not found in Article '"
-										+ srcMatcher.group(2) + "'.";
-							} else {
-								finding = "Error: Include '"
-										+ srcMatcher.group(4)
-										+ "' in Article '"
-										+ srcMatcher.group(2)
-										+ "' is not unique. Try IDs.";
-							}
-						}
-					} else {
-						finding = "Error: Article '" + srcMatcher.group(2)
-								+ "' not found.";
-					}
-				}
-
-				// smooth the findings
-				Matcher trim = Pattern.compile("\\s*(\\S.*\\S)\\s*",
-						Pattern.DOTALL).matcher(finding);
-				if (trim.find()) {
-					finding = trim.group(1);
-				}
-
-				if (highlighting) {
-					// wrap it in xml tags
-					finding = "\n" + finding + "\n";
-					String incFrom1 = "<" + TextInclude.TAG + " src=\""
-							+ srcMatcher.group(1) + "\">";
-					String incFrom2 = "</" + TextInclude.TAG + ">";
-					replacement.add(incFrom1 + finding + incFrom2);
-				} else {
-					replacement.add(finding);
-				}
-
-				replacementList.add(replacement);
-			}
-		}
-
-		// replace include tags with the actual includes
-		for (List<String> replacement : replacementList) {
-			text = text.replace(replacement.get(0), replacement.get(1));
-		}
-
-		return text;
-	}
-
-	private void refactorTextIncludeObjects() throws Exception {
-
-		List<ArrayList<ArrayList<Section>>> includeFamilies = new ArrayList<ArrayList<ArrayList<Section>>>();
-		int generation = -1;
-		int family = -1;
-
-		// get all TextIncludeHeads and -Tails
-		for (Section sec : getAllNodesPreOrder()) {
-			if (generation < -1) {
-				// just in case, but shouldn't happen!
-				throw new Exception(
-						"Number of TextIncludedHeads and -Tails doesn't fit");
-			}
-			if (sec.getObjectType() instanceof TextIncludeHead) {
-				if (generation == -1) {
-					ArrayList<ArrayList<Section>> includeFamily = new ArrayList<ArrayList<Section>>();
-					includeFamilies.add(includeFamily);
-					family++;
-				}
-				ArrayList<Section> includeGeneration = new ArrayList<Section>();
-				includeGeneration.add(sec);
-				includeFamilies.get(family).add(includeGeneration);
-				generation++;
-			} else if (sec.getObjectType() instanceof TextIncludeTail
-					&& family >= 0 && generation >= 0) {
-				includeFamilies.get(family).get(generation).add(sec);
-				generation--;
-			}
-		}
-
-		if (generation != -1) {
-			// just in case, but shouldn't happen!
-			throw new Exception(
-					"Number of TextIncludedHeads and -Tails doesn't fit");
-		}
-
-		// actual refactoring starts
-		for (List<ArrayList<Section>> includeFamily : includeFamilies) {
-			for (int i = includeFamily.size() - 1; i >= 0; i--) {
-				List<Section> includeGeneration = includeFamily.get(i);
-
-				if (includeGeneration.size() != 2) {
-					// just in case, but shouldn't happen!
-					throw new Exception(
-							"Number of TextIncludedHeads and Tails doesn't fit");
-				}
-
-				// get a node that is ancestor of both head and tail
-				Section commonAncestor = null;
-
-				List<Section> fathers1 = new ArrayList<Section>();
-				List<Section> fathers2 = new ArrayList<Section>();
-
-				Section sec = includeGeneration.get(0);
-				while (true) {
-					fathers1.add(sec);
-					if (sec.getFather() == null) {
-						break;
-					}
-					sec = sec.getFather();
-				}
-				sec = includeGeneration.get(1);
-				while (true) {
-					fathers2.add(sec);
-					if (sec.getFather() == null) {
-						break;
-					}
-					sec = sec.getFather();
-				}
-
-				boolean found = false;
-				for (Section father1 : fathers1) {
-					for (Section father2 : fathers2) {
-						if (father1.equals(father2)) {
-							commonAncestor = father1;
-							// found the common ancestor!
-							found = true;
-							break;
-						}
-					}
-					if (found) {
-						break;
-					}
-				}
-				
-				String src = includeGeneration.get(0).getOriginalText()
-					.substring(14, includeGeneration.get(0).getOriginalText()
-								.indexOf(">") - 1);
-
-				if (commonAncestor instanceof TextIncludeSection 
-						&& ((TextIncludeSection) commonAncestor).getSrc().equals(src)) {
-					return;
-				}
-
-				// get the nodes between TextIncludedHead and TextIncludedTail
-				List<Section> newChildren = new ArrayList<Section>();
-				List<Section> children = commonAncestor.getChildren();
-				int headPos = children.indexOf(
-						fathers1.get(fathers1.indexOf(commonAncestor) - 1));
-				int tailPos = children.indexOf(
-						fathers2.get(fathers2.indexOf(commonAncestor) - 1)) + 1;
-
-				// fail-safe (happens with bad SectionFinders...)
-				if (headPos == -1 || tailPos == -1) {
-					headPos = 0;
-					tailPos = children.size() - 1;
-				}
-
-				// children for the new TextIncludeSection
-				newChildren.addAll(children.subList(
-						headPos, tailPos));
-				children.removeAll(newChildren);
-
-				StringBuilder text = new StringBuilder();
-				for (Section s : newChildren) {
-					text.append(s.getOriginalText());
-				}
-				
-
-				int offset = 0;
-				for (int c = 0; c < headPos; c++) {
-					offset += children.get(c)
-							.getOriginalText().length();
-				}
-
-				Section newIncludeSection = new TextIncludeSection(
-						commonAncestor, text.toString(), src, offset,
-						newChildren, this);
-
-				children.add(headPos, newIncludeSection);
-			}
-		}
-	}
 }

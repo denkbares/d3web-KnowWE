@@ -22,33 +22,15 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.include.TextInclude;
 
 public class AllTextSectionFinder extends SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		Matcher textMatcher = Pattern.compile(TextInclude.PATTERN_BOTH).matcher(text);
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-		int start = 0;
-		int end = 0;
-		int matchEnd = 0;
-		boolean found = false;
-		while (textMatcher.find()) {
-			found = true;
-			start = matchEnd;
-			end = textMatcher.start();
-			matchEnd = textMatcher.end();
-			result.add(new SectionFinderResult(start, end));
-		}
-		if (found && matchEnd < text.length()) {
-			result.add(new SectionFinderResult(matchEnd, text.length()));
-		}
-		if (!found && text.length() > 0) {
+		if (text.length() > 0) {
 			result.add(new SectionFinderResult(0, text.length()));
 		}
 		return result;

@@ -62,7 +62,7 @@ public class QuestionsSection extends AbstractKopicSection {
 				if (content != null) {
 	
 					List<de.d3web.report.Message> messages = D3DTBuilder
-							.parse(new StringReader(removeTextIncludeTags(content.getOriginalText())), new SingleKBMIDObjectManager(kbm));
+							.parse(new StringReader(content.getOriginalText()), new SingleKBMIDObjectManager(kbm));
 	
 					storeMessages(article, s,messages);
 					Report ruleRep = new Report();
@@ -70,7 +70,7 @@ public class QuestionsSection extends AbstractKopicSection {
 						ruleRep.add(messageKnOffice);
 					}
 					KnowWEParseResult result = new KnowWEParseResult(ruleRep, s
-							.getTitle(), removeTextIncludeTags(s.getOriginalText()));
+							.getTitle(), s.getOriginalText());
 					s.getArticle().getReport().addReport(result);
 				}
 			}
