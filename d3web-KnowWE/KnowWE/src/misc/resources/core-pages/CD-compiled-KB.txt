@@ -8,7 +8,7 @@
 <include src="Leaking-air-intake-system/RulesSection" />
 <include src="Clogged-air-filter/RulesSection" />
 <include src="Bad-ignition-timing/RulesSection" />
-<include src="Empty-battery/@id=battery-rules" />
+<include src="Empty-battery/RulesSection" />
 
 <Solutions-section>
 Damaged idle speed system
@@ -19,6 +19,3 @@ Empty battery
 </Solutions-section>
 
 </Kopic>
-
-
-[{KnowWEPlugin renderKnowledge}]
