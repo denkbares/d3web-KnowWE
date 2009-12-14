@@ -33,7 +33,7 @@ public abstract class D3webReviseSubTreeHandler implements ReviseSubTreeHandler 
 	 * @param article is the article you need the KBM from
 	 * @param sec is the knowledge containing section you need the KBM for 
 	 * @returns the KBM or <tt>null</tt> for article <tt>article</tt>. <tt>null</tt> 
-	 * is returned if the Knowledge of the given section doesn't need to get rebuild.
+	 * is returned if the Knowledge of the given section doesn't need to be rebuild.
 	 */
 	protected KnowledgeBaseManagement getKBM(KnowWEArticle article, Section sec) {
 		KnowledgeRepresentationHandler handler = KnowledgeRepresentationManager.getInstance().getHandler("d3web");

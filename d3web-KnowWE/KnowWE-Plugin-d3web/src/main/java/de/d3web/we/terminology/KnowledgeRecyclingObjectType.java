@@ -23,9 +23,24 @@ package de.d3web.we.terminology;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 
-
+/**
+ * This Interface indicates, that Sections with ObjectTypes that implement this
+ * Interface contain Knowledge which can be modified in an already existing 
+ * KnowledgeBase.
+ * 
+ * @author astriffler
+ *
+ */
 public interface KnowledgeRecyclingObjectType {
 	
+	/**
+	 * This method is called after all new an changed knowledge is parsed to
+	 * the KnowledgeBase. It then needs to delete all knowledge from the given
+	 * KnowledgeBase that is not longer in the given Article.
+	 * 
+	 * @param article is the Article the KBM belongs to
+	 * @param kbm is the KBM the Article belongs to
+	 */
 	public void cleanKnowledge(KnowWEArticle article, KnowledgeBaseManagement kbm);
 
 }

@@ -21,7 +21,6 @@
 
 package de.d3web.we.terminology;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -118,7 +117,7 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 	 * @param article is the article you need the KBM from
 	 * @param s is the knowledge containing section you need the KBM for 
 	 * @returns the KBM or <tt>null</tt> for article <tt>article</tt>. <tt>null</tt> 
-	 * is returned if the Knowledge of the given section doesn't need to get rebuild.
+	 * is returned if the Knowledge of the given section doesn't need to be rebuild.
 	 */
 	public KnowledgeBaseManagement getKBM(KnowWEArticle article, Section s) {
 		if (buildKnowledge(article, s)) {
@@ -131,6 +130,8 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 
 	/**
 	 * Initializes modules, kbms, services, flags...
+	 * This gets called when an new Article or a new version of an
+	 * Article gets build.
 	 */
 	@Override
 	public void initArticle(KnowWEArticle art) {
@@ -168,6 +169,8 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 	
 	/**
 	 * Registers complete KnowledgeBase...
+	 * This gets called after revising all Sections of the Article
+	 * through their ReviseSubTreeHandler.
 	 */
 	@Override
 	public void finishArticle(KnowWEArticle art) {
@@ -180,25 +183,60 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 	}
 	
 	/**
-	 * Builds or reuses and cleans Knowledge for the given article and Section 
-	 * depending on the nature of changes in the article.
+	 * This method gets called every time the KBM is requested through the 
+	 * <tt>getKBM</tt> method and decides whether the KBM or <tt>null</tt> is 
+	 * returned. In the same time (or while deciding that) it 
+	 * builds or reuses and cleans Knowledge for the given article and Section 
+	 * depending on the nature of changes in the article.<p/>
+	 * 
+	 * <b>Roughly it works like this:</b><p/>
+	 * 
+	 * As long as non of the Sections calling this method has changed
+	 * (respectively got reused), <tt>false</tt> is returned and no flags get set.
+	 * As soon as a changed Sections calls this, the method decides whether the old
+	 * KnowledgeBase is reusable or if a complete rebuild of the KnowledgeBase
+	 * is necessary. Then, on the one hand the needed actions are performed to the
+	 * KnowledgeBase, on the other hand, to save this decision for the following 
+	 * Sections calling this method, according flags are set.
+	 * An additional review is performed when this method is called with the root
+	 * Section of the Article through the <tt>finishArticle</tt> method which is
+	 * called after all Sections of the Articles are revised. In this review the
+	 * number of knowledge containing Sections in the article gets checked against
+	 * the number of knowledge containing Sections in the last version of the
+	 * article. If it differs it is again checked, depending on the nature of
+	 * Sections that are missing, if the KnowledgeBase needs to be rebuild or if
+	 * it is simply possible to erase the knowledge of the removed Section from
+	 * the KnowledgeBase...
+	 * 
+	 * @param article is the Article calling this method. Since Sections can be
+	 * included, this is not necessarily the article the Section belongs to directly
+	 * @param s is the Section for which the KBM is called for.
 	 * 
 	 * @returns <b>true</b> if the Knowledge of the Section needs to
-	 * 	get parsed to the KnowledgeBase or  </p>
-	 * <b>false</b> if the Knowledge is already in the KnowledgeBase
+	 * 	get parsed to the KnowledgeBase or if parsing is completed</p>
+	 * <b>false</b> if it is not yet decided if the Knowledge needs to get
+	 * reparsed or if Knowledge is already in the reused old KnowledgeBase
 	 */
 	@Override
 	public boolean buildKnowledge(KnowWEArticle article, Section s) {
 		String title = article.getTitle();
 		
+		// if the finishedKBM flag is set, always return true, so the KBM gets
+		// returned from the getKBM method
+		// the flag gets set after revising all Sections respectively after
+		// the knowledge is completely build or recycled, so
+		// for example renderer get the KBM without further checks.
 		if (finishedKBM.get(title)) {
 			return true;
 		}
 		
+		// counts knowledge containing Sections of this version of the article so it
+		// can later be compared to the number in the last version.
 		if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
 			recyclingTypes.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
 			
-			Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> countMap = knowledgeSectionsCount.get(title);
+			Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> countMap = 
+				knowledgeSectionsCount.get(title);
 			if (!countMap.containsKey(s.getObjectType().getClass())) {
 				countMap.put(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass(), 0);
 			}
@@ -208,48 +246,77 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			terminologySectionsCount.put(title, terminologySectionsCount.get(title) + 1);
 		}
 		
+		// if this flag is set, all knowledge needs to be reparsed, so
+		// return true every time.
 		if (usingNewKBM.get(title)) {
 			return true;
 		}
 		
 		KnowledgeBaseManagement lastKbm = lastKbms.get(title);
 		
+		// if this Section has changed or is the root Section
 		if (s.getObjectType() instanceof KnowWEArticle 
 				|| !s.isReusedBy(title)) {
 			
+			// in case the useOldKBM flag is already set from a previous Section
 			if (usingOldKBM.get(title)) {
 				if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
+					// add the ObjectType to the List of ObjectTypes whose knowledge need
+					// to get cleaned in the KnowledgeBase (happens when root Sections calls
+					// the buildKnowledge method), if the ObjectType implements the the
+					// Interface KnowledgeRecyclingObjectType, indicating that this is even possible
 					typesToClean.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
 				} else if (!(s.getObjectType() instanceof KnowWEArticle)) {
-					// KnowledgeRecyclingObjectTypes should be the last ObjectTypes to parse...
+					// since the Sections with an ObjectTypes not implementing the interface
+					// KnowledgeRecyclingObjectType should be parsed and calling this method
+					// before the ones implementing that interface, this only happen if something
+					// is wrong with that order.
 					Logger.getLogger(this.getClass().getName())
 						.log(Level.WARNING, "Wrong order of parsing for ObjectType '" +
 								s.getObjectType() + "'!");
 				} else if (lastTerminologySectionsCount.get(title) != terminologySectionsCount.get(title)) {
+					// this is the case, when a terminology containing Section gets removed from the article
+					// but only Sections with recyclable knowledge get changed. None the less a complete
+					// rebuild is needed.
 					kbms.put(title, KnowledgeBaseManagement.createInstance());
 					useNewKBM(article, s);
 				} else {
+					// the Section must be the root Section (objectType instanceof KnowWEArticle)
+					// so there is nothing left but to clean the reused KnowledgeBase
 					cleanKnowledge(article);
 				}
 				return true;
 			}
 			
+			// during the building of an Article, this point is only reached the first time 
+			// a changed Section or the root Section calls this method
 			if (lastKbm != null && isEmpty(kbms.get(title))
 					&& (s.getObjectType() instanceof KnowledgeRecyclingObjectType
 							|| (s.getObjectType() instanceof KnowWEArticle 
 								&& lastTerminologySectionsCount.get(title) 
 									== terminologySectionsCount.get(title)))) {
+				
+				// if there exists a previous version of the KnowledgeBase, there hasn't been
+				// added any knowledge to the current KnowledgeBase and the current (changed) Section
+				// contains knowledge that can be modified in the KnowledgeBase or the current Section
+				// is the root Section but the number of terminology containing Sections hasn't changed
+				// in the article, then the last version of the KnowledgeBase can be reused.
 				lastKbms.remove(title);
 				usingOldKBM.put(title, true);
 				kbms.put(title, lastKbm);
 				if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
-						typesToClean.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
+					// remember to clean that type of knowledge in the KnowledgeBase
+					typesToClean.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
 				}
 				if (s.getObjectType() instanceof KnowWEArticle) {
+					// this is the root Section respectively the last time in the process of
+					// building this article this method is called, so its time to clean the
+					// KnowledgeBase
 					cleanKnowledge(article);
 				}
 				return true;
 			} else {
+				// if the last version of the KnowledgeBase can not be reused it needs to be rebuild
 				useNewKBM(article, s);
 				return true;
 			}
