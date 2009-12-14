@@ -213,7 +213,9 @@ public class Sectionizer {
 									}
 									
 									//System.out.print(oldStore.getAllObjects().isEmpty() ? "" : "#" + node.getId() + " put " + oldStore.getAllObjects() + "\n");
-									KnowWEUtils.putSectionStore(node.getWeb(), father.getTitle(), node.id, oldStore);
+									if (oldStore != null) {
+										KnowWEUtils.putSectionStore(node.getWeb(), father.getTitle(), node.id, oldStore);
+									}
 								}
 							}
 								

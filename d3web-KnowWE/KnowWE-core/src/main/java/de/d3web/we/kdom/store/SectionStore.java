@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class SectionStore {
 
-	private Map<String,Object> store = new HashMap<String, Object>();
+	private Map<String,Object> store = new HashMap<String, Object>(4);
 	
 	public Object getObjectForKey(String key) {
 		return store.get(key);
