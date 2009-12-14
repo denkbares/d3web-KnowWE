@@ -90,7 +90,7 @@ function startQuiz(user) {
         url : KNOWWE.core.util.getURL(params),
         response : {
             action : 'insert',
-            ids : [ 'quiz' ],
+            ids : [ 'quiz-question' ],
         }
     }
 
@@ -114,7 +114,7 @@ function quizAnswer(user, answer) {
         url : KNOWWE.core.util.getURL(params),
         response : {
             action : 'insert',
-            ids : [ 'quiz' ],
+            ids : [ 'quiz-question' ],
         }
     }
 
@@ -136,7 +136,7 @@ function stopQuiz(user) {
         url : KNOWWE.core.util.getURL(params),
         response : {
             action : 'insert',
-            ids : [ 'quiz' ],
+            ids : [ 'quiz-question' ],
         }
     }
 
