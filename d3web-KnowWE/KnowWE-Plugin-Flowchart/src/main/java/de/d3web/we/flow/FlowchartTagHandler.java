@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
+import com.ecyrd.jspwiki.diff.FlowchartDiffProvider.FlowchartChangeType;
+
 import util.ResStream;
 
 import de.d3web.kernel.XPSCase;
@@ -20,6 +22,7 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.flow.diff.FlowchartEdge;
 import de.d3web.we.flow.diff.FlowchartNode;
 import de.d3web.we.flow.type.FlowchartContentType;
 import de.d3web.we.flow.type.FlowchartType;
@@ -61,21 +64,11 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		
 		
 		for (Section section : flows) {
-			
-			
-			String flowPreview = FlowchartUtils.extractPreview(section);
-
-			if (theCase != null) { //without running case no highlighting
-				String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
+			String flowPreview = createPreviewWithHighlightedPath(section, theCase);
 				
-				flowPreview = highlightNode(flowID, flowPreview, theCase);
-				
-				//Debug
-				builder.append(getPathendText(theCase));
-				//
-			}
-			
-			
+			//Debug
+			builder.append(getPathendText(theCase));
+			//
 			builder.append(FlowchartUtils.createPreview(flowPreview));
 			
 			builder.append("<p/><p/>");
@@ -86,6 +79,9 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	}
 	
 	private String getPathendText(XPSCase theCase) {
+		
+		if (theCase == null)
+			return "";
 		
 		FlowSet set = getFlowSet(theCase);
 				
@@ -121,9 +117,6 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		builder.append("<br/>");
 		
 		
-//		builder.append();
-		
-		
 		return builder.toString(); 
 	}
 
@@ -138,48 +131,99 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	}
 	
 
-	private String highlightNode(String flowID, String preview, XPSCase xpsCase) {
+	private String createPreviewWithHighlightedPath(Section section, XPSCase xpsCase) {
+		
+		String preview = FlowchartUtils.extractPreview(section);
+		
+		if (xpsCase == null)
+			return preview;
+		
+		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
 		
 		CaseObjectSource flowSet = getFlowSet(xpsCase);
 		
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) xpsCase.getCaseObject(flowSet);
 		
-		String result = preview;
-		
 	      
-        // get all the nodes
-        String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
-
+       
         
 		for (PathEntry entry : caseObject.getPathEnds()) {
 		
-			INode node = entry.getNodeData().getNode();
-			
-			if (!node.getFlow().getId().equals(flowID))
-				continue;
-			
-			String id = node.getID();
-			
-			for (int i = 0; i < nodes.length; i++) {
-				if (nodes[i].contains(id))
-					result = colorNode(nodes[i], preview);
-				
-			}
+			preview = highlightPath(preview, flowID, entry);
 			
 		}		
 		
-		return result;
+		return preview;
 	}
 
-	private String colorNode(String string, String preview) {
+	private String highlightPath(String preview, String flowID, PathEntry startEntry) {
+		 // get all the nodes
+        String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
+        String[] edges = preview.split("<DIV class=\"Rule\" id=\"");
+
+		PathEntry currentEntry = startEntry;
+		
+		while (currentEntry != null) {
+
+			INode node = currentEntry.getNodeData().getNode();
+			
+			if (!node.getFlow().getId().equals(flowID))
+				return preview;
+			
+			String nodeId = node.getID();
+			for (int i = 0; i < nodes.length; i++) {
+				if (nodes[i].contains(nodeId)) {
+					preview = colorNode(nodes[i], preview);
+				}
+			}
+			
+			String edgeId = currentEntry.getEdge().getID();
+			for (int i = 0; i < edges.length; i++) {
+				if (edges[i].contains(edgeId)) {
+					preview = colorEdge(edges[i], preview);
+				}
+			}
+			
+			currentEntry = currentEntry.getPath();
+			
+			
+		}
+		return preview;
+	}
+
+	private String colorNode(String node, String preview) {
 
      	// if yes, add the additional class
-     	String inputHelper1 = preview.substring(0, preview.indexOf(string) - 6);
-     	String inputHelper2 = preview.substring(preview.indexOf(string));
+     	String inputHelper1 = preview.substring(0, preview.indexOf(node) - 6);
+     	String inputHelper2 = preview.substring(preview.indexOf(node));
      	preview = inputHelper1 + " added" + "\" id=\"" + inputHelper2;
 		
      	return preview;
 	}
 
+	private String colorEdge(String edge, String preview) {
+	// set the additional class of the yet to be colored nodes
+		String alteration = "added";
+		
+	    String temp = preview;
+	    
+		String[] parts = edge.split("<DIV class=\"");
+		for (String s : parts) {
+			String type = s.substring(0, s.indexOf("\""));
+			if (type.equals("h_line") || type.equals("v_line") || type.contains("arrow")) {
+				String inputHelper1 = temp.substring(0, temp.indexOf(s));
+				String inputHelper2 = temp.substring(temp.indexOf(s));
+				temp = inputHelper1 + alteration + "\" id=\"" + inputHelper2;
+			} else if (type.equals("GuardPane") || type.equals("value")) {
+				String inputHelper1 = temp.substring(0, temp.indexOf(s));
+				String inputHelper2 = temp.substring(temp.indexOf(s));
+				temp = inputHelper1 + alteration + "Text\" id=\"" + inputHelper2;
+			}
+		}
+	        
+	    return temp;
+	}
+	
+	
 
 }
