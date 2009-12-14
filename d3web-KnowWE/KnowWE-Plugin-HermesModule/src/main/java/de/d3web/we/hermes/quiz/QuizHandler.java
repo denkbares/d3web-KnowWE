@@ -20,7 +20,7 @@ public class QuizHandler extends AbstractTagHandler {
 		String html = "<div style='width:400px;border-width:2px;border-style:solid;border-color:grey;' id=\"quiz\">";
 		
 		html += "<div class=\"box-head\" style=\"background-color:#B5B5B5; font-size:14px; height:28px; line-height:27px; margin:0 0 10px;padding:0 0 0 10px;\">"
-			+ "<span class=\"quiz-title\" style=\"float:left;font-weight:bold;\">Quiz</span>"
+			+ "<span class=\"quiz-title\" style=\"float:left;font-weight:bold;\">HermesQuiz</span>"
 			+ "<span class=\"questcount\">"
 			+ "</span>"
 			+ "</div><div id=\"quiz-question\" style=\"margin:1em;\">";
@@ -51,13 +51,13 @@ public class QuizHandler extends AbstractTagHandler {
 	}
 
 	private static String renderStopButton(String user) {
-		return "<input type=\"button\" value=\"stop quiz\" class=\"start\" onclick=\"stopQuiz('"+user+"');\"" 
+		return "<input type=\"button\" value=\"Stop quiz\" class=\"start\" onclick=\"stopQuiz('"+user+"');\"" 
 		    + "style=\"	background-color:#FFFFFF;border:1px solid #617E9B;color:#07519A;margin-top:10px;padding:2px;\">";
 		
 	}
 
 	private static String renderStartButton(String user) {
-		return "<input type=\"button\" value=\"start quiz\" class=\"stop\" onclick=\"startQuiz('"+user+"');\"" 
+		return "<input type=\"button\" value=\"Start quiz\" class=\"stop\" onclick=\"startQuiz('"+user+"');\"" 
 		    + "style=\"	background-color:#FFFFFF;border:1px solid #617E9B;color:#07519A;margin-top:10px;padding:2px;\">";
 	}
 

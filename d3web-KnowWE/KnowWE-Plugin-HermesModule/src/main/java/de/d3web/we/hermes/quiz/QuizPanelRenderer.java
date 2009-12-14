@@ -74,9 +74,18 @@ public class QuizPanelRenderer {
 			    + "list-style-type:none;margin:0 0 4px;text-align:center;width:80%;";
 			
 			if (session.getAnswered() == i && lastQuestion.getCorrectAnswer() != i){
-				s += "background-color:#FF998B;color:#C80000;font-weight:bold\">";
+				s += "color:#C80000;font-weight:bold;background:#AAAAAA url(KnowWEExtension/images/msg_cross.png) no-repeat scroll 95%;\">";
 			} else if (lastQuestion.getCorrectAnswer() == i){
-				s += "background-color:#8BFF8B;font-weight:bold;color:#008F00\"> ";
+				
+				String img = "";
+				if(session.getAnswered() == lastQuestion.getCorrectAnswer()){
+					img = "msg_checkmark.png";
+				} else {
+					img = "msg_info_yellow.png";
+				}
+				
+				
+				s += "color:#008F00;font-weight:bold;background:#AAAAAA url(KnowWEExtension/images/" + img + ") no-repeat scroll 95%;\"> ";
 			} else {
 				s += "background-color:#AAAAAA\"> ";
 			}
