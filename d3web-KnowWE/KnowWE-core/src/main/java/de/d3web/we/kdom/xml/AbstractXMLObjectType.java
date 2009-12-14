@@ -60,31 +60,25 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 	 * ObjectType for XML-Sections with tag name <code>tagName</code>.
 	 */
 	public AbstractXMLObjectType(String tagName) {
-		this.xmlTagName = tagName;
-		this.anyXML = false;
-		childrenTypes.add(0, new XMLHead());
-		childrenTypes.add(1, new XMLTail());
+		this(tagName, false);
 	}
 	
 	/**
 	 * ObjectType for XML-Sections with no specific tag name.
-	 * Finds all XML-Sections independet of thier tag names.
+	 * Finds all XML-Sections independent of their tag names.
 	 */
 	public AbstractXMLObjectType() {
-		this.xmlTagName = "AnyXMLObjectType";
-		this.anyXML = true;
+		this("AnyXMLObjectType", true);
+	}
+	
+	private AbstractXMLObjectType(String tagName, boolean anyXML) {
+		this.xmlTagName = tagName;
+		this.anyXML = false;
 		childrenTypes.add(0, new XMLHead());
 		childrenTypes.add(1, new XMLTail());
+		this.sectionFinder = new XMLSectionFinder(anyXML ? null : xmlTagName);
 	}
 
-	/**
-	 * XXX Override sectioner here. If in constructor strange breaks in layout occur.
-	 */
-	@Override
-	public SectionFinder getSectioner() {
-		this.sectionFinder = new XMLSectionFinder(anyXML ? null : xmlTagName);
-		return super.getSectioner();
-	}
 
 	public String getXMLTagName() {
 		return xmlTagName;
