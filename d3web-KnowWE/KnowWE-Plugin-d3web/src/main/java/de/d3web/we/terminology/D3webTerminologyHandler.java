@@ -191,7 +191,7 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 	 * 
 	 * <b>Roughly it works like this:</b><p/>
 	 * 
-	 * As long as non of the Sections calling this method has changed
+	 * As long as non of the Sections calling this method have changed
 	 * (respectively got reused), <tt>false</tt> is returned and no flags get set.
 	 * As soon as a changed Sections calls this, the method decides whether the old
 	 * KnowledgeBase is reusable or if a complete rebuild of the KnowledgeBase
