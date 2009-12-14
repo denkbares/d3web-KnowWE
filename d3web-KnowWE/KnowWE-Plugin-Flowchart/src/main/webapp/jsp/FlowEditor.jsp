@@ -328,6 +328,7 @@
 	}
 	
 	function saveFlowchart(closeOnSuccess) {
+		theFlowchart.setSelection(null, false, false);
 		var xml = theFlowchart.toXML(true); // include preview for us
 		_saveFlowchartText(xml, closeOnSuccess);
 	}

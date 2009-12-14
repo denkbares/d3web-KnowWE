@@ -154,7 +154,7 @@ RuleArrangement.prototype.arrange = function() {
 		var angle1 = Math.atan2(n1.getCenterY() - node.getCenterY(), n1.getCenterX() - node.getCenterX());
 		var angle2 = Math.atan2(n2.getCenterY() - node.getCenterY(), n2.getCenterX() - node.getCenterX());
 		// da auf der linken Seite ein Koordinatensprung von PI ==> -PI statt findet 
-		// (beim Übertritt über 180°), muss dieser ausgeglichen werden, in dem die Koordinaten
+		// (beim uebertritt  ueber 180Â°), muss dieser ausgeglichen werden, in dem die Koordinaten
 		// in den Bereich [0 .. 2*PI] gebracht werden 
 		if (anchorType == 'left') {
 			if (angle1 < 0) angle1 += 2*Math.PI
