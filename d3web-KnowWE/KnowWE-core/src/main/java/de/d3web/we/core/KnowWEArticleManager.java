@@ -133,8 +133,8 @@ public class KnowWEArticleManager {
 		String newArticleSourceText = newText.toString();
 		KnowWEEnvironment.getInstance().saveArticle(web, articleName,
 				newArticleSourceText, map);
-		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
-				KnowWEEnvironment.getInstance().getRootTypes(), this.web));
+//		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
+//				KnowWEEnvironment.getInstance().getRootTypes(), this.web));
 		return "done";
 	}
 
@@ -159,8 +159,8 @@ public class KnowWEArticleManager {
 		appendTextReplaceNode(root, nodeID, text, newText);
 
 		String newArticleSourceText = newText.toString();
-		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
-				KnowWEEnvironment.getInstance().getRootTypes(), this.web));
+//		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
+//				KnowWEEnvironment.getInstance().getRootTypes(), this.web));
 		return newArticleSourceText;
 	}
 

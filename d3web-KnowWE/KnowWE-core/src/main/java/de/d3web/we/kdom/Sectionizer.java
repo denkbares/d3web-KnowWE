@@ -202,14 +202,14 @@ public class Sectionizer {
 									
 									if (node.getTitle().equals(father.getTitle())) {
 										node.setReusedBy(node.getTitle(), true);	
-										node.article = father.article;
-										//if (node != this) {
+										node.article = article;
+										if (node != s) {
 											if (node.specificID == null) {
 												node.id = new SectionID(node.father, node.objectType).toString();
 											} else {
 												node.id = new SectionID(node.getArticle(), node.specificID).toString();
 											}
-										//}
+										}
 									}
 									
 									//System.out.print(oldStore.getAllObjects().isEmpty() ? "" : "#" + node.getId() + " put " + oldStore.getAllObjects() + "\n");
