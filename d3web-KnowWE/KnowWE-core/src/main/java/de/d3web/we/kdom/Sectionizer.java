@@ -203,12 +203,11 @@ public class Sectionizer {
 									if (node.getTitle().equals(father.getTitle())) {
 										node.setReusedBy(node.getTitle(), true);	
 										node.article = article;
-										if (node != s) {
-											if (node.specificID == null) {
-												node.id = new SectionID(node.father, node.objectType).toString();
-											} else {
-												node.id = new SectionID(node.getArticle(), node.specificID).toString();
-											}
+										
+										if (node.specificID == null) {
+											node.id = new SectionID(node.father, node.objectType).toString();
+										} else if (node != s) {
+											node.id = new SectionID(node.getArticle(), node.specificID).toString();
 										}
 									}
 									
