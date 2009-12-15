@@ -210,11 +210,24 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		String[] parts = edge.split("<DIV class=\"");
 		for (String s : parts) {
 			String type = s.substring(0, s.indexOf("\""));
-			if (type.equals("h_line") || type.equals("v_line") || type.contains("arrow")) {
+			
+			// for simple lines
+			if (type.equals("h_line") || type.equals("v_line") || type.equals("no_arrow")) {
 				String inputHelper1 = temp.substring(0, temp.indexOf(s));
 				String inputHelper2 = temp.substring(temp.indexOf(s));
 				temp = inputHelper1 + alteration + "\" id=\"" + inputHelper2;
+			
+			// for arrows
+			} else if (type.equals("arrow_up") || type.equals("arrow_down") || type.equals("arrow_left") || type.equals("arrow_right")) {
+				int size = type.length();
+				String arrowAlteration = "_" + alteration;
+				String inputHelper1 = temp.substring(0, temp.indexOf(s) + size);
+				String inputHelper2 = temp.substring(temp.indexOf(s));
+				temp = inputHelper1 + arrowAlteration + "\" id=\"" + inputHelper2;
+				
+			// for the rest
 			} else if (type.equals("GuardPane") || type.equals("value")) {
+//				Logging.getInstance().log(Level.INFO, "type: " + type);
 				String inputHelper1 = temp.substring(0, temp.indexOf(s));
 				String inputHelper2 = temp.substring(temp.indexOf(s));
 				temp = inputHelper1 + alteration + "Text\" id=\"" + inputHelper2;
