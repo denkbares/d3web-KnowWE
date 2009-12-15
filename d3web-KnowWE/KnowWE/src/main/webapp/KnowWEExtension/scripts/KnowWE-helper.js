@@ -215,7 +215,7 @@ KNOWWE.helper = function(){
             var regex = new RegExp( "[\\?&]" + name + "=([^&#]*)" );
             var results = regex.exec( window.location.href );
             if( results ) { 
-                return results[1];
+                return decodeURIComponent(results[1]);
             }
             if(name === 'page') { //fix for url parameter topic on Main page  
                 return 'Main';
@@ -315,8 +315,8 @@ KNOWWE.helper.event = function(){
             return e.target || e.srcElement ;
         },
         cancel : function( e ){
-        	e.cancelBubble = true;
-			if (e.stopPropagation) e.stopPropagation();
+            e.cancelBubble = true;
+            if (e.stopPropagation) e.stopPropagation();
         }
     }
 }();
@@ -384,7 +384,7 @@ KNOWWE.helper.ajax = function ( options ) {
         loading.setAttributeNode( domID );
         loading.innerHTML = "<img src=\"KnowWEExtension/images/ajax-loader.gif\" width=\"32\" height=\"32\"/>";
         
-        document.getElementsByTagName("body")[0].appendChild( loading );     	
+        document.getElementsByTagName("body")[0].appendChild( loading );        
     }
     
     /** 
@@ -429,8 +429,8 @@ KNOWWE.helper.ajax = function ( options ) {
             oDefault.response.fn.call();
             
             if(oDefault.loader) {
-            	var loader = document.getElementById('KNOWWE-ajax-loader');
-            	loader.parentNode.removeChild( loader );
+                var loader = document.getElementById('KNOWWE-ajax-loader');
+                loader.parentNode.removeChild( loader );
             }
         }  
     }    
@@ -458,7 +458,7 @@ KNOWWE.helper.ajax = function ( options ) {
         http.onreadystatechange = oDefault.fn;       
         http.send(oDefault.method);
         if(oDefault.loader){
-        	createLoader();
+            createLoader();
         }
     }
     /**
@@ -1386,6 +1386,63 @@ KNOWWE.helper.logger = function(){
     }
 }();
 
+/**
+ * Class: KNOWWE.helper.observer
+ * The observer namespace.
+ * 
+ * Returns:
+ *     An observer object.
+ */
+KNOWWE.helper.observer = function(){
+	/**
+	 * Stores the functions that should notified.
+	 */
+	var observations = [];
+	return {
+	    /**
+	     * Function: subscribe
+	     * 
+	     * Parameters:
+	     *     fn - The function that should be registered. 
+	     */
+	    subscribe : function( fn ){
+	        try{
+	            if( typeof fn !== "function" ) throw 'subscribe argument is not a function: ';
+	            observations.push( fn );
+	        } catch( err ){
+	            alert( err + fn); //not the best error handling
+	        }
+	    },
+	    /**
+	     * Function: unsubscribe
+	     * 
+	     * Parameters:
+	     *     fn - The function that should be unregistered.
+	     */
+	    unsubscribe : function( fn ) {
+	        var l = observations.length;
+	        for( var i = 0; i < l; i++){
+	            if( observations[i] === fn ){
+	                observations.splice(i,1);
+	            }
+	        }
+	    },
+	    /**
+	     * Function: notify
+	     * Notifies all the registered observers and executes their actions.
+	     * 
+	     * Parameters:
+	     *     o - The current scope.
+	     */
+	    notify : function( o ) {
+	        var scope = o || window;
+	        var l = observations.length;
+	        for( var i = 0; i < l; i++){
+	            observations[i].call( o );
+	        }
+	    }	
+	}
+}();
 
 /**
  * Class: KNOWWE.helper.overlay

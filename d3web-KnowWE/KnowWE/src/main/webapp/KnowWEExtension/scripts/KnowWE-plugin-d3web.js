@@ -41,10 +41,7 @@ KNOWWE.plugin.d3web.actions = function(){
          * Some function that are executed on page load. They initialize some core
          * d3web plugin functionality.
          */ 
-        init : function(){
-            //update solutions
-            this.update();
-            
+        init : function(){           
             //init KnowledgeBasesGenerator
             if(_KS('#KnowledgeBasesGenerator')) {
                 var els = _KS('#KnowledgeBasesGenerator input[type=button]');
@@ -206,14 +203,6 @@ KNOWWE.plugin.d3web.actions = function(){
                 }
             }
             new _KA( options ).send();
-        },
-        /**
-         * Function: update
-         */
-        update : function(){
-            KNOWWE.plugin.d3web.solutionstate.updateSolutionstate();
-            KNOWWE.plugin.d3web.rerenderquestionsheet.update();         
-            KNOWWE.core.rerendercontent.update();
         }
     }
 }();
@@ -436,7 +425,7 @@ KNOWWE.plugin.d3web.dialog = function(){
                 toogleImage( img, state);
             }
             KNOWWE.plugin.d3web.dialog.initAction();
-            KNOWWE.plugin.d3web.actions.update();
+            KNOWWE.helper.observer.notify();
         },
         /**
          * Function: answerClicked
@@ -520,6 +509,7 @@ KNOWWE.plugin.d3web.dialog = function(){
          * Function: saveAsXCL
          * Stores the selected findings in the HTMLDialog as an XCLRealtion.
          * Used as a simple XCLRelation editor.
+         * @Depreacted
          */
         saveAsXCL : function(){
             var params = {
@@ -819,7 +809,7 @@ KNOWWE.plugin.d3web.semantic = function(){
                 url : url.url + "?" + tokens.join('&'),
                 response : {
                     action: 'none',
-                    fn : KNOWWE.plugin.d3web.actions.update
+                    fn : KNOWWE.helper.observer.notify
                 }
             }
             new _KA( options ).send();
@@ -900,6 +890,7 @@ KNOWWE.plugin.d3web.solutionstate = function(){
             if( el ){
                 _KE.add('click', el, this.clearSolutionstate);
             }
+            KNOWWE.helper.observer.subscribe( this.updateSolutionstate );
         },
         /**
          * Function: updateSolutionstate
@@ -1040,6 +1031,12 @@ KNOWWE.plugin.d3web.solutionstate = function(){
 KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
     return {
         /**
+         * Function: init
+         */
+        init : function(){
+            KNOWWE.helper.observer.subscribe( this.update );
+        },      
+        /**
          * Function: update
          * Updates the question sheet after the user selected an answer in the
          * pop-up window.
@@ -1082,12 +1079,14 @@ KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
 
 (function init(){ 
     if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
-        window.addEvent( 'domready', function(){            
-            KNOWWE.plugin.d3web.actions.init();
-            KNOWWE.plugin.d3web.dialog.init();
-            KNOWWE.plugin.d3web.semantic.init();
-            KNOWWE.plugin.d3web.solutionstate.init();
-            KNOWWE.plugin.d3web.adminconsole.init();
+        window.addEvent( 'domready', function(){
+            
+            var ns = KNOWWE.plugin.d3web;
+            for(var i in ns){
+                if(ns[i].init){
+                    ns[i].init();
+                }
+            }
             
             if(_KS('#dialog-panel')){
                 KNOWWE.plugin.d3web.dialog.initAction();

@@ -162,8 +162,8 @@ KNOWWE.core.actions = function(){
                     action : 'string',
                     ids : [id],
                     fn : function(){
-                    	fn.call();
-                    	Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
+                        fn.call();
+                        Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
                     }
                 }
             }
@@ -275,7 +275,7 @@ KNOWWE.core.util = function(){
             for(var i = 0; i < p.length; i++){
                 var t = p[i].split('=');
                 if(!KNOWWE.helper.containsArr(tokens,t[0])){
-                    tokens.push(p[i]);
+                    tokens.push( t[0] + "=" + encodeURIComponent( t[1] ));
                 }
             }
             tokens.push('tstamp='+new Date().getTime());            
@@ -1117,6 +1117,12 @@ KNOWWE.core.codecompletion = function(){
 KNOWWE.core.rerendercontent = function(){
     return {
         /**
+         * Function: init
+         */
+        init : function(){
+            KNOWWE.helper.observer.subscribe( this.update );
+        },
+        /**
          * Function: updateNode
          * Updates a node.
          * 
@@ -1130,11 +1136,11 @@ KNOWWE.core.rerendercontent = function(){
                 KWikiWeb : 'default_web',
                 KdomNodeId : node,
                 KWiki_Topic : topic,
-				ajaxToHTML : ajaxToHTML
+                ajaxToHTML : ajaxToHTML
 
             }
             var url = KNOWWE.core.util.getURL( params );
-            this.execute(url, node, 'insert');
+            KNOWWE.core.rerendercontent.execute(url, node, 'insert');
         },
         /**
          * Function: update
@@ -1157,7 +1163,7 @@ KNOWWE.core.rerendercontent = function(){
                         ajaxToHTML : "render"
                     }           
                     var url = KNOWWE.core.util.getURL( params );
-                    this.execute(url, rel.id, 'replace');
+                    KNOWWE.core.rerendercontent.execute(url, rel.id, 'replace');
                 }
             }
         },
@@ -1176,9 +1182,9 @@ KNOWWE.core.rerendercontent = function(){
                 response : {
                     ids : [ id ],
                     fn : function(){
-                    	KNOWWE.core.actions.init();
+                        KNOWWE.core.actions.init();
                         Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
-            		}
+                    }
                 }
             }
             new _KA( options ).send();
@@ -1211,6 +1217,7 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 /* ------------- Onload Events  ---------------------------------- */
 /* ############################################################### */
 (function init(){
+    
     window.addEvent( 'domready', _KL.setup );
 
     if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
@@ -1219,13 +1226,15 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
             KNOWWE.core.renaming.init(); 
             KNOWWE.core.util.tablesorter.init();
             KNOWWE.core.typebrowser.init();
+            KNOWWE.core.rerendercontent.init();
             
             if(_KS('#testsuite-show-extend')){
                 _KE.add('click', _KS('#testsuite-show-extend'), KNOWWE.core.util.form.showExtendedPanel);
             }
             if(_KS('#testsuite2-show-extend')){
                 _KE.add('click', _KS('#testsuite2-show-extend'), KNOWWE.core.util.form.showExtendedPanel);
-            }            
+            }
+            setTimeout(KNOWWE.helper.observer.notify, 50);
         });
     };
 }());
