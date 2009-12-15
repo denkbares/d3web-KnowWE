@@ -84,6 +84,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	
 	private long startTimeOverall;
 	
+	private boolean fullParse;
+	
+	
+	public KnowWEArticle(String text, String title, List<KnowWEObjectType> allowedObjects, String web) {
+		this(text, title, allowedObjects, web, false);
+	}
+	
 	/**
 	 * Constructor: starts recursive parsing by creating new Section object
 	 * 
@@ -92,7 +99,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * @param allowedObjects
 	 */
 	public KnowWEArticle(String text, String title,
-			List<KnowWEObjectType> allowedObjects, String web) {
+			List<KnowWEObjectType> allowedObjects, String web, boolean fullParse) {
 		
 		Logger.getLogger(this.getClass().getName())
 			.log(Level.INFO,"-----> Starting to build article '" + title + "' ----->");
@@ -100,6 +107,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		
 		long startTime = System.currentTimeMillis();
 		startTimeOverall = System.currentTimeMillis();
+		
+		this.fullParse = fullParse;
 		
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
 		
@@ -444,6 +453,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		for (Section node:nodes) {
 			node.getObjectType().reviseSubtree(this, node);
 		}
+	}
+
+	public boolean isFullParse() {
+		return this.fullParse;
 	}
 
 }

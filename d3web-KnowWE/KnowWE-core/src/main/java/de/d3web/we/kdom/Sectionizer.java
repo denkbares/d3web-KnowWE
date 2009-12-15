@@ -161,6 +161,7 @@ public class Sectionizer {
 						// Update mechanism
 						// try to get unchanged Sections from old article
 						if (article.getLastVersionOfArticle() != null 
+								&& !article.isFullParse()
 								&& !(result instanceof ExpandedSectionFinderResult)
 								&& !ob.isNotRecyclable()
 								&& !(ob.isLeafType() && !(ob instanceof Include))) {

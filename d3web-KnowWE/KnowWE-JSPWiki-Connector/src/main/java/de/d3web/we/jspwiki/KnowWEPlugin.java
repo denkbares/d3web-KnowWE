@@ -152,6 +152,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 							KnowWEEnvironment.getInstance().getRootTypes(),
 							KnowWEEnvironment.DEFAULT_WEB);
 				}
+				String parse = userContext.getUrlParameterMap().get("parse");
+				if (parse != null && (parse.equals("full") || parse.equals("true")) 
+						&& !article.isFullParse()) {
+					article = new KnowWEArticle(content, topicName,
+							KnowWEEnvironment.getInstance().getRootTypes(),
+							KnowWEEnvironment.DEFAULT_WEB, true);
+					KnowWEEnvironment.getInstance().getArticleManager(
+						"default_web").saveUpdatedArticle(article);
+				}
 			} else {
 				article = new KnowWEArticle(content, topicName,
 						KnowWEEnvironment.getInstance().getRootTypes(),
