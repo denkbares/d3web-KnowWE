@@ -49,11 +49,13 @@ import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.i18n.InternationalizationManager;
 
-import de.d3web.we.flow.FlowchartUtils;
 import de.d3web.we.flow.diff.FlowchartEdge;
 import de.d3web.we.flow.diff.FlowchartNode;
 import de.d3web.we.flow.diff.FlowchartNodeType;
 import de.d3web.we.logging.Logging;
+
+
+
 
 public class FlowchartDiffProvider implements DiffProvider
 {
@@ -176,34 +178,30 @@ public class FlowchartDiffProvider implements DiffProvider
                     s += "changed Edges:<br />" + changedEdges + "<br />";
                 }
 
-                String preview1 = FlowchartUtils.extractPreview(v1);
-                String preview2 = FlowchartUtils.extractPreview(v2);
+                v1 = removeHighlighting(v1);
+                v2 = removeHighlighting(v2);
+                
+                v1 = removeArrows(v1);
+                v2 = removeArrows(v2);
+                
+                v1 = removeBoxes(v1);
+                v2 = removeBoxes(v2);
+                
+                v2 = colorNodes(v2, changedNodes, FlowchartChangeType.changed);
+                v2 = colorNodes(v2, addedNodes, FlowchartChangeType.added);
+                v1 = colorNodes(v1, changedNodes, FlowchartChangeType.changed);
+                v1 = colorNodes(v1, removedNodes, FlowchartChangeType.removed);  
 
-                preview1 = removeHighlighting(preview1);
-                preview2 = removeHighlighting(preview2);
-                
-                preview1 = removeArrows(preview1);
-                preview2 = removeArrows(preview2);
-                
-                preview1 = removeBoxes(preview1);
-                preview2 = removeBoxes(preview2);
-                
-                
-                preview2 = colorNodes(preview2, changedNodes, FlowchartChangeType.changed);
-                preview2 = colorNodes(preview2, addedNodes, FlowchartChangeType.added);
-                preview1 = colorNodes(preview1, changedNodes, FlowchartChangeType.changed);
-                preview1 = colorNodes(preview1, removedNodes, FlowchartChangeType.removed);  
-
-                preview1 = colorEdges(preview1, changedEdges, FlowchartChangeType.changed);
-                preview1 = colorEdges(preview1, removedEdges, FlowchartChangeType.removed); 
-                preview2 = colorEdges(preview2, changedEdges, FlowchartChangeType.changed);
-                preview2 = colorEdges(preview2, addedEdges, FlowchartChangeType.added);
+                v1 = colorEdges(v1, changedEdges, FlowchartChangeType.changed);
+                v1 = colorEdges(v1, removedEdges, FlowchartChangeType.removed); 
+                v2 = colorEdges(v2, changedEdges, FlowchartChangeType.changed);
+                v2 = colorEdges(v2, addedEdges, FlowchartChangeType.added);
                 
 //                Logging.getInstance().log(Level.INFO, "v1: " + v1);
 //                Logging.getInstance().log(Level.INFO, "v2: " + v2);
                                 
-                return s + "<br \\>" + "<br \\>" + FlowchartUtils.createPreview( preview1 ) + "<br \\>" + "<br \\>" + "<br \\>" + "<br \\>"
-                       + FlowchartUtils.createPreview( preview2 );
+                return s + "<br \\>" + "<br \\>" + createPreview( v1 ) + "<br \\>" + "<br \\>" + "<br \\>" + "<br \\>"
+                       + createPreview( v2 );
             }
             return ret.toString();
         }
@@ -216,6 +214,29 @@ public class FlowchartDiffProvider implements DiffProvider
         return diffResult;
     }
     
+    private String createPreview(String version) {
+        String xml = version;
+        int startPos = xml.lastIndexOf("<preview mimetype=\"text/html\">");
+        int endPos = xml.lastIndexOf("</preview>");
+        if (startPos >= 0 && endPos >= 0) {
+            return 
+                "<div style='zoom: 50%; cursor: pointer;'>" +
+                "<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>" +
+                "<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>" +
+                "<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>" +
+                "<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>" +
+                "<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>" +
+                "<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>" +
+                "<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" +
+                "<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>" +
+                "<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>" +
+                "<style type='text/css'>div, span, a { cursor: pointer !important; }</style>" + 
+                xml.substring(startPos+43, endPos-8) + 
+                "</div>";
+        }
+        return "you shouldn't read this :(";
+
+    }
     
     /**
      * gets all nodes from the xml
@@ -469,11 +490,11 @@ public class FlowchartDiffProvider implements DiffProvider
     	}
     	
     	
-        String result = version;
+        String temp = version;
         
-//        // get the lower part of the flowchart
-//        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
-//        version = version.substring(version.indexOf(">") + 1);
+        // get the lower part of the flowchart
+        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
+        version = version.substring(version.indexOf(">") + 1);
       
         // get all the nodes
         String[] nodes = version.split("<DIV class=\"Node\" id=\"");
@@ -491,52 +512,15 @@ public class FlowchartDiffProvider implements DiffProvider
                 if (id.equals( nID )) {
   	
                 	// if yes, add the additional class
-                	String inputHelper1 = result.substring(0, result.indexOf(nodes[i]) - 6);
-                	String inputHelper2 = result.substring(result.indexOf(nodes[i]));
-                	result = inputHelper1 + alteration + "\" id=\"" + inputHelper2;
+                	String inputHelper1 = temp.substring(0, temp.indexOf(nodes[i]) - 6);
+                	String inputHelper2 = temp.substring(temp.indexOf(nodes[i]));
+                	temp = inputHelper1 + alteration + "\" id=\"" + inputHelper2;
                 }
             }
         }
-        return result;
+        return temp;
     }
-    
         
-    
-//    private String setIdToNodes(String version, List<FlowchartNode> flowchartNodes) {
-//        String temp = version;
-//        
-//        // get the lower part of the flowchart
-//        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
-//        version = version.substring(version.indexOf(">") + 1);
-//        
-//        // get all the nodes
-//        String[] nodes = version.split("<DIV class=\"Node\"");
-//       
-//        // make temporary nodes out of the lines, which are easier to compare
-//        // to the xml nodes and add their respective ids
-//        for (int i = 1; i < nodes.length; i++) {  
-//            nodes[i] = nodes[i].substring(0, nodes[i].indexOf( ">" ));
-//            String line = nodes[i];
-//                      
-//            nodes[i] = nodes[i].substring(14);
-//            int left = Integer.valueOf(nodes[i].substring(0, nodes[i].indexOf("px")));
-//            
-//            nodes[i] = nodes[i].substring( nodes[i].indexOf("px") + 8);
-//            int top = Integer.valueOf(nodes[i].substring(0, nodes[i].indexOf("px")));
-//            
-//            FlowchartNode tempNode = new FlowchartNode(left, top);
-//          
-//            for (FlowchartNode n : flowchartNodes) {
-//                if (tempNode.equalsPositionOnly(n)) {
-//                    String inputHelper1 = temp.substring(0, temp.indexOf(line));
-//                    String inputHelper2 = temp.substring(temp.indexOf(line));
-//                    temp = inputHelper1 + " id=\"" + n.getID() + "\"" + inputHelper2;
-//                }
-//            }
-//        }
-//        return temp;
-//    }
-    
     
     private String colorEdges(String version, List<FlowchartEdge> alteredEdges, FlowchartChangeType change) {
     	// set the additional class of the yet to be colored nodes
@@ -555,8 +539,8 @@ public class FlowchartDiffProvider implements DiffProvider
         String temp = version;
         
         // get the lower part of the flowchart
-//        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
-//        version = version.substring(version.indexOf(">") + 1);
+        version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
+        version = version.substring(version.indexOf(">") + 1);
       
         // get all the nodes
         String[] edges = version.split("<DIV class=\"Rule\" id=\"");
@@ -569,17 +553,28 @@ public class FlowchartDiffProvider implements DiffProvider
             
             for (FlowchartEdge n : alteredEdges) {
 
-            	// check for each node if it changed
+            	// check for each node if it was changed
                 String nID = n.getID();
                 if (id.equals( nID )) {
                 		String[] parts = edges[i].split("<DIV class=\"");
                 		for (String s : parts) {
                 			String type = s.substring(0, s.indexOf("\""));
-                			if (type.equals("h_line") || type.equals("v_line") || type.contains("arrow")) {
-//                				Logging.getInstance().log(Level.INFO, "type: " + type);
+                			
+                			// for simple lines
+                			if (type.equals("h_line") || type.equals("v_line") || type.equals("no_arrow")) {
                 				String inputHelper1 = temp.substring(0, temp.indexOf(s));
                 				String inputHelper2 = temp.substring(temp.indexOf(s));
                 				temp = inputHelper1 + alteration + "\" id=\"" + inputHelper2;
+                			
+                			// for arrows
+                			} else if (type.equals("arrow_up") || type.equals("arrow_down") || type.equals("arrow_left") || type.equals("arrow_right")) {
+                				int size = type.length();
+                				String arrowAlteration = "_" + alteration;
+                				String inputHelper1 = temp.substring(0, temp.indexOf(s) + size);
+                				String inputHelper2 = temp.substring(temp.indexOf(s));
+                				temp = inputHelper1 + arrowAlteration + "\" id=\"" + inputHelper2;
+                				
+                			// for the rest
                 			} else if (type.equals("GuardPane") || type.equals("value")) {
 //                				Logging.getInstance().log(Level.INFO, "type: " + type);
                 				String inputHelper1 = temp.substring(0, temp.indexOf(s));
@@ -604,9 +599,9 @@ public class FlowchartDiffProvider implements DiffProvider
 		String temp = version;
 
 		// get the lower part of the flowchart
-//		version = version
-//				.substring(version.indexOf("<DIV class=\"Flowchart\""));
-//		version = version.substring(version.indexOf(">") + 1);
+		version = version
+				.substring(version.indexOf("<DIV class=\"Flowchart\""));
+		version = version.substring(version.indexOf(">") + 1);
 
 		// get all the arrows
 		String[] arrows = version.split("<DIV class=\"ArrowTool\"");
@@ -633,9 +628,9 @@ public class FlowchartDiffProvider implements DiffProvider
 		String temp = version;
 
 		// get the lower part of the flowchart
-//		version = version
-//				.substring(version.indexOf("<DIV class=\"Flowchart\""));
-//		version = version.substring(version.indexOf(">") + 1);
+		version = version
+				.substring(version.indexOf("<DIV class=\"Flowchart\""));
+		version = version.substring(version.indexOf(">") + 1);
 
 		// get all the boxes
 		String[] boxes = version.split("<SELECT");

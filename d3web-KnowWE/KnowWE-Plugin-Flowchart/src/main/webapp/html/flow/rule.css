@@ -74,3 +74,76 @@
 	height: 0px;
 }
 
+.Rule .arrow_up_added {
+	position: absolute;
+	overflow: hidden;
+	left: -2px;
+	top: 0px;
+	width: 5px;
+	height: 6px;
+	background-image: url(../image/arrow_up_added.gif); 
+}
+.Rule .arrow_down_added {
+	position: absolute;
+	overflow: hidden;
+	left: -2px;
+	bottom: 0px;
+	width: 5px;
+	height: 6px;
+	background-image: url(../image/arrow_down_added.gif); 
+}
+.Rule .arrow_left_added {
+	position: absolute;
+	overflow: hidden;
+	left: 0px;
+	top: -2px;
+	width: 6px;
+	height: 5px;
+	background-image: url(../image/arrow_left_added.gif); 
+}
+.Rule .arrow_right_added {
+	position: absolute;
+	overflow: hidden;
+	right: 0px;
+	top: -2px;
+	width: 6px;
+	height: 5px;
+	background-image: url(../image/arrow_right_added.gif); 
+}
+
+.Rule .arrow_up_removed {
+	position: absolute;
+	overflow: hidden;
+	left: -2px;
+	top: 0px;
+	width: 5px;
+	height: 6px;
+	background-image: url(../image/arrow_up_removed.gif); 
+}
+.Rule .arrow_down_removed {
+	position: absolute;
+	overflow: hidden;
+	left: -2px;
+	bottom: 0px;
+	width: 5px;
+	height: 6px;
+	background-image: url(../image/arrow_down_removed.gif); 
+}
+.Rule .arrow_left_removed {
+	position: absolute;
+	overflow: hidden;
+	left: 0px;
+	top: -2px;
+	width: 6px;
+	height: 5px;
+	background-image: url(../image/arrow_left_removed.gif); 
+}
+.Rule .arrow_right_removed {
+	position: absolute;
+	overflow: hidden;
+	right: 0px;
+	top: -2px;
+	width: 6px;
+	height: 5px;
+	background-image: url(../image/arrow_right_removed.gif); 
+}
