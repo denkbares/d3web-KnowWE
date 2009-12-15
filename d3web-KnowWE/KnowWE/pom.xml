@@ -47,13 +47,13 @@
 				<executions>
 					<execution>
 						<id>buildtime</id>
-						<phase>package</phase>
+						<phase>generate-resources</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
 							<tasks>
-								<mkdir dir="${project.build.directory}/WEB-INF/classes/" />
+								<mkdir dir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/classes/" />
 
 								<tstamp>
 									<format property="last.updated" pattern="yyyyMMdd_kk:mm" />
