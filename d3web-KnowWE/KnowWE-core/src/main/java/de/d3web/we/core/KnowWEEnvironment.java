@@ -64,6 +64,8 @@ import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
+import de.d3web.we.search.SearchTerminologyHandler;
+import de.d3web.we.search.termExpansion.OWLSubclassExpander;
 import de.d3web.we.taghandler.FactSheet;
 import de.d3web.we.taghandler.ImportKnOfficeHandler;
 import de.d3web.we.taghandler.KDOMRenderer;
@@ -361,6 +363,7 @@ public class KnowWEEnvironment {
 			
 			//adding TaggingMangler as SearchProvider to KnowWE-MultiSearch
 			MultiSearchEngine.getInstance().addProvider(TaggingMangler.getInstance());
+			SearchTerminologyHandler.getInstance().addSearchTermExpander(new OWLSubclassExpander());
 
 			initDefaultTagHandlers();
 			// loadData(context);

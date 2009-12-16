@@ -3,6 +3,8 @@ package de.d3web.we.search;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.we.search.termExpansion.SearchTermExpander;
+
 public class SearchTerminologyHandler {
 	
 	private static SearchTerminologyHandler instance;
@@ -16,6 +18,25 @@ public class SearchTerminologyHandler {
 		return instance;
 	}
 	
+	
+	private List<SearchTermExpander> expanders = new ArrayList<SearchTermExpander>();
+	
+	public void addSearchTermExpander(SearchTermExpander expander) {
+		if(!expanders.contains(expander)) {
+			expanders.add(expander);
+		}
+	}
+	
+	public List<SearchTerm> expandSearchTerm(SearchTerm t) {
+		List<SearchTerm> result = new ArrayList<SearchTerm>();
+		
+		for (SearchTermExpander expander : expanders) {
+			result.addAll(expander.expandSearchTerm(t));
+		}
+		
+		return result;
+		
+	}
 	
 	/**
 	 * This method returns data for a word-cloud with relevant search terms for

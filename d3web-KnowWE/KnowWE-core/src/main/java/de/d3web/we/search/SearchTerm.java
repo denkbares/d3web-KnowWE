@@ -19,7 +19,7 @@
  */
 package de.d3web.we.search;
 
-public class SearchTerm {
+public class SearchTerm implements Comparable<SearchTerm> {
 	
 	private double importance = 1;
 	private String term;
@@ -43,6 +43,37 @@ public class SearchTerm {
 
 	public void setImportance(double importance) {
 		this.importance = importance;
+	}
+	
+	@Override
+	public String toString() {
+		return this.term+" ("+importance+")";
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof SearchTerm) {
+			return ((SearchTerm)o).getTerm().equals(this.term);
+		}
+		else {
+			return o.equals(this);
+		}
+		
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.term.hashCode();
+	}
+	
+
+	@Override
+	public int compareTo(SearchTerm arg0) {
+		if(this.importance >= arg0.getImportance()) {
+			return +1;
+		} else {
+			return -1;
+		}
 	}
 	
 

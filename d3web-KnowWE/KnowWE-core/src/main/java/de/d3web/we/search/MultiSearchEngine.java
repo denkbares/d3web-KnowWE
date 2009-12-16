@@ -23,8 +23,10 @@ package de.d3web.we.search;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.d3web.we.core.KnowWEParameterMap;
 
@@ -62,9 +64,16 @@ public class MultiSearchEngine {
 		
 		Map<String, Collection<GenericSearchResult>> all = new HashMap<String, Collection<GenericSearchResult>>();
 		
+		Set<SearchTerm> searchSet = new HashSet<SearchTerm>();
+		
+		searchSet.addAll(terms);
+		
+		for (SearchTerm searchTerm : terms) {
+			searchSet.addAll(SearchTerminologyHandler.getInstance().expandSearchTerm(searchTerm));
+		}
 		
 		for (KnowWESearchProvider provider : searchProvider.values()) {
-			Collection<GenericSearchResult> singleResultSet = provider.search(terms, map);
+			Collection<GenericSearchResult> singleResultSet = provider.search(searchSet, map);
 			all.put(provider.getID(), singleResultSet);
 		}
 		

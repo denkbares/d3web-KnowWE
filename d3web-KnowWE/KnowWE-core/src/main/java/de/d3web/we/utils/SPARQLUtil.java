@@ -120,5 +120,17 @@ public class SPARQLUtil {
 		return executeTupleQuery(CLASS_SPARQL.replaceAll("URI", uri.toString()));
 	}
 	
+	private static final String SUBCLASS_SPARQL = "SELECT ?x WHERE { ?x rdfs:subClassOf <URI>.} ";
+	
+	public static TupleQueryResult findSubClasses(URI uri) {
+		return executeTupleQuery(SUBCLASS_SPARQL.replaceAll("URI", uri.toString()));
+	}
+	
+	private static final String SUPERCLASS_SPARQL = "SELECT ?x WHERE { <URI> rdfs:subClassOf ?x.} ";
+	
+	public static TupleQueryResult findSuperClasses(URI uri) {
+		return executeTupleQuery(SUPERCLASS_SPARQL.replaceAll("URI", uri.toString()));
+	}
+	
 
 }

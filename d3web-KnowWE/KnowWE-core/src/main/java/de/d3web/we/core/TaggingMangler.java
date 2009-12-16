@@ -372,6 +372,11 @@ public class TaggingMangler implements KnowWESearchProvider {
 			html.append("</div><br>");
 
 		}
+		
+		if(pages.size() == 0) {
+			html.append("no results");
+		}
+		
 		return html.toString();
 	}
 
@@ -391,10 +396,11 @@ public class TaggingMangler implements KnowWESearchProvider {
 	@Override
 	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
 			KnowWEParameterMap map) {
+		Collection<GenericSearchResult> collection = new ArrayList<GenericSearchResult>();
 		StringBuffer buffy = new StringBuffer();
 		for (SearchTerm searchTerm : words) {
-			buffy.append(searchTerm.getTerm()+" ");
+			collection.addAll(searchPages(searchTerm.getTerm()));
 		}
-		return searchPages(buffy.toString());
+		return collection;
 	}
 } 

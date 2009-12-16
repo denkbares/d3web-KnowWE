@@ -20,11 +20,12 @@
 
 package de.d3web.we.kdom.xml;
 
+import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
@@ -54,6 +55,68 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 		return (Map<String, String>) KnowWEUtils.getStoredObject(s.getWeb(),
 				s.getTitle(), s.getId(), XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
 		
+	}
+	
+
+//	public static Map<String, String> getAttributeMapFor(
+//			Section<? extends AbstractXMLObjectType> s) {
+//		return (Map<String, String>) KnowWEUtils.getStoredObject(s.getWeb(), s
+//				.getTitle(), s.getId(),
+//				XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
+//
+//	}
+
+	public static String getTagName(Section<AbstractXMLObjectType> s) {
+		Map<String, String> attributeMapFor = getAttributeMapFor(s);
+		if (attributeMapFor != null) {
+			return attributeMapFor.get(AbstractXMLObjectType.TAGNAME);
+		} else {
+			return null;
+		}
+	}
+	
+	public static Section<AbstractXMLObjectType> getXMLFatherElement(Section<? extends AbstractXMLObjectType> s) {
+		Section xmlFather = KnowWEObjectTypeUtils.getAncestorOfType(s.getFather(), AbstractXMLObjectType.class);
+		return (Section<AbstractXMLObjectType>)xmlFather;
+	}
+
+	public static int getXMLDepth(Section<AbstractXMLObjectType> s) {
+
+		return getXMLDepth(s, 0);
+	}
+
+	private static int getXMLDepth(Section<AbstractXMLObjectType> s, int depth) {
+		Section xmlFather = KnowWEObjectTypeUtils.getAncestorOfType(s.getFather(), AbstractXMLObjectType.class);
+		if (xmlFather != null && xmlFather.getObjectType() instanceof AbstractXMLObjectType) {
+			return getXMLDepth(xmlFather, ++depth);
+		} else {
+			return depth;
+		}
+
+	}
+
+	public static Section<AbstractXMLObjectType> findSubSectionOfTag(
+			String tagname, Section<AbstractXMLObjectType> s) {
+		if (tagname.equals(getTagName(s))) {
+
+			return s;
+		}
+		List<Section> children = s.getChildren();
+		for (Section section : children) {
+			if (section.getObjectType() instanceof XMLContent) {
+				List<Section> nodes = section
+						.findChildrenOfType(AbstractXMLObjectType.class);
+				for (Section section2 : nodes) {
+					Section<AbstractXMLObjectType> found = findSubSectionOfTag(
+							tagname, (Section<AbstractXMLObjectType>) section);
+					if (found != null)
+						return found;
+				}
+
+			}
+		}
+		return null;
+
 	}
 
 	/**
