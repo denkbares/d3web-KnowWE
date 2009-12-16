@@ -31,16 +31,17 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
+import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class KopicSectionRenderer extends KnowWEDomRenderer {
+public class KopicSectionRenderer extends DefaultEditSectionRender {
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
 		//string.append("%%collapsebox-closed \n");
 		

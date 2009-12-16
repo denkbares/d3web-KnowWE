@@ -44,6 +44,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
@@ -114,15 +115,15 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 		}
 	}
 
-	private class RuleRenderer extends DefaultEditSectionRender {
+	private class RuleRenderer extends KnowWEDomRenderer {
 
 		@Override
-		public void renderContent(KnowWEArticle article, Section sec,
+		public void render(KnowWEArticle article, Section sec,
 				KnowWEUserContext user, StringBuilder string) {
 
 			List<Message> errors = getErrorMessages(article, sec);
 
-			string.append(KnowWEUtils.maskHTML("<pre><span id='" + sec.getId()
+			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getId()
 					+ "' class = 'XCLRelationInList'>"));
 
 			boolean empty = true;
@@ -132,7 +133,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 							// hack showing only errors, this rendering needs a complete redesign
 						empty = false;
 						string.append(KnowWEUtils
-								.maskHTML("<span style='color:red'>"));
+								.maskHTML("<span class='error' style='color:red'>"));
 						string.append(KnowWEUtils
 								.maskHTML(error.getMessageType() + ": "
 										+ error.getMessageText()
@@ -142,7 +143,6 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 												+ error.getLineNo())));
 						
 						string.append(KnowWEUtils.maskHTML("</span>"));
-						string.append(KnowWEUtils.maskHTML("\n"));
 		
 					}
 				}
@@ -153,12 +153,14 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 			StringBuilder b = new StringBuilder();
 			if (!empty) {
+				b.append(KnowWEUtils.maskHTML("<span class='error_highlight'>"));
 				DefaultTextRenderer.getInstance().render(article, sec, user, b);
+				b.append(KnowWEUtils.maskHTML("</span>"));
 			} else {
 				DelegateRenderer.getInstance().render(article, sec, user, b);
 			}
 			string.append(b.toString()
-					+ KnowWEUtils.maskHTML("</pre></span>\n"));
+					+ KnowWEUtils.maskHTML("</span>\n"));
 		}
 
 	}

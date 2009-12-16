@@ -38,17 +38,19 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class RuleSectionRenderer extends KopicSectionRenderer {
 		
 		@Override
-		public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
+		public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
 			
 			StringBuilder messagesBuilder = new StringBuilder();
 			
+			result.append("\n{{{\n");
+			int parsedCount = 0;
 			if (sec.getObjectType() instanceof AbstractKopicSection) {
 				
 				List<Message> sectionMessages = new ArrayList<Message>();
 				List<Section> rules = new ArrayList<Section>();
 				sec.findSuccessorsOfType(Rule.class, rules);
 				
-				int parsedCount = 0;
+				
 				List<String> errors = new ArrayList<String>();
 				List<String> warnings = new ArrayList<String>();
 				
@@ -82,29 +84,32 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 				}
 				
 				if (sectionMessages != null) {
-					messagesBuilder.append("{{{");
-					messagesBuilder.append(MessageKnOfficeGenerator.createNoteMSG("rule", "", 0, "", parsedCount).getMessageText() + " " + KnowWEUtils.maskHTML("<br>"));
+					//messagesBuilder.append("{{{");
+					//messagesBuilder.append(MessageKnOfficeGenerator.createNoteMSG("rule", "", 0, "", parsedCount).getMessageText() + " " + KnowWEUtils.maskHTML("<br>"));
 					if (warnings.size() > 0) {
-						messagesBuilder.append(D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.KopicRenderer.RulesSection.warnings")  + " "+ warnings.toString());
+						messagesBuilder.append(wrappSpan(D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.KopicRenderer.RulesSection.warnings")  + " "+ warnings.toString(),"warning"));
 					}
 					if (errors.size() > 0) {
-						messagesBuilder.append(D3webModule.getKwikiBundle_d3web()
-							.getString("KnowWE.KopicRenderer.RulesSection.errors")  + " "+ errors.toString());
+						messagesBuilder.append(wrappSpan(D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.KopicRenderer.RulesSection.errors")  + " "+ errors.toString(),"error"));
 					}
-					messagesBuilder.append("}}}");
+					messagesBuilder.append("\n");
 				}
 				
-				result.append("%%collapsebox-closed \n");
+				//result.append("%%collapsebox-closed \n");
 				
-				result.append(generateTitle(sec, user, errors.size() > 0));
+				//result.append(generateTitle(sec, user, errors.size() > 0));
 				
 				result.append(messagesBuilder);
 			}
 			
 			// a div containing
 			// the class SetCoveringList and the nodes id
-			result.append(KnowWEUtils.maskHTML("<div class=\"ReRenderSectionMarker\" id=\"" 
+			
+			String title = MessageKnOfficeGenerator.createNoteMSG("rule", "", 0, "", parsedCount).getMessageText();
+			
+			result.append(KnowWEUtils.maskHTML("<div title='"+title+"' class=\"ReRenderSectionMarker\" id=\"" 
 					+ sec.getId() + "-pre\" rel=\"{id:'"+sec.getId()+"'}\">"));
 			
 			// Rendering children
@@ -115,9 +120,19 @@ public class RuleSectionRenderer extends KopicSectionRenderer {
 			// close the div
 			result.append(KnowWEUtils.maskHTML("</div>"));
 			
-			result.append("/%\n");
+			result.append("\n}}}\n");
+			
+			//result.append("/%\n");
 			
 			//return result.toString();
+		}
+		
+		protected String wrappSpan(String messages, String className) {
+			if (messages == null) return null;
+			if (messages.isEmpty()) return "";
+			return KnowWEUtils.maskHTML("<span class='"+className+"'>")
+					+ messages 
+					+ KnowWEUtils.maskHTML("</span>");
 		}
 	}
 
