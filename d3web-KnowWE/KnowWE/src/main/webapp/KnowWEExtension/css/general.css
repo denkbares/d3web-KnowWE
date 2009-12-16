@@ -102,10 +102,18 @@ code.box {
     border-bottom: 2px solid #FFD324;
     margin: 10px 0px;   
 }
+.warning {
+    background: #FFF6BF url(../images/msg_info_yellow.png) center no-repeat;
+    background-position: 10px 50%; /* x-pos y-pos */
+    padding: 5px 20px 5px 45px;
+}
 .error {
     background: #FFF6BF url(../images/msg_cross.png) center no-repeat;
     background-position: 10px 50%; /* x-pos y-pos */
     padding: 5px 20px 5px 45px;
+}
+.error_highlight {
+    background-color: #FFF6BF;
 }
 .ok {
     background: #FFF6BF url(../images/msg_checkmark.png) center no-repeat;
