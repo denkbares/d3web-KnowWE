@@ -2,29 +2,16 @@ package de.d3web.we.flow;
 
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-
-import com.ecyrd.jspwiki.diff.FlowchartDiffProvider.FlowchartChangeType;
-
-import util.ResStream;
 
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.CaseObjectSource;
-import de.d3web.kernel.dynamicObjects.XPSCaseObject;
 import de.d3web.kernel.psMethods.diaFlux.FluxSolver;
 import de.d3web.kernel.psMethods.diaFlux.PathEntry;
 import de.d3web.kernel.psMethods.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.kernel.psMethods.diaFlux.flow.FlowSet;
 import de.d3web.kernel.psMethods.diaFlux.flow.INode;
 import de.d3web.we.core.KnowWEArticleManager;
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.flow.diff.FlowchartEdge;
-import de.d3web.we.flow.diff.FlowchartNode;
-import de.d3web.we.flow.type.FlowchartContentType;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -64,12 +51,11 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		
 		
 		for (Section section : flows) {
-			String flowPreview = createPreviewWithHighlightedPath(section, theCase);
+			builder.append(createPreviewWithHighlightedPath(section, theCase));
 				
 			//Debug
 			builder.append(getPathendText(theCase));
 			//
-			builder.append(FlowchartUtils.createPreview(flowPreview));
 			
 			builder.append("<p/><p/>");
 			
@@ -143,8 +129,6 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		CaseObjectSource flowSet = getFlowSet(xpsCase);
 		
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) xpsCase.getCaseObject(flowSet);
-		
-	      
        
         
 		for (PathEntry entry : caseObject.getPathEnds()) {
@@ -153,7 +137,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 			
 		}		
 		
-		return preview;
+		return FlowchartUtils.createPreview(preview);
 	}
 
 	private String highlightPath(String preview, String flowID, PathEntry startEntry) {
@@ -165,21 +149,21 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		
 		while (currentEntry != null) {
 
-			INode node = currentEntry.getNodeData().getNode();
+			INode node = currentEntry.getNode();
 			
 			if (!node.getFlow().getId().equals(flowID))
 				return preview;
 			
 			String nodeId = node.getID();
-			for (int i = 0; i < nodes.length; i++) {
-				if (nodes[i].contains(nodeId)) {
+			for (int i = 1; i < nodes.length; i++) {
+				if (nodes[i].contains(nodeId + "\"")) {
 					preview = colorNode(nodes[i], preview);
 				}
 			}
 			
 			String edgeId = currentEntry.getEdge().getID();
 			for (int i = 0; i < edges.length; i++) {
-				if (edges[i].contains(edgeId)) {
+				if (edges[i].contains(edgeId + "\"")) {
 					preview = colorEdge(edges[i], preview);
 				}
 			}
@@ -192,9 +176,17 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	}
 
 	private String colorNode(String node, String preview) {
-
+		
+		//is node in current flowchart? 
+		//TODO as FC change along PathEntries, the node might not be in the current FC
+     	int nodeIndex = preview.indexOf(node);
+     	
+     	if (nodeIndex == -1)
+     		return preview;
+     	
+     	
      	// if yes, add the additional class
-     	String inputHelper1 = preview.substring(0, preview.indexOf(node) - 6);
+		String inputHelper1 = preview.substring(0, nodeIndex - 6);
      	String inputHelper2 = preview.substring(preview.indexOf(node));
      	preview = inputHelper1 + " added" + "\" id=\"" + inputHelper2;
 		
