@@ -36,6 +36,6 @@ public class QuizSessionManager {
 
 	public void setAnswer(String user, int answer) {
 		QuizSession session = this.sessions.get(user);
-		session.setAnswered(answer);
+		session.setAnswer(answer);
 	}
 }

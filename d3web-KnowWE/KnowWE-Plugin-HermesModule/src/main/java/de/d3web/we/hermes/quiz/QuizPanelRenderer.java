@@ -3,7 +3,7 @@ package de.d3web.we.hermes.quiz;
 public class QuizPanelRenderer {
 
 	public static String renderQuiz(QuizSession session) {
-		boolean answered = session.getAnswered() >= 0;
+		boolean answered = session.getCurrentAnswer() >= 0;
 
 		Question lastQuestion = session.getLastQuestion();
 
@@ -31,7 +31,7 @@ public class QuizPanelRenderer {
 	
 	private static String getBGColor( QuizSession session ){
 		if (session == null ) return "#DBDBDB";
-		if( session.getAnswered() == -1 ) return "#DBDBDB";
+		if( session.getCurrentAnswer() == -1 ) return "#DBDBDB";
 		
 		Question lastQuestion = session.getLastQuestion();
 		if ( lastQuestion == null ){
@@ -39,7 +39,7 @@ public class QuizPanelRenderer {
 		}
 				
 		for (int i = 0; i < lastQuestion.getAlternatives().length; i++) {
-			if (session.getAnswered() == i && lastQuestion.getCorrectAnswer() != i){
+			if (session.getCurrentAnswer() == i && lastQuestion.getCorrectAnswer() != i){
 				return "#FF998B";
 			}
 		}
@@ -73,12 +73,12 @@ public class QuizPanelRenderer {
 			s += "<li style=\"border:1px solid rgb(10,10,10);color:#000000;font-size:13px;line-height:35px;" 
 			    + "list-style-type:none;margin:0 0 4px;text-align:center;width:80%;";
 			
-			if (session.getAnswered() == i && lastQuestion.getCorrectAnswer() != i){
+			if (session.getCurrentAnswer() == i && lastQuestion.getCorrectAnswer() != i){
 				s += "color:#C80000;font-weight:bold;background:#AAAAAA url(KnowWEExtension/images/msg_cross.png) no-repeat scroll 95%;\">";
 			} else if (lastQuestion.getCorrectAnswer() == i){
 				
 				String img = "";
-				if(session.getAnswered() == lastQuestion.getCorrectAnswer()){
+				if(session.getCurrentAnswer() == lastQuestion.getCorrectAnswer()){
 					img = "msg_checkmark.png";
 				} else {
 					img = "msg_info_yellow.png";

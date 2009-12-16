@@ -36,18 +36,35 @@ public class QuizHandler extends AbstractTagHandler {
 		if (session == null) {
 			html += renderStartButton(user);
 		} else if (session.isStopped()) {
-			html += renderStats(user);
+			html += renderStats(session);
 			html += renderStartButton(user);			
 		}	else {			
 			html += QuizPanelRenderer.renderQuiz(session);
 			html += renderStopButton(user);
+			html += renderShortStats(session);
 		}
 		
 		return html;
 	}
 
-	private static String renderStats(String username) {
-		return "<p>some stats for user: "+username + "</p>";
+	private static String renderShortStats(QuizSession session) {
+		int correct = session.getSolved();
+		int num = session.getAnswered();
+		String stats = new String();
+		stats += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		stats += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		
+		stats += "<span style=\"font:1.2em Tahoma,arial\">";
+		stats += correct+" / "+num+" = ";
+		stats += "<span style=\"font:bold 1.4em Tahoma,arial\">";
+		stats += (int) (((double) correct / num) * 100) +"%";
+		stats += "</span>";
+		stats += "</span>";
+		return stats;
+	}
+
+	private static String renderStats(QuizSession s) {
+		return "<p>"+s.getUser() + ":"+renderShortStats(s)+"</p>";
 	}
 
 	private static String renderStopButton(String user) {
