@@ -32,11 +32,6 @@ import de.d3web.we.kdom.table.TableCellContent;
 public class KopicTableSectionRenderer extends KopicSectionRenderer {
 
 	@Override
-	protected String wrappContent(String string) {
-		return string;
-	}
-
-	@Override
 	protected void insertErrorRenderer(List<Section> lines, Message m,
 			String user) {
 		int line = m.getLineNo();

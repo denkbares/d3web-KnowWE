@@ -42,30 +42,41 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
-		string.append("%%collapsebox-closed \n");
+		//string.append("%%collapsebox-closed \n");
 		
-		StringBuilder messagesBuilder = new StringBuilder();
+		StringBuilder builder = new StringBuilder();
+		String tooltip = null;
+		
 		if (sec.getObjectType() instanceof AbstractKnowWEObjectType) {
 			Collection<Message> messages = ((AbstractKnowWEObjectType) sec
 					.getObjectType()).getMessages(article, sec);
-			boolean errors = false;
 			if (messages != null && !messages.isEmpty()) {
-				messagesBuilder.append(wrappMessages(generateMessages(messages, sec, user)));
-				for (Message msg:messages) {
-					if (msg.getMessageType() == Message.ERROR) {
-						errors = true;
+				boolean visible = false;
+				for (Message msg : messages) {
+					if (msg.getMessageType() == Message.ERROR || msg.getMessageType() == Message.WARNING) {
+						visible = true;
 						break;
 					}
 				}
+				String notes = generateMessages(messages, Message.NOTE, sec, user);
+				String warns = generateMessages(messages, Message.WARNING, sec, user);
+				String errors = generateMessages(messages, Message.ERROR, sec, user);
+				if (visible) {
+					builder.append(wrappSpan(errors, "error"));
+					builder.append(wrappSpan(warns, "warning"));
+					builder.append(wrappSpan(notes, "info"));
+				}
+				else {
+					tooltip = notes;
+				}
 			}
-			string.append(generateTitle(sec, user, errors));
-			string.append(messagesBuilder);
+			//string.append(generateTitle(sec, user, errors));
+			//string.append(messagesBuilder);
 		}
 		
-		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(article,sec, user, b);
-		string.append(wrappContent(b.toString()));
-		string.append("/%\n");
+		DelegateRenderer.getInstance().render(article,sec, user, builder);
+		string.append(wrappContent(builder.toString(), tooltip));
+		//string.append("/%\n");
 	}
 	
 	/*
@@ -86,22 +97,33 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 		}
 	}
 
-	protected String wrappContent(String string) {
+	protected String wrappContent(String string, String tooltip) {
+		if (tooltip != null) {
+			string = KnowWEUtils.maskHTML("<div title='"+tooltip+"'>")
+					+ string
+					+ KnowWEUtils.maskHTML("</div>");
+		}
 		return "\n{{{"+string+"}}}\n";
 	}
 	
-	protected String wrappMessages(String messages) {
-		return "{{{" + messages + "}}}";
+	protected String wrappSpan(String messages, String className) {
+		if (messages == null) return null;
+		if (messages.isEmpty()) return "";
+		return KnowWEUtils.maskHTML("<span class='"+className+"'>")
+				+ messages 
+				+ KnowWEUtils.maskHTML("</span>");
 	}
 	
-	protected String generateMessages(Collection<Message> messages, Section sec, KnowWEUserContext user) {
+	protected String generateMessages(Collection<Message> messages, String messageType, Section sec, KnowWEUserContext user) {
 		StringBuilder result = new StringBuilder();
 		List<Section> lines = new ArrayList<Section>(); 
 		sec.findSuccessorsOfType(TextLine.class, lines);
 		for (Message m : messages) {
-			result.append(m.getMessageType() + ": " + m.getMessageText()
+			if (m.getMessageType() != messageType) continue;
+			result.append(
+					m.getMessageText()
 					+ (m.getMessageType().equals(Message.NOTE) ? "" : " Line: " + m.getLineNo()) 
-					+ KnowWEUtils.maskHTML("<br>"));
+					+ KnowWEUtils.maskHTML("\n"));
 			if(m.getMessageType().equals(Message.ERROR)) {
 				insertErrorRenderer(lines, m, user.getUsername());
 			}
