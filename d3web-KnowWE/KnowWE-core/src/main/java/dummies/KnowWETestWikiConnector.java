@@ -32,7 +32,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class KnowWETestWikiConnector implements KnowWEWikiConnector {
@@ -110,7 +112,9 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
     @Override
     public boolean saveArticle(String name, String text, KnowWEParameterMap map) {
-	// pretend so save article for KnowWEEnvironment Sandbox testing
+		KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
+			.saveUpdatedArticle(new KnowWEArticle(text, name,
+				KnowWEEnvironment.getInstance().getRootTypes(), KnowWEEnvironment.DEFAULT_WEB));
 	return true;
     }
 
