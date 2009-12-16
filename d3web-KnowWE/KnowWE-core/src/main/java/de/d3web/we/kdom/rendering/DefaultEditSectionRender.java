@@ -24,7 +24,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public final void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		
 		boolean isEditable = sec.hasQuickEditModeSet( user.getUsername() ); 
