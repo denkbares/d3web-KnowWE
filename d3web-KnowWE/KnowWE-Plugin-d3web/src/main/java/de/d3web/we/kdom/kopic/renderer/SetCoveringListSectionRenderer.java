@@ -41,14 +41,14 @@ public class SetCoveringListSectionRenderer extends DefaultEditSectionRender {
 	@Override
 	public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
-		string.append("%%collapsebox-closed \n");
+		//string.append("%%collapsebox-closed \n");
 		
-		String title = "";
-		if(sec.getObjectType() instanceof AbstractXMLObjectType) {
-			title = ((AbstractXMLObjectType)sec.getObjectType()).getXMLTagName()+" ";
-		}
+//		String title = "";
+//		if(sec.getObjectType() instanceof AbstractXMLObjectType) {
+//			title = ((AbstractXMLObjectType)sec.getObjectType()).getXMLTagName()+" ";
+//		}
 
-		string.append("! " +title + " \n");
+		//string.append("! " +title + " \n");
 		if (sec.getObjectType() instanceof AbstractKnowWEObjectType) {
 			KnowWEObjectType type = sec.getObjectType();
 			Collection<Message> messages = ((AbstractKnowWEObjectType) type)
@@ -74,7 +74,7 @@ public class SetCoveringListSectionRenderer extends DefaultEditSectionRender {
 		
 		string.append(KnowWEUtils.maskHTML("</pre>"));
 		
-		string.append("/%\n");
+		//string.append("/%\n");
 	}
 		
 	protected void insertErrorRenderer(Section sec, Message m, String user) {

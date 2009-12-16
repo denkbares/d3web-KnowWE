@@ -68,9 +68,9 @@ public class FindingQuestionAndAnswerRenderer extends KnowWEDomRenderer {
 			
 			
 			
-			string.append("<span title=\"" + message +"\">");
+			string.append("<span class='error_highlight' title=\"" + message +"\">");
 			
-			FontColorBackgroundRenderer.getRenderer(FontColorRenderer.COLOR6, "red").render(article, sec, user, string);
+			FontColorRenderer.getRenderer(FontColorRenderer.COLOR6).render(article, sec, user, string);
 
 			string.append("</span>");
 		} 
