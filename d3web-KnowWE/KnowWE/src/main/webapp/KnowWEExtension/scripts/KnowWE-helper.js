@@ -297,8 +297,8 @@ KNOWWE.helper.event = function(){
          *     eventType - The type of the event e.g. click, mouseout, ...
          *     object - The DomElement to which the event should be bind
          */        
-        removeEvents : function( eventType, object ){
-            $(object).removeEvents(eventType);
+        removeEvents : function( object ){
+            $(object).removeEvents();
         },
         /**
          * Function: target
@@ -426,7 +426,7 @@ KNOWWE.helper.ajax = function ( options ) {
                     break;
             }
             if( !oDefault.response.fn ){ return; }
-            oDefault.response.fn.call();
+            oDefault.response.fn.call( this );
             
             if(oDefault.loader) {
                 var loader = document.getElementById('KNOWWE-ajax-loader');
@@ -563,7 +563,7 @@ KNOWWE.helper.element.prototype = {
         var e = this;
         do  {
             e = e.previousSibling;
-        } while( e && e.nodeType != -1);
+        } while( e && e.nodeType != 1);
         return  KNOWWE.helper.element( e );
     },
     /**

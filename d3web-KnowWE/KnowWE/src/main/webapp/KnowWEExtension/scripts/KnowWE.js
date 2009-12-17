@@ -45,7 +45,7 @@ KNOWWE.core.actions = function(){
             //init quickedit actions
             var els = _KS('.quickedit');
             for (var i = 0; i < els.length; i++){
-                _KE.removeEvents('click', els[i]);
+                _KE.removeEvents(els[i]);
                 if( els[i]._hasClass( 'table' )){
                     _KE.add('click', els[i], function(e){
                         var el = _KE.target(e);
@@ -543,7 +543,7 @@ KNOWWE.core.edit = function(){
             for(var i = 0; i < elements.length; i++){
                 var rel, bttns;
                 
-                _KE.removeEvents('click', elements[i]);
+                _KE.removeEvents(elements[i]);
                 rel = eval("(" + elements[i].getAttribute('rel') + ")");
                 bttns = _KS('#'+rel.id + ' input[type=submit]');
                 if( bttns.length != 0 ){
@@ -619,7 +619,7 @@ KNOWWE.core.table = function(){
                 
                 elements = _KS('.quickedit .table');
                 for(var i = 0; i < elements.length; i++){
-                    _KE.removeEvents('click', elements[i]);
+                    _KE.removeEvents(elements[i]);
                     _KE.add('click', elements[i], function(e){
                         var el = _KE.target(e);
                         var id = el.parentNode.id;

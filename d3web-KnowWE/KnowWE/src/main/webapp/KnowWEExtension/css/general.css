@@ -765,3 +765,67 @@ font-size:120%;
 .semLink:hover {
 	text-decoration:underline;
 }
+
+
+/* ################################################## */
+/* -------------- Biolog search       --------------- */
+/* ################################################## */
+
+
+#biologsearch .form li {
+    left:0;
+    position:absolute;
+    top:0;
+    width:590px;
+}
+#biologsearch .form li label, #biologsearch .form li input {
+    border:0 none;
+    left:5px;
+    padding:5px;
+    position:absolute;
+    top:4px;
+    width:470px;
+}
+#biologsearch ul.form {
+    height:25px;
+    position:relative;
+    width:590px;
+    -moz-border-radius-bottomleft:5px;
+    -moz-border-radius-bottomright:5px;
+    -moz-border-radius-topleft:5px;
+    -moz-border-radius-topright:5px;
+    background: #96BBD9 none repeat scroll 0 0;
+    display:block;
+    padding:5px 5px 4px;    
+}
+#biologsearch input#searchsubmit {
+    background: #003366 none repeat scroll 0 0;
+    color: rgb(255,255,255);
+    left:auto;
+    position:absolute;
+    right:-5px;
+    text-align:center;
+    width:110px;
+}
+
+#knowwe-autocompletion{
+    background-color: rgb(255,255,255);
+	border: 1px solid rgb(0,0,0);
+	margin-left: 5px;
+    overflow: auto;
+    position: absolute;
+    width:470px;
+    z-index: 300;
+}
+#knowwe-autocompletion ul{
+    list-style-type: none;
+    margin: 0px;
+    padding: 5px;
+}
+#knowwe-autocompletion .highlight{
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.3); 
+}
+#knowwe-autocompletion strong{
+    color: rgb(0, 0, 255);
+}

@@ -327,7 +327,7 @@ KNOWWE.plugin.d3web.dialog = function(){
                         var el = _KS('a .dialog')[0];
                         el.innerHTML = bttn_name; 
                         
-                        _KE.removeEvents('click', _KS('#bttn-dialog'));
+                        _KE.removeEvents(_KS('#bttn-dialog'));
                         _KE.add('click', _KS('#bttn-dialog'), KNOWWE.plugin.d3web.dialog.remove);
                         KNOWWE.plugin.d3web.dialog.initAction();
                     }
@@ -368,7 +368,7 @@ KNOWWE.plugin.d3web.dialog = function(){
          */
         remove : function(){
             _KS('#dialog-panel')._remove();            
-            _KE.removeEvents('click', _KS('#bttn-dialog'));
+            _KE.removeEvents(_KS('#bttn-dialog'));
             _KE.add('click', _KS('#bttn-dialog'), KNOWWE.plugin.d3web.dialog.insert);       
         },
         /**

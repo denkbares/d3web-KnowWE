@@ -71,8 +71,31 @@ public class SearchTerminologyHandler {
 		results.add("apfel");
 		results.add("birne");
 		results.add("banane");
+		results.add("birnenkuchen");
+		results.add("birnen marmelade");
+		results.add("birnenkompott");
+		results.add("birnen einkochen");
+		results.add("birnensorten");
 		
-		return results;
+		
+		List<String> test = new ArrayList<String>();
+		for (String string : results) {
+			if(string.contains( typedString )){
+				test.add( wrap(string, typedString ));
+			}
+		}
+		return test;
 	}
-
+	
+	/**
+	 * Wraps the query that is found in a suggestion with strong HTML element
+	 * to indicate the finding visually.
+	 *  
+	 * @param suggestion
+	 * @param query
+	 * @return
+	 */
+	private String wrap(String suggestion, String query){
+		return suggestion.replaceAll( query, "<strong>" + query + "</strong>");
+	}
 }
