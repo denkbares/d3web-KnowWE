@@ -70,6 +70,17 @@ public class Placemark {
 
     @Override
     public String toString() {
-	return title + "[" + longitude + ", " + latitude + "]";
+	return title + "[" + latitude + ", " + longitude + "]";
+    }
+
+    public String toHTMLString() {
+	String s = "<pre>";
+	s += "<h5>" + title + "</h5>";
+	s += "<div>" + latitude + ";" + longitude + "</div>";
+	if (description != null) {
+	    s += "<div>" + description + "</div>";
+	}
+	s += "</pre>";
+	return s;
     }
 }

@@ -48,7 +48,7 @@ public class MapType extends AbstractXMLObjectType {
 	List<Placemark> placemarks = kmlLoader.getPlacemarks();
 
 	for (Placemark placem : placemarks) {
-	    addPlacemarkToOwlObject(sec, placem, ioo);
+	    addPlacemarkToOwlObject(placem, ioo);
 	}
 
 	return ioo;
@@ -69,7 +69,7 @@ public class MapType extends AbstractXMLObjectType {
 	return url;
     }
 
-    private void addPlacemarkToOwlObject(Section section, Placemark placem,
+    public static void addPlacemarkToOwlObject(Placemark placem,
 	    IntermediateOwlObject ioo) {
 	OwlHelper helper = UpperOntology.getInstance().getHelper();
 
@@ -96,8 +96,8 @@ public class MapType extends AbstractXMLObjectType {
 
     private class MapRenderer extends KnowWEDomRenderer {
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user,
-		StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec,
+		KnowWEUserContext user, StringBuilder string) {
 	    string.append("<div id=\"map\" class=\"panel\">");
 	    string.append("<h3>Karte</h3>");
 	    String originalText = sec.getOriginalText();
