@@ -28,30 +28,35 @@ import de.d3web.we.kdom.KnowWEArticle;
 
 public class KnowledgeRepresentationManager {
 	
-	private static KnowledgeRepresentationManager instance;
-	
-	private boolean usedHandler;
-		
-	public static KnowledgeRepresentationManager getInstance() {
-		if (instance == null)
-			instance = new KnowledgeRepresentationManager();
-		return instance;
-	}
-	
-	private KnowledgeRepresentationManager() {
-		
-	}
+//	private static KnowledgeRepresentationManager instance;
+//	
+//		
+//	public static KnowledgeRepresentationManager getInstance() {
+//		if (instance == null)
+//			instance = new KnowledgeRepresentationManager();
+//		return instance;
+//	}
 	
 	private Map<String, KnowledgeRepresentationHandler> handlers = new HashMap<String, KnowledgeRepresentationHandler>();
 	
+	private String web;
+	
+	/**
+	 * <b>This constructor SHOULD NOT BE USED!</b><p/>
+	 * Use KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(String web) instead!
+	 */
+	public KnowledgeRepresentationManager(String web) {
+		this.web = web;
+	}
+	
+
+	
 	public void registerHandler(String key, KnowledgeRepresentationHandler handler) {
 		handlers.put(key, handler);
-		
 	}
 	
 	
 	public void initArticle(KnowWEArticle art) {
-		usedHandler = false;
 		for(KnowledgeRepresentationHandler handler : handlers.values()) {
 			handler.initArticle(art);
 		}
@@ -64,37 +69,16 @@ public class KnowledgeRepresentationManager {
 	}
 	
 	public KnowledgeRepresentationHandler getHandler(String key) {
-		usedHandler = true;
 		return handlers.get(key);
 	}
 	
 	public Collection<KnowledgeRepresentationHandler> getHandlers() {
-		usedHandler = true;
 		return handlers.values();
 	}
-	
-	public boolean usedHandler() {
-		return this.usedHandler;
-	}
-	
-//	public boolean buildKnowledge(Section s) {
-//		boolean usedOldKnowledge = false;
-//		for(KnowledgeRepresentationHandler handler : handlers.values()) {
-//			if (handler.buildKnowledge(s)) {
-//				usedOldKnowledge = true;
-//			}
-//		}
-//		return usedOldKnowledge;
-//	}
 
-//	public boolean isKnowledgeBuilt(String title) {
-//		boolean usingOldKnowledge = false;
-//		for(KnowledgeRepresentationHandler handler : handlers.values()) {
-//			if (handler.isKnowledgeBuilt(title)) {
-//				usingOldKnowledge = true;
-//			}
-//		}
-//		return usingOldKnowledge;
-//	}
+
+	public String getWeb() {
+		return this.web;
+	}
 
 }

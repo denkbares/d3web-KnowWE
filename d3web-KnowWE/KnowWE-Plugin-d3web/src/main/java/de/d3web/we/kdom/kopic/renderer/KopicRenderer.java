@@ -36,9 +36,9 @@ public class KopicRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String title = "Knowledge "
-						+ generateLinkIcons(user.getUsername(), sec.getTitle(), 
+						+ generateLinkIcons(user.getUsername(), article.getTitle(), 
 						KnowWEEnvironment.generateDefaultID(
-								sec.getTitle()), sec.getWeb(), false, sec.getId());
+								article.getTitle()), article.getWeb(), false, sec.getId());
 		StringBuilder b = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
 		string.append(wrapCollapsebox(title, b.toString()));
@@ -61,26 +61,27 @@ public class KopicRenderer extends KnowWEDomRenderer {
 		}
 		result.append(generateDownloadLink(topic, id, web, nodeID));
 		if (!error) {
-			result.append(generateJarLink(topic, id, web));
+			result.append(generateJarLink(topic, id, web, nodeID));
 		}
 		return result.toString();
 	}
 	
-	private String generateJarLink(String topic2, String id, String web2) {
+	private String generateJarLink(String topic2, String id, String web2, String nodeID) {
 		String icon = "<img src=KnowWEExtension/images/drive_disk.png title='Download jar file' /></img>";
-
-		return KnowWEUtils
-				.maskHTML("<a href='KnowWEExtension/KBrepository/" + web2 + "/"
-						+ topic2 + ".." + id + ".jar' >" + icon + "</a>");
+		String result = "<a href='KnowWEDownload.jsp?KWiki_Topic="
+			+ topic2 + "&web=" + web2 + "&nodeID=" + nodeID + "&filename=" + topic2
+			+ "_kopic.jar' >" + icon + "</a>";
+		return KnowWEUtils.maskHTML(result);
+//		return KnowWEUtils.maskHTML("<a href='KnowWEExtension/KBrepository/" + web2 + "/"
+//						+ topic2 + ".." + id + ".jar' >" + icon + "</a>");
 	}
 
 	private String generateDownloadLink(String topic2, String id, String web2,
 			String nodeID) {
-		String prefix = "";
-		String result = "";
+		
 		String icon = "<img src=KnowWEExtension/images/disk.png title='Txt download' /></img>";
-		result += "<a href='" + prefix + "KnowWEDownload.jsp?KWiki_Topic="
-				+ topic2 + "&nodeID=" + nodeID + "&filename=" + topic2
+		String result = "<a href='KnowWEDownload.jsp?KWiki_Topic="
+				+ topic2 + "&web=" + web2 + "&nodeID=" + nodeID + "&filename=" + topic2
 				+ "_kopic.txt' >" + icon + "</a>";
 
 		return KnowWEUtils.maskHTML(result);

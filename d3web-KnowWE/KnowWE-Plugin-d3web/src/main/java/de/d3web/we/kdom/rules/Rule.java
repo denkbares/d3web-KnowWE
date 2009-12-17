@@ -75,13 +75,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	public void cleanKnowledge(KnowWEArticle article, KnowledgeBaseManagement kbm) {
 		
 		if (kbm != null) {
-			long startTime = System.currentTimeMillis();
-//			KnowWEArticle oldArt = article.getLastVersionOfArticle();
-//				
-//			// get all Rules of the old article
-//			List<Section> oldRules = new ArrayList<Section>();
-//			oldArt.getSection().findSuccessorsOfType(Rule.class, oldRules);
-			
+
 			// get new Rules if necessary
 			List<Section> newRules = new ArrayList<Section>();
 			article.getSection().findSuccessorsOfType(Rule.class, newRules);
@@ -91,14 +85,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 				kbIDs.add((String) KnowWEUtils.getStoredObject(article.getWeb(), article
 						.getTitle(), r.getId(), Rule.KBID_KEY));
 			}
-//			// store all KnowledgeBase-Ids of those old Rules, that havn't got reused in the current article
-//			Set<String> idsToDelete = new HashSet<String>();
-//			for (Section r:newRules) {
-//				if (!or.isReusedBy(article.getTitle())) {
-//					idsToDelete.add((String) KnowWEUtils.getLastStoredObject(or.getWeb(), 
-//						article.getTitle(), or.getId(), Rule.KBID_KEY));
-//				}
-//			}
+
 			
 			// delete the rules from the KnowledgeBase
 			Collection<KnowledgeSlice> ruleComplexes = kbm.getKnowledgeBase().getAllKnowledgeSlices();

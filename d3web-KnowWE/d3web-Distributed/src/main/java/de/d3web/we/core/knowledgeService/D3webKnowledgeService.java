@@ -56,7 +56,7 @@ public class D3webKnowledgeService implements KnowledgeService {
 		this.id = id;
 		base.setId(id);
 		this.home = home;
-		save();
+		//save();
 	}
 	
 	public D3webKnowledgeService(KnowledgeBase base, String id, URL home) {
@@ -64,7 +64,7 @@ public class D3webKnowledgeService implements KnowledgeService {
 		this.base = base;
 		this.id = id;
 		this.home = home;
-		save();
+		//save();
 		//load();
 		loaded = true;
 	}

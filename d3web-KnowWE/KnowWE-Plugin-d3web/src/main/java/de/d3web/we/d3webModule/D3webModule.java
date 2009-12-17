@@ -109,7 +109,7 @@ public class D3webModule implements KnowWEModule {
 
 	private static D3webModule instance;
 
-	private D3webTerminologyHandler handler = null;
+	private Map<String, D3webTerminologyHandler> handlers = new HashMap<String, D3webTerminologyHandler>();
 
 	public static ResourceBundle getKwikiBundle_d3web() {
 
@@ -431,15 +431,18 @@ public class D3webModule implements KnowWEModule {
 	}
 
 	@Override
-	public void registerKnowledgeRepresentationHandler(
-			KnowledgeRepresentationManager mgr) {
-		handler = new D3webTerminologyHandler();
+	public void registerKnowledgeRepresentationHandler(KnowledgeRepresentationManager mgr) {
+		D3webTerminologyHandler handler = handlers.get(mgr.getWeb());
+		if (handler == null) {
+			handler = new D3webTerminologyHandler(mgr.getWeb());
+			handlers.put(mgr.getWeb(), handler);
+		}
 		mgr.registerHandler("d3web", handler);
-
+		
 	}
 
-	public D3webTerminologyHandler getKnowledgeRepresentationHandler() {
-		return handler;
+	public D3webTerminologyHandler getKnowledgeRepresentationHandler(String web) {
+		return handlers.get(web);
 	}
 
 	@Override

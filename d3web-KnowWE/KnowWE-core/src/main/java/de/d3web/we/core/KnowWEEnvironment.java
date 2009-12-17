@@ -136,6 +136,12 @@ public class KnowWEEnvironment {
 	private Map<String, KnowWEArticleManager> articleManagers = new HashMap<String, KnowWEArticleManager>();
 
 	/**
+	 * An knowledge manager for each web. In case of JSPWiki there is only on web
+	 * ('default_web')
+	 */
+	private Map<String, KnowledgeRepresentationManager> knowledgeManagers = new HashMap<String, KnowledgeRepresentationManager>();
+
+	/**
 	 * An include manager for each web. In case of JSPWiki there is only on web
 	 * ('default_web')
 	 */
@@ -263,7 +269,7 @@ public class KnowWEEnvironment {
 
 	public static void initKnowWE(KnowWEWikiConnector wiki) {
 		instance = new KnowWEEnvironment(wiki);
-		instance.initModules(wiki.getServletContext());
+		instance.initModules(wiki.getServletContext(), DEFAULT_WEB);
 	}
 
 	public boolean registerConditionalRendererToType(Class clazz,
@@ -307,6 +313,15 @@ public class KnowWEEnvironment {
 		if (mgr == null) {
 			mgr = new KnowWEArticleManager(this, web);
 			articleManagers.put(web, mgr);
+		}
+		return mgr;
+	}
+	
+	public KnowledgeRepresentationManager getKnowledgeRepresentationManager(String web) {
+		KnowledgeRepresentationManager mgr = this.knowledgeManagers.get(web);
+		if (mgr == null) {
+			mgr = new KnowledgeRepresentationManager(web);
+			knowledgeManagers.put(web, mgr);
 		}
 		return mgr;
 	}
@@ -495,7 +510,7 @@ public class KnowWEEnvironment {
 	/**
 	 * Initializes the KnowWE modules
 	 */
-	private void initModules(ServletContext context) {
+	private void initModules(ServletContext context, String web) {
 		// add the default modules
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
 		this.rootTypes.add(VerbatimType.getInstance());
@@ -622,9 +637,7 @@ public class KnowWEEnvironment {
 			modul.initModule(context);
 
 			// TERMINLOGY-HANDLER
-			modul
-					.registerKnowledgeRepresentationHandler(KnowledgeRepresentationManager
-							.getInstance());
+			modul.registerKnowledgeRepresentationHandler(this.getKnowledgeRepresentationManager(web));
 
 			// GET TAGHANDLERS
 			List<TagHandler> handlers = modul.getTagHandlers();

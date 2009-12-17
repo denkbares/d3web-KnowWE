@@ -31,6 +31,7 @@ import utils.Utils;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -51,6 +52,8 @@ import dummies.KnowWETestWikiConnector;
 
 public class ExtendedUpdateMechanismTest extends TestCase {
 	
+	private String web = "default_web";
+	
 	public void testWithIdenticalArticles() {
 		/*
 		 * Initialise KnowWEEnvironment
@@ -66,15 +69,15 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		types.add(new Kopic());
 		types.add(DefaultTextType.getInstance());
 		
-		D3webTerminologyHandler d3Handler =  new D3webTerminologyHandler();
-		KnowledgeRepresentationManager.getInstance().registerHandler("d3web", d3Handler);
+		D3webTerminologyHandler d3Handler = 
+			D3webModule.getInstance().getKnowledgeRepresentationHandler(web);
 		
 		/*
 		 * Init first Article
 		 */
 		KnowWEArticle article1 = new KnowWEArticle(content, "UpdatingTest1",
-				types, "default_web");
-		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article1);
+				types, web);
+		KnowWEEnvironment.getInstance().getArticleManager(web).saveUpdatedArticle(article1);
 		
 		List<Section<? extends KnowWEObjectType>> sections1 = article1.getAllNodesPreOrder();
 		
@@ -84,7 +87,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		 * Init a second, identical Article
 		 */
 		KnowWEArticle article2 = new KnowWEArticle(content, "UpdatingTest1",
-				types, "default_web");
+				types, web);
 		
 		List<Section<? extends KnowWEObjectType>> sections2 = article2.getAllNodesPreOrder();
 		
@@ -119,14 +122,13 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();;
 		types.add(new Kopic());
 		
-		D3webTerminologyHandler d3Handler =  new D3webTerminologyHandler();
-		KnowledgeRepresentationManager.getInstance().registerHandler("d3web", d3Handler);
+		D3webTerminologyHandler d3Handler =  D3webModule.getInstance().getKnowledgeRepresentationHandler(web);
 		
 		/*
 		 * Init first Article
 		 */
 		KnowWEArticle article1 = new KnowWEArticle(content1, "UpdatingTest",
-				types, "default_web");
+				types, web);
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article1);
 		List<Section<? extends KnowWEObjectType>> sections1 = article1.getAllNodesPreOrder();		
 		KnowledgeBase kb1 = d3Handler.getKBM(article1, article1.getSection()).getKnowledgeBase();
@@ -169,8 +171,8 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		 * Init a third, altered Article
 		 */
 		KnowWEArticle article3 = new KnowWEArticle(content3, "UpdatingTest",
-				types, "default_web");
-		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article3);	
+				types, web);
+		KnowWEEnvironment.getInstance().getArticleManager(web).saveUpdatedArticle(article3);	
 		List<Section<? extends KnowWEObjectType>> sections3 = article3.getAllNodesPreOrder();
 		KnowledgeBase kb3 = d3Handler.getKBM(article3, article3.getSection()).getKnowledgeBase();
 		Collection<KnowledgeSlice> slices3 = kb2.getAllKnowledgeSlices();

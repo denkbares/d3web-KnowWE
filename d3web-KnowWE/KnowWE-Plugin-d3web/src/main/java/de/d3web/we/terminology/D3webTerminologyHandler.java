@@ -21,6 +21,7 @@
 
 package de.d3web.we.terminology;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,10 +29,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;
+import de.d3web.we.core.knowledgeService.D3webPersistence;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DistributedRegistrationManager;
@@ -47,10 +50,12 @@ import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
  */
 public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 	
+	private String web;
+	
 	/**
 	 * Map for all articles an their KBMs.
 	 */
-	private Map<String, KnowledgeBaseManagement> kbms = new HashMap<String, KnowledgeBaseManagement>();
+	private static Map<String, KnowledgeBaseManagement> kbms = new HashMap<String, KnowledgeBaseManagement>();
 	
 	/**
 	 * Map of the last versions of each KBM.
@@ -108,6 +113,20 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 	 */
 	private Map<String, Map<Class<? extends KnowledgeRecyclingObjectType>, Integer>> lastKnowledgeSectionsCount	
 			= new HashMap<String, Map<Class<? extends KnowledgeRecyclingObjectType>, Integer>>();
+	
+	
+	/**
+	 * Stores for each Article if the jar file already got built
+	 */
+	private static Map<String, Boolean> savedToJar = new HashMap<String, Boolean>();
+	
+	/**
+	 * <b>This constructor SHOULD NOT BE USED!</b><p/>
+	 * Use D3webModule.getInstance().getKnowledgeRepresentationHandler(String web) instead!
+	 */
+	public D3webTerminologyHandler(String web) {
+		this.web = web;
+	}
 	
 	public Map<String, HashSet<Class<? extends KnowledgeRecyclingObjectType>>> getCleanedTypes() {
 		return this.typesToClean;
@@ -177,7 +196,7 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			KnowledgeBaseManagement kbm = this.getKBM(art, art.getSection());
 			if(!isEmpty(kbm)) {
 				DistributedRegistrationManager.getInstance().registerKnowledgeBase(kbm, 
-						art.getTitle(), "default_web");
+						art.getTitle(), web);
 			}
 			finishedKBM.put(art.getTitle(), true);
 	}
@@ -340,11 +359,13 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
+			savedToJar.put(article.getTitle(), false);
 		}
 	}
 	
 	private void useNewKBM(KnowWEArticle article, Section s) {
 		usingNewKBM.put(article.getTitle(), true);
+		savedToJar.put(article.getTitle(), false);
 		List<Section> sectionsToRevise = article.getAllNodesParsingPostOrder();
 		List<Section> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));
 		for (Section sec:strSub) {
@@ -361,6 +382,21 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			return false;
 		}
 		
+	}
+	
+	@Override
+	public URL saveKnowledge(String title) {
+		KnowledgeBaseManagement kbm = kbms.get(title);
+		if (kbm != null) {
+			KnowledgeBase base = kbm.getKnowledgeBase();
+			URL home = D3webModule.getKbUrl(web, base.getId());
+			if (!savedToJar.get(title)) {;
+				D3webPersistence.getInstance().getPersistenceManager().save(base, home);
+				savedToJar.put(title, true);
+			}
+			return home;
+		}
+		return null;
 	}
 	
 }

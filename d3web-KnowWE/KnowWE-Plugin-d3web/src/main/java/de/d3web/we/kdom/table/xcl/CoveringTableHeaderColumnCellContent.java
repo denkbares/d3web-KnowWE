@@ -52,7 +52,7 @@ public class CoveringTableHeaderColumnCellContent extends
 		@Override
 		public void reviseSubtree(KnowWEArticle article, Section s) {
 			KnowledgeBaseManagement mgn = D3webModule.getInstance()
-					.getKnowledgeRepresentationHandler().getKBM(article, s);
+					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 			
 			if (mgn == null) {
 				return;

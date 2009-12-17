@@ -20,6 +20,8 @@
 
 package de.d3web.we.knowRep;
 
+import java.net.URL;
+
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
@@ -32,6 +34,6 @@ public abstract class KnowledgeRepresentationHandler {
 	
 	public abstract boolean buildKnowledge(KnowWEArticle article, Section s);
 	
-//	public abstract boolean isKnowledgeBuilt(String title);
+	public abstract URL saveKnowledge(String title);
 
 }

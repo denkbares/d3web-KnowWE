@@ -128,13 +128,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		callSaveHooks(title);
 		
 		// run initHooks at TerminologyManager
-		KnowledgeRepresentationManager.getInstance().initArticle(this);
+		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web).initArticle(this);
 
 		// clear KnowWETypeStorage before re-parsing data
 		clearTypeStore(allowedObjects, title);
 		
 		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<- Finished initializing article '" + title + "' in " 
+			.log(Level.INFO,"<- Initialized article '" + title + "' in " 
 					+ (System.currentTimeMillis() - startTime) + "ms <-");
 	
 		startTime = System.currentTimeMillis();
@@ -151,7 +151,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		instance.getIncludeManager(web).getSectionizingArticles().remove(title);
 		
 		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<- Finished KDOM for article '" + title + "' in " 
+			.log(Level.INFO,"<- Built KDOM for article '" + title + "' in " 
 				+ (System.currentTimeMillis() - startTime) + "ms <-");
 	
 		startTime = System.currentTimeMillis();
@@ -167,7 +167,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		reviseArticle();
 		
 		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<- Finished Knowledge for article '" + title + "' in " 
+			.log(Level.INFO,"<- Built Knowledge for article '" + title + "' in " 
 				+ (System.currentTimeMillis() - startTime) + "ms <-");
 
 		startTime = System.currentTimeMillis();
@@ -187,10 +187,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			startTime = System.currentTimeMillis();
 		}
 		
-		KnowledgeRepresentationManager.getInstance().finishArticle(this);
+		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web).finishArticle(this);
 
 		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<- Finished JAR for article '" + title + "' in " 
+			.log(Level.INFO,"<- Registered Knowledge for article '" + title + "' in " 
 					+ (System.currentTimeMillis() - startTime) + "ms <-");
 		
 		// prevent memory leak

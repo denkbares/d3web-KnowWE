@@ -50,7 +50,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 			String question = s.getOriginalText();
 
 			KnowledgeBaseManagement kbm = D3webModule.getInstance()
-					.getKnowledgeRepresentationHandler().getKBM(article, s);
+					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 
 			if(kbm == null) return; //dirty hack for testing
 			

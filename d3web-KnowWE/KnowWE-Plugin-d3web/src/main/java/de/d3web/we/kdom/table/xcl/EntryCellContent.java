@@ -84,7 +84,7 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 			// Get the KnowledgeSlices from KB and find the XCLRelation to be
 			// rendered
 			KnowledgeBaseManagement mgn = D3webModule.getInstance()
-					.getKnowledgeRepresentationHandler().getKBM(sec.getArticle(), sec);
+					.getKnowledgeRepresentationHandler(sec.getArticle().getWeb()).getKBM(sec.getArticle(), sec);
 
 			Collection<KnowledgeSlice> models = mgn.getKnowledgeBase()
 					.getAllKnowledgeSlicesFor(PSMethodXCL.class);

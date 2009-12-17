@@ -70,6 +70,7 @@ import de.d3web.kernel.supportknowledge.MMInfoStorage;
 import de.d3web.kernel.supportknowledge.MMInfoSubject;
 import de.d3web.kernel.supportknowledge.Property;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
@@ -172,8 +173,7 @@ public class KBCreationTestUtil {
 		
 		// Initialize KnowWE
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
-		D3webTerminologyHandler d3Handler = new D3webTerminologyHandler();
-		KnowledgeRepresentationManager.getInstance().registerHandler("d3web", d3Handler);
+		D3webTerminologyHandler d3Handler = D3webModule.getInstance().getKnowledgeRepresentationHandler("default_web");
 		
 		// Create Article
 		KnowWEArticle article = new KnowWEArticle(content, "KBCreationTest", 
