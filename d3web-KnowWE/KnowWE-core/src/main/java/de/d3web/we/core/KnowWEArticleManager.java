@@ -227,4 +227,17 @@ public class KnowWEArticleManager {
 		return art.getReport();
 	}
 	
+	/**
+	 * Deletes the given article from the article map and invalidates all
+	 * knowledge content that was in the article.
+	 * @param art The article to delete
+	 */
+	public void deleteArticle(KnowWEArticle art) {
+		KnowWEEnvironment.getInstance().processAndUpdateArticle("", "", art.getTitle(), KnowWEEnvironment.DEFAULT_WEB);
+		articleMap.remove(art.getTitle());
+		
+		Logger.getLogger(this.getClass().getName())
+			.log(Level.INFO,"-> Deleted article '" + art.getTitle() + "'");
+	}
+	
 }

@@ -32,11 +32,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
+import com.ecyrd.jspwiki.event.WikiEvent;
+import com.ecyrd.jspwiki.event.WikiEventListener;
+import com.ecyrd.jspwiki.event.WikiEventUtils;
+import com.ecyrd.jspwiki.event.WikiPageEvent;
 import com.ecyrd.jspwiki.filters.BasicPageFilter;
 import com.ecyrd.jspwiki.filters.FilterException;
 import com.ecyrd.jspwiki.plugin.PluginException;
 import com.ecyrd.jspwiki.plugin.WikiPlugin;
 
+import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -44,10 +49,10 @@ import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
+public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEventListener {
 
 	private String topicName = "";
-
+	
     /**
 	 * To initialize KnowWE, even if the directory for the pages is empty.
      */
@@ -57,6 +62,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
     	super.initialize(engine, properties);
         m_engine = engine;
         initKnowWEEnvironmentIfNeeded(engine);
+        
+		WikiEventUtils.addWikiEventListener(engine.getPageManager(), WikiPageEvent.PAGE_DELETE_REQUEST, this);
     }
 	
 	private void initKnowWEEnvironmentIfNeeded(WikiEngine wEngine) {
@@ -268,6 +275,22 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 		}
 
 		return parameter;
+	}
+	
+	/**
+	 * Handles events passed from JSPWiki
+	 */
+	@Override
+	public void actionPerformed(WikiEvent event) {
+		// When deleting a page, remove it from the ArticleManager and invalidate all knowledge
+		if ((event instanceof WikiPageEvent) && (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
+			WikiPageEvent e = (WikiPageEvent) event;
+			
+			KnowWEArticleManager amgr = KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
+			
+			amgr.deleteArticle(amgr.getArticle(e.getPageName()));
+		}
+		
 	}
 
 }
