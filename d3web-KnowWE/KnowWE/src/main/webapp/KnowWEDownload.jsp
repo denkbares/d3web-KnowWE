@@ -40,7 +40,7 @@ String findParam( PageContext ctx, String key )
 		//set the content type
 		response.setContentType ("application/jar");
 		de.d3web.we.knowRep.KnowledgeRepresentationHandler handler = KnowWEEnvironment.getInstance()
-			.getKnowledgeRepresentationManager(web).getHandler(web, "d3web");
+			.getKnowledgeRepresentationManager(web).getHandler("d3web");
 		if (handler != null) {
 			java.net.URL home = handler.saveKnowledge(topic);
 			in = home.openStream();
