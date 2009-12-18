@@ -24,7 +24,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -35,22 +34,27 @@ import org.antlr.runtime.RecognitionException;
 
 import de.d3web.KnOfficeParser.D3webConditionBuilder;
 import de.d3web.KnOfficeParser.DefaultLexer;
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.RestrictedIDObjectManager;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
+import de.d3web.kernel.domainModel.Answer;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.QASet;
 import de.d3web.kernel.domainModel.RuleAction;
 import de.d3web.kernel.domainModel.RuleComplex;
 import de.d3web.kernel.domainModel.RuleFactory;
 import de.d3web.kernel.domainModel.Score;
+import de.d3web.kernel.domainModel.answers.AnswerChoice;
+import de.d3web.kernel.domainModel.qasets.QContainer;
+import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.kernel.domainModel.qasets.QuestionMC;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.domainModel.ruleCondition.CondAnd;
 import de.d3web.kernel.psMethods.diaFlux.ConditionTrue;
 import de.d3web.kernel.psMethods.diaFlux.FluxSolver;
-import de.d3web.kernel.psMethods.diaFlux.actions.CallFlowAction;
+import de.d3web.kernel.psMethods.diaFlux.actions.IndicateFlowAction;
 import de.d3web.kernel.psMethods.diaFlux.actions.NoopAction;
 import de.d3web.kernel.psMethods.diaFlux.flow.Flow;
 import de.d3web.kernel.psMethods.diaFlux.flow.FlowFactory;
@@ -59,6 +63,7 @@ import de.d3web.kernel.psMethods.diaFlux.flow.IEdge;
 import de.d3web.kernel.psMethods.diaFlux.flow.INode;
 import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
 import de.d3web.kernel.psMethods.nextQASet.ActionIndication;
+import de.d3web.kernel.psMethods.questionSetter.ActionSetValue;
 import de.d3web.report.Message;
 import de.d3web.we.flow.type.ActionType;
 import de.d3web.we.flow.type.EdgeType;
@@ -85,8 +90,7 @@ import de.d3web.we.terminology.D3webReviseSubTreeHandler;
  */
 public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	
-	
-	
+
 	@Override
 	public void reviseSubtree(KnowWEArticle article, Section s) {
 		
@@ -103,22 +107,20 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		List<Message> errors = new ArrayList<Message>();
 		
 		List<Section> sections = new ArrayList<Section>();
+
+		Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(s);
+		String name = attributeMap.get("name");
+		
+		if (name == null || name.equals(""))
+			name = "unnamed";
 		
 		content.findSuccessorsOfType(NodeType.class, sections);
-		List<INode> nodes = createNodes(article, sections, errors);
+		List<INode> nodes = createNodes(article, name, sections, errors);
 		
 		sections.clear();
 		
 		content.findSuccessorsOfType(EdgeType.class, sections);
 		List<IEdge> edges = createEdges(article, sections, nodes, errors);
-		
-		
-		Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(s);
-		
-		String name = attributeMap.get("name");
-		
-		if (name == null || name.equals(""))
-			name = "unnamed";
 		
 		
 		String id = attributeMap.get("id");
@@ -149,6 +151,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		
 	}
+
+
 
 	private List<IEdge> createEdges(KnowWEArticle article, List<Section> edgeSections, List<INode> nodes, List<Message> errors) {
 		List<IEdge> result = new ArrayList<IEdge>();
@@ -200,9 +204,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			else
 				condition = ConditionTrue.INSTANCE;
 			
-			
 			result.add(FlowFactory.getInstance().createEdge(id, source, target, condition));
-			
 			
 		}
 		
@@ -230,8 +232,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		//For creating conditions in edges coming out from call nodes
 		//TODO explicitly create oc-question for all FCs
-		idom.setLazyAnswers(true);
-		idom.setLazyQuestions(true);
+//		idom.setLazyAnswers(true);
+//		idom.setLazyQuestions(true);
 		
 		D3webConditionBuilder builder = new D3webConditionBuilder("Parsed from article", errors, idom);
 		
@@ -261,7 +263,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return null;
 	}
 
-	private List<INode> createNodes(KnowWEArticle article, List<Section> nodeSections, List<Message> errors) {
+	private List<INode> createNodes(KnowWEArticle article, String flowName, List<Section> nodeSections, List<Message> errors) {
 		
 		List<INode> result = new ArrayList<INode>();
 		
@@ -290,7 +292,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			if (nodeinfo.getObjectType() == StartType.getInstance()) 
 				result.add(createStartNode(id, nodeinfo));
 			else if (nodeinfo.getObjectType() == ExitType.getInstance())
-				result.add(createEndNode(id, nodeinfo));
+				result.add(createEndNode(article, id, flowName, nodeinfo));
 			else if(nodeinfo.getObjectType() == ActionType.getInstance())
 				result.add(createActionNode(article, id, nodeinfo, errors));
 			else
@@ -313,7 +315,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		} else if (string.contains("=")) {
 			action = createHeuristicScoreAction(article, section, string);
 		} else if (string.startsWith("CALL[")) {
-			action = createCallFlowAction(section, string, errors);
+			action = createCallFlowAction(article, section, string, errors);
 		}
 		else
 			action = NoopAction.INSTANCE;
@@ -322,7 +324,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 	}
 
-	private RuleAction createCallFlowAction(Section section, String string, List<Message> errors) {
+	private RuleAction createCallFlowAction(KnowWEArticle article, Section section, String string, List<Message> errors) {
 		int nodenameStart = string.indexOf('(');
 		int nodenameEnd = string.indexOf(')');
 
@@ -330,10 +332,50 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		String nodeName = string.substring(nodenameStart + 1, nodenameEnd);
 		
 		
+		KnowledgeBaseManagement kbm = getKBM(article, section);
 		
+		QContainer container = kbm.findQContainer(flowName + "_Questionnaire");
 		
-		return new CallFlowAction(flowName, nodeName);
+		if (container == null) {
+			errors.add(new Message("Terminology not found for flow'" + flowName + "'"));
+			return NoopAction.INSTANCE;
+		}
+		
+		QuestionMC question = null;
+		
+		for (NamedObject child : container.getChildren()) {
+			
+			if (child.getText().equals(flowName + "_" + FlowchartTerminologySubTreeHandler.STARTNODES_QUESTION_NAME))
+				question = (QuestionMC) child;
+		}
+		
+		if (question == null) {
+			errors.add(new Message("No startnode question found for flow '" + flowName + "'."));
+			return NoopAction.INSTANCE;
+		}
+		
+		ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
+
+		action.setQuestion(question);
+		
+		AnswerChoice answer = null;
+		for (AnswerChoice child : question.getAllAlternatives()) {
+			if (child.getText().equals(nodeName))
+				answer = (AnswerChoice) child;
+			
+		}
+		
+		if (answer == null) {
+			errors.add(new Message("No startnode  '" + flowName + "' not found in terminology of flow '" + flowName +"'."));
+			return NoopAction.INSTANCE;
+		}
+		
+		action.setValues(new AnswerChoice[] {answer} );
+		
+		return action;
 	}
+
+
 
 	private RuleAction createHeuristicScoreAction(KnowWEArticle article, Section section,
 			String string) {
@@ -342,12 +384,15 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		String solution = split[0].trim();
 		String score = split[1].trim();
 		
+		//Fix after Refactoring
 		RuleComplex rule = new RuleComplex();
 		rule.setId("FlowchartRule" + System.currentTimeMillis());
 		
 		ActionHeuristicPS action = new ActionHeuristicPS(rule);
 		rule.setAction(action);
 		rule.setCondition(new CondAnd(new ArrayList()));
+		//
+		
 		
 		if (solution.startsWith("\""))// remove "
 			solution = solution.substring(1, solution.length()-1);
@@ -385,7 +430,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		qasets.add(findQuestion);
 		
-		RuleComplex rule = RuleFactory.createRule("0000");
+		RuleComplex rule = RuleFactory.createRule("FlowQAIndicationRule_" + System.currentTimeMillis());
 		rule.setProblemsolverContext(FluxSolver.class);
 		rule.setCondition(new CondAnd(new ArrayList()));
 
@@ -396,10 +441,30 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return action;
 	}
 
-	private INode createEndNode(String id, Section section) {
+	private INode createEndNode(KnowWEArticle article, String id, String flowName, Section section) {
 		String name = ((Section) section.getChildren().get(1)).getOriginalText();
 		
-		return FlowFactory.getInstance().createEndNode(id, name);
+		ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
+		
+		QuestionMC question = (QuestionMC) getKBM(article, section).findQuestion(flowName + "_" + FlowchartTerminologySubTreeHandler.EXITNODES_QUESTION_NAME);
+		
+		action.setQuestion(question);
+		
+		AnswerChoice answer = null;
+		for (AnswerChoice child : question.getAllAlternatives()) {
+			if (child.getText().equals(name))
+				answer = (AnswerChoice) child;
+			
+		}
+		
+		if (answer == null) {
+//			errors.add(new Message("No startnode  '" + flowName + "' not found in terminology of flow '" + flowName +"'."));
+			return null;
+		}
+		
+		action.setValues(new AnswerChoice[] {answer} );
+		
+		return FlowFactory.getInstance().createEndNode(id, name, action);
 	}
 
 	private INode createStartNode(String id, Section section) {

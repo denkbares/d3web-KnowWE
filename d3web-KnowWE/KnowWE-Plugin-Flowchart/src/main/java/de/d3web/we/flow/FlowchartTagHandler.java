@@ -1,5 +1,6 @@
 package de.d3web.we.flow;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,20 +44,25 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = artManager.getArticle(topic);
 		
-		List<Section> flows = article.getSection().findChildrenOfType(FlowchartType.class);
+		List<Section> flows = new ArrayList<Section>();
+		
+		article.getSection().findSuccessorsOfType(FlowchartType.class, flows);
 
 		XPSCase theCase = D3webUtils.getXPSCase(topic, user, web);
 		
 		StringBuilder builder = new StringBuilder();
 		
+		if (flows.isEmpty()) {
+			builder.append("No Flowcharts found in KB.");
+		}
+
+		//Debug
+		builder.append(getPathendText(theCase));
+		//
 		
 		for (Section section : flows) {
 			builder.append(createPreviewWithHighlightedPath(section, theCase));
 				
-			//Debug
-			builder.append(getPathendText(theCase));
-			//
-			
 			builder.append("<p/><p/>");
 			
 		}

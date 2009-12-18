@@ -25,6 +25,7 @@ import java.util.Map;
 
 import de.d3web.we.flow.FlowchartSectionRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
+import de.d3web.we.flow.FlowchartTerminologySubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -60,7 +61,7 @@ public class FlowchartType extends AbstractXMLObjectType {
 	protected void init() {
 		
 		this.childrenTypes.add(FlowchartContentType.getInstance());
-		addReviseSubtreeHandler(new FlowchartSubTreeHandler());
+		addReviseSubtreeHandler(new FlowchartTerminologySubTreeHandler());
 		
 //		setNotRecyclable(true);
 	}

@@ -25,7 +25,9 @@ import java.util.List;
 import javax.servlet.ServletContext;
 
 import de.d3web.we.flow.type.FlowchartType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.RootType;
 import de.d3web.we.module.AbstractDefaultKnowWEModule;
 import de.d3web.we.taghandler.TagHandler;
 
@@ -46,7 +48,7 @@ public class FlowchartPlugin extends AbstractDefaultKnowWEModule{
 	public static FlowchartPlugin getInstance() {
 		if (instance == null) {
 			instance = new FlowchartPlugin();
-			
+			RootType.getInstance().addReviseSubtreeHandler(new DelegateSubtreeHandler(new FlowchartSubTreeHandler(), FlowchartType.class));
 		}
 
 		return instance;
@@ -55,6 +57,11 @@ public class FlowchartPlugin extends AbstractDefaultKnowWEModule{
 	@Override
 	public void initModule(ServletContext context) {
 		this.addTagHandler(new FlowchartTagHandler());
+		
+		//TODO workaround for parsing flow terminology before flow procedures
+		
+		
+		
 	}
 
 	protected void addTagHandler(de.d3web.we.taghandler.TagHandler handler) {
