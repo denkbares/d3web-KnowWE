@@ -42,6 +42,7 @@ import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.basic.VerbatimType;
@@ -376,6 +377,8 @@ public class KnowWEEnvironment {
 				
 			}
 			
+			rootTypes.add(RootType.getInstance());
+			
 			//adding TaggingMangler as SearchProvider to KnowWE-MultiSearch
 			MultiSearchEngine.getInstance().addProvider(TaggingMangler.getInstance());
 			SearchTerminologyHandler.getInstance().addSearchTermExpander(new OWLSubclassExpander());
@@ -513,7 +516,7 @@ public class KnowWEEnvironment {
 	private void initModules(ServletContext context, String web) {
 		// add the default modules
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
-		this.rootTypes.add(VerbatimType.getInstance());
+		addRootType(VerbatimType.getInstance());
 
 		// Loading modules from the single files in modules/
 		ArrayList<String> moduleStrings = new ArrayList<String>();
@@ -616,19 +619,19 @@ public class KnowWEEnvironment {
 		// sections, this type has to be last!
 
 		//this.rootTypes.add(defaultTextType);
-		this.rootTypes.add(new SubClassing());
-		this.rootTypes.add(new XMLDashTree());
-		this.rootTypes.add(new Table());
-		this.rootTypes.add(new Edit());
-		this.rootTypes.add(new CSS());
-		this.rootTypes.add(new TagHandlerType());
-		this.rootTypes.add(new Sparql());
-		this.rootTypes.add(new Namespaces());
-		this.rootTypes.add(new Extension());
-		this.rootTypes.add(new OwlProperties());
-		this.rootTypes.add(new SemanticAnnotation());
-		this.rootTypes.add(new Info());
-		this.rootTypes.add(new Tags());
+		addRootType(new SubClassing());
+		addRootType(new XMLDashTree());
+		addRootType(new Table());
+		addRootType(new Edit());
+		addRootType(new CSS());
+		addRootType(new TagHandlerType());
+		addRootType(new Sparql());
+		addRootType(new Namespaces());
+		addRootType(new Extension());
+		addRootType(new OwlProperties());
+		addRootType(new SemanticAnnotation());
+		addRootType(new Info());
+		addRootType(new Tags());
 
 		// init modules and add root types
 		for (KnowWEModule modul : modules) {
@@ -665,7 +668,11 @@ public class KnowWEEnvironment {
 			// ADD ROOT TYPES
 			List<? extends KnowWEObjectType> moduleRoots = modul.getRootTypes();
 			if (moduleRoots != null) {
-				this.rootTypes.addAll(moduleRoots);
+				
+				for (KnowWEObjectType type : moduleRoots) {
+					addRootType(type);
+				}
+				
 			}
 
 			// ADD Global TYPES
@@ -677,8 +684,12 @@ public class KnowWEEnvironment {
 
 		// ensuring it is last in list
 		//this.rootTypes.remove(defaultTextType);
-		this.rootTypes.add(defaultTextType);
+		addRootType(defaultTextType);
 
+	}
+
+	private boolean addRootType(KnowWEObjectType type) {
+		return RootType.getInstance().getAllowedChildrenTypes().add(type);
 	}
 
 	/**
@@ -926,7 +937,7 @@ public class KnowWEEnvironment {
 		if (this.allKnowWEObjectTypes == null) {
 			KnowWEObjectTypeSet allTypes = new KnowWEObjectTypeSet();
 
-			for (KnowWEObjectType type : this.getRootTypes()) {
+			for (KnowWEObjectType type : getRootTypes()) {
 				KnowWEObjectTypeSet s = KnowWEObjectTypeUtils
 						.getAllChildrenTypesRecursive(type,
 								new KnowWEObjectTypeSet());
@@ -941,7 +952,7 @@ public class KnowWEEnvironment {
 
 	public List<KnowWEObjectType> searchTypeInstances(Class clazz) {
 		List<KnowWEObjectType> instances = new ArrayList<KnowWEObjectType>();
-		for (KnowWEObjectType type : this.rootTypes) {
+		for (KnowWEObjectType type : getRootTypes()) {
 			type.findTypeInstances(clazz, instances);
 		}
 		// for (KnowWEModule mod : this.modules) {

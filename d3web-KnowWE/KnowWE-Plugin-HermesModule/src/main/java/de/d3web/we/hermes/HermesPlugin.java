@@ -48,6 +48,7 @@ import de.d3web.we.hermes.taghandler.ShowTimeEventsForConceptTagHandler;
 import de.d3web.we.hermes.taghandler.TimeLineHandler;
 import de.d3web.we.hermes.taghandler.VersionCountTagHandler;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.dashTree.propertyDefinition.PropertyDefinitionType;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
 import de.d3web.we.module.AbstractDefaultKnowWEModule;
@@ -72,8 +73,13 @@ public class HermesPlugin extends AbstractDefaultKnowWEModule {
 	// standard SemanticAnnotation
 	// to allow for SemanticAnnotation inside TimeEvents (without destroying
 	// those)
-	List<KnowWEObjectType> rootTypes = KnowWEEnvironment.getInstance()
-		.getRootTypes();
+//	List<KnowWEObjectType> rootTypes = KnowWEEnvironment.getInstance()
+//		.getRootTypes();
+
+    //after introducing RootType	
+    List<KnowWEObjectType> rootTypes = RootType.getInstance().getAllowedChildrenTypes();
+    	
+    	
 	int index = -1;
 	for (KnowWEObjectType knowWEObjectType : rootTypes) {
 	    if (knowWEObjectType instanceof SemanticAnnotation) {
