@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,6 +48,17 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin {
 
 	private String topicName = "";
 
+    /**
+	 * To initialize KnowWE, even if the directory for the pages is empty.
+     */
+    public void initialize( WikiEngine engine, Properties properties )
+        throws FilterException {
+    	
+    	super.initialize(engine, properties);
+        m_engine = engine;
+        initKnowWEEnvironmentIfNeeded(engine);
+    }
+	
 	private void initKnowWEEnvironmentIfNeeded(WikiEngine wEngine) {
 		if (!KnowWEEnvironment.isInitialized()) {
 			KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wEngine));
