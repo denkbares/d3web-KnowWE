@@ -9,3 +9,4 @@
 // de.d3web.we.xclgenerator.XCLGeneratorModule
 // de.d3web.we.plugin.TiRex.TiRexModule
 // de.d3web.we.plugin.calendar.CalendarModule
+cc.wiki.todo.TodoPlugin
