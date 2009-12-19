@@ -116,8 +116,13 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 */
 	public AbstractKnowWEObjectType() {
-
+		//TODO: vb: this is dangerous behavior. Should be replaced. The objects "init" method is called, before it is completely initialized by its own constructor.
 		init();
+	}
+
+	public AbstractKnowWEObjectType(SectionFinder sectionFinder) {
+		this();
+		this.sectionFinder = sectionFinder;
 	}
 
 	/**

@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom;
 
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
+
 
 /**
  * @author Jochen
@@ -30,6 +32,14 @@ package de.d3web.we.kdom;
  */
 public abstract class DefaultAbstractKnowWEObjectType extends AbstractKnowWEObjectType{
 
+	public DefaultAbstractKnowWEObjectType() {
+		super();
+	}
+	
+	public DefaultAbstractKnowWEObjectType(SectionFinder sectionFinder) {
+		super(sectionFinder);
+	}	
+	
 	@Override
 	protected void init() {
 		//empty default implementation, if no initialization is necessary
