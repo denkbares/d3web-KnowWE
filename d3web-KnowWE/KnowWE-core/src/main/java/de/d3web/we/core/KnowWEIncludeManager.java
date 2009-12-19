@@ -149,7 +149,7 @@ public class KnowWEIncludeManager {
 		Section<? extends KnowWEObjectType> target;
 		
 		if (address == null) {
-			getNoValidAddressErrorSection(src);
+			return getNoValidAddressErrorSection(src);
 		}
 		
 		// search node in Article
@@ -248,10 +248,13 @@ public class KnowWEIncludeManager {
 				if (inc.getIncludeAddress() != null) {
 					getIncludingSectionsForArticle(inc.getIncludeAddress().getTargetArticle()).add(inc);
 				}
-				reviseArticles.put(inc.getTitle(), inc.getArticle());
+				// don't revise the article if the Include includes from the article it is originating
+				if (!inc.getTitle().equals(target.getTitle())) {
+					reviseArticles.put(inc.getTitle(), inc.getArticle());
+				}
 			}
 		}
-		// rebuild the article 
+		// rebuild the articles
 		// there will be no changes to the KDOM, but maybe 
 		// changes to the Knowledge... the update mechanism will take care of that
 		for (KnowWEArticle ra:reviseArticles.values()) {

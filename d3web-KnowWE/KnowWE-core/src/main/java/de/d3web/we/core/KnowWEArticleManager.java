@@ -221,8 +221,8 @@ public class KnowWEArticleManager {
 		art.getSection().setReusedStateRecursively(art.getTitle(), false);
 		
 		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<----- Finished building article '" + art.getTitle() + "' in " 
-				+ (System.currentTimeMillis() - art.getStartTime()) + "ms <-----");
+			.log(Level.INFO,"<<==== Finished building article '" + art.getTitle() + "' in " 
+				+ (System.currentTimeMillis() - art.getStartTime()) + "ms <<====");
 		
 		return art.getReport();
 	}

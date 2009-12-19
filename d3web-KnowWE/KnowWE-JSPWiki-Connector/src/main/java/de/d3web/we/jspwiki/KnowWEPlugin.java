@@ -166,19 +166,14 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 					KnowWEEnvironment.DEFAULT_WEB, topicName);
 			if (article != null) {
 				String originalText = article.getSection().getOriginalText();
-				if (!originalText.equals(content)) {
-					article = new KnowWEArticle(content, topicName,
-							KnowWEEnvironment.getInstance().getRootTypes(),
-							KnowWEEnvironment.DEFAULT_WEB);
-				}
 				String parse = userContext.getUrlParameterMap().get("parse");
-				if (parse != null && (parse.equals("full") || parse.equals("true")) 
-						&& !article.isFullParse()) {
+				boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
+				if ((fullParse && !article.isFullParse()) || !originalText.equals(content)) {
 					article = new KnowWEArticle(content, topicName,
 							KnowWEEnvironment.getInstance().getRootTypes(),
-							KnowWEEnvironment.DEFAULT_WEB, true);
-					KnowWEEnvironment.getInstance().getArticleManager(
-						"default_web").saveUpdatedArticle(article);
+							KnowWEEnvironment.DEFAULT_WEB, fullParse);
+					KnowWEEnvironment.getInstance().getArticleManager("default_web")
+						.saveUpdatedArticle(article);
 				}
 			} else {
 				article = new KnowWEArticle(content, topicName,

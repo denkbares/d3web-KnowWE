@@ -102,7 +102,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			List<KnowWEObjectType> allowedObjects, String web, boolean fullParse) {
 		
 		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"-----> Starting to build article '" + title + "' ----->");
+			.log(Level.INFO,"====>> Starting to build article '" + title + "' ====>>");
 
 		
 		long startTime = System.currentTimeMillis();
@@ -176,7 +176,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		if (Validator.getResourceBundle().getString("validator.active")
 				.contains("true")) {
 			Logger.getLogger(this.getClass().getName())
-					.log(Level.INFO, "-> Starting to validate article '" + title + "' ->>");
+					.log(Level.INFO, "-> Starting to validate article '" + title + "' ->");
 			
 			Validator.getInstance().validateArticle(this);
 			
