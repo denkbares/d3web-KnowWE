@@ -551,8 +551,57 @@ ActionEditor.getQuestionType = function () {
 		qType = document.choseQuestionType.questionType[3].value;
 	} else if (document.choseQuestionType.questionType[4].checked) {
 		qType = document.choseQuestionType.questionType[4].value;
+	} else if (document.choseQuestionType.questionType[5].checked) {
+		qType = document.choseQuestionType.questionType[5].value;
 	}
 	return qType;
+}
+
+ActionEditor.addSubFlow = function(exitNodes) {
+
+	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
+	var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
+	var name = document.choseQuestionText.questionText.value;
+	
+	var nodesToLine;
+	for (var i = 0; i < exitNodes.length; i++)  {
+		if (i != exitNodes.length -1) {
+			nodesToLine += exitNodes[i] + ',';
+		} else {
+			nodesToLine += exitNodes[i];
+		}
+	}
+	
+	var infos = '&infos=' + pageName + ',' + name +  ',' + nodesToLine;
+
+	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.AddSubFlowchart" + infos;
+	
+	new Ajax.Request(url, {
+		method: 'get',
+		onSuccess: function(transport) {
+		
+		},
+		onFailure: function() {
+			CCMessage.warn(
+				'AJAX Verbindungs-Fehler', 
+				'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
+				'In sp?teren Aktionen k?nnte auch das Speichern der ?nderungen fehlschlagen.');
+		},
+		onException: function(transport, exception) {
+			CCMessage.warn(
+				'AJAX interner Fehler',
+				exception
+				);
+		}
+	}); 
+}
+
+ActionEditor.prototype.createNewFlowchart = function() {
+	var root = this.dom.select('.value')[0];
+	var qText = document.choseQuestionText.questionText.value;
+	var exitNodes = this.getAnswers();
+	this.nodeModel = 'CALL[' + qText + '(Start' + qText + ')]';
+	ActionEditor.addSubFlow(exitNodes);
 }
 
 // puts everything together, e.g. the question, the type and the answers
@@ -642,13 +691,24 @@ ActionEditor.prototype.addAnswer = function() {
 	// if its a yn question or a solution there is no need for custom answers
 	if (questionType === "yn" || questionType === "num" || questionType ===  "Solution") {
 		return this.createNewQuestion();
+		
+	// if a new Flowchart is to be created
+	} else if (questionType === "newFlowchart") {
+		var newAnswer = '<input type="text" size="30" name="answer"><br \>';
+		var buttonWeiter = '<input type="button" value="Weiter" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.createNewFlowchart()"';
+		var buttonOK = '<input type="button" value="Hinzufügen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.answerValue()"';
+		root.innerHTML = '<i>Exit-Knoten für</i><br\>' + questionText + '<br\><i>hinzufügen</i><br\><form name="addAnswer" id="addAnswer" method="get">' + newAnswer + buttonOK + buttonWeiter + '</form><i>bisherige Exit-Knoten:</i>';
+		
+	// else if its a question with custom answers
+	} else {
+		var newAnswer = '<input type="text" size="30" name="answer"><br \>';
+		var buttonWeiter = '<input type="button" value="Weiter" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.createNewQuestion()"';
+		var buttonOK = '<input type="button" value="Hinzufügen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.answerValue()"';
+		root.innerHTML = '<i>Lösungsvorschläge für</i><br\>' + questionText + ' [' + questionType + ']<br\><i>hinzufügen</i><br\><form name="addAnswer" id="addAnswer" method="get">' + newAnswer + buttonOK + buttonWeiter + '</form><i>bisherige Vorschläge:</i>';
 	}
-	
-	var newAnswer = '<input type="text" size="30" name="answer"><br \>';
-	var buttonWeiter = '<input type="button" value="Weiter" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.createNewQuestion()"';
-	var buttonOK = '<input type="button" value="Hinzufügen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.answerValue()"';
-	root.innerHTML = '<i>Lösungsvorschläge für</i><br\>' + questionText + ' [' + questionType + ']<br\><i>hinzufügen</i><br\><form name="addAnswer" id="addAnswer" method="get">' + newAnswer + buttonOK + buttonWeiter + '</form><i>bisherige Vorschläge:</i>';
 }
+
+
 
 
 // TODO filter empty answers
@@ -671,8 +731,10 @@ ActionEditor.prototype.askQuestionType = function() {
 	var yn = '<input type="radio" id="yn" name="questionType" value="yn">Question [yn]<br>';
 	var num = '<input type="radio" id="num" name="questionType" value="num">Question [num]<br>';
 	var solution = '<input type="radio" id="Solution" name="questionType" value="Solution">Solution<br>';
+	var newFlowchart = '<input type="radio" id="newFlowchart" name="questionType" value="newFlowchart">new Flowchart<br>';
 	var buttonOK = '<input type="button" value="Erstellen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.addAnswer()"';
-	root.innerHTML = '<i>Bitte Objekttyp auswählen für</i><br\>' + questionText + '<br\><form name="choseQuestionType" id="choseQuestionType" method="get">' + multipleChoice + oneChoice + yn  + num + solution + "<br\>" + buttonOK + "</form>";
+	root.innerHTML = '<i>Bitte Objekttyp auswählen für</i><br\>' + questionText
+	+ '<br\><form name="choseQuestionType" id="choseQuestionType" method="get">' + multipleChoice + oneChoice + yn  + num + solution + newFlowchart + "<br\>" + buttonOK + "</form>";
 	return;
 }
 
