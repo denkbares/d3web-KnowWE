@@ -46,22 +46,29 @@ public class AddSubFlowchart implements KnowWEAction{
 		KnowWEArticle article = artManager.getArticle(pageName);
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
 		Section sec = article.getSection();
-		KnowWEParameterMap map =  new KnowWEParameterMap(KnowWEAttributes.WEB, sec.getWeb());
 		String oldText = article.getSection().getOriginalText();
 
 		
 		String id = createID(oldText);
-		String before = getSurrounding(oldText)[0];
 		int numberOfNodes = exits.length;
 		
 		String flowchart = "";
-		List<String> exitsFlowHtml = new ArrayList<String>();
 		
+		
+		String preview = "<preview mimetype=\"text/html\">" + LINE_SEPARATOR
+		+ "<![CDATA[" + LINE_SEPARATOR
+		+ "<DIV class=\"Flowchart\" style=\" width: 751px; height: 501px;\">" + LINE_SEPARATOR 
+		+ "<DIV id=\"#node_0\" class=\"Node\" style=\"left: 340px; top: 45px; width: 72px; height: 20px;\">" + LINE_SEPARATOR 
+		+ "<DIV class=\"start\" style=\"width: 58px; height: 20px;\">" + LINE_SEPARATOR 
+		+ "<DIV class=\"decorator\" style=\"width: 25px; height: 25px;\">" + LINE_SEPARATOR 
+		+ "</DIV>" + LINE_SEPARATOR 
+		+ "<DIV class=\"title\" style=\"width: 60px; height: 16px;\">Start</DIV>"+ LINE_SEPARATOR 
+		+ "</DIV>"+ LINE_SEPARATOR 
+		;
 		
 		// the html representation of the nodes
 		
-		String firstLine = "<flowchart id=\"" + id + "\" name=\"" + name + "\" icon=\"sanduhr.gif\" width=\"750\" height=\"500\" idCounter=\"" + numberOfNodes + "\">" + LINE_SEPARATOR + LINE_SEPARATOR;
-		flowchart += firstLine;
+		flowchart += "<flowchart id=\"" + id + "\" name=\"" + name + "\" icon=\"sanduhr.gif\" width=\"750\" height=\"500\" idCounter=\"" + numberOfNodes + "\">" + LINE_SEPARATOR + LINE_SEPARATOR;
 		
 		String startNode = "<!-- nodes of the flowchart -->" + LINE_SEPARATOR
 				+ "<node id=\"#node_0\">" + LINE_SEPARATOR
@@ -73,16 +80,11 @@ public class AddSubFlowchart implements KnowWEAction{
 		
 		
 		int currentNode = 0;
-		int x = 750 / (exits.length + 2);
+		int x = 450 / (exits.length + 2);
 		int y = 400; 
 		
 		for (String s : exits) {
 			currentNode++;
-			
-			// for some not yet fixed bug
-			if (s.startsWith("undefinded")) {
-				s = s.substring(10);
-			}
 			
 			// to get the id
 			String tempid = "#node_" + currentNode;
@@ -92,48 +94,38 @@ public class AddSubFlowchart implements KnowWEAction{
 			// html of the exit node
 			String exit = "<node id=\"" + tempid + "\">" + LINE_SEPARATOR
 					+ "<position left=\"" + left + "\" top=\"" + top
-					+ "\"></position>" + LINE_SEPARATOR + "<exit>Exit</exit>"
+					+ "\"></position>" + LINE_SEPARATOR + "<exit>"+ s + "</exit>"
 					+ LINE_SEPARATOR + "</node>" + LINE_SEPARATOR + LINE_SEPARATOR;
 			
 			flowchart += exit;
 			
 			
-			String flowExit = "<DIV id=\"" + tempid + "\" class=\"Node\" style=\"left: " + left + "px; top: " + top + "px; width: 74px; height: 20px;\">"
-			+ "<DIV class=\"exit\" style=\"width: 60px; height: 20px;\">"
-			+ "<DIV class=\"decorator\" style=\"width: 25px; height: 25px;\"/>"
-			+ "<DIV class=\"title\" style=\"width: 60px; height: 16px;\">Exit</DIV>"
-			+ "</DIV></DIV>";
+			preview += "<DIV id=\"" + tempid + "\" class=\"Node\" style=\"left: " + left + "px; top: " + top + "px; width: 74px; height: 20px;\">" + LINE_SEPARATOR 
+			+ "<DIV class=\"exit\" style=\"width: 60px; height: 20px;\">" + LINE_SEPARATOR 
+			+ "<DIV class=\"decorator\" style=\"width: 25px; height: 25px;\"> </DIV>" + LINE_SEPARATOR 
+			+ "<DIV class=\"title\" style=\"width: 60px; height: 16px;\">" + s +"</DIV>" + LINE_SEPARATOR 
+			+ "</DIV></DIV>" + LINE_SEPARATOR ;
 			
-			exitsFlowHtml.add(flowExit);
 		}
 
 		// the flowchart div part
-		String start = "<preview mimetype=\"text/html\">" + LINE_SEPARATOR
-		+ "<![CDATA[" + LINE_SEPARATOR
-		+ "<DIV class=\"Flowchart\" style=\" width: 751px; height: 501px;\">"
-		+ "<DIV id=\"#node_0\" class=\"Node\" style=\"left: 340px; top: 45px; width: 72px; height: 20px;\">"
-		+ "<DIV class=\"start\" style=\"width: 58px; height: 20px;\">"
-		+ "<DIV class=\"decorator\" style=\"width: 25px; height: 25px;\"/>"
-		+ "<DIV class=\"title\" style=\"width: 60px; height: 16px;\">Start</DIV>"
-		+ "</DIV></DIV>";
+	
 		
-		flowchart += start;
+		preview += "</DIV> ]]>" + LINE_SEPARATOR + 
+				"</preview>" + LINE_SEPARATOR;
+				
+				
+		flowchart += preview;
 		
-		for (String s : exitsFlowHtml) {
-			Logging.getInstance().info("exitsFlowHtml: " + s);
-			flowchart += s;
-		}
-		
-		flowchart += "]]></preview></flowchart>";
-		
+		flowchart += "</flowchart>" + LINE_SEPARATOR;
 
 		String text = getSurrounding(oldText)[0] + flowchart
 				+ getSurrounding(oldText)[1];
 		
 		Logging.getInstance().info(text);
-		instance.saveArticle(sec.getWeb(), sec.getTitle(), text, map);
+		instance.saveArticle(sec.getWeb(), sec.getTitle(), text, parameterMap);
 
-		return "";
+		return "success";
 	}
 	
 	private String createID(String text) {

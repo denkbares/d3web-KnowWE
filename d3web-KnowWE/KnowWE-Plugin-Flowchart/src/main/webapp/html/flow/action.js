@@ -563,13 +563,13 @@ ActionEditor.addSubFlow = function(exitNodes) {
 	var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
 	var name = document.choseQuestionText.questionText.value;
 	
-	var nodesToLine;
+	var nodesToLine='';
 	for (var i = 0; i < exitNodes.length; i++)  {
+		nodesToLine += exitNodes[i];
+		
 		if (i != exitNodes.length -1) {
-			nodesToLine += exitNodes[i] + ',';
-		} else {
-			nodesToLine += exitNodes[i];
-		}
+			nodesToLine += ',';
+		} 
 	}
 	
 	var infos = '&infos=' + pageName + ',' + name +  ',' + nodesToLine;
