@@ -151,12 +151,12 @@
 					</div>			
 				</div>			
 				<div style="padding: 5px;">
-					<div id=fork_prototype class=NodePrototype>
+					<div id=comment_prototype class=NodePrototype>
 						<div class=Node style="position: relative; width: 120px;">
-							<div class=fork>
+							<div class=comment>
 								<div class=decorator></div>
-								<div class=title>new fork</div>
-								<div class=text>drag this element to add a new fork point.</div>
+								<div class=title>new comment</div>
+								<div class=text>drag this element to add a new comment.</div>
 							</div>
 						</div>			
 					</div>			
@@ -376,11 +376,13 @@
 	new Draggable('decision_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
 	new Draggable('start_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
 	new Draggable('exit_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
-	new Draggable('fork_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
+	new Draggable('comment_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
+//	new Draggable('fork_prototype', { ghosting: true, revert: true, reverteffect: revertIt, starteffect: null });
 	$('decision_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {action: { markup: 'KnOffice', expression: ''}}); };
 	$('start_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {start: 'start'}); };
 	$('exit_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {exit: 'done'}); };
-	$('fork_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {fork: 'fork'}); };
+	$('comment_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {comment: 'Kommentar'}); };
+//	$('fork_prototype').createNode = function(flowchart, left, top) { createActionNode(flowchart, left, top, {fork: 'fork'}); };
 	
 	function createActionNode(flowchart, left, top, nodeModel) {
 		nodeModel.position = {left: left, top: top};

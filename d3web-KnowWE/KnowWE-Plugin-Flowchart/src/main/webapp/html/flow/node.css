@@ -38,7 +38,7 @@
 	z-index: 100;
 }
 
-.Node .start, .Node .exit, .Node .fork {
+.Node .start, .Node .exit, .Node .fork , .Node .comment {
 	min-width:	60px;
 	max-width:	120px;
 	min-height: 18px;
@@ -87,6 +87,11 @@
 
 .Node .start {
 	background-color: #bfb; /* #99ff99; */
+	padding-left: 6px;
+}
+
+.Node .comment {
+	background-color: #bbf; /* #99ff99; */
 	padding-left: 6px;
 }
 
@@ -148,6 +153,16 @@
 	height: 25px;
 	z-index: 200;
 	background-image: url(../image/node_decorators/start.gif);
+}
+
+.Node .comment .decorator {
+	position: absolute;
+	top: -8px;
+	left: -5px;
+	width: 24px;
+	height: 24px;
+	z-index: 200;
+	background-image: url(../image/node_decorators/comment.png);
 }
 
 .Node .fork .decorator {

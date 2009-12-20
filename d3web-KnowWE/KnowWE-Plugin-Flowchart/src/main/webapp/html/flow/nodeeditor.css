@@ -33,7 +33,7 @@
 	white-space: nowrap;
 }
 
-.NodeEditor .actionTab, .NodeEditor .startTab, .NodeEditor .exitTab {
+.NodeEditor .actionTab, .NodeEditor .startTab, .NodeEditor .exitTab, .NodeEditor .commentTab {
 	position: relative;
 	display: inline-block;
 	border-top:   1px solid gray;
@@ -44,7 +44,7 @@
 	z-index: 0;
 }
 
-.NodeEditor .actionTab_selected, .NodeEditor .startTab_selected, .NodeEditor .exitTab_selected {
+.NodeEditor .actionTab_selected, .NodeEditor .startTab_selected, .NodeEditor .exitTab_selected, .NodeEditor .commentTab_selected  {
 	position: relative;
 	display: inline-block;
 	border-top:   1px solid gray;
@@ -74,6 +74,13 @@
 	background-repeat: no-repeat;
 }
 
+.NodeEditor .commentTab, .NodeEditor .commentTab_selected {
+	background-color: #bbf;
+	background-image: url(../image/node_decorators/comment.png);
+	background-position: -3px 0px;
+	background-repeat: no-repeat;
+}
+
 .NodeEditor .paneGroup {
 	position: relative;
 	top: -1px;
@@ -97,6 +104,13 @@
 .NodeEditor .exitPane {
 	padding: 5px;
 	background-color: #fbb;
+	border: 1px gray solid;
+	z-index: 50;
+}
+
+.NodeEditor .commentPane {
+	padding: 5px;
+	background-color: #bbf;
 	border: 1px gray solid;
 	z-index: 50;
 }

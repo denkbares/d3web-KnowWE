@@ -223,6 +223,10 @@ Node.prototype.render = function() {
 		contentNode.className = 'exit';
 		contentNode.appendChild(Builder.node('div', {className: 'title'}, [this.nodeModel.exit]));
 	}
+	else if (this.nodeModel.comment) {
+		contentNode.className = 'comment';
+		contentNode.appendChild(Builder.node('div', {className: 'title'}, [this.nodeModel.comment]));
+	}
 	else if (this.nodeModel.action) {
 		var action = new Action(this.nodeModel.action.markup, this.nodeModel.action.expression);
 		var infoObject = KBInfo.lookupInfoObject(action.getInfoObjectName());
@@ -358,6 +362,9 @@ Node.prototype.toXML = function() {
 	else if (this.nodeModel.exit) {
 		xml += '\t\t<exit>'+this.nodeModel.exit.escapeXML()+'</exit>\n';
 	}
+	else if (this.nodeModel.comment) {
+		xml += '\t\t<comment>'+this.nodeModel.comment.escapeXML()+'</comment>\n';
+	}
 	else if (this.nodeModel.action) {
 		var action = this.nodeModel.action;
 		xml += '\t\t<action markup="'+action.markup+'">' + 
@@ -374,7 +381,8 @@ Node.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 		id: pasteOptions.createID(xmlDom.getAttribute('id')),
 		position: { left: 0, top: 0 },
 		start: KBInfo._getNodeValueIfExists(xmlDom, 'start'),
-		exit: KBInfo._getNodeValueIfExists(xmlDom, 'exit')
+		exit: KBInfo._getNodeValueIfExists(xmlDom, 'exit'),
+		comment: KBInfo._getNodeValueIfExists(xmlDom, 'comment')
 	};
 	
 	var posDoms = xmlDom.getElementsByTagName('position');

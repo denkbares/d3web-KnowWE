@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="project" default="default">
+
+		<property name="flowchartDir" value="${basedir}/../../../../KnowWE-Plugin-Flowchart" />
+
+	<property name="buildDir"  value="${basedir}/../../../../KnowWE/target/KnowWE-0-SNAPSHOT"/>
+	
+	<target name="default">
+
+
+		
+		<mkdir dir="/cc" />
+		
+		<copy todir="${buildDir}/cc">
+			<fileset dir="${flowchartDir}/src/main/webapp/html">
+				<include name="**/*.js" />
+				<include name="**/*.css" />
+				<include name="**/*.html" />
+				<include name="**/*.gif" />
+				<include name="**/*.png" />
+				<include name="**/*.jpg" />
+			</fileset>
+		</copy>
+
+		<copy todir="${buildDir}/">
+			<fileset dir="${flowchartDir}/src/main/webapp/jsp">
+				<include name="**/*.jsp" />
+			</fileset>
+		</copy>
+
+
+	</target>
+
+
+</project>

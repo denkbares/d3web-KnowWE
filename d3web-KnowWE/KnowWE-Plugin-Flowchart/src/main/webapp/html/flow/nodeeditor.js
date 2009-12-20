@@ -10,7 +10,7 @@ function NodeEditor(parent, nodeModel, style, onSuccess) {
 	this.tabItems = null;
 	
 	this.setVisible(true);
-	this.selectTab(nodeModel.start ? 1 : nodeModel.exit ? 2 : 0);
+	this.selectTab(nodeModel.start ? 1 : nodeModel.exit ? 2 : nodeModel.comment ? 3: 0);
 }
 
 // register key listener to handle ok / cancel hot keys 
@@ -49,7 +49,7 @@ NodeEditor.prototype.handleOk = function() {
 	};
 	if (this.tabItems[0].className == 'actionTab_selected') {
 		// vor dem ok noch sicherstellen, dass 
-		// das Selektionsfeld übernommen wurde (blur() hilft hier)
+		// das Selektionsfeld ï¿½bernommen wurde (blur() hilft hier)
 		var select = this.dom.select
 		var action = this.actionEditor.getAction();
 		this.nodeModel.action = {
@@ -62,6 +62,9 @@ NodeEditor.prototype.handleOk = function() {
 	}
 	else if (this.tabItems[2].className == 'exitTab_selected') {
 		this.nodeModel.exit = this.tabPanes[2].childNodes[2].value;
+	}
+	else if (this.tabItems[3].className == 'commentTab_selected') {
+		this.nodeModel.comment = this.tabPanes[3].childNodes[2].value;
 	}
 	else {
 		throw "invalid/unexpected tab pane layout";
@@ -146,11 +149,13 @@ NodeEditor.prototype.render = function() {
 	this.tabItems = [
 		Builder.node('span', {className: 'actionTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(0);'}),
 		Builder.node('span', {className: 'startTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(1);'}),
-		Builder.node('span', {className: 'exitTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(2);'})];
+		Builder.node('span', {className: 'exitTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(2);'}),
+	Builder.node('span', {className: 'commentTab', onclick: 'this.parentNode.parentNode.__nodeEditor.selectTab(3);'})];
 	this.tabPanes = [
 		this.renderActionPane(),
 		this.renderStartPane(),
-		this.renderExitPane()];
+		this.renderExitPane(),
+		this.renderCommentPane()];
 		
 	var dom = Builder.node('div', {
 		className: 'NodeEditor',
@@ -194,6 +199,22 @@ NodeEditor.prototype.renderStartPane = function() {
 			value: this.nodeModel.start ? this.nodeModel.start: ''
 			})
 	]);
+	return dom;
+}
+
+NodeEditor.prototype.renderCommentPane = function() {
+	var dom = Builder.node('div', {
+		className: 'commentPane',
+		style: 'display: none;'
+	}, 
+	[
+	 'Kommentar:',
+	 Builder.node('br'),
+	 Builder.node('textarea', 
+			 this.nodeModel.comment ? this.nodeModel.comment: ''
+	 	 
+	 )
+	 ]);
 	return dom;
 }
 
