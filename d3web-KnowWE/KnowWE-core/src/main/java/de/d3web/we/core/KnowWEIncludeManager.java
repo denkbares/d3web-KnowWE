@@ -244,12 +244,17 @@ public class KnowWEIncludeManager {
 					// reuse the last target
 					lastTarget.setReusedStateRecursively(inc.getTitle(), false);
 				}
+				// overwrite the last target
 				src2target.put(inc, target);
 				if (inc.getIncludeAddress() != null) {
 					getIncludingSectionsForArticle(inc.getIncludeAddress().getTargetArticle()).add(inc);
 				}
-				// don't revise the article if the Include includes from the article it is originating
-				if (!inc.getTitle().equals(target.getTitle())) {
+				// don't revise the article that is currently revised again
+				// and don't revise if the error message hasn't changed
+				boolean sameError = lastTarget instanceof IncludeErrorSection 
+					&& target instanceof IncludeErrorSection
+					&& lastTarget.getOriginalText().equals(target.getOriginalText());
+				if (!inc.getTitle().equals(article.getTitle()) && !sameError) {
 					reviseArticles.put(inc.getTitle(), inc.getArticle());
 				}
 			}
@@ -312,7 +317,6 @@ public class KnowWEIncludeManager {
 			// if an Include is from the article with the given title but not in 
 			// the active Includes of this article, it is out of use
 			if (inc.getTitle().equals(title) && !activeIncludes.contains(inc)) {
-				String targetTitle = src2target.get(inc).getTitle();
 				Section targetSection = src2target.get(inc);
 				// since the target has changed, the including article doesn't 
 				// reuse the last target
@@ -321,7 +325,9 @@ public class KnowWEIncludeManager {
 				src2target.remove(inc);
 				// also delete the Include from the set of Includes of
 				// the target article
-				getIncludingSectionsForArticle(targetTitle).remove(inc);
+				if (inc.getIncludeAddress() != null) {
+					getIncludingSectionsForArticle(inc.getIncludeAddress().getTargetArticle()).remove(inc);
+				}
 			}
 		}
 		

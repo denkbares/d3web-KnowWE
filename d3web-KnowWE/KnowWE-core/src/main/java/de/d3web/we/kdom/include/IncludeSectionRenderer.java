@@ -24,15 +24,15 @@ import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class IncludeSectionRenderer extends KnowWEDomRenderer {
+public class IncludeSectionRenderer extends DefaultEditSectionRender {
 
 	
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String srclink;
 		if (sec.getObjectType() instanceof Include && sec.getIncludeAddress() != null) {
 			srclink = createLink(sec.getIncludeAddress().getTargetArticle(),  

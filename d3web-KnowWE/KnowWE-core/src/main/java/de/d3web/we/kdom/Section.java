@@ -279,8 +279,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	@Override
 	public String toString() {
-		return this.getObjectType().getClass().getName() + " l:"
-				+ this.getOriginalText().length() + " - "
+		return (objectType != null && objectType instanceof Include && article != null ? 
+				article.getTitle() : this.getObjectType().getClass().getName() + " l:"
+				+ this.getOriginalText().length()) + " - "
 				+ this.getOriginalText();
 	}
 
