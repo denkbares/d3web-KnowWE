@@ -58,7 +58,6 @@ import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
 import de.d3web.we.kdom.xcl.XCLBody;
 import de.d3web.we.kdom.xcl.XCLHead;
 import de.d3web.we.kdom.xcl.XCLRelationWeight;
-import de.d3web.we.kdom.xcl.XCLRelationWhiteSpaces;
 import de.d3web.we.kdom.xcl.XCLTail;
 import de.d3web.we.kdom.xcl.XCList;
 import dummies.KnowWETestWikiConnector;
@@ -410,18 +409,5 @@ public class d3webSectionFinderTest extends TestCase {
 		assertEquals(WRONG_FOURTH_END, 202, results.get(3).getEnd());
 	}
 	
-	// TODO Should this find all whitespaces...
-	public void testXCLRelationWhiteSpacesFinder() {
-		String text = "Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],\r\n"
-			+ "Are you hungry? = Very very hungry,\r\n"
-			+ "What do you like? = Shopping,\r\n"
-			+ "} \r\n \r\n \r \n";
-		
-		XCLRelationWhiteSpaces.XCLRelationWhiteSpacesSectionFinder f = 
-			new XCLRelationWhiteSpaces().new XCLRelationWhiteSpacesSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
-//		assertEquals(WRONG_FIRST_START, 83, results.get(0).getStart());
-//		assertEquals(WRONG_FIRST_END, 87, results.get(0).getEnd());
-	}
+	
 }
