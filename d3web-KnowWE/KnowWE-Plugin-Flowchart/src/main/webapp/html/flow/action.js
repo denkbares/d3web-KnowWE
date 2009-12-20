@@ -421,8 +421,8 @@ ActionEditor.createQuestionDropdown = function(addedQuestionText, addedQuestionT
 	
 	result.push('---- Frage stellen ----');			
 	// questions can be asked
-	result.push(new Action('KnOffice', 'ERFRAGE['+name.toJSON()+']'));
-	result.push(new Action('KnOffice', 'INSTANT['+name.toJSON()+']'));
+	result.push(new Action('KnOffice', 'ERFRAGE['+name+']'));
+	result.push(new Action('KnOffice', 'INSTANT['+name+']'));
 
 	result.push('---- Wert abfragen ----');			
 	result.push(new Action('NOP', '"'+name.escapeQuote()+'"'));			
