@@ -22,15 +22,15 @@ package de.d3web.we.selenium.main;
 
 import java.util.ResourceBundle;
 
-import org.kohsuke.junit.ParallelTestSuite;
-
-import de.d3web.we.selenium.tests.CalendarTest;
-import de.d3web.we.selenium.tests.CarDiagnosisTest;
-import de.d3web.we.selenium.tests.CommentTest;
-import de.d3web.we.selenium.tests.SetUpWikiPages;
-
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+
+import org.kohsuke.junit.ParallelTestSuite;
+
+import de.d3web.we.selenium.tests.*;
+
+
+
 
 /**
  * This TestClass organizes the Selenium test of KnowWE2.
@@ -44,7 +44,7 @@ import junit.framework.TestSuite;
  * @author Max Diez
  *
  */
-public class SeleniumMainTest extends TestSuite {
+public class SeleniumMainTest extends TestSuite{
 	
 	/**
 	 * Add to mainSuite in the right order the tests which have to be run
@@ -70,6 +70,7 @@ public class SeleniumMainTest extends TestSuite {
 		parallelSuite.addTestSuite(CommentTest.class);
 		
 		mainSuite.addTest(parallelSuite);
+		mainSuite.addTestSuite(CarDiagnosisDialogTest.class);
 
 		return mainSuite;		
 	}
@@ -99,7 +100,7 @@ public class SeleniumMainTest extends TestSuite {
 //			e.printStackTrace();
 //		}
 		System.out.println("Tests started");
-		super.run(result);
+			super.run(result);			
 		System.out.println("Tests finished!");
 //		try {
 //			Thread.sleep(5000);

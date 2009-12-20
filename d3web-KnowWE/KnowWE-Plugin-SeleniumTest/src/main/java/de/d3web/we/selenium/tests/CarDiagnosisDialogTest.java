@@ -23,21 +23,19 @@ package de.d3web.we.selenium.tests;
 import java.util.HashMap;
 import java.util.Map;
 
-
-public class CarDiagnosisTest extends KnowWETestCase{
+public class CarDiagnosisDialogTest extends KnowWETestCase{
 	
-	@SuppressWarnings("unchecked")
-	public void testQuestionsheetAndSolutions(){
-		
-		boolean isDialog = false;
-		boolean result;
-		
+	public void testCDDialog(){
 		open("Wiki.jsp?page=Car-Diagnosis-Test");
 		assertEquals("KnowWE: Car-Diagnosis-Test", selenium.getTitle());
 		assertTrue("Solutionstates nicht eingebunden",
 				selenium.isElementPresent("//div[@id='sstate-panel']/h3"));
 		
+		boolean isDialog = true;
+		
 		Map<String, Integer[]> map = new HashMap();
+		boolean result;
+				
 		map.put("Battery o.k.?", new Integer[] {2});
 		map.put("Ignition timing o.k.?", new Integer[] {2});
 		map.put("Air filter o.k.?", new Integer[] {2});	
@@ -48,8 +46,9 @@ public class CarDiagnosisTest extends KnowWETestCase{
 				"Damaged idle speed system"}, map, isDialog);
 		assertEquals(comment, true, result);
 		
+		
 		map.clear();
-		map.put("Engine noises", new Integer[] {1});
+		map.put("Engine noises", new Integer[] {2});
 		result = checkSolutions(new String[] {"Bad ignition timing"}, map, isDialog);
 		assertEquals(comment, true, result);
 		
@@ -61,7 +60,7 @@ public class CarDiagnosisTest extends KnowWETestCase{
 		assertEquals(comment, true, result);
 		
 		map.clear();
-		map.put("Exhaust pipe color", new Integer[] {2});
+		map.put("What is the color of the exhaust pipe?", new Integer[] {2});
 		map.put("Driving", new Integer[] {1, 2, 3});
 		result = checkAndUncheckSolutions(new String[] {"Leaking air intake system"},
 				new String[] {"Clogged air filter"}, map, isDialog);
@@ -79,5 +78,6 @@ public class CarDiagnosisTest extends KnowWETestCase{
 		map.put("Battery o.k.?", new Integer[] {2});
 		result = checkSolutions(new String[] {"Clogged air filter", "Empty battery"}, map, isDialog);
 		assertEquals(comment, true, result);
+		
 	}
 }

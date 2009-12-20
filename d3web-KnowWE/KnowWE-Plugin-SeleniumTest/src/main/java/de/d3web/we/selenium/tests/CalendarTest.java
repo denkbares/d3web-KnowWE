@@ -28,8 +28,8 @@ public class CalendarTest extends KnowWETestCase{
 	
 	public void testNewCalendarEntry() throws Exception {
 		openWindowBlank(rb.getString("KnowWE.SeleniumTest.server")
-				+ "Wiki.jsp?page=Selenium-Docu", "KnowWE: Selenium-Docu");
-		verifyTrue(selenium.getTitle().contains("KnowWE: Selenium-Docu"));
+				+ "Wiki.jsp?page=Selenium-Docu", "Selenium-Docu");
+		verifyTrue(selenium.getTitle().contains("Selenium-Docu"));
 		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a/span");
 		
 		Date d = new Date();
