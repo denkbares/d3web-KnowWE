@@ -33,6 +33,8 @@ import com.thoughtworks.selenium.KnowWESeleneseTestCase;
  */
 public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	
+	protected String comment = new String();
+	
 	ResourceBundle rb = ResourceBundle.getBundle("KnowWE-Selenium-Test");
 	
 	/**
@@ -52,10 +54,10 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * page to be loaded before continuing with the test.
 	 * If time (standard value set in properties file) expires the test will
 	 * quit by error.
-	 * @param linkName This is the string Selenium uses to search for the link.
+	 * @param linkName This is the string/locator Selenium uses to search for the link.
 	 */
-	public void loadAndWait(String linkName) {
-		selenium.click(linkName);
+	public void loadAndWait(String locator) {
+		selenium.click(locator);
 		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
 	}
 	
@@ -68,75 +70,130 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 */
 	public void openWindowBlank (String url, String name) {
 		selenium.openWindow(url, name);
+		selenium.selectWindow(name);
+		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+		selenium.windowFocus();
+	}
+	
+	/**
+	 * This method simulates the user's action clicking on the browser's
+	 * refresh and waits until the page finished loading.
+	 */
+	private void refreshAndWait() {
+		selenium.refresh();
+		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));		
+	}
+	
+	/**
+	 * Clicks on a certain element and stops for a fixed time.
+	 * @param string Locator to find the element to click on
+	 */
+	private void clickAndWait(String string) {
+		selenium.click(string);
 		try {
 			Thread.sleep(Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime")));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		selenium.selectWindow(name);
-		selenium.windowFocus();
 	}
 	
-	public boolean checkSolutions(String[] solutions, Map<String, Integer> input) {
-		return checkAndUncheckSolutions(solutions, new String[] {}, input);
+	public boolean checkSolutions(String[] solutions, Map<String, Integer[]> input, boolean isDialog) {
+		return checkAndUncheckSolutions(solutions, new String[] {}, input, isDialog);
 	}
 	
 	/**
-	 * This will help you to check your questionsheet.
+	 * This method will help to check the functionality of
+	 * questionsheet and dialog of an existing knowledgebase.
 	 * @param input This map contains the information about what should
 	 * be chosen (no text fields). Key is the name of the category and 
-	 * value is the option's number (int beginning with 1).  
+	 * value is an array of the option's numbers (int beginning with 1).  
 	 * @param expSolutions This is an array of all the solutions which should
 	 * appear after setting the input,
 	 * @param notExpSolutions and these should not appear.
-	 * @return true if with your input parameters all expected Solutions 
-	 * are shown and all not expected not; else false.
+	 * @param isDialog If true the dialog is checked else the questionsheet
+	 * @return true if with the input parameters all expected Solutions 
+	 * are shown at solutionsstates and all not expected not; else false.
 	 */
 	public boolean checkAndUncheckSolutions(String[] expSolutions, String[] notExpSolutions,
-			Map<String,Integer> input) {
-		Long sleep = Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime"));
-		
-		selenium.click("sstate-clear");
-		for (String elem : input.keySet()) {
-			selenium.click("//span[text()='" + elem.trim()+ "']");
+			Map<String, Integer[]> input, boolean isDialog) {
+		if (isDialog) {
+			clickAndWait("sstate-clear");
+			clickAndWait("//img[@title='Fall']");
+			open("dialog.jsf");
+			assertEquals(selenium.getTitle(), "d3web Dialog");
 			
-			//It's recommended to wait until the dialog pops up
-			try {
-				Thread.sleep(sleep);
-			} catch (InterruptedException ie) {
-				return false;
+			//Try all observations on the left (Frageboegen)
+			for (int i = 1; selenium.isElementPresent("//div[@id='qasettree']//table[" + i + "]//span"); i++) {
+				clickAndWait("//div[@id='qasettree']//table[" + i + "]//span");
+				refreshAndWait();
+				//Try all categories of input
+				for (String elem : input.keySet()) {
+					if (selenium.getText("//table[@id='qPage']").contains(elem)) {
+						boolean elemFound = false;
+						//Try all listed categories of the choosen observation
+						for (int j = 1; !elemFound && j < 10000; j++) {
+							if (selenium.isElementPresent("//table[@id='qPage']//td[@id='qTableCell_Q" + j + "']") &&
+									selenium.getText("//table[@id='qPage']//td[@id='qTableCell_Q" + j + "']").contains(elem.trim())){
+								//Choose all answers given in the int array of input
+								for (int k = 0; k < input.get(elem).length; k++) {
+									clickAndWait("//td[@id='qTableCell_Q" + j + "']//input[@id='Q" + j + "a" + input.get(elem)[k] + "']");
+									clickAndWait("//td[@id='qTableCell_Q" + j + "']//input[@id='dialogForm:questions:q_ok']");									
+								}
+								elemFound = true;
+							}
+						}
+					}
+				}
 			}
+			clickAndWait("link=Ergebnisseite");
+			open("Wiki.jsp?page=Car-Diagnosis-Test");
+			return verifySolutions(expSolutions, notExpSolutions);
+		} else {
+			Long sleepTime = Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime"));
 			
-			//Radio buttons or check box
-			if (selenium.isElementPresent("//form[@name='semanooc']/input[" + input.get(elem) + "]")) {
-				selenium.click("//form[@name='semanooc']/input[" + input.get(elem) + "]");
-			}
-			if(selenium.isElementPresent("//form[@name='semanomc']/input[" + input.get(elem) + "]")){
-				selenium.click("//form[@name='semanomc']/input[" + input.get(elem) + "]");
-				//CheckBoxes need some special treatment
-				try {
-					Thread.sleep(sleep);
-				} catch (InterruptedException ie) {
-					return false;
+			selenium.click("sstate-clear");
+			for (String elem : input.keySet()) {
+				Integer[] actCategory = input.get(elem);
+				clickAndWait("//span[text()='" + elem.trim()+ "']");
+				
+				//It's recommended to wait until the dialog pops up
+				threadSleep(sleepTime);
+				
+				//Radio buttons or check box
+				for (int i = 0; i < actCategory.length; i++) {
+					if (selenium.isElementPresent("//form[@name='semanooc']/input[" + actCategory[i] + "]")) {
+						clickAndWait("//form[@name='semanooc']/input[" + actCategory[i] + "]");						
+					}
+					if(selenium.isElementPresent("//form[@name='semanomc']/input[" + actCategory[i] + "]")){
+						selenium.click("//form[@name='semanomc']/input[" + actCategory[i] + "]");
+						//CheckBoxes need some special treatment
+						threadSleep(sleepTime);
+					}
 				}
 				//Close pop-up window if not done yet
 				if (selenium.isElementPresent("o-lay-close")) {
-					selenium.click("o-lay-close");				
-				}
-			}
-			try {
-				Thread.sleep(sleep);
-			} catch (InterruptedException ie) {
-				return false;
-			}
-		}			
-		try {
-			Thread.sleep(sleep);
-		} catch (InterruptedException ie) {
-			return false;
+					clickAndWait("o-lay-close");				
+				}						
+				threadSleep(sleepTime);
+			}			
+			threadSleep(sleepTime);
+			return verifySolutions(expSolutions, notExpSolutions);
 		}
+	}
 		
+	/**
+	 * After selecting all answers in checkAndUncheckSolution, this method
+	 * evaluates if the right solutions are shown in solutionstate
+	 * @param expSolutions This is an array of all the solutions which should
+	 * appear after setting the input,
+	 * @param notExpSolutions and these should not appear.
+	 * @return true if with the input parameters all expected Solutions 
+	 * are shown at solutionsstates and all not expected not; else false.
+	 */
+	private boolean verifySolutions(String[] expSolutions, String[] notExpSolutions) {
 		String actSolutions = "";
+		comment = "";
+		clickAndWait("sstate-update");
 		if (selenium.isElementPresent("//div[@id='sstate-result']/div/ul/")) {
 			actSolutions = selenium.getText("//div[@id='sstate-result']/div/ul/");			
 		}
@@ -146,12 +203,42 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		}
 		boolean result = true;
 		for (int i = 0; i < expSolutions.length; i++) {
-			result = result && actSolutions.contains(expSolutions[i]);
+			boolean hasExpSol = actSolutions.contains(expSolutions[i]);
+			if (!hasExpSol) {
+				comment += "Didn't saw solution " + expSolutions[i] + ". ";
+			}
+			result = result && hasExpSol;
 		}
 		for (int i = 0; i < notExpSolutions.length; i++) {
-			result = result && !actSolutions.contains(notExpSolutions[i]);
+			boolean hasntNotExpSol = !actSolutions.contains(notExpSolutions[i]);
+			if (!hasntNotExpSol) {
+				comment += "Saw not expected solution " + notExpSolutions[i] + ". ";
+			}
+			result = result && hasntNotExpSol;
 		}
+		clickAndWait("sstate-clear");
 		return result;
 	}
-
+	
+	/**
+	 * This method sets a little break. Thread is temporary paused.
+	 * @param sleepTime Break duration
+	 */
+	private void threadSleep(Long sleepTime) {
+		try {
+			Thread.sleep(sleepTime);
+		} catch (InterruptedException ie) {
+			ie.printStackTrace();
+		}
+	}
+	
+	/**
+	 * This method opens in the chosen window a new page and waits for its
+	 * loading.
+	 * @param url Address of the new page
+	 */
+	public void open(String url) {
+		selenium.open(url);
+		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+	}
 }

@@ -26,6 +26,7 @@ import junit.framework.TestSuite;
 import org.kohsuke.junit.ParallelTestSuite;
 
 import de.d3web.we.selenium.tests.CalendarTest;
+import de.d3web.we.selenium.tests.CarDiagnosisDialogTest;
 import de.d3web.we.selenium.tests.CarDiagnosisTest;
 import de.d3web.we.selenium.tests.CommentTest;
 
@@ -67,6 +68,7 @@ public class SeleniumMainTest extends TestSuite {
 		parallelSuite.addTestSuite(CommentTest.class);
 		
 		mainSuite.addTest(parallelSuite);
+		mainSuite.addTestSuite(CarDiagnosisDialogTest.class);
 
 		return mainSuite;		
 	}

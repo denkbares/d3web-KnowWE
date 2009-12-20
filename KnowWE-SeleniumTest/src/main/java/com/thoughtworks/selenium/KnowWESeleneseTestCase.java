@@ -98,7 +98,7 @@ public class KnowWESeleneseTestCase extends TestCase {
     
     /** Like assertEquals, but fails at the end of the test (during tearDown) */
     public void verifyEquals(boolean arg1, boolean arg2) {
-        stb.verifyEquals(arg1, arg2);
+        stb.verifyEquals("" + arg1, "" + arg2);
     }
     
     /** Like assertEquals, but fails at the end of the test (during tearDown) */
