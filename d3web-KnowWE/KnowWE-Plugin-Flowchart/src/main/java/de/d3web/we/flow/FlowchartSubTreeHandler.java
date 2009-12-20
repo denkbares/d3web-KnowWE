@@ -65,6 +65,7 @@ import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
 import de.d3web.kernel.psMethods.nextQASet.ActionIndication;
 import de.d3web.kernel.psMethods.questionSetter.ActionSetValue;
 import de.d3web.report.Message;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.ActionType;
 import de.d3web.we.flow.type.EdgeType;
 import de.d3web.we.flow.type.ExitType;
@@ -144,10 +145,13 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		flows.put(flow);
 		
+//		KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).getTypeStore().
+		
+		
 		if (!errors.isEmpty())
 			System.out.println(errors);
-		else
-			System.out.println("No errors");
+//		else
+//			System.out.println("No errors");
 		
 		
 	}
@@ -167,7 +171,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			INode source = getNodeByID(sourceID, nodes);
 			
 			if (source == null) {
-				System.out.println("No node found with id: " + sourceID);
+				errors.add(new Message("No node found with id: " + sourceID));
 				continue;
 			}
 			
@@ -177,7 +181,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			INode target = getNodeByID(targetID, nodes);
 			
 			if (target == null) {
-				System.out.println("No node found with id: " + targetID);
+				errors.add(new Message("No node found with id: " + targetID));
 				continue;
 			}
 			
@@ -311,9 +315,9 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		RuleAction action = NoopAction.INSTANCE;
 		String string = getXMLContentText(section);
 		if (string.startsWith("ERFRAGE")) {
-			action = createQAindicationAction(article, section, string);
+			action = createQAindicationAction(article, section, string, errors);
 		} else if (string.contains("=")) {
-			action = createHeuristicScoreAction(article, section, string);
+			action = createHeuristicScoreAction(article, section, string, errors);
 		} else if (string.startsWith("CALL[")) {
 			action = createCallFlowAction(article, section, string, errors);
 		}
@@ -378,7 +382,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 
 	private RuleAction createHeuristicScoreAction(KnowWEArticle article, Section section,
-			String string) {
+			String string, List<Message> errors) {
 		
 		String[] split = string.split("=");
 		String solution = split[0].trim();
@@ -398,10 +402,12 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			solution = solution.substring(1, solution.length()-1);
 		
 		
-		Diagnosis diagnosis = getKBM(article, section).findDiagnosis(solution); 
+		KnowledgeBaseManagement kbm = getKBM(article, section);
+		Diagnosis diagnosis = kbm.findDiagnosis(solution); 
 		
-		if (diagnosis == null)
-			Logging.getInstance().log(Level.INFO, "Diagnosis not found: " + solution);
+		if (diagnosis == null) {
+			errors.add(new Message("Diagnosis not found: " + solution));
+		}
 		
 		action.setDiagnosis(diagnosis);
 		
@@ -414,7 +420,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return action;
 	}
 
-	private RuleAction createQAindicationAction(KnowWEArticle article, Section section, String string) {
+	private RuleAction createQAindicationAction(KnowWEArticle article, Section section, String string, List<Message> errors) {
 		String name = string.substring(8, string.length() - 1);
 		QASet findQuestion = getKBM(article, section).findQuestion(name);
 		
@@ -422,7 +428,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			findQuestion = getKBM(article, section).findQContainer(name);
 			
 		if (findQuestion == null) {
-			Logging.getInstance().log(Level.WARNING, "could not find question: " + name);
+			errors.add(new Message("Question not found: " + name));
 			return NoopAction.INSTANCE;
 		}
 		

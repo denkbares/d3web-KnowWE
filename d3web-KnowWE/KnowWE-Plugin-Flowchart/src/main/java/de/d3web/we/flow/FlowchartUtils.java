@@ -41,6 +41,10 @@ public class FlowchartUtils {
 		
 		Section previewsection = flowchartSection.findSuccessor(FlowchartPreviewContentType.class);
 
+		if (previewsection == null)
+			return "";
+		
+		
 		return extractPreview(previewsection.getOriginalText());
 	}
 	

@@ -9,8 +9,10 @@ import de.d3web.kernel.domainModel.CaseObjectSource;
 import de.d3web.kernel.psMethods.diaFlux.FluxSolver;
 import de.d3web.kernel.psMethods.diaFlux.PathEntry;
 import de.d3web.kernel.psMethods.diaFlux.flow.DiaFluxCaseObject;
+import de.d3web.kernel.psMethods.diaFlux.flow.EdgeSupport;
 import de.d3web.kernel.psMethods.diaFlux.flow.FlowSet;
 import de.d3web.kernel.psMethods.diaFlux.flow.INode;
+import de.d3web.kernel.psMethods.diaFlux.flow.ISupport;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.FlowchartType;
@@ -167,10 +169,16 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 				}
 			}
 			
-			String edgeId = currentEntry.getEdge().getID();
-			for (int i = 0; i < edges.length; i++) {
-				if (edges[i].contains(edgeId + "\"")) {
-					preview = colorEdge(edges[i], preview);
+			ISupport support = currentEntry.getSupport();
+			if ((support instanceof EdgeSupport)) {
+			
+				
+				String edgeId = ((EdgeSupport) support).getEdge().getID();
+				
+				for (int i = 0; i < edges.length; i++) {
+					if (edges[i].contains(edgeId + "\"")) {
+						preview = colorEdge(edges[i], preview);
+					}
 				}
 			}
 			
