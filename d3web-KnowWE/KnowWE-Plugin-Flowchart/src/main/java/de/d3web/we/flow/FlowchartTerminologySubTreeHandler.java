@@ -109,7 +109,18 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 
 	private void createTerminology(Flow flow, KnowledgeBaseManagement kbm) {
 
-		QContainer flowQC = kbm.createQContainer(flow.getName() + "_Questionnaire", null);
+		
+		
+		QContainer flowQC;
+		String name = flow.getName() + "_Questionnaire";
+		
+		//reuse QContainer if already defined
+		flowQC = kbm.findQContainer(name);
+		
+		if (flowQC == null)
+			flowQC = kbm.createQContainer(name, null);
+		else
+			System.out.println("QContainer found:" + name);
 
 		QuestionMC startQ = createQuestion(flowQC, flow.getName() + "_" + STARTNODES_QUESTION_NAME, flow.getStartNodes(), kbm);
 		createRules(flow, startQ, kbm);		
