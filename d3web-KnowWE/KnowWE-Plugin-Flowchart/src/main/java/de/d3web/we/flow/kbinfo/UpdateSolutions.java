@@ -20,6 +20,9 @@
 
 package de.d3web.we.flow.kbinfo;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
@@ -84,7 +87,7 @@ public class UpdateSolutions implements KnowWEAction {
 		// if Kopic as well as Solutions-section Tag are missing
 		} else {
 			firstPart = oldText;
-			lastPart = "</Solutions-section></Kopic>";
+			lastPart = "</Solutions-section>" + LINE_SEPARATOR + "</Kopic>";
 			newSolutionsSection = this.addSolution("<Kopic>" + LINE_SEPARATOR + "<Solutions-section>",
 					solutionText);
 		}
@@ -98,14 +101,19 @@ public class UpdateSolutions implements KnowWEAction {
 	
 	
 	private String addSolution(String solutionsSection, String solutionText) { 
-		String newSolutionsSection = solutionsSection;
-		StringBuffer buffy = new StringBuffer();
+
+//		if (!solutionsSection.contains(solutionText)) {
+		//"Contains" is too weak: tried to add Solution "Bogen Vergiftung" when "Bogen Vergiftung Kind"
+		//was already a Solution -> didnt do anything
+		//Solution must be in its own line
 		
-		if (!solutionsSection.contains(solutionText)) {
-			buffy.append(solutionText + LINE_SEPARATOR);
-		}
-		newSolutionsSection += buffy.toString();
-		return newSolutionsSection;
+		
+		Matcher matcher = Pattern.compile("^" + solutionText + "$", Pattern.MULTILINE).matcher(solutionsSection);
+		
+		if (!matcher.lookingAt())
+			return solutionsSection + solutionText + LINE_SEPARATOR;
+		else 
+			return solutionsSection;
 	}
 	
 
