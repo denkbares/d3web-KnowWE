@@ -60,15 +60,18 @@ public class SeleniumMainTest extends TestSuite {
 		//the wiki (d3web-KnowWE/KnowWE/src/misc/resources/core-pages/)
 //		mainSuite.addTestSuite(SetUpWikiPages.class);
 
-		TestSuite parallelSuite = new ParallelTestSuite("Testsuite for all parallel units");
+//		TestSuite parallelSuite = new ParallelTestSuite("Testsuite for all parallel units");
 		
 		//Add here the test which could be run in parrallel
-		parallelSuite.addTestSuite(CalendarTest.class);
-		parallelSuite.addTestSuite(CarDiagnosisTest.class);
-		parallelSuite.addTestSuite(CommentTest.class);
+//		parallelSuite.addTestSuite(CalendarTest.class);
+//		parallelSuite.addTestSuite(CarDiagnosisTest.class);
+//		parallelSuite.addTestSuite(CommentTest.class);
 		
-		mainSuite.addTest(parallelSuite);
+//		mainSuite.addTest(parallelSuite);
 		mainSuite.addTestSuite(CarDiagnosisDialogTest.class);
+		mainSuite.addTestSuite(CalendarTest.class);
+		mainSuite.addTestSuite(CarDiagnosisTest.class);
+		mainSuite.addTestSuite(CommentTest.class);
 
 		return mainSuite;		
 	}
