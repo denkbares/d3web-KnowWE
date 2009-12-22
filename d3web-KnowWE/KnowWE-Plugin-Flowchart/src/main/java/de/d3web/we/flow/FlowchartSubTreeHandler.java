@@ -63,10 +63,12 @@ import de.d3web.kernel.psMethods.diaFlux.flow.IEdge;
 import de.d3web.kernel.psMethods.diaFlux.flow.INode;
 import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
 import de.d3web.kernel.psMethods.nextQASet.ActionIndication;
+import de.d3web.kernel.psMethods.nextQASet.ActionInstantIndication;
 import de.d3web.kernel.psMethods.questionSetter.ActionSetValue;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.ActionType;
+import de.d3web.we.flow.type.CommentType;
 import de.d3web.we.flow.type.EdgeType;
 import de.d3web.we.flow.type.ExitType;
 import de.d3web.we.flow.type.GuardType;
@@ -107,7 +109,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		List<Message> errors = new ArrayList<Message>();
 		
-		List<Section> sections = new ArrayList<Section>();
+		List<Section> nodeSections = new ArrayList<Section>();
+		List<Section> edgeSections = new ArrayList<Section>();
 
 		Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(s);
 		String name = attributeMap.get("name");
@@ -115,13 +118,18 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		if (name == null || name.equals(""))
 			name = "unnamed";
 		
-		content.findSuccessorsOfType(NodeType.class, sections);
-		List<INode> nodes = createNodes(article, name, sections, errors);
+		content.findSuccessorsOfType(NodeType.class, nodeSections);
+		List<INode> nodes = createNodes(article, name, nodeSections, errors);
 		
-		sections.clear();
+		if (nodeSections.size() != nodes.size())
+			System.out.println("Could not parse all nodes");
 		
-		content.findSuccessorsOfType(EdgeType.class, sections);
-		List<IEdge> edges = createEdges(article, sections, nodes, errors);
+//		System.out.println(nodes);
+//		System.out.println(nodeSections);
+		
+		
+		content.findSuccessorsOfType(EdgeType.class, edgeSections);
+		List<IEdge> edges = createEdges(article, edgeSections, nodes, errors);
 		
 		
 		String id = attributeMap.get("id");
@@ -145,13 +153,10 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		flows.put(flow);
 		
-//		KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).getTypeStore().
 		
 		
 		if (!errors.isEmpty())
-			System.out.println(errors);
-//		else
-//			System.out.println("No errors");
+			System.out.println(errors.size() +" errors in Flow '" + name +"': " + errors);
 		
 		
 	}
@@ -164,6 +169,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		for (Section section : edgeSections) {
 			
+			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
 			Section content = (Section) section.getChildren().get(1); //get edgecontent-section
 			
 			String sourceID = getXMLContentText(content.findChildOfType(SourceType.class));
@@ -171,7 +177,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			INode source = getNodeByID(sourceID, nodes);
 			
 			if (source == null) {
-				errors.add(new Message("No node found with id: " + sourceID));
+				errors.add(new Message("No source node found with id '" + sourceID + "' in edge '" + id + "'."));
 				continue;
 			}
 			
@@ -181,11 +187,10 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			INode target = getNodeByID(targetID, nodes);
 			
 			if (target == null) {
-				errors.add(new Message("No node found with id: " + targetID));
+				errors.add(new Message("No target node found with id '" + targetID + "' in edge '" + id + "'."));
 				continue;
 			}
 			
-			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
 			
 			
 			
@@ -254,7 +259,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	}
 
 	private String getXMLContentText(Section s) {
-		return ((Section) s.getChildren().get(1)).getOriginalText();
+		String originalText = ((Section) s.getChildren().get(1)).getOriginalText();
+		return originalText;
 	}
 
 	private INode getNodeByID(String nodeID, List<INode> nodes) {
@@ -299,6 +305,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 				result.add(createEndNode(article, id, flowName, nodeinfo));
 			else if(nodeinfo.getObjectType() == ActionType.getInstance())
 				result.add(createActionNode(article, id, nodeinfo, errors));
+			else if(nodeinfo.getObjectType() == CommentType.getInstance())
+				result.add(createCommentNode(article, id, nodeinfo, errors));
 			else
 				errors.add(new Message("Unknown node type: " + nodeinfo.getObjectType()));
 //				throw new UnsupportedOperationException();
@@ -309,6 +317,16 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		return result;
 	}
+
+	private INode createCommentNode(KnowWEArticle article, String id,
+			Section nodeinfo, List<Message> errors) {
+
+		RuleAction action = NoopAction.INSTANCE;
+		
+		return FlowFactory.getInstance().createNode(id, action);
+	}
+
+
 
 	private INode createActionNode(KnowWEArticle article, String id, Section section, List<Message> errors) {
 		
@@ -440,7 +458,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		rule.setProblemsolverContext(FluxSolver.class);
 		rule.setCondition(new CondAnd(new ArrayList()));
 
-		RuleAction action = new ActionIndication(rule);
+		RuleAction action = new ActionInstantIndication(rule);
 		((ActionIndication) action).setQASets(qasets);
 //		((RuleAction)action).setCorrespondingRule(rule);
 		

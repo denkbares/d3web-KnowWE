@@ -20,40 +20,32 @@
 
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.xml.XMLContent;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
  * 
  *
- * @author hatko
- * Created on: 09.10.2009
+ * @author Reinhard Hatko
+ * Created on: 21.12.2009
  */
-public class NodeContentType extends XMLContent{
+public class CommentType extends AbstractXMLObjectType {
 
-	private static NodeContentType instance;
+	private static CommentType instance;
 
-	private NodeContentType() {
+	private CommentType() {
+		super("comment");
 	}
 
-	public static NodeContentType getInstance() {
+	public static CommentType getInstance() {
 		if (instance == null)
-			instance = new NodeContentType();
+			instance = new CommentType();
 
 		return instance;
 	}
 
-
 	
 	@Override
 	protected void init() {
-		this.childrenTypes.add(StartType.getInstance());
-		this.childrenTypes.add(ExitType.getInstance());
-		this.childrenTypes.add(PositionType.getInstance());
-		this.childrenTypes.add(ActionType.getInstance());
-		this.childrenTypes.add(CommentType.getInstance());
-		
-		
 	}
-
 
 }
