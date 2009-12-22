@@ -133,9 +133,18 @@ public class FlowchartDiffProvider implements DiffProvider
             // if the changes are in a flowchart section
             if (ret.toString().contains("&lt;DIV class=&quot;Flowchart&quot; style=&quot;")) {
             
-                String v1 = p1.substring(p1.indexOf("<flowchart id="), p1.indexOf("</preview></flowchart>")) + "</preview></flowchart>";
-                String v2 = p2.substring(p2.indexOf("<flowchart id=" ), p2.indexOf("</preview></flowchart>")) + "</preview></flowchart>";
-
+            	
+            	// select the changed flowchart - important if there
+            	// are more than 1
+            	String changedFlowchartID = changedFlowchart(p1, p2);
+            	
+                String v1 = p1.substring(p1.indexOf("<flowchart id=\"" + changedFlowchartID));
+                v1 = v1.substring(0, v1.indexOf("</preview></flowchart>")) + "</preview></flowchart>";
+                
+                String v2 = p2.substring(p2.indexOf("<flowchart id=\"" + changedFlowchartID));
+                v2 = v2.substring(0, v2.indexOf("</preview></flowchart>")) + "</preview></flowchart>";
+                                
+                
                 List<FlowchartNode> f1 = getNodes(v1);
                 List<FlowchartNode> f2 = getNodes(v2);
          
@@ -668,6 +677,22 @@ public class FlowchartDiffProvider implements DiffProvider
     private String removeHighlighting(String version) {
     	return version.replace("_highlight", "");
     }
+    
+    private String changedFlowchart(String p1, String p2) {
+    	
+    	String[] flowChartsInp1 = p1.split("<flowchart id=\"");
+    	String[] flowChartsInp2 = p2.split("<flowchart id=\"");
+
+    	for (int i = 1; i < flowChartsInp1.length; i++) {
+    		if (!flowChartsInp1[i].equals(flowChartsInp2[i])) {
+    			return flowChartsInp1[i].substring(0, flowChartsInp1[i].indexOf("\""));
+    		}
+    	}
+    	return null;
+    }
+    
+
+
 
     private static final class RevisionPrint
         implements RevisionVisitor
