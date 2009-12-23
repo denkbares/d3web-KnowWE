@@ -59,12 +59,28 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		}
 
 		//Debug
-		builder.append(getPathendText(theCase));
+		if (isDebug(user.getUrlParameterMap()))
+			builder.append(getPathendText(theCase));
 		//
 		
 		for (Section section : flows) {
-			builder.append(createPreviewWithHighlightedPath(section, theCase));
+			
+			Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(section);
+			String name = attributeMap.get("name");
+			
+			builder.append("<div>");
+			builder.append("<h3>");
+			builder.append("Flowchart '");
+			builder.append(name);
+			builder.append("'");
+			builder.append("</h3>");
+			
+			if (isActive(section, theCase)) {
+				builder.append(createPreviewWithHighlightedPath(section, theCase));
+			}
+			
 				
+			builder.append("</div>");
 			builder.append("<p/><p/>");
 			
 		}
@@ -72,12 +88,24 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		return builder.toString(); 
 	}
 	
+	private boolean isActive(Section section, XPSCase theCase) {
+
+		//TODO
+//		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
+//		
+//		CaseObjectSource flowSet = FluxSolver.getFlowSet(theCase);
+//		
+//		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) theCase.getCaseObject(flowSet);
+//       
+		return true;
+	}
+
 	private String getPathendText(XPSCase theCase) {
 		
 		if (theCase == null)
 			return "";
 		
-		FlowSet set = getFlowSet(theCase);
+		FlowSet set = FluxSolver.getFlowSet(theCase);
 				
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) theCase.getCaseObject(set);
 		List<PathEntry> pathEnds = caseObject.getPathEnds();
@@ -114,16 +142,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		return builder.toString(); 
 	}
 
-	private FlowSet getFlowSet(XPSCase xpsCase) {
-		
-		List knowledge = (List) xpsCase.getKnowledgeBase().getKnowledge(FluxSolver.class, FluxSolver.DIAFLUX);
-		
-		if (knowledge == null || knowledge.isEmpty())
-			return null;
-		
-		return (FlowSet) knowledge.get(0);
-	}
-	
+
 
 	private String createPreviewWithHighlightedPath(Section section, XPSCase xpsCase) {
 		
@@ -134,7 +153,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		
 		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
 		
-		CaseObjectSource flowSet = getFlowSet(xpsCase);
+		CaseObjectSource flowSet = FluxSolver.getFlowSet(xpsCase);
 		
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) xpsCase.getCaseObject(flowSet);
        
@@ -244,5 +263,10 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	}
 	
 	
-
+	private boolean isDebug(Map<String, String> urlParameterMap) {
+		String debug = urlParameterMap.get("debug"); 
+		return debug != null && debug.equals("true");
+	}
+	
+	
 }

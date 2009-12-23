@@ -8,9 +8,7 @@
 	
 	<target name="default">
 
-
-		
-		<mkdir dir="/cc" />
+		<mkdir dir="${buildDir}/cc" />
 		
 		<copy todir="${buildDir}/cc">
 			<fileset dir="${flowchartDir}/src/main/webapp/html">

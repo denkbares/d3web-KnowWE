@@ -30,7 +30,7 @@
 
 .Node .action, .Node .question, .Node .decision, .Node .flowchart {
 	min-width:	80px;
-	max-width:	120px;
+	max-width:	200px;
 	min-height: 40px;
 	padding-left: 10px;
 	padding-right: 4px;
@@ -40,7 +40,7 @@
 
 .Node .start, .Node .exit, .Node .fork , .Node .comment {
 	min-width:	60px;
-	max-width:	120px;
+	max-width:	200px;
 	min-height: 18px;
 	padding-left: 10px;
 	padding-right: 4px;

@@ -100,9 +100,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 		
 		
 		if (!errors.isEmpty())
-			System.out.println(errors);
-		else
-			System.out.println("No errors");
+			System.out.println(errors.size() +" errors in Flow '" + name +"': " + errors);
 		
 		
 	}
