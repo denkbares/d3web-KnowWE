@@ -81,7 +81,6 @@
 		<module>KnowWE-Plugin-HermesModule</module>
 		<module>KnowWE-Plugin-Flowchart</module>
 		<module>KnowWE-Plugin-Todo</module>
-		<module>KnowWE-Plugin-SeleniumTest</module>
 		<module>KnowWE-Plugin-Refactoring</module>
 	</modules>
 	<repositories>
