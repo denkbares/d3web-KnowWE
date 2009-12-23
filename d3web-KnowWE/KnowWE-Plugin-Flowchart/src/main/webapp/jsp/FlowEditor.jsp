@@ -89,9 +89,10 @@
 <%= jspHelper.getReferredInfoObjectsAsXML() %>
 </xml>
 
+
 <xml id="ajaxKBInfo" style="display:none;">
 	<kbinfo>
-		<flowchart name="Warten" id="sh_wait">
+		<!-- flowchart name="Warten" id="sh_wait">
 			<start>30 sec</start>
 			<start>2 min</start>
 			<start>5 min</start>
@@ -101,7 +102,7 @@
 			<start>10 min</start>
 			<exit>abgeblaufen</exit>
 			<exit>unterbrochen</exit>
-		</flowchart>
+		</flowchart-->
 		
 	</kbinfo>
 </xml>
