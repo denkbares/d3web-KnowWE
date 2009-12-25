@@ -338,7 +338,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.Section)
+	 * de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.KnowWErticle, de.d3web.we.kdom.Section)
 	 */
 	@Override
 	public final void reviseSubtree(KnowWEArticle article, Section s) {

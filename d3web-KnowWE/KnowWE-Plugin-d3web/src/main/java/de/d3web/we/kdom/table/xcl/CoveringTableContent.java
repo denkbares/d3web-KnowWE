@@ -29,6 +29,7 @@ public class CoveringTableContent extends XMLContent{
 	@Override
 	protected void init() {
 		childrenTypes.add( new TableContent() );
+		
 	}
 
 }

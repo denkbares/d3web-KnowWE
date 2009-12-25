@@ -22,7 +22,8 @@ package de.d3web.we.hermes.maps;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -35,7 +36,7 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
     protected void init() {
 	sectionFinder = new RegexSectionFinder(START_TAG + "[\\w|\\W]*?"
 		+ END_TAG);
-	this.setCustomRenderer(LocationRenderer.getInstance());
+	this.setCustomRenderer(new EditSectionRenderer(LocationRenderer.getInstance()));
     }
 
     @Override
@@ -74,7 +75,7 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
 	return new Placemark(locationName, latitude, longitude, description);
     }
 
-    public static class LocationRenderer extends DefaultEditSectionRender {
+    public static class LocationRenderer extends KnowWEDomRenderer {
 
 	private static LocationRenderer instance;
 
@@ -86,7 +87,7 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	@Override
-	public void renderContent(KnowWEArticle article, Section sec,
+	public void render(KnowWEArticle article, Section sec,
 		KnowWEUserContext user, StringBuilder string) {
 	    string.append(extractPlacemark(sec.getOriginalText())
 		    .toHTMLString());

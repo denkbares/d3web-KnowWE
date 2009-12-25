@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.dashTree.solutions;
 
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
 
 public class SolutionsContent extends XMLContent {
@@ -27,6 +28,7 @@ public class SolutionsContent extends XMLContent {
 	@Override
 	protected void init() {
 		childrenTypes.add(new SolutionsTreeANTLR());
+		this.setCustomRenderer(new EditSectionRenderer());
 	}
 	
 	

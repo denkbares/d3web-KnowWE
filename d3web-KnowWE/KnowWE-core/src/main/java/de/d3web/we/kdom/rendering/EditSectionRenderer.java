@@ -8,20 +8,26 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * <p>The <code>DefaultEditSectionRender</code> renders the content of a section 
+ * <p>The <code>EditSectionRenderer</code> renders the content of a section 
  * depending on the edit flag state. If the edit flag is set for the current section,
  * the section will be wrapped into an HTML textarea which allows the user to 
  * edit the content of the section. The text of the HTML textarea is the original
  * text of the section. So be carefully when editing the lines.</p>
  * 
- * <p>If the edit flag is not set the content is rendered through the <code>
- * renderContent</code> method. This method has to be implemented by each child
- * of the <code>DefaultEditSectionRender</code></p>
- * 
  * @author smark
  * @since 2009/10/18
  */
-public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
+public class EditSectionRenderer extends KnowWEDomRenderer {
+	
+	KnowWEDomRenderer renderer;
+	
+	public EditSectionRenderer() {
+		this(DelegateRenderer.getInstance());
+	}
+	
+	public EditSectionRenderer(KnowWEDomRenderer renderer) {
+		this.renderer = renderer;
+	}
 
 	@Override
 	public final void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
@@ -60,7 +66,7 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 			if(!user.getUrlParameterMap().containsKey("action")) {  // is not ajax action add verbatim for jspwiki render pipeline
 				string.append(KnowWEUtils.maskHTML("{{{"));
 			}
-			string.append( KnowWEUtils.maskHTML( "<textarea name=\"default-edit-area\" id=\"default-edit-area\" style=\"width:95%; height:"+this.getHeight(str)+"px;\">" ));
+			string.append( KnowWEUtils.maskHTML( "<textarea name=\"default-edit-area\" id=\"default-edit-area\" style=\"width:92%; height:"+this.getHeight(str)+"px;\">" ));
 			string.append( str );
 			string.append( KnowWEUtils.maskHTML( "</textarea>" ));
 			if(!user.getUrlParameterMap().containsKey("action")) {// is not ajax action add verbatim for jspwiki render pipeline
@@ -68,7 +74,7 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 			}
 			string.append( KnowWEUtils.maskHTML( "<div class=\"default-edit-handle\"></div>" ));
 		} else {
-			renderContent(article, sec, user, string );
+			renderer.render(article, sec, user, string );
 		}
 		string.append( KnowWEUtils.maskHTML( "</div>" ));
 		if(highlight && !isEditable) {
@@ -76,14 +82,6 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 		}
 	}
 		
-	/**
-	 * 
-	 * @param sec
-	 * @param user
-	 * @param string
-	 */
-	public abstract void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string);
-	
 	
 	/**
 	 * Generates a link used to enable or disable the Quick-Edit-Flag.
@@ -98,9 +96,13 @@ public abstract class DefaultEditSectionRender extends KnowWEDomRenderer {
 	private String generateQuickEdit(String id, boolean isEditable) {
 		StringBuilder b = new StringBuilder();
 		b.append( "<div class=\"right\" style=\"padding-right: 3px;\">" );
-		b.append( "<img src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\"Set QuickEdit-Mode\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\"/><br />");
+		b.append( "<img ");
+		if (isEditable) {
+			b.append("align=\"right\" ");
+		}
+		b.append("src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\"Set QuickEdit-Mode\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\"/><br />");
 		if( isEditable ){
-		    b.append( "<input rel=\"{id : '" + id + "'}\" type=\"submit\" value=\"save\"/>" );
+		    b.append( "<input rel=\"{id : '" + id + "'}\" type=\"submit\" value=\"save\" title=\"save\"/>" );
 		}
 		b.append( "</div>" );		
 		return b.toString();

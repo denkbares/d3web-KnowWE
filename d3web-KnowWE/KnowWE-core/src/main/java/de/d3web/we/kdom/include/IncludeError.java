@@ -35,8 +35,8 @@ public class IncludeError extends DefaultAbstractKnowWEObjectType {
 		return instance;
 	}
 	
-//	public IncludeError() {
-//		this.customRenderer = DefaultTextRenderer.getInstance();
-//	}
+	private IncludeError() {
+		
+	}
 
 }

@@ -23,6 +23,7 @@ package de.d3web.we.kdom.include;
 import java.util.Map;
 
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -42,7 +43,7 @@ public class Include extends AbstractXMLObjectType {
 	
 	private Include() {
 		super("include");
-		this.customRenderer = new IncludeSectionRenderer();
+		this.customRenderer = new EditSectionRenderer(IncludeSectionRenderer.getInstance());
 	}
 	
 	@Override

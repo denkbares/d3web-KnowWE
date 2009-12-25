@@ -25,23 +25,21 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.report.Message;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
-import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class KopicSectionRenderer extends DefaultEditSectionRender {
+public class KopicSectionRenderer extends KnowWEDomRenderer {
 
 	@Override
-	public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
 		//string.append("%%collapsebox-closed \n");
 		
@@ -94,7 +92,7 @@ public class KopicSectionRenderer extends DefaultEditSectionRender {
 	protected void insertErrorRenderer(List<Section> lines, Message m, String user) {
 		int line = m.getLineNo();
 		if(line - 1 >= 0 && line - 1 < lines.size()) {
-		lines.get(line-1).setRenderer(ErrorRenderer.getInstance());
+		((AbstractKnowWEObjectType) lines.get(line-1).getObjectType()).setCustomRenderer(ErrorRenderer.getInstance());
 		}
 	}
 

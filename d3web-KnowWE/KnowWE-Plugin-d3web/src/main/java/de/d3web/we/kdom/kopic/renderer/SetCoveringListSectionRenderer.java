@@ -20,26 +20,22 @@
 
 package de.d3web.we.kdom.kopic.renderer;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import de.d3web.report.Message;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.TextLine;
-import de.d3web.we.kdom.rendering.DefaultEditSectionRender;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class SetCoveringListSectionRenderer extends DefaultEditSectionRender {
+public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 	
 	@Override
-	public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
 		//string.append("%%collapsebox-closed \n");
 		
@@ -66,13 +62,13 @@ public class SetCoveringListSectionRenderer extends DefaultEditSectionRender {
 		}
 		
 		string.append(KnowWEUtils.maskHTML(
-				"<pre class=\"ReRenderSectionMarker\" id=\"" + sec.getId() + "-pre\" rel=\"{id:'"+sec.getId()+"'}\">"));
+				"<div id=\"" + sec.getId() + "\"><pre class=\"ReRenderSectionMarker\" id=\"" + sec.getId() + "-pre\" rel=\"{id:'"+sec.getId()+"'}\">"));
 		
 		StringBuilder b = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
 		string.append(b.toString());
 		
-		string.append(KnowWEUtils.maskHTML("</pre>"));
+		string.append(KnowWEUtils.maskHTML("</pre></div>"));
 		
 		//string.append("/%\n");
 	}
@@ -81,7 +77,7 @@ public class SetCoveringListSectionRenderer extends DefaultEditSectionRender {
 		String text = m.getLine();
 		if(text == null || text.length() == 0) return;
 		Section errorSec = sec.findSmallestNodeContaining(text);
-		errorSec.setRenderer(ErrorRenderer.getInstance());
+		((AbstractKnowWEObjectType) errorSec.getObjectType()).setCustomRenderer(ErrorRenderer.getInstance());
 		
 	}
 

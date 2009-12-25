@@ -25,8 +25,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.renderer.HighlightRenderer;
-import de.d3web.we.kdom.renderer.OneTimeRenderer;
 
 public class HighlightNodeAction extends AbstractKnowWEAction {
 
@@ -43,7 +41,7 @@ public class HighlightNodeAction extends AbstractKnowWEAction {
 				KnowWEArticle art = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(article);
 				Section sec = art.getSection().findChild(nodeID);
 				if(sec != null) {
-					sec.setRenderer(new OneTimeRenderer(sec, HighlightRenderer.getInstance()));
+//					sec.setRenderer(new OneTimeRenderer(sec, HighlightRenderer.getInstance()));
 					return "renderer set";
 				}else {	
 					return "no section found for id: "+nodeID;

@@ -76,8 +76,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	protected boolean isExpanded = false;
 
-	protected KnowWEDomRenderer renderer;
-
 	/**
 	 * The id of this node, unique in an article
 	 */
@@ -1008,14 +1006,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			buffi.append(this.originalText);
 		}
 
-	}
-
-	public KnowWEDomRenderer getRenderer() {
-		return renderer;
-	}
-
-	public void setRenderer(KnowWEDomRenderer renderer) {
-		this.renderer = renderer;
 	}
 
 	public boolean hasQuickEditModeSet(String user) {

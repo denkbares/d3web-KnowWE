@@ -28,17 +28,17 @@ import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class RuleSectionRenderer extends KopicSectionRenderer {
+public class RuleSectionRenderer extends KnowWEDomRenderer {
 		
 		@Override
-		public void renderContent(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
+		public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
 			
 			StringBuilder messagesBuilder = new StringBuilder();
 			

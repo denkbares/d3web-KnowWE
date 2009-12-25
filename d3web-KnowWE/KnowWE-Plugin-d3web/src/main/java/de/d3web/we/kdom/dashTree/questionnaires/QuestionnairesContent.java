@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.dashTree.questionnaires;
 
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
 
 public class QuestionnairesContent extends XMLContent {
@@ -27,5 +28,6 @@ public class QuestionnairesContent extends XMLContent {
 	@Override
 	protected void init() {
 		childrenTypes.add(new QuestionnairesTreeANTLR());
+		this.setCustomRenderer(new EditSectionRenderer());
 	}
 }

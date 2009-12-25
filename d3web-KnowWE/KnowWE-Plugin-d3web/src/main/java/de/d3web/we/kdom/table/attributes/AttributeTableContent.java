@@ -28,7 +28,7 @@ import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.kopic.AbstractKopicSection;
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.table.TableContentRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;

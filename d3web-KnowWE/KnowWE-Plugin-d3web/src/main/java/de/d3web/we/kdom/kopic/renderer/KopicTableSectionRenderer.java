@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.report.Message;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.SettingsModeRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -42,9 +43,9 @@ public class KopicTableSectionRenderer extends KopicSectionRenderer {
 			lineSec.findSuccessorsOfType(TableCellContent.class, cells);
 			Section cell = cells.get(col - 1);
 			if (!cell.hasQuickEditModeSet(user)) {
-				cell.setRenderer(ErrorRendererTable.getInstance());
+				((AbstractKnowWEObjectType) cell.getObjectType()).setCustomRenderer(ErrorRendererTable.getInstance());
 			}else {
-				cell.setRenderer(new SettingsModeRenderer(DelegateRenderer.getInstance(),new EditCoveringTableCellRenderer()));
+				((AbstractKnowWEObjectType) cell.getObjectType()).setCustomRenderer(new SettingsModeRenderer(DelegateRenderer.getInstance(),new EditCoveringTableCellRenderer()));
 			}
 		}
 	}

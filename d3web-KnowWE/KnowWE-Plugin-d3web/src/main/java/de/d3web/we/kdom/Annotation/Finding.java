@@ -114,6 +114,9 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		} catch (IndexOutOfBoundsException e) {
 			Logger.getLogger(this.getName()).log(Level.WARNING,
 					"Finding without subsections");
+		} catch (NullPointerException e) {
+			//TODO: Handle?
+			e.printStackTrace();
 		}
 
 		return io;

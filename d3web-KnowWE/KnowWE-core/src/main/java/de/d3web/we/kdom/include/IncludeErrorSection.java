@@ -23,7 +23,7 @@ package de.d3web.we.kdom.include;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
-public class IncludeErrorSection extends Section<IncludeError> {
+public class IncludeErrorSection extends Section {
 
 	public IncludeErrorSection(String text, Section father, KnowWEArticle article) {
 		//super(text, new IncludeError(), father, 0, article, null, false, null);
