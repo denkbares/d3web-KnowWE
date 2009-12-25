@@ -21,9 +21,12 @@
 package de.d3web.we.kdom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -340,7 +343,31 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	@Override
 	public final void reviseSubtree(KnowWEArticle article, Section s) {
 		for (ReviseSubTreeHandler handler : subtreeHandler) {
-			handler.reviseSubtree(article, s);
+			try {
+				handler.reviseSubtree(article, s);
+			}
+			catch (Throwable e) {
+				String text = "unexpected internal error in subtree handler '" + handler + "'";
+				Logger.getLogger(getClass()).error(text, e);
+				Message msg = new Message(text + ": " + e);
+				storeMessages(article, s, Arrays.asList(msg));
+				// TODO: vb: store the error also in the article. (see below for more details)
+				// 
+				// Idea 1:
+				// Any unexpected error (and therefore catched here) of the ReviseSubtreeHandlers
+				// shall be remarked at the "article" object. When rendering the article page,
+				// the error should be placed at the top level. A KnowWEPlugin to list all
+				// erroneous articles as links with its errors shall be introduced. A call to this
+				// plugin should be placed in the LeftMenu-page.
+				//
+				// Idea 2:
+				// The errors are not marked at the article, but as a special message
+				// type is added to this section. When rendering the page, the error 
+				// message should be placed right before the section and the content 
+				// of the section as original text in pre-formatted style (no renderer 
+				// used!):
+				// {{{ <div class=error>EXCEPTION WITH MESSAGE</div> ORIGINAL TEXT }}}
+			}
 		}
 		s.setReusedBy(article.getTitle(), true);
 	}
