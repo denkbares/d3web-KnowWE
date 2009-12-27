@@ -53,16 +53,60 @@ public class SearchTerminologyHandler {
 		terms.add(new SearchTerm("apfel",2));
 		terms.add(new SearchTerm("birne", 0.5));
 		terms.add(new SearchTerm("banane",1));
+		terms.add(new SearchTerm("birnenkuchen", 2));
+		terms.add(new SearchTerm("birnen marmelade", 1));
+		terms.add(new SearchTerm("birnenkompott",0.5));
+		terms.add(new SearchTerm("birnen einkochen",3));
+		terms.add(new SearchTerm("birnensorten",0.5));
+		terms.add(new SearchTerm("advent",0.5));
+		terms.add(new SearchTerm("weihnachten",0.5));
+		terms.add(new SearchTerm("geschenke",0.5));
+		terms.add(new SearchTerm("freude",0.5));
+		terms.add(new SearchTerm("sterne",0.5));
+		terms.add(new SearchTerm("könige",0.5));
+		terms.add(new SearchTerm("kinder",2.5));
+		terms.add(new SearchTerm("plätzchen",1.5));
+		terms.add(new SearchTerm("gelächter",0.5));
+		terms.add(new SearchTerm("baum",0.4));
+		terms.add(new SearchTerm("kugel",1.0));
+		terms.add(new SearchTerm("schnee",1.0));
+		terms.add(new SearchTerm("kalt",1.5));
+		terms.add(new SearchTerm("kerzen",2.0));
+		terms.add(new SearchTerm("schneemann",0.8));
+		terms.add(new SearchTerm("schneefrau",1.2));
+		terms.add(new SearchTerm("wasser",1.5));
+		terms.add(new SearchTerm("feuer",2.0));
+		terms.add(new SearchTerm("erde",0.4));
+		terms.add(new SearchTerm("luft",3.5));
+		terms.add(new SearchTerm("vogel",0.5));
+		terms.add(new SearchTerm("stein",0.5));
+		terms.add(new SearchTerm("ameise",0.5));
+		terms.add(new SearchTerm("sonne",0.5));
+		terms.add(new SearchTerm("wolke",0.5));
+		terms.add(new SearchTerm("farben",0.5));
+		terms.add(new SearchTerm("main",0.5));
+		terms.add(new SearchTerm("fisch",0.5));
 		
-		return terms;
+		List<SearchTerm> filtered = new ArrayList<SearchTerm>();
+		
+		if( query != null && query.length() > 0){
+			for (SearchTerm term : terms) {
+				if(term.getTerm().contains( query )){
+					filtered.add( term );
+				}
+			}
+		} else {
+			filtered.addAll( terms );
+		}		
+		return filtered;
 	}
 	
 	
 	/**
 	 * Auto-completion for KnowWE search: Proposes search terms for (beginning) user inputs
 	 * 
-	 * @param typedString
-	 * @return
+	 * @param typedString - The input of the user in the search box.
+	 * @return A list of suggestions the user might search for.
 	 */
 	public List<String> getCompletionSuggestions(String typedString) {
 		
@@ -78,13 +122,18 @@ public class SearchTerminologyHandler {
 		results.add("birnensorten");
 		
 		
-		List<String> test = new ArrayList<String>();
-		for (String string : results) {
-			if(string.contains( typedString )){
-				test.add( wrap(string, typedString ));
+		List<String> filtered = new ArrayList<String>();
+		
+		if( typedString != null && typedString.length() > 0){
+			for (String string : results) {
+				if(string.contains( typedString )){
+					filtered.add( wrap(string, typedString ));
+				}
 			}
+		} else {
+			filtered.addAll( results );
 		}
-		return test;
+		return filtered;
 	}
 	
 	/**

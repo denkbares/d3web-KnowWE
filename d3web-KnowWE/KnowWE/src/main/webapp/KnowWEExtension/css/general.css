@@ -794,12 +794,13 @@ font-size:120%;
     -moz-border-radius-bottomright:5px;
     -moz-border-radius-topleft:5px;
     -moz-border-radius-topright:5px;
-    background: #96BBD9 none repeat scroll 0 0;
+    background: #1D7D35 none repeat scroll 0 0;
     display:block;
     padding:5px 5px 4px;    
+    list-style-type:none;
 }
 #biologsearch input#searchsubmit {
-    background: #003366 none repeat scroll 0 0;
+    background: #1D7D35 none repeat scroll 0 0;
     color: rgb(255,255,255);
     left:auto;
     position:absolute;
@@ -807,7 +808,10 @@ font-size:120%;
     text-align:center;
     width:110px;
 }
-
+.biolog-cloud-link{
+    color: rgb(29,125,53);
+    cursor: pointer;	
+}
 #knowwe-autocompletion{
     background-color: rgb(255,255,255);
 	border: 1px solid rgb(0,0,0);
