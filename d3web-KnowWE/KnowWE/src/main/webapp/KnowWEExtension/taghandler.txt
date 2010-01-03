@@ -13,3 +13,4 @@ de.d3web.we.taghandler.TagSearchHandler
 de.d3web.we.plugin.calendar.CalendarHandler
 de.d3web.we.taghandler.RenderClassMembersHandler
 de.d3web.we.taghandler.VersionTagHandler
+cc.wiki.todo.TimeChartTagHandler
