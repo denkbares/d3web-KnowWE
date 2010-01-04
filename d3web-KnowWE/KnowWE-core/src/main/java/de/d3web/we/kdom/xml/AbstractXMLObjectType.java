@@ -38,6 +38,15 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 	
 	private boolean anyXML;
 	
+	private static AbstractXMLObjectType defaultInstance;
+	
+	public static AbstractXMLObjectType getDefaultInstance() {
+		if(defaultInstance == null) {
+			defaultInstance = new AbstractXMLObjectType();
+		}
+		return defaultInstance;
+	}
+	
 	public Section getContentChild(Section s) {
 		if(s.getObjectType() instanceof AbstractXMLObjectType) {
 			Section content = s.findSuccessor(XMLContent.class);
@@ -97,18 +106,19 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 
 	public static Section<AbstractXMLObjectType> findSubSectionOfTag(
 			String tagname, Section<AbstractXMLObjectType> s) {
-		if (tagname.equals(getTagName(s))) {
+		String tagName2 = getTagName(s);
+		if (tagname.equals(tagName2)) {
 
 			return s;
 		}
 		List<Section> children = s.getChildren();
 		for (Section section : children) {
 			if (section.getObjectType() instanceof XMLContent) {
-				List<Section> nodes = section
-						.findChildrenOfType(AbstractXMLObjectType.class);
-				for (Section section2 : nodes) {
+				List<Section<AbstractXMLObjectType>> nodes = section
+						.findChildrenOfType(AbstractXMLObjectType.getDefaultInstance());
+				for (Section<AbstractXMLObjectType> section2 : nodes) {
 					Section<AbstractXMLObjectType> found = findSubSectionOfTag(
-							tagname, (Section<AbstractXMLObjectType>) section);
+							tagname, section2);
 					if (found != null)
 						return found;
 				}
