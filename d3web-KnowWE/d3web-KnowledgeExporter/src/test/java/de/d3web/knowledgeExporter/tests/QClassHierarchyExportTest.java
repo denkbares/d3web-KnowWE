@@ -123,8 +123,6 @@ public class QClassHierarchyExportTest extends KnowledgeExporterTest {
 	
 	@Override
 	protected void setUpWriter() {
-		//DataManager.getInstance().setBase(kb);
-		manager = new KnowledgeManager(kb);
 		writer = new QClassHierarchyWriter(manager);
 	}
 	

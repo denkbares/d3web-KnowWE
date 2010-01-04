@@ -9,10 +9,10 @@ import de.d3web.KnOfficeParser.dashtree.QuestionnaireBuilder;
 import de.d3web.KnOfficeParser.dashtree.SolutionsBuilder;
 import de.d3web.KnOfficeParser.decisiontree.D3DTBuilder;
 import de.d3web.KnOfficeParser.rule.D3ruleBuilder;
+import de.d3web.KnOfficeParser.xcl.XCLd3webBuilder;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.knowledgeExporter.KnowledgeManager;
-import de.d3web.report.Message;
 
 public abstract class KnowledgeExporterTest extends TestCase {
 	
@@ -40,26 +40,36 @@ public abstract class KnowledgeExporterTest extends TestCase {
 		if (initQuestion != null) {
 			List<de.d3web.report.Message> messages = QuestionnaireBuilder
 					.parse(new StringReader(initQuestion), new SingleKBMIDObjectManager(kbm));
+			System.out.println(messages);
 		}
 		
 		if (diagnosis != null) {
 			List<de.d3web.report.Message> messages = SolutionsBuilder
 				.parse(new StringReader(diagnosis), kbm, new SingleKBMIDObjectManager(kbm));
+			System.out.println(messages);
 		}
 		
 		if (decisionTree != null) {
 			List<de.d3web.report.Message> messages = D3DTBuilder.parse(new StringReader(decisionTree), new SingleKBMIDObjectManager(kbm));
+			System.out.println(messages);
 		}
 		
 		if (rules != null) {
 			D3ruleBuilder builder = new D3ruleBuilder("", false,
 					new SingleKBMIDObjectManager(kbm));
 			
-			List<Message> bm = builder.addKnowledge(new StringReader(rules),
+			List<de.d3web.report.Message> messages = builder.addKnowledge(new StringReader(rules),
 					new SingleKBMIDObjectManager(kbm), null);
+			System.out.println(messages);
 		}
 		
+		if (xcl != null) {
+			XCLd3webBuilder builder = new XCLd3webBuilder("", new SingleKBMIDObjectManager(kbm)); 
+			List<de.d3web.report.Message> messages = builder.addKnowledge(new StringReader(xcl), new SingleKBMIDObjectManager(kbm), null);
+			System.out.println(messages);
+		}
 		
+		manager = new KnowledgeManager(kb);
 		setUpWriter();
 
 		

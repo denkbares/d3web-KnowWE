@@ -203,7 +203,6 @@ public class DecisionTreeExportTest extends KnowledgeExporterTest {
 	}
 	
 	public void setUpWriter() {
-		manager = new KnowledgeManager(kb);
 		writer = new DecisionTreeWriter(manager);
 	}
 	

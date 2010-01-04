@@ -78,7 +78,6 @@ import de.d3web.we.kdom.rules.RulesSection;
 import de.d3web.we.kdom.table.attributes.AttributeTableSection;
 import de.d3web.we.kdom.table.xcl.CoveringTableSection;
 import de.d3web.we.kdom.xcl.CoveringListSection;
-import de.d3web.we.kdom.xcl.XCL;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.module.PageAppendHandler;
@@ -137,7 +136,6 @@ public class D3webModule implements KnowWEModule {
 		rootTypes.add(new QuestionnairesSection());
 		rootTypes.add(new QuestionsSection());
 		rootTypes.add(new AttributeTableSection());
-		rootTypes.add(new XCL());
 		rootTypes.add(new Annotation());
 		rootTypes.add(new TestsuiteSection());
 		rootTypes.add(new CoveringTableSection());

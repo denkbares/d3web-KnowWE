@@ -81,12 +81,6 @@
   	</dependency>
   	<dependency>
   		<groupId>de.uniwue.d3web</groupId>
-  		<artifactId>d3web-TextParser</artifactId>
-  		<version>0-SNAPSHOT</version>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>de.uniwue.d3web</groupId>
   		<artifactId>d3web-TiRex</artifactId>
   		<version>0-SNAPSHOT</version>
   		<scope>compile</scope>

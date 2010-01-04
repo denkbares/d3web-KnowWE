@@ -143,8 +143,6 @@ public class RuleExportTest extends KnowledgeExporterTest {
 	}
 	
 	protected void setUpWriter() {
-		//DataManager.getInstance().setBase(kb);
-		manager = new KnowledgeManager(kb);
 		manager.setLocale(Locale.GERMAN);
 		writer = new RuleWriter(manager);
 	}
