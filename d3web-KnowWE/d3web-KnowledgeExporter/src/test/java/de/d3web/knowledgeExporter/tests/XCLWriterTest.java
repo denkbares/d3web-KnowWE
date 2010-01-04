@@ -22,8 +22,10 @@ package de.d3web.knowledgeExporter.tests;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
+import de.d3web.knowledgeExporter.KnowledgeManager;
 import de.d3web.knowledgeExporter.txtWriters.XCLWriter;
 
 
@@ -101,6 +103,7 @@ public class XCLWriterTest extends KnowledgeExporterTest {
 	
 	@Override
 	protected void setUpWriter() {
+		KnowledgeManager.setLocale(Locale.ENGLISH);
 		writer = new XCLWriter(manager);
 	}
 	
