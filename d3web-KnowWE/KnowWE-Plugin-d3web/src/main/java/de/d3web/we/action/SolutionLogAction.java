@@ -53,7 +53,7 @@ public class SolutionLogAction extends AbstractKnowWEAction {
 	private String htmlHeader;
 	private SimpleDateFormat dateFormat;
 //	private String link = "KnowWE.jsp?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
-	private String jumplink = "KnowWE.jsp?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikiJumpId=%jumpId%&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
+	private String jumplink = "KnowWE.jsp?renderer=KWiki_dialog&action=RequestDialogRenderer&KWikiJumpId=%jumpId%&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
 	private String iconURL;
 	
 	public SolutionLogAction() {

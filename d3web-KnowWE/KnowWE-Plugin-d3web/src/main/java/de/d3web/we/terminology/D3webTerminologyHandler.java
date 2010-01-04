@@ -375,7 +375,7 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 
 	private boolean isEmpty(KnowledgeBaseManagement kbm) {
 		if (kbm.getKnowledgeBase().getAllKnowledgeSlices().size() == 0
-				&& kbm.getKnowledgeBase().getQuestions().size() <= 1
+				&& kbm.getKnowledgeBase().getQuestions().size() < 1
 				&& kbm.getKnowledgeBase().getDiagnoses().size() <= 1) {
 			return true;
 		} else {

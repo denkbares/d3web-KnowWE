@@ -40,7 +40,6 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.validation.Validator;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.KnowWEModule;
 
 /**
