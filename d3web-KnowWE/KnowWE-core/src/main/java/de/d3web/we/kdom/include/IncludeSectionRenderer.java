@@ -20,11 +20,16 @@
 
 package de.d3web.we.kdom.include;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.report.Message;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -45,40 +50,66 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 	
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+		
+		String render = sec.getObjectType() instanceof AbstractXMLObjectType ? 
+				AbstractXMLObjectType.getAttributeMapFor(sec).get("render") : null;
+
+		StringBuilder content = new  StringBuilder();
+		
 		String srclink;
 		if (sec.getObjectType() instanceof Include && sec.getIncludeAddress() != null) {
-			srclink = createLink(sec.getIncludeAddress().getTargetArticle(),  
-						"include: src=\"" + sec.getIncludeAddress().getOriginalAddress() + "\"");
+			Section child = (Section) sec.getChildren().get(0);
+			srclink = "<a class=\"wikipage\" href=\"/KnowWE/Wiki.jsp?page=" 
+				+ sec.getIncludeAddress().getTargetArticle() 
+				+ (!child.getTitle().equals(sec.getTitle()) ? "#" + child.getId() : "") + "\">" 
+				+ "Include: src=\"" +  sec.getIncludeAddress().getOriginalAddress() + "\"</a>";
 		} else {
-			srclink = createLink(sec.getTitle(), "Unknown Source");
+			srclink = "Unknown Source";
 		}
 		
-		StringBuilder content = new StringBuilder();
-		StringBuilder b = new StringBuilder();
-		int i = 0;
-		List<Section> children = sec.getChildren();
-		for (Section child:children) {
-			if (!((i < 2 || i > sec.getChildren().size() - 3) && child.isEmpty())) {
-				child.getObjectType().getRenderer().render(article, child, user, content);
-				b.append(content.toString());
-				// make content empty, so no new Object has to be created
-				content.delete(0, content.length());
-			}
-			i++;
-		}
+		string.append(KnowWEUtils.maskHTML("<div style=\"text-align:left; padding-top:5px; padding-right:5px; " 
+				+ "padding-left:5px; padding-bottom: 6px; border:thin solid #99CC99\">"));
+		
+		if (render != null && render.equalsIgnoreCase("false")) {
 
-		//renderedContent = DefaultDelegateRenderer.getInstance().render(sec, user, web, topic);
-		string.append(wrapIncludeFrame(b.toString(), srclink));		
-	}
-	
-	protected String createLink(String articleName, String linkText) {
-		return "<a class=\"wikipage\" href=\"/KnowWE/Wiki.jsp?page=" + articleName + "\">" + linkText + "</a>";
-	}
-	
-	protected String wrapIncludeFrame(String renderedContent, String srclink) {
+			List<Section> successors = new ArrayList<Section>();
+			sec.getAllNodesPreOrder(successors);
+			boolean errors = false;
+			for (Section suc:successors) {
+				List<Message> messages = AbstractKnowWEObjectType.getMessagesPassively(article, suc);
+				if (messages != null) {
+					for (Message msg:messages) {
+						if (msg.getMessageType().equals(Message.WARNING) 
+								|| msg.getMessageType().equals(Message.ERROR)) {
+							errors = true;
+							break;
+						}
+					}
+				}
+				if (errors) {
+					break;
+				}
+			}
+			if (errors) {
+				renderNormally(article, sec, user, srclink, content, string);
+			} else {
+				string.append(KnowWEUtils.maskHTML("<div style=\"padding-left: 2px;\">" 
+						+ srclink + "</div></div>"));
+			}
+			
+		} else {
+			renderNormally(article, sec, user, srclink, content, string);
+		}
 		
-		return KnowWEUtils.maskHTML("<div style=\"text-align:left; padding-top:5px; padding-right:5px; padding-left:5px; border:thin solid #99CC99\">") 
-			+ renderedContent + KnowWEUtils.maskHTML("<div style=\"text-align:right\"><font size=\"1\">" + srclink + "</font></div></div><p>");
+		string.append(KnowWEUtils.maskHTML("<p>"));
+	}
+	
+	private void renderNormally(KnowWEArticle article, Section sec, KnowWEUserContext user, 
+			String srclink, StringBuilder content, StringBuilder string) {
+		DelegateRenderer.getInstance().render(article, sec, user, content);
+		string.append(content.toString());
+		string.append(KnowWEUtils.maskHTML("<div style=\"text-align:right\"><font size=\"1\">" 
+				+ srclink + "</font></div></div>"));
 	}
 
 }

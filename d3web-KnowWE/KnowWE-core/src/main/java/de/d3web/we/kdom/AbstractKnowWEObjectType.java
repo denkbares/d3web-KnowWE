@@ -168,33 +168,37 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	}
 
 	/**
-	 * Returns all the messages stored for this section
+	 * Returns all the messages stored for this section put doesn't create a new
+	 * empty MessageList in the SectionStore if no MessageList is there yet. Returns
+	 * <tt>null</tt> in this case.
 	 * 
 	 * @param s
 	 * @return
 	 */
-	public List<Message> getMessages(KnowWEArticle article, Section s) {
-		return toMessages(KnowWEUtils.getStoredObject(
-				KnowWEEnvironment.DEFAULT_WEB, article.getTitle(), s.getId(),
-				MESSAGES_STORE_KEY), article, s);
-
+	public static List<Message> getMessagesPassively(KnowWEArticle article, Section s) {
+		Object o = KnowWEUtils.getStoredObject(
+				article.getWeb(), article.getTitle(), s.getId(),
+				MESSAGES_STORE_KEY);
+		if (o == null) {
+			return null;
+		} else {
+			return toMessages(o, article, s);
+		}
 	}
-
+	
 	/**
-	 * Returns the messages of the last version of the section respectively
-	 * article.
+	 * Returns all the messages stored for this section.
 	 * 
 	 * @param s
 	 * @return
 	 */
-	public List<Message> getLastMessages(KnowWEArticle article, Section s) {
-		return toMessages(KnowWEUtils.getLastStoredObject(
-				KnowWEEnvironment.DEFAULT_WEB, article.getTitle(), s.getId(),
+	public static List<Message> getMessages(KnowWEArticle article, Section s) {
+		return toMessages(KnowWEUtils.getStoredObject(
+				article.getWeb(), article.getTitle(), s.getId(),
 				MESSAGES_STORE_KEY), article, s);
-
 	}
 
-	private List<Message> toMessages(Object o, KnowWEArticle article, Section s) {
+	private static List<Message> toMessages(Object o, KnowWEArticle article, Section s) {
 		if (o instanceof List) {
 			return (List<Message>) o;
 		}
@@ -239,9 +243,9 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * @param s
 	 * @param messages
 	 */
-	public void storeMessages(KnowWEArticle article, Section s,
+	public static void storeMessages(KnowWEArticle article, Section s,
 			List<Message> messages) {
-		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, article
+		KnowWEUtils.storeSectionInfo(article.getWeb(), article
 				.getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
 	}
 

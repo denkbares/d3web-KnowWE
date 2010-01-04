@@ -20,9 +20,7 @@
 
 package de.d3web.we.kdom.rules;
 
-import de.d3web.we.kdom.kopic.renderer.RuleSectionRenderer;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
 
 public class RulesSectionContent extends XMLContent {
@@ -32,7 +30,5 @@ public class RulesSectionContent extends XMLContent {
 		childrenTypes.add(new Rule());
 		this.setCustomRenderer(new EditSectionRenderer());
 	}
-	
-	protected KnowWEDomRenderer renderer = new RuleSectionRenderer();
 	
 }

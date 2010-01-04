@@ -24,7 +24,6 @@ import de.d3web.we.kdom.bulletLists.scoring.BulletScoring;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
 import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
-import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rules.RulesSection;
 import de.d3web.we.kdom.table.attributes.AttributeTableSection;
 import de.d3web.we.kdom.table.xcl.CoveringTableSection;
@@ -45,7 +44,6 @@ public class KopicContent extends XMLContent {
 		childrenTypes.add(new CoveringListSection());
 		childrenTypes.add(new RulesSection());
 		childrenTypes.add(new BulletScoring());
-		this.setCustomRenderer(new EditSectionRenderer());
 	}
 
 }

@@ -21,14 +21,15 @@
 package de.d3web.we.kdom.include;
 
 
+import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class IncludeSectionFinderResult extends SectionFinderResult {
 
 	private IncludeAddress a;
 	
-	public IncludeSectionFinderResult(int start, int end, IncludeAddress a) {
-		super(start, end);
+	public IncludeSectionFinderResult(int start, int end, SectionID sectionID, IncludeAddress a) {
+		super(start, end, sectionID);
 		this.a = a;
 	}
 	

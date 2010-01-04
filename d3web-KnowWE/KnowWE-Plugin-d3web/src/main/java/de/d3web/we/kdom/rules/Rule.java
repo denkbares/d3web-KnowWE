@@ -38,11 +38,11 @@ import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParseResult;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.DefaultTextRenderer;
-import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -192,7 +192,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 								.getRuleIDs().get(0));
 					}
 
-					((Rule) s.getObjectType()).storeMessages(article, s, bm);
+					AbstractKnowWEObjectType.storeMessages(article, s, bm);
 					List<Message> errors = new ArrayList<Message>();
 					for (Message message : bm) {
 						if (message.getMessageType().equals(Message.ERROR)

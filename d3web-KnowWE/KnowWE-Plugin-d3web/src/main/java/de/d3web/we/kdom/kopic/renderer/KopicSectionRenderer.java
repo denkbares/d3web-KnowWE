@@ -40,7 +40,8 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-
+		
+		string.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getId() + "\" />"));
 		//string.append("%%collapsebox-closed \n");
 		
 		StringBuilder builder = new StringBuilder();
@@ -76,17 +77,6 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 		DelegateRenderer.getInstance().render(article,sec, user, builder);
 		string.append(wrappContent(builder.toString(), tooltip));
 		//string.append("/%\n");
-	}
-	
-	/*
-	 * Doesn't work at the moment -> deaktivated
-	 */
-	protected String generateQuickEditLink(String topic, String id, String web2, String user) {
-//		String icon = " <img src=KnowWEExtension/images/pencil.png title='Set QuickEdit-Mode' onclick='setQuickEditFlag(&quot;"+id+"&quot;,&quot;"+topic+"&quot;);window.event.cancelBubble=true;var mooEvent = new Event(window.event);mooEvent.stop();'  ></img>";
-//
-//		return KnowWEEnvironment
-//				.maskHTML("<a>"+icon+"</a>");
-		return "";
 	}
 
 	protected void insertErrorRenderer(List<Section> lines, Message m, String user) {
@@ -144,7 +134,6 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 					+ title
 					+ "</a>");
 		}
-		title += generateQuickEditLink(sec.getTitle(), sec.getId(), sec.getWeb(), user.getUsername());
 		title =  "! " + title + " \n";
 		
 		return title;

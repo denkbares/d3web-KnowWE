@@ -22,8 +22,7 @@ package de.d3web.we.kdom.include;
 
 import java.util.Map;
 
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.EditSectionRenderer;
+import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -43,7 +42,7 @@ public class Include extends AbstractXMLObjectType {
 	
 	private Include() {
 		super("include");
-		this.customRenderer = new EditSectionRenderer(IncludeSectionRenderer.getInstance());
+		this.customRenderer = new EditIncludeSectionRenderer(IncludeSectionRenderer.getInstance());
 	}
 	
 	@Override
@@ -58,15 +57,15 @@ public class Include extends AbstractXMLObjectType {
 		}
 		
 		@Override
-		protected SectionFinderResult makeSectionFinderResult(Section father, String text, int start, 
-				int end, Map<String, String> parameterMap) {
-			
+		protected SectionFinderResult makeSectionFinderResult(int start, 
+				int end, SectionID sectionID, Map<String, String> parameterMap) {
+
 			String src = parameterMap.get("src");
 			if (src != null) {
 				IncludeAddress a = new IncludeAddress(parameterMap.get("src"));
-				return new IncludeSectionFinderResult(start, end, a);
+				return new IncludeSectionFinderResult(start, end, sectionID, a);
 			}
-			return new IncludeSectionFinderResult(start, end, null);
+			return new IncludeSectionFinderResult(start, end, sectionID, null);
 		}
 		
 	}

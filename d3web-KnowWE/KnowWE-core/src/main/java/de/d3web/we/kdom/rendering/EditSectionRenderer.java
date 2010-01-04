@@ -58,7 +58,9 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		string.append( KnowWEUtils.maskHTML( "<a name=\""+sec.getId()+"\"></a><div id=\"" + sec.getId() + "\">" ));
 		
 		if( sec.getArticle().equals( article ) ) {
-			string.append( KnowWEUtils.maskHTML( this.generateQuickEdit( sec.getId(), isEditable) ));
+			string.append(KnowWEUtils.maskHTML( this.generateQuickEdit
+					("Quickedit " + sec.getObjectType().getName() + " Section", sec.getId(), 
+							isEditable)));
 		}
 		
 		if ( isEditable ) {
@@ -93,19 +95,23 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 	 * @return
 	 *     The quick edit menu panel.
 	 */
-	private String generateQuickEdit(String id, boolean isEditable) {
+	protected String generateQuickEdit(String tooltip, String id, boolean isEditable) {
 		StringBuilder b = new StringBuilder();
-		b.append( "<div class=\"right\" style=\"padding-right: 3px;\">" );
+		b.append( "<div " + getQuickEditDivAttributes() + ">" );
 		b.append( "<img ");
 		if (isEditable) {
 			b.append("align=\"right\" ");
 		}
-		b.append("src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\"Set QuickEdit-Mode\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\"/><br />");
+		b.append("src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\"" + tooltip + "\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\"/><br />");
 		if( isEditable ){
 		    b.append( "<input rel=\"{id : '" + id + "'}\" type=\"submit\" value=\"save\" title=\"save\"/>" );
 		}
 		b.append( "</div>" );		
 		return b.toString();
+	}
+	
+	protected String getQuickEditDivAttributes() {
+		return "class=\"right\"";
 	}
 	
 	/**

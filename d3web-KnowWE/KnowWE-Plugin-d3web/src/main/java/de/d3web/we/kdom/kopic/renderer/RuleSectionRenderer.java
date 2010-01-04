@@ -26,6 +26,7 @@ import java.util.List;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
@@ -40,9 +41,10 @@ public class RuleSectionRenderer extends KnowWEDomRenderer {
 		@Override
 		public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
 			
+			result.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getId() + "\" />"));
 			StringBuilder messagesBuilder = new StringBuilder();
 			
-			result.append("\n{{{\n");
+			result.append("\n{{{");
 			int parsedCount = 0;
 			if (sec.getObjectType() instanceof AbstractKopicSection) {
 				
@@ -57,7 +59,7 @@ public class RuleSectionRenderer extends KnowWEDomRenderer {
 				String rulesParsed = MessageKnOfficeGenerator.getResourceBundle().getString("rule");
 				int rnum = 1;
 				for (Section r:rules) {
-					List<Message> rmsgs = ((Rule) r.getObjectType()).getMessages(article, r);
+					List<Message> rmsgs = AbstractKnowWEObjectType.getMessages(article, r);
 					boolean foundWarning = false;
 					boolean foundError = false;
 					for (Message msg:rmsgs) {
@@ -120,7 +122,7 @@ public class RuleSectionRenderer extends KnowWEDomRenderer {
 			// close the div
 			result.append(KnowWEUtils.maskHTML("</div>"));
 			
-			result.append("\n}}}\n");
+			result.append("}}}\n");
 			
 			//result.append("/%\n");
 			

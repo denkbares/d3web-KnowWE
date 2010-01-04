@@ -138,7 +138,7 @@ public class XMLSectionFinder extends SectionFinder {
 					
 					// found single-tag
 					if (tagMatcher.group(4) != null) {
-						result.add(makeSectionFinderResult(father, text, sectionStart, 
+						result.add(makeResult(father, text, sectionStart, 
 								tagMatcher.end(), parameterMap));
 						parameterMap = new HashMap<String, String>();
 						foundTagName = new String();
@@ -155,7 +155,7 @@ public class XMLSectionFinder extends SectionFinder {
 				// it's the closing tag belonging to the first opening tag
 				if (depth == 1 && foundTagName.equals(tagMatcher.group(2))) {
 					parameterMap.put(AbstractXMLObjectType.TAIL, tagMatcher.group());
-					result.add(makeSectionFinderResult(father, text, sectionStart, 
+					result.add(makeResult(father, text, sectionStart, 
 							tagMatcher.end(), parameterMap));
 				}
 				
@@ -174,7 +174,7 @@ public class XMLSectionFinder extends SectionFinder {
 		return result;
 	}
 	
-	protected SectionFinderResult makeSectionFinderResult(Section father, String text, int start, int end, Map<String, String> parameterMap) {
+	private SectionFinderResult makeResult(Section father, String text, int start, int end, Map<String, String> parameterMap) {
 
 		SectionID sectionID;
 		if (parameterMap.containsKey("id")) {
@@ -188,6 +188,11 @@ public class XMLSectionFinder extends SectionFinder {
 			KnowWEUtils.storeSectionInfo(art.getWeb(), art.getTitle(), sectionID.toString(), ATTRIBUTE_MAP_STORE_KEY, parameterMap);
 		}
 		
+		return makeSectionFinderResult(start, end, sectionID, parameterMap);
+	}
+	
+	protected SectionFinderResult makeSectionFinderResult(int start, int end, SectionID sectionID, 
+			Map<String, String> parameterMap) {
 		return new SectionFinderResult(start, end, sectionID);
 	}
 
@@ -217,7 +222,7 @@ public class XMLSectionFinder extends SectionFinder {
 		}
 		
 		@Override
-		protected SectionFinderResult makeSectionFinderResult(Section father, String text, int start, int end, Map<String, String> parameterMap) {
+		protected SectionFinderResult makeSectionFinderResult(int start, int end, SectionID sectionID, Map<String, String> parameterMap) {
 			paras = parameterMap;
 			return new SectionFinderResult(start, end);
 		}
