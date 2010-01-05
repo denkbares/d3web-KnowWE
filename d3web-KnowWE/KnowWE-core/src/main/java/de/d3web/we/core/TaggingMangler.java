@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
@@ -324,7 +325,9 @@ public class TaggingMangler implements KnowWESearchProvider {
 		.replaceKDOMNode(params, topic, asection.getId(), text);
 	}
 
-	public ArrayList<GenericSearchResult> searchPages(String querytags) {		String[] tags=querytags.split(" ");
+	public ArrayList<GenericSearchResult> searchPages(String querytags) {		
+		
+		String[] tags=querytags.split(" ");
 		ArrayList<GenericSearchResult> result=new ArrayList<GenericSearchResult>();
 		String querystring="";
 		int i=0;
@@ -374,7 +377,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		}
 		
 		if(pages.size() == 0) {
-			html.append("no results");
+			return null;
 		}
 		
 		return html.toString();
@@ -402,5 +405,15 @@ public class TaggingMangler implements KnowWESearchProvider {
 			collection.addAll(searchPages(searchTerm.getTerm()));
 		}
 		return collection;
+	}
+
+	@Override
+	public Collection<SearchTerm> getAllTerms() {
+		Collection<SearchTerm> result = new HashSet<SearchTerm>();
+		List<String> string = this.getAllTags();
+		for (String string2 : string) {
+			result.add(new SearchTerm(string2));
+		}
+		return result;
 	}
 } 

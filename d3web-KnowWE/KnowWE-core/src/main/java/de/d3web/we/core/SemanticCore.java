@@ -499,6 +499,7 @@ public class SemanticCore {
 					org.apache.log4j.Level.ERROR, e.getMessage());
 		}
 		TupleQueryResult result = null;
+		if(query == null)return resultlist;
 		try {
 			result = ((TupleQuery) query).evaluate();
 		} catch (QueryEvaluationException e) {

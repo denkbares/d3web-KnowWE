@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.xml;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -126,6 +127,29 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 			}
 		}
 		return null;
+
+	}
+	
+	public static void findSubSectionsOfTag(
+			String tagname, Section<AbstractXMLObjectType> s, Collection<Section<AbstractXMLObjectType>> c) {
+		String tagName2 = getTagName(s);
+		if (tagname.equals(tagName2)) {
+
+			c.add(s);
+		}
+		List<Section> children = s.getChildren();
+		for (Section section : children) {
+			if (section.getObjectType() instanceof XMLContent) {
+				List<Section<AbstractXMLObjectType>> nodes = section
+						.findChildrenOfType(AbstractXMLObjectType.getDefaultInstance());
+				for (Section<AbstractXMLObjectType> section2 : nodes) {
+					findSubSectionsOfTag(
+							tagname, section2,  c);
+					
+				}
+
+			}
+		}
 
 	}
 

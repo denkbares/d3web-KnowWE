@@ -47,6 +47,10 @@ public class MultiSearchEngine {
 	private Map<String,KnowWESearchProvider> searchProvider = new HashMap<String,KnowWESearchProvider>();
 	private SearchWordPreprocessor proz = new SearchWordPreprocessor();
 	
+	public Map<String, KnowWESearchProvider> getSearchProvider() {
+		return searchProvider;
+	}
+
 	public void addProvider(KnowWESearchProvider p) {
 		this.searchProvider.put(p.getID(),p);
 	}

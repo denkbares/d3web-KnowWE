@@ -163,5 +163,15 @@
 			<artifactId>gson</artifactId>
 			<version>1.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.bibsonomy</groupId>
+			<artifactId>bibsonomy-bibtex-parser</artifactId>
+			<version>2.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.wchoen</groupId>
+			<artifactId>secondstring</artifactId>
+			<version>20060615</version>
+		</dependency>
 	</dependencies>
 </project>
