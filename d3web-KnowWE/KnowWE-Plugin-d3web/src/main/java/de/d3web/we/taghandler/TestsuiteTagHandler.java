@@ -502,14 +502,16 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		while (iterator.hasNext()) {
 			
 			KnowWEArticle article = iterator.next();
-			Section s = article.getSection().findChildOfType(TestsuiteSection.class);
+			// TODO: HOTFIX!! I don't think this is the proper way to get the TestsuiteSection...
+			Section s = article.getSection().getChildren().get(0).findChildOfType(TestsuiteSection.class);
 			
 			// Check for TestSuite-Section outside of Kopic-Section
 			if (s != null) {
 				testsuites.put(article.getTitle(), s);
 			} else {
 				// Check for Testsuite-Section inside of Kopic-Section
-				s = article.getSection().findChildOfType(Kopic.class);
+				// TODO: HOTFIX!! I don't think this is the proper way to get the TestsuiteSection...
+				s = article.getSection().getChildren().get(0).findChildOfType(Kopic.class);
 				if (s != null) {
 					s = s.findChildOfType(KopicContent.class);
 					if (s != null) {

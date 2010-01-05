@@ -73,7 +73,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.terminology.D3webTerminologyHandler;
 import de.d3web.we.testsuite.TestsuiteSection;
 import de.d3web.we.utils.KnowWEUtils;
@@ -182,9 +181,10 @@ public class KBCreationTestUtil {
 		
 		// Load KnowledgeBase
 		loadedKB =  d3Handler.getKBM(article, article.getSection()).getKnowledgeBase();
-
-		// Load TestSuite
-		Section s = article.getSection().findChildOfType(TestsuiteSection.class);
+		
+		// Load TestSuite	
+		// TODO: HOTFIX!! I don't think this is the proper way to get the TestsuiteSection...
+		Section s = article.getSection().getChildren().get(0).findChildOfType(TestsuiteSection.class);
 		loadedTS = (TestSuite) KnowWEUtils.getStoredObject("default_web", "KBCreationTest", s.getId(), "TestsuiteSection_Testsuite");
 		
 	}
