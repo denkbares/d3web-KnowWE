@@ -87,7 +87,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		actual = original.equals(content);
 		assertEquals("Original equals replaced" , false, actual);
 		
-		actual = Validator.getInstance().validateArticle(_env.getArticle("default_web", "Test_Article"));
+		actual = Validator.getFileHandlerInstance().validateArticle(_env.getArticle("default_web", "Test_Article"));
 		assertEquals("Article no longer valid", true, actual);
 		
 		/**
@@ -99,7 +99,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		map.put(KnowWEAttributes.TEXT, "-aa-");
 		KnowWEFacade.getInstance().replaceKDOMNode(map);
 		
-		actual = Validator.getInstance().validateArticle(_env.getArticle("default_web", "Test_Article"));
+		actual = Validator.getFileHandlerInstance().validateArticle(_env.getArticle("default_web", "Test_Article"));
 		assertEquals("Article no longer valid", true, actual);
 		
 		article = _env.getArticle("default_web", "Test_Article");

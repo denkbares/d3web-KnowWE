@@ -23,9 +23,11 @@ package de.d3web.we.kdom.validation;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
@@ -43,13 +45,35 @@ import de.d3web.we.kdom.Section;
 
 public class Validator {
 	
-	private static Validator instance;
+	private static Validator fileHandlerInstance;
+	
+	private static Validator consoleInstance;
+	
+	private static Validator sectionzierInstance;
+	
+	private static Validator tagHandlerInstance;
+	
+	private Logger logger;
+	
+	private StringBuilder builder = new StringBuilder();
+	
+	private String name;
+	
+	private boolean logging = true;
+	
+	private boolean correcting = true;
 	
 	private boolean verbose = false;
+	
+	private boolean useBuilder = false;
+	
+	private boolean htmlAllowed = false;
 	
 	private static ResourceBundle rb;
 	
 	private int textLength = 50;
+
+	private Level level;
 	
 	public int getTextLength() {
 		return textLength;
@@ -59,6 +83,30 @@ public class Validator {
 		this.textLength = textLength;
 	}
 
+	public boolean isLogging() {
+		return logging;
+	}
+
+	public void setLogging(boolean logging) {
+		this.logging = logging;
+	}
+
+	public boolean isCorrecting() {
+		return correcting;
+	}
+
+	public void setCorrecting(boolean correcting) {
+		this.correcting = correcting;
+	}
+
+	public boolean isUseBuilder() {
+		return useBuilder;
+	}
+
+	public void setUseBuilder(boolean useBuilder) {
+		this.useBuilder = useBuilder;
+	}
+
 	public static ResourceBundle getResourceBundle() {
 		if (rb == null) {
 			rb = ResourceBundle.getBundle("KnowWE_config");
@@ -66,47 +114,87 @@ public class Validator {
 		return rb;
 	}
 	
-	private Validator() {
-		getResourceBundle();
-		try {
-			FileHandler fh = new FileHandler(KnowWEEnvironment.getInstance().getContext()
-					.getRealPath("") + rb.getString("validator.logFile"));
-			fh.setFormatter(new ValidatorFormatter());
-			
-			Logger.getLogger(Validator.class.getName()).addHandler(fh);
-			Logger.getLogger(Validator.class.getName()).setUseParentHandlers(false);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private Validator(String type) {
+		verbose = true;
+		this.name = type + Validator.class.getName();
+		this.logger = Logger.getLogger(name);
+		this.setLevel(Level.ALL);
 		
-		try {
-			if (rb.getString("validator.logToConsole").contains("true")) {
-				Logger.getLogger(Validator.class.getName()).addHandler(new ConsoleHandler());
-			} else {
-				Logger.getLogger(Validator.class.getName()).removeHandler(new ConsoleHandler());
+		getResourceBundle();
+		
+		if (type.equals("FileHandler")) {
+			setCorrecting(true);
+			setLogging(true);
+			try {
+				FileHandler fh = new FileHandler(KnowWEEnvironment.getInstance().getContext()
+						.getRealPath("") + rb.getString("validator.logFile"));
+				fh.setFormatter(new ValidatorFormatter());
+				
+				logger.addHandler(fh);
+				logger.setUseParentHandlers(false);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			if (rb.getString("validator.severeOnly").contains("true")) {
-				Logger.getLogger(Validator.class.getName()).log(Level.INFO, 
-					"Level is set to 'severe' -> check KnowWE_config to change");
-				Logger.getLogger(Validator.class.getName()).setLevel(Level.SEVERE);
-			} else {
-				Logger.getLogger(Validator.class.getName()).setLevel(Level.ALL);
+			try {
+				if (rb.getString("validator.logToConsole").contains("true")) {
+					logger.addHandler(new ConsoleHandler());
+				} else {
+					logger.removeHandler(new ConsoleHandler());
+				}
+				if (rb.getString("validator.verbose").contains("true")) {
+					verbose = true;
+				} else {
+					verbose = false;
+				}
+
+				if (rb.getString("validator.severeOnly").contains("true")) {
+					log(Level.INFO, 
+						"Level is set to 'severe' -> check KnowWE_config to change");
+					setLevel(Level.SEVERE);
+				} else {
+					setLevel(Level.ALL);
+				}
+			} catch (MissingResourceException e) {
+				e.printStackTrace();
 			}
-			if (rb.getString("validator.verbose").contains("true")) {
-				verbose = true;
-			} else {
-				verbose = false;
-			}
-		} catch (MissingResourceException e) {
-			e.printStackTrace();
 		}
+		if (type.equals("Sectionizer")) {
+			setLogging(false);
+			setCorrecting(false);
+		}
+		if (type.equals("TagHandler")) {
+			useBuilder = true;
+			htmlAllowed = true;
+		}
+
 	}
 	
-	public static synchronized Validator getInstance() {
-		if (instance == null) {
-			instance = new Validator();
+	public static synchronized Validator getFileHandlerInstance() {
+		if (fileHandlerInstance == null) {
+			fileHandlerInstance = new Validator("FileHandler");
 		}
-		return instance;
+		return fileHandlerInstance;
+	}
+	
+	public static synchronized Validator getConsoleInstance() {
+		if (consoleInstance == null) {
+			consoleInstance = new Validator("Console");
+		}
+		return consoleInstance;
+	}
+	
+	public static synchronized Validator getSectionizerInstance() {
+		if (sectionzierInstance == null) {
+			sectionzierInstance = new Validator("Sectionzier");
+		}
+		return sectionzierInstance;
+	}
+	
+	public static synchronized Validator getTagHandlerInstance() {
+		if (tagHandlerInstance == null) {
+			tagHandlerInstance = new Validator("TagHandler");
+		}
+		return tagHandlerInstance;
 	}
 	
 	/**
@@ -117,26 +205,47 @@ public class Validator {
 	    throw new CloneNotSupportedException(); 	   
 	}
 	
+	private void log(Level level, String msg) {
+		if (logging) {
+			if (useBuilder) {
+				if (level.intValue() >= this.level.intValue()) {
+					builder.append((htmlAllowed?"<li>":"") + msg + (htmlAllowed?"</li>":""));
+				}
+			} else {
+				logger.log(level, msg);
+			}
+		}
+	}
+	
+	public void setLevel(Level level) {
+		logger.setLevel(level);
+		this.level = level;
+	}
+	
 	public boolean validateArticle(KnowWEArticle art) {
-		Level level = Logger.getLogger(Validator.class.getName()).getLevel();
-		Logger.getLogger(Validator.class.getName()).setLevel(Level.INFO);
-		Logger.getLogger(Validator.class.getName()).log(Level.INFO, 
-			"Starting to validate Article '" + art.getTitle() + "'"  + (verbose ? "\n" : ""));
-		Logger.getLogger(Validator.class.getName()).setLevel(level);
+		Level level = logger.getLevel();
+		if (logging) {
+			setLevel(Level.INFO);
+			log(Level.INFO, 
+				"Starting to validate Article '" + art.getTitle() + "'"  + (verbose ? "\n" : ""));
+			setLevel(level);
+		}
 		
 		boolean valid = validateSubTree(art.getSection());
 		
-		Logger.getLogger(Validator.class.getName()).setLevel(Level.INFO);
-		Logger.getLogger(Validator.class.getName()).log(Level.INFO, 
-			"Finished validating Article '" + art.getTitle() + "'"  + (verbose ? "\n\n" : ""));
-		Logger.getLogger(Validator.class.getName()).setLevel(level);
+		if (logging) {
+			setLevel(Level.INFO);
+			log(Level.INFO, 
+				"Finished validating Article '" + art.getTitle() + "'"  + (verbose ? "\n\n" : ""));
+			setLevel(level);
+		}
 		return valid;
 	}
 		 
 	public boolean validateSubTree(Section root) {
 		boolean valid = true;
-		List<String> IDs = new ArrayList<String>();
-		List<String> duplicateIDs = new ArrayList<String>();
+		Set<String> IDs = new HashSet<String>();
+		Set<String> duplicateIDs = new HashSet<String>();
 		List<Section> nodes = new ArrayList<Section>();
 		root.getAllNodesPreOrder(nodes);
 		for (Section node:nodes) {
@@ -150,7 +259,7 @@ public class Validator {
 				valid = false;
 			}
 		}
-		if (!duplicateIDs.isEmpty()) {
+		if (logging && !duplicateIDs.isEmpty()) {
 			//Collections.sort(duplicateIDs);
 			StringBuilder idString = new StringBuilder();
 			int counter = 0;
@@ -162,7 +271,7 @@ public class Validator {
 					counter = 0;
 				}
 			}
-			Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, 
+			log(Level.SEVERE, 
 				"The following IDs are not unique:\n" + idString  + (verbose ? "\n" : ""));
 		}
 		
@@ -172,48 +281,55 @@ public class Validator {
 	public boolean validateNode(Section node) {
 		boolean valid = true;
 		if (node == null) {
-			Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, 
+			log(Level.SEVERE, 
 					"Node is null" + (verbose ? "\n" : ""));
 			return false;
 		}
 		
 		if (node.getOriginalText() == null) {
-			Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, 
-					"Text of node '" + node.getId() + "' is null" + (verbose ? "\n" : ""));
+			log(Level.SEVERE, 
+					"Text of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
+							+ "</span>" : node.getId()) + "' is null" + (verbose ? "\n" : ""));
 			valid = false;
 		}
 		
 		if (node.getObjectType() == null) {
-			Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, 
-					"ObjectType of node '" + node.getId() + "' is null" + (verbose ? "\n" : ""));
+			log(Level.SEVERE, 
+					"ObjectType of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
+							+ "</span>" : node.getId()) + "' is null" + (verbose ? "\n" : ""));
 			valid = false;
 		} 
 		
 		if (node.getFather() == null
 				&& !(node.getObjectType() != null 
 					&& node.getObjectType() instanceof KnowWEArticle)) {
-			Logger.getLogger(Validator.class.getName()).log(Level.WARNING, 
-					"Father of node '" + node.getId() + "' is null" + (verbose ? "\n" : ""));
+			log(Level.WARNING, 
+					"Father of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
+							+ "</span>" : node.getId()) + "' is null" + (verbose ? "\n" : ""));
 			valid = false;
 		}
 		
 //		if ((node.getChildren() == null || node.getChildren().isEmpty())
 //				&& !(node.getObjectType() != null 
 //					&& node.getObjectType() instanceof PlainText)) {
-//			Logger.getLogger(Validator.class.getName()).log(Level.WARNING, 
-//					"Children of node '" + node.getId() + "' are null/empty" + (verbose ? "\n" : ""));
+//			Logger.getLogger(name).log(Level.WARNING, 
+//					"Children of node '" + node.getShortId() + "' are null/empty" + (verbose ? "\n" : ""));
 //			valid = false;
 //		}
 		
 		if (node.getOffSetFromFatherText() <= -1) {
-			Logger.getLogger(Validator.class.getName()).log(Level.WARNING, 
-					"OffSetFromFatherText of node '" + node.getId() + "' isn't set" + (verbose ? "\n" : ""));
-			if (node.getFather() != null
+			log(Level.WARNING, 
+					"OffSetFromFatherText of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
+							+ "</span>" : node.getId()) + "' isn't set" + (verbose ? "\n" : ""));
+			if (correcting 
+					&& node.getFather() != null
 					&& node.getFather().getOriginalText() != null
 					&& containsOneOf(node.getFather().getOriginalText(), node.getOriginalText())) {
 				node.setOffSetFromFatherText(node.getFather().getOriginalText().indexOf(node.getOriginalText()));
-				Logger.getLogger(Validator.class.getName()).log(Level.INFO, 
-						"Set OffSetFromFatherText in node '" + node.getId() 
+				log(Level.INFO, 
+						"Set OffSetFromFatherText in node '" 
+						+ (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
+								+ "</span>" : node.getId()) 
 						+ "' to " + node.getOffSetFromFatherText()   
 						+ (verbose ? "\nFather:\n<" + node.getFather().getOriginalText() 
 								+ ">\nNode:\n<" + node.getOriginalText() + ">\n" : ""));
@@ -231,11 +347,12 @@ public class Validator {
 					.substring(node.getOffSetFromFatherText())
 					.startsWith(node.getOriginalText())) {
 			
-			Logger.getLogger(Validator.class.getName()).log(Level.WARNING, 
-					"OffSetFromFatherText of node '" + node.getId() + "' doesn't fit" + (verbose ? "\n" : ""));
-			int old = node.getOffSetFromFatherText();
-			if (containsOneOf(node.getFather().getOriginalText(), node.getOriginalText())) {
-				
+			log(Level.WARNING, 
+					"OffSetFromFatherText of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
+							+ "</span>" : node.getId()) + "' doesn't fit" + (verbose ? "\n" : ""));
+			
+			if (correcting && containsOneOf(node.getFather().getOriginalText(), node.getOriginalText())) {
+				int old = node.getOffSetFromFatherText();
 				int offset = node.getFather().getOriginalText().indexOf(node.getOriginalText());
 				boolean isStart = offset <= textLength;
 				int beginIndex = isStart ? 0 : offset - textLength;
@@ -244,8 +361,9 @@ public class Validator {
 				boolean isEnd2 = textLength > node.getOriginalText().length() ;
 				int endIndex2 = isEnd2 ? node.getOriginalText().length() : textLength;
 				node.setOffSetFromFatherText(offset);
-				Logger.getLogger(Validator.class.getName()).log(Level.INFO, 
-						"Corrected OffSetFromFatherText in node '" + node.getId() + "'. "
+				log(Level.INFO, 
+						"Corrected OffSetFromFatherText in node '" + (htmlAllowed ? "<span title='" + node.getId() 
+								+ "'>" + node.getShortId() + "</span>" : node.getId()) + "'. "
 						+ "Old: " + old + ", New: " + node.getOffSetFromFatherText()  
 						+ (verbose ? "\nFather:\n" + (isStart ? "<" : "...") 
 								+ node.getFather().getOriginalText().substring(beginIndex, endIndex1) 
@@ -267,17 +385,24 @@ public class Validator {
 					}
 					if (child.getFather() == null || !child.getFather().equals(node)) {
 						if (child.getFather() == null) {
-							Logger.getLogger(Validator.class.getName()).log(Level.WARNING, 
-									"Father of node '" + child.getId() + "' is null" + (verbose ? "\n" : ""));
+							log(Level.WARNING, 
+									"Father of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" 
+											+ node.getShortId() + "</span>" : node.getId()) 
+											+ "' is null" + (verbose ? "\n" : ""));
 						} else {
-							Logger.getLogger(Validator.class.getName()).log(Level.WARNING, 
-									"Node '" + child.getId() + "' has wrong father" + (verbose ? "\n" : ""));
+							log(Level.WARNING, 
+									"Node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" 
+											+ node.getShortId() + "</span>" : node.getId()) 
+											+ "' has wrong father" + (verbose ? "\n" : ""));
 						}
-						if (containsOneOf(node.getOriginalText(), child.getOriginalText())) {
+						if (correcting && containsOneOf(node.getOriginalText(), child.getOriginalText())) {
 							//TODO: Sicher genug? Genauer?
 							child.setFather(node);
-							Logger.getLogger(Validator.class.getName()).log(Level.INFO, 
-									"Repaired missing/wrong link to father in node '" + child.getId() + "'"  + (verbose ? "\n" : "")); 
+							Logger.getLogger(name).log(Level.INFO, 
+									"Repaired missing/wrong link to father in node '" 
+									+ (htmlAllowed ? "<span title='" + node.getId() + "'>" 
+											+ node.getShortId() 
+											+ "</span>" : node.getId()) + "'"  + (verbose ? "\n" : "")); 
 							
 							int offset = node.getOriginalText().indexOf(child.getOriginalText());
 							boolean isStart = offset <= textLength;
@@ -287,8 +412,10 @@ public class Validator {
 							boolean isEnd2 = textLength > child.getOriginalText().length() ;
 							int endIndex2 = isEnd2 ? child.getOriginalText().length() : textLength;
 							child.setOffSetFromFatherText(offset);
-							Logger.getLogger(Validator.class.getName()).log(Level.INFO, 
-									"Set OffSetFromFatherText in node '" + child.getId() 
+							log(Level.INFO, 
+									"Set OffSetFromFatherText in node '" + (htmlAllowed ? "<span title='" 
+											+ node.getId() + "'>" + node.getShortId() 
+											+ "</span>" : node.getId()) 
 									+ "' to " + offset  
 									+ (verbose ? "\nFather:\n" + (isStart ? "<" : "...") 
 											+ node.getOriginalText().substring(beginIndex, endIndex1) 
@@ -301,14 +428,30 @@ public class Validator {
 				}
 				
 			}
-			int lDist = StringUtils.getLevenshteinDistance(node.getOriginalText(), builder.toString());
-			if (lDist != 0) {
-				Logger.getLogger(Validator.class.getName()).log(Level.SEVERE, 
-						"Text of children doesn't fit to text of node '" + node.getId() + "'" + (verbose ? 
-						"\nLevenshtein distance = " + lDist 
-						+ "\nOriginal:\n<" + node.getOriginalText() + ">\n"
-						+ "Concatenation:\n<" + builder.toString() + ">\n"
-						: ""));
+			if (!node.getOriginalText().equals(builder.toString())) {
+				if (logging) {
+					log(Level.SEVERE, "Text of children doesn't fit to text of node '" 
+							+ (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
+							+ "</span>" : node.getId()) + "'");
+					if (verbose) {
+						int lDist = StringUtils.getLevenshteinDistance(node.getOriginalText(), builder.toString());
+						log(Level.INFO, " Levenshtein distance = " + lDist);
+						String a = node.getOriginalText();
+						String b = builder.toString();
+						if (a.length() > 500) {
+							a = a.substring(0, 500) + "...";
+						}
+						if (b.length() > 500) {
+							b = b.substring(0, 500) + "...";
+						}
+						a = a.replaceAll("\\r\\n", "\\\\r\\\\n");
+						a = a.replaceAll("\\n", "\\\\n");
+						b = b.replaceAll("\\r\\n", "\\\\r\\\\n");
+						b = b.replaceAll("\\n", "\\\\n");
+						log(Level.INFO, "Original:" + (htmlAllowed?"<p/>":"\n") + a + (htmlAllowed?"<p/>":"\n") 
+								+ "Concatenation:" + (htmlAllowed?"<p/>":"\n") + b);
+					}
+				}
 				valid = false;
 			}
 		}
@@ -358,4 +501,75 @@ public class Validator {
 
 	}
 	
+	/**
+	 * The StringBuilder only has content for the TagHandlerInstance...
+	 */
+	public StringBuilder getBuilder() {
+		StringBuilder temp = new StringBuilder(this.builder);
+		this.builder = new StringBuilder();
+		return temp;
+	}
+	
+	
+//	private static String showDiff(String x, String y) {
+//		int lookahead = 50;
+//		StringBuffer output = new StringBuffer();
+//		int[] offset = new int[2];
+//		for (int i = 0; i < x.length() + offset[0] || i < y.length() + offset[1]; i++) {
+//			if (i == x.length() + offset[0]) {
+//				output.append("<span style='background: green'>" + y.substring(i, y.length()) + "</span>");
+//				break;
+//			} else if (i == y.length() + offset[1]) {
+//				output.append("<span style='background: green'>" + x.substring(i, x.length()) + "</span>");
+//				break;
+//			}
+//			if (x.charAt(i + offset[0]) != y.charAt(i + offset[1])) {
+//				//int tempLookahead = (i + lookahead < maxlength ? i + lookahead : i + (maxlength - i));
+//				int[] temp = findNextMatch(x.substring(i, (i + lookahead < x.length() ? i + lookahead : i + (x.length() - i))),
+//						y.substring(i, (i + lookahead < y.length() ? i + lookahead : i + (y.length() - i))));
+//				if (temp[0] == 0 && temp[1] == 0) {
+//					output.append("<span style='background: red'>NO FURTHER MATCHES IN THE NEXT " 
+//							+ lookahead + " CHARS</span>");
+//					break;
+//				} else {
+//					offset[0] += temp[0];
+//					offset[1] += temp[1];
+//					if (temp[0] == temp[1]) {
+//						output.append("<span style='background: purple'>" + x.substring(i, i + temp[0]) + "</span>");
+//					} else if (temp[0] > 0) {
+//						output.append("<span style='background: orange'>" + x.substring(i, i + temp[0]) + "</span>");
+//					} else if (temp[1] > 0) {
+//						output.append("<span style='background: yellow'>" + y.substring(i, i + temp[1]) + "</span>");
+//					}
+//				}
+//			} else {
+//				output.append(x.charAt(i));
+//			}
+//		}
+//		return  output.toString();
+//	}
+//	
+//	private static int[] findNextMatch(String x, String y) {
+//
+//		for (int i = 1; i < x.length() || i < y.length(); i++) {
+//			for (int j = 0; j < x.length() - i || j < y.length() - i; j++) {
+//				if (x.substring(i, x.length() - j).indexOf(y.substring(i, y.length() - j)) > -1) {
+//					return new int[] {i, i};
+//				} else  if (y.indexOf(x.substring(i, x.length() - j)) > -1) {
+//					return new int[] {i, 0};
+//				} else if (x.indexOf(y.substring(i, y.length() - j)) > -1) {
+//					return new int[] {0, i};
+//				} 
+//			}
+//		}
+//		return new int[] {0, 0};
+//	}
+//	
+//	public static void main(String[] args) {
+//		String test1 = "asnsf";
+//		
+//		String test2 = "asmsf";
+//		
+//		System.out.println(showDiff(test1, test2));
+//	}
 }

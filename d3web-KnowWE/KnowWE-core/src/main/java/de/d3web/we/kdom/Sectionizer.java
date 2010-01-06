@@ -22,7 +22,6 @@ package de.d3web.we.kdom;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -251,6 +250,9 @@ public class Sectionizer {
 					Section firstFinding = findings.get(0);
 					if (findings.size() == 1 && firstFinding.isExpanded()) {
 						// the generated section is already expanded and is just hanged into the tree
+//						long start = System.currentTimeMillis();
+//						Validator.getConsoleInstance().validateSubTree(father);
+//						System.out.println("###" + (System.currentTimeMillis() - start));
 						newSections.add(firstFinding);
 					} else {
 						PairOfInts positionOfFirstFinding = firstFinding

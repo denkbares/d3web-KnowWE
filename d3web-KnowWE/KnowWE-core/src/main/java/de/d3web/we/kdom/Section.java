@@ -615,7 +615,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		StringBuffer buffi = new StringBuffer();
 		buffi.append(this.getObjectType().getClass().getSimpleName());
 		//TODO: Show more of the IDs...
-		buffi.append(", ID: " + (id.contains("/") ? ".." + id.substring(id.lastIndexOf("/")) : id));
+		buffi.append(", ID: " + getShortId());
 		buffi.append(", length: " + this.getOriginalText().length() + " ("
 				+ offSetFromFatherText + ")" + ", children: " + getChildren().size());
 		buffi.append(", \"" + replaceNewlines(getShortText(50)));
@@ -637,6 +637,20 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public String getId() {
 		return id;
+	}
+	
+	/**
+	 * <b>IMPORTANT:</b> This is NOT the actual ID, this may NOT be unique and this should only be used 
+	 * in situations where a short version of the ID is needed e.g. to make it easier to
+	 * read for humans in debugging, logging and similar stuff.
+	 */
+	public String getShortId() {
+		String temp = id;
+		if (temp.contains(SectionID.SEPARATOR)) {
+			temp = temp.substring(0, temp.indexOf(SectionID.SEPARATOR) + 1) + "..." 
+				+ temp.substring(temp.lastIndexOf(SectionID.SEPARATOR));
+		}
+		return temp;
 	}
 	
 	@Override

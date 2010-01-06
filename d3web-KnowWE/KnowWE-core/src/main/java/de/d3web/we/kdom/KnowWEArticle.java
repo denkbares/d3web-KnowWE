@@ -177,7 +177,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			Logger.getLogger(this.getClass().getName())
 					.log(Level.INFO, "-> Starting to validate article '" + title + "' ->");
 			
-			Validator.getInstance().validateArticle(this);
+			Validator.getFileHandlerInstance().validateArticle(this);
 			
 			Logger.getLogger(this.getClass().getName())
 				.log(Level.INFO,"<- Finished validating article '" + title + "' in " 
