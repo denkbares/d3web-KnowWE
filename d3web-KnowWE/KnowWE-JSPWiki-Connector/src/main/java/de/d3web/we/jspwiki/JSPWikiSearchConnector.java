@@ -145,6 +145,10 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 	@Override
 	public String renderResults(Collection<GenericSearchResult> results) {
 		StringBuffer resultBuffy = new StringBuffer();
+		
+		if(results.size() == 0) {
+			return null;
+		}
 
 		resultBuffy.append("<div class=\"graphBars\">");
 		resultBuffy.append("<div class=\"zebra-table\">");
@@ -177,8 +181,8 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
 	@Override
 	public Collection<SearchTerm> getAllTerms() {
-		// TODO Auto-generated method stub
-		return null;
+		// Plaintext-search does not generate terms...
+		return new ArrayList<SearchTerm>();
 	}
 
 	/*
