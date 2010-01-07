@@ -175,6 +175,12 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 		return resultBuffy.toString();
 	}
 
+	@Override
+	public Collection<SearchTerm> getAllTerms() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/*
 	 * <div class="graphBars"> <div class="zebra-table">
 	 * 
