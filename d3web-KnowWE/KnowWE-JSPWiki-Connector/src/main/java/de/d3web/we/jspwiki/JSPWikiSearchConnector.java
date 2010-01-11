@@ -110,12 +110,12 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
 	@Override
 	public String getID() {
-		return "JSPWiki Search";
+		return "JSPWiki search";
 	}
 
 	@Override
 	public String getVerbalization(Locale local) {
-		return "jspwiki search verbalization: " + local.toString();
+		return "JSPWiki Suche";
 	}
 
 	@Override
@@ -183,6 +183,12 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 	public Collection<SearchTerm> getAllTerms() {
 		// Plaintext-search does not generate terms...
 		return new ArrayList<SearchTerm>();
+	}
+
+	@Override
+	public Collection<SearchTerm> expandTerm(SearchTerm t) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/*
