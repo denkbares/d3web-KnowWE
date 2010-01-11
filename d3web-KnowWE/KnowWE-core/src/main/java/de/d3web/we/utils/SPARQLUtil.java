@@ -126,6 +126,14 @@ public class SPARQLUtil {
 		return executeTupleQuery(SUBCLASS_SPARQL.replaceAll("URI", uri.toString()));
 	}
 	
+	private static final String RELATION_SPARQL = "SELECT ?x WHERE { ?x <PRED-URI> <OBJECT-URI>.} ";
+	
+	public static TupleQueryResult findRelations(URI object, URI predicate) {
+		String query = RELATION_SPARQL.replaceAll("OBJECT-URI", object.toString());
+		query = query.replaceAll("PRED-URI", predicate.toString());
+		return executeTupleQuery(query);
+	}
+	
 	private static final String SUPERCLASS_SPARQL = "SELECT ?x WHERE { <URI> rdfs:subClassOf ?x.} ";
 	
 	public static TupleQueryResult findSuperClasses(URI uri) {

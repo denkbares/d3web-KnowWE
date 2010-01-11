@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import com.wcohen.ss.Levenstein;
 
@@ -39,14 +40,8 @@ public class SearchTerminologyHandler {
 		}
 	}
 
-	public List<SearchTerm> expandSearchTerm(SearchTerm t) {
-		List<SearchTerm> result = new ArrayList<SearchTerm>();
-
-		for (SearchTermExpander expander : expanders) {
-			result.addAll(expander.expandSearchTerm(t));
-		}
-
-		return result;
+	public Collection<SearchTerm> expandSearchTerm(SearchTerm t) {
+		return expandSearchTermByProviders(t);
 
 	}
 
@@ -60,68 +55,73 @@ public class SearchTerminologyHandler {
 	 */
 	public Collection<SearchTerm> getRelevantSearchWords(String query) {
 
-		List<SearchTerm> terms = new ArrayList<SearchTerm>();
+		if (query.startsWith("\"") && query.endsWith("\"")) {
+			query = query.substring(1, query.length() - 1);
+		}
 
-		terms.add(new SearchTerm("apfel", 2));
-		terms.add(new SearchTerm("birne", 0.5));
-		terms.add(new SearchTerm("banane", 1));
-		terms.add(new SearchTerm("birnenkuchen", 2));
-		terms.add(new SearchTerm("birnen marmelade", 1));
-		terms.add(new SearchTerm("birnenkompott", 0.5));
-		terms.add(new SearchTerm("birnen einkochen", 3));
-		terms.add(new SearchTerm("birnensorten", 0.5));
-		terms.add(new SearchTerm("advent", 0.5));
-		terms.add(new SearchTerm("weihnachten", 0.5));
-		terms.add(new SearchTerm("geschenke", 0.5));
-		terms.add(new SearchTerm("freude", 0.5));
-		terms.add(new SearchTerm("sterne", 0.5));
-		terms.add(new SearchTerm("könige", 0.5));
-		terms.add(new SearchTerm("kinder", 2.5));
-		terms.add(new SearchTerm("plätzchen", 1.5));
-		terms.add(new SearchTerm("gelächter", 0.5));
-		terms.add(new SearchTerm("baum", 0.4));
-		terms.add(new SearchTerm("kugel", 1.0));
-		terms.add(new SearchTerm("schnee", 1.0));
-		terms.add(new SearchTerm("kalt", 1.5));
-		terms.add(new SearchTerm("kerzen", 2.0));
-		terms.add(new SearchTerm("schneemann", 0.8));
-		terms.add(new SearchTerm("schneefrau", 1.2));
-		terms.add(new SearchTerm("wasser", 1.5));
-		terms.add(new SearchTerm("feuer", 2.0));
-		terms.add(new SearchTerm("erde", 0.4));
-		terms.add(new SearchTerm("luft", 3.5));
-		terms.add(new SearchTerm("vogel", 0.5));
-		terms.add(new SearchTerm("stein", 0.5));
-		terms.add(new SearchTerm("ameise", 0.5));
-		terms.add(new SearchTerm("sonne", 0.5));
-		terms.add(new SearchTerm("wolke", 0.5));
-		terms.add(new SearchTerm("farben", 0.5));
-		terms.add(new SearchTerm("landschaft", 0.5));
-		terms.add(new SearchTerm("Grünland", 0.5));
-		terms.add(new SearchTerm("Boden", 1.5));
-		terms.add(new SearchTerm("Bewuchs", 0.5));
-		terms.add(new SearchTerm("vielfalt", 0.4));
-		terms.add(new SearchTerm("Pflanzen", 1.0));
-		terms.add(new SearchTerm("Käfer", 1.0));
-		terms.add(new SearchTerm("lebensraum", 1.5));
-		terms.add(new SearchTerm("diversität", 2.0));
-		terms.add(new SearchTerm("bio", 0.8));
-		terms.add(new SearchTerm("natur", 1.2));
+		List<SearchTerm> generalSystemTerms = new ArrayList<SearchTerm>();
+
+		// terms.add(new SearchTerm("apfel", 2));
+		// terms.add(new SearchTerm("birne", 0.5));
+		// terms.add(new SearchTerm("banane", 1));
+		// terms.add(new SearchTerm("birnenkuchen", 2));
+		// terms.add(new SearchTerm("birnen marmelade", 1));
+		// terms.add(new SearchTerm("birnenkompott", 0.5));
+		// terms.add(new SearchTerm("birnen einkochen", 3));
+		// terms.add(new SearchTerm("birnensorten", 0.5));
+		// terms.add(new SearchTerm("advent", 0.5));
+		// terms.add(new SearchTerm("weihnachten", 0.5));
+		// terms.add(new SearchTerm("geschenke", 0.5));
+		// terms.add(new SearchTerm("freude", 0.5));
+		// terms.add(new SearchTerm("sterne", 0.5));
+		// terms.add(new SearchTerm("könige", 0.5));
+		// terms.add(new SearchTerm("kinder", 2.5));
+		// terms.add(new SearchTerm("plätzchen", 1.5));
+		// terms.add(new SearchTerm("gelächter", 0.5));
+		// terms.add(new SearchTerm("baum", 0.4));
+		// terms.add(new SearchTerm("kugel", 1.0));
+		// terms.add(new SearchTerm("schnee", 1.0));
+		// terms.add(new SearchTerm("kalt", 1.5));
+		// terms.add(new SearchTerm("kerzen", 2.0));
+		// terms.add(new SearchTerm("schneemann", 0.8));
+		// terms.add(new SearchTerm("schneefrau", 1.2));
+		// terms.add(new SearchTerm("wasser", 1.5));
+		// terms.add(new SearchTerm("feuer", 2.0));
+		// terms.add(new SearchTerm("erde", 0.4));
+		// terms.add(new SearchTerm("luft", 3.5));
+		// terms.add(new SearchTerm("vogel", 0.5));
+		// terms.add(new SearchTerm("stein", 0.5));
+		// terms.add(new SearchTerm("ameise", 0.5));
+		// terms.add(new SearchTerm("sonne", 0.5));
+		// terms.add(new SearchTerm("wolke", 0.5));
+		// terms.add(new SearchTerm("farben", 0.5));
+		// terms.add(new SearchTerm("landschaft", 0.5));
+		// terms.add(new SearchTerm("Grünland", 0.5));
+		// terms.add(new SearchTerm("Boden", 1.5));
+		// terms.add(new SearchTerm("Bewuchs", 0.5));
+		// terms.add(new SearchTerm("vielfalt", 0.4));
+		// terms.add(new SearchTerm("Pflanzen", 1.0));
+		// terms.add(new SearchTerm("Käfer", 1.0));
+		// terms.add(new SearchTerm("lebensraum", 1.5));
+		// terms.add(new SearchTerm("diversität", 2.0));
+		// terms.add(new SearchTerm("bio", 0.8));
+		// terms.add(new SearchTerm("natur", 1.2));
 
 		Collection<KnowWESearchProvider> providers = MultiSearchEngine
 				.getInstance().getSearchProvider().values();
-		if(providers != null) {
-		for (KnowWESearchProvider knowWESearchProvider : providers) {
-			Collection<SearchTerm> allTerms = knowWESearchProvider
-					.getAllTerms();
-			if (allTerms != null) {
-				terms.addAll(allTerms);
+		if (providers != null) {
+			for (KnowWESearchProvider knowWESearchProvider : providers) {
+				Collection<SearchTerm> allTerms = knowWESearchProvider
+						.getAllTerms();
+				if (allTerms != null) {
+					generalSystemTerms.addAll(allTerms);
+				}
 			}
 		}
-		}
+
 		Map<SearchTerm, Double> similarities = new HashMap<SearchTerm, Double>();
 		if (query != null) {
-			for (SearchTerm searchTerm : terms) {
+			for (SearchTerm searchTerm : generalSystemTerms) {
 				double sim = levenstein.score(query, searchTerm.getTerm());
 				similarities.put(searchTerm, sim);
 
@@ -131,13 +131,23 @@ public class SearchTerminologyHandler {
 		Set<SearchTerm> filtered = new HashSet<SearchTerm>();
 
 		int cnt = 0;
-		int maxTerms = 15;
+		int maxTerms = 20;
 
-		for (SearchTerm term : terms) {
-			if (term.getTerm().contains(query)) {
+		SearchTerm exactMatch = null;
+
+		for (SearchTerm term : generalSystemTerms) {
+			if (term.getTerm().equals(query)) {
+				exactMatch = term;
+				filtered.addAll(expandSearchTermByProviders( term));
+			} else if (term.getTerm().contains(query)) {
 				filtered.add(term);
 			}
 		}
+
+//		if (exactMatch != null) {
+//			filtered.addAll(OWLSibblingClassExpander.getInstance()
+//					.expandSearchTerm(exactMatch));
+//		}
 
 		maxTerms = maxTerms - filtered.size();
 
@@ -159,6 +169,21 @@ public class SearchTerminologyHandler {
 		}
 
 		return filtered;
+	}
+
+	private Collection<SearchTerm> expandSearchTermByProviders(
+			SearchTerm term) {
+		Set<SearchTerm> result = new HashSet<SearchTerm>();
+		Set<Entry<String, KnowWESearchProvider>> entrySet = MultiSearchEngine
+				.getInstance().getSearchProvider().entrySet();
+		for (Entry<String, KnowWESearchProvider> entry : entrySet) {
+			Collection<SearchTerm> expanded = entry.getValue()
+					.expandTerm(term);
+			if (expanded != null) {
+				result.addAll(expanded);
+			}
+		}
+		return result;
 	}
 
 	/**

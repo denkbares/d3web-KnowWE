@@ -416,4 +416,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 		}
 		return result;
 	}
+
+	@Override
+	public Collection<SearchTerm> expandTerm(SearchTerm t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 } 

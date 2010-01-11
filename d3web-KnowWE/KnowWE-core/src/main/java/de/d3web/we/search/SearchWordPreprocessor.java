@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.we.utils.SplitUtility;
+
 public class SearchWordPreprocessor {
 	
 	private static SearchWordPreprocessor instance;
@@ -41,11 +43,14 @@ public class SearchWordPreprocessor {
 	private static List<SearchWordPreprocessingModule> processors = new ArrayList<SearchWordPreprocessingModule>(); 
 	
 	public Collection<SearchTerm> process(String searchText) {
-		String [] words = searchText.split(" ");
+		List<String> terms = SplitUtility.splitUnquoted(searchText," ");
 		
 		Map<String,SearchTerm> result = new HashMap<String,SearchTerm>();
 		
-		for (String word : words) {
+		for (String word : terms) {
+			if (word.startsWith("\"") && word.endsWith("\"")) {
+				word = word.substring(1, word.length() - 1);
+			}
 			result.put(word, new SearchTerm(word));
 		}
 		

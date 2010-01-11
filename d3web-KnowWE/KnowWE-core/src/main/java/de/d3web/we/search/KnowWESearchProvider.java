@@ -36,5 +36,7 @@ public interface KnowWESearchProvider {
 	public abstract String renderResults(Collection<GenericSearchResult> results);
 		
 	public abstract Collection<SearchTerm> getAllTerms();
+	
+	public abstract Collection<SearchTerm> expandTerm(SearchTerm t);
 
 }

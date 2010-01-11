@@ -1,6 +1,6 @@
 package de.d3web.we.search.termExpansion;
 
-import java.util.List;
+import java.util.Collection;
 
 import de.d3web.we.search.SearchTerm;
 
@@ -13,6 +13,8 @@ import de.d3web.we.search.SearchTerm;
 public interface SearchTermExpander {
 	
 	
-	public List<SearchTerm> expandSearchTerm(SearchTerm t);
+	public Collection<SearchTerm> expandSearchTerm(SearchTerm t);
+	
+	public Collection<SearchTerm> expandSearchTerm(SearchTerm t, int level);
 
 }
