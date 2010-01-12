@@ -31,15 +31,20 @@ public class AddSubFlowchart implements KnowWEAction{
 		// get everything important from the parameter map
 		String web = parameterMap.getWeb();
 		String infos = parameterMap.get("infos");
-		String[] splitInfos = infos.split(",");
-		String pageName = splitInfos[0];
-		String name = splitInfos[1];
-		String[] exits = new String[splitInfos.length - 2];
-		for (int i = 2; i < splitInfos.length; i++) {
-			exits[i -2] = splitInfos[i];
-			Logging.getInstance().info(exits[i-2]);
-		}
-
+//		String[] splitInfos = infos.split(",");
+//		String pageName = splitInfos[0];
+//		String name = splitInfos[1];
+//		String[] exits = new String[splitInfos.length - 2];
+//		for (int i = 2; i < splitInfos.length; i++) {
+//			exits[i -2] = splitInfos[i];
+//			Logging.getInstance().info(exits[i-2]);
+//		}
+		
+		String pageName = infos.substring(infos.indexOf("[Pagename]") + 10, infos.indexOf("[Name]"));
+		String name = infos.substring(infos.indexOf("[Name]") + 6, infos.indexOf("[Nodes]"));
+		String nodesToLine = infos.substring(infos.indexOf("[Nodes]") + 7).replace("[next]", ":next:");
+		String[] exits = nodesToLine.split(":next:");
+		
 		
 		// get everything to update the article
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);

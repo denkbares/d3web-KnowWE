@@ -42,15 +42,12 @@ public class UpdateQuestions implements KnowWEAction {
 		// get everything important from the parameter map
 		String web = parameterMap.getWeb();
 		String infos = parameterMap.get("infos");
-		String[] splitInfos = infos.split(",");
-		String questionText = splitInfos[0];
-		String questionType = splitInfos[1];
-		String pageName = splitInfos[2];
-		String[] answers = new String[splitInfos.length - 3];
-		for (int i = 3; i < splitInfos.length; i++) {
-			answers[i -3] = splitInfos[i];
-		}
-
+		String questionText = infos.substring(infos.indexOf("[Text]") + 6, infos.indexOf("[Type]"));
+		String questionType = infos.substring(infos.indexOf("[Type]") + 6, infos.indexOf("[Pagename]"));
+		String pageName = infos.substring(infos.indexOf("[Pagename]") + 10, infos.indexOf("[Answers]"));
+		String answersToLine = infos.substring(infos.indexOf("[Answers]") + 9).replace("[next]", ":next:");
+		String[] answers = answersToLine.split(":next:");
+		
 		
 		// get everything to update the article
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);

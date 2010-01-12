@@ -44,9 +44,9 @@ public class UpdateSolutions implements KnowWEAction {
 		// get everything important from the parameter map
 		String web = parameterMap.getWeb();
 		String infos = parameterMap.get("infos");
-		String[] splitInfos = infos.split(",");
-		String solutionText = splitInfos[0];
-		String pageName = splitInfos[1];
+		String solutionText = infos.substring(infos.indexOf("[Text]") + 6, infos.indexOf("[Pagename]"));
+		String pageName = infos.substring(infos.indexOf("[Pagename]") + 10);
+
 
 		
 		// get everything to update the article
@@ -96,7 +96,7 @@ public class UpdateSolutions implements KnowWEAction {
 		String newText = firstPart + newSolutionsSection + lastPart;
 		instance.saveArticle(sec.getWeb(), sec.getTitle(), newText, map);
 
-		return "solutionText: " + solutionText + " pageName: " + pageName;
+		return "success";
 	}
 	
 	

@@ -451,15 +451,25 @@ ActionEditor.updateQuestions = function(addedQuestionText, addedQuestionType, po
 
 		var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
 		var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
-		var answersToLine = "";
-		for (var i = 0; i < possibleAnswers.length; i++) {
-			if (i != possibleAnswers.length -1) {
-				answersToLine += possibleAnswers[i] + ',';
-			} else {
-				answersToLine += possibleAnswers[i];
+		var answersToLine = '[Answers]';
+		
+		if (addedQuestionType === 'yn') {
+			answersToLine += 'yes[next]no';
+		} else {
+			for (var i = 0; i < possibleAnswers.length; i++) {
+				if (i != possibleAnswers.length -1) {
+					answersToLine += possibleAnswers[i] + '[next]';
+				} else {
+					answersToLine += possibleAnswers[i];
+				}
 			}
 		}
-		var infos = '&infos=' + addedQuestionText + ',' + addedQuestionType + ',' + pageName + ',' + answersToLine;
+		
+		addedQuestionText = '[Text]' + addedQuestionText;
+		addedQuestionType = '[Type]' + addedQuestionType;
+		pageName = '[Pagename]' + pageName;
+		
+		var infos = '&infos=' + addedQuestionText + addedQuestionType + pageName + answersToLine;
 
 		
 		var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.UpdateQuestions" + infos;
@@ -513,8 +523,9 @@ ActionEditor.createSolutionDropdown = function(solutionText) {
 ActionEditor.updateSolutions = function(solutionText) {
 
 	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
-	var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
-	var infos = '&infos=' + solutionText + ',' + pageName;
+	var pageName = '[Pagename]' + window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
+	
+	var infos = '&infos=' + '[Text]' + solutionText + pageName;
 
 	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.UpdateSolutions" + infos;
 	
@@ -563,16 +574,16 @@ ActionEditor.addSubFlow = function(exitNodes) {
 	var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
 	var name = document.choseQuestionText.questionText.value;
 	
-	var nodesToLine='';
+	var nodesToLine = '[Nodes]';
 	for (var i = 0; i < exitNodes.length; i++)  {
 		nodesToLine += exitNodes[i];
 		
 		if (i != exitNodes.length -1) {
-			nodesToLine += ',';
+			nodesToLine += '[next]';
 		} 
 	}
 	
-	var infos = '&infos=' + pageName + ',' + name +  ',' + nodesToLine;
+	var infos = '&infos=' + '[Pagename]' +  pageName + '[Name]' + name + nodesToLine;
 
 	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.AddSubFlowchart" + infos;
 	
@@ -612,6 +623,20 @@ ActionEditor.prototype.createNewQuestion = function() {
 	var qType = ActionEditor.getQuestionType();
 	var answers = this.getAnswers();
 	var actions;
+	
+	// escape special characters ! / = ( ) { } [ ] * - . : ; > | 
+	// Verbindungs-Fehler: & , #
+	// heap space ` \ ^
+	// verschwindet: +
+	// bug: <
+	if ((qText.indexOf('!') > 0) || (qText.indexOf('/') > 0) || (qText.indexOf('=') > 0) 
+			|| (qText.indexOf('(') > 0) || (qText.indexOf(')') > 0 || (qText.indexOf('{') > 0)) 
+			|| (qText.indexOf('}') > 0) || (qText.indexOf('[') > 0) || (qText.indexOf(']') > 0) 
+			|| (qText.indexOf('*') > 0) || (qText.indexOf('+') > 0) || (qText.indexOf('-') > 0) 
+			|| (qText.indexOf('.') > 0) || (qText.indexOf(':') > 0) || (qText.indexOf(';') > 0)
+			|| (qText.indexOf('>') > 0) || (qText.indexOf('|') > 0)) {
+		qText = '"' + qText + '"';
+	}
 	
 	// if the object is a question, do the right ajax-request and create the dropdown
 	if (qType != "Solution") {
@@ -727,14 +752,14 @@ ActionEditor.prototype.askQuestionType = function() {
 	var root = this.dom.select('.value')[0];
 	var questionText = document.choseQuestionText.questionText.value;
 	var multipleChoice = '<input type="radio" id="mc" name="questionType" value="mc">Question [mc]<br>';
-	var oneChoice = '<input type="radio" id="oc" name="questionType" value="oc">Question [oc]<br>';
+	var oneChoice = '<input type="radio" id="oc" name="questionType" value="oc" checked>Question [oc]<br>';
 	var yn = '<input type="radio" id="yn" name="questionType" value="yn">Question [yn]<br>';
 	var num = '<input type="radio" id="num" name="questionType" value="num">Question [num]<br>';
 	var solution = '<input type="radio" id="Solution" name="questionType" value="Solution">Solution<br>';
-	var newFlowchart = '<input type="radio" id="newFlowchart" name="questionType" value="newFlowchart">new Flowchart<br>';
+	var newFlowchart = '<input type="radio" id="newFlowchart" name="questionType" value="newFlowchart">Flowchart<br>';
 	var buttonOK = '<input type="button" value="Erstellen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.addAnswer()"';
 	root.innerHTML = '<i>Bitte Objekttyp auswählen für</i><br\>' + questionText
-	+ '<br\><form name="choseQuestionType" id="choseQuestionType" method="get">' + multipleChoice + oneChoice + yn  + num + solution + newFlowchart + "<br\>" + buttonOK + "</form>";
+	+ '<br\><form name="choseQuestionType" id="choseQuestionType" method="get">' + oneChoice + multipleChoice  + yn  + num + solution + newFlowchart + "<br\>" + buttonOK + "</form>";
 	return;
 }
 
