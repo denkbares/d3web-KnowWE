@@ -49,22 +49,23 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		String web = parameterMap.getWeb();
 		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = articleManager.getArticle(topic);
-		Section articleSection = article.getSection();
+		Section<?> articleSection = article.getSection();
 
 		// Section mit der id holen
-		Section knowledgeSection = articleSection.findChild(id);
+		Section<?> knowledgeSection = articleSection.findChild(id);
 		
 		// Alle Finding 's dieser Section holen
-		List<Section> findingSections = new ArrayList<Section>();
-		knowledgeSection.findSuccessorsOfType(Finding.class, findingSections); 
+		List<Section<Finding>> findingSections = new ArrayList<Section<Finding>>();
+		//Finding.class, findingSections
+		knowledgeSection.findSuccessorsOfType(new Finding(), findingSections);
 		
 		// SolutionID holen
-		Section solutionID = knowledgeSection.findSuccessor(SolutionID.class);
+		Section<SolutionID> solutionID = knowledgeSection.findSuccessor(new SolutionID());
 		
 		// Regelstring bauen
 		StringBuilder sb = new StringBuilder("\nIF ");
-		for(Iterator<Section> iter = findingSections.iterator(); iter.hasNext(); ) {
-			Section sec = iter.next();
+		for(Iterator<Section<Finding>> iter = findingSections.iterator(); iter.hasNext(); ) {
+			Section<Finding> sec = iter.next();
 			sb.append(sec.getOriginalText() + " ");
 			if (iter.hasNext())
 				sb.append("\nAND ");
@@ -73,15 +74,26 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		sb.append(solutionID.getOriginalText() + " = P7\n");
 		
 		//Lösche entsprechende XCList
-		articleManager.replaceKDOMNodeWithoutSave(parameterMap, topic, knowledgeSection.getId(), "\n");
-		
+		String newText = articleManager.replaceKDOMNodeWithoutSave(parameterMap, topic, knowledgeSection.getId(), "\n");
+		articleSection = refreshArtcleSection(articleManager, article, newText);
+			
 		//Füge Regel ein und speichere Artikel
-		List<Section> rulesSectionContentSections = new ArrayList<Section>();
-		articleSection.findSuccessorsOfType(RulesSectionContent.class, rulesSectionContentSections);
-		Section rulesSectionContent = rulesSectionContentSections.get(0);
+		List<Section<RulesSectionContent>> rulesSectionContentSections = new ArrayList<Section<RulesSectionContent>>();
+		articleSection.findSuccessorsOfType(new RulesSectionContent(), rulesSectionContentSections);
+		Section<RulesSectionContent> rulesSectionContent = rulesSectionContentSections.get(0);
 		articleManager.replaceKDOMNode(parameterMap, topic, rulesSectionContent.getId(), rulesSectionContent.getOriginalText() + sb.toString());
 		
 		return "";
 	}
+
+	private Section<?> refreshArtcleSection(KnowWEArticleManager articleManager,
+			KnowWEArticle article, String newText) {
+		Section<?> articleSection;
+		article = new KnowWEArticle(newText, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
+		articleManager.saveUpdatedArticle(article);
+		articleSection = article.getSection();
+		return articleSection;
+	}
+
 
 }
