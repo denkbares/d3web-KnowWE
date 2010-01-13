@@ -20,23 +20,22 @@
 
 package de.d3web.we.taghandler;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class TagHandlerAttributeSectionFinder extends SectionFinder {
+public class TagHandlerAttributeSectionFinder implements ReviseSubTreeHandler {
 
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 	
-	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public void reviseSubtree(KnowWEArticle art, Section sec) {
 				
+		String text = sec.getOriginalText();
+		
 		Map<String, String> values = new HashMap<String, String>();
 
 		//attribute parsen und einfügen
@@ -55,10 +54,8 @@ public class TagHandlerAttributeSectionFinder extends SectionFinder {
 			values.put(tag.trim(), value.trim());
 		}
 		
-		KnowWEUtils.storeSectionInfo(father.getWeb(),father.getTitle(), father.getId(), ATTRIBUTE_MAP, values);
+		KnowWEUtils.storeSectionInfo(sec.getWeb(),sec.getTitle(), sec.getFather().getId(), ATTRIBUTE_MAP, values);
 		
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-		result.add(new SectionFinderResult(0, text.length()));
-		return result;
+		
 	}
 }

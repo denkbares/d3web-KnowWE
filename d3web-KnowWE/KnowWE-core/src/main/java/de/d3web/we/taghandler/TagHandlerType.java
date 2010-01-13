@@ -21,8 +21,10 @@
 package de.d3web.we.taghandler;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.MultiSectionFinder;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinder;
 
 
 public class TagHandlerType extends DefaultAbstractKnowWEObjectType {
@@ -30,7 +32,14 @@ public class TagHandlerType extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		//searches for Strings like [{KnowWEPlugin ...}]
-		sectionFinder = new RegexSectionFinder("\\[\\{KnowWEPlugin [^}]*}]");
+		
+		MultiSectionFinder multi = new MultiSectionFinder();
+		SectionFinder f1 = new RegexSectionFinder("\\[\\{KnowWEPlugin [^}]*}]");
+		SectionFinder f2 = new RegexSectionFinder("\\%\\%KnowWEPlugin .*\\r?\\n");
+		multi.addSectionFinder(f1);
+		multi.addSectionFinder(f2);
+		this.sectionFinder = multi;
+		
 		childrenTypes.add(new TagHandlerTypeStartSymbol());
 		childrenTypes.add(new TagHandlerTypeEndSymbol());
 		childrenTypes.add(new TagHandlerTypeContent());
