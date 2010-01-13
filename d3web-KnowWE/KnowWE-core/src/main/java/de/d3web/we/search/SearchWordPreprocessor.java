@@ -21,9 +21,9 @@ package de.d3web.we.search;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import de.d3web.we.utils.SplitUtility;
 
@@ -45,30 +45,22 @@ public class SearchWordPreprocessor {
 	public Collection<SearchTerm> process(String searchText) {
 		List<String> terms = SplitUtility.splitUnquoted(searchText," ");
 		
-		Map<String,SearchTerm> result = new HashMap<String,SearchTerm>();
+		Set<SearchTerm> result = new HashSet<SearchTerm>();
 		
 		for (String word : terms) {
 			if (word.startsWith("\"") && word.endsWith("\"")) {
 				word = word.substring(1, word.length() - 1);
 			}
-			result.put(word, new SearchTerm(word));
+			result.add(new SearchTerm(word));
 		}
 		
-		for (SearchWordPreprocessingModule module : processors) {
-			Collection<SearchTerm> list = module.getTerms(searchText);
-			for (SearchTerm searchTerm : list) {
-				SearchTerm t = result.get(searchTerm.getTerm());
-				if(t != null) {
-					t.setImportance(t.getImportance() + searchTerm.getImportance());
-				}else {
-					result.put(searchTerm.getTerm(), searchTerm);
-				}
-			}
-			
+		for (SearchTerm searchTerm : result) {
+			result.addAll(SearchTerminologyHandler.getInstance().expandSearchTerm(searchTerm));
 		}
 		
 		
-		return result.values();
+		
+		return result;
 		
 	}
 

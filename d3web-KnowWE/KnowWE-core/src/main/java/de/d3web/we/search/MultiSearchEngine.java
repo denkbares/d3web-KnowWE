@@ -45,7 +45,8 @@ public class MultiSearchEngine {
 	
 	
 	private Map<String,KnowWESearchProvider> searchProvider = new HashMap<String,KnowWESearchProvider>();
-	private SearchWordPreprocessor proz = new SearchWordPreprocessor();
+	
+	
 	
 	public Map<String, KnowWESearchProvider> getSearchProvider() {
 		return searchProvider;
@@ -61,7 +62,7 @@ public class MultiSearchEngine {
 	}
 	
 	public Map<String, Collection<GenericSearchResult>> search(String searchText, KnowWEParameterMap map) {
-		return search(proz.process(searchText), map);
+		return search(SearchWordPreprocessor.getInstance().process(searchText), map);
 	}
 	
 	public Map<String, Collection<GenericSearchResult>> search(Collection<SearchTerm> terms, KnowWEParameterMap map) {
@@ -72,9 +73,7 @@ public class MultiSearchEngine {
 		
 		searchSet.addAll(terms);
 		
-		for (SearchTerm searchTerm : terms) {
-			searchSet.addAll(SearchTerminologyHandler.getInstance().expandSearchTerm(searchTerm));
-		}
+		
 		
 		for (KnowWESearchProvider provider : searchProvider.values()) {
 			Collection<GenericSearchResult> singleResultSet = provider.search(searchSet, map);
