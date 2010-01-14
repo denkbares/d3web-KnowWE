@@ -21,7 +21,8 @@ var KBInfo = {
 	      v = parseInt(v + '0'.times(4-v.length));
 	      return versionString.indexOf('_') > -1 ? v-1 : v;
 	    }
-	
+	    KBInfo.imagePath = "cc/image/kbinfo/";
+	/*
 		if((typeof Prototype=='undefined') ||
 				(typeof Element == 'undefined') ||
 				(typeof Element.Methods=='undefined') ||
@@ -29,18 +30,19 @@ var KBInfo = {
 				convertVersionString(KBInfo.REQUIRED_PROTOTYPE)))
 			throw("FlowPlugin requires the Prototype JavaScript framework >= " +
 				KBInfo.REQUIRED_PROTOTYPE);
-	  
+	  */
+		/*
 		var js = /kbinfo\.js(\?.*)?$/;
 		$$('head script[src]').findAll(function(s) {
 			return s.src.match(js);
 		}).each(function(s) {
 			var path = s.src.replace(js, '');
-			KBInfo.imagePath = path+"../image/kbinfo/";
 			('extensions,dropdownlist,objectselect,objecttree').split(',').each(function(include) { 
 				KBInfo.requireJS(path+include+'.js');
 				KBInfo.requireCSS(path+include+'.css');
 			});
 	    });
+	    */
 	}	
 };
 

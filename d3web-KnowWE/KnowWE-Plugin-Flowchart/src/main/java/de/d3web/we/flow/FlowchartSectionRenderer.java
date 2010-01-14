@@ -39,7 +39,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		FlowchartType section = (FlowchartType)sec.getObjectType();
 		
-		String title = "Flowchart '" + section.getFlowchartName(sec) + "'";
+		String title = "Flowchart '" + section.getFlowchartName(sec) + "' ";
 		
 		String topic = sec.getArticle().getTitle();
 		String web = sec.getArticle().getWeb();
@@ -50,7 +50,8 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 //		string.append("%%collapsebox-closed \n! " + title + editLink + " \n" + content + "/%\n");
 		string.append("%%collapsebox-closed \n! ");
 		string.append(title);
-		string.append(editLink);
+//		string.append(" \n");
+//		string.append(editLink);
 		string.append(" \n");
 		string.append(content);
 		string.append("/%\n");
@@ -64,16 +65,19 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 		if (startPos >= 0 && endPos >= 0) {
 			return KnowWEUtils
 			.maskHTML(
-				"<div style='zoom: 50%; cursor: pointer;' onclick='window.open(\""+createEditURL(sec.getId(), topic)+"\", \""+sec.getId()+"\").focus();'>" +
-				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>" +
-				"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>" +
+				"<div style='zoom: 50%; cursor: pointer;' " +
+				"onclick='window.open(\""+createEditURL(sec.getId(), topic)+"\", \""+sec.getId().replaceAll("[^\\w]", "_")+"\")'>" +"\r\n" +
+//sec.getID() contains a '/' which is not allowed. FF ignores it, IE doesnt open a new window				
+//				"onclick='window.open(\""+createEditURL(sec.getId(), topic)+"\", \""+sec.getId()+"\")'>" +"\r\n" +
+				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/dropdownlist.css'></link>" + "\r\n" +
+				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objectselect.css'></link>" + "\r\n" +
+				"<link rel='stylesheet' type='text/css' href='cc/kbinfo/objecttree.css'></link>" + "\r\n" +
+				"<link rel='stylesheet' type='text/css' href='cc/flow/flowchart.css'></link>" + "\r\n" +
+				"<link rel='stylesheet' type='text/css' href='cc/flow/floweditor.css'></link>" + "\r\n" +
+				"<link rel='stylesheet' type='text/css' href='cc/flow/guard.css'></link>" + "\r\n" +
+				"<link rel='stylesheet' type='text/css' href='cc/flow/node.css'></link>" + "\r\n" +
+				"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>" + "\r\n" +
+				"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>" + "\r\n" +
 				"<style type='text/css'>div, span, a { cursor: pointer !important; }</style>" + 
 				xml.substring(startPos+43, endPos-8) + 
 				"</div>");
@@ -88,7 +92,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 	}
 	
 	private String generateQuickEditLink(String topic, String id, String web2, String user) {
-		String icon = " <img src=KnowWEExtension/images/pencil.png title='Start Flowchart Editor' onclick='setQuickEditFlag(&quot;"+id+"&quot;,&quot;"+topic+"&quot;);window.open(&quot;"+createEditURL(id, topic)+"&quot;, &quot;"+id+"&quot;).focus();'></img>";
+		String icon = " <img src=KnowWEExtension/images/pencil.png title='Start Flowchart Editor' onclick='setQuickEditFlag(\""+id+"\",\""+topic+"\");window.open(\""+createEditURL(id, topic)+"\", \""+id.replaceAll("[^\\w]", "_")+"\").focus();'></img>";
 
 		return KnowWEUtils
 		.maskHTML("<a>"+icon+"</a>");

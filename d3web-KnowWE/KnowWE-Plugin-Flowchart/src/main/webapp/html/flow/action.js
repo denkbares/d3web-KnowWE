@@ -71,6 +71,11 @@ Action.prototype.isDecision = function() {
 	return this.markup == 'NOP';
 }
 
+Action.prototype.isFlowCall = function() {
+	return this.markup == 'KnOffice' && this.expression.startsWith('CALL');
+
+}
+
 
 
 Action._createExpression = function(name, value) {
@@ -930,8 +935,16 @@ ActionPane.prototype.render = function() {
 	var valueText = null;
 	var valueError = null;
 	if (this.action && !this.action.isDecision()) {
-//		valueText = this.action.getDisplayText();
+//		valueText = this.action.getDisplayText(); // zeigt ZusatzInfo an (fragen/ immer fragen,...)
 		valueText = ' ';
+		
+		//Hack for displaying waiting time (startnode) in Wait Nodes
+		if (this.action.isFlowCall() && this.action.expression.startsWith('CALL[Warten')) {
+			valueText = this.action.getDisplayText();
+		}
+			
+		
+		
 		valueError = this.action.getError();
 	}
 	

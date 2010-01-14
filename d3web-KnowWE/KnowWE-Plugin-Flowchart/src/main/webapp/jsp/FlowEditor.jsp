@@ -70,10 +70,45 @@
 		}
 	</style>
 	
+	
 	<script src="cc/scriptaculous-js/lib/prototype.js" type="text/javascript"></script>
-	<script src="cc/scriptaculous-js/src/scriptaculous.js" type="text/javascript"></script>
+	<script src="cc/scriptaculous-js/src/builder.js" type="text/javascript"></script>
+	<script src="cc/scriptaculous-js/src/effects.js" type="text/javascript"></script>
+	<script src="cc/scriptaculous-js/src/dragdrop.js" type="text/javascript"></script>
+	<script src="cc/scriptaculous-js/src/controls.js" type="text/javascript"></script>
+	<script src="cc/scriptaculous-js/src/slider.js" type="text/javascript"></script>
+	<script src="cc/scriptaculous-js/src/sound.js" type="text/javascript"></script>
+	<!-- script src="cc/scriptaculous-js/src/scriptaculous.js" type="text/javascript"></script-->
+	
 	<script src="cc/kbinfo/kbinfo.js" type="text/javascript"></script>
+	<script src="cc/kbinfo/extensions.js" type="text/javascript"></script>
+	<script src="cc/kbinfo/dropdownlist.js" type="text/javascript"></script>
+	<script src="cc/kbinfo/objectselect.js" type="text/javascript"></script>
+	<script src="cc/kbinfo/objecttree.js" type="text/javascript"></script>
+	
 	<script src="cc/flow/floweditor.js" type="text/javascript"></script>
+	<script src="cc/flow/flowchart.js" type="text/javascript"></script>
+	<script src="cc/flow/action.js" type="text/javascript"></script>
+	<script src="cc/flow/guard.js" type="text/javascript"></script>
+	<script src="cc/flow/node.js" type="text/javascript"></script>
+	<script src="cc/flow/rule.js" type="text/javascript"></script>
+	<script src="cc/flow/nodeeditor.js" type="text/javascript"></script>
+	<script src="cc/flow/router.js" type="text/javascript"></script>
+	<script src="cc/flow/rollup.js" type="text/javascript"></script>
+	
+	
+	<link rel="stylesheet" type="text/css" href="cc/kbinfo/dropdownlist.css"></link>
+	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objectselect.css"></link>
+	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objecttree.css"></link>
+
+
+	<link rel="stylesheet" type="text/css" href="cc/flow/floweditor.css"></link>
+	<link rel="stylesheet" type="text/css" href="cc/flow/flowchart.css"></link>
+	<link rel="stylesheet" type="text/css" href="cc/flow/nodeeditor.css"></link>
+	<link rel="stylesheet" type="text/css" href="cc/flow/node.css"></link>
+	<link rel="stylesheet" type="text/css" href="cc/flow/rule.css"></link>
+	<link rel="stylesheet" type="text/css" href="cc/flow/guard.css"></link>
+	
 </head>
 
 

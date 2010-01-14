@@ -301,7 +301,7 @@ Rule.prototype.toXML = function() {
 	var xml = '\t<edge' +
 			(this.id ? ' id="'+this.id+'"' : '')+
 			'>\n';
-	xml += '\t\t<source>'+this.sourceNode.getNodeModel().id+'</source>\n';
+	xml += '\t\t<origin>'+this.sourceNode.getNodeModel().id+'</origin>\n';
 	xml += '\t\t<target>'+this.targetNode.getNodeModel().id+'</target>\n';
 	if (this.guard && this.guard.getMarkup() != 'NOP') {
 		if (Object.isString(this.guard)) {
@@ -320,7 +320,7 @@ Rule.prototype.toXML = function() {
 
 Rule.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 	var id = pasteOptions.createID(xmlDom.getAttribute('id'));
-	var sourceNodeID = pasteOptions.getID(KBInfo._getNodeValueIfExists(xmlDom, 'source'));
+	var sourceNodeID = pasteOptions.getID(KBInfo._getNodeValueIfExists(xmlDom, 'origin'));
 	var targetNodeID = pasteOptions.getID(KBInfo._getNodeValueIfExists(xmlDom, 'target'));
 	var sourceNode = flowchart.findNode(sourceNodeID);
 	var targetNode = flowchart.findNode(targetNodeID);

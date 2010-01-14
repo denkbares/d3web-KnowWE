@@ -46,7 +46,7 @@ public class EdgeContentType extends XMLContent{
 	
 	@Override
 	protected void init() {
-		this.childrenTypes.add(SourceType.getInstance());
+		this.childrenTypes.add(OriginType.getInstance());
 		this.childrenTypes.add(TargetType.getInstance());
 		this.childrenTypes.add(GuardType.getInstance());
 		

@@ -74,7 +74,7 @@ import de.d3web.we.flow.type.ExitType;
 import de.d3web.we.flow.type.GuardType;
 import de.d3web.we.flow.type.NodeType;
 import de.d3web.we.flow.type.PositionType;
-import de.d3web.we.flow.type.SourceType;
+import de.d3web.we.flow.type.OriginType;
 import de.d3web.we.flow.type.StartType;
 import de.d3web.we.flow.type.TargetType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -172,7 +172,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
 			Section content = (Section) section.getChildren().get(1); //get edgecontent-section
 			
-			String sourceID = getXMLContentText(content.findChildOfType(SourceType.class));
+			String sourceID = getXMLContentText(content.findChildOfType(OriginType.class));
 			
 			INode source = getNodeByID(sourceID, nodes);
 			

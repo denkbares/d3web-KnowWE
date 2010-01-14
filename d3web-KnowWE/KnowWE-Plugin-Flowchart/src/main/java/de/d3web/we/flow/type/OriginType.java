@@ -27,18 +27,18 @@ import de.d3web.we.module.DefaultTextType;
  * @author hatko
  * Created on: 08.10.2009
  */
-public class SourceType extends AbstractXMLObjectType {
+public class OriginType extends AbstractXMLObjectType {
 	
 	
-	private static SourceType instance;
+	private static OriginType instance;
 
-	private SourceType() {
-		super("source");
+	private OriginType() {
+		super("origin");
 	}
 
-	public static SourceType getInstance() {
+	public static OriginType getInstance() {
 		if (instance == null)
-			instance = new SourceType();
+			instance = new OriginType();
 
 		return instance;
 	}

@@ -5,7 +5,7 @@ var FlowEditor = {
 	REQUIRED_PROTOTYPE: '1.6.0.3',
 	REQUIRED_KBINFO: '0.0.1',
 	
-	basePath: null, 
+	//basePath: null, /unused 
 	imagePath: null, 
 	
 	requireJS: function(libraryName) {
@@ -24,7 +24,7 @@ var FlowEditor = {
 	      v = parseInt(v + '0'.times(4-v.length));
 	      return versionString.indexOf('_') > -1 ? v-1 : v;
 	    }
-	
+	/*
 		if((typeof Prototype=='undefined') ||
 				(typeof Element == 'undefined') ||
 				(typeof Element.Methods=='undefined') ||
@@ -44,14 +44,17 @@ var FlowEditor = {
 				convertVersionString(FlowEditor.REQUIRED_KBINFO)))
 			throw("FlowPlugin requires the KBInfo library >= " +
 				FlowEditor.REQUIRED_KBINFO);
-	  
+				*/
+		//FlowEditor.basePath = '.'; 
+		
+	    
+	    FlowEditor.imagePath = "cc/image/";
+	  /*
 		var js = /floweditor\.js(\?.*)?$/;
 		$$('head script[src]').findAll(function(s) {
 			return s.src.match(js);
 		}).each(function(s) {
 			var path = s.src.replace(js, '');
-			FlowEditor.basePath = path;
-			FlowEditor.imagePath = path+"../image/";
 			('flowchart,action,guard,node,rule,nodeeditor,router,rollup').split(',').each(function(include) { 
 				FlowEditor.requireJS(path+include+'.js');
 			});
@@ -62,6 +65,7 @@ var FlowEditor = {
 			FlowEditor.requireCSS(path+'rule.css');
 			FlowEditor.requireCSS(path+'guard.css');
 	    });
+	    */
 	}
 };
 

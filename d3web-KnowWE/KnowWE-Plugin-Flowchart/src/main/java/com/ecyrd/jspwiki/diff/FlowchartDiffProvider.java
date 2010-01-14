@@ -393,7 +393,7 @@ public class FlowchartDiffProvider implements DiffProvider
             if (line.startsWith("edge")) {
                 String id = line.substring(9, line.indexOf(">") - 1);
                 edges.add(new FlowchartEdge(id));
-            } else if (line.startsWith("source")) {
+            } else if (line.startsWith("origin")) {
                 String source = line.substring(7);
                 edges.get(edges.size() -1).setSource(source);
             } else if (line.startsWith("target")) {
