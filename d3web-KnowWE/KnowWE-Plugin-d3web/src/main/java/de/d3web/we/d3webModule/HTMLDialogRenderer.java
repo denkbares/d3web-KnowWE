@@ -46,7 +46,12 @@ public class HTMLDialogRenderer {
 		java.util.List<de.d3web.kernel.domainModel.qasets.QContainer> containers = b
 				.getQContainers();
 		StringBuffer buffi = new StringBuffer();
-
+		/*buffi.append("<div class='panel'> " +
+				"	  <h3>Pluginname</h3> " +
+				"		<div>some plugin content</div>" +
+				"	  </div>");
+		*/
+		
 		// for formatting the specific dialog panel
 		buffi.append("<div class='dialogstyle''>"
 						+ "<b class='top'><b class='b1'></b><b class='b2'></b><b class='b3'>"
@@ -55,9 +60,10 @@ public class HTMLDialogRenderer {
 
 		buffi.append(getDialogPluginHeader());
 		buffi.append("<div id='dialog' class='dialogstyle' style='display:inline'>");
-
+      
 		boolean first = true;
 		for (de.d3web.kernel.domainModel.qasets.QContainer container : containers) {
+			
 			if (container.getText().endsWith("Q000"))
 				continue;
 
@@ -65,7 +71,7 @@ public class HTMLDialogRenderer {
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
 				buffi.append("<h4 class='qcontainerName'>");
 				buffi.append("<img src='KnowWEExtension/images/arrow_down.png' border='0'/>");
-				buffi.append(container.getText() + ": ");
+				buffi.append("  " + container.getText() + ": ");
 				buffi.append("</a></h4>");
 				buffi.append("<table id='tbl" + container.getId() + "' class='visible'><tbody>");
 				first = false;
@@ -74,16 +80,19 @@ public class HTMLDialogRenderer {
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
 				buffi.append("<h4 class='qcontainerName'>");
 				buffi.append("<img src='KnowWEExtension/images/arrow_right.png' border='0'/>");
-				buffi.append(container.getText() + ": ");
+				buffi.append("  " + container.getText() + ": ");
 				buffi.append("</a></h4>");
 				buffi.append("<table id='tbl" + container.getId() + "' class='hidden'><tbody>");
 			}
 			
 			java.util.List<? extends NamedObject> questions = container.getChildren();
+			
 
 			// to be able to format the table lines alternatingly
 			int i = -1;
 			for (NamedObject namedObject : questions) {
+				QASet hello = (QASet) namedObject;
+			
 				Question q = null;
 				if (namedObject instanceof Question) {
 					q = (Question) namedObject;
@@ -91,12 +100,12 @@ public class HTMLDialogRenderer {
 				} else {
 					continue;
 				}
-				//System.out.println("HALLO" + q.getKnowledge(PSMethodNextQASet.getInstance().getClass()));
 				
 				i += 1;
 				// assigns different css classes according to whether nr/line is
 				// odd or even
 				
+				if(q.getChildren().isEmpty()){
 				if(i==0){
 					buffi.append("<tr class='trEven first'>");
 					buffi.append(render(c, q, web, b.getId(), true));
@@ -113,13 +122,29 @@ public class HTMLDialogRenderer {
 					buffi.append("</tr> \n");
 				}
 				
-				/*
-				if(q.getChildren()!=null && !(q.getChildren().isEmpty())){
-					buffi.append("<tr id ='trf" + q.getId() + "' class='hidden'>");
-					buffi.append(renderFollowUpQuestions(c, q, web, b.getId()));
-					buffi.append("</tr \n>");
+				// falls Kindelemente da --> indikationsregeln
+				} else {
+				
+					if (i % 2 == 0) {
+						buffi.append("<tr class='trEven'>");
+						buffi.append(render(c, q, web, b.getId(), true));
+						buffi.append("</tr> \n");
+						
+					} else {
+						buffi.append("<tr class='trOdd'>");
+						buffi.append(render(c, q, web, b.getId(), false));
+						buffi.append("</tr> \n");
+					}
 					
-				}*/
+					/**Assemble HTML for follow up questions - static, recursively*/
+					StringBuffer ch = new StringBuffer();	
+					if(!q.getChildren().isEmpty()){
+						for(NamedObject cset : q.getChildren()){
+							getFollowUpChildrenRekur(ch, (Question)cset, c, web, b.getId(), true, 25);
+						}
+					} 
+				buffi.append(ch);
+				}
 			}
 			buffi.append("</tbody></table>");
 			buffi.append("</div>"); // qcontainer div
@@ -129,10 +154,26 @@ public class HTMLDialogRenderer {
 		buffi.append("</div>"); // box content div
 		buffi.append("<b class='bottom'><b class='b4b'></b><b class='b3b'></b>"
 				+ "<b class='b2b'></b><b class='b1b'></b></b>" + "</div>"); // inset
-																			// div
-
+																		// div
 		return buffi.toString();
 	}
+	
+	
+	private static StringBuffer getFollowUpChildrenRekur(StringBuffer children, Question set,
+			XPSCase c, String web, String namespace, boolean bool, int indent){
+		indent +=15;
+		children.append("<tr class='trf'");
+		children.append(renderFollowUpQuestion(c, set, web, namespace, indent));
+		children.append("</tr> \n");
+		
+		if(!set.getChildren().isEmpty()){
+			for(NamedObject cset : set.getChildren()){
+				getFollowUpChildrenRekur(children, (Question)cset, c, web, namespace, !bool, indent);
+			}
+		} 
+		return children;
+	}
+	
 
 	/**
 	 * <p>
@@ -144,7 +185,7 @@ public class HTMLDialogRenderer {
 	private static String getDialogPluginHeader() {
 		StringBuffer html = new StringBuffer();
 		html.append("<h3>");
-		html.append("Dialog");
+		html.append("Interview");
 		html.append("</h3>");
 		return html.toString();
 	}
@@ -176,29 +217,26 @@ public class HTMLDialogRenderer {
 	}
 	
 	
-	private static String renderFollowUpQuestions(XPSCase c, Question trigger, 
-			String web, String namespace){
-		List follows = trigger.getChildren();
+	private static String renderFollowUpQuestion(XPSCase c, Question q, 
+			String web, String namespace, int indent){
+		
 		StringBuffer html = new StringBuffer();
-		
-		QASet first = (QASet)follows.get(0);
-		
-		if(first instanceof Question){
 			
-			html.append("<td class='labelcellFollow'>" + first.getText() + " </td>");
-			html.append("<td class='fieldcell'><div id='" + first.getId() + "'>");
+			html.append("<td class='labelcellFollow' style='margin: 0px 0px 0px " + indent+"px;'>" 
+					+ q.getText() + " </td>");
+			html.append("<td class='fieldcellFollow'><div id='" + q.getId() + "'>");
 			
-			if (first instanceof QuestionChoice) {
-				List<AnswerChoice> list = ((QuestionChoice) first).getAllAlternatives();
-				renderChoiceAnswers(c, html, (Question)first, list, web, namespace);
+			if (q instanceof QuestionChoice) {
+				List<AnswerChoice> list = ((QuestionChoice) q).getAllAlternatives();
+				renderChoiceAnswers(c, html, (Question)q, list, web, namespace);
 
 				// to remove the last comma after answers in built in dialog
 				html.delete(html.length() - 2, html.length());
 
 			} else {
-				renderNumAnswers(c, html, (Question)first, web, namespace);
+				renderNumAnswers(c, html, q, web, namespace);
 			}
-		}
+		
 		
 		html.append("</div></td>");
 		
