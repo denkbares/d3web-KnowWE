@@ -62,20 +62,19 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		// SolutionID holen
 		Section<SolutionID> solutionID = knowledgeSection.findSuccessor(new SolutionID());
 		
-		// Regelstring bauen
-		StringBuilder sb = new StringBuilder("\nIF ");
+		// Pro Finding eine Regel bauen
+		StringBuilder sb = new StringBuilder("");
 		for(Iterator<Section<Finding>> iter = findingSections.iterator(); iter.hasNext(); ) {
 			Section<Finding> sec = iter.next();
-			sb.append(sec.getOriginalText() + " ");
-			if (iter.hasNext())
-				sb.append("\nAND ");
+			sb.append("\nIF " + sec.getOriginalText());
+			sb.append("\n\tTHEN ");
+			sb.append(solutionID.getOriginalText() + " = P7");
 		}
-		sb.append("\nTHEN ");
-		sb.append(solutionID.getOriginalText() + " = P7\n");
+		sb.append("\n");
 		
 		//Lösche entsprechende XCList
 		String newText = articleManager.replaceKDOMNodeWithoutSave(parameterMap, topic, knowledgeSection.getId(), "\n");
-		articleSection = refreshArtcleSection(articleManager, article, newText);
+		articleSection = refreshArticleSection(articleManager, article, newText);
 			
 		//Füge Regel ein und speichere Artikel
 		List<Section<RulesSectionContent>> rulesSectionContentSections = new ArrayList<Section<RulesSectionContent>>();
@@ -86,7 +85,7 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		return "";
 	}
 
-	private Section<?> refreshArtcleSection(KnowWEArticleManager articleManager,
+	private Section<?> refreshArticleSection(KnowWEArticleManager articleManager,
 			KnowWEArticle article, String newText) {
 		Section<?> articleSection;
 		article = new KnowWEArticle(newText, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
@@ -94,6 +93,9 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		articleSection = article.getSection();
 		return articleSection;
 	}
-
+	
+	public static String blub() {
+		return "Haassssssssssha!";
+	}
 
 }
