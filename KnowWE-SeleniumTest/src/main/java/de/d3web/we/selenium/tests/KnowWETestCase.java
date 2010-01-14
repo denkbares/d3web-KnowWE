@@ -34,8 +34,11 @@ import com.thoughtworks.selenium.KnowWESeleneseTestCase;
 public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	
 	protected String comment = new String();
-	
+
 	ResourceBundle rb = ResourceBundle.getBundle("KnowWE-Selenium-Test");
+	
+	Long sleepTime = Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime"));
+	
 	
 	/**
 	 * This method specifies on which server the tests are
@@ -51,28 +54,47 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	
 	/**
 	 * This method is used if you want to open a link and wait for the
-	 * page to be loaded before continuing with the test.
+	 * page to be loaded before continuing with the test. If this
+	 * link opens a new window (target=_blank or = kwiki-dialog) the 
+	 * method openWindowBlank is called.
 	 * If time (standard value set in properties file) expires the test will
 	 * quit by error.
 	 * @param linkName This is the string/locator Selenium uses to search for the link.
 	 */
 	public void loadAndWait(String locator) {
-		selenium.click(locator);
-		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+		boolean isNewTab = false;
+		try {
+			String aParent = getParent(locator, "a");
+			String target = selenium.getAttribute(aParent + "@target").toString();
+			if (target.equals("_blank") || target.equals("kwiki-dialog")) {
+				String aHref = selenium.getAttribute( aParent + "@href");
+				openWindowBlank(rb.getString("KnowWE.SeleniumTest.url") + aHref , aHref);			
+				isNewTab = true;
+			}
+		} catch (Exception e) {
+			// locator has no "a" parent or it has no attribute "target"
+			// no need of using openWindowBlank
+		}
+		if (!isNewTab) {
+			selenium.click(locator);
+			selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+		}
 	}
 	
 	/**
 	 * If you open a link, which opens a new window because of
-	 * "target=_blank" Selenium can't find this new window. Use this method
-	 * instead of selenium.click or loadAndWait
+	 * "target=_blank" Selenium can't find this new window.
 	 * @param url
 	 * @param name
 	 */
-	public void openWindowBlank (String url, String name) {
+	private void openWindowBlank (String url, String name) {
 		selenium.openWindow(url, name);
 		selenium.selectWindow(name);
-		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
 		selenium.windowFocus();
+		threadSleep(sleepTime);
+		open(url);
+		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+		threadSleep(sleepTime);
 	}
 	
 	/**
@@ -117,10 +139,10 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	public boolean checkAndUncheckSolutions(String[] expSolutions, String[] notExpSolutions,
 			Map<String, Integer[]> input, boolean isDialog) {
 		if (isDialog) {
+			String startPage = selenium.getTitle();
 			clickAndWait("sstate-clear");
-			clickAndWait("//img[@title='Fall']");
-			open("dialog.jsf");
-			assertEquals(selenium.getTitle(), "d3web Dialog");
+			loadAndWait("//img[@title='Fall']");
+			assertEquals("d3web Dialog", selenium.getTitle());
 			
 			//Try all observations on the left (Frageboegen)
 			for (int i = 1; selenium.isElementPresent("//div[@id='qasettree']//table[" + i + "]//span"); i++) {
@@ -140,35 +162,72 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 									clickAndWait("//td[@id='qTableCell_Q" + j + "']//input[@id='dialogForm:questions:q_ok']");									
 								}
 								elemFound = true;
+								
+								//Category should be chosen now. If not, repeat last iteration.
+								boolean allSelected = true;
+								for (int k = 0; k < input.get(elem).length; k++) {
+									allSelected &= selenium.isChecked("//td[@id='qTableCell_Q" + j + "']//input[@id='Q" + j + "a" + input.get(elem)[k] + "']");
+								}
+								if (!allSelected) {
+									elemFound = false;
+									j--;
+								}
 							}
 						}
 					}
 				}
 			}
 			clickAndWait("link=Ergebnisseite");
-			open("Wiki.jsp?page=Car-Diagnosis-Test");
-			return verifySolutions(expSolutions, notExpSolutions);
+			selenium.close();
+			selenium.selectWindow(null);
+			selenium.windowFocus();
+			assertEquals(startPage, selenium.getTitle());
 		} else {
-			Long sleepTime = Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime"));
-			
 			selenium.click("sstate-clear");
-			for (String elem : input.keySet()) {
-				Integer[] actCategory = input.get(elem);
-				clickAndWait("//span[text()='" + elem.trim()+ "']");
+			Object[] elem = input.keySet().toArray();
+			for (int j = 0; j < elem.length; j++) {
+				Integer[] actCategory = input.get(elem[j]);
+				clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");
 				
 				//It's recommended to wait until the dialog pops up
 				threadSleep(sleepTime);
 				
 				//Radio buttons or check box
+				String actLocator = "";
 				for (int i = 0; i < actCategory.length; i++) {
-					if (selenium.isElementPresent("//form[@name='semanooc']/input[" + actCategory[i] + "]")) {
-						clickAndWait("//form[@name='semanooc']/input[" + actCategory[i] + "]");						
+					actLocator = "//form[@name='semanooc']/input[" + actCategory[i] + "]";
+					if (selenium.isElementPresent(actLocator)) {
+						clickAndWait(actLocator);
+						
+						clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");						
+						//It's recommended to wait until the dialog pops up
+						threadSleep(sleepTime);
+						if (!selenium.isElementPresent(actLocator) 
+								|| !selenium.isChecked(actLocator)) {
+							i--;
+							continue;
+						}
+						continue;
 					}
-					if(selenium.isElementPresent("//form[@name='semanomc']/input[" + actCategory[i] + "]")){
-						selenium.click("//form[@name='semanomc']/input[" + actCategory[i] + "]");
+					actLocator = "//form[@name='semanomc']/input[" + actCategory[i] + "]";
+					if(selenium.isElementPresent(actLocator)){
+						selenium.click(actLocator);
 						//CheckBoxes need some special treatment
 						threadSleep(sleepTime);
+						
+						clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");						
+						//It's recommended to wait until the dialog pops up
+						threadSleep(sleepTime);
+						if (!selenium.isElementPresent(actLocator)
+								|| !selenium.isChecked(actLocator)) {
+							i--;
+							continue;
+						}
+						continue;
 					}
+					//No Radiobutten no Checkbox present (pop-up
+					//closed already), so repeat this step
+					j--;
 				}
 				//Close pop-up window if not done yet
 				if (selenium.isElementPresent("o-lay-close")) {
@@ -177,8 +236,8 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 				threadSleep(sleepTime);
 			}			
 			threadSleep(sleepTime);
-			return verifySolutions(expSolutions, notExpSolutions);
 		}
+		return verifySolutions(expSolutions, notExpSolutions, System.currentTimeMillis());
 	}
 		
 	/**
@@ -190,7 +249,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * @return true if with the input parameters all expected Solutions 
 	 * are shown at solutionsstates and all not expected not; else false.
 	 */
-	private boolean verifySolutions(String[] expSolutions, String[] notExpSolutions) {
+	private boolean verifySolutions(String[] expSolutions, String[] notExpSolutions, long startTime) {
 		String actSolutions = "";
 		comment = "";
 		clickAndWait("sstate-update");
@@ -205,7 +264,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		for (int i = 0; i < expSolutions.length; i++) {
 			boolean hasExpSol = actSolutions.contains(expSolutions[i]);
 			if (!hasExpSol) {
-				comment += "Didn't saw solution " + expSolutions[i] + ". ";
+				comment += "Didn't see solution " + expSolutions[i] + ". ";
 			}
 			result = result && hasExpSol;
 		}
@@ -217,6 +276,12 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			result = result && hasntNotExpSol;
 		}
 		clickAndWait("sstate-clear");
+		//Retry the check if result is false and time isn't expired
+		if (System.currentTimeMillis() - startTime < 
+				Long.parseLong(rb.getString("KnowWE.SeleniumTest.RetryTime")) && !result) {
+			refreshAndWait();
+			return verifySolutions(expSolutions, notExpSolutions, startTime);
+		}
 		return result;
 	}
 	
@@ -240,5 +305,21 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	public void open(String url) {
 		selenium.open(url);
 		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+	}
+	
+	/**
+	 * A little help if you have a locator but want to access the 
+	 * parent of the given element (only working for the pagecontent).
+	 * @param locator specifies the element (child)
+	 * @param type specifies the parent's type (i.e. "a" or "div")
+	 * @return the parent's xpath
+	 */
+	private String getParent(String locator, String type) {
+		for (int i = (Integer)selenium.getXpathCount("//div[@id='pagecontent']//" + type) - 1; i >=0; i--) {
+			if (selenium.isElementPresent("//div[@id='pagecontent']//" + type + "[" + i + "]" + locator)) {
+				return "//div[@id='pagecontent']//" + type + "[" + i + "]";
+			}
+		}
+		return "Not Found";
 	}
 }

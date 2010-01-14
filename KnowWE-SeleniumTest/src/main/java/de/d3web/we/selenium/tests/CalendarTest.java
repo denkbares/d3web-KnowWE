@@ -27,8 +27,8 @@ public class CalendarTest extends KnowWETestCase {
 	
 	
 	public void testNewCalendarEntry() throws Exception {
-		openWindowBlank(rb.getString("KnowWE.SeleniumTest.url")
-				+ "Wiki.jsp?page=Selenium-Docu", "Selenium-Docu");
+		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Selenium-Test");
+		loadAndWait("//img[@title='Add some appointments']");
 		verifyTrue(selenium.getTitle().contains("Selenium-Docu"));
 		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a/span");
 		

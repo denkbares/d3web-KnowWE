@@ -24,8 +24,8 @@ public class CommentTest extends KnowWETestCase{
 	
 	
 	public void testNewCommentEntry() throws Exception{
-		openWindowBlank(rb.getString("KnowWE.SeleniumTest.url") + 
-				"Wiki.jsp?page=Selenium-Comment", "KnowWE: Selenium-Comment");
+		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Selenium-Test");
+		loadAndWait("//img[@title='Comments on this Test?']");
 		assertTrue(selenium.getTitle().contains("KnowWE: Selenium-Comment"));
 		verifyTrue(selenium.isTextPresent("<< back"));
 		selenium.type("text", "Das ist ein Selenium-Test");
@@ -34,9 +34,8 @@ public class CommentTest extends KnowWETestCase{
 		loadAndWait("link=<< back");
 		verifyEquals("KnowWE: Selenium-Test", selenium.getTitle());
 		
-		openWindowBlank(rb.getString("KnowWE.SeleniumTest.url") + 
-				"Wiki.jsp?page=Selenium-Comment", "KnowWE: Selenium-Comment");		
-		assertEquals(selenium.getTitle(), "KnowWE: Selenium-Comment");
+		loadAndWait("//img[@title='Comments on this Test?']");
+		assertEquals("KnowWE: Selenium-Comment", selenium.getTitle());
 		assertTrue("Neuer Beitrag wurde nicht/nicht richtig gespeichert",
 				selenium.isTextPresent("Das ist ein Selenium-Test"));
 		}
