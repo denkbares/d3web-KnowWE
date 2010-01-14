@@ -108,10 +108,18 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	
 	/**
 	 * Clicks on a certain element and stops for a fixed time.
-	 * @param string Locator to find the element to click on
+	 * If the element is not present yet, this method waits on its
+	 * arrival until "RetryTime" expires.
+	 * @param locator Locator to find the element to click on
 	 */
-	private void clickAndWait(String string) {
-		selenium.click(string);
+	private void clickAndWait(String locator) {
+		Long startTime = System.currentTimeMillis();
+		while (!selenium.isElementPresent(locator) 
+				&& System.currentTimeMillis() - startTime < 
+				Long.getLong(rb.getString("KnowWE.SeleniumTest.RetryTime"))) {
+			//wait until Element appears
+		}
+		selenium.click(locator);
 		try {
 			Thread.sleep(Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime")));
 		} catch (Exception e) {
