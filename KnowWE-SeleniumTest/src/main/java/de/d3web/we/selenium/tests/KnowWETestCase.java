@@ -116,7 +116,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		Long startTime = System.currentTimeMillis();
 		while (!selenium.isElementPresent(locator) 
 				&& System.currentTimeMillis() - startTime < 
-				Long.getLong(rb.getString("KnowWE.SeleniumTest.RetryTime"))) {
+				Long.parseLong(rb.getString("KnowWE.SeleniumTest.RetryTime"))) {
 			//wait until Element appears
 		}
 		selenium.click(locator);
