@@ -186,7 +186,13 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 	}
 
 	@Override
-	public Collection<SearchTerm> expandTerm(SearchTerm t) {
+	public Collection<SearchTerm> expandTermForRecommendation(SearchTerm t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Collection<SearchTerm> expandTermForSearch(SearchTerm t) {
 		// TODO Auto-generated method stub
 		return null;
 	}
