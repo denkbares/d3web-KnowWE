@@ -242,12 +242,21 @@ KNOWWE.plugin.d3web.dialog = function(){
     }
     /**
      * Toggles an image.
+     * MF TODO: change class of parent css instead of img sr
      */
     function toogleImage( node, state ){
         if(state == "hidden"){
-            node.src = "KnowWEExtension/images/arrow_right.png";
+        	if(node.className=='qcontainerName'){
+        		node.className ='qcontainerName pointer extend-htmlpanel-right';
+        	} else 	{
+        		node.className ='follow pointer extend-htmlpanel-right';
+        	}
         } else {
-            node.src =  "KnowWEExtension/images/arrow_down.png";
+        	if(node.className=='qcontainerName'){
+        		node.className ='qcontainerName pointer extend-htmlpanel-down';
+        	} else {
+        		node.className ='follow  pointer extend-htmlpanel-down';
+        	}
         }
     } 
     /**
@@ -288,7 +297,14 @@ KNOWWE.plugin.d3web.dialog = function(){
                 var tbl = _KS('#tbl'+p.id, p);
                 _KE.add('click', tbl, KNOWWE.plugin.d3web.dialog.answerClicked);                
             });
-                        
+               
+            _KS('.follow').each(function(element){
+                _KE.add('click', element, KNOWWE.plugin.d3web.dialog.showElement);
+               // var p = element.parentNode;
+               // var tbl = _KS('#tbl'+p.id, p);
+               // _KE.add('click', tbl, KNOWWE.plugin.d3web.dialog.answerClicked);                
+            });
+            
             if(_KS('#xcl-save-as')){
                 _KE.add('click', _KS('#xcl-save-as'), KNOWWE.plugin.d3web.dialog.saveAsXCL);
             }
@@ -380,27 +396,71 @@ KNOWWE.plugin.d3web.dialog = function(){
          */
         showElement : function( event ){
             var el = _KE.target(event).parentNode;
-            var id = el.id;
-            var clazz = (el.className == 'qcontainer');
 
-            if( !(id && clazz) ) return;
-
-            var tbl = _KS('#' + id + ' table')[0];
-            var img = _KS('#' + id + ' img')[0];
+            if(el.className == 'qcontainer'){
+            	 var id = el.id;
+                 var clazz = (el.className == 'qcontainer');
+                 if( !(id && clazz) ) return;
+                 
+            	var tbl = _KS('#' + id + ' table')[0];
+            	var h4 = _KS('#' + id + ' h4')[0];
             
-            var search = '', replace = '';
-            if(tbl.className == 'visible'){
-                search  = '1' + id + ';';
-                replace = '0' + id + ';';
+            	var search = '', replace = '';
+            	if(tbl.className == 'visible'){
+            		search  = '1' + id + ';';
+            		replace = '0' + id + ';';
             
-                tbl.className = 'hidden';
-            } else {    
-                search  = '0' + id + ';';
-                replace = '1' + id + ';';
+            		tbl.className = 'hidden';
+            	} else {    
+            		search  = '0' + id + ';';
+            		replace = '1' + id + ';';
                                 
-                tbl.className = 'visible';
+            		tbl.className = 'visible';
+            	}
+          
+            	 toogleImage( h4, tbl.className ); 
             }
-            toogleImage( img, tbl.className ); 
+            
+            
+            // im Follow Up Questions Fall --> Zeilen ausblenden Fall
+            else if(_KE.target(event).parentNode.className.substring(0,6)=='follow') {
+            	
+            	// alle tr elemente holen
+            	var trs = _KS('#dialog tr');
+            	
+            	// Ziel ID abfragen
+            	var id = _KE.target(event).parentNode.id;
+            	var state;      
+            	
+            	for(var i = 0; i < trs.length; i++ ){
+            		
+            		if(trs[i].className == 'trf'){
+            			state = '';
+            			var idTest = trs[i].id;
+                    	
+            			// falls Ziel-Id (geklickte Question) der Id in der 
+            			// follow up row entspricht -->  muss ausgeblendet werden
+                  		if(id == idTest){  
+                    		trs[i].className = 'trf hidden'; 
+                    	}
+                           
+            		} else if(trs[i].className == 'trf hidden') {    
+            			state = 'hidden';
+            			var idTest = trs[i].id;
+                    		
+            			// falls Ziel-Id (geklickte Question) der Id in der 
+                		// follow up row entspricht -->  muss eingeblendet werden
+                    		
+            			if(id == idTest){  
+            				trs[i].className = 'trf'; 
+            			}
+            		}           	 
+            	} 
+            	
+            	var clickedQues = _KE.target(event).parentNode;
+            	toogleImage( clickedQues, state ); 
+            }
+           
         }, 
         /**
          * Function: refreshed
@@ -526,7 +586,7 @@ KNOWWE.plugin.d3web.dialog = function(){
                 }
             }
             new _KA( options ).send();
-        }       
+        }
     }
 }();
 

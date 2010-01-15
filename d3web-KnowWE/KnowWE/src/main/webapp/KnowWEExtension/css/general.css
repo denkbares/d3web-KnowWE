@@ -45,6 +45,9 @@ a:hover {
 .visible{
     display: inline;
 }
+.visibleBlock{
+    display: block;
+}
 h1, h2, h3, h4 {
     font-family:Helvetica,Sans-Serif, Arial;
     font-weight:bold;
@@ -86,6 +89,8 @@ h1, h2, h3, h4 {
     padding:0px 20px;
     background: #FFF url(../images/arrow_up.png) no-repeat 0px 3px; 
 }
+
+
 
 code.box {
   background-color: #F9F9F9;
@@ -321,13 +326,16 @@ code.box {
 }
 
 .dialogstyle h4{
-    padding: 5px 0 5px 10px;
+    padding: 5px 0 5px 30px;
     /*background-color: #37435B;*/
 }
 
-/*.dialogstyle h4 a{
-    color: #fff;
-}*/
+.extend-htmlpanel-down{
+    background: #FFF url(../images/arrow_down.png) no-repeat 10px 5px;   
+}
+.extend-htmlpanel-right{
+    background: #FFF url(../images/arrow_right.png) no-repeat 10px 5px; 
+}
 
 /* ########################################################## */
 /* --------------display as dialog widget / background------------ */

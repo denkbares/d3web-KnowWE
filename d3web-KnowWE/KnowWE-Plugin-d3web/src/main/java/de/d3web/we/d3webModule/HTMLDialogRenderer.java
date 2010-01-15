@@ -46,11 +46,6 @@ public class HTMLDialogRenderer {
 		java.util.List<de.d3web.kernel.domainModel.qasets.QContainer> containers = b
 				.getQContainers();
 		StringBuffer buffi = new StringBuffer();
-		/*buffi.append("<div class='panel'> " +
-				"	  <h3>Pluginname</h3> " +
-				"		<div>some plugin content</div>" +
-				"	  </div>");
-		*/
 		
 		// for formatting the specific dialog panel
 		buffi.append("<div class='dialogstyle''>"
@@ -69,19 +64,19 @@ public class HTMLDialogRenderer {
 
 			if(first){
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
-				buffi.append("<h4 class='qcontainerName'>");
-				buffi.append("<img src='KnowWEExtension/images/arrow_down.png' border='0'/>");
+				buffi.append("<h4 class='qcontainerName pointer extend-htmlpanel-down'>");
+				//buffi.append("<img src='KnowWEExtension/images/arrow_down.png' border='0'/>");
 				buffi.append("  " + container.getText() + ": ");
-				buffi.append("</a></h4>");
+				buffi.append("</h4>");
 				buffi.append("<table id='tbl" + container.getId() + "' class='visible'><tbody>");
 				first = false;
 			} else {
 				
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
-				buffi.append("<h4 class='qcontainerName'>");
-				buffi.append("<img src='KnowWEExtension/images/arrow_right.png' border='0'/>");
+				buffi.append("<h4 class='qcontainerName pointer extend-htmlpanel-right'>");
+				//buffi.append("<img src='KnowWEExtension/images/arrow_right.png' border='0'/>");
 				buffi.append("  " + container.getText() + ": ");
-				buffi.append("</a></h4>");
+				buffi.append("</h4>");
 				buffi.append("<table id='tbl" + container.getId() + "' class='hidden'><tbody>");
 			}
 			
@@ -91,8 +86,7 @@ public class HTMLDialogRenderer {
 			// to be able to format the table lines alternatingly
 			int i = -1;
 			for (NamedObject namedObject : questions) {
-				QASet hello = (QASet) namedObject;
-			
+				
 				Question q = null;
 				if (namedObject instanceof Question) {
 					q = (Question) namedObject;
@@ -126,23 +120,23 @@ public class HTMLDialogRenderer {
 				} else {
 				
 					if (i % 2 == 0) {
-						buffi.append("<tr class='trEven'>");
+						buffi.append("<tr id='" + q.getId() + "' class='follow pointer extend-htmlpanel-down' >");
 						buffi.append(render(c, q, web, b.getId(), true));
 						buffi.append("</tr> \n");
 						
 					} else {
-						buffi.append("<tr class='trOdd'>");
+						buffi.append("<tr id='" + q.getId() + "' class='follow pointer extend-htmlpanel-down'>");
 						buffi.append(render(c, q, web, b.getId(), false));
 						buffi.append("</tr> \n");
 					}
 					
 					/**Assemble HTML for follow up questions - static, recursively*/
 					StringBuffer ch = new StringBuffer();	
-					if(!q.getChildren().isEmpty()){
+					// if(!q.getChildren().isEmpty()){
 						for(NamedObject cset : q.getChildren()){
-							getFollowUpChildrenRekur(ch, (Question)cset, c, web, b.getId(), true, 25);
+							getFollowUpChildrenRekur(ch, (Question)cset, c, web, b.getId(), true, 25, q);
 						}
-					} 
+					// } 
 				buffi.append(ch);
 				}
 			}
@@ -160,15 +154,15 @@ public class HTMLDialogRenderer {
 	
 	
 	private static StringBuffer getFollowUpChildrenRekur(StringBuffer children, Question set,
-			XPSCase c, String web, String namespace, boolean bool, int indent){
+			XPSCase c, String web, String namespace, boolean bool, int indent, Question parent){
 		indent +=15;
-		children.append("<tr class='trf'");
+		children.append("<tr id='" + parent.getId() + "' class='trf hidden'");
 		children.append(renderFollowUpQuestion(c, set, web, namespace, indent));
 		children.append("</tr> \n");
 		
 		if(!set.getChildren().isEmpty()){
 			for(NamedObject cset : set.getChildren()){
-				getFollowUpChildrenRekur(children, (Question)cset, c, web, namespace, !bool, indent);
+				getFollowUpChildrenRekur(children, (Question)cset, c, web, namespace, !bool, indent, parent);
 			}
 		} 
 		return children;
