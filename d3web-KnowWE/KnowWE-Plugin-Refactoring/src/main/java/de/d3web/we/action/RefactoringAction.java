@@ -41,48 +41,119 @@ import de.d3web.we.refactoring.RefactoringTagHandler;
  * @author Franz Schwab
  */
 public class RefactoringAction extends AbstractKnowWEAction {
+	
+	KnowWEParameterMap pm;
+	public KnowWEParameterMap getPm() {
+		return pm;
+	}
+
+	String id;
+	String topic;
+	String web;
+	KnowWEArticleManager am;
+	KnowWEArticle a;
+	Section<?> as;
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
-		String id = parameterMap.get("KnowledgeElement");
-		String topic = parameterMap.getTopic();
-		String web = parameterMap.getWeb();
-		KnowWEArticleManager articleManager = KnowWEEnvironment.getInstance().getArticleManager(web);
-		KnowWEArticle article = articleManager.getArticle(topic);
-		Section<?> articleSection = article.getSection();
+		pm = parameterMap;
+		initAttributes();
 
-		// Section mit der id holen
-		Section<?> knowledgeSection = articleSection.findChild(id);
+		perform();
 		
-		// Alle Finding 's dieser Section holen
-		List<Section<Finding>> findingSections = new ArrayList<Section<Finding>>();
-		//Finding.class, findingSections
-		knowledgeSection.findSuccessorsOfType(new Finding(), findingSections);
+		return "";
+	}
+
+	private void initAttributes() {
+		id = pm.get("KnowledgeElement");
+		topic = pm.getTopic();
+		web = pm.getWeb();
+		am = KnowWEEnvironment.getInstance().getArticleManager(web);
+		a = am.getArticle(topic);
+		as = a.getSection();
+	}
+	
+	public RefactoringAction(int i) {
+		pm = new KnowWEParameterMap("KWikiWeb", "default_web");
+		pm.put("KnowledgeElement", "GroovyTest/RootType/SetCoveringList-section2/SetCoveringList-section2_content/XCList");
+		pm.put("page", "GroovyTest");
+		pm.put("KWikiUser", "0:0:0:0:0:0:0:1");
+		pm.put("action", "RefactoringAction");
+		pm.put("env", "JSPWiki");
+		pm.put("tstamp", "1263574727308");
+		initAttributes();
+		System.out.println("RefactoringAction(int i)");
 		
-		// SolutionID holen
-		Section<SolutionID> solutionID = knowledgeSection.findSuccessor(new SolutionID());
+	}
+
+	public void perform() {
+		//1 Coveringlist-Section mit der id holen
+		Section<?> knowledgeSection = findKnowledgeSection();
 		
-		// Pro Finding eine Regel bauen
+		//2 Alle Finding 's dieser Section holen
+		List<Section<Finding>> findingSections = findFindings(knowledgeSection);
+		
+		//3 SolutionID holen
+		String solutionID = findSolutionID(knowledgeSection);
+		
+		//4 Pro Finding eine Regel bauen
 		StringBuilder sb = new StringBuilder("");
-		for(Iterator<Section<Finding>> iter = findingSections.iterator(); iter.hasNext(); ) {
-			Section<Finding> sec = iter.next();
-			sb.append("\nIF " + sec.getOriginalText());
-			sb.append("\n\tTHEN ");
-			sb.append(solutionID.getOriginalText() + " = P7");
+		for(Section<Finding> sec : findingSections) {
+			createRulesText(solutionID, sb, sec);
 		}
 		sb.append("\n");
 		
-		//Lösche entsprechende XCList
-		String newText = articleManager.replaceKDOMNodeWithoutSave(parameterMap, topic, knowledgeSection.getId(), "\n");
-		articleSection = refreshArticleSection(articleManager, article, newText);
+		//5 Lösche entsprechende XCList
+		deleteXCList(knowledgeSection);
 			
-		//Füge Regel ein und speichere Artikel
+		//6 Füge Regel ein und 7 speichere Artikel
+		Section<RulesSectionContent> rulesSectionContent = findRulesSectionContent();
+		saveArticle(sb, rulesSectionContent);
+	}
+
+	public void saveArticle(StringBuilder sb,
+			Section<RulesSectionContent> rulesSectionContent) {
+		am.replaceKDOMNode(pm, topic, rulesSectionContent.getId(), rulesSectionContent.getOriginalText() + sb.toString());
+	}
+
+	public Section<RulesSectionContent> findRulesSectionContent() {
 		List<Section<RulesSectionContent>> rulesSectionContentSections = new ArrayList<Section<RulesSectionContent>>();
-		articleSection.findSuccessorsOfType(new RulesSectionContent(), rulesSectionContentSections);
+		as.findSuccessorsOfType(new RulesSectionContent(), rulesSectionContentSections);
 		Section<RulesSectionContent> rulesSectionContent = rulesSectionContentSections.get(0);
-		articleManager.replaceKDOMNode(parameterMap, topic, rulesSectionContent.getId(), rulesSectionContent.getOriginalText() + sb.toString());
-		
-		return "";
+		return rulesSectionContent;
+	}
+
+	public void deleteXCList(Section<?> knowledgeSection) {
+		String newText = am.replaceKDOMNodeWithoutSave(pm, topic, knowledgeSection.getId(), "\n");
+		as = refreshArticleSection(am, a, newText);
+	}
+
+	public void createRulesText(String solutionID, StringBuilder sb,
+			Section<Finding> sec) {
+		sb.append("\nIF " + sec.getOriginalText());
+		sb.append("\n\tTHEN ");
+		sb.append(solutionID + " = P7");
+	}
+
+	public String findSolutionID(Section<?> knowledgeSection) {
+		Section<SolutionID> solutionIDSection = knowledgeSection.findSuccessor(new SolutionID());
+		String solutionID = solutionIDSection.getOriginalText();
+		return solutionID;
+	}
+
+	public List<Section<Finding>> findFindings(Section<?> knowledgeSection) {
+		List<Section<Finding>> findingSections = new ArrayList<Section<Finding>>();
+		knowledgeSection.findSuccessorsOfType(new Finding(), findingSections);
+		return findingSections;
+	}
+
+	public Section<?> findKnowledgeSection() {
+		Section<?> knowledgeSection = as.findChild(id);
+		return knowledgeSection;
+	}
+	
+	public static String blub() {
+		return "Hello method blub() in class RefactoringAction!";
 	}
 
 	private Section<?> refreshArticleSection(KnowWEArticleManager articleManager,
@@ -94,8 +165,4 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		return articleSection;
 	}
 	
-	public static String blub() {
-		return "Haassssssssssha!";
-	}
-
 }
