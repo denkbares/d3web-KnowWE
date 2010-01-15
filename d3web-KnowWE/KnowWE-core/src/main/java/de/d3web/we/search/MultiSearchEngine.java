@@ -62,7 +62,7 @@ public class MultiSearchEngine {
 	}
 	
 	public Map<String, Collection<GenericSearchResult>> search(String searchText, KnowWEParameterMap map) {
-		return search(SearchWordPreprocessor.getInstance().process(searchText), map);
+		return search(SearchWordPreprocessor.getInstance().processForSearch(searchText), map);
 	}
 	
 	public Map<String, Collection<GenericSearchResult>> search(Collection<SearchTerm> terms, KnowWEParameterMap map) {

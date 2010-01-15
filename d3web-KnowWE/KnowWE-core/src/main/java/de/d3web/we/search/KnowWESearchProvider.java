@@ -37,6 +37,8 @@ public interface KnowWESearchProvider {
 		
 	public abstract Collection<SearchTerm> getAllTerms();
 	
-	public abstract Collection<SearchTerm> expandTerm(SearchTerm t);
+	public abstract Collection<SearchTerm> expandTermForRecommendation(SearchTerm t);
+	
+	public abstract Collection<SearchTerm> expandTermForSearch(SearchTerm t);
 
 }

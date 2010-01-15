@@ -400,7 +400,6 @@ public class TaggingMangler implements KnowWESearchProvider {
 	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
 			KnowWEParameterMap map) {
 		Collection<GenericSearchResult> collection = new ArrayList<GenericSearchResult>();
-		StringBuffer buffy = new StringBuffer();
 		for (SearchTerm searchTerm : words) {
 			collection.addAll(searchPages(searchTerm.getTerm()));
 		}
@@ -418,7 +417,13 @@ public class TaggingMangler implements KnowWESearchProvider {
 	}
 
 	@Override
-	public Collection<SearchTerm> expandTerm(SearchTerm t) {
+	public Collection<SearchTerm> expandTermForRecommendation(SearchTerm t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Collection<SearchTerm> expandTermForSearch(SearchTerm t) {
 		// TODO Auto-generated method stub
 		return null;
 	}

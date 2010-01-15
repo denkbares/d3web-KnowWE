@@ -15,9 +15,8 @@ import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 
 public class SPARQLUtil {
-	
+
 	@Deprecated
-	
 	/**
 	 * Executes a boolean sparql-query (like 'ASK {...}')
 	 * 
@@ -35,7 +34,8 @@ public class SPARQLUtil {
 		}
 		Query query = null;
 		try {
-			query = con.prepareQuery(QueryLanguage.SPARQL, SparqlDelegateRenderer.addNamespaces(q,""));
+			query = con.prepareQuery(QueryLanguage.SPARQL,
+					SparqlDelegateRenderer.addNamespaces(q, ""));
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 		} catch (MalformedQueryException e) {
@@ -53,7 +53,7 @@ public class SPARQLUtil {
 		}
 		return null;
 	}
-	
+
 	public static TupleQueryResult executeTupleQuery(String q, String topic) {
 		SemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
@@ -65,7 +65,8 @@ public class SPARQLUtil {
 		}
 		Query query = null;
 		try {
-			query = con.prepareQuery(QueryLanguage.SPARQL, SparqlDelegateRenderer.addNamespaces(q,topic));
+			query = con.prepareQuery(QueryLanguage.SPARQL,
+					SparqlDelegateRenderer.addNamespaces(q, topic));
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 		} catch (MalformedQueryException e) {
@@ -75,7 +76,7 @@ public class SPARQLUtil {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
 				return result;
-			} 
+			}
 		} catch (QueryEvaluationException e) {
 			e.printStackTrace();
 		} finally {
@@ -83,7 +84,7 @@ public class SPARQLUtil {
 		}
 		return null;
 	}
-	
+
 	public static TupleQueryResult executeTupleQuery(String q) {
 		SemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
@@ -95,7 +96,8 @@ public class SPARQLUtil {
 		}
 		Query query = null;
 		try {
-			query = con.prepareQuery(QueryLanguage.SPARQL, SparqlDelegateRenderer.addNamespaces(q));
+			query = con.prepareQuery(QueryLanguage.SPARQL,
+					SparqlDelegateRenderer.addNamespaces(q));
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 		} catch (MalformedQueryException e) {
@@ -105,7 +107,7 @@ public class SPARQLUtil {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
 				return result;
-			} 
+			}
 		} catch (QueryEvaluationException e) {
 			e.printStackTrace();
 		} finally {
@@ -113,32 +115,43 @@ public class SPARQLUtil {
 		}
 		return null;
 	}
-	
+
 	private static final String CLASS_SPARQL = "SELECT ?x WHERE { <URI> rdf:type ?x.} ";
-	
+
 	public static TupleQueryResult findClassesOfEntity(URI uri) {
 		return executeTupleQuery(CLASS_SPARQL.replaceAll("URI", uri.toString()));
 	}
-	
+
 	private static final String SUBCLASS_SPARQL = "SELECT ?x WHERE { ?x rdfs:subClassOf <URI>.} ";
-	
+
 	public static TupleQueryResult findSubClasses(URI uri) {
-		return executeTupleQuery(SUBCLASS_SPARQL.replaceAll("URI", uri.toString()));
+		return executeTupleQuery(SUBCLASS_SPARQL.replaceAll("URI", uri
+				.toString()));
 	}
-	
-	private static final String RELATION_SPARQL = "SELECT ?x WHERE { ?x <PRED-URI> <OBJECT-URI>.} ";
-	
-	public static TupleQueryResult findRelations(URI object, URI predicate) {
-		String query = RELATION_SPARQL.replaceAll("OBJECT-URI", object.toString());
+
+	private static final String SUBJECT_SPARQL = "SELECT ?x WHERE { ?x <PRED-URI> <OBJECT-URI>.} ";
+
+	public static TupleQueryResult findSubjects(URI object, URI predicate) {
+		String query = SUBJECT_SPARQL.replaceAll("OBJECT-URI", object
+				.toString());
 		query = query.replaceAll("PRED-URI", predicate.toString());
 		return executeTupleQuery(query);
 	}
-	
-	private static final String SUPERCLASS_SPARQL = "SELECT ?x WHERE { <URI> rdfs:subClassOf ?x.} ";
-	
-	public static TupleQueryResult findSuperClasses(URI uri) {
-		return executeTupleQuery(SUPERCLASS_SPARQL.replaceAll("URI", uri.toString()));
+
+	private static final String OBJECT_SPARQL = "SELECT ?x WHERE { <SUBJECT-URI> <PRED-URI> ?x.} ";
+
+	public static TupleQueryResult findObjects(URI subject, URI predicate) {
+		String query = OBJECT_SPARQL.replaceAll("SUBJECT-URI", subject
+				.toString());
+		query = query.replaceAll("PRED-URI", predicate.toString());
+		return executeTupleQuery(query);
 	}
-	
+
+	private static final String SUPERCLASS_SPARQL = "SELECT ?x WHERE { <URI> rdfs:subClassOf ?x.} ";
+
+	public static TupleQueryResult findSuperClasses(URI uri) {
+		return executeTupleQuery(SUPERCLASS_SPARQL.replaceAll("URI", uri
+				.toString()));
+	}
 
 }

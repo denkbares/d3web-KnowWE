@@ -40,8 +40,8 @@ public class SearchTerminologyHandler {
 		}
 	}
 
-	public Collection<SearchTerm> expandSearchTerm(SearchTerm t) {
-		return expandSearchTermByProviders(t);
+	public Collection<SearchTerm> expandSearchTermForSearch(SearchTerm t) {
+		return expandSearchTermForSearchByProviders(t);
 
 	}
 
@@ -53,12 +53,11 @@ public class SearchTerminologyHandler {
 	 * @param query
 	 * @return
 	 */
-	public Collection<SearchTerm> getRelevantSearchWords(String query) {
+	public Collection<SearchTerm> expandSearchTermForRecommendation(SearchTerm t) {
 
-		if (query.startsWith("\"") && query.endsWith("\"")) {
-			query = query.substring(1, query.length() - 1);
-		}
-
+		String query = t.getTerm();
+		
+		
 		List<SearchTerm> generalSystemTerms = new ArrayList<SearchTerm>();
 
 		// terms.add(new SearchTerm("apfel", 2));
@@ -138,7 +137,7 @@ public class SearchTerminologyHandler {
 		for (SearchTerm term : generalSystemTerms) {
 			if (term.getTerm().equals(query)) {
 				exactMatch = term;
-				filtered.addAll(expandSearchTermByProviders( term));
+				filtered.addAll(expandSearchTermForRecommendationByProviders( term));
 			} else if (term.getTerm().contains(query)) {
 				filtered.add(term);
 			}
@@ -171,14 +170,29 @@ public class SearchTerminologyHandler {
 		return filtered;
 	}
 
-	private Collection<SearchTerm> expandSearchTermByProviders(
+	private Collection<SearchTerm> expandSearchTermForRecommendationByProviders(
 			SearchTerm term) {
 		Set<SearchTerm> result = new HashSet<SearchTerm>();
 		Set<Entry<String, KnowWESearchProvider>> entrySet = MultiSearchEngine
 				.getInstance().getSearchProvider().entrySet();
 		for (Entry<String, KnowWESearchProvider> entry : entrySet) {
 			Collection<SearchTerm> expanded = entry.getValue()
-					.expandTerm(term);
+					.expandTermForRecommendation(term);
+			if (expanded != null) {
+				result.addAll(expanded);
+			}
+		}
+		return result;
+	}
+	
+	private Collection<SearchTerm> expandSearchTermForSearchByProviders(
+			SearchTerm term) {
+		Set<SearchTerm> result = new HashSet<SearchTerm>();
+		Set<Entry<String, KnowWESearchProvider>> entrySet = MultiSearchEngine
+				.getInstance().getSearchProvider().entrySet();
+		for (Entry<String, KnowWESearchProvider> entry : entrySet) {
+			Collection<SearchTerm> expanded = entry.getValue()
+					.expandTermForSearch(term);
 			if (expanded != null) {
 				result.addAll(expanded);
 			}

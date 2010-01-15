@@ -42,7 +42,7 @@ public class SearchWordPreprocessor {
 	
 	private static List<SearchWordPreprocessingModule> processors = new ArrayList<SearchWordPreprocessingModule>(); 
 	
-	public Collection<SearchTerm> process(String searchText) {
+	public Collection<SearchTerm> processForSearch(String searchText) {
 		List<String> terms = SplitUtility.splitUnquoted(searchText," ");
 		
 		Set<SearchTerm> result = new HashSet<SearchTerm>();
@@ -55,7 +55,29 @@ public class SearchWordPreprocessor {
 		}
 		
 		for (SearchTerm searchTerm : result) {
-			result.addAll(SearchTerminologyHandler.getInstance().expandSearchTerm(searchTerm));
+			result.addAll(SearchTerminologyHandler.getInstance().expandSearchTermForSearch(searchTerm));
+		}
+		
+		
+		
+		return result;
+		
+	}
+	
+	public Collection<SearchTerm> processForRecommendation(String searchText) {
+		List<String> terms = SplitUtility.splitUnquoted(searchText," ");
+		
+		Set<SearchTerm> result = new HashSet<SearchTerm>();
+		
+		for (String word : terms) {
+			if (word.startsWith("\"") && word.endsWith("\"")) {
+				word = word.substring(1, word.length() - 1);
+			}
+			result.add(new SearchTerm(word));
+		}
+		
+		for (SearchTerm searchTerm : result) {
+			result.addAll(SearchTerminologyHandler.getInstance().expandSearchTermForRecommendation(searchTerm));
 		}
 		
 		
