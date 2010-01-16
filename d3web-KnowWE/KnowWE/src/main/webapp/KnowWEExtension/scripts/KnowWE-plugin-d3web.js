@@ -241,19 +241,27 @@ KNOWWE.plugin.d3web.dialog = function(){
             return "hidden";
     }
     /**
-     * Toggles an image.
-     * MF TODO: change class of parent css instead of img sr
+     * Toggles an image. The cases for qcontainer (questionnaires) and follow-up
+     * questions have to be distinguished as they need to be assigned different
+     * css classes
      */
     function toogleImage( node, state ){
-        if(state == "hidden"){
+    	// in case 'node' is displayed hidden
+        if(state == "hidden"){				
+        	// and is a qcontainer
         	if(node.className=='qcontainerName'){
         		node.className ='qcontainerName pointer extend-htmlpanel-right';
+        	// or is a follow up question
         	} else 	{
         		node.className ='follow pointer extend-htmlpanel-right';
         	}
+        	
+        // in case 'node' is displayed visible
         } else {
+        	// and is a qcontainer
         	if(node.className=='qcontainerName'){
         		node.className ='qcontainerName pointer extend-htmlpanel-down';
+        	// or is a follow up question
         	} else {
         		node.className ='follow  pointer extend-htmlpanel-down';
         	}
@@ -396,71 +404,68 @@ KNOWWE.plugin.d3web.dialog = function(){
          */
         showElement : function( event ){
             var el = _KE.target(event).parentNode;
-
+            
+            // questionnaire was clicked and should "react" accordingly
             if(el.className == 'qcontainer'){
-            	 var id = el.id;
-                 var clazz = (el.className == 'qcontainer');
-                 if( !(id && clazz) ) return;
-                 
+            	var id = el.id;
+                var clazz = (el.className == 'qcontainer');
+                if( !(id && clazz) ) return;
+                
+                // get table element with id of the clicked element
             	var tbl = _KS('#' + id + ' table')[0];
+            	// get the clicked element which is stored in a h4 element
             	var h4 = _KS('#' + id + ' h4')[0];
             
             	var search = '', replace = '';
-            	if(tbl.className == 'visible'){
+            	if(tbl.className == 'visible'){		// if it was visible before
             		search  = '1' + id + ';';
             		replace = '0' + id + ';';
-            
-            		tbl.className = 'hidden';
+            		tbl.className = 'hidden';		// it should be hidden now
             	} else {    
-            		search  = '0' + id + ';';
-            		replace = '1' + id + ';';
-                                
-            		tbl.className = 'visible';
+            		search  = '0' + id + ';';		// else if it was hidden
+            		replace = '1' + id + ';';        
+            		tbl.className = 'visible';		// it should be visible now
             	}
-          
-            	 toogleImage( h4, tbl.className ); 
+            	// display the right image for the questionnaire
+            	toogleImage( h4, tbl.className ); 
             }
             
-            
-            // im Follow Up Questions Fall --> Zeilen ausblenden Fall
+            // if not questionnaire case, check if it's the follow-up extension case
             else if(_KE.target(event).parentNode.className.substring(0,6)=='follow') {
             	
-            	// alle tr elemente holen
+            	// fetch all tr elements of the interview, first
             	var trs = _KS('#dialog tr');
-            	
-            	// Ziel ID abfragen
+            	// get the target id = id of the clicked element that is the root of 
+            	// the follow up elements
             	var id = _KE.target(event).parentNode.id;
             	var state;      
             	
-            	for(var i = 0; i < trs.length; i++ ){
-            		
+            	for(var i = 0; i < trs.length; i++ ){          		
             		if(trs[i].className == 'trf'){
-            			state = '';
             			var idTest = trs[i].id;
-                    	
-            			// falls Ziel-Id (geklickte Question) der Id in der 
-            			// follow up row entspricht -->  muss ausgeblendet werden
+            			// follow up row must be hidden, if it was previously shown and
+            			// if the clicked element is the root of the f-u --> which
+            			// is the case if both have the same id
                   		if(id == idTest){  
                     		trs[i].className = 'trf hidden'; 
+                    		state = 'hidden';
                     	}
-                           
             		} else if(trs[i].className == 'trf hidden') {    
-            			state = 'hidden';
-            			var idTest = trs[i].id;
-                    		
-            			// falls Ziel-Id (geklickte Question) der Id in der 
-                		// follow up row entspricht -->  muss eingeblendet werden
-                    		
+            			var idTest = trs[i].id;	
+            			// follow up row must be shown, if it was previously hidden and
+            			// if the clicked element is the root of the f-u --> which
+            			// is the case if both have the same id
             			if(id == idTest){  
             				trs[i].className = 'trf'; 
+                			state = '';
             			}
             		}           	 
             	} 
-            	
+            	// get the clicked question, i.e., the "root" of the follow up questions
             	var clickedQues = _KE.target(event).parentNode;
+            	// adapt image display for the root of the follow up questions
             	toogleImage( clickedQues, state ); 
             }
-           
         }, 
         /**
          * Function: refreshed

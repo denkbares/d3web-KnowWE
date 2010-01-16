@@ -26,140 +26,163 @@ import java.util.List;
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.domainModel.QASet;
 import de.d3web.kernel.domainModel.answers.AnswerChoice;
 import de.d3web.kernel.domainModel.answers.AnswerNum;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.qasets.QuestionChoice;
 
+/**
+ * Class for rendering the HTML table-based interview
+ */
 public class HTMLDialogRenderer {
 
-	public static final String SPAN = "span";
-	public static final String TR_TAG = "<tr>";
-	public static final String TR_TAG_CLOSE = "</tr>";
-	public static final String TD_TAG = "<td>";
-	public static final String TD_TAG_CLOSE = "</td>";
-
+	/**
+	 * Renders the HTML table-based interview.
+	 * @param c the given XPS case
+	 * @param web 	
+	 * @return the String that represents the interview in HTML encoding
+	 */
 	public static String renderDialog(XPSCase c, String web) {
 
+		// get the current knowledge base
 		KnowledgeBase b = c.getKnowledgeBase();
+		
+		// get all qcontainers of kb into a list
 		java.util.List<de.d3web.kernel.domainModel.qasets.QContainer> containers = b
 				.getQContainers();
+		
 		StringBuffer buffi = new StringBuffer();
 		
 		// for formatting the specific dialog panel
 		buffi.append("<div class='dialogstyle''>"
 						+ "<b class='top'><b class='b1'></b><b class='b2'></b><b class='b3'>"
-						+ "</b><b class='b4'></b></b>"
-						+ "<div class='boxcontent'>");
+						+ "</b><b class='b4'></b></b><div class='boxcontent'>");
 
+		// add plugin header
 		buffi.append(getDialogPluginHeader());
+		
+		// markup the whole dialog with own id and class
 		buffi.append("<div id='dialog' class='dialogstyle' style='display:inline'>");
-      
 		boolean first = true;
+		
+		// go through all qcontainers of the knowledge base
 		for (de.d3web.kernel.domainModel.qasets.QContainer container : containers) {
 			
+			// skipt the rootiest root element "Q000"
 			if (container.getText().endsWith("Q000"))
 				continue;
 
+			// the first element of the dialog should be extended so the user sees where
+			// he has to do something
 			if(first){
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
 				buffi.append("<h4 class='qcontainerName pointer extend-htmlpanel-down'>");
-				//buffi.append("<img src='KnowWEExtension/images/arrow_down.png' border='0'/>");
 				buffi.append("  " + container.getText() + ": ");
 				buffi.append("</h4>");
 				buffi.append("<table id='tbl" + container.getId() + "' class='visible'><tbody>");
 				first = false;
 			} else {
-				
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
 				buffi.append("<h4 class='qcontainerName pointer extend-htmlpanel-right'>");
-				//buffi.append("<img src='KnowWEExtension/images/arrow_right.png' border='0'/>");
 				buffi.append("  " + container.getText() + ": ");
 				buffi.append("</h4>");
 				buffi.append("<table id='tbl" + container.getId() + "' class='hidden'><tbody>");
 			}
 			
+			// get all question objects for the given qcontainer = questionnaire
 			java.util.List<? extends NamedObject> questions = container.getChildren();
 			
-
-			// to be able to format the table lines alternatingly
+			// counter, to be able to format the table lines alternatingly
 			int i = -1;
+			// go through all question objects
 			for (NamedObject namedObject : questions) {
-				
+	
 				Question q = null;
 				if (namedObject instanceof Question) {
-					q = (Question) namedObject;
-
-				} else {
-					continue;
+					q = (Question) namedObject;		// cast element to Question of possible
+				} else {	
+					continue;						// otherwise jump to next element in list								
 				}
 				
+				// increase counter
 				i += 1;
-				// assigns different css classes according to whether nr/line is
-				// odd or even
 				
-				if(q.getChildren().isEmpty()){
-				if(i==0){
-					buffi.append("<tr class='trEven first'>");
-					buffi.append(render(c, q, web, b.getId(), true));
-					buffi.append("</tr> \n");
+				// if there are no follow-up questions
+				if(q.getChildren().isEmpty()){	
 					
-				} else if (i % 2 == 0) {
-					buffi.append("<tr class='trEven'>");
-					buffi.append(render(c, q, web, b.getId(), true));
-					buffi.append("</tr> \n");
-					
-				} else {
-					buffi.append("<tr class='trOdd'>");
-					buffi.append(render(c, q, web, b.getId(), false));
-					buffi.append("</tr> \n");
-				}
-				
-				// falls Kindelemente da --> indikationsregeln
-				} else {
-				
-					if (i % 2 == 0) {
-						buffi.append("<tr id='" + q.getId() + "' class='follow pointer extend-htmlpanel-down' >");
-						buffi.append(render(c, q, web, b.getId(), true));
-						buffi.append("</tr> \n");
-						
+					// assigns different css classes according to whether nr/line is
+					// odd or even
+					if(i==0){
+						buffi.append(getTableRowString(c, q, web, b.getId(), false, "class='trEven first'"));
+					} else if (i % 2 == 0) {
+						buffi.append(getTableRowString(c, q, web, b.getId(), false, "class='trEven'"));
 					} else {
-						buffi.append("<tr id='" + q.getId() + "' class='follow pointer extend-htmlpanel-down'>");
-						buffi.append(render(c, q, web, b.getId(), false));
-						buffi.append("</tr> \n");
+						buffi.append(getTableRowString(c, q, web, b.getId(), false, "class='trOdd'"));
+					}
+				
+				// if there are follow-up questions
+				} else {
+				
+					// first render their initiating root element 
+					if (i % 2 == 0) {
+						//
+						buffi.append(getTableRowString(c, q, web, b.getId(), false, 
+								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right'"));	
+					} else {
+						buffi.append(getTableRowString(c, q, web, b.getId(), false, 
+								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right'"));
 					}
 					
-					/**Assemble HTML for follow up questions - static, recursively*/
-					StringBuffer ch = new StringBuffer();	
-					// if(!q.getChildren().isEmpty()){
-						for(NamedObject cset : q.getChildren()){
-							getFollowUpChildrenRekur(ch, (Question)cset, c, web, b.getId(), true, 25, q);
-						}
-					// } 
-				buffi.append(ch);
+					// then assemble the StringBuffer that contains all follow up questions
+					StringBuffer ch = new StringBuffer();
+					for(NamedObject cset : q.getChildren()){
+						getFollowUpChildrenRekur(ch, (Question)cset, c, web, b.getId(), true, 25, q);
+					}
+					buffi.append(ch);
 				}
 			}
 			buffi.append("</tbody></table>");
 			buffi.append("</div>"); // qcontainer div
 		}
-
 		buffi.append("</div>"); // dialog div
 		buffi.append("</div>"); // box content div
-		buffi.append("<b class='bottom'><b class='b4b'></b><b class='b3b'></b>"
-				+ "<b class='b2b'></b><b class='b1b'></b></b>" + "</div>"); // inset
-																		// div
+		buffi.append("<b class='bottom'><b class='b4b'></b><b class='b3b'></b>" // inset
+				+ "<b class='b2b'></b><b class='b1b'></b></b>" + "</div>"); 	// div
 		return buffi.toString();
 	}
 	
 	
+	/**
+	 * assembles a StringBuffer, that represents one table row, that is a question and
+	 * its answer alternatives
+	 */
+	 private static StringBuffer getTableRowString(XPSCase c, Question q, String web,
+			  String namespace, boolean even, String classDecl){
+		 StringBuffer buffi = new StringBuffer();
+		 buffi.append("<tr " + classDecl + ">");
+		 buffi.append(render(c, q, web, namespace, even));
+		 buffi.append("</tr> \n");
+		 return buffi;
+	  }
+	
+	 
+	/**
+	 * gets all follow-up questions of the given Question "set" recursively and assembles
+	 * them into a StringBuffer decorated with HTML tags
+	 */
 	private static StringBuffer getFollowUpChildrenRekur(StringBuffer children, Question set,
 			XPSCase c, String web, String namespace, boolean bool, int indent, Question parent){
+		//increase the indentation with every hierarchical descendance = each recursion level
 		indent +=15;
+		
+		// add the table-row HTML, assign the id of the clicked root element that initiates the
+		// follow-up questions and set each element hidden for the first rendering
 		children.append("<tr id='" + parent.getId() + "' class='trf hidden'");
 		children.append(renderFollowUpQuestion(c, set, web, namespace, indent));
 		children.append("</tr> \n");
 		
+		// as long as the follow-up question has further child elements, call the method
+		// recursively for each of them
 		if(!set.getChildren().isEmpty()){
 			for(NamedObject cset : set.getChildren()){
 				getFollowUpChildrenRekur(children, (Question)cset, c, web, namespace, !bool, indent, parent);
@@ -290,7 +313,7 @@ public class HTMLDialogRenderer {
 				cssclass = "fieldcell answerTextActive";
 			}
 			String spanid = "span_" + q.getId() + "_" + answerChoice.getId();
-			buffi.append(getEnclosingTagOnClick(SPAN, ""
+			buffi.append(getEnclosingTagOnClick("span", ""
 					+ answerChoice.getText() + " ", cssclass, jscall, null,
 					spanid));
 			
