@@ -404,7 +404,6 @@ KNOWWE.plugin.d3web.dialog = function(){
          */
         showElement : function( event ){
             var el = _KE.target(event).parentNode;
-            
             // questionnaire was clicked and should "react" accordingly
             if(el.className == 'qcontainer'){
             	var id = el.id;
@@ -431,13 +430,23 @@ KNOWWE.plugin.d3web.dialog = function(){
             }
             
             // if not questionnaire case, check if it's the follow-up extension case
-            else if(_KE.target(event).parentNode.className.substring(0,6)=='follow') {
+            else {//if(_KE.target(event).parentNode.className.substring(0,6)=='follow') {
+            	//alert(_KE.target(event).className);
+            	var id;
+            	var par;
+            	if(_KE.target(event).parentNode.className.substring(0,6)=='follow'){
+            		id = _KE.target(event).parentNode.id;
+            		par = true;
+            	} 
+            	if(_KE.target(event).className.substring(0,6)=='follow') {
+            		id = _KE.target(event).id;
+            		par = false;
+            	}
             	
             	// fetch all tr elements of the interview, first
             	var trs = _KS('#dialog tr');
             	// get the target id = id of the clicked element that is the root of 
             	// the follow up elements
-            	var id = _KE.target(event).parentNode.id;
             	var state;      
             	
             	for(var i = 0; i < trs.length; i++ ){          		
@@ -461,8 +470,16 @@ KNOWWE.plugin.d3web.dialog = function(){
             			}
             		}           	 
             	} 
-            	// get the clicked question, i.e., the "root" of the follow up questions
-            	var clickedQues = _KE.target(event).parentNode;
+            	
+            	var clickedQues;
+            	if(par){
+            		// get the clicked question, i.e., the "root" of the follow up questions
+                    clickedQues = _KE.target(event).parentNode;
+            	} else if (!par){
+            		// get the clicked question, i.e., the "root" of the follow up questions
+                    clickedQues = _KE.target(event);
+            	}
+            	
             	// adapt image display for the root of the follow up questions
             	toogleImage( clickedQues, state ); 
             }

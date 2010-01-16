@@ -125,7 +125,6 @@ public class HTMLDialogRenderer {
 				
 					// first render their initiating root element 
 					if (i % 2 == 0) {
-						//
 						buffi.append(getTableRowString(c, q, web, b.getId(), false, 
 								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right'"));	
 					} else {
@@ -138,7 +137,7 @@ public class HTMLDialogRenderer {
 					for(NamedObject cset : q.getChildren()){
 						getFollowUpChildrenRekur(ch, (Question)cset, c, web, b.getId(), true, 25, q);
 					}
-					buffi.append(ch);
+					buffi.append(ch.toString());
 				}
 			}
 			buffi.append("</tbody></table>");
@@ -156,13 +155,13 @@ public class HTMLDialogRenderer {
 	 * assembles a StringBuffer, that represents one table row, that is a question and
 	 * its answer alternatives
 	 */
-	 private static StringBuffer getTableRowString(XPSCase c, Question q, String web,
+	 private static String getTableRowString(XPSCase c, Question q, String web,
 			  String namespace, boolean even, String classDecl){
 		 StringBuffer buffi = new StringBuffer();
 		 buffi.append("<tr " + classDecl + ">");
 		 buffi.append(render(c, q, web, namespace, even));
 		 buffi.append("</tr> \n");
-		 return buffi;
+		 return buffi.toString();
 	  }
 	
 	 
