@@ -76,8 +76,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			// no need of using openWindowBlank
 		}
 		if (!isNewTab) {
-			selenium.click(locator);
-			selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+			clickAndWait(locator);
 		}
 	}
 	
@@ -92,9 +91,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		selenium.selectWindow(name);
 		selenium.windowFocus();
 		threadSleep(sleepTime);
-		open(url);
-		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
-		threadSleep(sleepTime);
+		refreshAndWait();
 	}
 	
 	/**
@@ -118,13 +115,10 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 				&& System.currentTimeMillis() - startTime < 
 				Long.parseLong(rb.getString("KnowWE.SeleniumTest.RetryTime"))) {
 			//wait until Element appears
+			refreshAndWait();
 		}
 		selenium.click(locator);
-		try {
-			Thread.sleep(Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime")));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		threadSleep(sleepTime);
 	}
 	
 	public boolean checkSolutions(String[] solutions, Map<String, Integer[]> input, boolean isDialog) {
@@ -160,7 +154,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 				for (String elem : input.keySet()) {
 					if (selenium.getText("//table[@id='qPage']").contains(elem)) {
 						boolean elemFound = false;
-						//Try all listed categories of the choosen observation
+						//Try all listed categories of the chosen observation
 						for (int j = 1; !elemFound && j < 10000; j++) {
 							if (selenium.isElementPresent("//table[@id='qPage']//td[@id='qTableCell_Q" + j + "']") &&
 									selenium.getText("//table[@id='qPage']//td[@id='qTableCell_Q" + j + "']").contains(elem.trim())){
@@ -194,48 +188,53 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			selenium.click("sstate-clear");
 			Object[] elem = input.keySet().toArray();
 			for (int j = 0; j < elem.length; j++) {
-				Integer[] actCategory = input.get(elem[j]);
-				clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");
+				Integer[] actCategoryInput = input.get(elem[j]);
 				
+				clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");
 				//It's recommended to wait until the dialog pops up
 				threadSleep(sleepTime);
 				
 				//Radio buttons or check box
-				String actLocator = "";
-				for (int i = 0; i < actCategory.length; i++) {
-					actLocator = "//form[@name='semanooc']/input[" + actCategory[i] + "]";
-					if (selenium.isElementPresent(actLocator)) {
-						clickAndWait(actLocator);
+				String actInputLocator = "";
+				for (int i = 0; i < actCategoryInput.length; i++) {
+					actInputLocator = "//form[@name='semanooc']/input[" + actCategoryInput[i] + "]";
+					if (selenium.isElementPresent(actInputLocator)) {
+						clickAndWait(actInputLocator);
 						
 						clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");						
 						//It's recommended to wait until the dialog pops up
 						threadSleep(sleepTime);
-						if (!selenium.isElementPresent(actLocator) 
-								|| !selenium.isChecked(actLocator)) {
+						
+						if (!selenium.isElementPresent(actInputLocator) 
+								|| !selenium.isChecked(actInputLocator)) {
 							i--;
 							continue;
 						}
+						//Choosing was succesful -> next one
 						continue;
 					}
-					actLocator = "//form[@name='semanomc']/input[" + actCategory[i] + "]";
-					if(selenium.isElementPresent(actLocator)){
-						selenium.click(actLocator);
+					actInputLocator = "//form[@name='semanomc']/input[" + actCategoryInput[i] + "]";
+					if(selenium.isElementPresent(actInputLocator)){
+						clickAndWait(actInputLocator);
 						//CheckBoxes need some special treatment
 						threadSleep(sleepTime);
 						
 						clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");						
 						//It's recommended to wait until the dialog pops up
 						threadSleep(sleepTime);
-						if (!selenium.isElementPresent(actLocator)
-								|| !selenium.isChecked(actLocator)) {
+						if (!selenium.isElementPresent(actInputLocator)
+								|| !selenium.isChecked(actInputLocator)) {
 							i--;
 							continue;
 						}
+						//Choosing was succesful -> next one
 						continue;
 					}
 					//No Radiobutten no Checkbox present (pop-up
 					//closed already), so repeat this step
 					j--;
+					refreshAndWait();
+					break;
 				}
 				//Close pop-up window if not done yet
 				if (selenium.isElementPresent("o-lay-close")) {
