@@ -27,6 +27,7 @@ import de.d3web.we.kdom.renderer.NothingRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 
 public class TagsContent extends XMLContent {
 
@@ -40,12 +41,11 @@ public class TagsContent extends XMLContent {
 		String text = s.getOriginalText();
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		for (String cur : text.split(" |,")) {
-
 			if (cur.trim().length() > 0) {
 				UpperOntology uo = UpperOntology.getInstance();
 				URI suri = uo.getHelper().createlocalURI(s.getTitle());
 				URI puri = uo.getHelper().createURI("hasTag");
-				URI ouri = uo.getHelper().createlocalURI(cur.trim());
+				URI ouri = uo.getHelper().createlocalURI(cur.trim());				
 				io.merge(uo.getHelper().createProperty(suri, puri, ouri, s));
 			}
 		}

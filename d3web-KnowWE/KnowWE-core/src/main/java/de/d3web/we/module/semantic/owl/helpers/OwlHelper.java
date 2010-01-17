@@ -24,6 +24,7 @@
 package de.d3web.we.module.semantic.owl.helpers;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
@@ -111,8 +112,9 @@ public class OwlHelper {
 	 * @return
 	 */
 	private String beautify(String value) {
+		
 		try {
-			return URLEncoder.encode(value, "UTF-8");
+			return URLEncoder.encode(URLDecoder.decode(value,"UTF-8"), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -138,7 +140,7 @@ public class OwlHelper {
 		try {
 			UpperOntology uo = UpperOntology.getInstance();
 			BNode to = uo.getVf().createBNode();
-			createTextOrigin(source, io, to);
+			io.merge(createTextOrigin(source,to));
 			io.addStatement(uo.getHelper().createStatement(attachto,
 					RDFS.ISDEFINEDBY, to));
 		} catch (RepositoryException e) {
@@ -148,13 +150,14 @@ public class OwlHelper {
 
 	}
 
-	private void createTextOrigin(Section source, IntermediateOwlObject io,
-			Resource to) throws RepositoryException {
+	private IntermediateOwlObject createTextOrigin(Section source, Resource to) throws RepositoryException {
+		IntermediateOwlObject io = new IntermediateOwlObject();
 		io.addStatement(createStatement(to, RDF.TYPE, createURI("TextOrigin")));
 		io.addStatement(createStatement(to, createURI("hasNode"),
 				createLiteral(source.getId())));
 		io.addStatement(createStatement(to, createURI("hasTopic"),
-				createLiteral(source.getTitle())));
+				createlocalURI(source.getTitle())));		
+		return io;
 	}
 
 	/**
@@ -344,15 +347,12 @@ public class OwlHelper {
 					source.getTitle() + ".." + source.getId() + ".."
 							+ suri.getLocalName() + puri.getLocalName()
 							+ ouri.getLocalName());
-			helper.createTextOrigin(source, io, to);
+			io.merge(helper.createTextOrigin(source ,to));
 			io.addStatement(helper.createStatement(nary, RDFS.ISDEFINEDBY, to));
-			io.addStatement(helper.createStatement(nary, RDF.TYPE,
-					RDF.STATEMENT));
+			io.addStatement(helper.createStatement(nary, RDF.TYPE,RDF.STATEMENT));
 			io.addStatement(helper.createStatement(nary, RDF.PREDICATE, puri));
 			io.addStatement(helper.createStatement(nary, RDF.OBJECT, ouri));
 			io.addStatement(helper.createStatement(nary, RDF.SUBJECT, suri));
-//			io.addStatement(helper.createStatement(nary, RDF.TYPE, helper
-//					.createURI("Finding")));
 			io.addLiteral(nary);
 
 		} catch (RepositoryException e) {

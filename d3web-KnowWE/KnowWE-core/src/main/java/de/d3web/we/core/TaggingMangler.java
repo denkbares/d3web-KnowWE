@@ -332,13 +332,23 @@ public class TaggingMangler implements KnowWESearchProvider {
 		String querystring="";
 		int i=0;
 		if (tags.length==1){
-			querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object lns:"
-			+ tags[0] + " .\n" + "?t rdf:predicate ns:hasTag .\n"
-			+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
+			try {
+				querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object \"lns:"
+				+ URLEncoder.encode(tags[0],"UTF-8") + "\" .\n" + "?t rdf:predicate ns:hasTag .\n"
+				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			querystring= "SELECT ?q \n" + "WHERE {\n";
 			for (String cur:tags){
-				querystring+="?t"+i+" rdf:object lns:" + cur + " .\n";			
+				try {
+					querystring+="?t"+i+" rdf:object lns:" + URLEncoder.encode(cur,"UTF-8") + " .\n";
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}			
 				querystring+= "?t"+i+" rdf:predicate ns:hasTag .\n";
 				querystring+= "?t"+i+" rdfs:isDefinedBy ?o"+i+" .\n ?o"+i+" ns:hasTopic ?q . \n";				
 				i++;
