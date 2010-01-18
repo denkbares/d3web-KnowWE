@@ -371,6 +371,7 @@
 	
 	function _saveFlowchartText(xml, closeOnSuccess) {
 		var url = "KnowWE.jsp";
+		xml = encodeURI(xml);
 		new Ajax.Request(url, {
 			method: 'post',
 			parameters: {
@@ -385,15 +386,17 @@
 			onFailure: function() {
 				CCMessage.warn(
 					'AJAX Verbindungs-Fehler', 
-					'Die �nderungen konnten nicht gespeichert werden.');
+					'Die Aenderungen konnten nicht gespeichert werden.');
 			},
 			onException: function(transport, exception) {
 				CCMessage.warn(
-					'AJAX interner Fehler, �nderungen eventuell verloren',
+					'AJAX interner Fehler, Aenderungen eventuell verloren',
 					exception
 					);
 			}
 		}); 		
+
+		
 	}
 
 
