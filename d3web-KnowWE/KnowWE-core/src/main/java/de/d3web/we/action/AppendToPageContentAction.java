@@ -25,7 +25,7 @@ public class AppendToPageContentAction implements KnowWEAction {
 		String name = parameterMap.getTopic();
 		String appendText = parameterMap.get(KnowWEAttributes.TEXT);
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-		KnowWEArticle art = mgr.getArticle("name");
+		KnowWEArticle art = mgr.getArticle(name);
 		
 		// replaces old article content with old article content + text to append 
 		return mgr.replaceKDOMNode(parameterMap, name, art.getSection().getId(), art.getSection().getOriginalText()+appendText);
