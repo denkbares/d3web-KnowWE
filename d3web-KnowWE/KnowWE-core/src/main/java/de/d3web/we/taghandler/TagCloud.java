@@ -20,9 +20,15 @@
 
 package de.d3web.we.taghandler;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
+
+import javax.swing.text.html.ListView;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.TaggingMangler;
@@ -41,8 +47,12 @@ public class TagCloud extends AbstractTagHandler {
 		HashMap<String,Integer> weightedlist=TaggingMangler.getInstance().getCloudList(8, 20);
 		String output="<p>";
 		//TagSearch.jsp?query=test+auto&ok=Find!&start=0&maxitems=20
-		for (Entry<String,Integer> cur:weightedlist.entrySet()){
-			output+=" <a href =\"Wiki.jsp?page=TagSearch&query="+cur.getKey()+"&ok=Find!&start=0&maxitems=20\" style=\"font-size:"+cur.getValue()+"px\">"+cur.getKey()+"</a>";		
+		List<String> tlist=new ArrayList<String>();
+		tlist.addAll(weightedlist.keySet());
+		Collections.sort(tlist);
+		
+		for (String cur:tlist){
+			output+=" <a href =\"Wiki.jsp?page=TagSearch&query="+cur+"&ok=Find!&start=0&maxitems=20\" style=\"font-size:"+weightedlist.get(cur)+"px\">"+cur+"</a>";		
 			}
 		return KnowWEEnvironment.maskHTML(output+"</p>");
 	}

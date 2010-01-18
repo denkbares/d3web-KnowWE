@@ -21,13 +21,17 @@
 package de.d3web.we.core;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -226,7 +230,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @return
 	 */
 	public HashMap<String, Float> getAllTagsWithWeight() {
-		ArrayList<String> tags = getAllTagsWithDuplicates();
+		ArrayList<String> tags = getAllTagsWithDuplicates();		
 		HashMap<String, Float> countlist = new HashMap<String, Float>();
 		float max = 0;
 		for (String cur : tags) {
@@ -243,9 +247,13 @@ public class TaggingMangler implements KnowWESearchProvider {
 		}
 		
 		HashMap<String, Float> weighted = new HashMap<String, Float>();		
+	
 		for (Entry<String, Float> cur : countlist.entrySet()) {
 			weighted.put(cur.getKey(), new Float(max-1==0?0.5:(cur.getValue()-1) / (max-1)));
-		}
+		}		
+		
+		
+		
 		return weighted;
 	}
 
