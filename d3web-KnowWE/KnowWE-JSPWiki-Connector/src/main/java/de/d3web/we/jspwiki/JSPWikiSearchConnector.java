@@ -52,7 +52,12 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 		// assembling query for searchTerm bag
 		String query = "";
 		for (SearchTerm searchTerm : searchTerms) {
-			query += searchTerm.getTerm() + " ";
+			//re-insert quotes for jspwiki search
+			if (searchTerm.getTerm().contains(" ")) {
+				query += "\""+searchTerm.getTerm() +  "\""+ " ";
+			} else {
+				query += searchTerm.getTerm() + " ";
+			}
 		}
 
 		// Create wiki context and check for authorization
@@ -145,8 +150,8 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 	@Override
 	public String renderResults(Collection<GenericSearchResult> results) {
 		StringBuffer resultBuffy = new StringBuffer();
-		
-		if(results.size() == 0) {
+
+		if (results.size() == 0) {
 			return null;
 		}
 
@@ -163,8 +168,11 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 			String url = "";
 
 			resultBuffy.append(" <tr>");
-			resultBuffy.append("<td><a class=\"wikipage\" href=\"Wiki.jsp?page=" + genericSearchResult.getPagename() + "" + url
-					+ "\">" + genericSearchResult.getPagename() + "</a> </td>");
+			resultBuffy
+					.append("<td><a class=\"wikipage\" href=\"Wiki.jsp?page="
+							+ genericSearchResult.getPagename() + "" + url
+							+ "\">" + genericSearchResult.getPagename()
+							+ "</a> </td>");
 			resultBuffy.append("<td><span class=\"gbar\">"
 					+ genericSearchResult.getScore() + "</span> </td>");
 
@@ -190,7 +198,7 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Collection<SearchTerm> expandTermForSearch(SearchTerm t) {
 		// TODO Auto-generated method stub
