@@ -56,7 +56,8 @@ public class SearchWordPreprocessor {
 		}
 		
 		for (SearchTerm searchTerm : resultTmp) {
-			result.addAll(SearchTerminologyHandler.getInstance().expandSearchTermForSearch(searchTerm));
+			Collection<SearchTerm> expandSearchTermForSearch = SearchTerminologyHandler.getInstance().expandSearchTermForSearch(searchTerm);
+			result.addAll(expandSearchTermForSearch);
 		}
 		
 		

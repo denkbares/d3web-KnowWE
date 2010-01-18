@@ -203,6 +203,7 @@ public class SearchTerminologyHandler {
 	private Collection<SearchTerm> expandSearchTermForSearchByProviders(
 			SearchTerm term) {
 		Set<SearchTerm> result = new HashSet<SearchTerm>();
+		result.add(term);
 		Set<Entry<String, KnowWESearchProvider>> entrySet = MultiSearchEngine
 				.getInstance().getSearchProvider().entrySet();
 		for (Entry<String, KnowWESearchProvider> entry : entrySet) {
