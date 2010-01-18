@@ -178,8 +178,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 
 		String querystring = "SELECT ?q \n" + "WHERE {\n"
 				+ "?t rdf:object ?q .\n" + "?t rdf:predicate ns:hasTag .\n"
-				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic \"" + topicenc
-				+ "\" .\n" + "}";
+				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic lns:" + topicenc
+				+ " .\n" + "}";
 		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
 	}
 
