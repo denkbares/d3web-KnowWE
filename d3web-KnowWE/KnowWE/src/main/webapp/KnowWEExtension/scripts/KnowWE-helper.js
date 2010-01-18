@@ -250,6 +250,19 @@ KNOWWE.helper = function(){
                     return true;
             }
             return false;
+        },
+        /**
+         * Function: tagParent
+         * Returns a parentnode to the given starting node that has the given tagname.
+         */
+        tagParent : function( element, tag){
+        	if(!element.tagName) return element;
+        	if( element.tagName.toLowerCase() === tag.toLowerCase()){
+        		return element;
+        	} else {
+        		return this.tagParent( element.parentNode, tag );
+        	}
+        	
         }
     }
 }();

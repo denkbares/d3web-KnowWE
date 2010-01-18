@@ -45,16 +45,17 @@ public class SearchWordPreprocessor {
 	public Collection<SearchTerm> processForSearch(String searchText) {
 		List<String> terms = SplitUtility.splitUnquoted(searchText," ");
 		
+		Set<SearchTerm> resultTmp = new HashSet<SearchTerm>();
 		Set<SearchTerm> result = new HashSet<SearchTerm>();
 		
 		for (String word : terms) {
 			if (word.startsWith("\"") && word.endsWith("\"")) {
 				word = word.substring(1, word.length() - 1);
 			}
-			result.add(new SearchTerm(word));
+			resultTmp.add(new SearchTerm(word));
 		}
 		
-		for (SearchTerm searchTerm : result) {
+		for (SearchTerm searchTerm : resultTmp) {
 			result.addAll(SearchTerminologyHandler.getInstance().expandSearchTermForSearch(searchTerm));
 		}
 		
@@ -67,17 +68,24 @@ public class SearchWordPreprocessor {
 	public Collection<SearchTerm> processForRecommendation(String searchText) {
 		List<String> terms = SplitUtility.splitUnquoted(searchText," ");
 		
+		Set<SearchTerm> resultTmp = new HashSet<SearchTerm>();
 		Set<SearchTerm> result = new HashSet<SearchTerm>();
 		
 		for (String word : terms) {
 			if (word.startsWith("\"") && word.endsWith("\"")) {
 				word = word.substring(1, word.length() - 1);
 			}
-			result.add(new SearchTerm(word));
+			resultTmp.add(new SearchTerm(word));
 		}
 		
-		for (SearchTerm searchTerm : result) {
-			result.addAll(SearchTerminologyHandler.getInstance().expandSearchTermForRecommendation(searchTerm));
+		
+		if( searchText != null && searchText.equals("")) {
+			SearchTerm t = new SearchTerm( searchText );
+			result.addAll(SearchTerminologyHandler.getInstance().expandSearchTermForRecommendation( t ));
+		} else {
+			for (SearchTerm searchTerm : resultTmp) {
+				result.addAll(SearchTerminologyHandler.getInstance().expandSearchTermForRecommendation(searchTerm));
+			}
 		}
 		
 		

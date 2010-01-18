@@ -225,27 +225,26 @@ public class SearchTerminologyHandler {
 	 */
 	public List<String> getCompletionSuggestions(String typedString) {
 
-		List<String> results = new ArrayList<String>();
-
-		results.add("apfel");
-		results.add("birne");
-		results.add("banane");
-		results.add("birnenkuchen");
-		results.add("birnen marmelade");
-		results.add("birnenkompott");
-		results.add("birnen einkochen");
-		results.add("birnensorten");
-
+		List<SearchTerm> generalSystemTerms = new ArrayList<SearchTerm>();
 		List<String> filtered = new ArrayList<String>();
-
-		if (typedString != null && typedString.length() > 0) {
-			for (String string : results) {
-				if (string.contains(typedString)) {
-					filtered.add(wrap(string, typedString));
+		
+		Collection<KnowWESearchProvider> providers = MultiSearchEngine.getInstance().getSearchProvider().values();
+		if (providers != null) {
+			for (KnowWESearchProvider knowWESearchProvider : providers) {
+				Collection<SearchTerm> allTerms = knowWESearchProvider
+						.getAllTerms();
+				if (allTerms != null) {
+					generalSystemTerms.addAll(allTerms);
 				}
 			}
-		} else {
-			filtered.addAll(results);
+		}
+		//filter the search result according to the typed string
+		if (typedString != null && typedString.length() > 0) {
+			for (SearchTerm term : generalSystemTerms) {
+				if (term.getTerm().contains(typedString)) {
+					filtered.add(wrap(term.getTerm(), typedString));
+				}
+			}
 		}
 		return filtered;
 	}
