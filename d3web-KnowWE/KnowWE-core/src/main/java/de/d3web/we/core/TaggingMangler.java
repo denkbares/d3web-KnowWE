@@ -21,17 +21,13 @@
 package de.d3web.we.core;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -341,8 +337,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 		int i=0;
 		if (tags.length==1){
 			try {
-				querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object \"lns:"
-				+ URLEncoder.encode(tags[0],"UTF-8") + "\" .\n" + "?t rdf:predicate ns:hasTag .\n"
+				querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object lns:"
+				+ URLEncoder.encode(tags[0],"UTF-8") + " .\n" + "?t rdf:predicate ns:hasTag .\n"
 				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block

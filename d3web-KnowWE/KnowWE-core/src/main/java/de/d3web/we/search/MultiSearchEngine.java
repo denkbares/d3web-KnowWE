@@ -20,69 +20,65 @@
 
 package de.d3web.we.search;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import de.d3web.we.core.KnowWEParameterMap;
 
 public class MultiSearchEngine {
-	
+
 	private static MultiSearchEngine instance;
-	
+
 	public static MultiSearchEngine getInstance() {
 		if (instance == null) {
 			instance = new MultiSearchEngine();
-			
+
 		}
 		return instance;
 	}
-	
-	
-	
-	private Map<String,KnowWESearchProvider> searchProvider = new HashMap<String,KnowWESearchProvider>();
-	
-	
-	
+
+	private Map<String, KnowWESearchProvider> searchProvider = new HashMap<String, KnowWESearchProvider>();
+
 	public Map<String, KnowWESearchProvider> getSearchProvider() {
 		return searchProvider;
 	}
 
 	public void addProvider(KnowWESearchProvider p) {
-		this.searchProvider.put(p.getID(),p);
+		this.searchProvider.put(p.getID(), p);
 	}
-	
+
 	public KnowWESearchProvider getProvider(String id) {
-		if(id == null) return null;
+		if (id == null)
+			return null;
 		return searchProvider.get(id);
 	}
-	
-	public Map<String, Collection<GenericSearchResult>> search(String searchText, KnowWEParameterMap map) {
-		return search(SearchWordPreprocessor.getInstance().processForSearch(searchText), map);
+
+	public Map<String, Collection<GenericSearchResult>> search(
+			String searchText, KnowWEParameterMap map) {
+		return search(SearchWordPreprocessor.getInstance().processForSearch(
+				searchText), map);
 	}
-	
-	public Map<String, Collection<GenericSearchResult>> search(Collection<SearchTerm> terms, KnowWEParameterMap map) {
-		
+
+	public Map<String, Collection<GenericSearchResult>> search(
+			Collection<SearchTerm> terms, KnowWEParameterMap map) {
+
 		Map<String, Collection<GenericSearchResult>> all = new HashMap<String, Collection<GenericSearchResult>>();
-		
+
 		Set<SearchTerm> searchSet = new HashSet<SearchTerm>();
-		
+
 		searchSet.addAll(terms);
-		
-		
-		
+
 		for (KnowWESearchProvider provider : searchProvider.values()) {
-			Collection<GenericSearchResult> singleResultSet = provider.search(searchSet, map);
+			Collection<GenericSearchResult> singleResultSet = provider.search(
+					searchSet, map);
 			all.put(provider.getID(), singleResultSet);
 		}
-		
-		
+
 		return all;
-		
+
 	}
 
 }

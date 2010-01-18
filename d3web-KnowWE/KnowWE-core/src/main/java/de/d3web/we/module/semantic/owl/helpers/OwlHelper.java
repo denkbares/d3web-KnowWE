@@ -112,9 +112,17 @@ public class OwlHelper {
 	 * @return
 	 */
 	private String beautify(String value) {
+		String temp=value;
+		try {
+			temp=URLDecoder.decode(value,"UTF-8");
+		} catch (UnsupportedEncodingException e1) {					
+		} catch (IllegalArgumentException e){
+			
+		}
+		
 		
 		try {
-			return URLEncoder.encode(URLDecoder.decode(value,"UTF-8"), "UTF-8");
+			return URLEncoder.encode(temp, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
