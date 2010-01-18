@@ -43,13 +43,15 @@ public class RatedSolutions extends DefaultAbstractKnowWEObjectType {
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			List<String> findings = SplitUtility.splitUnquoted(text, ":");
+			List<String> ratedsolutions = SplitUtility.splitUnquoted(text, ":");
 
-			int start = text.indexOf(findings.get(1));
-			int end = text.lastIndexOf(";");
-			SectionFinderResult s = 
-				new SectionFinderResult(start, end);
-			result.add(s);
+			if (ratedsolutions.size() > 1) {
+				int start = text.indexOf(ratedsolutions.get(1));
+				int end = text.lastIndexOf(";");
+				SectionFinderResult s = 
+					new SectionFinderResult(start, end);
+				result.add(s);
+			}
 
 			return result;
 		}

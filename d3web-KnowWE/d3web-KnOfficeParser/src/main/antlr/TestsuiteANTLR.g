@@ -19,7 +19,7 @@
  */
 
 /**
- * Grammatik für Testsuites
+ * Grammatik fÃ¼r Testsuites
  * @author Sebastian Furth
  *
  */
@@ -78,7 +78,7 @@ sqtestcase
 : n=name {builder.addSequentialTestCase($n.value);} CBO ({i++;} ratedtestcase[i])+ CBC {builder.finishCurrentSequentialTestCase();};
 
 ratedtestcase[int i]
-: {builder.addRatedTestCase(i, $start.getLine(), $text);} findings DD solutions SEMI {builder.finishCurrentRatedTestCase();};
+: {builder.addRatedTestCase(i, $start.getLine(), $text);} findings DD solutions? SEMI {builder.finishCurrentRatedTestCase();};
 
 findings
 : (q=name EQ a=name COMMA {builder.addFinding($q.value, $a.value, $start.getLine(), $text);})* 
@@ -97,5 +97,5 @@ normalsolution
 : (n=name (LP r=name RP) {builder.addSolution($n.value, $r.value, $start.getLine(), $text);});
 
 name returns [String value]
-: (ID|INT)+ {$value=$text;}
+: (ID|d3double)+ {$value=$text;}
 | String {$value=delQuotes($String.text);};

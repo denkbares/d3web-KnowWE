@@ -123,7 +123,6 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	 */
 	public void addRatedTestCase(int i, int line, String linetext) {
 		currentRatedTestCase = new RatedTestCase();
-		currentRatedTestCase.setName(currentSequentialTestCase.getName() + "_RTC" + i);	
 	}
 	
 	/**
@@ -145,6 +144,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 				double value = Double.parseDouble(answer);
 				AnswerNum a = new AnswerNum();
 				a.setValue(value);
+				a.setQuestion(q);
 				Finding currentFinding = new Finding(q, a);
 				currentRatedTestCase.add(currentFinding);
 				
@@ -226,12 +226,65 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	 * Adds the current RatedTestCase to the current SequentialTestCase
 	 */
 	public void finishCurrentRatedTestCase() {
-		if (currentRatedTestCase.getFindings().size() > 0 
-				&& currentRatedTestCase.getExpectedSolutions().size() > 0) {
+		if (currentRatedTestCase.getFindings().size() > 0) {
+			String name;
+			RatedTestCase equalRTC = searchForEqualPathRTC();
+			if (equalRTC != null) {
+				name = equalRTC.getName();
+			} else {
+				name = "RTC_" + System.currentTimeMillis();
+			}
+			currentRatedTestCase.setName(name);
 			currentSequentialTestCase.add(currentRatedTestCase);
+			
 		}
 	}
 	
+	private RatedTestCase searchForEqualPathRTC() {
+		
+		if (sequentialTestCases.size() == 0)
+			return null;
+
+		boolean equality;
+		int pathLength = currentSequentialTestCase.getCases().size();
+		RatedTestCase lastCase;
+		
+		for (SequentialTestCase stc : sequentialTestCases) {
+			
+			equality = true;
+			
+			// If the path is shorter, the cases can't be equal
+			if (stc.getCases().size() < pathLength + 1)
+				continue;
+			
+			// Compares the already added RatedTestCases
+			for (int i = 0; i < pathLength; i++) {
+				if (!equalCases(stc.getCases().get(i), currentSequentialTestCase.getCases().get(i))) {
+					equality = false;
+					break;
+				}
+			}
+			
+			// Compares the last RTC of the STC with the current RTC
+			lastCase = stc.getCases().get(pathLength);
+			if (equality && equalCases(lastCase, currentRatedTestCase))
+				return lastCase;
+		}
+		
+		// Return null if there is no equal RTC
+		return null;
+	}
+
+	private boolean equalCases(RatedTestCase rtc1, RatedTestCase rtc2) {
+
+		if (!rtc1.getExpectedSolutions().equals(rtc2.getExpectedSolutions()))
+			return false;
+		if (!rtc1.getFindings().equals(rtc2.getFindings()))
+			return false;
+
+		return true;
+	}
+
 	/**
 	 * Adds the current SequentialTestCase to the list of SequentialTestCases
 	 */

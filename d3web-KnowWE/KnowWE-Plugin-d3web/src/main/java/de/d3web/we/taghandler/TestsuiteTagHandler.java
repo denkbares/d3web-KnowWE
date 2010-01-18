@@ -198,7 +198,10 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("<p>");
 		html.append("<img src='KnowWEExtension/images/green_bulb.gif' width='16' height='16' />");
 		html.append("<strong>");
-		html.append(rb.getString("KnowWE.Testsuite.passed"));
+		html.append(rb.getString("KnowWE.Testsuite.passed1"));
+		html.append(t.getRepository().size());
+		html.append(" ");
+		html.append(rb.getString("KnowWE.Testsuite.passed2"));
 		html.append("</strong>");
 		html.append("</p>");
 
@@ -258,11 +261,14 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		
 		html.append("<fieldset>");
 				
-		// TestSuite passed text and green bulb
+		// TestSuite failed text and red bulb
 		html.append("<p>");
 		html.append("<img src='KnowWEExtension/images/red_bulb.gif' width='16' height='16' />");
 		html.append("<strong>");
-		html.append(rb.getString("KnowWE.Testsuite.failed"));
+		html.append(rb.getString("KnowWE.Testsuite.failed1"));
+		html.append(t.getRepository().size());
+		html.append(" ");
+		html.append(rb.getString("KnowWE.Testsuite.failed2"));
 		html.append("</strong>");
 		html.append("</p>");
 		
@@ -324,7 +330,10 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("<p>");
 		html.append("<img src='KnowWEExtension/images/red_bulb.gif' width='16' height='16' />");
 		html.append("<strong>");
-		html.append(rb.getString("KnowWE.Testsuite.failed"));
+		html.append(rb.getString("KnowWE.Testsuite.failed1"));
+		html.append(t.getRepository().size());
+		html.append(" ");
+		html.append(rb.getString("KnowWE.Testsuite.failed2"));
 		html.append("</strong>");
 		html.append("</p>");
 		

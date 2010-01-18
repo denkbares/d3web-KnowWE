@@ -62,9 +62,6 @@ public class TestSuiteTest extends TestCase {
 		assertNotNull("Sequential-Test-Case has no Rated-Test-Case.", loadedRTC);
 		assertNotNull("Sequential-Test-Case has no Rated-Test-Case.", createdRTC);
 		
-		assertEquals("Rated-Test-Case has wrong name.", 
-					  loadedRTC.getName(), 
-					  createdRTC.getName());
 		assertEquals("Rated-Test-Case has wrong findings.", 
 					  loadedRTC.getFindings(), 
 					  createdRTC.getFindings());
