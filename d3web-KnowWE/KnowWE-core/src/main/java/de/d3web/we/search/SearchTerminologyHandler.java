@@ -166,6 +166,21 @@ public class SearchTerminologyHandler {
 			filtered.add(minTerm);
 
 		}
+		
+		if(filtered.size() > 25) {
+			Set<SearchTerm> cutResultList = new HashSet<SearchTerm>();
+			int cntLimit = 0;
+			for (SearchTerm searchTerm : filtered) {
+				cntLimit++;
+				if( cntLimit > 25) break;
+				cutResultList.add(searchTerm);
+			}
+			
+			filtered = cutResultList;
+			
+		}
+		
+		
 
 		return filtered;
 	}
