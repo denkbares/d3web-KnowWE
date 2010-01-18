@@ -33,5 +33,6 @@ String findParam( PageContext ctx, String key )
 		result = result.replaceAll("((\r\n)|\n){2}", KnowWEUtils.maskHTML("<br />"));
 		result = wiki.textToHTML(wikiContext, result);
 	}
+	if (result==null) {result="";}
     result = KnowWEUtils.unmaskHTML( result );
 %><%=result%><wiki:Include page="<%=\"\"%>"/>
