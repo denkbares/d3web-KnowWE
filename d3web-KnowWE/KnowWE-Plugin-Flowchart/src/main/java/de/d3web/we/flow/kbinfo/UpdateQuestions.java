@@ -20,6 +20,8 @@
 
 package de.d3web.we.flow.kbinfo;
 
+import org.apache.tools.ant.types.CommandlineJava.SysProperties;
+
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
@@ -41,12 +43,11 @@ public class UpdateQuestions implements KnowWEAction {
 		
 		// get everything important from the parameter map
 		String web = parameterMap.getWeb();
-		String infos = parameterMap.get("infos");
-		String questionText = infos.substring(infos.indexOf("[Text]") + 6, infos.indexOf("[Type]"));
-		String questionType = infos.substring(infos.indexOf("[Type]") + 6, infos.indexOf("[Pagename]"));
-		String pageName = infos.substring(infos.indexOf("[Pagename]") + 10, infos.indexOf("[Answers]"));
-		String answersToLine = infos.substring(infos.indexOf("[Answers]") + 9).replace("[next]", ":next:");
-		String[] answers = answersToLine.split(":next:");
+		String questionText = parameterMap.get("text");
+		String questionType = parameterMap.get("type");
+		String pageName = parameterMap.get("pageName");
+		String answersToLine = parameterMap.get("answers");
+		String[] answers = answersToLine.split("::");
 		
 		
 		// get everything to update the article

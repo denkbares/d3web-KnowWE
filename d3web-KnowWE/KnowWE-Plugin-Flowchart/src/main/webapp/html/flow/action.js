@@ -456,25 +456,25 @@ ActionEditor.updateQuestions = function(addedQuestionText, addedQuestionType, po
 
 		var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
 		var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
-		var answersToLine = '[Answers]';
+		var answersToLine = '&answers=';
 		
 		if (addedQuestionType === 'yn') {
-			answersToLine += 'yes[next]no';
+			answersToLine += 'yes::no';
 		} else {
 			for (var i = 0; i < possibleAnswers.length; i++) {
 				if (i != possibleAnswers.length -1) {
-					answersToLine += possibleAnswers[i] + '[next]';
+					answersToLine += possibleAnswers[i] + '::';
 				} else {
 					answersToLine += possibleAnswers[i];
 				}
 			}
 		}
 		
-		addedQuestionText = '[Text]' + addedQuestionText;
-		addedQuestionType = '[Type]' + addedQuestionType;
-		pageName = '[Pagename]' + pageName;
+		addedQuestionText = '&text=' + addedQuestionText;
+		addedQuestionType = '&type=' + addedQuestionType;
+		pageName = '&pageName=' + pageName;
 		
-		var infos = '&infos=' + addedQuestionText + addedQuestionType + pageName + answersToLine;
+		var infos = addedQuestionText + addedQuestionType + pageName + answersToLine;
 
 		
 		var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.UpdateQuestions" + infos;
@@ -528,9 +528,10 @@ ActionEditor.createSolutionDropdown = function(solutionText) {
 ActionEditor.updateSolutions = function(solutionText) {
 
 	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
-	var pageName = '[Pagename]' + window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
+	var pageName = '&pageName=' + window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
+	solutionText = '&text=' + solutionText;
 	
-	var infos = '&infos=' + '[Text]' + solutionText + pageName;
+	var infos = solutionText + pageName;
 
 	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.UpdateSolutions" + infos;
 	
@@ -576,19 +577,19 @@ ActionEditor.getQuestionType = function () {
 ActionEditor.addSubFlow = function(exitNodes) {
 
 	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
-	var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
-	var name = document.choseQuestionText.questionText.value;
+	var pageName = '&pageName=' + window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
+	var name = '&name=' + document.choseQuestionText.questionText.value;
 	
-	var nodesToLine = '[Nodes]';
+	var nodesToLine = '&nodes=';
 	for (var i = 0; i < exitNodes.length; i++)  {
 		nodesToLine += exitNodes[i];
 		
 		if (i != exitNodes.length -1) {
-			nodesToLine += '[next]';
+			nodesToLine += '::';
 		} 
 	}
 	
-	var infos = '&infos=' + '[Pagename]' +  pageName + '[Name]' + name + nodesToLine;
+	var infos = pageName + name + nodesToLine;
 
 	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.AddSubFlowchart" + infos;
 	

@@ -43,12 +43,10 @@ public class UpdateSolutions implements KnowWEAction {
 		
 		// get everything important from the parameter map
 		String web = parameterMap.getWeb();
-		String infos = parameterMap.get("infos");
-		String solutionText = infos.substring(infos.indexOf("[Text]") + 6, infos.indexOf("[Pagename]"));
-		String pageName = infos.substring(infos.indexOf("[Pagename]") + 10);
+		String solutionText = parameterMap.get("text");
+		String pageName = parameterMap.get("pageName");
 
 
-		
 		// get everything to update the article
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = artManager.getArticle(pageName);
