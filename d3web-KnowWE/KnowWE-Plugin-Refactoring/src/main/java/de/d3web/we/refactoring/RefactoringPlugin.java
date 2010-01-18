@@ -22,10 +22,15 @@ package de.d3web.we.refactoring;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import de.d3web.we.module.AbstractDefaultKnowWEModule;
-import de.d3web.we.taghandler.TagHandler;
+import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.module.AbstractDefaultKnowWEModule;
+import de.d3web.we.refactoring.action.RefactoringAction;
+import de.d3web.we.taghandler.TagHandler;
+
+
 
 /**
  * A demo plugin for d3web for use without the usual Maven workspace
@@ -54,6 +59,13 @@ import de.d3web.we.kdom.KnowWEObjectType;
 public class RefactoringPlugin extends AbstractDefaultKnowWEModule {
 	
 	
+	@Override
+	public void addAction(Map<Class<? extends KnowWEAction>, KnowWEAction> map) {
+		// TODO Auto-generated method stub
+		map.put(RefactoringAction.class, new RefactoringAction());
+	}
+
+
 	/**
 	 * Singleton instance
 	 */

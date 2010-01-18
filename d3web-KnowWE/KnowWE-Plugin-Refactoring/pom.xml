@@ -119,6 +119,22 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.groovy.maven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generateStubs</goal>
+							<goal>compile</goal>
+							<goal>generateTestStubs</goal>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
 
 		</plugins>
 	</build>
@@ -184,6 +200,13 @@
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
 			<version>1.7.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy.maven.runtime</groupId>
+			<artifactId>gmaven-runtime-default</artifactId>
+			<version>1.0-rc-3</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
