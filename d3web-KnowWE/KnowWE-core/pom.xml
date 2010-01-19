@@ -15,7 +15,7 @@
 		<repository>
 			<id>Bibsonomy</id>
 			<name>Bibsonomy</name>
-			<url>http://dev.bibsonomy.org/maven2/</url>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/bibsonomy</url>
 		</repository>
 	</repositories>
 
