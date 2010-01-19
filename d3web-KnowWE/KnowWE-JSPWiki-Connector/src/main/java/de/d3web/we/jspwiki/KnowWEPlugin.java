@@ -20,6 +20,9 @@
 
 package de.d3web.we.jspwiki;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Enumeration;
@@ -30,8 +33,11 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
+
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
+import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.event.WikiEvent;
 import com.ecyrd.jspwiki.event.WikiEventListener;
 import com.ecyrd.jspwiki.event.WikiEventUtils;
@@ -40,6 +46,7 @@ import com.ecyrd.jspwiki.filters.BasicPageFilter;
 import com.ecyrd.jspwiki.filters.FilterException;
 import com.ecyrd.jspwiki.plugin.PluginException;
 import com.ecyrd.jspwiki.plugin.WikiPlugin;
+import com.ecyrd.jspwiki.providers.ProviderException;
 
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -63,7 +70,45 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
         m_engine = engine;
         initKnowWEEnvironmentIfNeeded(engine);
         
+        File f = new File(KnowWEEnvironment.getInstance().getKnowWEExtensionPath());
+        f = f.getParentFile();
+
+        try {
+            for (File s : f.listFiles()) {
+            	if (s.getName().equals("WEB-INF")) {        		
+					BufferedReader in = new BufferedReader(new FileReader(s.getPath()
+							+ "/jspwiki.properties"));
+					String zeile = null;
+					File pagedir = null;
+					while ((zeile = in.readLine()) != null) {
+						if (!zeile.contains("#") && zeile.contains("jspwiki.fileSystemProvider.pageDir")) {
+							zeile = zeile.trim();
+							zeile = zeile.substring(zeile.lastIndexOf(" ") + 1);
+							pagedir = new File(zeile);
+							in.close();
+							break;
+						}
+					}
+					
+					if (pagedir.exists()) {
+						File [] files = pagedir.listFiles();						
+						File coreDir = new File(s.getPath() + "/resources/core-pages");
+						File[] cores = coreDir.listFiles();
+						for (File cP : coreDir.listFiles()) {
+							if (!cP.getName().endsWith(".txt")) continue;
+							File newFile = new File(pagedir.getPath()+ "/" + cP.getName());
+							if (!newFile.exists())
+								FileUtils.copyFile(cP, newFile);
+							}
+						}
+            	}
+            }
+        } catch (Exception e) {
+        	// Nothing to do. Start wiki without pages.
+        }
+        
 		WikiEventUtils.addWikiEventListener(engine.getPageManager(), WikiPageEvent.PAGE_DELETE_REQUEST, this);
+
     }
 	
 	private void initKnowWEEnvironmentIfNeeded(WikiEngine wEngine) {
