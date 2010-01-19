@@ -335,6 +335,12 @@ code.box {
 .extend-htmlpanel-right{
     background: #FFF url(../images/arrow_right.png) no-repeat 10px 5px; 
 }
+.extend-htmlpanel-down-s{
+    background: #FFF url(../images/arrow_down_s.png) no-repeat 20px 5px;   
+}
+.extend-htmlpanel-right-s{
+    background: #FFF url(../images/arrow_right_s.png) no-repeat 20px 5px; 
+}
 
 /* ########################################################## */
 /* --------------display as dialog widget / background------------ */
@@ -386,14 +392,14 @@ code.box {
     display: block;
     font-weight:bold;
     width: 250px;
-    margin: 0px 0px 0px 25px;
+    margin: 0px 0px 0px 35px;
 }
 
 .dialogstyle .labelcellOdd {
     display: block;
     font-weight:bold;
     width: 250px;
-    margin: 0px 0px 0px 25px;
+    margin: 0px 0px 0px 35px;
 }
 
 .dialogstyle .trf{     /* Folgefragen */
@@ -431,6 +437,17 @@ code.box {
     height: 20px;
 }
 
+.dialogstyle .fieldcellFollow input {
+    background-color: #D7E5F2;
+    border: 1px solid #96BBD9;
+    width: 100px;
+    margin: 0px 5px 0px 0px;
+}
+
+.dialogstyle .fieldcellFollow input[type='button']{
+    width: 40px;     
+    height: 20px;
+}
 
 
 /* ################################################## */

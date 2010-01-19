@@ -230,6 +230,7 @@ KNOWWE.plugin.d3web.dialog = function(){
      *     String
      */
     var qContainerStates = '';
+    var followUpStates = '';
     
     /**
      * Decodes the status information into a valid CSS attribute name.
@@ -237,7 +238,7 @@ KNOWWE.plugin.d3web.dialog = function(){
     function decodeStatus( status ){
         if(status == 1)
             return "visible";
-        else
+        else if(status == 0)
             return "hidden";
     }
     /**
@@ -245,25 +246,26 @@ KNOWWE.plugin.d3web.dialog = function(){
      * questions have to be distinguished as they need to be assigned different
      * css classes
      */
-    function toogleImage( node, state ){
+    function toogleImage( node , state ){
+    	
     	// in case 'node' is displayed hidden
         if(state == "hidden"){				
         	// and is a qcontainer
-        	if(node.className=='qcontainerName'){
+        	if(node.className.substring(0,14)=='qcontainerName'){
         		node.className ='qcontainerName pointer extend-htmlpanel-right';
         	// or is a follow up question
-        	} else 	{
-        		node.className ='follow pointer extend-htmlpanel-right';
+        	} else if(node.className.substring(0,6)=='follow')	{
+        		node.className ='follow pointer extend-htmlpanel-right-s';
         	}
         	
         // in case 'node' is displayed visible
         } else {
         	// and is a qcontainer
-        	if(node.className=='qcontainerName'){
+        	if(node.className.substring(0,14)=='qcontainerName'){
         		node.className ='qcontainerName pointer extend-htmlpanel-down';
         	// or is a follow up question
-        	} else {
-        		node.className ='follow  pointer extend-htmlpanel-down';
+        	} else if (node.className.substring(0,6)=='follow'){
+        		node.className ='follow  pointer extend-htmlpanel-down-s';
         	}
         }
     } 
@@ -366,24 +368,49 @@ KNOWWE.plugin.d3web.dialog = function(){
             new _KA( options ).send();
         },
         /**
-         * Function: getQContainerVisibilityState
+         * Function: getQContainerVisibilityStates
          * Stores the display status of each qcontainer element of the HTMLDialog.
          * Used to restore the view after a refresh occurred.
          */    
-        getQContainerVisibilityState : function(){
-            var states = [];
+        getQContainerVisibilityStates : function(){
+            var states = '';
             var tables = _KS('#dialog table');
                             
             for(var i = 0; i < tables.length; i++){
                 var qContainerId = tables[i].parentNode.id;
                    
                 if(tables[i].className == 'hidden'){
-                    states.push(0 + qContainerId);
-                } else {
-                    states.push(1 + qContainerId);
+                    states = states.concat(0 + qContainerId);
+                } else if (tables[i].className == 'visible') {
+                    states = states.concat(1 + qContainerId);
                 }
+                states = states.concat(';');
             }
-            return states.join(';');
+          
+            return states;
+        },
+        /**
+         * Function: getFollowUpRowsVisibilityStates
+         * Stores the display status of each qcontainer element of the HTMLDialog.
+         * Used to restore the view after a refresh occurred.
+         */    
+        getFollowUpRowsVisibilityStates : function(){
+ 	 
+            var states = '';
+            var trs = _KS('#dialog tr');
+                          
+            for(var i = 0; i < trs.length; i++){            	
+                var trid = trs[i].id;
+                   
+                if(trs[i].className == 'trf hidden'){
+                    states = states.concat(0 + trid);;
+                } else if(trs[i].className == 'trf') {
+                    states = states.concat(1 + trid);
+                }
+                states = states.concat(';');
+            }
+       
+            return states;
         },
         /**
          * Function: remove
@@ -403,6 +430,13 @@ KNOWWE.plugin.d3web.dialog = function(){
          *     event - The qContainer click event.
          */
         showElement : function( event ){
+        	if(qContainerStates == ''){
+        		qContainerStates = KNOWWE.plugin.d3web.dialog.getQContainerVisibilityStates();
+        	}
+        	if(followUpStates == ''){
+        	    followUpStates = KNOWWE.plugin.d3web.dialog.getFollowUpRowsVisibilityStates();
+            }
+        	
             var el = _KE.target(event).parentNode;
             // questionnaire was clicked and should "react" accordingly
             if(el.className == 'qcontainer'){
@@ -415,23 +449,26 @@ KNOWWE.plugin.d3web.dialog = function(){
             	// get the clicked element which is stored in a h4 element
             	var h4 = _KS('#' + id + ' h4')[0];
             
-            	var search = '', replace = '';
             	if(tbl.className == 'visible'){		// if it was visible before
-            		search  = '1' + id + ';';
-            		replace = '0' + id + ';';
-            		tbl.className = 'hidden';		// it should be hidden now
-            	} else {    
-            		search  = '0' + id + ';';		// else if it was hidden
-            		replace = '1' + id + ';';        
+            		var bef = '1'+id+';';
+            		var aft = '0'+id+';';
+        			var test = qContainerStates.replace(bef, aft);
+        			tbl.className = 'hidden';		// it should be hidden now
+        			qContainerStates = test;
+            	} else if(tbl.className == 'hidden'){    
+            		var bef = '0'+id+';';
+            		var aft = '1'+id+';';
+        			var test = qContainerStates.replace(bef, aft);
+        			qContainerStates = test;
             		tbl.className = 'visible';		// it should be visible now
             	}
+            	
             	// display the right image for the questionnaire
-            	toogleImage( h4, tbl.className ); 
+            	toogleImage( _KE.target(event) , tbl.className ); 
             }
             
             // if not questionnaire case, check if it's the follow-up extension case
-            else {//if(_KE.target(event).parentNode.className.substring(0,6)=='follow') {
-            	//alert(_KE.target(event).className);
+            else {
             	var id;
             	var par;
             	if(_KE.target(event).parentNode.className.substring(0,6)=='follow'){
@@ -457,6 +494,10 @@ KNOWWE.plugin.d3web.dialog = function(){
             			// is the case if both have the same id
                   		if(id == idTest){  
                     		trs[i].className = 'trf hidden'; 
+                    		var bef = '1'+id+';';
+                    		var aft = '0'+id+';';
+                			var test = followUpStates.replace(bef, aft);
+                    		followUpStates = test;  
                     		state = 'hidden';
                     	}
             		} else if(trs[i].className == 'trf hidden') {    
@@ -466,6 +507,10 @@ KNOWWE.plugin.d3web.dialog = function(){
             			// is the case if both have the same id
             			if(id == idTest){  
             				trs[i].className = 'trf'; 
+            				var bef = '0'+id+';';
+                    		var aft = '1'+id+';';
+                			var test = followUpStates.replace(bef, aft);
+                			followUpStates = test;  
                 			state = '';
             			}
             		}           	 
@@ -491,21 +536,54 @@ KNOWWE.plugin.d3web.dialog = function(){
          * according to this.
          */
         refreshed : function(){
-            if( qContainerStates === '' ){
-                qContainerStates = KNOWWE.plugin.d3web.dialog.getQContainerVisibilityState();
-            }
-
+       
             var qContainers = qContainerStates.split(';');
-            for( var i = 0; i < qContainers.length; i++ ){
-                var id = qContainers[i].substring(1);
-
-                var img = _KS('#' + id + ' h4 img')[0];
-                var table = _KS('#' + id + ' table')[0];
-
-                var state = decodeStatus( qContainers[i].charAt(0) );
-                table.className = state;
-                toogleImage( img, state);
+            var h4s = _KS('#dialog h4');
+            var tables = _KS('#dialog table');
+                
+            for( var i = 0; i < qContainers.length-1; i++ ){
+            
+            	var s = qContainers[i].substring(0,1);
+            	var id = qContainers[i].substring(1);
+               	var state = decodeStatus( s );
+                
+               	var h4 = _KS('#' + id + ' h4')[0];
+               	toogleImage(h4, state);
+               
+               	var tbl = _KS('#' + id + ' table')[0];
+               	tbl.className = state;
             }
+           
+            var followUps = followUpStates.split(';');           
+            var trs = _KS('#dialog tr');
+          
+            
+            for(var j = 0; j < followUps.length-1; j++) {
+            	
+            	var s = followUps[j].substring(0,1);
+            	var id =followUps[j].substring(1);
+               	var state = decodeStatus( s );
+               	
+            
+            	for(var k=0; k<trs.length; k++){
+            		
+            		if(trs[k].className.substring(0,3) == 'trf'){
+            			
+            			
+            			if(trs[k].id == id){
+            				if(s==0){
+            					trs[k].className = 'trf hidden';
+            				} else {
+            					trs[k].className = 'trf'
+            				}
+            				
+            			}
+            			
+            		}
+            	}
+               	
+            }
+        	
             KNOWWE.plugin.d3web.dialog.initAction();
             KNOWWE.helper.observer.notify();
         },
@@ -584,7 +662,7 @@ KNOWWE.plugin.d3web.dialog = function(){
                     }
                 }
             }
-            qContainerStates = KNOWWE.plugin.d3web.dialog.getQContainerVisibilityState();          
+                      
             new _KA( options ).send();         
         },  
         /**

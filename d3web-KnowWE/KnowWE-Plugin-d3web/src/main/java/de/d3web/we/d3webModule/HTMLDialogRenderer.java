@@ -126,16 +126,16 @@ public class HTMLDialogRenderer {
 					// first render their initiating root element 
 					if (i % 2 == 0) {
 						buffi.append(getTableRowString(c, q, web, b.getId(), false, 
-								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right'"));	
+								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right-s'"));	
 					} else {
 						buffi.append(getTableRowString(c, q, web, b.getId(), false, 
-								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right'"));
+								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right-s'"));
 					}
 					
 					// then assemble the StringBuffer that contains all follow up questions
 					StringBuffer ch = new StringBuffer();
 					for(NamedObject cset : q.getChildren()){
-						getFollowUpChildrenRekur(ch, (Question)cset, c, web, b.getId(), true, 25, q);
+						getFollowUpChildrenRekur(ch, (Question)cset, c, web, b.getId(), true, 35, q);
 					}
 					buffi.append(ch.toString());
 				}
