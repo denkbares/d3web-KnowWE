@@ -177,14 +177,14 @@ KNOWWE.core.actions = function(){
         parseAll : function(){
             var params = {
                 action : 'ParseWebOfflineRenderer',
-                KWiki_Topic : KNOWWE.helper.gup('page'),
+                KWiki_Topic : KNOWWE.helper.gup('page')
             }   
             
             var options = {
                 url : KNOWWE.core.util.getURL( params ),
                 response : {
                     action : 'insert',
-                    ids : ['parseAllResult'],
+                    ids : ['parseAllResult']
                 }
             }
             new _KA( options ).send();
