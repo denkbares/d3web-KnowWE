@@ -152,9 +152,16 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @return
 	 */
 	public ArrayList<String> getPages(String tag) {
-		String querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object lns:"
-		+ tag + " .\n" + "?t rdf:predicate ns:hasTag .\n"
-		+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
+		String lns=SemanticCore.getInstance().getUpper().getLocaleNS();
+		String querystring="";
+		try {
+			querystring = "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object <"+lns
+			+ URLEncoder.encode(tag,"UTF-8") + "> .\n" + "?t rdf:predicate ns:hasTag .\n"
+			+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
 	}
 	
@@ -334,11 +341,12 @@ public class TaggingMangler implements KnowWESearchProvider {
 		String[] tags=querytags.split(" ");
 		ArrayList<GenericSearchResult> result=new ArrayList<GenericSearchResult>();
 		String querystring="";
+		String lns=SemanticCore.getInstance().getUpper().getLocaleNS();
 		int i=0;
 		if (tags.length==1){
-			try {
-				querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object lns:"
-				+ URLEncoder.encode(tags[0],"UTF-8") + " .\n" + "?t rdf:predicate ns:hasTag .\n"
+			try {				
+				querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object <"+lns+
+				 URLEncoder.encode(tags[0],"UTF-8") + "> .\n" + "?t rdf:predicate ns:hasTag .\n"
 				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
@@ -348,7 +356,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 			querystring= "SELECT ?q \n" + "WHERE {\n";
 			for (String cur:tags){
 				try {
-					querystring+="?t"+i+" rdf:object lns:" + URLEncoder.encode(cur,"UTF-8") + " .\n";
+					
+					querystring+="?t"+i+" rdf:object <"+lns+ URLEncoder.encode(cur,"UTF-8") + "> .\n";
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
