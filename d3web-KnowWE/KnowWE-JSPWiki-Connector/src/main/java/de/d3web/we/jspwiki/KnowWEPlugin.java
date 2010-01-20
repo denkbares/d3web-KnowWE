@@ -213,7 +213,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 				String originalText = article.getSection().getOriginalText();
 				String parse = userContext.getUrlParameterMap().get("parse");
 				boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
-				if ((fullParse && !article.isFullParse()) || !originalText.equals(content)) {
+				if ((fullParse/* && !article.isFullParse()*/) || !originalText.equals(content)) {
 					article = new KnowWEArticle(content, topicName,
 							KnowWEEnvironment.getInstance().getRootTypes(),
 							KnowWEEnvironment.DEFAULT_WEB, fullParse);
