@@ -92,6 +92,9 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		selenium.windowFocus();
 		threadSleep(sleepTime);
 		refreshAndWait();
+		System.out
+				.println("End of refreshAndWait from openWindowBlank at: " +
+						System.currentTimeMillis());
 	}
 	
 	/**
@@ -144,7 +147,8 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			String startPage = selenium.getTitle();
 			clickAndWait("sstate-clear");
 			loadAndWait("//img[@title='Fall']");
-			assertEquals("d3web Dialog", selenium.getTitle());
+			System.out.println("End of loadAndWait -> getTitle at: " + System.currentTimeMillis());
+			verifyEquals("d3web Dialog", selenium.getTitle());
 			
 			//Try all observations on the left (Frageboegen)
 			for (int i = 1; selenium.isElementPresent("//div[@id='qasettree']//table[" + i + "]//span"); i++) {
