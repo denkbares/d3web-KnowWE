@@ -221,6 +221,8 @@ public class KnowWEEnvironment {
 	public static final String HTML_PLUGIN_BRACKETS_CLOSE = "KNOWEPLUGIN_BRACKETS_CLOSE";
 	public static final String HTML_CURLY_BRACKET_OPEN = "KNOWWE_CURLY_BRACKET_OPEN";
 	public static final String HTML_CURLY_BRACKET_CLOSE = "KNOWWE_CURLY_BRACKET_CLOSE";
+	
+	public static final String NEWLINE = "KNOWWE_NEWLINE";
 
 	/**
 	 * Name of the WikiFindings-page

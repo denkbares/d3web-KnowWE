@@ -20,6 +20,7 @@
 
 package de.d3web.we.refactoring.action;
 import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 import groovy.lang.MissingPropertyException;
 import groovy.lang.Script;
@@ -60,6 +61,8 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	KnowWEArticleManager am;
 	KnowWEArticle a;
 	Section<?> as;
+	
+	private String rsId = "CoveringListTest/RootType/Refactoring/Refactoring_content";
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
@@ -97,14 +100,16 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		if (useGroovy) {
 	        try {
 	        	System.out.println("groovy");
-	            //ClassLoader parent = getClass().getClassLoader();
-	            //GroovyClassLoader loader = new GroovyClassLoader(parent);
-                //Class groovyClass = loader.parseClass(f); 
-
-	            // instantiate the class
 	            Object[] args = { };
-	            //GroovyObject gob = (GroovyObject)groovyClass.newInstance();
-	            GroovyObject gob = new XCLToRules();
+	            
+	            //GroovyObject gob = new XCLToRules();
+	            
+	            ClassLoader parent = getClass().getClassLoader();
+	            GroovyClassLoader loader = new GroovyClassLoader(parent);
+	            Section<?> refactoringSection = findRefactoringSection();
+                Class groovyClass = loader.parseClass(refactoringSection.getOriginalText()); 
+	            // instantiate the class
+	            GroovyObject gob = (GroovyObject)groovyClass.newInstance();
 	            if ( gob instanceof groovy.lang.Script ) {
 	            	System.out.println("is groovy script");
 	                Script script = (Script)gob;
@@ -225,6 +230,11 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		articleManager.saveUpdatedArticle(article);
 		articleSection = article.getSection();
 		return articleSection;
+	}
+		
+	private Section<?> findRefactoringSection() {
+		Section<?> knowledgeSection = as.findChild(rsId);
+		return knowledgeSection;
 	}
 	
 }

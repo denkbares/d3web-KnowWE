@@ -20,33 +20,38 @@
 
 package de.d3web.we.refactoring;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
  * This is an simple example type for the Hello-World Plugin
  * to demonstrate what a type is and what it can do
  * @author Franz Schwab
  */
-public class RefactoringType extends DefaultAbstractKnowWEObjectType{
+public class RefactoringType extends AbstractXMLObjectType{
+
 	
-	@Override
-	public void init() {
-		/* Every custom type needs a SectionFinder to get recognized in the pages.
-		 * @see de.d3web.we.kdom.sectionFinder.SectionFinder
-		 * 
-		 * You can create your own, or reuse own from the
-		 * KnowWE core library like done here:
-		 */
-		this.sectionFinder = new RegexSectionFinder("Hello Refactoring!");
-		
-		
-		/* A custom type may define a custom renderer
-		 * to define how the type occurrences look like
-		 * in the wiki page view.
-		 * 
-		 */
-		this.setCustomRenderer(new RefactoringRenderer());
+	private static RefactoringType instance;
+
+	protected RefactoringType() {
+		super("Refactoring");
 	}
+
+	public static RefactoringType getInstance() {
+		if (instance == null)
+			instance = new RefactoringType();
+
+		return instance;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.d3web.we.kdom.DefaultAbstractKnowWEObjectType#init()
+	 */
+	@Override
+	protected void init() {
+		childrenTypes.add(new RefactoringContent());
+	}
+
+
+
 
 }

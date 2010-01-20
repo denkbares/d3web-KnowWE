@@ -166,6 +166,11 @@ public class KnowWEUtils {
 				KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE, "}");
 		return htmlContent;
 	}
+	
+	public static String unmaskNewline (String htmlContent) {
+		htmlContent = htmlContent.replaceAll(KnowWEEnvironment.NEWLINE, "\n");
+		return htmlContent;
+	}
 
 	/**
 	 * 
@@ -194,6 +199,11 @@ public class KnowWEUtils {
 				KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN);
 		htmlContent = htmlContent.replace("}", 
 				KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE);
+		return htmlContent;
+	}
+	
+	public static String maskNewline (String htmlContent) {
+		htmlContent = htmlContent.replaceAll("\n", KnowWEEnvironment.NEWLINE);
 		return htmlContent;
 	}
 	

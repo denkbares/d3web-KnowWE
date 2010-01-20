@@ -166,6 +166,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 
 		try {
 
+			htmlContent = KnowWEUtils.unmaskNewline(htmlContent);
 			htmlContent = KnowWEUtils.unmaskHTML(htmlContent);
 
 			return htmlContent;
