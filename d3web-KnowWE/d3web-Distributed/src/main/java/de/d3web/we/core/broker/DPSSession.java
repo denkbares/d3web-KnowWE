@@ -20,6 +20,7 @@
 
 package de.d3web.we.core.broker;
 
+import java.io.IOException;
 import java.rmi.server.UID;
 import java.util.Collection;
 import java.util.HashMap;

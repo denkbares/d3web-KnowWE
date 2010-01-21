@@ -25,7 +25,7 @@ import java.util.List;
 
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.psMethods.PSMethodAdapter;
 import de.d3web.kernel.psMethods.PropagationEntry;
 
@@ -48,7 +48,7 @@ public class PSMethodDelegate extends PSMethodAdapter {
 				return;
 			
 			for (KnowledgeSlice slice : slices) {
-				((RuleComplex) slice).check(theCase);
+				((Rule) slice).check(theCase);
 			}
 		}
 	}

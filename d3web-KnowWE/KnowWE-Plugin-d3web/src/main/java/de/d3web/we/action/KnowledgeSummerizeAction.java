@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
 
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
@@ -128,7 +128,7 @@ public class KnowledgeSummerizeAction extends AbstractKnowWEAction {
 						}
 						
 					}
-					if(element instanceof RuleComplex) {
+					if(element instanceof Rule) {
 						ruleCount++;
 					}
 					

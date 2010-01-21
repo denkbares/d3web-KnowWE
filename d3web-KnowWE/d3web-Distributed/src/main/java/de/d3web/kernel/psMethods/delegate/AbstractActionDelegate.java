@@ -27,7 +27,6 @@ import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.dialogControl.QASetManager;
 import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.RuleComplex;
 
 public abstract class AbstractActionDelegate extends RuleAction {
 
@@ -37,8 +36,7 @@ public abstract class AbstractActionDelegate extends RuleAction {
 	private String targetNamespace;
 	private boolean temporary;
 	
-	public AbstractActionDelegate(RuleComplex theCorrespondingRule) {
-		super(theCorrespondingRule);
+	public AbstractActionDelegate() {
 		namedObjects = new ArrayList<NamedObject>();
 		targetNamespace = "";
 		temporary = true;

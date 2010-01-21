@@ -27,7 +27,7 @@ import jxl.Cell;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WriteException;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.domainModel.ruleCondition.CondAnd;
 import de.d3web.kernel.domainModel.ruleCondition.CondDState;
@@ -43,8 +43,8 @@ import de.d3web.knowledgeExporter.KnowledgeManager;
 
 public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 
-	private List<RuleComplex> rulesToDo = new ArrayList<RuleComplex>();
-	private List<List<RuleComplex>> rulesToDoParts = new ArrayList<List<RuleComplex>>();
+	private List<Rule> rulesToDo = new ArrayList<Rule>();
+	private List<List<Rule>> rulesToDoParts = new ArrayList<List<Rule>>();
 	private List<List<String>> firstColumn = new ArrayList<List<String>>(); 
 	
 	public HeuristicDecisionTableWriter(KnowledgeManager manager) {
@@ -64,7 +64,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 	@Override
 	protected void getKnowledge() {
 
-		for (RuleComplex r:manager.getAllRules()) {
+		for (Rule r:manager.getAllRules()) {
 			AbstractCondition cond = r.getCondition();
 			if (!manager.isDone(r)
 					&& isRuleForDecisionTable(r)
@@ -108,7 +108,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 			WritableSheet sheet = wb.getSheet(i);
 			
 			for (int j = 0; j < rulesToDoParts.get(i).size(); j++) {
-				RuleComplex rc = rulesToDoParts.get(i).get(j);
+				Rule rc = rulesToDoParts.get(i).get(j);
 				NonTerminalCondVerbalization ntcv = (NonTerminalCondVerbalization) 
 					verbalizer.createConditionVerbalization(rc.getCondition());
 				
@@ -158,7 +158,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 		return tConds;
 	}
 	
-	private boolean isRuleForDecisionTable (RuleComplex r) {
+	private boolean isRuleForDecisionTable (Rule r) {
 		AbstractCondition cond = r.getCondition();
 		if (r.getAction() instanceof ActionHeuristicPS
 				&& isMaxDepth(cond, 2) 
@@ -253,7 +253,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 		int index = 0;
 		int stepWidth = excelMaxCols - 4;
 		while (rulesToDo.size() - index > excelMaxCols - 3) {
-			List<RuleComplex> part = rulesToDo.subList(index, index + stepWidth);
+			List<Rule> part = rulesToDo.subList(index, index + stepWidth);
 			index += stepWidth;
 			rulesToDoParts.add(part);
 		}

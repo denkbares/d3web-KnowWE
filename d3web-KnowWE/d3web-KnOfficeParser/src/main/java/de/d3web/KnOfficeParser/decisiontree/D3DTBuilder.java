@@ -47,7 +47,7 @@ import de.d3web.kernel.domainModel.DiagnosisState;
 import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.NumericalInterval;
 import de.d3web.kernel.domainModel.QASet;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.RuleFactory;
 import de.d3web.kernel.domainModel.Score;
 import de.d3web.kernel.domainModel.answers.AnswerChoice;
@@ -291,7 +291,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		if ((conditionStack.size() <= 1) || (!complexconditions)) {
 			c = conditionStack.peek();
 		} else {
-			c = new CondAnd(new ArrayList<TerminalCondition>(conditionStack));
+			c = new CondAnd(new ArrayList<AbstractCondition>(conditionStack));
 		}
 		return c;
 	}
@@ -370,7 +370,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		for (String name : diags) {
 			Question q = idom.findQuestion(name);
 			AbstractCondition cond = getCondPath(line, linetext);
-			String newRuleID = idom.findNewIDFor(new RuleComplex());
+			String newRuleID = idom.findNewIDFor(Rule.class);
 			// Merkmalsherleitung
 			if (q != null) {
 				if (q instanceof QuestionNum) {
@@ -453,7 +453,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				} else {
 					state = DiagnosisState.UNCLEAR;
 				}
-				TerminalCondition c = new CondDState(diag, state, PSMethodHeuristic.class);
+				TerminalCondition c = new CondDState(diag, state);
 				conditionStack.push(c);
 				conddashstack.push(dashes);
 			}
@@ -657,7 +657,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 
 	private void addQuestionOrQuestionclassIndication(QASet set,
 			AbstractCondition abscon, int line, String linetext) {
-		String newRuleID = idom.findNewIDFor(new RuleComplex());
+		String newRuleID = idom.findNewIDFor(Rule.class);
 		if (abscon instanceof CondDState) {
 			CondDState statecond = (CondDState) abscon;
 			List<QASet> action = new ArrayList<QASet>();

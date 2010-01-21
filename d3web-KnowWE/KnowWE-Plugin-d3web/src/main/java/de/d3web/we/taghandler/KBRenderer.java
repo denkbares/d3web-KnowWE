@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
@@ -45,7 +45,6 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.bulletLists.BulletContentType;
-import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -115,7 +114,7 @@ public class KBRenderer extends AbstractTagHandler {
 			boolean appendedRulesHeadline = false;
 			Map<String, String> idMap = new HashMap<String, String>();
 			for (KnowledgeSlice knowledgeSlice : rules) {
-				if (knowledgeSlice instanceof RuleComplex) {
+				if (knowledgeSlice instanceof Rule) {
 					if (!appendedRulesHeadline) {
 						if (appendedSolutionsHeadline) {
 							text.append("<br/>");
@@ -129,11 +128,11 @@ public class KBRenderer extends AbstractTagHandler {
 								.getSection().findSuccessorsOfType(BulletContentType.class, allRules);
 						for (Section rule:allRules) {
 							String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), topic, 
-									rule.getId(), Rule.KBID_KEY);
+									rule.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
 							idMap.put(kbRuleId, rule.getId());
 						}
 					}
-					RuleComplex rule = ((RuleComplex) knowledgeSlice);
+					Rule rule = ((Rule) knowledgeSlice);
 						
 					String kdomid = idMap.get(rule.getId());
 		

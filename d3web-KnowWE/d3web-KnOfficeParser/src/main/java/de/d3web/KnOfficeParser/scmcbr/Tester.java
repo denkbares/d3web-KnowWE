@@ -32,11 +32,11 @@ import org.antlr.runtime.RecognitionException;
 
 import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.RestrictedIDObjectManager;
-import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
-import de.d3web.persistence.xml.PersistenceManager;
-import de.d3web.report.Message;
+import de.d3web.core.kpers.PersistenceManager;
+import de.d3web.core.kpers.progress.ProgressListener;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.report.Message;
 
 /**
  * Einfache Testklasse für den SCMCBR Parser
@@ -75,7 +75,12 @@ public class Tester {
 		}
 		
 		KnowledgeBase base = kbm.getKnowledgeBase();
-		PersistenceManager.getInstance().save(base, new File("testkb.zip").toURL());
+		PersistenceManager.getInstance().save(base, new File("testkb.zip"), new ProgressListener() {
+			@Override
+			public void updateProgress(float percent, String message) {
+				
+			}
+		});
 		
 		
 		

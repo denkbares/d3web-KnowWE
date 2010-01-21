@@ -40,6 +40,15 @@
 						</overlay>
 					</overlays>
 				</configuration>
+				<executions>
+					<execution>
+						<id>prepare-war</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>exploded</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -83,6 +92,39 @@
 							</tasks>
 						</configuration>
 					</execution>
+					<execution>
+						<id>JPF-Plugins</id>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<phase>prepare-package</phase>
+						<configuration>
+							<tasks>
+								<mkdir dir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/Plugins/" />
+								<move todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/Plugins/">
+									<fileset dir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/lib/">
+										<include name="*jpf-plugin*.jar"/>
+									</fileset>
+								</move>
+							</tasks>
+						</configuration>
+					</execution>
+					<execution>
+						<id>JPF-Plugins delete</id>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<delete>
+									<fileset dir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/lib/">
+										<include name="*jpf-plugin*.jar"/>
+									</fileset>
+								</delete>
+							</tasks>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
@@ -111,6 +153,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
+							<packagingExcludes>WEB-INF/lib/*jpf-plugin*.jar</packagingExcludes>
 							<webResources>
 								<resource>
 									<directory>src/resources/local</directory>
@@ -522,6 +565,18 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.3</version>
 			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>d3web-Persistence-Basic-jpf-plugin</artifactId>
+			<version>0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>d3web-SharedKnowledgePersistence-jpf-plugin</artifactId>
+			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

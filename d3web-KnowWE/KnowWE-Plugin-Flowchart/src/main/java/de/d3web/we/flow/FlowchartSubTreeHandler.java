@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -36,25 +35,22 @@ import de.d3web.KnOfficeParser.D3webConditionBuilder;
 import de.d3web.KnOfficeParser.DefaultLexer;
 import de.d3web.KnOfficeParser.RestrictedIDObjectManager;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
-import de.d3web.kernel.domainModel.Answer;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.QASet;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.RuleComplex;
 import de.d3web.kernel.domainModel.RuleFactory;
 import de.d3web.kernel.domainModel.Score;
 import de.d3web.kernel.domainModel.answers.AnswerChoice;
 import de.d3web.kernel.domainModel.qasets.QContainer;
-import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.qasets.QuestionMC;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.domainModel.ruleCondition.CondAnd;
 import de.d3web.kernel.psMethods.diaFlux.ConditionTrue;
 import de.d3web.kernel.psMethods.diaFlux.FluxSolver;
-import de.d3web.kernel.psMethods.diaFlux.actions.IndicateFlowAction;
 import de.d3web.kernel.psMethods.diaFlux.actions.NoopAction;
 import de.d3web.kernel.psMethods.diaFlux.flow.Flow;
 import de.d3web.kernel.psMethods.diaFlux.flow.FlowFactory;
@@ -66,7 +62,6 @@ import de.d3web.kernel.psMethods.nextQASet.ActionIndication;
 import de.d3web.kernel.psMethods.nextQASet.ActionInstantIndication;
 import de.d3web.kernel.psMethods.questionSetter.ActionSetValue;
 import de.d3web.report.Message;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.ActionType;
 import de.d3web.we.flow.type.CommentType;
 import de.d3web.we.flow.type.EdgeType;
@@ -82,7 +77,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.logging.Logging;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 
 /**
@@ -406,11 +400,14 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		String solution = split[0].trim();
 		String score = split[1].trim();
 		
+
 		//Fix after Refactoring
-		RuleComplex rule = new RuleComplex();
-		rule.setId("FlowchartRule" + System.currentTimeMillis());
+		Rule rule = new Rule("FlowchartRule" + System.currentTimeMillis());
 		
-		ActionHeuristicPS action = new ActionHeuristicPS(rule);
+
+		
+		ActionHeuristicPS action = new ActionHeuristicPS();
+		action.setRule(rule);
 		rule.setAction(action);
 		rule.setCondition(new CondAnd(new ArrayList()));
 		//
@@ -454,11 +451,15 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		qasets.add(findQuestion);
 		
-		RuleComplex rule = RuleFactory.createRule("FlowQAIndicationRule_" + System.currentTimeMillis());
+
+		Rule rule = RuleFactory.createRule("FlowQAIndicationRule_" + System.currentTimeMillis());
+
 		rule.setProblemsolverContext(FluxSolver.class);
 		rule.setCondition(new CondAnd(new ArrayList()));
 
-		RuleAction action = new ActionInstantIndication(rule);
+		RuleAction action = new ActionIndication();
+		action.setRule(rule);
+
 		((ActionIndication) action).setQASets(qasets);
 //		((RuleAction)action).setCorrespondingRule(rule);
 		

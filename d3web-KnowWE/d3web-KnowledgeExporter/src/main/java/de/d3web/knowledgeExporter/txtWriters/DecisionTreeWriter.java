@@ -37,7 +37,7 @@ import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.NumericalInterval;
 import de.d3web.kernel.domainModel.QASet;
 import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.Score;
 import de.d3web.kernel.domainModel.answers.AnswerChoice;
 import de.d3web.kernel.domainModel.qasets.QContainer;
@@ -214,19 +214,19 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		level--;
 	}
 
-	private void addChildren(NamedObject nob, Class psMethod, Map<AbstractCondition, List<RuleComplex>> mergedRules) {
+	private void addChildren(NamedObject nob, Class psMethod, Map<AbstractCondition, List<Rule>> mergedRules) {
 		Collection slices = (Collection) nob.getKnowledge(
 				psMethod, MethodKind.FORWARD);
 		if (slices != null) {
 			for (Object element: slices) {
-				if (element instanceof RuleComplex) {
-					RuleComplex rule = (RuleComplex) element;
+				if (element instanceof Rule) {
+					Rule rule = (Rule) element;
 					AbstractCondition condition = rule.getCondition();
 					if(mergedRules.containsKey(condition)) {
-						List<RuleComplex> rules = mergedRules.get(condition);
+						List<Rule> rules = mergedRules.get(condition);
 						rules.add(rule);
 					} else {
-						List<RuleComplex> rules = new LinkedList<RuleComplex>();
+						List<Rule> rules = new LinkedList<Rule>();
 						rules.add(rule);
 						mergedRules.put(condition, rules);
 					}
@@ -239,7 +239,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 
 
 		level++;
-		Map<AbstractCondition, List<RuleComplex>> mergedRules = new HashMap<AbstractCondition, List<RuleComplex>>();
+		Map<AbstractCondition, List<Rule>> mergedRules = new HashMap<AbstractCondition, List<Rule>>();
 		addChildren(q, PSMethodNextQASet.class, mergedRules);
 		addChildren(q, PSMethodHeuristic.class, mergedRules);
 		
@@ -346,8 +346,8 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	}
 	
 	
-	private void processActions(Map<AbstractCondition, List<RuleComplex>> mergedRules, AbstractCondition condition, StringBuffer s) {
-		for (RuleComplex rule: mergedRules.get(condition)) {
+	private void processActions(Map<AbstractCondition, List<Rule>> mergedRules, AbstractCondition condition, StringBuffer s) {
+		for (Rule rule: mergedRules.get(condition)) {
 			RuleAction action = rule.getAction();
 			if (action instanceof ActionIndication) {
 				ActionIndication ai = (ActionIndication) action;
@@ -376,11 +376,11 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	}
 
 	private void processDiagnosis(Diagnosis diagnosis, StringBuffer s) {
-		Map<AbstractCondition, List<RuleComplex>> mergedRules = new HashMap<AbstractCondition, List<RuleComplex>>();
+		Map<AbstractCondition, List<Rule>> mergedRules = new HashMap<AbstractCondition, List<Rule>>();
 		addChildren(diagnosis, PSMethodNextQASet.class, mergedRules);
 		for (AbstractCondition diagCondition: mergedRules.keySet()) {
 			if (diagCondition instanceof CondDState) {
-				for (RuleComplex diagRule: mergedRules.get(diagCondition)) {
+				for (Rule diagRule: mergedRules.get(diagCondition)) {
 					RuleAction diagRuleAction = diagRule.getAction();
 					if (diagRuleAction instanceof ActionNextQASet && !manager.isDone(diagRule)) {
 						List<QASet> nextQASets = ((ActionNextQASet) diagRuleAction).getQASets();

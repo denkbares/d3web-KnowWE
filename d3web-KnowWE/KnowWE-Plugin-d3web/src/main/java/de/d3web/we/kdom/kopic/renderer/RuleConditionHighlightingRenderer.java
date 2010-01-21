@@ -25,7 +25,7 @@ import java.util.List;
 
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -38,7 +38,6 @@ import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -106,8 +105,8 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
 		
 		// get the rule: Eval it and highlight the condition
-		Section rule = KnowWEObjectTypeUtils.getAncestorOfType(sec, Rule.class);
-		String kbRuleId = (String) KnowWEUtils.getStoredObject(sec.getWeb(), sec.getTitle(), rule.getId(), Rule.KBID_KEY);
+		Section rule = KnowWEObjectTypeUtils.getAncestorOfType(sec, de.d3web.we.kdom.rules.Rule.class);
+		String kbRuleId = (String) KnowWEUtils.getStoredObject(sec.getWeb(), sec.getTitle(), rule.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
 		
 		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
 		
@@ -116,7 +115,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 			for (KnowledgeSlice slice : slices) {
 				
 				if (slice.getId().equals(kbRuleId)) {
-					RuleComplex rc = (RuleComplex) slice;
+					Rule rc = (Rule) slice;
 					this.renderConditionLine(article, sec, rc, xpsCase, user, result);
 				}
 			}
@@ -155,7 +154,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 //	}
 	
 	
-	private void renderConditionLine(KnowWEArticle article, Section sec, RuleComplex rc, XPSCase xpsCase,
+	private void renderConditionLine(KnowWEArticle article, Section sec, Rule rc, XPSCase xpsCase,
 			KnowWEUserContext user, StringBuilder buffi) {
 		
 		KnowWEObjectType type;
@@ -183,7 +182,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	 * @param xpsCase
 	 * @return
 	 */
-	private String highlightCondition(KnowWEArticle article, Section sec, RuleComplex rc, XPSCase xpsCase,
+	private String highlightCondition(KnowWEArticle article, Section sec, Rule rc, XPSCase xpsCase,
 			KnowWEUserContext user) {
 		
 		StringBuilder buffi = new StringBuilder();		

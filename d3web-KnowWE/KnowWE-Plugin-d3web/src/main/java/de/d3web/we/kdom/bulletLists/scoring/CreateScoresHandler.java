@@ -6,7 +6,7 @@ import java.util.Map;
 import de.d3web.kernel.domainModel.Answer;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.RuleFactory;
 import de.d3web.kernel.domainModel.Score;
 import de.d3web.kernel.domainModel.answers.AnswerChoice;
@@ -18,7 +18,6 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -76,10 +75,10 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 
 			if (scoreV != null && d != null && cond != null) {
 
-				RuleComplex rule = RuleFactory.createHeuristicPSRule(s.getId(), d, scoreV, cond);
+				Rule rule = RuleFactory.createHeuristicPSRule(s.getId(), d, scoreV, cond);
 				KnowWEUtils.storeSectionInfo(
 						s.getArticle().getWeb(), article.getTitle(), s.getId(),
-						Rule.KBID_KEY, rule.getId());
+						de.d3web.we.kdom.rules.Rule.KBID_KEY, rule.getId());
 				
 			} else {
 				// TODO ERRORHANDLING

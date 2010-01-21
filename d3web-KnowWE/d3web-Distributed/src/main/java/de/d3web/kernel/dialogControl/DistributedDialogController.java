@@ -25,7 +25,7 @@ import java.util.List;
 import de.d3web.kernel.dialogControl.exceptions.InvalidQASetRequestException;
 import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.QASet;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.psMethods.PSMethod;
 import de.d3web.kernel.psMethods.PSMethodInit;
 import de.d3web.kernel.psMethods.delegate.AbstractActionDelegate;
@@ -46,7 +46,7 @@ public class DistributedDialogController implements DialogController {
 		this.proxy = proxy;
 	}
 	
-	public void propagate(NamedObject no, RuleComplex rule, PSMethod psm) {
+	public void propagate(NamedObject no, Rule rule, PSMethod psm) {
 		Boolean external = (Boolean) no.getProperties().getProperty(Property.EXTERNAL);
 		String targetNamespace = (String) no.getProperties().getProperty(Property.FOREIGN_NAMESPACE);
 		if(psm instanceof PSMethodDelegate) {

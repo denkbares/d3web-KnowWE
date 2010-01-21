@@ -28,7 +28,6 @@ import java.util.Stack;
 
 import de.d3web.KnOfficeParser.util.ConditionGenerator;
 import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
-import de.d3web.report.Message;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.DiagnosisState;
@@ -47,7 +46,7 @@ import de.d3web.kernel.domainModel.ruleCondition.CondNot;
 import de.d3web.kernel.domainModel.ruleCondition.CondOr;
 import de.d3web.kernel.domainModel.ruleCondition.CondUnknown;
 import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
-import de.d3web.kernel.psMethods.heuristic.PSMethodHeuristic;
+import de.d3web.report.Message;
 
 /**
  * Klasse um Conditionen in d3web zu erstellen
@@ -126,16 +125,13 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		if (diag != null) {
 			if (value.equalsIgnoreCase("established")
 					|| value.equalsIgnoreCase("etabliert")) {
-				condstack.push(new CondDState(diag, DiagnosisState.ESTABLISHED,
-						PSMethodHeuristic.class));
+				condstack.push(new CondDState(diag, DiagnosisState.ESTABLISHED));
 			} else if (value.equalsIgnoreCase("excluded")
 					|| value.equalsIgnoreCase("ausgeschlossen")) {
-				condstack.push(new CondDState(diag, DiagnosisState.EXCLUDED,
-						PSMethodHeuristic.class));
+				condstack.push(new CondDState(diag, DiagnosisState.EXCLUDED));
 			} else if (value.equalsIgnoreCase("suggested")
 					|| value.equalsIgnoreCase("verdächtigt")) {
-				condstack.push(new CondDState(diag, DiagnosisState.SUGGESTED,
-						PSMethodHeuristic.class));
+				condstack.push(new CondDState(diag, DiagnosisState.SUGGESTED));
 			}
 			// else if
 			// (value.equalsIgnoreCase("unclear")||value.equalsIgnoreCase("unklar")){

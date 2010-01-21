@@ -26,7 +26,7 @@ import java.util.Iterator;
 import utils.KBCreationTestUtil;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.formula.FormulaExpression;
 import de.d3web.kernel.psMethods.PSMethod;
 import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
@@ -60,17 +60,17 @@ public class RulesTest extends TestCase {
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 				
 		// load Rules in HashMaps (necessary because they are unsorted)
-		HashMap<String, RuleComplex> loadedRules = 
+		HashMap<String, Rule> loadedRules = 
 			getRulesInHashMap(loadedKB, PSMethodHeuristic.class);
-		HashMap<String, RuleComplex> createdRules = 
+		HashMap<String, Rule> createdRules = 
 			getRulesInHashMap(createdKB, PSMethodHeuristic.class);
 		
 		// Check number of rules
 		assertEquals("Wrong number of rules for PSMethodHeuristic.",
 				createdRules.size(), loadedRules.size());
 		
-		RuleComplex createdRule;
-		RuleComplex loadedRule;
+		Rule createdRule;
+		Rule loadedRule;
 		
 		for (String key : createdRules.keySet()) {
 			
@@ -136,17 +136,17 @@ public class RulesTest extends TestCase {
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 				
 		// load Rules in HashMaps (necessary because they are unsorted)
-		HashMap<String, RuleComplex> loadedRules = 
+		HashMap<String, Rule> loadedRules = 
 			getRulesInHashMap(loadedKB, PSMethodNextQASet.class);
-		HashMap<String, RuleComplex> createdRules = 
+		HashMap<String, Rule> createdRules = 
 			getRulesInHashMap(createdKB, PSMethodNextQASet.class);
 		
 		// Check number of rules
 		assertEquals("Wrong number of rules for PSMethodNextQASet.",
 				createdRules.size(), loadedRules.size());
 		
-		RuleComplex createdRule;
-		RuleComplex loadedRule;
+		Rule createdRule;
+		Rule loadedRule;
 		
 		for (String key : createdRules.keySet()) {
 			
@@ -203,17 +203,17 @@ public class RulesTest extends TestCase {
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 			
 		// load Rules in HashMaps (necessary because they are unsorted)
-		HashMap<String, RuleComplex> loadedRules = 
+		HashMap<String, Rule> loadedRules = 
 			getRulesInHashMap(loadedKB, PSMethodQuestionSetter.class);
-		HashMap<String, RuleComplex> createdRules = 
+		HashMap<String, Rule> createdRules = 
 			getRulesInHashMap(createdKB, PSMethodQuestionSetter.class);
 		
 		// Check number of rules
 		assertEquals("Wrong number of rules for PSMethodQuestionSetter.",
 				createdRules.size(), loadedRules.size());
 		
-		RuleComplex createdRule;
-		RuleComplex loadedRule;
+		Rule createdRule;
+		Rule loadedRule;
 		
 		for (String key : createdRules.keySet()) {
 			
@@ -289,15 +289,15 @@ public class RulesTest extends TestCase {
 	 * @param PSMethod PSMethod
 	 * @return HashMap<String, RuleComplex>
 	 */
-	private HashMap<String, RuleComplex> getRulesInHashMap(KnowledgeBase kb, 
+	private HashMap<String, Rule> getRulesInHashMap(KnowledgeBase kb, 
 			Class<? extends PSMethod> PSMethod) {
 		
-		HashMap<String, RuleComplex> rules = new HashMap<String, RuleComplex>();
+		HashMap<String, Rule> rules = new HashMap<String, Rule>();
 		Iterator<KnowledgeSlice> iter = kb.getAllKnowledgeSlicesFor(PSMethod).iterator();
 		
 		while (iter.hasNext()) {
 
-			RuleComplex rule = (RuleComplex) iter.next();
+			Rule rule = (Rule) iter.next();
 			rules.put(rule.getId(), rule);
 
 		}

@@ -20,6 +20,7 @@
 
 package de.d3web.we.core.knowledgeService;
 
+import java.io.IOException;
 import java.util.Map;
 
 import de.d3web.we.basic.TerminologyType;

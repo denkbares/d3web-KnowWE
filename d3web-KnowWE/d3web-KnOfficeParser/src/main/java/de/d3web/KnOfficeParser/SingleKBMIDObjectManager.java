@@ -197,7 +197,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	}
 
 	@Override
-	public String findNewIDFor(IDObject object) {
+	public String findNewIDFor(Class<? extends IDObject> object) {
 		return kbm.findNewIDFor(object);
 	}
 

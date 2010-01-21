@@ -140,9 +140,6 @@ public class ExplanationRenderer2 extends AbstractKnowWEAction {
 				if(heu != null && !heu.isEmpty()) {
 					result.add(ProblemSolverType.heuristic);
 				}
-				if(d3.getBase().getCaseRepository("train") != null && !d3.getBase().getCaseRepository("train").isEmpty()) {
-					result.add(ProblemSolverType.casebased);
-				}
 			}
 		}
 		return result;

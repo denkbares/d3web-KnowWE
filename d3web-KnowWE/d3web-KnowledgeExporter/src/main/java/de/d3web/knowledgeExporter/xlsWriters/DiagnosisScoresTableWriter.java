@@ -21,7 +21,7 @@
 package de.d3web.knowledgeExporter.xlsWriters;
 
 import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.domainModel.ruleCondition.CondQuestion;
 import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
@@ -43,7 +43,7 @@ public class DiagnosisScoresTableWriter extends QDTableWriter {
 	@Override
 	protected void getKnowledge() {
 
-		for (RuleComplex rc:manager.getAllRules()) {
+		for (Rule rc:manager.getAllRules()) {
 			AbstractCondition cond = rc.getCondition();
 			RuleAction raction =  rc.getAction();
 			if (rc.getException() == null 

@@ -27,7 +27,7 @@ import de.d3web.report.Message;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.KnOfficeParser.util.Scorefinder;
 import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.RuleFactory;
 import de.d3web.kernel.domainModel.Score;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
@@ -57,7 +57,7 @@ public class ScoringRuleBuilder implements CellKnowledgeBuilder {
 				return MessageKnOfficeGenerator.createScoreDoesntExistError(file, line, column, "", text);
 			}
 		}
-		String newRuleID = idom.findNewIDFor(new RuleComplex());
+		String newRuleID = idom.findNewIDFor(Rule.class);
 		RuleFactory.createHeuristicPSRule(newRuleID, diag, score, cond);
 		return null;
 	}

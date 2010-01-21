@@ -21,12 +21,12 @@
 package de.d3web.tirex.core;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 
+import de.d3web.core.kpers.PersistenceManager;
+import de.d3web.core.kpers.progress.ConsoleProgressListener;
 import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.persistence.xml.PersistenceManager;
-import de.d3web.persistence.xml.XCLModelPersistenceHandler;
 
 /**
  * This singleton class contains the data and methods needed for TiRex to
@@ -89,10 +89,10 @@ public class TiRexFileReader {
 	 * @param file
 	 *            The File, from which the knowledgebase is to be read.
 	 * @return The loaded knowledgebase.
-	 * @throws MalformedURLException
+	 * @throws IOException 
 	 */
 	public KnowledgeBase loadKnowledgebase(File file)
-			throws MalformedURLException {
+			throws IOException {
 		return loadKnowledgebase(file.toURI().toURL());
 	}
 
@@ -100,22 +100,21 @@ public class TiRexFileReader {
 	 * @param url
 	 *            The link to the location of the knowledgebase.
 	 * @return The loaded knowledgebase.
+	 * @throws IOException 
 	 */
-	public KnowledgeBase loadKnowledgebase(URL url) {
+	public KnowledgeBase loadKnowledgebase(URL url) throws IOException {
 		PersistenceManager mgr = PersistenceManager.getInstance();
-		mgr.addPersistenceHandler(new XCLModelPersistenceHandler());
-
-		return mgr.load(url);
+		return mgr.load(new File(url.getFile()), new ConsoleProgressListener());
 	}
 
 	/**
 	 * @param path
 	 *            The path to the location of the knowledgebase.
 	 * @return The loaded knowledgebase.
-	 * @throws MalformedURLException
+	 * @throws IOException 
 	 */
 	public KnowledgeBase loadKnowledgebase(String path)
-			throws MalformedURLException {
+			throws IOException {
 		URL url = new URL(path);
 
 		return loadKnowledgebase(url);

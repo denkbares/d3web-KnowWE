@@ -108,7 +108,6 @@ public class DPSEnvironment {
 			return;
 		}
 		try {
-			initKnowledge(new File(environmentLocation.toURI()));
 			initTerminologies(dir);
 			initAlignment(dir);
 			initClusters(dir);
@@ -119,23 +118,6 @@ public class DPSEnvironment {
 	}
 
 	
-
-	private void initKnowledge(File dir) throws Exception {
-		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".jar") || name.endsWith(".d3web") || name.endsWith(".zip");
-			}
-		};
-		for (File file : dir.listFiles(filter)) {
-			
-			URL url = file.toURI().toURL();
-			KnowledgeService service = new D3webKnowledgeService(url);
-			Logger.getLogger(getClass().getName()).info("Loading Knowledge: "+file.toString());
-			
-			addService(service, null, false);
-		}	
-	}
-
 	private void initTerminologies(File dir) {
 		File symptomGTFile = new File(dir, symptomTerminology);		
 		File diagnosisGTFile = new File(dir, diagnosisTerminology);	

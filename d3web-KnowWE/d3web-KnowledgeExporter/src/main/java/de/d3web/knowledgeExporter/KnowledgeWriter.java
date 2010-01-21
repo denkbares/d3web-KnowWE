@@ -25,7 +25,7 @@ import java.io.IOException;
 
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.Score;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
@@ -50,13 +50,13 @@ public abstract class KnowledgeWriter {
 	}
 
 	
-	protected Diagnosis getDiagnosis(RuleComplex r) {
+	protected Diagnosis getDiagnosis(Rule r) {
 		ActionHeuristicPS action = (ActionHeuristicPS) r.getAction();
 		return action.getDiagnosis();
 	}
 
 
-	protected Score getScore(RuleComplex element) {
+	protected Score getScore(Rule element) {
 		if (element.getAction() instanceof ActionHeuristicPS) {
 			ActionHeuristicPS action = (ActionHeuristicPS) (element.getAction());
 			return action.getScore();
@@ -69,7 +69,7 @@ public abstract class KnowledgeWriter {
 	 * prüft ob die Regel vollständig ist, also ob keine komponenten null sind.
 	 * [TODO] Noch nicht vollständig!
 	 */
-	protected boolean isValidRule(RuleComplex r) {
+	protected boolean isValidRule(Rule r) {
 		RuleAction a = r.getAction();
 		if (a == null) {
 			return false;

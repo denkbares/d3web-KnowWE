@@ -28,7 +28,7 @@ import de.d3web.kernel.domainModel.Answer;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.QASet;
 import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.formula.FormulaExpression;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
@@ -91,8 +91,8 @@ public class RuleWriter extends TxtKnowledgeWriter {
 		
 		for (Iterator iter = rules.iterator(); iter.hasNext();) {
 			Object element = (Object) iter.next();
-			if (element instanceof RuleComplex) {
-				RuleComplex rule = (RuleComplex) element;
+			if (element instanceof Rule) {
+				Rule rule = (Rule) element;
 				if (!manager.isDone(rule)) {
 					if(isValidRule(rule)) {
 						appendRule(rule, s);
@@ -108,7 +108,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 	
 	
 
-	private void appendRule(RuleComplex r, StringBuffer s) {
+	private void appendRule(Rule r, StringBuffer s) {
 		StringBuffer ruleBuffer = new StringBuffer();
 		ruleBuffer.append("\n" + string_if + " ");
 		AbstractCondition cond = r.getCondition();
@@ -126,7 +126,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 		}
 	}
 	
-	private void appendException(RuleComplex r, StringBuffer buffy) {
+	private void appendException(Rule r, StringBuffer buffy) {
 		AbstractCondition cond = r.getException();
 		if(cond != null) {
 			
@@ -136,7 +136,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 		}
 	}
 	
-	private void appendKontext(RuleComplex r, StringBuffer buffy) {
+	private void appendKontext(Rule r, StringBuffer buffy) {
 		AbstractCondition cond = r.getContext();
 		if(cond != null) {
 			

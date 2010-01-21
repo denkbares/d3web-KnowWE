@@ -45,7 +45,7 @@ import de.d3web.kernel.domainModel.Answer;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.DiagnosisState;
 import de.d3web.kernel.domainModel.QASet;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.RuleFactory;
 import de.d3web.kernel.domainModel.Score;
 import de.d3web.kernel.domainModel.answers.AnswerChoice;
@@ -93,20 +93,15 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		private Question question;
 		private AbstractCondition ifcond;
 		private AbstractCondition exceptcond;
-		private Object[] answers;
+		private AnswerChoice[] answers;
 		private FormulaExpression formula;
 		private ArrayList<QASet> qcons;
 		private Score score;
 		private Diagnosis diag;
-		private String kdomID;
 		
-		public void setKDOMID(String id) {
-			kdomID = id;
-		}
- 
 		public MyRule(ruletype type, Question question,
 				AbstractCondition ifcond, AbstractCondition exceptcond,
-				Object[] answers, FormulaExpression formula,
+				AnswerChoice[] answers, FormulaExpression formula,
 				ArrayList<QASet> qcons) {
 			super();
 			this.type = type;
@@ -138,9 +133,9 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		}
 	}
 
-	private RuleComplex generateRule(MyRule rule) {
-		String newRuleID = idom.findNewIDFor(new RuleComplex());
-		RuleComplex newRule = null;
+	private Rule generateRule(MyRule rule) {
+		String newRuleID = idom.findNewIDFor(Rule.class);
+		Rule newRule = null;
 		if (rule.type == ruletype.indication) {
 			AbstractCondition cond = rule.ifcond;
 			if (cond instanceof CondDState) {
@@ -364,11 +359,11 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		} else {
 			if (q instanceof QuestionChoice) {
 				QuestionChoice qc = (QuestionChoice) q;
-				ArrayList<Answer> alist = new ArrayList<Answer>();
+				ArrayList<AnswerChoice> alist = new ArrayList<AnswerChoice>();
 				for (String s : anames) {
 					Answer a = idom.findAnswer(qc, s);
 					if (a != null) {
-						alist.add(a);
+						alist.add((AnswerChoice) a);
 					} else {
 						errors.add(MessageKnOfficeGenerator
 								.createAnswerNotFoundException(file, line,
@@ -389,8 +384,9 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					}
 					if (ifcond == null)
 						return;
+					AnswerChoice[] array = alist.toArray(new AnswerChoice[alist.size()]);
 					addRule(new MyRule(ruletype.supress, qc, ifcond,
-							exceptcond, alist.toArray(), null, null));
+							exceptcond, array, null, null));
 				} else {
 					errors
 							.add(MessageKnOfficeGenerator
@@ -564,11 +560,11 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				return;
 			if (add) {
 				addRule(new MyRule(ruletype.addvalue, currentquestion, ifcond,
-						exceptcond, new Object[] { a }, null, null));
+						exceptcond, new AnswerChoice[] { (AnswerChoice) a }, null, null));
 
 			} else {
 				addRule(new MyRule(ruletype.setvalue, currentquestion, ifcond,
-						exceptcond, new Object[] { a }, null, null));
+						exceptcond, new AnswerChoice[] { (AnswerChoice) a }, null, null));
 			}
 		}
 	}

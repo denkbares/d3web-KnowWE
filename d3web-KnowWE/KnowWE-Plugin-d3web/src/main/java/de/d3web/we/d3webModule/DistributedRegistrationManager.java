@@ -20,8 +20,6 @@
 
 package de.d3web.we.d3webModule;
 
-import java.net.URL;
-
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.we.core.DPSEnvironment;
@@ -50,10 +48,9 @@ public class DistributedRegistrationManager {
 
 		base.setId(topic + ".."
 				+ KnowWEEnvironment.generateDefaultID(topic));
-		URL url = D3webModule.getKbUrl(webname, base.getId());
 		DPSEnvironment env = D3webModule.getDPSE(webname);
 		KnowledgeService service = new D3webKnowledgeService(base,
-				base.getId(), url);
+				base.getId());
 		env.addService(service, null, true);
 		// KnowledgeBaseRepository.getInstance().addKnowledgeBase(
 		// base.getId(), base);

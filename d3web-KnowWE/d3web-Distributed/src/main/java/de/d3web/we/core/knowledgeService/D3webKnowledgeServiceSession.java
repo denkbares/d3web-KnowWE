@@ -53,10 +53,6 @@ import de.d3web.kernel.domainModel.qasets.QuestionChoice;
 import de.d3web.kernel.domainModel.qasets.QuestionNum;
 import de.d3web.kernel.domainModel.qasets.QuestionOC;
 import de.d3web.kernel.psMethods.PSMethodInit;
-import de.d3web.kernel.psMethods.compareCase.CompareCaseException;
-import de.d3web.kernel.psMethods.compareCase.comparators.CompareMode;
-import de.d3web.kernel.psMethods.compareCase.facade.ComparisonResultRepository;
-import de.d3web.kernel.psMethods.compareCase.facade.SimpleResult;
 import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
 import de.d3web.kernel.psMethods.heuristic.PSMethodHeuristic;
 import de.d3web.kernel.psMethods.nextQASet.PSMethodNextQASet;
@@ -227,7 +223,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private final String id;
 	private final Broker broker;
 	private XPSCase xpsCase;
-	private ComparisonResultRepository crr;
+	
 
 	private boolean instantly = true;
 	private List<ValuedObject> toChange;
@@ -250,17 +246,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		((D3WebCase) xpsCase).addUsedPSMethod(PSMethodXCL.getInstance());
 		((D3WebCase) xpsCase).addUsedPSMethod(PSMethodDelegate.getInstance());
 
-		Collection caseRepository = base.getCaseRepository("train");
-		if (caseRepository != null && !caseRepository.isEmpty()) {
-			initCBR();
-		}
-	}
-
-	private void initCBR() {
-		Collection caseRepository = base.getCaseRepository("train");
-		crr = new ComparisonResultRepository();
-		crr.setCurrentCase(xpsCase);
-		crr.setCompareMode(CompareMode.BOTH_FILL_UNKNOWN);
 	}
 
 	private DistributedControllerFactory getControllerFactory() {
@@ -505,77 +490,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				// mag ich grad net
 			}
 		}
-		if (crr != null) {
-			crr.setCurrentCase(xpsCase);
-			try {
-				List simpleResults = crr.getSimpleResults(base
-						.getCaseRepository("train"));
-				for (Object eachObj1 : simpleResults) {
-					SimpleResult sr = (SimpleResult) eachObj1;
-					if (sr.getSimilarity() > 0.9) {
-						for (Object eachObj2 : sr.getDiagnoses()) {
-							Diagnosis diagnosis = (Diagnosis) eachObj2;
-							List solutionList = new ArrayList();
-							solutionList.add(SolutionState.ESTABLISHED);
-							List inferenceList = new ArrayList();
-							inferenceList.add(sr.getSimilarity());
-							broker.update(new Information(id,
-									diagnosis.getId(), solutionList,
-									TerminologyType.diagnosis,
-									InformationType.SolutionInformation));
-							broker
-									.update(new Information(
-											id,
-											diagnosis.getId(),
-											inferenceList,
-											TerminologyType.diagnosis,
-											InformationType.CaseBasedInferenceInformation));
-						}
-					} else if (sr.getSimilarity() > 0.5) {
-						for (Object eachObj2 : sr.getDiagnoses()) {
-							Diagnosis diagnosis = (Diagnosis) eachObj2;
-							List solutionList = new ArrayList();
-							solutionList.add(SolutionState.SUGGESTED);
-							List inferenceList = new ArrayList();
-							inferenceList.add(sr.getSimilarity());
-							broker.update(new Information(id,
-									diagnosis.getId(), solutionList,
-									TerminologyType.diagnosis,
-									InformationType.SolutionInformation));
-							broker
-									.update(new Information(
-											id,
-											diagnosis.getId(),
-											inferenceList,
-											TerminologyType.diagnosis,
-											InformationType.CaseBasedInferenceInformation));
-						}
-					} else if (sr.getSimilarity() < 0.1) {
-						for (Object eachObj2 : sr.getDiagnoses()) {
-							Diagnosis diagnosis = (Diagnosis) eachObj2;
-							List solutionList = new ArrayList();
-							solutionList.add(SolutionState.EXCLUDED);
-							List inferenceList = new ArrayList();
-							inferenceList.add(sr.getSimilarity());
-							broker.update(new Information(id,
-									diagnosis.getId(), solutionList,
-									TerminologyType.diagnosis,
-									InformationType.SolutionInformation));
-							broker
-									.update(new Information(
-											id,
-											diagnosis.getId(),
-											inferenceList,
-											TerminologyType.diagnosis,
-											InformationType.CaseBasedInferenceInformation));
-						}
-					}
-				}
-			} catch (CompareCaseException e) {
-				Logger.getLogger(getClass().getName()).warning(e.getMessage());
-			}
-		}
-
+		
 		if (isFinished()) {
 			broker.finished(this);
 		}

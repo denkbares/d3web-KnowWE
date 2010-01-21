@@ -38,7 +38,7 @@ import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.NumericalInterval;
 import de.d3web.kernel.domainModel.QASet;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.RuleFactory;
 import de.d3web.kernel.domainModel.Score;
 import de.d3web.kernel.domainModel.formula.Add;
@@ -60,7 +60,6 @@ import de.d3web.kernel.domainModel.ruleCondition.CondKnown;
 import de.d3web.kernel.domainModel.ruleCondition.CondNot;
 import de.d3web.kernel.domainModel.ruleCondition.CondNumGreater;
 import de.d3web.kernel.domainModel.ruleCondition.CondOr;
-import de.d3web.kernel.psMethods.heuristic.PSMethodHeuristic;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
 import de.d3web.kernel.supportknowledge.DCElement;
@@ -411,7 +410,7 @@ public class KBCreationTestUtil {
 		// --- Fuel [oc]
 		answer = createdKBM.findAnswer(condQuestion, "black");
 		condition = new CondEqual(condQuestion, answer);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
 		
 		// Create Rule R2:
@@ -420,7 +419,7 @@ public class KBCreationTestUtil {
 		// --- &REF Fuel
 		answer = createdKBM.findAnswer(condQuestion, "blue");
 		condition = new CondEqual(condQuestion, answer);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
 		
 		// Create Rule R3:
@@ -429,7 +428,7 @@ public class KBCreationTestUtil {
 		// --- &REF Fuel
 		answer = createdKBM.findAnswer(condQuestion, "invisible");
 		condition = new CondEqual(condQuestion, answer);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
 		
 	}
@@ -447,7 +446,7 @@ public class KBCreationTestUtil {
 		QuestionChoice q1 = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer a1 = createdKBM.findAnswer(q1, "insufficient power on partial load");
 		CondEqual c1 = new CondEqual(q1, a1);
-		String ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		String ruleID = createdKBM.findNewIDFor(Rule.class);
 		QuestionNum q2 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
 		FormulaNumber fn1 = new FormulaNumber(110.0);
 		FormulaExpression f1 = new FormulaExpression(q2, fn1);
@@ -459,7 +458,7 @@ public class KBCreationTestUtil {
         // --- "Num. Mileage evaluation" (20)
 		Answer a2 = createdKBM.findAnswer(q1, "insufficient power on full load");
 		CondEqual c2 = new CondEqual(q1, a2);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		QuestionNum q3 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
 		FormulaNumber fn2 = new FormulaNumber(20.0);
 		FormulaExpression f2 = new FormulaExpression(q3, fn2);
@@ -479,7 +478,7 @@ public class KBCreationTestUtil {
 		QuestionChoice condQuestion = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer answer = createdKBM.findAnswer(condQuestion, "everything is fine");
 		CondEqual condition = new CondEqual(condQuestion, answer);
-		String ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		String ruleID = createdKBM.findNewIDFor(Rule.class);
 		Diagnosis diag = createdKBM.findDiagnosis("Other problem");
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, condition);
 		
@@ -496,10 +495,10 @@ public class KBCreationTestUtil {
 		Question question = createdKBM.findQuestion("Other");
 		List<Question> action = new ArrayList<Question>();
 		action.add(question);
-		String ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		String ruleID = createdKBM.findNewIDFor(Rule.class);
 		Diagnosis diag = createdKBM.findDiagnosis("Other problem");
 		CondDState condition = new CondDState(diag, 
-				DiagnosisState.ESTABLISHED, PSMethodHeuristic.class);
+				DiagnosisState.ESTABLISHED);
 		RuleFactory.createRefinementRule(ruleID, action, diag, condition);
 		
 	}
@@ -531,7 +530,7 @@ public class KBCreationTestUtil {
 		// Create Rule R8:
 		// IF "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
 		// THEN "Num. Mileage evaluation" = (("Real mileage  /100km" / "Average mileage /100km") * 100.0)
-		String ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		String ruleID = createdKBM.findNewIDFor(Rule.class);
 		QuestionNum q3 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
 		Div d = new Div(new QNumWrapper(q11), new QNumWrapper(q12));
 		FormulaNumber fn = new FormulaNumber(100.0);
@@ -543,7 +542,7 @@ public class KBCreationTestUtil {
 		// IF "Num. Mileage evaluation" > 130
 		// THEN Mileage evaluation = increased
 		CondNumGreater c2 = new CondNumGreater(q3, 130.0);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		Question q4 = createdKBM.findQuestion("Mileage evaluation");
 		Answer a = createdKBM.findAnswer(q4, "increased");
 		RuleFactory.createSetValueRule(ruleID, q4, new Object[] { a }, c2);
@@ -554,7 +553,7 @@ public class KBCreationTestUtil {
 		QuestionChoice questionIf4 = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer answerIf4 = createdKBM.findAnswer(questionIf4, "unsteady idle speed");
 		CondEqual conditionIf4 = new CondEqual(questionIf4, answerIf4);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		QuestionNum qnum = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
 		FormulaNumber fn2 = new FormulaNumber(2.0);
 		Add add = new Add(new QNumWrapper(qnum), fn2);
@@ -572,7 +571,7 @@ public class KBCreationTestUtil {
 		Add addition = new Add(new QNumWrapper(questionFormula), fn3);
 		QuestionNum questionThen = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
 		FormulaExpression f3 = new FormulaExpression(questionThen, addition);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		RuleFactory.createSetValueRule(ruleID, questionThen, f3, conditionIf5);
 		
 		// Create Rule R12:
@@ -586,7 +585,7 @@ public class KBCreationTestUtil {
 		Sub subtraction = new Sub(new QNumWrapper(questionFormula2), fn4);
 		QuestionNum questionThen2 = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
 		FormulaExpression f4 = new FormulaExpression(questionThen2, subtraction);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		RuleFactory.createSetValueRule(ruleID, questionThen2, f4, conditionIf6);
 		
 	}
@@ -608,7 +607,7 @@ public class KBCreationTestUtil {
 		Answer answerExc = createdKBM.findAnswer(questionExc, "diesel");
 		CondEqual conditionExc = new CondEqual(questionExc, answerExc);
 		
-		String ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		String ruleID = createdKBM.findNewIDFor(Rule.class);
 		Diagnosis diag = createdKBM.findDiagnosis("Mechanical problem");
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, conditionIf, conditionExc);
 		
@@ -631,7 +630,7 @@ public class KBCreationTestUtil {
 		conditions.add(condNot1);
 		CondOr condOr = new CondOr(conditions);
 		
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.N7, condOr);		
 		
 	}
@@ -650,7 +649,7 @@ public class KBCreationTestUtil {
 		QASet actionQuestion = createdKBM.findQContainer("Technical Examinations");
 		Answer answer = createdKBM.findAnswer(condQuestion, "unsteady idle speed");
 		CondEqual condition = new CondEqual(condQuestion, answer);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
 		
 		// Create Rule R16:
@@ -664,7 +663,7 @@ public class KBCreationTestUtil {
 		List<QASet> nextQuestions = new ArrayList<QASet>();
 		nextQuestions.add(actionQuestion2);
 		nextQuestions.add(actionQuestion3);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		RuleFactory.createIndicationRule(ruleID, nextQuestions, condition2);
 		
 		// Create Rule R17:
@@ -673,7 +672,7 @@ public class KBCreationTestUtil {
 		Question condQuestion3 = createdKBM.findQuestion("Other");
 		QASet actionQuestion4 = createdKBM.findQContainer("Technical Examinations");
 		CondKnown condition3 = new CondKnown(condQuestion3);
-		ruleID = createdKBM.findNewIDFor(new RuleComplex());
+		ruleID = createdKBM.findNewIDFor(Rule.class);
 		RuleFactory.createIndicationRule(ruleID, actionQuestion4, condition3);
 		
 	}

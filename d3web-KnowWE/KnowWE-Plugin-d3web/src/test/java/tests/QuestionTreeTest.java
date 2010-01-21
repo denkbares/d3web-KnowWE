@@ -111,8 +111,8 @@ public class QuestionTreeTest extends TestCase {
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 		
 		// Get Question with ID "Q1": "Exhaust fumes"
-		Question loadedQuestion = loadedKB.searchQuestions("Q1");
-		Question createdQuestion = createdKB.searchQuestions("Q1");
+		Question loadedQuestion = loadedKB.searchQuestion("Q1");
+		Question createdQuestion = createdKB.searchQuestion("Q1");
 		
 		// Get MMInfoStorage of question
 		MMInfoStorage loadedStorage = (MMInfoStorage) loadedQuestion.getProperties().getProperty(Property.MMINFO);

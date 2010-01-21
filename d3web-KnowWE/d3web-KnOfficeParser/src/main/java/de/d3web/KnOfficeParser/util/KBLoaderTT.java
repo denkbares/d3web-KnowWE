@@ -20,6 +20,7 @@
 
 package de.d3web.KnOfficeParser.util;
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
@@ -38,7 +39,7 @@ public class KBLoaderTT implements TerminologyTester{
 	private Map<String, KnowledgeBase> kbs;
 	private String id;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		KBLoaderTT tester = KBLoaderTT.getInstance();
 		tester.setKBID("0");
 		boolean found = tester.checkQuestion("Hauptdarsteller");
@@ -48,7 +49,7 @@ public class KBLoaderTT implements TerminologyTester{
 
 	private static KBLoaderTT instance;
 
-	private KBLoaderTT() {
+	private KBLoaderTT() throws IOException {
 		init();
 	}
 
@@ -56,7 +57,7 @@ public class KBLoaderTT implements TerminologyTester{
 		this.id = id;
 	}
 
-	public static KBLoaderTT getInstance() {
+	public static KBLoaderTT getInstance() throws IOException {
 		if (instance == null) {
 			instance = new KBLoaderTT();
 
@@ -65,7 +66,7 @@ public class KBLoaderTT implements TerminologyTester{
 		return instance;
 	}
 
-	private void init() {
+	private void init() throws IOException {
 		kbs = new HashMap<String, KnowledgeBase>();
 		String path = "resources";
 		File f = new File(path);

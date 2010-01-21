@@ -32,8 +32,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import de.d3web.core.kpers.PersistenceManager;
 import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.persistence.xml.PersistenceManager;
 
 public class TestLoader {
 
@@ -43,7 +43,7 @@ public class TestLoader {
 	private static final String allWebs = "allWebs";
 	private static ResourceBundle rb = null;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		rb = ResourceBundle
 		.getBundle("TestLoaderConfig");
 		// String path =
@@ -67,7 +67,7 @@ public class TestLoader {
 				+ " problems found");
 	}
 
-	private void loadKBs(String web, StringBuffer log) {
+	private void loadKBs(String web, StringBuffer log) throws IOException {
 		String path = rb.getString("path_to_web_kbs");
 		try {
 			URL url = new File(path).toURI().toURL();
@@ -99,13 +99,13 @@ public class TestLoader {
 
 	}
 
-	public static Collection<KnowledgeBase> loadAllKBs(File file, StringBuffer log) {
+	public static Collection<KnowledgeBase> loadAllKBs(File file, StringBuffer log) throws IOException {
 		PersistenceManager m = PersistenceManager.getInstance();
 		List<KnowledgeBase> list = new ArrayList<KnowledgeBase>();
 		File[] jars = file.listFiles(new JarFileFilter());
 		for (int i = 0; i < jars.length; i++) {
 			try {
-				KnowledgeBase kb = m.load(jars[i].toURI().toURL());
+				KnowledgeBase kb = m.load(jars[i]);
 				String id = jars[i].toString();
 				kb.setId(""+i);
 				list.add(kb);

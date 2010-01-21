@@ -21,10 +21,12 @@
 package de.d3web.we.action;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import de.d3web.core.kpers.PersistenceManager;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.knowledgeExporter.KnowledgeManager;
 import de.d3web.knowledgeExporter.txtWriters.DecisionTreeWriter;
@@ -32,7 +34,6 @@ import de.d3web.knowledgeExporter.txtWriters.DiagnosisHierarchyWriter;
 import de.d3web.knowledgeExporter.txtWriters.QClassHierarchyWriter;
 import de.d3web.knowledgeExporter.txtWriters.RuleWriter;
 import de.d3web.knowledgeExporter.txtWriters.XCLWriter;
-import de.d3web.persistence.xml.PersistenceManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -66,9 +67,15 @@ public class GenerateKBAction extends AbstractKnowWEAction {
 		
 		// If Page already exists, try to append the KB
 		if (KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(parameterMap.get(KnowWEAttributes.NEWKB_NAME))) {
-			if (this.appendKnowledgeBase(KnowWEEnvironment.getInstance(), parameterMap.getWeb(), parameterMap.get(KnowWEAttributes.NEWKB_NAME), kbString, parameterMap.getUser())) {
-				return "<p class='info box'>"
-				+ rb.getString("KnowWE.KnowledgeBasesGenerator.kbAppended")
+			try {
+				if (this.appendKnowledgeBase(KnowWEEnvironment.getInstance(), parameterMap.getWeb(), parameterMap.get(KnowWEAttributes.NEWKB_NAME), kbString, parameterMap.getUser())) {
+					return "<p class='info box'>"
+					+ rb.getString("KnowWE.KnowledgeBasesGenerator.kbAppended")
+					+ "</p>";
+				}
+			} catch (IOException e) {
+				return "<p class='error box'>"
+				+ rb.getString("KnowWE.KnowledgeBasesGenerator.generatingError")
 				+ "</p>";
 			}
 			return "<p class='error box'>"
@@ -76,8 +83,10 @@ public class GenerateKBAction extends AbstractKnowWEAction {
 				+ "</p>";
 		}
 		
-		String testMap = this.readOutKnowledge(kbString);
-		if (testMap != null) {
+		String testMap;
+		try {
+			testMap = this.readOutKnowledge(kbString);
+			if (testMap != null) {
 			String updateContent = KnowWEEnvironment.getInstance().getWikiConnector().createWikiPage(parameterMap.get(KnowWEAttributes.NEWKB_NAME), testMap, parameterMap.getUser());
 			KnowWEEnvironment.getInstance().processAndUpdateArticle(parameterMap.getUser(), updateContent, parameterMap.get(KnowWEAttributes.NEWKB_NAME), parameterMap.getWeb());
 			// Link zu neuer page...
@@ -85,7 +94,11 @@ public class GenerateKBAction extends AbstractKnowWEAction {
 				+ rb.getString("KnowWE.KnowledgeBasesGenerator.creationSuccess") +
 				parameterMap.get(KnowWEAttributes.NEWKB_NAME) + "</p>";
 		}
-		
+		} catch (IOException e) {
+			return "<p class='error box'>"
+			+ rb.getString("KnowWE.KnowledgeBasesGenerator.generatingError")
+			+ "</p>";
+		}
 		return "<p class='error box'>"
 		+ rb.getString("KnowWE.KnowledgeBasesGenerator.generatingError")
 		+ "</p>";
@@ -97,8 +110,9 @@ public class GenerateKBAction extends AbstractKnowWEAction {
 	 * Returns null if an error occurred or the jar was no KB.
 	 * 
 	 * @param kbString
+	 * @throws IOException 
 	 */
-	private String readOutKnowledge(String kbString) {
+	private String readOutKnowledge(String kbString) throws IOException {
 		
 		if (kbString != null) {
 			PersistenceManager mgr = PersistenceManager.getInstance();
@@ -106,7 +120,7 @@ public class GenerateKBAction extends AbstractKnowWEAction {
 			
 			try {
 			
-				KnowledgeBase knowledge = mgr.load(jarFile.toURI().toURL());
+				KnowledgeBase knowledge = mgr.load(jarFile);
 				KnowledgeManager manager = new KnowledgeManager(knowledge);			
 				
 				// Create writer
@@ -148,8 +162,9 @@ public class GenerateKBAction extends AbstractKnowWEAction {
 	 * @param kbString
 	 * @param username
 	 * @return
+	 * @throws IOException 
 	 */
-	private boolean appendKnowledgeBase(KnowWEEnvironment env, String web, String topic, String kbString, String username) {
+	private boolean appendKnowledgeBase(KnowWEEnvironment env, String web, String topic, String kbString, String username) throws IOException {
 		
 		KnowWEArticle art = env.getArticle(web, topic);
 		List <Section> secs = art.getSection().getChildren();

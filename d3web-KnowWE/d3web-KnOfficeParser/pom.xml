@@ -33,19 +33,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-MMExtensions</artifactId>
-			<version>0-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Persistence</artifactId>
-			<version>0-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>d3web-Persistence-MMInfo</artifactId>
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

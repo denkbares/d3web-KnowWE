@@ -97,7 +97,7 @@ public class SetSingleFindingAction extends AbstractKnowWEAction {
 			KnowledgeServiceSession kss = broker.getSession()
 			.getServiceSession(namespace);
 			if (kss instanceof D3webKnowledgeServiceSession) {
-				Question q = ((D3webKnowledgeServiceSession)kss).getBaseManagement().getKnowledgeBase().searchQuestions(objectid);
+				Question q = ((D3webKnowledgeServiceSession)kss).getBaseManagement().getKnowledgeBase().searchQuestion(objectid);
 				if(q != null) {
 					termName = q.getText();
 					term = SemanticAnnotationAction.getTerm(env, termName);

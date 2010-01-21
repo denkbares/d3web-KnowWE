@@ -24,19 +24,14 @@ import java.util.ArrayList;
 
 import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.RuleComplex;
 
 public class ActionDelegate extends AbstractActionDelegate {
 
 	private static final long serialVersionUID = -9002222137674579476L;
 
-	public ActionDelegate(RuleComplex theCorrespondingRule) {
-		super(theCorrespondingRule);
-	}
-
 	@Override
 	public RuleAction copy() {
-		ActionDelegate result = new ActionDelegate(getCorrespondingRule());
+		ActionDelegate result = new ActionDelegate();
 		result.setNamedObjects(new ArrayList<NamedObject>(getNamedObjects()));
 		result.setTargetNamespace(new String(getTargetNamespace()));
 		return result;

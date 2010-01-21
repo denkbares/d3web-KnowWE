@@ -35,7 +35,7 @@ import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.domainModel.NamedObject;
 import de.d3web.kernel.domainModel.QASet;
 import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.kernel.domainModel.ruleCondition.CondDState;
@@ -66,14 +66,14 @@ public class KnowledgeManager {
 	private static Locale locale = Locale.ENGLISH;
 	private static ResourceBundle rb;
 
-	private Set<RuleComplex> allRules = new HashSet<RuleComplex>();
-	private Set<RuleComplex> doneRules = new HashSet<RuleComplex>();
+	private Set<Rule> allRules = new HashSet<Rule>();
+	private Set<Rule> doneRules = new HashSet<Rule>();
 	private List<Diagnosis> diagnosisList = new LinkedList<Diagnosis>();
 	private Set<Question> questions = new HashSet<Question>();
 	private Set<QASet> qClasses = new HashSet<QASet>();
 	private boolean filterOn = false;
 	private KnowledgeBase kb;
-	private Set<RuleComplex> indicationRules = new HashSet<RuleComplex>();
+	private Set<Rule> indicationRules = new HashSet<Rule>();
 	
 	/**
 	 * If you dont want to export the complete KnowledgeBase, you
@@ -99,10 +99,10 @@ public class KnowledgeManager {
 
 		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
 			KnowledgeSlice element = iter.next();
-			if (element instanceof RuleComplex) {
-				if (matchesFilter((RuleComplex) element) || !filterOn) {
+			if (element instanceof Rule) {
+				if (matchesFilter((Rule) element) || !filterOn) {
 
-					this.allRules.add((RuleComplex) element);
+					this.allRules.add((Rule) element);
 				}
 			}
 		}
@@ -128,8 +128,8 @@ public class KnowledgeManager {
 		Collection<KnowledgeSlice> knowledge = kb.getAllKnowledgeSlices();
 		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
 			KnowledgeSlice element = iter.next();
-			if (element instanceof RuleComplex) {
-				this.allRules.add((RuleComplex) element);
+			if (element instanceof Rule) {
+				this.allRules.add((Rule) element);
 			}
 		}
 	}
@@ -152,12 +152,12 @@ public class KnowledgeManager {
 
 		Collection<KnowledgeSlice> knowledge = kb.getAllKnowledgeSlices();
 		
-		this.allRules = new HashSet<RuleComplex>();
+		this.allRules = new HashSet<Rule>();
 		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
 			KnowledgeSlice element =  iter.next();
-			if (element instanceof RuleComplex) {
-				if (matchesFilter((RuleComplex) element)) {
-					this.allRules.add((RuleComplex) element);
+			if (element instanceof Rule) {
+				if (matchesFilter((Rule) element)) {
+					this.allRules.add((Rule) element);
 				}
 			}
 		}
@@ -168,16 +168,16 @@ public class KnowledgeManager {
 		}
 	}
 	
-	public void ruleDone(RuleComplex rule) {
+	public void ruleDone(Rule rule) {
 		doneRules.add(rule);
 	}
 	
-	public boolean isDone(RuleComplex rule) {
+	public boolean isDone(Rule rule) {
 		return doneRules.contains(rule);
 	}
 
 	
-	public Collection<RuleComplex> getAllRules() {
+	public Collection<Rule> getAllRules() {
 		return allRules;
 	}
 
@@ -241,8 +241,8 @@ public class KnowledgeManager {
 	
 	private void checkIndicationRules() {
 
-		for (Iterator<RuleComplex> iter = indicationRules.iterator(); iter.hasNext();) {
-			RuleComplex element = (RuleComplex) iter.next();
+		for (Iterator<Rule> iter = indicationRules.iterator(); iter.hasNext();) {
+			Rule element = (Rule) iter.next();
 			AbstractCondition cond = element.getCondition();
 			Set<Question> questions = new HashSet<Question>();
 			addAllAppearingQuestions(cond, questions);
@@ -314,8 +314,8 @@ public class KnowledgeManager {
 
 	private void calcRelevantQuestions() {
 
-		for (Iterator<RuleComplex> iter = allRules.iterator(); iter.hasNext();) {
-			RuleComplex element = (RuleComplex) iter.next();
+		for (Iterator<Rule> iter = allRules.iterator(); iter.hasNext();) {
+			Rule element = (Rule) iter.next();
 			questions.addAll(getAllQuestions(element));
 		}
 		Set<QASet> s = new HashSet<QASet>();
@@ -334,7 +334,7 @@ public class KnowledgeManager {
 
 	}
 
-	private Set<Question> getAllQuestions(RuleComplex r) {
+	private Set<Question> getAllQuestions(Rule r) {
 		Set<Question> result = new HashSet<Question>();
 		RuleAction a = r.getAction();
 		if (a instanceof ActionHeuristicPS) {
@@ -397,7 +397,7 @@ public class KnowledgeManager {
 
 	}
 	
-	private boolean matchesFilter(RuleComplex r) {
+	private boolean matchesFilter(Rule r) {
 		List<Diagnosis> l = diagnosisList;
 		if (l == null) {
 			return true;

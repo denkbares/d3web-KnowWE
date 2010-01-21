@@ -21,7 +21,11 @@
 
 package de.d3web.we.terminology;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,12 +33,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.d3web.core.kpers.PersistenceManager;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webPersistence;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DistributedRegistrationManager;
@@ -385,13 +389,13 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 	}
 	
 	@Override
-	public URL saveKnowledge(String title) {
+	public URL saveKnowledge(String title) throws IOException {
 		KnowledgeBaseManagement kbm = kbms.get(title);
 		if (kbm != null) {
 			KnowledgeBase base = kbm.getKnowledgeBase();
 			URL home = D3webModule.getKbUrl(web, base.getId());
 			if (!savedToJar.get(title)) {;
-				D3webPersistence.getInstance().getPersistenceManager().save(base, home);
+				PersistenceManager.getInstance().save(base, new File(URLDecoder.decode(home.getFile(), "UTF-8")));
 				savedToJar.put(title, true);
 			}
 			return home;

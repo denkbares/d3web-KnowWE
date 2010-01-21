@@ -28,28 +28,30 @@ import de.d3web.kernel.psMethods.delegate.ActionInstantDelegate;
 
 public class DelegateRuleFactory {
 	
-	public static RuleComplex createDelegateRule(
+	public static Rule createDelegateRule(
 		String theId,
-		List theAction,
+		List<NamedObject> theAction,
 		String ns, AbstractCondition theCondition) {
 
-		RuleComplex rule = RuleFactory.createRule(theId);
+		Rule rule = RuleFactory.createRule(theId);
 
-		ActionDelegate ruleAction = new ActionDelegate(rule);
+		ActionDelegate ruleAction = new ActionDelegate();
+		ruleAction.setRule(rule);
 		ruleAction.setNamedObjects(theAction);
 		ruleAction.setTargetNamespace(ns);
 		RuleFactory.setRuleParams(rule, ruleAction, theCondition, null);
 		return rule;
 	}
 	
-	public static RuleComplex createInstantDelegateRule(
+	public static Rule createInstantDelegateRule(
 			String theId,
-			List theAction,
+			List<NamedObject> theAction,
 			String ns, AbstractCondition theCondition) {
 
-			RuleComplex rule = RuleFactory.createRule(theId);
+			Rule rule = RuleFactory.createRule(theId);
 
-			ActionInstantDelegate ruleAction = new ActionInstantDelegate(rule);
+			ActionInstantDelegate ruleAction = new ActionInstantDelegate();
+			ruleAction.setRule(rule);
 			ruleAction.setNamedObjects(theAction);
 			ruleAction.setTargetNamespace(ns);
 			RuleFactory.setRuleParams(rule, ruleAction, theCondition, null);

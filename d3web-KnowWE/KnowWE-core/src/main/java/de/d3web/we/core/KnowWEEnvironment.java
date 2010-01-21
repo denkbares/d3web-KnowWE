@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import de.d3web.plugin.JPFPluginManager;
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -521,7 +522,7 @@ public class KnowWEEnvironment {
 		// Loading modules from the single files in modules/
 		ArrayList<String> moduleStrings = new ArrayList<String>();
 		File modulesDir = new File(knowweExtensionPath + "/modules");
-
+		JPFPluginManager.init(knowweExtensionPath+"/Plugins");
 		if (!modulesDir.isDirectory()) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Could not read modules directory");

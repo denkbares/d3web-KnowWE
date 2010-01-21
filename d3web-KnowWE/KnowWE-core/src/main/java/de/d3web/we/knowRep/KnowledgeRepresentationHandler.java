@@ -20,6 +20,7 @@
 
 package de.d3web.we.knowRep;
 
+import java.io.IOException;
 import java.net.URL;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -34,6 +35,6 @@ public abstract class KnowledgeRepresentationHandler {
 	
 	public abstract boolean buildKnowledge(KnowWEArticle article, Section s);
 	
-	public abstract URL saveKnowledge(String title);
+	public abstract URL saveKnowledge(String title) throws IOException;
 
 }

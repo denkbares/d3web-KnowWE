@@ -163,7 +163,7 @@ public class D3webModule implements KnowWEModule {
 		}
 		if (action != null) {
 			action = "de.d3web.we.renderer." + action;
-			Class clazz;
+			Class<?> clazz;
 			try {
 				clazz = Class.forName(action);
 				KnowWEAction a = actionMap.get(clazz);

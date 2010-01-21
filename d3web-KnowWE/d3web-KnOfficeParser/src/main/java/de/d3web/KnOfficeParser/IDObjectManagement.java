@@ -77,7 +77,7 @@ public interface IDObjectManagement {
 
 	String findNewIDForAnswerChoice(QuestionChoice currentQuestion);
 
-	String findNewIDFor(IDObject object);
+	String findNewIDFor(Class<? extends IDObject> object);
 
 	boolean changeID(IDObject object, String ref);
 	

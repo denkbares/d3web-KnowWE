@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.RuleComplex;
+import de.d3web.kernel.domainModel.Rule;
 import de.d3web.kernel.domainModel.RuleFactory;
 import de.d3web.kernel.domainModel.answers.AnswerChoice;
 import de.d3web.kernel.domainModel.qasets.QContainer;
@@ -134,7 +134,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 		for (AnswerChoice answer : startQ.getAlternatives()) {
 			
 			
-			RuleComplex rule = RuleFactory.createRule("FCIndication_" + startQ  + "_" + answer.getText());
+			Rule rule = RuleFactory.createRule("FCIndication_" + startQ  + "_" + answer.getText());
 			
 			rule.setAction(new IndicateFlowAction(rule, flow.getName(), answer.getText()));
 			rule.setCondition(new CondEqual(startQ, answer));
