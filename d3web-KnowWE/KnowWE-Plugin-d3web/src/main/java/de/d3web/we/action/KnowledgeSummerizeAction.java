@@ -143,7 +143,7 @@ public class KnowledgeSummerizeAction extends AbstractKnowWEAction {
 					html.append("<tr>");
 				}
 				
-				Object[] tblContent = {"<a href=\"Wiki.jsp?page=/"+parts[0]+"#"+parts[1]+"\">"+id+"</a>",
+				Object[] tblContent = {"<a href=\"Wiki.jsp?page="+parts[0]+"#"+parts[1]+"\">"+id.substring(0,id.indexOf(".."))+"</a>",
 						xclCount, ruleCount, qCount, KnowWEEnvironment.unmaskHTML(DialogLinkTagHandler.generateDialogLink(user, parameterMap.getRequest(), topic, id))};
 				for (Object object : tblContent) {
 					html.append("<td>" + object + "</td>");
