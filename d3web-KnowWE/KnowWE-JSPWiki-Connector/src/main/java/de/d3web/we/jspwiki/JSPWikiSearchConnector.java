@@ -120,7 +120,7 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
 	@Override
 	public String getVerbalization(Locale local) {
-		return "JSPWiki Suche";
+		return "Freitext Suche";
 	}
 
 	@Override
