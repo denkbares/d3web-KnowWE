@@ -27,18 +27,18 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
  * to demonstrate what a type is and what it can do
  * @author Franz Schwab
  */
-public class RefactoringType extends AbstractXMLObjectType{
+public class Refactoring extends AbstractXMLObjectType{
 
 	
-	private static RefactoringType instance;
+	private static Refactoring instance;
 
-	protected RefactoringType() {
+	protected Refactoring() {
 		super("Refactoring");
 	}
 
-	public static RefactoringType getInstance() {
+	public static Refactoring getInstance() {
 		if (instance == null)
-			instance = new RefactoringType();
+			instance = new Refactoring();
 
 		return instance;
 	}

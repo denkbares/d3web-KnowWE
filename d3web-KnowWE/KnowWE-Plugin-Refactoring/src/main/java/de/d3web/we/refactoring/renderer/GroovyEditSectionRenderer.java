@@ -1,9 +1,11 @@
-package de.d3web.we.kdom.rendering;
+package de.d3web.we.refactoring.renderer;
 
 import java.util.Map;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -17,15 +19,15 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author smark
  * @since 2009/10/18
  */
-public class EditSectionRenderer extends KnowWEDomRenderer {
+public class GroovyEditSectionRenderer extends KnowWEDomRenderer {
 	
 	KnowWEDomRenderer renderer;
 	
-	public EditSectionRenderer() {
+	public GroovyEditSectionRenderer() {
 		this(DelegateRenderer.getInstance());
 	}
 	
-	public EditSectionRenderer(KnowWEDomRenderer renderer) {
+	public GroovyEditSectionRenderer(KnowWEDomRenderer renderer) {
 		this.renderer = renderer;
 	}
 
@@ -66,12 +68,15 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		if ( isEditable ) {
 			String str = sec.getOriginalText();
 			if(!user.getUrlParameterMap().containsKey("action")) {  // is not ajax action add verbatim for jspwiki render pipeline
+				//string.append(KnowWEUtils.maskHTML("{{{"));
 				string.append("{{{");
 			}
 			string.append( KnowWEUtils.maskHTML( "<textarea name=\"default-edit-area\" id=\"default-edit-area\" style=\"width:92%; height:"+this.getHeight(str)+"px;\">" ));
+			//string.append(KnowWEUtils.maskNewline(str));
 			string.append( str );
 			string.append( KnowWEUtils.maskHTML( "</textarea>" ));
 			if(!user.getUrlParameterMap().containsKey("action")) {// is not ajax action add verbatim for jspwiki render pipeline
+				//string.append(KnowWEUtils.maskHTML("}}}"));
 				string.append("}}}");
 			}
 			string.append( KnowWEUtils.maskHTML( "<div class=\"default-edit-handle\"></div>" ));
@@ -81,6 +86,10 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		string.append( KnowWEUtils.maskHTML( "</div>" ));
 		if(highlight && !isEditable) {
 			string.append(KnowWEUtils.maskHTML("</div>"));
+		}
+		if(isEditable){
+			string.append(KnowWEUtils.maskHTML("<script type='text/javascript' src='KnowWEExtension/scripts/CodeMirror-0.65/js/codemirror.js'></script>"));
+			string.append(KnowWEUtils.maskHTML("<script type='text/javascript' src='KnowWEExtension/scripts/CodeMirror.js'></script>"));
 		}
 	}
 		

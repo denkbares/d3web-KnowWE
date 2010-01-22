@@ -56,13 +56,13 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	}
 
 	String id;
+	String refactoringId;
 	String topic;
 	String web;
 	KnowWEArticleManager am;
 	KnowWEArticle a;
 	Section<?> as;
 	
-	private String rsId = "CoveringListTest/RootType/Refactoring/Refactoring_content";
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
@@ -75,7 +75,8 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	}
 
 	private void initAttributes() {
-		id = pm.get("KnowledgeElement");
+		id = pm.get("knowledgeElement");
+		refactoringId = pm.get("refactoringElement");
 		topic = pm.getTopic();
 		web = pm.getWeb();
 		am = KnowWEEnvironment.getInstance().getArticleManager(web);
@@ -233,7 +234,7 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	}
 		
 	private Section<?> findRefactoringSection() {
-		Section<?> knowledgeSection = as.findChild(rsId);
+		Section<?> knowledgeSection = as.findChild(refactoringId);
 		return knowledgeSection;
 	}
 	

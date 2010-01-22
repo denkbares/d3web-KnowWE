@@ -4,6 +4,7 @@ import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.refactoring.renderer.GroovyDisplayRenderer;
+import de.d3web.we.refactoring.renderer.GroovyEditSectionRenderer;
 
 public class RefactoringContent extends XMLContent {
 	

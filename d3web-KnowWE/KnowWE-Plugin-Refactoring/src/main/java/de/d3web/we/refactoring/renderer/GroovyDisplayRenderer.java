@@ -24,11 +24,13 @@ public class GroovyDisplayRenderer extends KnowWEDomRenderer {
 				"<script type='text/javascript' src='KnowWEExtension/scripts/syntaxhighlighter_2.1.364/scripts/shBrushGroovy.js'></script>" +
 				"<script type='text/javascript' src='KnowWEExtension/scripts/SyntaxHighlighter.js'></script>" +
 				""));
-		
+		//string.append("{{{");
 		string.append(KnowWEUtils.maskHTML("<script type=\"syntaxhighlighter\" class=\"brush: groovy\"><![CDATA["));
-		string.append(KnowWEUtils.maskNewline(sec.getOriginalText()));
+		//string.append(KnowWEUtils.maskNewline(sec.getOriginalText()));
+		string.append(sec.getOriginalText());
 		string.append(KnowWEUtils.maskHTML("]]></script>"));
-				
+		//string.append("}}}");
+		
 		string.append(KnowWEUtils.maskHTML("<input type=\"button\"" +
 		"onclick=\"SyntaxHighlighter.highlight()\" value='Highlight'>"));
 		

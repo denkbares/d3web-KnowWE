@@ -168,7 +168,7 @@ public class KnowWEUtils {
 	}
 	
 	public static String unmaskNewline (String htmlContent) {
-		htmlContent = htmlContent.replaceAll(KnowWEEnvironment.NEWLINE, "\n");
+		htmlContent = htmlContent.replace(KnowWEEnvironment.NEWLINE, "\n");
 		return htmlContent;
 	}
 
@@ -203,7 +203,7 @@ public class KnowWEUtils {
 	}
 	
 	public static String maskNewline (String htmlContent) {
-		htmlContent = htmlContent.replaceAll("\n", KnowWEEnvironment.NEWLINE);
+		htmlContent = htmlContent.replace("\n", KnowWEEnvironment.NEWLINE);
 		return htmlContent;
 	}
 	
