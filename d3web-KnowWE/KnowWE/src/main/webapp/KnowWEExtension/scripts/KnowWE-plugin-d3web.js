@@ -557,35 +557,26 @@ KNOWWE.plugin.d3web.dialog = function(){
             var followUps = followUpStates.split(';');           
             var trs = _KS('#dialog tr');
           
-            
             for(var j = 0; j < followUps.length-1; j++) {
-            	
             	var s = followUps[j].substring(0,1);
             	var id =followUps[j].substring(1);
                	var state = decodeStatus( s );
                	
-            
             	for(var k=0; k<trs.length; k++){
-            		
             		if(trs[k].className.substring(0,3) == 'trf'){
-            			
-            			
             			if(trs[k].id == id){
             				if(s==0){
             					trs[k].className = 'trf hidden';
             				} else {
             					trs[k].className = 'trf'
             				}
-            				
             			}
-            			
             		}
             	}
-               	
             }
         	
             KNOWWE.plugin.d3web.dialog.initAction();
-            KNOWWE.helper.observer.notify();
+            KNOWWE.helper.observer.notify('update');
         },
         /**
          * Function: answerClicked
@@ -969,7 +960,7 @@ KNOWWE.plugin.d3web.semantic = function(){
                 url : url.url + "?" + tokens.join('&'),
                 response : {
                     action: 'none',
-                    fn : KNOWWE.helper.observer.notify
+                    fn : function(){KNOWWE.helper.observer.notify('update')}
                 }
             }
             new _KA( options ).send();
@@ -1050,7 +1041,7 @@ KNOWWE.plugin.d3web.solutionstate = function(){
             if( el ){
                 _KE.add('click', el, this.clearSolutionstate);
             }
-            KNOWWE.helper.observer.subscribe( this.updateSolutionstate );
+            KNOWWE.helper.observer.subscribe( 'update', this.updateSolutionstate );
         },
         /**
          * Function: updateSolutionstate
@@ -1194,7 +1185,7 @@ KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
          * Function: init
          */
         init : function(){
-            KNOWWE.helper.observer.subscribe( this.update );
+            KNOWWE.helper.observer.subscribe( 'update', this.update );
         },      
         /**
          * Function: update

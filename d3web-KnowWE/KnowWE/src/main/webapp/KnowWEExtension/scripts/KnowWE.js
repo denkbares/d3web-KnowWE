@@ -552,6 +552,7 @@ KNOWWE.core.edit = function(){
                         var el = _KE.target(e);
                         var rel = eval("(" + el.getAttribute('rel') + ")");
                         KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render");
+                        KNOWWE.helper.observer.notify('quick-edit');
                     });
                 }  else {               
                     _KE.add('click', elements[i], function(e){
@@ -1120,7 +1121,7 @@ KNOWWE.core.rerendercontent = function(){
          * Function: init
          */
         init : function(){
-            KNOWWE.helper.observer.subscribe( this.update );
+            KNOWWE.helper.observer.subscribe( 'update', this.update );
         },
         /**
          * Function: updateNode
@@ -1234,7 +1235,7 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
             if(_KS('#testsuite2-show-extend')){
                 _KE.add('click', _KS('#testsuite2-show-extend'), KNOWWE.core.util.form.showExtendedPanel);
             }
-            setTimeout(KNOWWE.helper.observer.notify, 50);
+            setTimeout(function(){KNOWWE.helper.observer.notify('update')}, 50);
         });
     };
 }());

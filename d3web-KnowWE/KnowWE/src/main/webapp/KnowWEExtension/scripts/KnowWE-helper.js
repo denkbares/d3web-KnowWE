@@ -1398,7 +1398,6 @@ KNOWWE.helper.logger = function(){
         }
     }
 }();
-
 /**
  * Class: KNOWWE.helper.observer
  * The observer namespace.
@@ -1406,55 +1405,145 @@ KNOWWE.helper.logger = function(){
  * Returns:
  *     An observer object.
  */
-KNOWWE.helper.observer = function(){
-	/**
-	 * Stores the functions that should notified.
-	 */
-	var observations = [];
-	return {
-	    /**
-	     * Function: subscribe
-	     * 
-	     * Parameters:
-	     *     fn - The function that should be registered. 
-	     */
-	    subscribe : function( fn ){
-	        try{
-	            if( typeof fn !== "function" ) throw 'subscribe argument is not a function: ';
-	            observations.push( fn );
-	        } catch( err ){
-	            alert( err + fn); //not the best error handling
-	        }
-	    },
-	    /**
-	     * Function: unsubscribe
-	     * 
-	     * Parameters:
-	     *     fn - The function that should be unregistered.
-	     */
-	    unsubscribe : function( fn ) {
-	        var l = observations.length;
-	        for( var i = 0; i < l; i++){
-	            if( observations[i] === fn ){
-	                observations.splice(i,1);
-	            }
-	        }
-	    },
-	    /**
-	     * Function: notify
-	     * Notifies all the registered observers and executes their actions.
-	     * 
-	     * Parameters:
-	     *     o - The current scope.
-	     */
-	    notify : function( o ) {
-	        var scope = o || window;
-	        var l = observations.length;
-	        for( var i = 0; i < l; i++){
-	            observations[i].call( o );
-	        }
-	    }	
-	}
+ KNOWWE.helper.observer = function(){
+    
+    /**
+     * Class: Observation.
+     * Stores the observations.
+     * 
+     * Parameters:
+     *     name - The name of the observation object 
+     *     func - The function to register
+     */
+    function Observation(name, func){
+        this.name = name;
+        this.add( func );
+    }
+    Observation.prototype = {
+        add : function( func ){
+            if( !this.f ) this.f = [];
+            
+            if(!KNOWWE.helper.containsArr( this.f, func)){
+                this.f.push( func );
+            }
+        },
+        remove : function( func ){
+            if(!KNOWWE.helper.containsArr( this.f, func)){
+                this.f = KNOWWE.helper.removeArr( this.f, func );
+            }           
+        },
+        getName : function(){
+            return this.name;
+        },
+        getFunct : function(){
+            return this.f;
+        }       
+    }
+	Observation.prototype.constructor  = Observation;
+    /**
+     * Subscribes the function to the given observer object.
+     * 
+     * Parameter
+     *     name - The name of the observer object.
+     *     func - The to execute function 
+     */
+    function subscribeObservation(name, func){
+        var l = observations.length;
+        if(l > 0){
+            for(var i = 0; i < observations.length; i++){
+                var obj = observations[i];
+                if( obj.constructor === Observation && obj.getName() === name){
+                    obj.add( func );
+                }
+            }
+        } else {
+            var obj = new Observation( name, func );
+            observations.push( obj );
+        }
+    }
+        /**
+     * Subscribes the function to the given observer object.
+     * 
+     * Parameter
+     *     name - The name of the Observer object.
+     *     func - The to execute function 
+     */
+    function unsubscribeObservation(name, func){
+        var l = observations.length;
+        if( l ){
+            for(var i = 0; i < observations.length; i++){
+                var obj = observations[i];
+                if( obj.constructor === Observation && obj.name() === name){
+                    observations.splice(i,1);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Stores the functions that should notified.
+     */
+    var observations = [];
+    return {
+        /**
+         * Function: subscribe
+         * 
+         * Parameters:
+         *     fn - The function that should be registered. 
+         */
+        subscribe : function( name, func ){
+        	if( !name || name == "") return;
+            try{
+                if( typeof func !== "function" ) throw 'subscribe argument is not a function: ';
+                subscribeObservation( name, func );
+            } catch( err ){
+                alert( err + func); //not the best error handling
+            }
+        },
+        /**
+         * Function: unsubscribe
+         * 
+         * Parameters:
+         *     fn - The function that should be unregistered.
+         */
+        unsubscribe : function( name, func ) {
+        	unsubscribeObservation(name, func);
+        },
+        /**
+         * Function: notify
+         * Notifies all the registered observers and executes their actions.
+         * 
+         * Parameters:
+         *     o - The current scope.
+         */
+        notify : function( name, o ) {
+            var scope = o || window;
+            var l = observations.length;
+            for( var i = 0; i < l; i++){
+                if( observations[i].name === name ){
+                    var f = observations[i].getFunct();
+                    for(var j = 0; j < f.length; j++){
+                        f[j].call( o );
+                    }
+                }
+            }
+        },
+        /**
+         * Function: notifyAll
+         * 
+         * Notifies all registered observation of a change.
+         */
+        notifyAll : function( o ) {
+        	var scope = o || window;
+            var l = observations.length;
+            for( var i = 0; i < l; i++){
+                var f = observations[i].getFunct();
+                for(var j = 0; j < f.length; j++){
+                    f[j].call( o );
+                }
+            }        	
+        }
+    }
 }();
 
 /**
