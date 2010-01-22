@@ -20,9 +20,11 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.constraint.SectionFinderConstraint;
 
 
 
@@ -32,6 +34,16 @@ import de.d3web.we.kdom.Section;
  */
 public abstract class SectionFinder {
 	
+
+	List<SectionFinderConstraint> constraintList = new ArrayList<SectionFinderConstraint>();
+	
+	public List<SectionFinderConstraint> getConstraints() {
+		return constraintList;
+	}
+
+	public void addConstraint(SectionFinderConstraint constraint) {
+		this.constraintList.add(constraint);
+	}
 
 	/**
 	 * 

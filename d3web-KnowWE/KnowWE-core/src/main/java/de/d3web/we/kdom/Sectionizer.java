@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.constraint.SectionFinderConstraint;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
@@ -150,7 +151,8 @@ public class Sectionizer {
 				}
 				
 				Collections.sort(results);
-				validateResults(results, secText, ob);
+				validateNonOverlaps(results, secText, ob);
+				validateConstraints(results, father, ob);
 				
 				List<Section> findings = new ArrayList<Section>();		
 				for (SectionFinderResult result:results) {
@@ -302,6 +304,17 @@ public class Sectionizer {
 				father, article);
 	}
 
+	private void validateConstraints(List<SectionFinderResult> results, Section father,
+			KnowWEObjectType ob) {
+		List<SectionFinderConstraint> constraints = ob.getSectioner().getConstraints();
+		for (SectionFinderConstraint sectionFinderConstraint : constraints) {
+			if(!sectionFinderConstraint.satisfiesConstraint(results, father, ob)) {
+				sectionFinderConstraint.filterCorrectResults(results, father, ob);
+			}
+		}
+		
+	}
+
 	private Section createExpandedSection(ExpandedSectionFinderResult result, Section father) {
 		Section s = Section.createTypedSection(result.getText(), result.getObjectType(), father, result.getStart(), 
 				father.getArticle(), null, true, null,result.getObjectType());
@@ -316,7 +329,7 @@ public class Sectionizer {
 		return s;
 	}
 
-	private void validateResults(List<SectionFinderResult> results, String text, KnowWEObjectType type) {
+	private void validateNonOverlaps(List<SectionFinderResult> results, String text, KnowWEObjectType type) {
 		if (results == null)
 			return;
 		int lastValue = 0;
@@ -354,7 +367,7 @@ public class Sectionizer {
 		}
 		if (invalid != -1) {
 			results.remove(invalid);
-			validateResults(results, text, type);
+			validateNonOverlaps(results, text, type);
 		}
 
 	}

@@ -32,6 +32,7 @@ import java.util.Set;
 
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.EmbracedType;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.VerbatimType;
@@ -613,7 +614,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	public String verbalize() {
 		StringBuffer buffi = new StringBuffer();
-		buffi.append(this.getObjectType().getClass().getSimpleName());
+		String simpleName = this.getObjectType().getClass().getSimpleName();
+		if(simpleName.equals(AnonymousType.class.getSimpleName())) {
+			simpleName = simpleName += "("+this.getObjectType().getName()+")";
+		}
+		buffi.append(simpleName);
 		//TODO: Show more of the IDs...
 		buffi.append(", ID: " + getShortId());
 		buffi.append(", length: " + this.getOriginalText().length() + " ("
