@@ -64,11 +64,11 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	public void loadAndWait(String locator) {
 		boolean isNewTab = false;
 		try {
-			String aParent = getParent(locator, "a");
+			String aParent = getAncestor(locator, "a");
 			String target = selenium.getAttribute(aParent + "@target").toString();
 			if (target.equals("_blank") || target.equals("kwiki-dialog")) {
 				String aHref = selenium.getAttribute( aParent + "@href");
-				openWindowBlank(rb.getString("KnowWE.SeleniumTest.url") + aHref , aHref);			
+				openWindowBlank(rb.getString("KnowWE.SeleniumTest.url") + aHref , aHref, target.equals("kwiki-dialog"));			
 				isNewTab = true;
 			}
 		} catch (Exception e) {
@@ -85,16 +85,18 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * "target=_blank" Selenium can't find this new window.
 	 * @param url
 	 * @param name
+	 * @param forwarding Boolean if the given url leads automatically to
+	 * another page
 	 */
-	private void openWindowBlank (String url, String name) {
+	private void openWindowBlank (String url, String name, Boolean forwarding) {
 		selenium.openWindow(url, name);
 		selenium.selectWindow(name);
 		selenium.windowFocus();
 		threadSleep(sleepTime);
 		refreshAndWait();
-		System.out
-				.println("End of refreshAndWait from openWindowBlank at: " +
-						System.currentTimeMillis());
+		if (forwarding) {
+			selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+		}
 	}
 	
 	/**
@@ -103,7 +105,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 */
 	private void refreshAndWait() {
 		selenium.refresh();
-		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));		
+		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
 	}
 	
 	/**
@@ -147,8 +149,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			String startPage = selenium.getTitle();
 			clickAndWait("sstate-clear");
 			loadAndWait("//img[@title='Fall']");
-			System.out.println("End of loadAndWait -> getTitle at: " + System.currentTimeMillis());
-			verifyEquals("d3web Dialog", selenium.getTitle());
+			assertEquals("d3web Dialog", selenium.getTitle());
 			
 			//Try all observations on the left (Frageboegen)
 			for (int i = 1; selenium.isElementPresent("//div[@id='qasettree']//table[" + i + "]//span"); i++) {
@@ -319,17 +320,21 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	}
 	
 	/**
-	 * A little help if you have a locator but want to access the 
-	 * parent of the given element (only working for the pagecontent).
+	 * A little help if you have a locator but want to access an 
+	 * ancestor of a special type of the given element.
 	 * @param locator specifies the element (child)
-	 * @param type specifies the parent's type (i.e. "a" or "div")
-	 * @return the parent's xpath
+	 * @param type specifies the ancestor's type (i.e. "a" or "div")
+	 * @return the ancestor's xpath
 	 */
-	private String getParent(String locator, String type) {
-		for (int i = (Integer)selenium.getXpathCount("//div[@id='pagecontent']//" + type) - 1; i >=0; i--) {
-			if (selenium.isElementPresent("//div[@id='pagecontent']//" + type + "[" + i + "]" + locator)) {
-				return "//div[@id='pagecontent']//" + type + "[" + i + "]";
+	private String getAncestor(String locator, String type) {
+		String parent = locator + "/../..";
+		while (selenium.isElementPresent(parent)) {
+			for (int i = (Integer)selenium.getXpathCount(parent + "/" + type); i > 0; i--) {
+				if (selenium.isElementPresent(parent + "/" + type + "[" + i + "]" + locator)) {
+					return parent + "/" + type + "[" + i + "]";
+				}
 			}
+			parent += "/..";
 		}
 		return "Not Found";
 	}
