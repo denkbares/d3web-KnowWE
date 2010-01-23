@@ -409,8 +409,8 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 */
 	public <T extends KnowWEObjectType>IntermediateOwlObject getOwl(Section<T> s) {
 		IntermediateOwlObject io = new IntermediateOwlObject();
-		List<Section> childrenList = s.getChildren();
-		for (Section cur : childrenList) {
+		List<Section<? extends KnowWEObjectType>> childrenList = s.getChildren();
+		for (Section<? extends KnowWEObjectType> cur : childrenList) {
 			if (cur.getObjectType() instanceof AbstractKnowWEObjectType) {
 				AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) cur
 						.getObjectType();

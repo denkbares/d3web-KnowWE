@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -130,7 +131,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 			if (context.getCommand().getRequestContext().equals(
 					WikiContext.VIEW)) {
 				initKnowWEEnvironmentIfNeeded(context.getEngine());
-				result = KnowWEEnvironment.getInstance().renderTags(params,
+				// There are sometimes non-String-values in the params map.
+				// Therefore we remove them before hand it over
+				Map<String, String> cleanParams = new HashMap<String, String>();
+				for (Map.Entry<?,?> entry : (Set<Map.Entry<?,?>>) params.entrySet()) {
+					if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+						cleanParams.put((String) entry.getKey(), (String) entry.getValue());
+					}
+				}
+				result = KnowWEEnvironment.getInstance().renderTags(cleanParams,
 						topic, userContext, KnowWEEnvironment.DEFAULT_WEB);
 			}
 		} catch (Throwable t) {

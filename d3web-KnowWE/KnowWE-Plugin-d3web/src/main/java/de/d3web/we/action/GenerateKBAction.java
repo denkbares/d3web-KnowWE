@@ -87,13 +87,13 @@ public class GenerateKBAction extends AbstractKnowWEAction {
 		try {
 			testMap = this.readOutKnowledge(kbString);
 			if (testMap != null) {
-			String updateContent = KnowWEEnvironment.getInstance().getWikiConnector().createWikiPage(parameterMap.get(KnowWEAttributes.NEWKB_NAME), testMap, parameterMap.getUser());
-			KnowWEEnvironment.getInstance().processAndUpdateArticle(parameterMap.getUser(), updateContent, parameterMap.get(KnowWEAttributes.NEWKB_NAME), parameterMap.getWeb());
-			// Link zu neuer page...
-			return "<p class='info box'>"
-				+ rb.getString("KnowWE.KnowledgeBasesGenerator.creationSuccess") +
-				parameterMap.get(KnowWEAttributes.NEWKB_NAME) + "</p>";
-		}
+				String updateContent = KnowWEEnvironment.getInstance().getWikiConnector().createWikiPage(parameterMap.get(KnowWEAttributes.NEWKB_NAME), testMap, parameterMap.getUser());
+				KnowWEEnvironment.getInstance().processAndUpdateArticle(parameterMap.getUser(), updateContent, parameterMap.get(KnowWEAttributes.NEWKB_NAME), parameterMap.getWeb());
+				// Link zu neuer page...
+				return "<p class='info box'>"
+					+ rb.getString("KnowWE.KnowledgeBasesGenerator.creationSuccess") +
+					parameterMap.get(KnowWEAttributes.NEWKB_NAME) + "</p>";
+			}
 		} catch (IOException e) {
 			return "<p class='error box'>"
 			+ rb.getString("KnowWE.KnowledgeBasesGenerator.generatingError")
@@ -167,11 +167,10 @@ public class GenerateKBAction extends AbstractKnowWEAction {
 	private boolean appendKnowledgeBase(KnowWEEnvironment env, String web, String topic, String kbString, String username) throws IOException {
 		
 		KnowWEArticle art = env.getArticle(web, topic);
-		List <Section> secs = art.getSection().getChildren();
+		List <Section<?>> secs = art.getSection().getChildren();
 		
 		// if KopicModule exists return false.
-		for (Section s : secs) {
-			
+		for (Section<?> s : secs) {
 			if (s.getObjectType() instanceof D3webModule) {			
 				return false;
 			}

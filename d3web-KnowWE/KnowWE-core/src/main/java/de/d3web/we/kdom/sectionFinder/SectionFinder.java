@@ -32,6 +32,7 @@ import de.d3web.we.kdom.constraint.SectionFinderConstraint;
  * @author Jochen
  *
  */
+//TODO: make SectionFinder to be an interface
 public abstract class SectionFinder {
 	
 

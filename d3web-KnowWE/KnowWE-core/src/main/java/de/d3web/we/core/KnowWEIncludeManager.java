@@ -273,12 +273,13 @@ public class KnowWEIncludeManager {
 	/**
 	 * @returns the children respectively the target of the Include Section
 	 */
-	public List<Section> getChildrenForSection(Section src) {
-		List<Section> children = new ArrayList<Section>();
-		Section target = src2target.get(src);
+	public List<Section<? extends KnowWEObjectType>> getChildrenForSection(Section<?> src) {
+		List<Section<? extends KnowWEObjectType>> children = new ArrayList<Section<? extends KnowWEObjectType>>();
+		Section<? extends KnowWEObjectType> target = src2target.get(src);
 		if (target != null) {
 			children.add(target);
-		} else {
+		} 
+		else {
 			children.add(new IncludeErrorSection("Section " + src.toString() 
 					+ " not registered as an including Section", src, src.getArticle()));
 		}

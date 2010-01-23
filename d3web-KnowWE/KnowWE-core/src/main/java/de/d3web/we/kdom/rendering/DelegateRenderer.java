@@ -23,6 +23,8 @@ package de.d3web.we.kdom.rendering;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -32,7 +34,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class DelegateRenderer extends KnowWEDomRenderer {
 
 	private static DelegateRenderer instance;
-	
+
 	static {
 		instance = new DelegateRenderer();
 	}
@@ -49,98 +51,114 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		throw new CloneNotSupportedException();
 	}
 
-//	@Override
-//	public String render(Section sec, KnowWEUserContext user) {
-//
-//		// old hack - TODO: remove (not referring to ObjectType-Renderer
-//		// causes loop with ErrorRenderer!!! -> deactivated
-////		if (sec.getRenderer() != null) {
-////			return sec.getRenderer().render(sec, user);
-////		}
-//
-//		StringBuilder result = new StringBuilder();
-//		List<Section> subsecs = sec.getChildren();
-//		if (subsecs.size() == 0) {
-//			return sec.getOriginalText();
-//		}
-//
-//		for (Section section : subsecs) {
-//			try {
-//				KnowWEObjectType objectType = section.getObjectType();
-//				KnowWEDomRenderer renderer = RendererManager.getInstance()
-//						.getRenderer(objectType, user.getUsername(),
-//								sec.getTitle());
-//				if (renderer == null) {
-//					renderer = objectType.getRenderer();
-//				}
-//
-//				/* Once we have completely switched to new render-method
-//				 * deprecated call will be removed (also from the interface)
-//				 */		
-//				try {
-//					renderer.render(section, user, result);
-//				} catch (NotImplementedException e) {
-//					
-//					result.append(renderer.render(section, user));
-//				}
-//
-//			} catch (Exception e) {
-//				System.out.println(section.getObjectType());
-//				e.printStackTrace();
-//			}
-//
-//		}
-// 
-//		return result.toString();
-//	}
+	// @Override
+	// public String render(Section sec, KnowWEUserContext user) {
+	//
+	// // old hack - TODO: remove (not referring to ObjectType-Renderer
+	// // causes loop with ErrorRenderer!!! -> deactivated
+	// // if (sec.getRenderer() != null) {
+	// // return sec.getRenderer().render(sec, user);
+	// // }
+	//
+	// StringBuilder result = new StringBuilder();
+	// List<Section> subsecs = sec.getChildren();
+	// if (subsecs.size() == 0) {
+	// return sec.getOriginalText();
+	// }
+	//
+	// for (Section section : subsecs) {
+	// try {
+	// KnowWEObjectType objectType = section.getObjectType();
+	// KnowWEDomRenderer renderer = RendererManager.getInstance()
+	// .getRenderer(objectType, user.getUsername(),
+	// sec.getTitle());
+	// if (renderer == null) {
+	// renderer = objectType.getRenderer();
+	// }
+	//
+	// /* Once we have completely switched to new render-method
+	// * deprecated call will be removed (also from the interface)
+	// */
+	// try {
+	// renderer.render(section, user, result);
+	// } catch (NotImplementedException e) {
+	//					
+	// result.append(renderer.render(section, user));
+	// }
+	//
+	// } catch (Exception e) {
+	// System.out.println(section.getObjectType());
+	// e.printStackTrace();
+	// }
+	//
+	// }
+	// 
+	// return result.toString();
+	// }
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder builder) {
-		
+	public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder builder) {
+
 		boolean renderTypes = isRenderTypes(user.getUrlParameterMap());
-		if (renderTypes)
-			builder.append(KnowWEUtils.maskHTML("<sub>&lt;" + sec.getObjectType().getName() + "&gt;</sub>"));
+		if (renderTypes) renderType(section, true, builder);
 		
-		List<Section> subsecs = sec.getChildren();
-		if (subsecs.size() == 0) {
-			builder.append(sec.getOriginalText());
-		}
-
-		for (Section section : subsecs) {
-			try {
-				KnowWEObjectType objectType = section.getObjectType();
-				KnowWEDomRenderer renderer = RendererManager.getInstance()
-						.getRenderer(objectType, user.getUsername(),
-								sec.getTitle());
-				if (renderer == null) {
-					renderer = objectType.getRenderer();
-				}
-			
-				// TODO is section right here: Was sec befor
-				// Johannes
-				renderer.render(article, section, user, builder);
-//				/* Once we have completely switched to new render-method
-//				 * deprecated call will be removed (also from the interface)
-//				 */	
-//				try {
-//					renderer.render(section, user, builder);
-//				} catch (NotImplementedException e) {
-//					//System.out.println("old rendering: "+section.getObjectType().toString() );
-//					builder.append(renderer.render(section, user));
+		try {
+			List<Section<?>> subSections = section.getChildren();
+			if (subSections.size() == 0) {
+//				KnowWEDomRenderer renderer = getRenderer(section, user);
+//				if (renderer == this) {
+//					// avoid endless recursion
+//					builder.append(section.getOriginalText());
 //				}
-
-			} catch (Exception e) {
-				System.out.println(section.getObjectType());
-				e.printStackTrace();
+//				else {
+//					// otherwise use section's renderer instead
+//					renderer.render(article, section, user, builder);
+//				}
+				builder.append(section.getOriginalText());
+			}
+			else {
+				for (Section<?> subSection : subSections) {
+					// use subSection's renderer
+					KnowWEDomRenderer renderer = getRenderer(subSection, user);
+					renderer.render(article, subSection, user, builder);
+				}
 			}
 		}
+		catch (Throwable e) {
+			// wow, that was evil!
+			// System.out.println(section.getObjectType());
+			// e.printStackTrace();
+			// now we log instead AND report the error to the user
+			Logger.getLogger(getClass()).warn(
+					"internal error while rendering section", e);
+			builder.append(KnowWEUtils.maskHTML("<span class='warning'>"));
+			builder.append("internal error while rendering section: " + e);
+			builder.append(KnowWEUtils.maskHTML("</span>"));
+		}
 		
-		if (renderTypes)
-			builder.append(KnowWEUtils.maskHTML("<sub>&lt;/" + sec.getObjectType().getName() + "&gt;</sub>"));
+		if (renderTypes) renderType(section, false, builder);
+	}
+
+	private void renderType(Section<?> section, boolean openIt, StringBuilder builder) {
+		builder.append(KnowWEUtils.maskHTML("<sub>&lt;"));
+		if (!openIt) builder.append('/');
+		builder.append(section.getObjectType().getName());
+		builder.append(KnowWEUtils.maskHTML("&gt;</sub>"));
+	}
+
+	private KnowWEDomRenderer getRenderer(Section<?> section, KnowWEUserContext user) {
+		KnowWEObjectType objectType = section.getObjectType();
+		KnowWEDomRenderer renderer =
+				RendererManager.getInstance().getRenderer(
+				objectType, user.getUsername(), section.getTitle());
+		if (renderer == null) {
+			renderer = objectType.getRenderer();
+		}
+		return renderer;
 	}
 
 	private boolean isRenderTypes(Map<String, String> urlParameterMap) {
-		String debug = urlParameterMap.get("renderTypes"); 
+		String debug = urlParameterMap.get("renderTypes");
 		return debug != null && debug.equals("true");
 	}
 }

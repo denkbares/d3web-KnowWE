@@ -62,9 +62,8 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public static int getLevel(Section<? extends SubTree> s) {
-		Section<DashTreeElement> root = s.findChildOfType(DashTreeElement.class);
-		if (root == null)
-			return 0;
+		Section<? extends DashTreeElement> root = s.findChildOfType(DashTreeElement.class);
+		if (root == null) return 0;
 		return DashTreeElement.getLevel(root) + 1;
 	}
 

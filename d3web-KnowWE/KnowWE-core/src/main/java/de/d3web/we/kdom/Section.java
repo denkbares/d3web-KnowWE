@@ -61,6 +61,7 @@ import de.d3web.we.utils.PairOfInts;
  * OWL, User-feedback-DBs etc.
  * 
  */
+// TODO: vb: Section causes hundreds/thousands of compile warnings ==> use it consequent or remove Template declaration!
 public class Section<T extends KnowWEObjectType> implements Visitable, Comparable<Section<? extends KnowWEObjectType>> {
 
 //	private boolean reused = false;
@@ -92,15 +93,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
-	protected List<Section> children = new ArrayList<Section>();
-	
-	private LinkedList<Section> childrenParsingOrder = new LinkedList<Section>();
+	protected List<Section<? extends KnowWEObjectType>> children = new LinkedList<Section<? extends KnowWEObjectType>>();	
+	private LinkedList<Section<? extends KnowWEObjectType>> childrenParsingOrder = new LinkedList<Section<? extends KnowWEObjectType>>();
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through
 	 * the tree
 	 */
-	protected Section father;
+	protected Section<? extends KnowWEObjectType> father;
 
 	/**
 	 * the position when the text off this node starts related to the text of
@@ -114,7 +114,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * 
 	 * @see KnowWEObjectType Each type has its own parser and renderer
 	 */
-	protected KnowWEObjectType objectType;
+	protected T objectType;
 	
 	protected T t;
 
@@ -155,7 +155,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.startPosFromTmp = startPosFromTmp;
 	}
 	
-	public static <T extends KnowWEObjectType>Section<T> createTypedSection(String text, KnowWEObjectType o, Section father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded, IncludeAddress adress, T type) {
+	public static <T extends KnowWEObjectType>Section<T> createTypedSection(String text, T o, Section father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded, IncludeAddress adress, T type) {
         return new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded,adress);
     }
 
@@ -174,7 +174,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 *          is the article this section is hooked in
 	 * @param address
 	 */
-	 private Section(String text, KnowWEObjectType objectType, Section father,
+	 private Section(String text, T objectType, Section father,
 			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
 			boolean isExpanded, IncludeAddress address) {
 		
@@ -342,10 +342,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	/**
 	 * @return the list of child nodes
 	 */
-	public List<Section> getChildren() {
+	public List<Section<? extends KnowWEObjectType>> getChildren() {
 		if (objectType instanceof Include) {
 			return KnowWEEnvironment.getInstance().getIncludeManager(getWeb()).getChildrenForSection(this);
-		} else {
+		} 
+		else {
 			return children;
 		}
 		
@@ -414,10 +415,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	/**
 	 * @return the list of child nodes in parsing order
 	 */
-	public List<Section> getChildrenParsingOrder() {
+	public List<Section<? extends KnowWEObjectType>> getChildrenParsingOrder() {
 		if (objectType instanceof Include) {
 			return getChildren();
-		} else {
+		} 
+		else {
 			return childrenParsingOrder;
 		}
 	}
@@ -435,20 +437,20 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			return;
 		}
 		// for every ObjectType a list with all Includes that include a Section with this ObjectType
-		Map<Class<? extends KnowWEObjectType>, List<Section>> includes = new HashMap<Class<? extends KnowWEObjectType>, List<Section>>();
+		Map<Class<? extends KnowWEObjectType>, List<Section<? extends KnowWEObjectType>>> includes = new HashMap<Class<? extends KnowWEObjectType>, List<Section<? extends KnowWEObjectType>>>();
 		// all ObjectTypes that are possible in the children list
 		Set<Class<? extends KnowWEObjectType>> types = new HashSet<Class<? extends KnowWEObjectType>>();
 		for (KnowWEObjectType type:getObjectType().getAllowedChildrenTypes()) {
 			types.add(type.getClass());
 		}
-		for (Section<T> sec:childrenParsingOrder) {
+		for (Section<? extends KnowWEObjectType> sec:childrenParsingOrder) {
 			// store the Includes to the map
 			if (sec.getObjectType() instanceof Include 
 					&& types.contains(sec.getChildren().get(0).getObjectType().getClass())) {
 				Class<? extends KnowWEObjectType> includedType = sec.getChildren().get(0).getObjectType().getClass();
-				List<Section> includesOfType = includes.get(includedType);
+				List<Section<? extends KnowWEObjectType>> includesOfType = includes.get(includedType);
 				if (includesOfType == null) {
-					includesOfType = new ArrayList<Section>();
+					includesOfType = new ArrayList<Section<? extends KnowWEObjectType>>();
 					includes.put(includedType, includesOfType);
 				}
 				includesOfType.add(sec);
@@ -460,7 +462,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			// nothing to sort here
 			return;
 		}
-		for (List<Section> incList:includes.values()) {
+		for (List<Section<? extends KnowWEObjectType>> incList : includes.values()) {
 			// remove the Includes from the children list
 			childrenParsingOrder.removeAll(incList);
 		}
@@ -474,7 +476,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 					&& childrenParsingOrder.get(i).getObjectType().isAssignableFromType(type.getClass())) {
 				i++;
 			}
-			List<Section> includesOfType = includes.get(type.getClass());
+			List<Section<? extends KnowWEObjectType>> includesOfType = includes.get(type.getClass());
 			if (includesOfType != null) {
 				childrenParsingOrder.addAll(i, includesOfType);
 				i += includesOfType.size();
@@ -487,7 +489,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * 
 	 * @return
 	 */
-	public Section getFather() {
+	public Section<? extends KnowWEObjectType> getFather() {
 		return father;
 	}
 	
@@ -496,7 +498,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * 
 	 * @return
 	 */
-	public KnowWEObjectType getObjectType() {
+	public T getObjectType() {
 		return objectType;
 	}
 
@@ -743,20 +745,19 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * 
 	 * @param section
 	 */
-	public Section findChildOfType(Class class1) {
-
-		for (Section s : this.getChildren())
-			if (class1.isAssignableFrom(s.getObjectType().getClass()))
-				return s;
+	@SuppressWarnings("unchecked")
+	public <OT extends KnowWEObjectType> Section<? extends OT> findChildOfType(Class<OT> class1) {
+		for (Section<?> s : this.getChildren()) {
+			if (class1.isAssignableFrom(s.getObjectType().getClass())) {
+				return (Section<? extends OT>) s;
+			}
+		}
 		return null;
 	}
 	
-	public <T extends KnowWEObjectType>Section<T> findChildOfType(T t) {
-
-		for (Section s : this.getChildren())
-			if (t.getClass().isAssignableFrom(s.getObjectType().getClass()))
-				return (Section<T>)s;
-		return null;
+	@SuppressWarnings("unchecked")
+	public <OT extends KnowWEObjectType> Section<? extends OT> findChildOfType(OT objectTypeInstance) {
+		return (Section<? extends OT>) findChildOfType(objectTypeInstance.getClass());
 	}
 
 	/**
@@ -765,12 +766,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * 
 	 * @param section
 	 */
-	@Deprecated
-	public List<Section> findChildrenOfType(Class<?> class1) {
-		List<Section> result = new ArrayList<Section>();
-		for (Section s : this.getChildren())
-			if (class1.isAssignableFrom(s.getObjectType().getClass()))
-				result.add(s);
+	@SuppressWarnings("unchecked")
+	public <OT extends KnowWEObjectType> List<Section<OT>> findChildrenOfType(Class<OT> clazz) {
+		List<Section<OT>> result = new ArrayList<Section<OT>>();
+		for (Section<?> s : this.getChildren())
+			if (clazz.isAssignableFrom(s.getObjectType().getClass()))
+				result.add((Section<OT>) s);
 		return result;
 	}
 	
@@ -780,8 +781,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * 
 	 * @param section
 	 */
-	public List<Section<T>> findChildrenOfType(T t) {
-		List<Section<T>> result = new ArrayList<Section<T>>();
+	public <OT extends KnowWEObjectType> List<Section<OT>> findChildrenOfType(OT t) {
+		List<Section<OT>> result = new ArrayList<Section<OT>>();
 		for (Section s : this.getChildren())
 			if (t.getClass().isAssignableFrom(s.getObjectType().getClass()))
 				result.add(s);
@@ -1092,7 +1093,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.father = father;
 	}
 	
-	public boolean setType(KnowWEObjectType newType) {
+	public boolean setType(T newType) {
 		if(objectType.getClass() != (newType.getClass()) && objectType.getClass().isAssignableFrom(newType.getClass())) {
 			this.objectType = newType;
 			newType.reviseSubtree(getArticle(), this);

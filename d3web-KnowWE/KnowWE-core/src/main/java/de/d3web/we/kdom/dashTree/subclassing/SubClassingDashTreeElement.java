@@ -38,9 +38,9 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 		if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
 			Section<? extends DashTreeElement> father = DashTreeElement.getDashTreeFather(element);
 			if (father != null) {
-				Section<DashTreeElementContent> fatherElement = father
+				Section<? extends DashTreeElementContent> fatherElement = father
 						.findChildOfType(new DashTreeElementContent());
-				Section<DashTreeElementContent> childElement = element.findChildOfType(DashTreeElementContent.getDefaultInstance());
+				Section<? extends DashTreeElementContent> childElement = element.findChildOfType(DashTreeElementContent.getDefaultInstance());
 				createSubClassRelation(childElement,
 						fatherElement, io);
 			}
@@ -58,7 +58,8 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 		try {
 			io.addStatement(uo.getHelper().createStatement(localURI, RDFS.SUBCLASSOF,
 					fatherURI));
-		} catch (RepositoryException e) {
+		} 
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -29,43 +29,68 @@ import de.d3web.we.kdom.Section;
 
 public class RegexSectionFinder extends SectionFinder {
 
-	
 	private final Pattern pattern;
 	private final int group;
 
 	public RegexSectionFinder(String p) {
 		this(p, 0);
 	}
-	
+
 	public RegexSectionFinder(String p, int patternmod) {
-		this(p, patternmod, 0); 
+		this(p, patternmod, 0);
 	}
 
 	/**
-	 * creates sections that reflect the content of the group <code>group</code>.
+	 * creates sections that reflect the content of the group <code>group</code>
+	 * .
 	 */
 	public RegexSectionFinder(String p, int patternmod, int group) {
-		pattern = Pattern.compile(p, patternmod); 
+		this(Pattern.compile(p, patternmod), group);
+	}
+
+	public RegexSectionFinder(Pattern pattern, int group) {
+		this.pattern = pattern;
 		this.group = group;
 	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		
 		ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-		
-		
 		Matcher m = pattern.matcher(text);
-
-		while (m.find()) {
+		/*
+		 * vb: changed this behavior. It now proceeds matching after the last
+		 * character USED, instead of the last character MATCHED by the regexp.
+		 * This is essential if your mark-up terminates at the beginning of the
+		 * next mark-up with no explicit termination expression, because in this
+		 * case, the start of the next expression is part of the regular
+		 * expression.
+		 * 
+		 * Example: "#foo: bla #goo: blub"
+		 * 
+		 * There the end of the "#foo:"-Block will be detected due to the
+		 * beginning of the "#goo:"-Block. Therefore "#" may be in the
+		 * expression to match the "#foo:"-Block. Nevertheless, the next matching
+		 * must start after "#foo: bla" and NOT after ""#foo: bla #".
+		 * 
+		 * Behavior is identical for "this.group == 0". It is also identical for the
+		 * existing instances with "this.group > 0".
+		 */
+		int index = 0;
+		while (m.find(index)) {
 			result.add(createSectionFinderResult(m));
+			int next = m.end(group) + 1;
+			// avoid endless iterations with "wrong" expressions
+			if (next <= index) break;
+			// detect if we reached the end, 
+			// otherwise we get an IndexOutOfBoundsException from "m.find(...)"
+			if (next >= text.length()) break;
+			index = next;
 		}
 		return result;
-	
 	}
-	
+
 	protected SectionFinderResult createSectionFinderResult(Matcher m) {
 		return new SectionFinderResult(m.start(group), m.end(group));
 	}
-	
+
 }

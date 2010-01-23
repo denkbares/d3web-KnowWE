@@ -147,7 +147,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 				DelegateRenderer.getInstance().render(article, sec, user, b);
 			}
 			string.append(b.toString()
-					+ KnowWEUtils.maskHTML("</span>\n"));
+					+ KnowWEUtils.maskHTML("</span>"));
 		}
 
 	}

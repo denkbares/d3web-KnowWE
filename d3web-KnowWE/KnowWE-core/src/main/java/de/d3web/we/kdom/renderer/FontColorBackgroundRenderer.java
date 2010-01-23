@@ -43,7 +43,6 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Johannes Dienst
  */
 public class FontColorBackgroundRenderer extends StyleRenderer {
-	String background = "";
 	
 	/**
 	 * Use static Method getRenderer() instead!
@@ -51,8 +50,10 @@ public class FontColorBackgroundRenderer extends StyleRenderer {
 	 * @param s
 	 */	
 	public FontColorBackgroundRenderer(String color, String background) {
-		super(color);
-		this.background = background;
+		super(
+				(color == null ? "" : color+";") +
+				(background == null ? "" : "background-color:" + background)
+				);
 	}
 	
 	/**
@@ -65,28 +66,4 @@ public class FontColorBackgroundRenderer extends StyleRenderer {
 		return new FontColorBackgroundRenderer(color, background);
 	}
 	
-	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		
-		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(article, sec, user, b);
-		
-		if (this.background != null) {
-			string.append(KnowWEUtils.maskHTML(
-							"<span style='"+this.getStyle()
-							+ ";background-color:"
-							+ this.background
-							+ "'><span id=''>"
-							+ b.toString()
-							+"</span></span>"));
-			return;
-		}
-		
-		string.append(KnowWEUtils.maskHTML(
-						"<span style='"
-						+ this.getStyle()
-						+ "'><span id=''>"
-						+ b.toString()
-						+ "</span></span>"));
-	}
 }

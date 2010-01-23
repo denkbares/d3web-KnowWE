@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -76,7 +77,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 //
 //	}
 
-	public static String getTagName(Section<AbstractXMLObjectType> s) {
+	public static String getTagName(Section<? extends AbstractXMLObjectType> s) {
 		Map<String, String> attributeMapFor = getAttributeMapFor(s);
 		if (attributeMapFor != null) {
 			return attributeMapFor.get(AbstractXMLObjectType.TAGNAME);
@@ -105,20 +106,20 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 
 	}
 
-	public static Section<AbstractXMLObjectType> findSubSectionOfTag(
-			String tagname, Section<AbstractXMLObjectType> s) {
+	public static Section<? extends AbstractXMLObjectType> findSubSectionOfTag(
+		String tagname, Section<? extends AbstractXMLObjectType> s) {
 		String tagName2 = getTagName(s);
 		if (tagname.equals(tagName2)) {
-
 			return s;
 		}
-		List<Section> children = s.getChildren();
-		for (Section section : children) {
+		
+		List<Section<? extends KnowWEObjectType>> children = s.getChildren();
+		for (Section<? extends KnowWEObjectType> section : children) {
 			if (section.getObjectType() instanceof XMLContent) {
 				List<Section<AbstractXMLObjectType>> nodes = section
-						.findChildrenOfType(AbstractXMLObjectType.getDefaultInstance());
-				for (Section<AbstractXMLObjectType> section2 : nodes) {
-					Section<AbstractXMLObjectType> found = findSubSectionOfTag(
+						.findChildrenOfType(AbstractXMLObjectType.class);
+				for (Section<? extends AbstractXMLObjectType> section2 : nodes) {
+					Section<? extends AbstractXMLObjectType> found = findSubSectionOfTag(
 							tagname, section2);
 					if (found != null)
 						return found;
@@ -131,13 +132,13 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 	}
 	
 	public static void findSubSectionsOfTag(
-			String tagname, Section<AbstractXMLObjectType> s, Collection<Section<AbstractXMLObjectType>> c) {
+			String tagname, Section<? extends AbstractXMLObjectType> s, Collection<Section<? extends AbstractXMLObjectType>> c) {
 		String tagName2 = getTagName(s);
 		if (tagname.equals(tagName2)) {
 
 			c.add(s);
 		}
-		List<Section> children = s.getChildren();
+		List<Section<? extends KnowWEObjectType>> children = s.getChildren();
 		for (Section section : children) {
 			if (section.getObjectType() instanceof XMLContent) {
 				List<Section<AbstractXMLObjectType>> nodes = section

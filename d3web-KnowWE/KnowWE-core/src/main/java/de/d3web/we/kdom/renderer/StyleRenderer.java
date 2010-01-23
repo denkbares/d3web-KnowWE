@@ -29,25 +29,38 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class StyleRenderer extends KnowWEDomRenderer {
 	
-	protected String style;
+	private final String cssClass;
+	private final String cssStyle;
 	
-	public StyleRenderer(String s) {
-		this.style = s;
+	public StyleRenderer(String cssStyle) {
+		this(null, cssStyle);
+	}
+	
+	public StyleRenderer(String cssClass, String cssStyle) {
+		this.cssClass = cssClass;
+		this.cssStyle = cssStyle;
 	}
 	
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		StringBuilder b = new StringBuilder();
-		DelegateRenderer.getInstance().render(article, sec, user, b);
-		string.append(
-				KnowWEUtils.maskHTML(
-						"<span style='"+style+"'>"
-						+ b.toString()
-						+ "</span>"));
+		string.append(KnowWEUtils.maskHTML("<span")); 
+		if (cssClass != null) {
+			string.append(" class='").append(cssClass).append("'");
+		}
+		if (cssStyle != null) {
+			string.append(" style='").append(cssStyle).append("'");
+		}
+		string.append(KnowWEUtils.maskHTML(">"));
+		DelegateRenderer.getInstance().render(article, sec, user, string);
+		string.append(KnowWEUtils.maskHTML("</span>"));
 	}
 	
-	public String getStyle() {
-		return this.style;
+	public String getCssStyle() {
+		return this.cssStyle;
+	}
+
+	public String getCssClass() {
+		return this.cssClass;
 	}
 
 }

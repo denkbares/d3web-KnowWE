@@ -105,21 +105,22 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
 		
 		// get the rule: Eval it and highlight the condition
-		Section rule = KnowWEObjectTypeUtils.getAncestorOfType(sec, de.d3web.we.kdom.rules.Rule.class);
-		String kbRuleId = (String) KnowWEUtils.getStoredObject(sec.getWeb(), sec.getTitle(), rule.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
+		Section ruleSection = KnowWEObjectTypeUtils.getAncestorOfType(sec, de.d3web.we.kdom.rules.Rule.class);
+		String kbRuleId = (String) KnowWEUtils.getStoredObject(sec.getWeb(), sec.getTitle(), ruleSection.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
 		
 		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
+		Rule rule = null;
 		
 		if (xpsCase != null) {
 			Collection<KnowledgeSlice> slices = xpsCase.getKnowledgeBase().getAllKnowledgeSlices();
 			for (KnowledgeSlice slice : slices) {
-				
 				if (slice.getId().equals(kbRuleId)) {
-					Rule rc = (Rule) slice;
-					this.renderConditionLine(article, sec, rc, xpsCase, user, result);
+					rule = (Rule) slice;
 				}
 			}
 		}
+		
+		this.renderConditionLine(article, sec, rule, xpsCase, user, result);
 	}
 
 	/**

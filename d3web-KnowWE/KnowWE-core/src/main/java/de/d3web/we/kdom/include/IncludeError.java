@@ -28,7 +28,7 @@ public class IncludeError extends DefaultAbstractKnowWEObjectType {
 	
 	private static IncludeError instance;
 
-	public static KnowWEObjectType getInstance() {
+	public static IncludeError getInstance() {
 		if (instance == null) {
 			instance = new IncludeError();
 		}

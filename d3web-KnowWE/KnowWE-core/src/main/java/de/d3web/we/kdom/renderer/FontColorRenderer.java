@@ -49,8 +49,4 @@ public class FontColorRenderer extends StyleRenderer {
 		super(s);
 	}
 	
-	public String getColor() {
-		return this.style;
-	}
-
 }
