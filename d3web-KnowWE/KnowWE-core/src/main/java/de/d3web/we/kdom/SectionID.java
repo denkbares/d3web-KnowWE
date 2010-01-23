@@ -24,7 +24,12 @@ import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.kdom.xml.XMLHead;
 import de.d3web.we.kdom.xml.XMLTail;
 
-
+/**
+ * This class generates ids for Sections.
+ * 
+ * @author astriffler
+ *
+ */
 public class SectionID {
 
 	private String id;

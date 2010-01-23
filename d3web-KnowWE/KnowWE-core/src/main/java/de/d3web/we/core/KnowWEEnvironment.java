@@ -65,6 +65,7 @@ import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.module.PageAppendHandler;
+import de.d3web.we.module.ValidationPageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
 import de.d3web.we.search.SearchTerminologyHandler;
 import de.d3web.we.taghandler.FactSheet;
@@ -686,6 +687,8 @@ public class KnowWEEnvironment {
 		// ensuring it is last in list
 		//this.rootTypes.remove(defaultTextType);
 		addRootType(defaultTextType);
+		
+		this.appendHandlers.add(ValidationPageAppendHandler.getInstance());
 
 	}
 
