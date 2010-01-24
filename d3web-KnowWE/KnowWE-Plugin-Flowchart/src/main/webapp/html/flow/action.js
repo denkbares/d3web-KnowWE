@@ -748,8 +748,7 @@ ActionEditor.prototype.answerValue = function() {
 	var root = this.dom.select('.value')[0];
 	var answer = document.addAnswer.answer.value;
 	if (!this.answers.contains(answer) && (answer !== '\s*') && (answer !== '')) {
-		root.innerHTML += '<br \>' + answer; 
-//		+ '<input type="button" value="[ - ]" style="width:30px;height:20px" onclick="return ActionEditor.prototype.removeAnswer(' + this.answers.length + ')">';
+		root.innerHTML += '<br \>' + answer + '&nbsp;&nbsp;<input type="image" src="cc/image/kbinfo/no-object.gif" style="width:20px;height:20px" onclick="return ActionEditor.prototype.removeAnswer(' + this.answers.length + ')">';
 		this.answers.push(answer);
 	}
 	return;
@@ -765,7 +764,7 @@ ActionEditor.prototype.removeAnswer = function(answer) {
 //	}
 //	this.answers = newAnswers;
 //	ActionEditor.prototype.writeNewAnswers();
-	alert(ActionEditor.getAnswers());
+//	alert(ActionEditor.getAnswers());
 }
 
 ActionEditor.prototype.writeNewAnswers = function() {
