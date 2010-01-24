@@ -95,6 +95,8 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		threadSleep(sleepTime);
 		refreshAndWait();
 		if (forwarding) {
+			selenium.getTitle(); //Sets new flag for waitForPageToLoad
+			threadSleep(sleepTime);
 			selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
 		}
 	}
