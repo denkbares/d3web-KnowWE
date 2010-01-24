@@ -459,6 +459,7 @@ ActionEditor.updateQuestions = function(addedQuestionText, addedQuestionType, po
 		var answersToLine = '&answers=';
 		
 		if (addedQuestionType === 'yn') {
+			addedQuestionType = 'oc';
 			answersToLine += 'yes::no';
 		} else {
 			for (var i = 0; i < possibleAnswers.length; i++) {
@@ -631,16 +632,16 @@ ActionEditor.prototype.createNewQuestion = function() {
 	var actions;
 	
 	// escape special characters ! / = ( ) { } [ ] * - . : ; > | 
-	// Verbindungs-Fehler: & , #
+	// Verbindungs-Fehler: #
 	// heap space ` \ ^
 	// verschwindet: +
-	// bug: <
+	// bug: < &
 	if ((qText.indexOf('!') > 0) || (qText.indexOf('/') > 0) || (qText.indexOf('=') > 0) 
 			|| (qText.indexOf('(') > 0) || (qText.indexOf(')') > 0 || (qText.indexOf('{') > 0)) 
 			|| (qText.indexOf('}') > 0) || (qText.indexOf('[') > 0) || (qText.indexOf(']') > 0) 
 			|| (qText.indexOf('*') > 0) || (qText.indexOf('+') > 0) || (qText.indexOf('-') > 0) 
 			|| (qText.indexOf('.') > 0) || (qText.indexOf(':') > 0) || (qText.indexOf(';') > 0)
-			|| (qText.indexOf('>') > 0) || (qText.indexOf('|') > 0)) {
+			|| (qText.indexOf('>') > 0) || (qText.indexOf('|') > 0) || (qText.indexOf(',') > 0)) {
 		qText = '"' + qText + '"';
 	}
 	
@@ -746,9 +747,32 @@ ActionEditor.prototype.addAnswer = function() {
 ActionEditor.prototype.answerValue = function() {
 	var root = this.dom.select('.value')[0];
 	var answer = document.addAnswer.answer.value;
-	if (!this.answers.contains(answer) && (answer !== '\s*')) {
-		root.innerHTML += '<br \>' + answer;
+	if (!this.answers.contains(answer) && (answer !== '\s*') && (answer !== '')) {
+		root.innerHTML += '<br \>' + answer; 
+//		+ '<input type="button" value="[ - ]" style="width:30px;height:20px" onclick="return ActionEditor.prototype.removeAnswer(' + this.answers.length + ')">';
 		this.answers.push(answer);
+	}
+	return;
+}
+
+ActionEditor.prototype.removeAnswer = function(answer) {
+//	var newAnswers = [];
+//	for (var i= 0; i < answer; i++) {
+//		newAnswers.push(this.answers[i];
+//	}
+//	for (var i=answer +1; i < this.answers.length; i++) {
+//		newAnswers.push(this.answers[i]);
+//	}
+//	this.answers = newAnswers;
+//	ActionEditor.prototype.writeNewAnswers();
+	alert(ActionEditor.getAnswers());
+}
+
+ActionEditor.prototype.writeNewAnswers = function() {
+	var root = this.dom.select('.value')[0];
+	root.innerHTML = '';
+	for (var i = 0; i < this.answers.length; i++) {
+		root.innerHTML += '<br \>' + this.answers[i];
 	}
 }
  
