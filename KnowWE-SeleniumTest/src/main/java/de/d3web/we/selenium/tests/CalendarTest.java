@@ -35,7 +35,7 @@ public class CalendarTest extends KnowWETestCase {
 		Date d = new Date();
 		SimpleDateFormat fmt = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 		String today = fmt.format(d);
-		selenium.type("editorarea", selenium.getValue("editorarea") + 
+		type("editorarea", selenium.getValue("editorarea") + 
 				"\n\n<<" + today +  " MD Das ist der aktuelle Selenium-Test>>");
 		loadAndWait("ok");
 		
@@ -47,4 +47,5 @@ public class CalendarTest extends KnowWETestCase {
 				&& selenium.isTextPresent(today.split(" ")[0])
 				&& selenium.isTextPresent(today.split(" ")[1]));
 	}
+
 }

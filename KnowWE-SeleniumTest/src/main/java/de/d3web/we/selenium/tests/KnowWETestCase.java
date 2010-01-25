@@ -37,7 +37,10 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 
 	ResourceBundle rb = ResourceBundle.getBundle("KnowWE-Selenium-Test");
 	
-	Long sleepTime = Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime"));
+	private Long sleepTime = Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime"));
+	
+	private String pageLoadTime = rb.getString("KnowWE.SeleniumTest.PageLoadTime");
+
 	
 	
 	/**
@@ -67,9 +70,9 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			String aParent = getAncestor(locator, "a");
 			String target = selenium.getAttribute(aParent + "@target").toString();
 			if (target.equals("_blank") || target.equals("kwiki-dialog")) {
+				isNewTab = true;
 				String aHref = selenium.getAttribute( aParent + "@href");
 				openWindowBlank(rb.getString("KnowWE.SeleniumTest.url") + aHref , aHref, target.equals("kwiki-dialog"));			
-				isNewTab = true;
 			}
 		} catch (Exception e) {
 			// locator has no "a" parent or it has no attribute "target"
@@ -77,6 +80,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		}
 		if (!isNewTab) {
 			clickAndWait(locator);
+			selenium.waitForPageToLoad(pageLoadTime);
 		}
 	}
 	
@@ -96,8 +100,8 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		refreshAndWait();
 		if (forwarding) {
 			selenium.getTitle(); //Sets new flag for waitForPageToLoad
-			threadSleep(sleepTime);
-			selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+//			threadSleep(sleepTime);
+			selenium.waitForPageToLoad(pageLoadTime);
 		}
 	}
 	
@@ -107,7 +111,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 */
 	private void refreshAndWait() {
 		selenium.refresh();
-		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+		selenium.waitForPageToLoad(pageLoadTime);
 	}
 	
 	/**
@@ -116,7 +120,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * arrival until "RetryTime" expires.
 	 * @param locator Locator to find the element to click on
 	 */
-	private void clickAndWait(String locator) {
+	protected void clickAndWait(String locator) {
 		Long startTime = System.currentTimeMillis();
 		while (!selenium.isElementPresent(locator) 
 				&& System.currentTimeMillis() - startTime < 
@@ -318,7 +322,28 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 */
 	public void open(String url) {
 		selenium.open(url);
-		selenium.waitForPageToLoad(rb.getString("KnowWE.SeleniumTest.PageLoadTime"));
+		selenium.waitForPageToLoad(pageLoadTime);
+	}
+	
+	/**
+	 * Same as selenium.type(locator, value) but tries again for a
+	 * specified time, if it didn't work before.
+	 * @param locator
+	 * @param value
+	 */
+	protected void type(String locator, String value) {
+		Long startTime = System.currentTimeMillis();
+		while (System.currentTimeMillis() - startTime
+				< Long.parseLong(rb.getString("KnowWE.SeleniumTest.RetryTime"))) {
+			try {
+				selenium.type(locator, value);
+				return;
+			} catch(Exception e) {
+				//refresh and retry
+				refreshAndWait();
+			}
+		}
+		selenium.type(locator, value);
 	}
 	
 	/**
