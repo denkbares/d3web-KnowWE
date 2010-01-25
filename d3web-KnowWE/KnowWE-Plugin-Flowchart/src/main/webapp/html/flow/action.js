@@ -748,32 +748,28 @@ ActionEditor.prototype.answerValue = function() {
 	var root = this.dom.select('.value')[0];
 	var answer = document.addAnswer.answer.value;
 	if (!this.answers.contains(answer) && (answer !== '\s*') && (answer !== '')) {
-		root.innerHTML += '<br \>' + answer + '&nbsp;&nbsp;<input type="image" src="cc/image/kbinfo/no-object.gif" style="width:20px;height:20px" onclick="return ActionEditor.prototype.removeAnswer(' + this.answers.length + ')">';
 		this.answers.push(answer);
+		var count = this.answers.length -1;
+		root.innerHTML += '<br \>' + answer + '&nbsp;&nbsp;<input type="image" src="cc/image/kbinfo/no-object.gif" style="width:20px;height:20px" onclick="return this.parentNode.parentNode.__ActionEditor.removeAnswer(' + count + ')">'; 
 	}
 	return;
 }
 
+// removes the answer with the given position from the answers[]
 ActionEditor.prototype.removeAnswer = function(answer) {
-//	var newAnswers = [];
-//	for (var i= 0; i < answer; i++) {
-//		newAnswers.push(this.answers[i];
-//	}
-//	for (var i=answer +1; i < this.answers.length; i++) {
-//		newAnswers.push(this.answers[i]);
-//	}
-//	this.answers = newAnswers;
-//	ActionEditor.prototype.writeNewAnswers();
-//	alert(ActionEditor.getAnswers());
+	
+	var root = this.dom.select('.value')[0];
+	var oldText = root.innerHTML;
+	var newText = oldText.substring(0, oldText.indexOf('<i>bisherige Vorschläge:</i>') + 28);
+	this.answers.splice(answer, 1);
+	
+	for (var i=0; i < this.answers.length; i++) {
+		newText += '<br \>' + this.answers[i] + '&nbsp;&nbsp;<input type="image" src="cc/image/kbinfo/no-object.gif" style="width:20px;height:20px" onclick="return this.parentNode.parentNode.__ActionEditor.removeAnswer(' + i + ')">'; 
+	}
+	
+	root.innerHTML = newText;
 }
 
-ActionEditor.prototype.writeNewAnswers = function() {
-	var root = this.dom.select('.value')[0];
-	root.innerHTML = '';
-	for (var i = 0; i < this.answers.length; i++) {
-		root.innerHTML += '<br \>' + this.answers[i];
-	}
-}
  
 
 // asks the object type
