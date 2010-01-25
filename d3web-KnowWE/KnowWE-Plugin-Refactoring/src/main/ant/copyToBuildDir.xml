@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+This target copies all *.js files to the build target.
+Can be called while running tomcat to replace above mentioned files.
+So no need to build after changes in these files. Reload the page is sufficient   
+
+-->
+
+<project name="project" default="copyToBuildDir">
+	<property name="buildDir" value="${basedir}/../../../../KnowWE/target/KnowWE-0-SNAPSHOT" />
+	<property name="knowweDir" value="${basedir}/../../../../KnowWE" />
+	<property name="refactoringDir" value="${basedir}/../../../../KnowWE-Plugin-Refactoring" />
+	<target name="copyToBuildDir">
+		<copy todir="${buildDir}/KnowWEExtension/scripts" verbose="true">
+			<fileset dir="${knowweDir}/src/main/webapp/KnowWEExtension/scripts">
+				<include name="*.js" />
+			</fileset>
+			<fileset dir="${refactoringDir}/src/main/webapp/KnowWEExtension/scripts">
+				<include name="*.js" />
+			</fileset>
+		</copy>
+	</target>
+</project>

@@ -68,6 +68,10 @@ public class ShowRefactoringAction extends AbstractKnowWEAction {
 			html.append("</option>");
 		}                
 		html.append("</select></div><div><input type='button' value='» Ausführen' name='submit' class='button' onclick='refactoring(\"" + id + "\");'/></div></fieldset>");
+		
+//		StringBuilder html = new StringBuilder("[{Groovy debug='false'" +
+//				as.findChild(id).getOriginalText() +
+//				"}]");
 
 		return html.toString();
 	}

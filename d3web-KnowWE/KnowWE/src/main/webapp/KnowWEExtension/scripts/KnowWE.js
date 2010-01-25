@@ -164,6 +164,9 @@ KNOWWE.core.actions = function(){
                     fn : function(){
                         fn.call();
                         Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
+                        if(view === "render"){
+                        	KNOWWE.helper.observer.notify('quick-edit');
+                        }
                     }
                 }
             }
@@ -552,7 +555,6 @@ KNOWWE.core.edit = function(){
                         var el = _KE.target(e);
                         var rel = eval("(" + el.getAttribute('rel') + ")");
                         KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render");
-                        KNOWWE.helper.observer.notify('quick-edit');
                     });
                 }  else {               
                     _KE.add('click', elements[i], function(e){
@@ -1228,7 +1230,7 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
             KNOWWE.core.util.tablesorter.init();
             KNOWWE.core.typebrowser.init();
             KNOWWE.core.rerendercontent.init();
-            
+
             if(_KS('#testsuite-show-extend')){
                 _KE.add('click', _KS('#testsuite-show-extend'), KNOWWE.core.util.form.showExtendedPanel);
             }
