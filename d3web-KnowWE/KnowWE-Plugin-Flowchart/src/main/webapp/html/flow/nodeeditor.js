@@ -163,7 +163,6 @@ NodeEditor.prototype.render = function() {
 	}, 
 	[
 		Builder.node('div', {className: 'background'}),
-		Builder.node('div', {className: 'tabGroup'}, this.tabItems[0]),
 		Builder.node('div', {className: 'paneGroup'}, this.tabPanes),
 		Builder.node('div', {className: 'buttonGroup'}, [
 			Builder.node('button', {className: 'ok', onclick: 'this.parentNode.parentNode.__nodeEditor.handleOk();'}, ['Ok']),
