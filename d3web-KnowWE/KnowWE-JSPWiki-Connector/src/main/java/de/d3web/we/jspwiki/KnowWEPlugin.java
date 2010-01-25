@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,15 +63,20 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 	private String topicName = "";
 	
     /**
-	 * To initialize KnowWE, even if the directory for the pages is empty.
+	 * To initialize KnowWE.
+	 * @see KnowWE_config.properties
      */
-    public void initialize( WikiEngine engine, Properties properties )
-        throws FilterException {
+    public void initialize( WikiEngine engine, Properties properties ) throws FilterException {
     	
     	super.initialize(engine, properties);
         m_engine = engine;
         initKnowWEEnvironmentIfNeeded(engine);
         
+        ResourceBundle knowweconfig = ResourceBundle.getBundle("KnowWE_config");
+        if (knowweconfig.getString("knowweplugin.jspwikiconnector.copycorepages").equals("false")) {
+    		WikiEventUtils.addWikiEventListener(engine.getPageManager(), WikiPageEvent.PAGE_DELETE_REQUEST, this);
+        	return;
+        }
         File f = new File(KnowWEEnvironment.getInstance().getKnowWEExtensionPath());
         f = f.getParentFile();
 
