@@ -138,10 +138,10 @@ public class FlowchartDiffProvider implements DiffProvider
             	// are more than 1
             	String changedFlowchartID = changedFlowchart(p1, p2);
             	
-                String v1 = p1.substring(p1.indexOf("<flowchart id=\"" + changedFlowchartID));
+                String v1 = p1.substring(p1.indexOf("<flowchart fcid=\"" + changedFlowchartID));
                 v1 = v1.substring(0, v1.indexOf("</preview></flowchart>")) + "</preview></flowchart>";
                 
-                String v2 = p2.substring(p2.indexOf("<flowchart id=\"" + changedFlowchartID));
+                String v2 = p2.substring(p2.indexOf("<flowchart fcid=\"" + changedFlowchartID));
                 v2 = v2.substring(0, v2.indexOf("</preview></flowchart>")) + "</preview></flowchart>";
                                 
                 
@@ -506,7 +506,7 @@ public class FlowchartDiffProvider implements DiffProvider
         version = version.substring(version.indexOf(">") + 1);
       
         // get all the nodes
-        String[] nodes = version.split("<DIV class=\"Node\" id=\"");
+        String[] nodes = version.split("<DIV class=\"Node\" fcid=\"");
 
         
         for (int i = 1; i < nodes.length; i++) {  
@@ -552,7 +552,7 @@ public class FlowchartDiffProvider implements DiffProvider
         version = version.substring(version.indexOf(">") + 1);
       
         // get all the nodes
-        String[] edges = version.split("<DIV class=\"Rule\" id=\"");
+        String[] edges = version.split("<DIV class=\"Rule\" fcid=\"");
 
         
         for (int i = 1; i < edges.length; i++) {  
@@ -680,8 +680,8 @@ public class FlowchartDiffProvider implements DiffProvider
     
     private String changedFlowchart(String p1, String p2) {
     	
-    	String[] flowChartsInp1 = p1.split("<flowchart id=\"");
-    	String[] flowChartsInp2 = p2.split("<flowchart id=\"");
+    	String[] flowChartsInp1 = p1.split("<flowchart fcid=\"");
+    	String[] flowChartsInp2 = p2.split("<flowchart fcid=\"");
 
     	for (int i = 1; i < flowChartsInp1.length; i++) {
     		if (!flowChartsInp1[i].equals(flowChartsInp2[i])) {

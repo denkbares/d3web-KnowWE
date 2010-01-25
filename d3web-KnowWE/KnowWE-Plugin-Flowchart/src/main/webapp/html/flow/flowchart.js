@@ -191,7 +191,7 @@ Flowchart.prototype.removeNode = function(node) {
 Flowchart.prototype.findNode = function(id) {
 	for (var i=0; i<this.nodes.length; i++) {
 		var node = this.nodes[i];
-		if (node.getNodeModel().id == id) return node;
+		if (node.getNodeModel().fcid == id) return node;
 	}
 	return null;
 }
@@ -199,7 +199,7 @@ Flowchart.prototype.findNode = function(id) {
 Flowchart.prototype.findRule = function(id) {
 	for (var i=0; i<this.rules.length; i++) {
 		var rule = this.rules[i];
-		if (rule.id == id) return rule;
+		if (rule.fcid == id) return rule;
 	}
 	return null;
 }
@@ -410,7 +410,7 @@ Flowchart.prototype.selectAt = function(x, y, addToSelection) {
 
 Flowchart.prototype.toXML = function(includePreview) {
 	var xml = '<flowchart' +
-			' id="'+this.id+'"' +
+			' fcid="'+this.id+'"' +
 			(this.name ? ' name="'+this.name.escapeXML()+'"' : '') +
 			(this.icon ?' icon="'+this.icon+'"' : '')  +
 			' width="'+this.width+'"' +
@@ -527,7 +527,7 @@ Flowchart.createFromXML = function(parent, xmlDom) {
 	}
 	
 	// direkt attributes
-	var id = xmlDom.getAttribute('id');
+	var id = xmlDom.getAttribute('fcid');
 	var width = xmlDom.getAttribute('width') | 650;
 	var height = xmlDom.getAttribute('height') | 400;
 	var name = xmlDom.getAttribute('name');

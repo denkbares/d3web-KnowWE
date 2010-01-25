@@ -26,10 +26,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import de.d3web.KnOfficeParser.D3webConditionBuilder;
 import de.d3web.KnOfficeParser.DefaultLexer;
@@ -126,7 +129,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		List<IEdge> edges = createEdges(article, edgeSections, nodes, errors);
 		
 		
-		String id = attributeMap.get("id");
+		String id = attributeMap.get("fcid");
 		
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
 		
@@ -163,7 +166,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		for (Section section : edgeSections) {
 			
-			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
+			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
 			Section content = (Section) section.getChildren().get(1); //get edgecontent-section
 			
 			String sourceID = getXMLContentText(content.findChildOfType(OriginType.class));
@@ -254,11 +257,10 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 	private String getXMLContentText(Section s) {
 		String originalText = ((Section) s.getChildren().get(1)).getOriginalText();
-		return originalText;
+		return StringEscapeUtils.unescapeXml(originalText);
 	}
 
 	private INode getNodeByID(String nodeID, List<INode> nodes) {
-
 		for (INode node : nodes) {
 			if (node.getID().equals(nodeID))
 				return node;
@@ -291,7 +293,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			
 			Section nodeinfo = children.get(0);
 			
-			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
+			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
 			
 			if (nodeinfo.getObjectType() == StartType.getInstance()) 
 				result.add(createStartNode(id, nodeinfo));

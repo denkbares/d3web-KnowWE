@@ -105,8 +105,8 @@ Node.prototype.getNodeModel = function() {
 }
 
 Node.prototype.setNodeModel = function(nodeModel) {
-	if (!nodeModel.id) {
-		nodeModel.id = this.flowchart.createID('node');
+	if (!nodeModel.fcid) {
+		nodeModel.fcid = this.flowchart.createID('node');
 	}
 	this.nodeModel = nodeModel;
 	this._possibleGuardCache = null;
@@ -203,7 +203,7 @@ Node.prototype.getBaseObject = function() {
 Node.prototype.render = function() {
 	var contentNode;	
 	var dom = Builder.node('div', {
-		id: this.nodeModel.id,
+		id: this.nodeModel.fcid,
 		className: 'Node',
 		//onClick: "this.__node.select();",
 		//onDblClick: "this.__node.edit();",
@@ -212,7 +212,7 @@ Node.prototype.render = function() {
 	[
 		contentNode = Builder.node('div', {}, [
 			Builder.node('div', {className: 'decorator', style: ''})]),
-		Builder.node('div', {id: this.nodeModel.id+'_highlight', className: 'node_highlight', style: 'visibility: hidden; z-index: 0;'})
+		Builder.node('div', {id: this.nodeModel.fcid+'_highlight', className: 'node_highlight', style: 'visibility: hidden; z-index: 0;'})
 	]);
 
 	if (this.nodeModel.start){
@@ -311,7 +311,7 @@ Node.prototype.select = function(multipleSelectionMode) {
 
 Node.prototype.setSelectionVisible = function(isVisible) {
 	if (this.isVisible()) {
-		$(this.nodeModel.id+'_highlight').style.visibility = isVisible ? 'visible' : 'hidden';
+		$(this.nodeModel.fcid+'_highlight').style.visibility = isVisible ? 'visible' : 'hidden';
 		if (isVisible && this.arrowTool==null) {
 			this.arrowTool = new ArrowTool(this);
 			this.arrowTool.setVisible(true);
@@ -354,7 +354,7 @@ Node.prototype.destroy = function() {
 
 
 Node.prototype.toXML = function() {
-	var xml = '\t<node id="'+this.nodeModel.id+'">\n';
+	var xml = '\t<node fcid="'+this.nodeModel.fcid+'">\n';
 	xml += '\t\t<position left="'+this.getLeft()+'" top="'+this.getTop()+'"></position>\n';
 	if (this.nodeModel.start) {
 		xml += '\t\t<start>'+this.nodeModel.start.escapeXML()+'</start>\n';
@@ -378,7 +378,7 @@ Node.prototype.toXML = function() {
 
 Node.createFromXML = function(flowchart, xmlDom, pasteOptions) {
 	var nodeModel = {
-		id: pasteOptions.createID(xmlDom.getAttribute('id')),
+		fcid: pasteOptions.createID(xmlDom.getAttribute('fcid')),
 		position: { left: 0, top: 0 },
 		start: KBInfo._getNodeValueIfExists(xmlDom, 'start'),
 		exit: KBInfo._getNodeValueIfExists(xmlDom, 'exit'),
@@ -456,7 +456,7 @@ ArrowTool.prototype.destroy = function() {
 
 ArrowTool.prototype.render = function() {
 	var dom = Builder.node('div', {
-		id: this.node.nodeModel.id+'_arrow_tool',
+		id: this.node.nodeModel.fcid+'_arrow_tool',
 		className: 'ArrowTool',
 		style: "position: absolute; overflow:visible; " +
 				"width: 0px; height: 0px;" +
@@ -485,7 +485,7 @@ ArrowTool.prototype.createDraggable = function() {
 			draggable.__arrowTool.showLine(x, y);
 			return [x, y];
 		},
-		scroll: this.node.flowchart.id
+		scroll: this.node.flowchart.fcid
 	});
 	newDrag.__arrowTool = this;
 	return newDrag;	
@@ -601,15 +601,15 @@ SnapManager.prototype.createDraggable = function() {
 		snap: function (x, y, draggable) {
 			return draggable.__snapManager.snapIt(x, y);
 		},
-		scroll: this.node.flowchart.id
+		scroll: this.node.flowchart.fcid
 	});
 	newDrag.__snapManager = this;
 	return newDrag;	
 }
 
 SnapManager.prototype.showSnapLines = function(hSnap, vSnap) {
-	var hid = "dragHelpLine_"+this.flowchart.id+"_h";
-	var vid = "dragHelpLine_"+this.flowchart.id+"_v";
+	var hid = "dragHelpLine_"+this.flowchart.fcid+"_h";
+	var vid = "dragHelpLine_"+this.flowchart.fcid+"_v";
 	// remove horizontal line if available and changed
 	if (this.vSnapLinePos && (vSnap==null || this.vSnapLinePos != vSnap.snapPosition)) {
 		var div = document.getElementById(hid);

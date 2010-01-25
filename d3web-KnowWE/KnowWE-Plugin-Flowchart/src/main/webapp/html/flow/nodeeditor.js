@@ -44,7 +44,7 @@ NodeEditor.prototype.getNodeModel = function() {
 NodeEditor.prototype.handleOk = function() {
 	// update node model before closing
 	this.nodeModel = {
-		id: this.nodeModel.id,
+		fcid: this.nodeModel.fcid,
 		position: this.nodeModel.position 
 	};
 	if (this.tabItems[0].className == 'actionTab_selected') {

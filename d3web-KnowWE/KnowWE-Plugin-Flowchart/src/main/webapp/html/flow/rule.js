@@ -1,7 +1,7 @@
 
 function Rule(id, sourceNode, guard, targetNode) {
 	this.flowchart = sourceNode.flowchart;
-	this.id = id || this.flowchart.createID('rule');
+	this.fcid = id || this.flowchart.createID('rule');
 	this.sourceNode = sourceNode;
 	this.guard = guard;
 	this.guardPane = null;
@@ -129,7 +129,7 @@ Rule.prototype.render = function(selected) {
 	selector += "</div>";
 	
 	var dom = Builder.node('div', {
-		id: this.id,
+		id: this.fcid,
 		className: 'Rule',
 		style: "position:absolute; left: 0px; top: 0px; overflow: visible; cursor: crosshair;"
 	});
@@ -299,10 +299,10 @@ Rule.prototype.destroy = function() {
 
 Rule.prototype.toXML = function() {
 	var xml = '\t<edge' +
-			(this.id ? ' id="'+this.id+'"' : '')+
+			(this.fcid ? ' fcid="'+this.id+'"' : '')+
 			'>\n';
-	xml += '\t\t<origin>'+this.sourceNode.getNodeModel().id+'</origin>\n';
-	xml += '\t\t<target>'+this.targetNode.getNodeModel().id+'</target>\n';
+	xml += '\t\t<origin>'+this.sourceNode.getNodeModel().fcid+'</origin>\n';
+	xml += '\t\t<target>'+this.targetNode.getNodeModel().fcid+'</target>\n';
 	if (this.guard && this.guard.getMarkup() != 'NOP') {
 		if (Object.isString(this.guard)) {
 			xml += '\t\t<guard>' + this.guard.escapeXML() + '</guard>\n';
@@ -319,7 +319,7 @@ Rule.prototype.toXML = function() {
 
 
 Rule.createFromXML = function(flowchart, xmlDom, pasteOptions) {
-	var id = pasteOptions.createID(xmlDom.getAttribute('id'));
+	var id = pasteOptions.createID(xmlDom.getAttribute('fcid'));
 	var sourceNodeID = pasteOptions.getID(KBInfo._getNodeValueIfExists(xmlDom, 'origin'));
 	var targetNodeID = pasteOptions.getID(KBInfo._getNodeValueIfExists(xmlDom, 'target'));
 	var sourceNode = flowchart.findNode(sourceNodeID);

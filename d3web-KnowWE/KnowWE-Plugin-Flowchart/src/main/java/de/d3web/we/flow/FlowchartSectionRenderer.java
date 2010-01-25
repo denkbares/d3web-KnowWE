@@ -63,9 +63,10 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 		int startPos = xml.lastIndexOf("<preview mimetype=\"text/html\">");
 		int endPos = xml.lastIndexOf("</preview>");
 		if (startPos >= 0 && endPos >= 0) {
+			String preview = xml.substring(startPos+43, endPos-8);
 			return KnowWEUtils
 			.maskHTML(
-				"<div style='zoom: 50%; cursor: pointer;' " +
+				"<div style='cursor: pointer;' " +
 				"onclick='window.open(\""+createEditURL(sec.getId(), topic)+"\", \""+sec.getId().replaceAll("[^\\w]", "_")+"\")'>" +"\r\n" +
 //sec.getID() contains a '/' which is not allowed. FF ignores it, IE doesnt open a new window				
 //				"onclick='window.open(\""+createEditURL(sec.getId(), topic)+"\", \""+sec.getId()+"\")'>" +"\r\n" +
@@ -79,7 +80,7 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer{
 				"<link rel='stylesheet' type='text/css' href='cc/flow/nodeeditor.css'></link>" + "\r\n" +
 				"<link rel='stylesheet' type='text/css' href='cc/flow/rule.css'></link>" + "\r\n" +
 				"<style type='text/css'>div, span, a { cursor: pointer !important; }</style>" + 
-				xml.substring(startPos+43, endPos-8) + 
+				preview + 
 				"</div>");
 		}
 		else {
