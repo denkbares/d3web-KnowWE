@@ -20,9 +20,7 @@
 
 package de.d3web.we.kdom.xcl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openrdf.model.Statement;
@@ -37,8 +35,7 @@ import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.utils.Patterns;
@@ -49,32 +46,11 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 	protected  void init() {
 		this.childrenTypes.add(new XCLRelationWeight());
 		this.childrenTypes.add(new ComplexFinding());
-		this.sectionFinder = new XCLRelationSectionFinder();
+		this.sectionFinder = new RegexSectionFinder(Patterns.XCRelation, Pattern.MULTILINE, 1);
 		this.setCustomRenderer(XCLRelationKdomIdWrapperRenderer.getInstance());
 	}
 	
-	public class XCLRelationSectionFinder extends SectionFinder {
-		
-		private final Pattern relPattern;
-		
-		public XCLRelationSectionFinder() {
-			relPattern = Pattern.compile("\\s*((?:" + Patterns.QUOTEDSTRING + "|[^,\"]+)+),");
-		}
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-			Matcher m = relPattern.matcher(text);
-			while (m.find()) {
-				result.add(new SectionFinderResult(m.start(1), m.end(1)));
-			}
-			return result;
-		}
-		
-		
-	}
-		
-
+	
 	@Override
 	/*
 	 * (non-Javadoc)

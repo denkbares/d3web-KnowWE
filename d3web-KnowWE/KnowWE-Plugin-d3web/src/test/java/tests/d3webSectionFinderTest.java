@@ -57,6 +57,7 @@ import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
 import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
 import de.d3web.we.kdom.xcl.XCLBody;
 import de.d3web.we.kdom.xcl.XCLHead;
+import de.d3web.we.kdom.xcl.XCLRelation;
 import de.d3web.we.kdom.xcl.XCLRelationWeight;
 import de.d3web.we.kdom.xcl.XCLTail;
 import de.d3web.we.kdom.xcl.XCList;
@@ -369,8 +370,7 @@ public class d3webSectionFinderTest extends TestCase {
 			+ "What do you like? = Shopping,\r\n"
 			+ "} \r\n \r\n \r \n";
 		
-		de.d3web.we.kdom.xcl.XCLRelation.XCLRelationSectionFinder f = 
-			new de.d3web.we.kdom.xcl.XCLRelation().new XCLRelationSectionFinder();
+		SectionFinder f = new XCLRelation().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
