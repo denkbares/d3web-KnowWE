@@ -165,7 +165,7 @@ KNOWWE.core.actions = function(){
                         fn.call();
                         Collapsible.render( _KS('#page'), KNOWWE.helper.gup('page'));
                         if(view === "render"){
-                        	KNOWWE.helper.observer.notify('quick-edit');
+                            KNOWWE.helper.observer.notify('quick-edit');
                         }
                     }
                 }
@@ -1123,7 +1123,7 @@ KNOWWE.core.rerendercontent = function(){
          * Function: init
          */
         init : function(){
-            KNOWWE.helper.observer.subscribe( 'update', this.update );
+            KNOWWE.helper.observer.subscribe( 'update', KNOWWE.core.rerendercontent.update );
         },
         /**
          * Function: updateNode
@@ -1215,7 +1215,6 @@ var _KL = KNOWWE.helper.logger;   /* Alias KNOWWE logger */
 var _KN = KNOWWE.helper.element   /* Alias KNOWWE.helper.element */
 var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 
-
 /* ############################################################### */
 /* ------------- Onload Events  ---------------------------------- */
 /* ############################################################### */
@@ -1237,6 +1236,7 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
             if(_KS('#testsuite2-show-extend')){
                 _KE.add('click', _KS('#testsuite2-show-extend'), KNOWWE.core.util.form.showExtendedPanel);
             }
+            setTimeout(function(){KNOWWE.helper.observer.notify('onload')}, 50);
             setTimeout(function(){KNOWWE.helper.observer.notify('update')}, 50);
         });
     };
