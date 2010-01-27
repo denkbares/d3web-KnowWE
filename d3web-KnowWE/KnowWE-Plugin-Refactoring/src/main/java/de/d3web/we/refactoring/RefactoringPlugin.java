@@ -27,8 +27,8 @@ import java.util.Map;
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.module.AbstractDefaultKnowWEModule;
+import de.d3web.we.refactoring.action.GetXCLAction;
 import de.d3web.we.refactoring.action.RefactoringAction;
-import de.d3web.we.refactoring.action.ShowRefactoringAction;
 import de.d3web.we.taghandler.TagHandler;
 
 
@@ -64,7 +64,7 @@ public class RefactoringPlugin extends AbstractDefaultKnowWEModule {
 	public void addAction(Map<Class<? extends KnowWEAction>, KnowWEAction> map) {
 		// TODO Auto-generated method stub
 		map.put(RefactoringAction.class, new RefactoringAction());
-		map.put(ShowRefactoringAction.class, new ShowRefactoringAction());
+		map.put(GetXCLAction.class, new GetXCLAction());
 	}
 
 
