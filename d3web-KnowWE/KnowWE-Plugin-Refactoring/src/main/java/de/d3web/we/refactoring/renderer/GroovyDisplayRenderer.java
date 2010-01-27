@@ -40,8 +40,8 @@ public class GroovyDisplayRenderer extends KnowWEDomRenderer {
 			string.append("}}}");
 		}
 		
-		string.append(KnowWEUtils.maskHTML("<input type=\"button\"" +
-		"onclick=\"SyntaxHighlighter.highlight()\" value='Highlight'>"));
+//		string.append(KnowWEUtils.maskHTML("<input type=\"button\"" +
+//		"onclick=\"SyntaxHighlighter.highlight()\" value='Highlight'>"));
 		
 	}
 }

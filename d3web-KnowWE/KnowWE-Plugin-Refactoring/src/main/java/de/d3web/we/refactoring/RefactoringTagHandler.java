@@ -28,8 +28,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.decisionTree.SolutionID;
-import de.d3web.we.kdom.xcl.XCList;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -42,34 +40,27 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 	public RefactoringTagHandler() {
 		super("refactoring");
 	}
+
 	@Override
-	public String render(String topic, KnowWEUserContext user,
-			Map<String, String> values, String web) {
-		KnowWEArticle article = KnowWEEnvironment.getInstance()
-						.getArticleManager(web).getArticle(topic);
+	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic);
 		Section<?> articleSection = article.getSection();
-		List<Section<Refactoring>> sections = new ArrayList<Section<Refactoring>>();
-		articleSection.findSuccessorsOfType(new Refactoring(), sections);
+		List<Section<Refactoring>> refactorings = new ArrayList<Section<Refactoring>>();
+		articleSection.findSuccessorsOfType(new Refactoring(), refactorings);
 		StringBuilder html = new StringBuilder();
 		KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
-		// oder veraltete Möglichkeit: html.append("<script type=text/javascript src=KnowWEExtension/scripts/RefactoringPlugin.js></script>\n");
-		//html.append("<div id='refactoring-result'></div>");
-		html.append("<div id='refactoring-panel' class='panel'><h3>Refactoring Konsole</h3><div id='refactoring-content'><fieldset><div class='left'>");
-		html.append("<p>Es wurden <strong>" +
-				sections.size() +
-				"</strong> Refactorings gefunden. Bitte wählen Sie das gewünschte Refactoring aus.</p></div>");
-		html.append("<div style='clear:both'></div><form name='refactoringform'><div class='left'><label for='article'>Refactoring</label>");
-		html.append("<select name='refactoringselect'>");
-		for(Section<Refactoring> s:sections) {
-			html.append("<option value='");
-			html.append(s.findChildOfType(RefactoringContent.class).getId());
-			html.append("'>");
-			Map<String,String> attMap = AbstractXMLObjectType.getAttributeMapFor(s);
-			html.append(attMap.get("name"));
-			html.append("</option>");
-		}                
-		html.append("</select></div><div><input type='button' value='» Ausführen' name='submit' class='button' onclick='selectRefactoring();'/></div></fieldset></div></form></div>");
-
+		html.append("<div id='refactoring-panel' class='panel'><h3>Refactoring Konsole</h3><div id='refactoring-content'>"
+				+ "<fieldset><div class='left'>" + "<p>Es wurden <strong>" + refactorings.size()
+				+ "</strong> Refactorings gefunden. Bitte wählen Sie das gewünschte Refactoring aus.</p></div>"
+				+ "<div style='clear:both'></div><form name='refactoringform'><div class='left'><label for='article'>Refactoring</label>"
+				+ "<select name='refactoringselect'>");
+		for (Section<Refactoring> refactoring : refactorings) {
+			Map<String, String> attributes = AbstractXMLObjectType.getAttributeMapFor(refactoring);
+			html.append("<option value='" + refactoring.findChildOfType(RefactoringContent.class).getId() + "'>" + attributes.get("name")
+					+ "</option>");
+		}
+		html.append("</select></div><div><input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/>"
+				+ "</div></fieldset></div></form></div>");
 		return html.toString();
 	}
 }

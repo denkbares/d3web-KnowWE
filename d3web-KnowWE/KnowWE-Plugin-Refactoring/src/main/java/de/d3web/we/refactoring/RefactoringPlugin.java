@@ -27,8 +27,8 @@ import java.util.Map;
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.module.AbstractDefaultKnowWEModule;
-import de.d3web.we.refactoring.action.GetXCLAction;
 import de.d3web.we.refactoring.action.RefactoringAction;
+import de.d3web.we.refactoring.action.GetXCLAction;
 import de.d3web.we.taghandler.TagHandler;
 
 

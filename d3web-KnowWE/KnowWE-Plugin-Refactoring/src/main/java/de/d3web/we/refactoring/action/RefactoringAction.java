@@ -19,6 +19,7 @@
  */
 
 package de.d3web.we.refactoring.action;
+
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
@@ -27,10 +28,14 @@ import groovy.lang.Script;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.ceryle.xml.XHTML;
 
 import de.d3web.we.action.AbstractKnowWEAction;
+import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -39,203 +44,191 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.rules.RulesSectionContent;
-import de.d3web.we.refactoring.script.XCLToRules;
-
-
 
 /**
  * @author Franz Schwab
  */
 public class RefactoringAction extends AbstractKnowWEAction {
 	
-	boolean useGroovy = true;
+	private final Lock lock = new ReentrantLock();
+	private final Condition runDialog = lock.newCondition();
+	private final Condition runScript = lock.newCondition();
+	private KnowWEAction nextAction;
 	
-	KnowWEParameterMap pm;
-	public KnowWEParameterMap getPm() {
-		return pm;
-	}
+	private static Thread thread;
 
+	KnowWEParameterMap parameters;
 	String id;
-	String refactoringId;
 	String topic;
 	String web;
-	KnowWEArticleManager am;
-	KnowWEArticle a;
-	Section<?> as;
+	KnowWEArticleManager manager;
+	KnowWEArticle article;
+	Section<?> section;
 	
-
 	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
-		pm = parameterMap;
-		initAttributes();
-
-		perform();
-		
-		return "";
+	public String perform(KnowWEParameterMap parameters) {
+		this.parameters = parameters;
+		init();
+		if (thread == null) {
+			thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					perform();
+				}
+			});
+			thread.start();
+		} else {
+			lock.lock();
+			runScript.signal();
+			lock.unlock();
+		}
+		// Hier könnte parallel ausgeführter Code stehen
+		lock.lock();
+		try { 
+			  runDialog.await(); 
+			} catch ( InterruptedException e ) {
+				e.printStackTrace();
+			} finally {
+				lock.unlock();
+			}
+		return nextAction.perform(parameters);
 	}
 
-	private void initAttributes() {
-		id = pm.get("knowledgeElement");
-		refactoringId = pm.get("refactoringElement");
-		topic = pm.getTopic();
-		web = pm.getWeb();
-		am = KnowWEEnvironment.getInstance().getArticleManager(web);
-		a = am.getArticle(topic);
-		as = a.getSection();
+	private void init() {
+		id = parameters.get("formdata");
+		topic = parameters.getTopic();
+		web = parameters.getWeb();
+		manager = KnowWEEnvironment.getInstance().getArticleManager(web);
+		article = manager.getArticle(topic);
+		section = article.getSection();
 	}
-	
-//	public RefactoringAction(int i) {
-//		pm = new KnowWEParameterMap("KWikiWeb", "default_web");
-//		pm.put("KnowledgeElement", "GroovyTest/RootType/SetCoveringList-section2/SetCoveringList-section2_content/XCList");
-//		pm.put("page", "GroovyTest");
-//		pm.put("KWikiUser", "0:0:0:0:0:0:0:1");
-//		pm.put("action", "RefactoringAction");
-//		pm.put("env", "JSPWiki");
-//		pm.put("tstamp", "1263574727308");
-//		initAttributes();
-//		System.out.println("RefactoringAction(int i)");
-//		
-//	}
 
 	public void perform() {
-		if (useGroovy) {
-	        try {
-	        	System.out.println("groovy");
-	            Object[] args = { };
-	            
-	            //GroovyObject gob = new XCLToRules();
-	            
-	            ClassLoader parent = getClass().getClassLoader();
-	            GroovyClassLoader loader = new GroovyClassLoader(parent);
-	            Section<?> refactoringSection = findRefactoringSection();
-                Class groovyClass = loader.parseClass(refactoringSection.getOriginalText()); 
-	            // instantiate the class
-	            GroovyObject gob = (GroovyObject)groovyClass.newInstance();
-	            if ( gob instanceof groovy.lang.Script ) {
-	            	System.out.println("is groovy script");
-	                Script script = (Script)gob;
-	                
-	              
-	                Binding binding = script.getBinding();
-	                binding.setVariable("ra",this);
 
-	                script.invokeMethod("run", args);
-	            } else {
-	                gob.invokeMethod("run", args);
-	            }
-	            System.out.println("interpret complete."); // I18N
-	        } catch ( MissingPropertyException mpe ) {
-	            System.out.println("MissingPropertyException while interpreting script: " 
-	                    + mpe.getMessage() ); // I18N
-	            if ( mpe.getMessage() != null ) {
-	                System.out.println( mpe.getMessage() + XHTML.Tag_br
-	                      + "MissingPropertyException is often due to the content not being a valid Groovy script." ); // I18N
-	            } else {
-	                System.out.println("MissingPropertyException thrown while executing Groovy script."); // I18N
-	            }
-//	        } catch ( InstantiationException ie ) {
-//	            System.out.println("unable to instantiate Groovy interpreter: " + ie.getMessage() ); // I18N
-//	            if ( ie.getMessage() != null ) {
-//	                System.out.println(ie.getMessage());
-//	            } else {
-//	                System.out.println("InstantiationException thrown while executing Groovy script."); // I18N
-//	            }
-//	        } catch ( IllegalAccessException iae ) {
-//	            System.out.println("illegal access instantiating Groovy interpreter: " + iae.getMessage() ); // I18N
-//	            if ( iae.getMessage() != null ) {
-//	                System.out.println(iae.getMessage());
-//	            } else {
-//	                System.out.println("IllegalAccessException thrown while executing Groovy script."); // I18N
-//	            }
-	        } catch ( Exception e ) {
-	            System.out.println( e.getClass().getName() 
-	                    + " thrown interpreting Groovy script: " + e.getMessage() ); // I18N
-	            if ( e.getMessage() != null ) {
-	                System.out.println( e.getClass().getName() 
-	                        + " thrown interpreting Groovy script: " + e.getMessage() ); // I18N
-	                e.printStackTrace(System.err);
-	            } else {
-	                System.out.println( e.getClass().getName() + " thrown while executing Groovy script."); // I18N
-	            }
-	        }
-		} else {
-			//1 Coveringlist-Section mit der id holen
-			Section<?> knowledgeSection = findKnowledgeSection();
-			//2 Alle Finding 's dieser Section holen
-			List<Section<Finding>> findingSections = findFindings(knowledgeSection);
-			//3 SolutionID holen
-			String solutionID = findSolutionID(knowledgeSection);
-			//4 Pro Finding eine Regel bauen
-			StringBuilder sb = new StringBuilder("");
-			for (Section<Finding> sec : findingSections) {
-				createRulesText(solutionID, sb, sec);
+		try {
+			Object[] args = {};
+			ClassLoader parent = getClass().getClassLoader();
+			GroovyClassLoader loader = new GroovyClassLoader(parent);
+			Section<?> refactoringSection = findRefactoringSection();
+			Class<?> groovyClass = loader.parseClass(refactoringSection.getOriginalText());
+			// GroovyObject gob = new XCLToRules();
+			GroovyObject gob = (GroovyObject) groovyClass.newInstance();
+			if (gob instanceof groovy.lang.Script) {
+				Script script = (Script) gob;
+				Binding binding = script.getBinding();
+				binding.setVariable("ra", this);
+				script.invokeMethod("run", args);
+			} else {
+				gob.invokeMethod("run", args);
 			}
-			sb.append("\n");
-			//5 Lösche entsprechende XCList
-			deleteXCList(knowledgeSection);
-			//6 Füge Regel ein und 7 speichere Artikel
-			Section<RulesSectionContent> rulesSectionContent = findRulesSectionContent();
-			saveArticle(sb, rulesSectionContent);
+			System.out.println("interpret complete."); // I18N
+		} catch (MissingPropertyException mpe) {
+			System.out.println("MissingPropertyException while interpreting script: " + mpe.getMessage()); // I18N
+			if (mpe.getMessage() != null) {
+				System.out.println(mpe.getMessage() + XHTML.Tag_br
+						+ "MissingPropertyException is often due to the content not being a valid Groovy script."); // I18N
+			} else {
+				System.out.println("MissingPropertyException thrown while executing Groovy script."); // I18N
+			}
+		} catch (InstantiationException ie) {
+			System.out.println("unable to instantiate Groovy interpreter: " + ie.getMessage()); // I18N
+			if (ie.getMessage() != null) {
+				System.out.println(ie.getMessage());
+			} else {
+				System.out.println("InstantiationException thrown while executing Groovy script."); // I18N
+			}
+		} catch (IllegalAccessException iae) {
+			System.out.println("illegal access instantiating Groovy interpreter: " + iae.getMessage()); // I18N
+			if (iae.getMessage() != null) {
+				System.out.println(iae.getMessage());
+			} else {
+				System.out.println("IllegalAccessException thrown while executing Groovy script."); // I18N
+			}
+		} catch (Exception e) {
+			System.out.println(e.getClass().getName() + " thrown interpreting Groovy script: " + e.getMessage()); // I18N
+			if (e.getMessage() != null) {
+				System.out.println(e.getClass().getName() + " thrown interpreting Groovy script: " + e.getMessage()); // I18N
+				e.printStackTrace(System.err);
+			} else {
+				System.out.println(e.getClass().getName() + " thrown while executing Groovy script."); // I18N
+			}
 		}
+		nextAction = new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameterMap) {
+				// TODO Auto-generated method stub
+				return "Refactorings abgeschlossen";
+			}
+		};
+		lock.lock();
+		runDialog.signal();
+		lock.unlock();
+		// sehr wichtig: Thread freigeben, da Script nun fertig
+		thread = null;
 	}
 
-	public void saveArticle(StringBuilder sb,
-			Section<RulesSectionContent> rulesSectionContent) {
-		am.replaceKDOMNode(pm, topic, rulesSectionContent.getId(), rulesSectionContent.getOriginalText() + sb.toString());
+	public void saveArticle(StringBuilder sb, Section<RulesSectionContent> rulesSectionContent) {
+		manager.replaceKDOMNode(parameters, topic, rulesSectionContent.getId(), rulesSectionContent.getOriginalText() + sb.toString());
 	}
 
 	public Section<RulesSectionContent> findRulesSectionContent() {
-		List<Section<RulesSectionContent>> rulesSectionContentSections = new ArrayList<Section<RulesSectionContent>>();
-		as.findSuccessorsOfType(new RulesSectionContent(), rulesSectionContentSections);
-		Section<RulesSectionContent> rulesSectionContent = rulesSectionContentSections.get(0);
+		List<Section<RulesSectionContent>> rulesSectionContents = new ArrayList<Section<RulesSectionContent>>();
+		section.findSuccessorsOfType(new RulesSectionContent(), rulesSectionContents);
+		Section<RulesSectionContent> rulesSectionContent = rulesSectionContents.get(0);
 		return rulesSectionContent;
 	}
 
 	public void deleteXCList(Section<?> knowledgeSection) {
-		String newText = am.replaceKDOMNodeWithoutSave(pm, topic, knowledgeSection.getId(), "\n");
-		as = refreshArticleSection(am, a, newText);
+		String text = manager.replaceKDOMNodeWithoutSave(parameters, topic, knowledgeSection.getId(), "\n");
+		section = refreshArticleSection(text);
 	}
 
-	public void createRulesText(String solutionID, StringBuilder sb,
-			Section<Finding> sec) {
+	public void createRulesText(String solutionID, StringBuilder sb, Section<Finding> sec) {
 		sb.append("\nIF " + sec.getOriginalText());
 		sb.append("\n\tTHEN ");
 		sb.append(solutionID + " = P7");
 	}
 
 	public String findSolutionID(Section<?> knowledgeSection) {
-		Section<SolutionID> solutionIDSection = knowledgeSection.findSuccessor(new SolutionID());
-		String solutionID = solutionIDSection.getOriginalText();
-		return solutionID;
+		Section<SolutionID> solutionID = knowledgeSection.findSuccessor(new SolutionID());
+		return solutionID.getOriginalText();
 	}
 
 	public List<Section<Finding>> findFindings(Section<?> knowledgeSection) {
-		List<Section<Finding>> findingSections = new ArrayList<Section<Finding>>();
-		knowledgeSection.findSuccessorsOfType(new Finding(), findingSections);
-		return findingSections;
+		List<Section<Finding>> findings = new ArrayList<Section<Finding>>();
+		knowledgeSection.findSuccessorsOfType(new Finding(), findings);
+		return findings;
 	}
 
 	public Section<?> findKnowledgeSection() {
-		Section<?> knowledgeSection = as.findChild(id);
-		return knowledgeSection;
+		//mit GetXCLAction die Section besorgen
+		nextAction = new GetXCLAction();
+		lock.lock();
+		runDialog.signal();
+		lock.unlock();
+		// Hier könnte parallel ausgeführter Code stehen
+		lock.lock();
+		try { 
+			  runScript.await(); 
+			} catch ( InterruptedException e ) {
+				e.printStackTrace();
+			} finally {
+				lock.unlock();
+			}
+		Section<?> knowledge = section.findChild(id);
+		return knowledge;
 	}
 	
-	public static String blub() {
-		return "Hello method blub() in class RefactoringAction!";
+	private Section<?> findRefactoringSection() {
+		Section<?> refactoring = section.findChild(id);
+		return refactoring;
 	}
 
-	private Section<?> refreshArticleSection(KnowWEArticleManager articleManager,
-			KnowWEArticle article, String newText) {
+	private Section<?> refreshArticleSection(String text) {
 		Section<?> articleSection;
-		article = new KnowWEArticle(newText, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
-		articleManager.saveUpdatedArticle(article);
+		article = new KnowWEArticle(text, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
+		manager.saveUpdatedArticle(article);
 		articleSection = article.getSection();
 		return articleSection;
 	}
-		
-	private Section<?> findRefactoringSection() {
-		Section<?> knowledgeSection = as.findChild(refactoringId);
-		return knowledgeSection;
-	}
-	
 }
