@@ -51,7 +51,7 @@ private String iconURL;
 	public AllSolutionsRenderer(String newId) {
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String path = "/KWiki/servlet/";
-		iconURL = path + rb.getString("KWiki.config.path.images") + "tree/";
+		iconURL = path + rb.getString("knowwe.config.path.images") + "tree/";
 	}
 
 	public String perform(KnowWEParameterMap parameterMap) {

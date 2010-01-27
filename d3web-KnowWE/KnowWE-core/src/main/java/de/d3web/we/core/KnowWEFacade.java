@@ -225,7 +225,7 @@ public class KnowWEFacade {
 		
 		ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
 
-		if (bundle.getString("knowwe2wiki.parseAllFunction").equals("true")) {
+		if (bundle.getString("knowwewiki.parseAllFunction").equals("true")) {
 
 			if (parameterMap.getWikiContext().userIsAdmin()) {
 				return action.perform(parameterMap);

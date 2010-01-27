@@ -183,7 +183,7 @@ public class DPSSolutionsAction extends AbstractKnowWEAction {
 		// if(knowwe2 != null) {
 		// path = knowwe2.getPathPrefix();
 		// }
-		iconURL = path + rb.getString("KWiki.config.path.images") + "tree/";
+		iconURL = path + rb.getString("knowwe.config.path.images") + "tree/";
 	}
 
 	// public void render(Model model) throws Exception {

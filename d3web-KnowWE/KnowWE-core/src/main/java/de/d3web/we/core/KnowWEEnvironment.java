@@ -747,7 +747,7 @@ public class KnowWEEnvironment {
 	// */
 	// private void loadData(ServletContext context) { ResourceBundle rb =
 	// ResourceBundle.getBundle("KnowWE_config");
-	// String webPath = rb.getString("KWiki.config.path.webs");
+	// String webPath = rb.getString("knowwe.config.path.webs");
 	// webPath = KnowWEUtils.getRealPath(context, webPath);
 	// File path = new File(webPath);
 	// if (!path.exists()) {

@@ -252,7 +252,7 @@ public class KnowWEUtils {
 	
 //	public static String getSessionPath(String user, String web) {
 //		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-//		String sessionDir = rb.getString("KWiki.config.path.sessions");
+//		String sessionDir = rb.getString("knowwe.config.path.sessions");
 //		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 //		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
 //
@@ -265,7 +265,7 @@ public class KnowWEUtils {
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-		String sessionDir = rb.getString("KWiki.config.path.sessions");
+		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
 
@@ -277,7 +277,7 @@ public class KnowWEUtils {
 	
 //	public static String getWebEnvironmentPath(String web) {
 //		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-//		String sessionDir = rb.getString("KWiki.config.path.currentWeb");
+//		String sessionDir = rb.getString("knowwe.config.path.currentWeb");
 //		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 //		sessionDir = getRealPath(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), sessionDir);
 //		return sessionDir;

@@ -169,7 +169,7 @@ public class XCLd3webBuilder implements KnOfficeParser, XCLBuilder {
 		// to KnowledgeBase via this method
 		try {
 			ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
-			if (bundle.getString("knowwe2wiki.activateANTLRforXCL").equals("false")){
+			if (bundle.getString("knowwewiki.activateANTLRforXCL").equals("false")){
 				return;
 			}
 		} catch (Exception e1) {

@@ -226,7 +226,7 @@ public class D3webModule implements KnowWEModule {
 	 */
 	private void loadData(ServletContext context) {
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-		String webPath = rb.getString("KWiki.config.path.webs");
+		String webPath = rb.getString("knowwe.config.path.webs");
 		webPath = getRealPath(context, webPath);
 		File path = new File(webPath);
 		if (!path.exists()) {
@@ -391,7 +391,7 @@ public class D3webModule implements KnowWEModule {
 
 	public static String getWebEnvironmentPath(String web) {
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-		String sessionDir = rb.getString("KWiki.config.path.currentWeb");
+		String sessionDir = rb.getString("knowwe.config.path.currentWeb");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 		sessionDir = getRealPath(KnowWEEnvironment.getInstance()
 				.getWikiConnector().getServletContext(), sessionDir);
@@ -402,7 +402,7 @@ public class D3webModule implements KnowWEModule {
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-		String sessionDir = rb.getString("KWiki.config.path.sessions");
+		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
 

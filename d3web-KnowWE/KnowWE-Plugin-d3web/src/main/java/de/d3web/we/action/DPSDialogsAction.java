@@ -37,7 +37,7 @@ public class DPSDialogsAction extends AbstractKnowWEAction {
 	public DPSDialogsAction() {
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String path = "KnowWEExtension/";
-		iconURL = path + rb.getString("KWiki.config.path.images") + "";
+		iconURL = path + rb.getString("knowwe.config.path.images") + "";
 	}
 
 	public String perform(KnowWEParameterMap map){
