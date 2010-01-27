@@ -81,6 +81,8 @@
 		<module>KnowWE-Plugin-Flowchart</module>
 		<module>KnowWE-Plugin-Todo</module>
 		<module>KnowWE-Plugin-Refactoring</module>
+		<module>KnowWE-ExtensionPoints</module>
+		<module>KnowWE-core-Plugins</module>
 	</modules>
 	<repositories>
 		<repository>
