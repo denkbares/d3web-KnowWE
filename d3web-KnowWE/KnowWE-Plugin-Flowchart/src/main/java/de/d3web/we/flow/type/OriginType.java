@@ -44,10 +44,4 @@ public class OriginType extends AbstractXMLObjectType {
 	}
 
 	
-	protected void init() {
-		super.init();
-		childrenTypes.add(DefaultTextType.getInstance());
-	}
-	
-
 }

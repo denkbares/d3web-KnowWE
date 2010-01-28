@@ -43,11 +43,5 @@ public class TargetType extends AbstractXMLObjectType {
 	}
 
 	
-	
-	protected void init() {
-		super.init();
-		childrenTypes.add(DefaultTextType.getInstance());
-	}
-	
 
 }

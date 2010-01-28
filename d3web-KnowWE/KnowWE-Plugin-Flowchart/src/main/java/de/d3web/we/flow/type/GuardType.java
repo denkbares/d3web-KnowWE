@@ -45,11 +45,4 @@ public class GuardType extends AbstractXMLObjectType {
 
 
 	
-	
-	@Override
-	protected void init() {
-		super.init();
-		childrenTypes.add(DefaultTextType.getInstance());
-	}
-	
 }
