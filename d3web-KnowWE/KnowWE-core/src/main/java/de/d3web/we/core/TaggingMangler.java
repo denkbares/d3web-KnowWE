@@ -390,11 +390,13 @@ public class TaggingMangler implements KnowWESearchProvider {
 	public String renderResults(Collection<GenericSearchResult> pages) {
 		StringBuffer html=new StringBuffer();
 		for (GenericSearchResult cur : pages) {
-			String link = "<a href=\"Wiki.jsp?page=" + cur.getPagename()
+			String link = "<a target='_blank' href=\"Wiki.jsp?page=" + cur.getPagename()
 					+ "\">" + cur.getPagename() + "</a>";
-			String score = cur.getScore() + "";
+			
+			//String score = cur.getScore() + "";
 			html.append("<div class='left'>");
-			html.append("<b>" + link + "</b>" + " (Score:" + score + ")");
+			html.append("<b>" + link + "</b>");
+					//" (Score:" + score + ")");
 			html.append("</div><br>");
 
 		}
@@ -414,7 +416,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	@Override
 	public String getVerbalization(Locale local) {
 		// TODO verbalize
-		return "Tag-Suche";
+		return "Tags";
 	}
 
 
