@@ -27,10 +27,18 @@ import groovy.lang.MissingPropertyException;
 import groovy.lang.Script;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.servlet.http.HttpSession;
+
+import name.fraser.neil.plaintext.diff_match_patch;
+import name.fraser.neil.plaintext.diff_match_patch.Diff;
 
 import org.ceryle.xml.XHTML;
 
@@ -44,7 +52,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.rules.RulesSectionContent;
-
 /**
  * @author Franz Schwab
  */
@@ -55,9 +62,14 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	private final Condition runScript = lock.newCondition();
 	private KnowWEAction nextAction;
 	
-	private static Thread thread;
+	private Map<String, String[]> changedSections = new HashMap<String, String[]>();
+	
+	// TODO eigentlich müsste nicht nur der Thread mit dem Skript, sondern auch die locks, die conditions,
+	// die nextactions... usw. alle pro HttpSession gespeichert werden -> Vorschlag: wie wärs mit Map<HttpSession, RefactoringAction> ?!
+	private Map<HttpSession, Thread> threads = new HashMap<HttpSession, Thread>();
 
 	KnowWEParameterMap parameters;
+	HttpSession session;
 	String id;
 	String topic;
 	String web;
@@ -69,14 +81,14 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	public String perform(KnowWEParameterMap parameters) {
 		this.parameters = parameters;
 		init();
-		if (thread == null) {
-			thread = new Thread(new Runnable() {
+		if (threads.get(session) == null) {
+			threads.put(session, new Thread(new Runnable() {
 				@Override
 				public void run() {
 					perform();
 				}
-			});
-			thread.start();
+			}));
+			threads.get(session).start();
 		} else {
 			lock.lock();
 			runScript.signal();
@@ -95,6 +107,7 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	}
 
 	private void init() {
+		session = parameters.getSession();
 		id = parameters.get("formdata");
 		topic = parameters.getTopic();
 		web = parameters.getWeb();
@@ -103,20 +116,27 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		section = article.getSection();
 	}
 
-	public void perform() {
+	private void perform() {
 
 		try {
 			Object[] args = {};
 			ClassLoader parent = getClass().getClassLoader();
 			GroovyClassLoader loader = new GroovyClassLoader(parent);
 			Section<?> refactoringSection = findRefactoringSection();
-			Class<?> groovyClass = loader.parseClass(refactoringSection.getOriginalText());
+			String identity = "R_E_F_A_C_T_O_R_I_N_G___A_C_T_I_O_N";
+			//String identity = "ra";
+			String ls = System.getProperty("line.separator");
+			StringBuffer sb = new StringBuffer();
+			sb.append(identity + ".identity{" + ls);
+			sb.append(refactoringSection.getOriginalText());
+			sb.append(ls + "}");
+			Class<?> groovyClass = loader.parseClass(sb.toString());
 			// GroovyObject gob = new XCLToRules();
 			GroovyObject gob = (GroovyObject) groovyClass.newInstance();
 			if (gob instanceof groovy.lang.Script) {
 				Script script = (Script) gob;
 				Binding binding = script.getBinding();
-				binding.setVariable("ra", this);
+				binding.setVariable(identity, this);
 				script.invokeMethod("run", args);
 			} else {
 				gob.invokeMethod("run", args);
@@ -156,19 +176,62 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		nextAction = new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameterMap) {
-				// TODO Auto-generated method stub
-				return "Refactorings abgeschlossen";
+//				String ls = System.getProperty("line.separator");
+//				
+//				String s1 = "Clogged air filter{"+ls+
+//						"    Air filter ok = no,"+ls+
+//						"    Driving = weak acceleration,"+ls+
+//						"    Exhaust pipe color evaluation = abnormal,"+ls+
+//						"    Mileage evaluation = increased,"+ls+
+//						"}"+ls+
+//						""+ls+
+//						"Leaking air intake system{"+ls+
+//						"    Driving = insufficient power on full load,"+ls+
+//						"    Air intake system ok = no,"+ls+
+//						"}";
+//				String s2 = "Clogged air filter{"+ls+
+//						"    Air filter ok = yes,"+ls+
+//						"    Driving = weak acceleration,"+ls+
+//						"    Mileage evaluation = increased,"+ls+
+//						"}"+ls+
+//						""+ls+
+//						""+ls+
+//						""+ls+
+//						"Leaking air intake system{"+ls+
+//						"    Driving = insufficient power on full load,"+ls+
+//						"    Mileage evaluation = increased,"+ls+
+//						"    Air intake system ok = no,"+ls+
+//						"}";
+//
+//				diff_match_patch dmp = new diff_match_patch();
+//				LinkedList<Diff> diffs = dmp.diff_main(s1,s2);
+//				dmp.diff_cleanupSemantic(diffs);
+//				String html = dmp.diff_prettyHtml(diffs);
+//				return html;
+				
+				StringBuffer sb = new StringBuffer();
+				
+				for (String id: changedSections.keySet()) {
+					sb.append("Die Section mit folgender ID hat sich geändert: " + id + "<br />");
+					diff_match_patch dmp = new diff_match_patch();
+					LinkedList<Diff> diffs = dmp.diff_main(changedSections.get(id)[0],changedSections.get(id)[1]);
+					dmp.diff_cleanupSemantic(diffs);
+					sb.append(dmp.diff_prettyHtml(diffs) + "<br />");
+				}
+				sb.append("<br />Refactorings abgeschlossen.<br />");
+				changedSections = new HashMap<String, String[]>();
+				return sb.toString();
 			}
 		};
 		lock.lock();
 		runDialog.signal();
 		lock.unlock();
 		// sehr wichtig: Thread freigeben, da Script nun fertig
-		thread = null;
+		threads.put(session,null);
 	}
 
 	public void saveArticle(StringBuilder sb, Section<RulesSectionContent> rulesSectionContent) {
-		manager.replaceKDOMNode(parameters, topic, rulesSectionContent.getId(), rulesSectionContent.getOriginalText() + sb.toString());
+		replaceKDOMNode(rulesSectionContent, rulesSectionContent.getOriginalText() + sb.toString(), true);
 	}
 
 	public Section<RulesSectionContent> findRulesSectionContent() {
@@ -179,13 +242,12 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	}
 
 	public void deleteXCList(Section<?> knowledgeSection) {
-		String text = manager.replaceKDOMNodeWithoutSave(parameters, topic, knowledgeSection.getId(), "\n");
-		section = refreshArticleSection(text);
+		replaceKDOMNode(knowledgeSection, "\n", false);
 	}
 
 	public void createRulesText(String solutionID, StringBuilder sb, Section<Finding> sec) {
 		sb.append("\nIF " + sec.getOriginalText());
-		sb.append("\n\tTHEN ");
+		sb.append("\n    THEN ");
 		sb.append(solutionID + " = P7");
 	}
 
@@ -223,7 +285,22 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		Section<?> refactoring = section.findChild(id);
 		return refactoring;
 	}
-
+	
+	private void replaceKDOMNode(Section<?> section, String newText, boolean save) {
+		// TODO Liste mit getätigten Änderungen anlegen, die am Ende als Report ausgegeben werden kann.
+		if (! changedSections.containsKey(section.getId())) {
+			changedSections.put(section.getId(), new String[] {section.getOriginalText(), newText});
+		} else {
+			changedSections.put(section.getId(), new String[] {changedSections.get(section.getId())[0], newText});
+		}
+		if (save) {
+			manager.replaceKDOMNode(parameters, topic, section.getId(), newText);
+		} else {
+			String text = manager.replaceKDOMNodeWithoutSave(parameters, topic, section.getId(), newText);
+			section = refreshArticleSection(text);
+		}
+	}
+	
 	private Section<?> refreshArticleSection(String text) {
 		Section<?> articleSection;
 		article = new KnowWEArticle(text, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
