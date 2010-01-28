@@ -120,7 +120,7 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
 	@Override
 	public String getVerbalization(Locale local) {
-		return "Freitext Suche";
+		return "Wiki-Seiten";
 	}
 
 	@Override
@@ -139,6 +139,7 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
 			// some conversion hack to get rid of jspwiki dependencies
 			for (SearchResult result : jspwikiResults) {
+				if(result.getPage().getName().contains("/")) continue;
 				knowweResult.add(new GenericSearchResult(result.getPage()
 						.getName(), result.getContexts(), result.getScore()));
 			}
@@ -161,20 +162,23 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 		resultBuffy.append(" <table class=\"wikitable\" >");
 
 		resultBuffy
-				.append(" <tr>  <th align=\"left\">Page</th>     <th align=\"left\">Score</th>  </tr>");
+				.append(" <tr>  <th align=\"left\">Page</th>    ");
+		//resultBuffy.append(" <th align=\"left\">Score</th>  </tr>");
 
 		for (GenericSearchResult genericSearchResult : results) {
 
+			
+			
 			String url = "";
 
 			resultBuffy.append(" <tr>");
 			resultBuffy
-					.append("<td><a class=\"wikipage\" href=\"Wiki.jsp?page="
+					.append("<td><a class=\"wikipage\" target='_blank' href=\"Wiki.jsp?page="
 							+ genericSearchResult.getPagename() + "" + url
 							+ "\">" + genericSearchResult.getPagename()
 							+ "</a> </td>");
-			resultBuffy.append("<td><span class=\"gbar\">"
-					+ genericSearchResult.getScore() + "</span> </td>");
+			//resultBuffy.append("<td><span class=\"gbar\">"
+			//		+ genericSearchResult.getScore() + "</span> </td>");
 
 			// resultBuffy.append(genericSearchResult.getContexts()[0]);
 			resultBuffy.append("</tr>");
