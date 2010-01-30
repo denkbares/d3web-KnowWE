@@ -20,6 +20,11 @@
 
 package de.d3web.we.refactoring.action;
 
+import com.ecyrd.jspwiki.WikiContext;
+import com.ecyrd.jspwiki.WikiEngine;
+import com.ecyrd.jspwiki.WikiException;
+import com.ecyrd.jspwiki.WikiPage;
+
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
@@ -63,6 +68,7 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	private KnowWEAction nextAction;
 	
 	private Map<String, String[]> changedSections = new HashMap<String, String[]>();
+	private Map<String, int[]> changedWikiPages = new HashMap<String, int[]>();
 	
 	// TODO eigentlich müsste nicht nur der Thread mit dem Skript, sondern auch die locks, die conditions,
 	// die nextactions... usw. alle pro HttpSession gespeichert werden -> Vorschlag: wie wärs mit Map<HttpSession, RefactoringAction> ?!
@@ -212,14 +218,40 @@ public class RefactoringAction extends AbstractKnowWEAction {
 				StringBuffer sb = new StringBuffer();
 				
 				for (String id: changedSections.keySet()) {
-					sb.append("Die Section mit folgender ID hat sich geändert: " + id + "<br />");
+					sb.append("<br />Die Section mit folgender ID hat sich geändert: " + id + "<br />");
 					diff_match_patch dmp = new diff_match_patch();
 					LinkedList<Diff> diffs = dmp.diff_main(changedSections.get(id)[0],changedSections.get(id)[1]);
 					dmp.diff_cleanupSemantic(diffs);
 					sb.append(dmp.diff_prettyHtml(diffs) + "<br />");
 				}
 				sb.append("<br />Refactorings abgeschlossen.<br />");
+				
+				WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
+				
+				//int oldversion = 9;
+				
+				for(String pageName: changedWikiPages.keySet()) {
+					sb.append("<br />Die Seite [" + pageName + "] wurde verändert von Version " + changedWikiPages.get(pageName)[0] +
+					" zu Version " + changedWikiPages.get(pageName)[1] + ". Aktuelle Version der Seite ist " + we.getPage(pageName).getVersion() + 
+					".<br />");
+
+					//oldversion = changedWikiPages.get(pageName)[0];
+				}
+				
+				//
+//				WikiPage page = we.getPage(topic);
+//				WikiContext wc = new WikiContext(we, page);
+//				try {
+//					we.saveText(wc, we.getPageManager().getPageText(topic, oldversion));
+//				} catch (WikiException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				//
+				
 				changedSections = new HashMap<String, String[]>();
+				changedWikiPages = new HashMap<String, int[]>();
+				
 				return sb.toString();
 			}
 		};
@@ -287,14 +319,22 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	}
 	
 	private void replaceKDOMNode(Section<?> section, String newText, boolean save) {
-		// TODO Liste mit getätigten Änderungen anlegen, die am Ende als Report ausgegeben werden kann.
 		if (! changedSections.containsKey(section.getId())) {
 			changedSections.put(section.getId(), new String[] {section.getOriginalText(), newText});
 		} else {
 			changedSections.put(section.getId(), new String[] {changedSections.get(section.getId())[0], newText});
 		}
 		if (save) {
+			// wikiengine tracking of article versions
+			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
+			int versionBefore = we.getPage(topic).getVersion();
 			manager.replaceKDOMNode(parameters, topic, section.getId(), newText);
+			int versionAfter = we.getPage(topic).getVersion();
+			if (! changedWikiPages.containsKey(topic)) {
+				changedWikiPages.put(topic, new int[] {versionBefore, versionAfter});
+			} else {
+				changedWikiPages.put(topic, new int[] {changedWikiPages.get(topic)[0], versionAfter});
+			}
 		} else {
 			String text = manager.replaceKDOMNodeWithoutSave(parameters, topic, section.getId(), newText);
 			section = refreshArticleSection(text);
