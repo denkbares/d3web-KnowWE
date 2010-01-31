@@ -361,7 +361,7 @@ public class KnowWEEnvironment {
 			this.wikiConnector = wiki;
 
 			System.out.println("INITIALISING KNOWWE ENVIRONMENT...");
-			ResourceBundle bundle = ResourceBundle.getBundle("WebParserConfig");
+			ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
 			if (bundle != null && !(wiki instanceof KnowWETestWikiConnector)) {
 				// convert the $web_app$-variable from the resourcebundle
 				// defaultJarsPath = KnowWEUtils.getRealPath(context, bundle

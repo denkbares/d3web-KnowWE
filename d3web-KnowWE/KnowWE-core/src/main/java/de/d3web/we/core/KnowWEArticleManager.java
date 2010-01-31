@@ -66,7 +66,7 @@ public class KnowWEArticleManager {
 	}
 
 	private static ResourceBundle rb = ResourceBundle
-			.getBundle("WebParserConfig");
+			.getBundle("KnowWE_config");
 
 	public KnowWEArticleManager(KnowWEEnvironment env, String webname) {
 		this.web = webname;
