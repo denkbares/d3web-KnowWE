@@ -22,13 +22,17 @@ import name.fraser.neil.plaintext.diff_match_patch.Diff;
 
 import org.ceryle.xml.XHTML;
 
+import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
+import com.ecyrd.jspwiki.WikiException;
+import com.ecyrd.jspwiki.WikiPage;
 
 import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
@@ -175,46 +179,66 @@ public class RefactoringSession {
 				System.out.println(e.getClass().getName() + " thrown while executing Groovy script."); // I18N
 			}
 		}
-		nextAction = new AbstractKnowWEAction() {
+		
+		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameterMap) {
-				StringBuffer sb = new StringBuffer();
+				StringBuffer html = new StringBuffer();
 				
 				for (String id: changedSections.keySet()) {
-					sb.append("<br />Die Section mit folgender ID hat sich geändert: " + id + "<br />");
+					html.append("<br />Die Section mit folgender ID hat sich geändert: " + id + "<br />");
 					diff_match_patch dmp = new diff_match_patch();
 					LinkedList<Diff> diffs = dmp.diff_main(changedSections.get(id)[0],changedSections.get(id)[1]);
 					dmp.diff_cleanupSemantic(diffs);
-					sb.append(dmp.diff_prettyHtml(diffs) + "<br />");
+					html.append(dmp.diff_prettyHtml(diffs) + "<br />");
 				}
-				sb.append("<br />Refactorings abgeschlossen.<br />");
+				html.append("<br />Refactorings abgeschlossen.<br />");
 				
 				WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
-				
-//				int oldversion;
-				
+											
 				for(String pageName: changedWikiPages.keySet()) {
-					sb.append("<br />Die Seite [" + pageName + "] wurde verändert von Version " + changedWikiPages.get(pageName)[0] +
+					html.append("<br />Die Seite [" + pageName + "] wurde verändert von Version " + changedWikiPages.get(pageName)[0] +
 					" zu Version " + changedWikiPages.get(pageName)[1] + ". Aktuelle Version der Seite ist " + we.getPage(pageName).getVersion() + 
 					".<br />");
-
-//					oldversion = changedWikiPages.get(pageName)[0];
 				}
-				
-//				WikiPage page = we.getPage(topic);
-//				WikiContext wc = new WikiContext(we, page);
-//				try {
-//					we.saveText(wc, we.getPageManager().getPageText(topic, oldversion));
-//				} catch (WikiException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-				
-				changedSections = new HashMap<String, String[]>();
-				changedWikiPages = new HashMap<String, int[]>();
-				return sb.toString();
+				 
+				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Möchten Sie die Änderungen rückgängig machen?</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringform'><div class='left'><label for='article'>Undo</label>"
+						+ "<select name='refactoringselect'>");
+				html.append("<option value='nein'>nein</option>");
+				html.append("<option value='ja'>ja</option>");
+				html.append("</select></div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		
+		if (id.equals("ja")) {
+			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
+			for (String st: changedWikiPages.keySet()) {
+				WikiPage page = we.getPage(st);
+				WikiContext wc = new WikiContext(we, page);
+				// TODO test, ob changedWikiPages.get(st)[0] == we.getPage(pageName).getVersion()
+				try {
+					we.saveText(wc, we.getPageManager().getPageText(topic, changedWikiPages.get(st)[0]));
+				} catch (WikiException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		nextAction = new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameterMap) {
+				// TODO Auto-generated method stub
+				return "Refactorings abgeschlossen";
 			}
 		};
+		
+		// Ende des Refactorings
 		lock.lock();
 		runDialog.signal();
 		lock.unlock();
