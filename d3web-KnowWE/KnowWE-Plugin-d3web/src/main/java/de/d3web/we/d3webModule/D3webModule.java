@@ -112,7 +112,7 @@ public class D3webModule implements KnowWEModule {
 
 	public static ResourceBundle getKwikiBundle_d3web() {
 
-		return ResourceBundle.getBundle("KnowWE2_plugin_d3web_messages");
+		return ResourceBundle.getBundle("KnowWE_plugin_d3web_messages");
 	}
 
 	public static ResourceBundle getKwikiBundle_d3web(KnowWEUserContext user) {
