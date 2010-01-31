@@ -110,14 +110,18 @@ public class UpdateQuestions implements KnowWEAction {
 		if (!questionsSection.contains("added Questions")) {
 			buffy.append(LINE_SEPARATOR + "added Questions" + LINE_SEPARATOR);
 			buffy.append("- " + questionText + " [" + questionType + "]" + LINE_SEPARATOR);
-			for (String s : answers) {
-				buffy.append("-- " + s + LINE_SEPARATOR);
+			if (!questionType.equals("num")) {
+				for (String s : answers) {
+					buffy.append("-- " + s + LINE_SEPARATOR);
+				}
 			}
 			
 		} else {
 			buffy.append("- " + questionText + " [" + questionType + "]" + LINE_SEPARATOR);
-			for (String s : answers) {
-				buffy.append("-- " + s + LINE_SEPARATOR);
+			if (!questionType.equals("num")) {
+				for (String s : answers) {
+					buffy.append("-- " + s + LINE_SEPARATOR);
+				}
 			}
 		}
 		newQuestionsSection += buffy.toString();

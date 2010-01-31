@@ -127,7 +127,7 @@ public class AddSubFlowchart implements KnowWEAction{
 	private String createID(String text) {
 		
 		if (text.contains("<flowchart")) {
-			String[] flowcharts = text.split("<flowchart id=\"");
+			String[] flowcharts = text.split("<flowchart fcid=\"");
 			
 			String tempid = flowcharts[flowcharts.length - 1].substring(2, flowcharts[flowcharts.length - 1].indexOf("\""));
 			int number = Integer.valueOf(tempid) + 1;

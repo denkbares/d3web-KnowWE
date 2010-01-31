@@ -419,6 +419,30 @@ ActionEditor.prototype.render = function() {
 	return dom;
 }
 
+// Helper
+function getElementsByClassName(class_name)
+{
+  var all_obj,ret_obj=new Array(),j=0,teststr;
+
+  if(document.all)all_obj=document.all;
+  else if(document.getElementsByTagName && !document.all)
+    all_obj=document.getElementsByTagName("*");
+
+  for(i=0;i<all_obj.length;i++)
+  {
+    if(all_obj[i].className.indexOf(class_name)!=-1)
+    {
+      teststr=","+all_obj[i].className.split(" ").join(",")+",";
+      if(teststr.indexOf(","+class_name+",")!=-1)
+      {
+        ret_obj[j]=all_obj[i];
+        j++;
+      }
+    }
+  }
+  return ret_obj;
+}
+
 //creates the Dropdown Menu, with the answer values
 ActionEditor.createQuestionDropdown = function(addedQuestionText, addedQuestionType, possibleAnswers) {
 	var name = addedQuestionText;	
@@ -454,6 +478,8 @@ ActionEditor.createQuestionDropdown = function(addedQuestionText, addedQuestionT
 // AJAX-Request for adding questions and their answers to the article
 ActionEditor.updateQuestions = function(addedQuestionText, addedQuestionType, possibleAnswers) {
 
+	
+		
 		var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
 		var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
 		var answersToLine = '&answers=';
@@ -615,6 +641,11 @@ ActionEditor.addSubFlow = function(exitNodes) {
 }
 
 ActionEditor.prototype.createNewFlowchart = function() {
+	// recreate the OK-Button
+	var buttonGroup = document.getElementsByClassName('buttonGroup');
+	buttonGroup[0].childNodes[0].style.visibility = "visible";
+	
+	// create the new flowchart
 	var root = this.dom.select('.value')[0];
 	var qText = document.choseQuestionText.questionText.value;
 	var exitNodes = this.getAnswers();
@@ -625,6 +656,13 @@ ActionEditor.prototype.createNewFlowchart = function() {
 // puts everything together, e.g. the question, the type and the answers
 // also calls the AJAX request
 ActionEditor.prototype.createNewQuestion = function() {
+	
+	// recreate the OK-Button
+	var buttonGroup = document.getElementsByClassName('buttonGroup');
+	buttonGroup[0].childNodes[0].style.visibility = "visible";
+
+	
+	// create the question
 	var root = this.dom.select('.value')[0];
 	var qText = document.choseQuestionText.questionText.value;
 	var qType = ActionEditor.getQuestionType();
@@ -770,10 +808,18 @@ ActionEditor.prototype.removeAnswer = function(answer) {
 	root.innerHTML = newText;
 }
 
- 
+
+
 
 // asks the object type
 ActionEditor.prototype.askQuestionType = function() {
+
+	// remove the OK-Button
+	var buttonGroup = document.getElementsByClassName('buttonGroup');
+	buttonGroup[0].childNodes[0].style.visibility = "hidden";
+	
+	
+	// ask the question type
 	var root = this.dom.select('.value')[0];
 	var questionText = document.choseQuestionText.questionText.value;
 	var multipleChoice = '<input type="radio" id="mc" name="questionType" value="mc">Question [mc]<br>';
@@ -783,6 +829,7 @@ ActionEditor.prototype.askQuestionType = function() {
 	var solution = '<input type="radio" id="Solution" name="questionType" value="Solution">Solution<br>';
 	var newFlowchart = '<input type="radio" id="newFlowchart" name="questionType" value="newFlowchart">Flowchart<br>';
 	var buttonOK = '<input type="button" value="Erstellen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.addAnswer()"';
+
 	root.innerHTML = '<i>Bitte Objekttyp auswählen für</i><br\>' + questionText
 	+ '<br\><form name="choseQuestionType" id="choseQuestionType" method="get">' + oneChoice + multipleChoice  + yn  + num + solution + newFlowchart + "<br\>" + buttonOK + "</form>";
 	return;
