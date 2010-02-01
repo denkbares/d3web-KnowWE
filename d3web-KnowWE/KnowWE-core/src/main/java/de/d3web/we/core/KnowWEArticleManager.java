@@ -170,12 +170,29 @@ public class KnowWEArticleManager {
 	 * @param articleName
 	 * @param nodeID
 	 * @return null if article or node not found
+	 * @see findNode(String nodeID)
 	 */
 	public Section findNode(String articleName, String nodeID) {
 		KnowWEArticle art = this.getArticle(articleName);
 		if (art == null)
 			return null;
 		return art.findSection(nodeID);
+	}
+	
+	/**
+	 * Looks in KDOM for the Section object with given nodeID The article name is not needed because it is part of the nodeID
+	 * 
+	 * @param nodeID
+	 * @return null if article or node not found
+	 */
+	public Section findNode(String nodeID) {
+		String articleName;
+		if (nodeID.contains("/")) {
+			articleName = nodeID.substring(0, nodeID.indexOf("/"));
+		} else {
+			articleName = nodeID;
+		}
+		return findNode(articleName, nodeID);
 	}
 
 	private void appendTextReplaceNode(Section sec, String nodeID, String text,

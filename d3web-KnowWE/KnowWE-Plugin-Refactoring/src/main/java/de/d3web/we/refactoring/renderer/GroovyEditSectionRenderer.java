@@ -19,6 +19,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author smark
  * @since 2009/10/18
  */
+@Deprecated
 public class GroovyEditSectionRenderer extends KnowWEDomRenderer {
 	
 	KnowWEDomRenderer renderer;

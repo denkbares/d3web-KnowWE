@@ -7,15 +7,17 @@ import groovy.lang.MissingPropertyException;
 import groovy.lang.Script;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import javax.servlet.http.HttpSession;
 
 import name.fraser.neil.plaintext.diff_match_patch;
 import name.fraser.neil.plaintext.diff_match_patch.Diff;
@@ -38,7 +40,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.rules.RulesSectionContent;
-import de.d3web.we.refactoring.action.GetXCLAction;
+import de.d3web.we.kdom.xcl.XCList;
 
 public class RefactoringSession {
 	
@@ -48,82 +50,54 @@ public class RefactoringSession {
 			perform();
 		}
 	});
-	
-	private final Lock lock = new ReentrantLock();
-	private final Condition runDialog = lock.newCondition();
-	private final Condition runScript = lock.newCondition();
-	private KnowWEAction nextAction;
-	
-	private Map<String, String[]> changedSections = new HashMap<String, String[]>();
-	private Map<String, int[]> changedWikiPages = new HashMap<String, int[]>();
-	
-	KnowWEParameterMap parameters;
-	HttpSession session;
-	// TODO bessere Schnittstelle zum Austausch der Formulardaten: momentan läuft alles über id
-	String id;
-	String topic;
-	String web;
-	KnowWEArticleManager manager;
-	KnowWEArticle article;
-	Section<?> section;
-	private boolean terminated = false;
-
-	/**
-	 * @return the lock
-	 */
-	public Lock getLock() {
-		return lock;
-	}
-
-	/**
-	 * @return the nextAction
-	 */
-	public KnowWEAction getNextAction() {
-		return nextAction;
-	}
-
-	/**
-	 * @return the runDialog
-	 */
-	public Condition getRunDialog() {
-		return runDialog;
-	}
-
-	/**
-	 * @return the runScript
-	 */
-	public Condition getRunScript() {
-		return runScript;
-	}
-
-	/**
-	 * @return the thread
-	 */
 	public Thread getThread() {
 		return thread;
 	}
-	
-	/**
-	 * @return the terminated
-	 */
+	private boolean terminated = false;
 	public boolean isTerminated() {
 		return terminated;
 	}
-
+	private final Lock lock = new ReentrantLock();
+	public Lock getLock() {
+		return lock;
+	}
+	private final Condition runDialog = lock.newCondition();
+	public Condition getRunDialog() {
+		return runDialog;
+	}
+	private final Condition runRefactoring = lock.newCondition();
+	public Condition getRunRefactoring() {
+		return runRefactoring;
+	}
+	private KnowWEAction nextAction;
+	public KnowWEAction getNextAction() {
+		return nextAction;
+	}
+	
+	/**
+	 * Key: String - the KDOM-ID of the changed section
+	 * Val: String[0] - the section before the change; String[1] - the section after the change
+	 */
+	private Map<String, String[]> changedSections = new HashMap<String, String[]>();
+	/**
+	 * Key: String - the name of the changed wiki page
+	 * Val: int[0] - the version of the wiki page before the changes - int[0] - the version of the wiki page after the changes
+	 */
+	private Map<String, int[]> changedWikiPages = new HashMap<String, int[]>();
+	
+	private KnowWEParameterMap parameters;
+	private KnowWEArticleManager manager;
+	// TODO bessere Schnittstelle zum Austausch der Formulardaten: momentan läuft alles über id
+	private String id;
+	
 	public void set(KnowWEParameterMap parameters) {
 		this.parameters = parameters;
-		session = parameters.getSession();
 		id = parameters.get("formdata");
-		topic = parameters.getTopic();
-		web = parameters.getWeb();
-		manager = KnowWEEnvironment.getInstance().getArticleManager(web);
-		article = manager.getArticle(topic);
-		section = article.getSection();
+		manager = KnowWEEnvironment.getInstance().getArticleManager(parameters.getWeb());
 	}
 	
 	// TODO bessere Integration des Groovy-Plugins, Fehlermeldungen müssten z.B. im Wiki angezeigt werden.
 	public void perform() {
-
 		try {
 			Object[] args = {};
 			ClassLoader parent = getClass().getClassLoader();
@@ -209,6 +183,7 @@ public class RefactoringSession {
 						+ "<select name='refactoringselect'>");
 				html.append("<option value='nein'>nein</option>");
 				html.append("<option value='ja'>ja</option>");
+				// TODO onlick ersetzen, d.h. den button explizit registrieren
 				html.append("</select></div><div>"
 						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
 				return html.toString();
@@ -222,18 +197,17 @@ public class RefactoringSession {
 				WikiContext wc = new WikiContext(we, page);
 				// TODO test, ob changedWikiPages.get(st)[0] == we.getPage(pageName).getVersion()
 				try {
-					we.saveText(wc, we.getPageManager().getPageText(topic, changedWikiPages.get(st)[0]));
+					we.saveText(wc, we.getPageManager().getPageText(st, changedWikiPages.get(st)[0]));
 				} catch (WikiException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
 		
+		// TODO verbessern
 		nextAction = new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameterMap) {
-				// TODO Auto-generated method stub
 				return "Refactorings abgeschlossen";
 			}
 		};
@@ -242,18 +216,23 @@ public class RefactoringSession {
 		lock.lock();
 		runDialog.signal();
 		lock.unlock();
+		// TODO wie wäre es, wenn sich der Thread gleich aus der HashMap von RefactoringAction selbst enfernt? 
 		// sehr wichtig: Thread freigeben, da Script nun fertig
 		terminated  = true;
 	}
 
+	// GROOVY-METHODEN TODO auslagern?!
+	
+	// TODO saveArticle sollte implizit/automatisch durchgeführt werden und nicht innerhalb des Refactorings durchgeführt werden müssen
+	// Vorschlag: bei changedArticles bzw. changedSections abfragen am Ende des Refs - (oder besser sofort nach einer Änderung abspeichern,
+	// damit anschließende Modifikationen dieses Refactoring auch sehen - tun sie das nicht sowieso?) ...
 	public void saveArticle(StringBuilder sb, Section<RulesSectionContent> rulesSectionContent) {
 		replaceSection(rulesSectionContent, rulesSectionContent.getOriginalText() + sb.toString(), true);
 	}
 
-	public Section<RulesSectionContent> findRulesSectionContent() {
-		List<Section<RulesSectionContent>> rulesSectionContents = new ArrayList<Section<RulesSectionContent>>();
-		section.findSuccessorsOfType(new RulesSectionContent(), rulesSectionContents);
-		Section<RulesSectionContent> rulesSectionContent = rulesSectionContents.get(0);
+	public Section<RulesSectionContent> findRulesSectionContent(Section<?> knowledgeSection) {
+		KnowWEArticle article = knowledgeSection.getArticle();
+		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(new RulesSectionContent());
 		return rulesSectionContent;
 	}
 
@@ -261,6 +240,7 @@ public class RefactoringSession {
 		replaceSection(knowledgeSection, "\n", false);
 	}
 
+	// TODO für dieses Refactoring sollten die Werte besser berechnet werden
 	public void createRulesText(String solutionID, StringBuilder sb, Section<Finding> sec) {
 		sb.append("\nIF " + sec.getOriginalText());
 		sb.append("\n    THEN ");
@@ -279,13 +259,44 @@ public class RefactoringSession {
 	}
 
 	public Section<?> findKnowledgeSection() {
-		performNextAction(new GetXCLAction());
-		Section<?> knowledge = section.findChild(id);
+		performNextAction(new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				
+				SortedSet<String> topics = new TreeSet<String>();
+				for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
+					topics.add(it.next().getTitle());
+				}
+				StringBuilder html = new StringBuilder();
+				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Wählen Sie die zu transformierende Überdeckungsliste aus:</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringform'><div class='left'><label for='article'>XCList</label>"
+						+ "<select name='refactoringselect'>");
+				for(Iterator<String> it = topics.iterator(); it.hasNext();) {
+					KnowWEArticle article = manager.getArticle(it.next());
+					Section<?> articleSection = article.getSection();
+					List<Section<XCList>> xclists = new ArrayList<Section<XCList>>();
+					articleSection.findSuccessorsOfType(new XCList(), xclists);
+					for (Section<?> xclist : xclists) {
+						html.append("<option value='" + xclist.getId() + "'>Seite: " + article.getTitle() + " - XCList: " 
+								+ xclist.findSuccessor(new SolutionID()).getOriginalText() + "</option>");
+					}
+				}
+				// TODO onlick ersetzen, d.h. den button explizit registrieren
+				html.append("</select></div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		
+		Section<?> knowledge = manager.findNode(id);
+
 		return knowledge;
 	}
 	
 	
-	// Hilfsmethoden
+	// HILFSMETHODEN
 
 	private void performNextAction(KnowWEAction action) {
 		nextAction = action;
@@ -295,7 +306,7 @@ public class RefactoringSession {
 		// Hier könnte parallel ausgeführter Code stehen
 		lock.lock();
 		try {
-			runScript.await();
+			runRefactoring.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
@@ -304,17 +315,24 @@ public class RefactoringSession {
 	}
 	
 	private Section<?> findRefactoringSection() {
+		// TODO momentan werden nur Refactorings betrachtet, die sich auf dieser Seite befinden
+		Section<?> section = manager.getArticle(parameters.getTopic()).getSection();
 		Section<?> refactoring = section.findChild(id);
 		return refactoring;
 	}
 	
-	private void replaceSection(Section<?> section, String newText, boolean save) {
+	// TODO Momentan muss die letzte Änderung mit saveArticle = true ausgeführt werden.
+	// Verbesserungsmöglichkeit: Es sollte immer mit saveArticle = false gearbeitet werden, und am Ende wird der Article standardmässig mit
+	// saveArticle = true abgespeichert. Dann kann man auch 2 Methoden draus machen.
+	private void replaceSection(Section<?> section, String newText, boolean saveArticle) {
 		if (! changedSections.containsKey(section.getId())) {
 			changedSections.put(section.getId(), new String[] {section.getOriginalText(), newText});
 		} else {
 			changedSections.put(section.getId(), new String[] {changedSections.get(section.getId())[0], newText});
 		}
-		if (save) {
+		KnowWEArticle article = section.getArticle();
+		String topic = article.getTitle();
+		if (saveArticle) {
 			// tracking of article versions
 			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
 			int versionBefore = we.getPage(topic).getVersion();

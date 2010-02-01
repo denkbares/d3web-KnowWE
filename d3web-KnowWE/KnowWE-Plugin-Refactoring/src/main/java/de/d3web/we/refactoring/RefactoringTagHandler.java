@@ -51,7 +51,7 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 		KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
 		html.append("<div id='refactoring-panel' class='panel'><h3>Refactoring Konsole</h3><div id='refactoring-content'>"
 				+ "<fieldset><div class='left'>" + "<p>Es wurden <strong>" + refactorings.size()
-				+ "</strong> Refactorings gefunden. Bitte wählen Sie das gewünschte Refactoring aus.</p></div>"
+				+ "</strong> Refactorings auf dieser Seite gefunden. Bitte wählen Sie das gewünschte Refactoring aus.</p></div>"
 				+ "<div style='clear:both'></div><form name='refactoringform'><div class='left'><label for='article'>Refactoring</label>"
 				+ "<select name='refactoringselect'>");
 		for (Section<Refactoring> refactoring : refactorings) {

@@ -62,9 +62,7 @@ public class RefactoringPlugin extends AbstractDefaultKnowWEModule {
 	
 	@Override
 	public void addAction(Map<Class<? extends KnowWEAction>, KnowWEAction> map) {
-		// TODO Auto-generated method stub
 		map.put(RefactoringAction.class, new RefactoringAction());
-		map.put(GetXCLAction.class, new GetXCLAction());
 	}
 
 
@@ -96,17 +94,16 @@ public class RefactoringPlugin extends AbstractDefaultKnowWEModule {
 	}
 
 	
-	/* (non-Javadoc)
+	/**
 	 * @see de.d3web.we.module.AbstractDefaultKnowWEModule#getRootTypes()
-	 * 
 	 * A module can add (any number of) root types to the system
 	 * 
 	 */
 	@Override
 	public List<KnowWEObjectType> getRootTypes() {
-		List<KnowWEObjectType> helloWorldrootTypes = new ArrayList<KnowWEObjectType>();
-		helloWorldrootTypes.add(new Refactoring());
-		return helloWorldrootTypes;
+		List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
+		rootTypes.add(new Refactoring());
+		return rootTypes;
 	} 
 	
 

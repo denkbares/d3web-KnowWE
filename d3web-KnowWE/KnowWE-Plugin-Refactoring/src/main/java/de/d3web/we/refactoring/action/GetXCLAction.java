@@ -36,6 +36,7 @@ import de.d3web.we.kdom.xcl.XCList;
 /**
  * @author Franz Schwab
  */
+@Deprecated
 public class GetXCLAction extends AbstractKnowWEAction {
 
 	KnowWEParameterMap parameters;

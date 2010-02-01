@@ -1,10 +1,12 @@
 package de.d3web.we.refactoring.script;
 
 import java.util.List;
+
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.rules.RulesSectionContent;
 
+@Deprecated
 // Coveringlist-Section mit der id holen
 Section<?> knowledgeSection = ra.findKnowledgeSection();
 // Alle Finding 's dieser Section holen

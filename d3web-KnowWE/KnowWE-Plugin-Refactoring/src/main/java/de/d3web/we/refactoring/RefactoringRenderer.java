@@ -29,6 +29,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 /**
  * @author Franz Schwab
  */
+@Deprecated
 public class RefactoringRenderer extends KnowWEDomRenderer {
 
 	/* (non-Javadoc)

@@ -37,7 +37,7 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	
 	@Override
 	public String perform(final KnowWEParameterMap parameters) {
-		//TODO Parameter immer mitteilen nicht vergessen
+		// rs.set(parameters) immer aufrufen nicht vergessen
 		HttpSession session = parameters.getSession();
 		RefactoringSession rs = sessions.get(session);
 		// der Nutzer hatte noch keine RefactoringSession oder die vorherige ist bereits beendet
@@ -50,7 +50,7 @@ public class RefactoringAction extends AbstractKnowWEAction {
 		} else {
 			rs.set(parameters);
 			rs.getLock().lock();
-			rs.getRunScript().signal();
+			rs.getRunRefactoring().signal();
 			rs.getLock().unlock();
 		}
 
