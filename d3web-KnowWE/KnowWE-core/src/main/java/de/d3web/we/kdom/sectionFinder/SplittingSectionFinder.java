@@ -55,6 +55,11 @@ public class SplittingSectionFinder extends SectionFinder {
         	resultRegex.add(new SectionFinderResult(lastStart, tagMatcher.end()));
         	lastStart = tagMatcher.end();
 		}
+        // append section result after last split character / substring
+        // also adds the total text, if there is no match (!)
+        if (lastStart < text.length()) {
+        	resultRegex.add(new SectionFinderResult(lastStart, text.length()));
+        }
 		return resultRegex;
 		
 	}
