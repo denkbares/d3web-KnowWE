@@ -35,7 +35,7 @@ public class LineSectionFinder extends SplittingSectionFinder {
 	}
 	
 	private LineSectionFinder() {
-		super("\\r\\n");
+		super("\\r?\\n");
 	}
 
 	
