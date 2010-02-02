@@ -139,7 +139,7 @@ public class XCLExplanationAction extends AbstractKnowWEAction {
 
 	private String verbalizeTrace(XCLInferenceTrace trace, String solution) {
 		this.template= new StringBuffer();
-		this.labels = ResourceBundle.getBundle("XCLExplanationRenderer", Locale.getDefault());
+		this.labels = ResourceBundle.getBundle("KnowWE_config", Locale.getDefault());
 		loadTemplate();
 		
 		
