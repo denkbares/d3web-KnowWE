@@ -40,7 +40,6 @@ public class SearchWordPreprocessor {
 		return instance;
 	}
 	
-	private static List<SearchWordPreprocessingModule> processors = new ArrayList<SearchWordPreprocessingModule>(); 
 	
 	public Collection<SearchTerm> processForSearch(String searchText) {
 		List<String> terms = SplitUtility.splitUnquoted(searchText," ");

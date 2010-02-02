@@ -19,6 +19,13 @@
  */
 package de.d3web.we.search;
 
+/**
+ * A SearchTerm contains a term to be searched for and an importance rating, which can be 
+ * used for ranking of the results.
+ * 
+ * @author Jochen
+ *
+ */
 public class SearchTerm implements Comparable<SearchTerm> {
 	
 	private double importance = 1;
