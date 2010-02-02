@@ -6,8 +6,8 @@ import groovy.lang.GroovyObject;
 import groovy.lang.MissingPropertyException;
 import groovy.lang.Script;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,6 +28,8 @@ import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
@@ -87,13 +89,14 @@ public class RefactoringSession {
 	
 	private KnowWEParameterMap parameters;
 	private KnowWEArticleManager manager;
-	// TODO bessere Schnittstelle zum Austausch der Formulardaten: momentan läuft alles über id
-	private String id;
+	private Map<String,String[]> gsonFormMap;
 	
 	public void set(KnowWEParameterMap parameters) {
 		this.parameters = parameters;
-		id = parameters.get("formdata");
-		manager = KnowWEEnvironment.getInstance().getArticleManager(parameters.getWeb());
+		this.manager = KnowWEEnvironment.getInstance().getArticleManager(parameters.getWeb());
+		Gson gson = new Gson();
+		Type mapType = new TypeToken<Map<String,String[]>>(){}.getType();
+		this.gsonFormMap = gson.fromJson(parameters.get("jsonFormMap"),mapType);
 	}
 	
 	// TODO bessere Integration des Groovy-Plugins, Fehlermeldungen müssten z.B. im Wiki angezeigt werden.
@@ -179,8 +182,8 @@ public class RefactoringSession {
 				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Möchten Sie die Änderungen rückgängig machen?</p></div>"
-						+ "<div style='clear:both'></div><form name='refactoringform'><div class='left'><label for='article'>Undo</label>"
-						+ "<select name='refactoringselect'>");
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Undo</label>"
+						+ "<select name='selectUndo' class='refactoring'>");
 				html.append("<option value='nein'>nein</option>");
 				html.append("<option value='ja'>ja</option>");
 				// TODO onlick ersetzen, d.h. den button explizit registrieren
@@ -190,7 +193,7 @@ public class RefactoringSession {
 			}
 		});
 		
-		if (id.equals("ja")) {
+		if (gsonFormMap.get("selectUndo")[0].equals("ja")) {
 			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
 			for (String st: changedWikiPages.keySet()) {
 				WikiPage page = we.getPage(st);
@@ -271,8 +274,8 @@ public class RefactoringSession {
 				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Wählen Sie die zu transformierende Überdeckungsliste aus:</p></div>"
-						+ "<div style='clear:both'></div><form name='refactoringform'><div class='left'><label for='article'>XCList</label>"
-						+ "<select name='refactoringselect'>");
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>XCList</label>"
+						+ "<select name='selectXCList' class='refactoring'>");
 				for(Iterator<String> it = topics.iterator(); it.hasNext();) {
 					KnowWEArticle article = manager.getArticle(it.next());
 					Section<?> articleSection = article.getSection();
@@ -290,7 +293,7 @@ public class RefactoringSession {
 			}
 		});
 		
-		Section<?> knowledge = manager.findNode(id);
+		Section<?> knowledge = manager.findNode(gsonFormMap.get("selectXCList")[0]);
 
 		return knowledge;
 	}
@@ -317,7 +320,8 @@ public class RefactoringSession {
 	private Section<?> findRefactoringSection() {
 		// TODO momentan werden nur Refactorings betrachtet, die sich auf dieser Seite befinden
 		Section<?> section = manager.getArticle(parameters.getTopic()).getSection();
-		Section<?> refactoring = section.findChild(id);
+		// siehe RefactoringTagHandler.java
+		Section<?> refactoring = section.findChild(gsonFormMap.get("selectRefactoring")[0]);
 		return refactoring;
 	}
 	
