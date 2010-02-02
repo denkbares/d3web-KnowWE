@@ -1,0 +1,419 @@
+import java.util.*;
+import java.text.MessageFormat;
+import de.d3web.kernel.domainModel.*;
+import de.d3web.textParser.Utils.Message;
+import de.d3web.kernel.supportknowledge.*;
+
+/**
+ * Dieser Parser verwendet zum abspeichern bereits eingelesener Diagnosen eine Map, anstatt die Diagnosen direkt in den EBNF-Produktionen
+ * zu übergeben. Dies könnte man noch verbessern.
+ * Außerdem könnte man die TOKENS so abändern, daß man Spaces per default ignoriert.
+ * @author Franz Schwab
+ */
+
+COMPILER DiagnosisHierarchy
+
+    
+    /**
+     * speichert zu jedem Level (Tiefe des Baumes bzw. Anzahl der Anführungszeichen) die zuletzt eingelesene Diagnose
+     */
+    private Map<Integer, Diagnosis> ht = new Hashtable<Integer, Diagnosis>();
+    /**
+     * die aktuelle Tiefe des Baumes (Anzahl der Anführungszeichen)
+     */
+    private int levelPeak = -1;
+    /**
+     * der Token ds letzten gelesenen Dashes
+     */
+    private Token lastDashToken;
+    private KnowledgeBase kb;
+    private KnowledgeBaseManagement kbm;
+    /**
+     * Update-Modus.
+     * true: hierbei können nur Eintrage hinzugefügt werden
+     * false: Einträge können überschrieben werden (ist nur bei einer leeren KB von Bedeutung) 
+     */
+    private boolean addMode;
+    /**
+     * Anzahl der hinzugefügten Diagnosen (alle)
+     */
+    private int numberOfInserts = 0;
+    /**
+     * Anzahl der hinzugefügten Linked-Unter-Diagnosen
+     */
+    private int numberOfInsertsAsLinkedChild = 0;
+    /**
+     * Anzahl der hinzugefügten Unter-Diagnosen
+     */
+    private int numberOfInsertsAsChild = 0;
+    /**
+     * Toplevel-Modus, wird angewendet bei einem Update, um Diagnosen auf Level 0 hinzuzufügen
+     */
+    private boolean toplevelMode = false;
+    /**
+     * aktuelle Diagnose
+     */
+    private Diagnosis currentDiagnosis = null;
+    /**
+     * Resource-Bundle welches zum Parsen von Meldungen benötigt wird
+     */
+    private static final ResourceBundle rb = ResourceBundle.getBundle("properties.textParser");
+    
+    
+    //Begin Change Extension
+    private String content = ""; 
+    private NamedObject namedObject = null; 
+    private HashMap<String,ArrayList<Object>> mapNamedObjects = new HashMap<String,ArrayList<Object>>(); 
+    private ArrayList<String> abbr = new ArrayList<String>(); 
+    private ArrayList<String> allowedNames = new ArrayList<String>(); 
+    private ArrayList<NamedObject> savedLinks = new ArrayList<NamedObject>(); 
+    //End Change Extension
+    
+    
+    /**
+     * Überprüft die Zulässigkeit des Levels, auf dem die Diagnose eingefügt werden soll.
+     * @param level das level der einzutragenden Diagnose
+     * @param diagnosisValue value der einzutragenden Diagnose
+     * @return true: level erlaubt, false: level falsch gewählt, Fehlermeldung wird geworfen
+     */
+    private boolean checkAndSetAllowedLevel(int level, String diagnosisValue) {
+        boolean returnValue = true;
+        if (level > levelPeak+1) {
+            int levelDifference = level - (levelPeak+1);
+            createMessage(
+                    lastDashToken.line, lastDashToken.col, "parser.diagnosisHierarchy.error.level",
+                    Message.ERROR, diagnosisValue, levelDifference); //System.out.println("Semantic Level Error recognized in line:" + lastDashToken.line + " column:" + lastDashToken.col);
+            returnValue = false;
+        } else {
+            levelPeak = level;
+        }
+        return returnValue;
+    }
+    
+    /**
+     * Erstellt eine Meldung.
+     * @param row Zeile in der Eingabe-Datei
+     * @param column Spalte  in der Eingabe-Datei
+     * @param key Schlüssel der Meldung
+     * @param messageType Message.ERROR, Message.WARNING oder MESSAGE.Note
+     * @param values Parameter, welche in den Text der Meldung mit aufgenommen werden sollen
+     */
+    private void createMessage(
+            int row, int column, String key, String messageType, Object ... values) {
+        String result = rb.getString("parser.error.unknownError") + ": "+key;
+        try {
+            result = MessageFormat.format(
+                rb.getString(key), values);
+        }
+        catch (MissingResourceException e) {}
+        errors.Error(row, column, result, messageType);        
+    }
+    
+    /**
+     * Überprüft, ob linkedParent ein Vorgäner von possibleChild ist.
+     * @param linkedParent Vorgänger
+     * @param possibleChild mögliches Kind
+     * @return true: linkedParent ist Vorgänger, false: linkedParent ist nicht Vorgänger
+     */
+    private boolean isAncestor(Diagnosis linkedParent, Diagnosis possibleChild) {
+        boolean isAncestor = false;        
+        if(linkedParent != null && linkedParent == possibleChild) return true;
+        else {
+            List<Diagnosis> ancestors = (List<Diagnosis>) linkedParent.getParents();
+            for(Diagnosis nextParent: ancestors) {
+                isAncestor = isAncestor(nextParent, possibleChild);
+                if(isAncestor) return isAncestor;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Liefert die Meldung für erfolgreiches Parsen
+     * @return Message für erfolgreiches Parsen
+     */
+    public Message getSuccessNote() {
+        // COCO: ist in Wirklichkeit kein Error, bitte umbenennen!
+        Object[] values = {numberOfInserts,
+                (numberOfInserts - (numberOfInsertsAsChild + numberOfInsertsAsLinkedChild)),
+                numberOfInsertsAsChild, numberOfInsertsAsLinkedChild, addMode};
+        String result = rb.getString("parser.error.unknownError");
+        try {
+            result = MessageFormat.format(
+                rb.getString("parser.diagnosisHierarchy.success"), values);
+        }
+        catch (MissingResourceException e) {}
+        return new Message(Message.NOTE, result, "", 0,0,"");
+    }
+    
+    //Begin Change Extension
+    private void addMMInfo(NamedObject o,String title,String subject,String content){
+        MMInfoStorage mmis; 
+        DCMarkup dcm = new DCMarkup();
+        dcm.setContent(DCElement.TITLE, title);
+        dcm.setContent(DCElement.SUBJECT, subject);
+        dcm.setContent(DCElement.SOURCE, o.getId());
+        MMInfoObject mmi = new MMInfoObject(dcm, content); 
+        if(o.getProperties().getProperty(Property.MMINFO) == null){
+            mmis = new MMInfoStorage(); 
+        }
+        else{
+            mmis = (MMInfoStorage)o.getProperties().getProperty(Property.MMINFO);
+        }
+        o.getProperties().setProperty(Property.MMINFO, mmis);
+        mmis.addMMInfo(mmi);        
+    }
+    //End Change Extension
+    
+    
+CHARACTERS
+newline                               = '\n' + '\r'.
+space                                 = ' '.
+allowedDeclaration                    = ANY - '-' - '\n' - '\r' - '\"' - '#' - space - '@' - '[' - ']' - '|'.
+allowedDeclarationFurther             = allowedDeclaration + '-' + space.
+allowedDeclarationFurtherWithBrackets = allowedDeclarationFurther + '#'.
+commentChar                           = ANY - '\n' - '\r'.
+
+TOKENS
+// die Bezeichnung darf keinen Zeilenumbruch, sowie keine Anführungszeichen enthalten
+// Anführungsstriche sind am Anfang nur erlaubt, wenn die Bezeichnung in Anführungsstrichen steht
+Declaration  = (allowedDeclaration {allowedDeclarationFurther}) | '\"' {allowedDeclarationFurtherWithBrackets} '\"'.
+ID           = '#'allowedDeclaration{allowedDeclaration}.
+BracketOpen  = '['.
+BracketClose = ']'.
+Dash         = '-'.
+
+//Begin Change Extension
+DiagnosisID        = '@'allowedDeclaration{allowedDeclaration}.
+//End Change Extension
+
+
+// die Praxis hat gezeigt, daß man Kommentare besser als Pragmas behandelt.
+PRAGMAS
+comment = "//"{commentChar}('\n'|'\r'){('\n'|'\r')}.
+
+
+// COMMENTS FROM "/*" TO "*/" NESTED
+// COMMENTS FROM "//" TO '\r' '\n'
+
+// Spaces werden per default ignoriert, also müsste man dies aus- bzw. einkommentieren
+// (siehe Änderung in den Frame-Dateien)
+IGNORE '\t' + ' '
+
+PRODUCTIONS
+DiagnosisHierarchy =                                                            (.
+                                                                                Diagnosis rootDiagnosis = kb.getRootDiagnosis();
+                                                                                ht.put(-1, rootDiagnosis);
+                                                                                .)
+{('\n'|'\r')}
+DIAGNOSIS                                                                       (.
+                                                                                .)
+{
+DIAGNOSIS                                                                       (.
+                                                                                .)
+}                                                                               (.
+                                                                                .)
+{DESCRIPTION }                                                                  (.
+                                                                                .)
+.
+DIAGNOSIS  =                                                    (.
+                                                                int diagnosisLevel = 0;
+                                                                .)
+{Dash                                                           (.
+                                                                diagnosisLevel = diagnosisLevel + 1;
+                                                                .)
+}                                                               (.
+                                                                lastDashToken = t;
+                                                                .)
+Declaration                                                     (.
+                                                                String diagnosisValue = t.val;
+                                                                diagnosisValue = diagnosisValue.trim();
+                                                                if (diagnosisValue.charAt(0) == '\"'
+                                                                        && diagnosisValue.charAt(diagnosisValue.length() - 1) == '\"') {
+                                                                    diagnosisValue = diagnosisValue.substring(1, diagnosisValue.length() - 1);
+                                                                }
+                                                        
+                                                                // semantisches Parsing der Zeile!
+                                                                if (addMode == true && diagnosisLevel == 0) {
+                                                                    if (diagnosisValue.equals(rb
+                                                                            .getString("parser.diagnosisHierarchy.toplevel"))) {
+                                                                        ht.put(0, kb.getRootDiagnosis());
+                                                                        toplevelMode = true;
+                                                                    } else {
+                                                                        toplevelMode = false;
+                                                                        Diagnosis anchorDiagnosis = kbm.findDiagnosis(diagnosisValue);
+                                                                        currentDiagnosis = anchorDiagnosis;
+                                                                        if (anchorDiagnosis != null) {
+                                                                            ht.put(diagnosisLevel, anchorDiagnosis);
+                                                                        } else {
+                                                                            createMessage(t.line, t.col,
+                                                                                    "parser.diagnosisHierarchy.error.anchor",
+                                                                                    Message.ERROR, diagnosisValue);
+                                                                        }
+                                                                    }
+                                                                    namedObject = currentDiagnosis;
+                                                                }
+                                                                if (checkAndSetAllowedLevel(diagnosisLevel, diagnosisValue)
+                                                                        && (diagnosisLevel != 0 || addMode == false)) {
+                                                                    
+                                                                    String diagnosisText = null;
+                                                                    if(diagnosisValue.contains("~")) {
+                                                                    	String parts [] = diagnosisValue.split("~");
+                                                                    	if(parts.length == 2) {
+                                                                    		diagnosisValue = parts[0].trim();
+                                                                    		diagnosisText = parts[1].trim();
+                                                                    	} 
+                                                                    
+                                                                    }
+                                                                    Diagnosis ancestor = ht.get(diagnosisLevel - 1);
+                                                                    Diagnosis stillContainedDiagnosis = kbm
+                                                                            .findDiagnosis(diagnosisValue);
+                                                                    currentDiagnosis = stillContainedDiagnosis;
+                                                                    
+                                                                    
+                                                                    if (stillContainedDiagnosis == null) {
+                                                                        Diagnosis child = kbm.createDiagnosis(diagnosisValue, ancestor);
+                                                                        child.getProperties().setProperty(Property.EXPLANATION,diagnosisText);
+                                                                        currentDiagnosis = child;
+                                                                        ht.put(diagnosisLevel, child);
+                                                                        numberOfInserts++;
+                                                                        // Toplevel-Kinder bei update nicht mitrechnen bei
+                                                                        // numberOfInsertsAsChild!
+                                                                        if (((diagnosisLevel > 1) && toplevelMode)
+                                                                                || ((diagnosisLevel > 0) && !toplevelMode))
+                                                                            numberOfInsertsAsChild++;
+                                                                    } else if (!isAncestor(ancestor, stillContainedDiagnosis)) {
+                                                                        if (!stillContainedDiagnosis.getParents().contains(ancestor)) {
+                                                                            stillContainedDiagnosis.addLinkedParent(ancestor);
+                                                                            numberOfInserts++;
+                                                                            numberOfInsertsAsLinkedChild++;
+                                                                        } else {
+                                                                            createMessage(t.line, t.col, "parser.diagnosisHierarchy.error.doubleInsertion", Message.ERROR, diagnosisValue);
+                                                                        }
+                                                                        ht.put(diagnosisLevel, stillContainedDiagnosis);
+                                                                    } else {
+                                                                        createMessage(t.line, t.col,
+                                                                                "parser.diagnosisHierarchy.error.loop", Message.ERROR, diagnosisValue);
+                                                                    }
+                                                                    namedObject = currentDiagnosis;
+                                                                }
+                                                                .)
+[
+ID                                                              (.
+                                                                String id = t.val.substring(1, t.val.length());
+                                                                id = id.trim();
+                                                                Diagnosis dSearch = kbm.findDiagnosis(id);
+                                                                if (dSearch == null) {
+                                                                    currentDiagnosis.setId(id);
+                                                                } else if (dSearch != currentDiagnosis) {
+                                                                    createMessage(t.line, t.col, "parser.diagnosisHierarchy.error.idAlreadyExists", Message.ERROR, currentDiagnosis.getText(), id);
+                                                                }
+                                                                .)
+]
+{
+DIAGNOSISREFERENZID
+}
+{
+'[' LINK ']'
+}
+SYNC                                                            
+(('\n'|'\r'){('\n'|'\r')}
+| EOF)                      
+.
+//##############################################################################
+//Begin of Referenz ID
+//##############################################################################
+DIAGNOSISREFERENZID = DiagnosisID                                               (.
+                                                                                String id = t.val.trim(); 
+                                                                                abbr.add(id);
+                                                                                ArrayList al = mapNamedObjects.get(id);
+                                                                                if(al == null){
+                                                                                    al = new ArrayList();
+                                                                                }
+                                                                                al.add(namedObject);
+                                                                                mapNamedObjects.put(id,al);
+                                                                                .)
+.
+//##############################################################################
+//Begin of Descriptiontable
+//##############################################################################
+DESCRIPTION = '|' DESCRIPTIONID                                                     (. 
+                                                                                 String id = ""; 
+                                                                                 String typ = "info"; 
+                                                                                 String name = ""; 
+                                                                                 content = ""; 
+                                                                                 id = t.val.trim();
+                                                                                .)
+'|' { TYP                                                                       (.
+                                                                                typ = t.val.trim();
+                                                                                typ = typ.toLowerCase(); 
+                                                                                .)
+} '|' { NAME                                                                    (.
+                                                                                name = t.val.trim();
+                                                                                .)
+} '|' { CONTENT }                                                               (.
+                                                                                boolean flag = false; 
+                                                                                if(name.startsWith("\"") && name.endsWith("\"")){
+                                                                                    name = name.replaceAll("\"","");
+                                                                                    flag = true; 
+                                                                                }
+                                                                                //if(!allowedNames.contains(name) && !flag && !allowedNames.isEmpty()){                                                                               
+                                                                                //     createMessage(t.line, t.col,
+                                                                                //    "parser.decisionTree.warning.nameNotAllowed",
+                                                                                //    Message.WARNING, "Bezeichner nicht erlaubt");                                                                               
+                                                                                //}
+                                                                                if(mapNamedObjects.containsKey(id) && mapNamedObjects.get(id)!= null){
+                                                                                    for(Object namedObject : mapNamedObjects.get(id)){
+                                                                                        if(namedObject instanceof NamedObject){
+                                                                                            //name = change(name);
+                                                                                            addMMInfo((NamedObject)namedObject,name,typ,content);   
+                                                                                        }
+                                                                                    }                                                                           
+                                                                                }
+                                                                                .)
+'|'
+SYNC                                                            
+(('\n'|'\r'){('\n'|'\r')}
+| EOF)                                                                          
+.
+DESCRIPTIONID =  DiagnosisID                                              
+.
+TYP  =   Declaration
+.
+NAME = Declaration                                                  
+.
+CONTENT = (('-' | '=' | '<' | '>' | '{' | '}' | '[' | ']' 
+| '(' | ')' | '#' | '@' | '\'' | '\\' | '\"' ) | DiagnosisID 
+| ID | Declaration | '/')                                                       (.
+                                                                                content = content.concat(t.val); 
+                                                                                .)
+.
+//##############################################################################
+//Begin of LINK
+//##############################################################################
+LINK = '[' Declaration                                                          (.
+                                                                                String url = t.val;
+                                                                                String typ = "url";
+                                                                                String decl = ""; 
+                                                                                .)
+{ '=' Declaration                                                               (.
+                                                                                url = url.concat("=" + t.val);
+                                                                                .)
+}                                                                               
+']' { '[' Declaration                                                           (.
+                                                                                decl = t.val; 
+                                                                                //decl = change(decl);
+                                                                                .)
+']' }                                                                           (.
+                                                                                if(!savedLinks.contains(namedObject)){
+                                                                                    savedLinks.add(namedObject);
+                                                                                }
+                                                                                addMMInfo(namedObject,decl,typ,url); 
+                                                                                .)
+//##############################################################################
+//End of Link
+//##############################################################################
+.
+
+
+END DiagnosisHierarchy.

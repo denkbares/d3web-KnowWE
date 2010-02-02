@@ -23,6 +23,8 @@ package de.d3web.kernel.psMethods.delegate;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.core.session.blackboard.Fact;
+import de.d3web.core.session.blackboard.Facts;
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.domainModel.Rule;
@@ -52,4 +54,10 @@ public class PSMethodDelegate extends PSMethodAdapter {
 			}
 		}
 	}
+	@Override
+	public Fact mergeFacts(Fact[] facts) {
+		// PSMethodDelegate does not provide own facts
+		return Facts.mergeError(facts);
+	}
+	
 }
