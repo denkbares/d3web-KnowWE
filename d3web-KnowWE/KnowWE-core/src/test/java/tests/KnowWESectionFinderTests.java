@@ -20,7 +20,11 @@
 
 package tests;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 import junit.framework.TestCase;
 import de.d3web.we.kdom.basic.LineBreak;
@@ -102,35 +106,45 @@ public class KnowWESectionFinderTests extends TestCase {
 //		
 //	}
 	
+	private String readOutTextFile() {
+		File file = new File("src/test/resources/LineBreakSectionFinderTestText.txt");
+		String text = "";
+		try {
+			text = FileUtils.readFileToString(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return text;
+	}
+	
 	/**
 	 * Single \r or \n are LineBreaks too for this finder
 	 */
 	public void testLineBreakFinder() {
-		String text = " There goes the cow\r\n"
-					+ " and there it goes not"
-					+ "perhaps it dont want to go \r\n";
+		String text = this.readOutTextFile();
 		SectionFinder f = new LineBreak().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
+
+		assertEquals(WRONG_FIRST_START, 18,results.get(0).getStart());
+		assertEquals(WRONG_FIRST_END, 20, results.get(0).getEnd());
 		
-		assertEquals(WRONG_FIRST_START, 19, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 21, results.get(0).getEnd());
-		
-		assertEquals(WRONG_SECOND_START, 69, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 72, results.get(1).getEnd());
+		assertEquals(WRONG_SECOND_START, 41, results.get(1).getStart());
+		assertEquals(WRONG_SECOND_END, 43, results.get(1).getEnd());
 	}
 	
 	public void testLineSectionFinder() {
-		String text = " There goes the cow\r\n"
-			+ " and there it goes not"
-			+ "perhaps it dont want to go \r\n";
+		String text = this.readOutTextFile();
 		SectionFinder f = LineSectionFinder.getInstance();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 21, results.get(0).getEnd());
+		assertEquals(WRONG_FIRST_END, 20, results.get(0).getEnd());
 		
-		assertEquals(WRONG_SECOND_START, 21, results.get(1).getStart());
-		assertEquals(WRONG_SECOND_END, 72, results.get(1).getEnd());
+		assertEquals(WRONG_SECOND_START, 20, results.get(1).getStart());
+		assertEquals(WRONG_SECOND_END, 43, results.get(1).getEnd());
+		
+		assertEquals(WRONG_SECOND_START, 43, results.get(2).getStart());
+		assertEquals(WRONG_SECOND_END, 69, results.get(2).getEnd());
 	}
 	
 //	public void testQuestionFinder() {
