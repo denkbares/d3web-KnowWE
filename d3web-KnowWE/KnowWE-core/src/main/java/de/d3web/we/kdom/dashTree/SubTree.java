@@ -62,8 +62,10 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public static int getLevel(Section<? extends SubTree> s) {
-		Section<? extends DashTreeElement> root = s.findChildOfType(DashTreeElement.class);
-		if (root == null) return 0;
+		Section<? extends DashTreeElement> root = s
+				.findChildOfType(DashTreeElement.class);
+		if (root == null)
+			return 0;
 		return DashTreeElement.getLevel(root) + 1;
 	}
 
@@ -87,17 +89,23 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 				level = getLevel(father);
 			}
 
-			String dashesPrefix = "";
-			for (int i = 0; i < level; i++) {
-				dashesPrefix += "-";
-			}
+			
 			Matcher m = null;
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			if (KnowWEUtils.isEmpty(text))
 				return result;
 			try {
-				m = Pattern.compile("^" + dashesPrefix + "[^-]+",
-						Pattern.MULTILINE).matcher(text);
+				// Searches for line-beginning with correct count of dashes
+				// (starting with 0)
+				// Exceptions: One additional dash, linebreak (ie. empty lines)
+				// and comment lines (starting with '/')
+				if (level > 0) {
+					m = Pattern.compile("^\\s*" + "-{"+level+"}" + "[^-]",
+							Pattern.MULTILINE).matcher(text);
+				} else {
+					m = Pattern.compile("^\\s*[\\w]+.*$",
+							Pattern.MULTILINE).matcher(text);
+				}
 			} catch (StackOverflowError e) {
 				e.printStackTrace();
 				return result;
@@ -106,12 +114,16 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 			while (m.find()) {
 				if (lastStart > -1) {
 					result.add(new SectionFinderResult(lastStart, m.start()));
+					// System.out.println("Dashes"+
+					// dashesPrefix+" :"+text.substring( lastStart, m.start()));
 				}
 				lastStart = m.start();
 
 			}
 			if (lastStart > -1) {
 				result.add(new SectionFinderResult(lastStart, text.length()));
+				// System.out.println("Dashes"+
+				// dashesPrefix+" :"+text.substring( lastStart, m.start()));
 			}
 			return result;
 

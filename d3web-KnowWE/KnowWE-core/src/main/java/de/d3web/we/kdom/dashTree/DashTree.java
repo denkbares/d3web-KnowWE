@@ -36,8 +36,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class DashTree extends DefaultAbstractKnowWEObjectType{
 	
-	@Override
-	protected void init() {
+	public DashTree() {
 		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new SubTree());
 		this.setCustomRenderer(new PreRenderer());

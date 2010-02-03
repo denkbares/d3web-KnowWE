@@ -41,7 +41,10 @@ public class DashesPrefix extends DefaultAbstractKnowWEObjectType{
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {
-			int index = 0;
+			
+			int leadingSpaces = text.indexOf(text.trim());
+			
+			int index = leadingSpaces;
 			while(text.charAt(index) == '-') {
 				index ++;
 			}
