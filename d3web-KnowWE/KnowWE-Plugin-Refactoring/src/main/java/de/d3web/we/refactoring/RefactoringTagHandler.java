@@ -59,13 +59,14 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 //				+ "<input type='radio' name='radioTest' class='refactoring' value='radioprinter'>radioPrinter<input type='radio' name='radioTest' class='refactoring' value='radiofoto'>radioFoto"
 //				+ "<input type='text' name='textTest' class='refactoring'>"
 //				+ "<textarea name='testTextarea' class='refactoring'></textarea>"
+				+ "<input type='hidden' name='startNewRefactoringSession' class='refactoring'>"
 				+ "<select name='selectRefactoring' class='refactoring'>");
 		for (Section<Refactoring> refactoring : refactorings) {
 			Map<String, String> attributes = AbstractXMLObjectType.getAttributeMapFor(refactoring);
 			html.append("<option value='" + refactoring.findChildOfType(RefactoringContent.class).getId() + "'>" + attributes.get("name")
 					+ "</option>");
 		}
-		// TODO onlick ersetzen, d.h. den button explizit registrieren
+		// FIXME onlick ersetzen, d.h. den button explizit registrieren
 		html.append("</select></div><div><input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/>"
 				+ "</div></fieldset></div></form></div>");
 		return html.toString();

@@ -6,7 +6,6 @@ import groovy.lang.GroovyObject;
 import groovy.lang.MissingPropertyException;
 import groovy.lang.Script;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,8 +27,6 @@ import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
@@ -49,7 +46,7 @@ public class RefactoringSession {
 	private Thread thread = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			perform();
+			runSession();
 		}
 	});
 	public Thread getThread() {
@@ -91,23 +88,21 @@ public class RefactoringSession {
 	private KnowWEArticleManager manager;
 	private Map<String,String[]> gsonFormMap;
 	
-	public void set(KnowWEParameterMap parameters) {
+	public void setParameters(KnowWEParameterMap parameters, Map<String, String[]> gsonFormMap) {
 		this.parameters = parameters;
 		this.manager = KnowWEEnvironment.getInstance().getArticleManager(parameters.getWeb());
-		Gson gson = new Gson();
-		Type mapType = new TypeToken<Map<String,String[]>>(){}.getType();
-		this.gsonFormMap = gson.fromJson(parameters.get("jsonFormMap"),mapType);
+		this.gsonFormMap = gsonFormMap;
 	}
 	
-	// TODO bessere Integration des Groovy-Plugins, Fehlermeldungen müssten z.B. im Wiki angezeigt werden.
-	public void perform() {
+	// FIXME bessere Integration des Groovy-Plugins, Fehlermeldungen müssten z.B. im Wiki angezeigt werden.
+	public void runSession() {
 		try {
 			Object[] args = {};
 			ClassLoader parent = getClass().getClassLoader();
 			GroovyClassLoader loader = new GroovyClassLoader(parent);
 			Section<?> refactoringSection = findRefactoringSection();
-			String identity = "R_E_F_A_C_T_O_R_I_N_G___A_C_T_I_O_N";
-//			String identity = "ra";
+			String identity = "R_E_F_A_C_T_O_R_I_N_G___S_E_S_S_I_O_N";
+//			String identity = "rs";
 			String ls = System.getProperty("line.separator");
 			StringBuffer sb = new StringBuffer();
 			sb.append(identity + ".identity{" + ls);
@@ -186,7 +181,7 @@ public class RefactoringSession {
 						+ "<select name='selectUndo' class='refactoring'>");
 				html.append("<option value='nein'>nein</option>");
 				html.append("<option value='ja'>ja</option>");
-				// TODO onlick ersetzen, d.h. den button explizit registrieren
+				// FIXME onlick ersetzen, d.h. den button explizit registrieren
 				html.append("</select></div><div>"
 						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
 				return html.toString();
@@ -219,7 +214,7 @@ public class RefactoringSession {
 		lock.lock();
 		runDialog.signal();
 		lock.unlock();
-		// TODO wie wäre es, wenn sich der Thread gleich aus der HashMap von RefactoringAction selbst enfernt? 
+		// FIXME wie wäre es, wenn sich der Thread gleich aus der HashMap von RefactoringAction selbst enfernt? 
 		// sehr wichtig: Thread freigeben, da Script nun fertig
 		terminated  = true;
 	}
@@ -286,7 +281,7 @@ public class RefactoringSession {
 								+ xclist.findSuccessor(new SolutionID()).getOriginalText() + "</option>");
 					}
 				}
-				// TODO onlick ersetzen, d.h. den button explizit registrieren
+				// FIXME onlick ersetzen, d.h. den button explizit registrieren
 				html.append("</select></div><div>"
 						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
 				return html.toString();

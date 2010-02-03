@@ -27,3 +27,14 @@ Section<RulesSectionContent> rulesSectionContent = ra.findRulesSectionContent();
 ra.saveArticle(sb, rulesSectionContent);
 
 System.out.println("Article saved per Groovy!");
+
+//package de.d3web.we.refactoring.script
+//
+//rs.identity{
+//	knowledgeSection = findKnowledgeSection()
+//	solutionID = findSolutionID(knowledgeSection)
+//	sb = new StringBuilder()
+//	findFindings(knowledgeSection).each{createRulesText solutionID, sb, it}
+//	deleteXCList knowledgeSection
+//	saveArticle sb, findRulesSectionContent(knowledgeSection)
+//}

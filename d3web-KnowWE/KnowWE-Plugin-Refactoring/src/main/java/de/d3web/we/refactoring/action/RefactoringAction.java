@@ -20,10 +20,12 @@
 
 package de.d3web.we.refactoring.action;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -33,22 +35,26 @@ import de.d3web.we.refactoring.session.RefactoringSession;
  */
 public class RefactoringAction extends AbstractKnowWEAction {
 	
-	private Map<HttpSession, RefactoringSession> sessions = new HashMap<HttpSession, RefactoringSession>();
+	private Map<String, RefactoringSession> sessions = new HashMap<String, RefactoringSession>();
 	
 	@Override
 	public String perform(final KnowWEParameterMap parameters) {
 		// rs.set(parameters) immer aufrufen nicht vergessen
-		HttpSession session = parameters.getSession();
-		RefactoringSession rs = sessions.get(session);
+		String user = parameters.getUser();
+		RefactoringSession rs = sessions.get(user);
+		Gson gson = new Gson();
+		Type mapType = new TypeToken<Map<String,String[]>>(){}.getType();
+		Map<String,String[]> gsonFormMap = gson.fromJson(parameters.get("jsonFormMap"),mapType);
 		// der Nutzer hatte noch keine RefactoringSession oder die vorherige ist bereits beendet
-		if (rs == null || rs.isTerminated()) {
+		// oder die vorherige wurde abgebrochen und der Benutzer startet eine neue
+		if (rs == null || rs.isTerminated() || gsonFormMap.containsKey("startNewRefactoringSession")) {
 			rs = new RefactoringSession();
-			rs.set(parameters);
-			sessions.put(session, rs);
+			rs.setParameters(parameters, gsonFormMap);
+			sessions.put(user, rs);
 			rs.getThread().start();
 		// die vorhandene RefactoringSession wird wieder angeworfen
 		} else {
-			rs.set(parameters);
+			rs.setParameters(parameters, gsonFormMap);
 			rs.getLock().lock();
 			rs.getRunRefactoring().signal();
 			rs.getLock().unlock();
