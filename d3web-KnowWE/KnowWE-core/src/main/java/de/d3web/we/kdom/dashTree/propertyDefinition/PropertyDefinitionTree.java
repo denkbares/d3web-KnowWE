@@ -30,31 +30,33 @@ import de.d3web.we.kdom.dashTree.SubTree;
 /**
  * @author Jochen
  * 
- * A DashTree that creates ObjectProperties in OWL.
- * For doint this the PropertyDashTreeElementContent type is injected into 
- * the default DashTree pattern
- *
+ *         A DashTree that creates ObjectProperties in OWL. For doint this the
+ *         PropertyDashTreeElementContent type is injected into the default
+ *         DashTree pattern
+ * 
  */
 public class PropertyDefinitionTree extends DashTree {
 
-	@Override
-	protected void init() {
-		super.init();
-		try {
-			KnowWEObjectType subtree = this.childrenTypes.get(0);
-			if (subtree instanceof SubTree) {
-				KnowWEObjectType element = subtree.getAllowedChildrenTypes()
-						.get(0);
-				if (element instanceof DashTreeElement) {
-					((DashTreeElement) element).replaceChildType(
-							new PropertyDashTreeElementContent(),
-							DashTreeElementContent.class);
-				}
-			}
-		} catch (InvalidKDOMSchemaModificationOperation e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+    @Override
+    protected void init() {
+	super.init();
+	try {
+	    if (childrenTypes != null && (!childrenTypes.isEmpty())) {
+		KnowWEObjectType subtree = this.childrenTypes.get(0);
+		if (subtree instanceof SubTree) {
+		    KnowWEObjectType element = subtree
+			    .getAllowedChildrenTypes().get(0);
+		    if (element instanceof DashTreeElement) {
+			((DashTreeElement) element).replaceChildType(
+				new PropertyDashTreeElementContent(),
+				DashTreeElementContent.class);
+		    }
 		}
+	    }
+	} catch (InvalidKDOMSchemaModificationOperation e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
+    }
 
 }
