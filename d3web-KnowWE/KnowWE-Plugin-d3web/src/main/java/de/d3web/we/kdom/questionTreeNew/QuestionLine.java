@@ -1,4 +1,4 @@
-package de.d3web.we.questionTreeNew;
+package de.d3web.we.kdom.questionTreeNew;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.decisionTree.QuestionDef;
 import de.d3web.we.kdom.error.SimpleMessageError;
+import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -22,10 +22,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuestionLine extends DefaultAbstractKnowWEObjectType{
 
-	private static final String QUESTIONTYPE_DECLARATION = "TypeDeclaration";
 	
-	public static final String [] QUESTION_DECLARATIONS = { "oc", "mc", "jn", "yn", "num", "date", "text" };
-
+	
 	@Override
 	protected void init() {
 		this.sectionFinder = new ConditionalAllTextFinder() {
@@ -36,40 +34,24 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType{
 			}
 		};
 		
-		//this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
 		
 		
 		
-		AnonymousType typeDeclarationType = createTypeDeclarationType();
+		QuestionTypeDeclaration typeDeclarationType = new QuestionTypeDeclaration();
 		this.childrenTypes.add(typeDeclarationType);
 		this.childrenTypes.add(createQuestionDefTypeBefore(typeDeclarationType));
 	}
 
 	private KnowWEObjectType createQuestionDefTypeBefore(KnowWEObjectType typeAfter) {
-		QuestionDef qid = new QuestionDef();
+		QuestionID qid = new QuestionID();
 		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
 		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
 		return qid;
 	}
 
-	private AnonymousType createTypeDeclarationType() {
-		AnonymousType typeDef = new AnonymousType(QUESTIONTYPE_DECLARATION);
-		SectionFinder typeFinder = new SectionFinder() {
-			
-			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father) {
-				
-				return SectionFinderResult.createSingleItemList(new SectionFinderResult(SplitUtility.indexOfUnquoted(text, "["), SplitUtility.indexOfUnquoted(text, "]")+1));
-			}
-		};
-		typeDef.setSectionFinder(typeFinder);
-		typeDef.setCustomRenderer(new TypeDeclarationRenderer());
-		typeDef.addReviseSubtreeHandler(new StringEnumChecker(QUESTION_DECLARATIONS, new SimpleMessageError("Invalid Question type - allowing only: "+QUESTIONTYPE_DECLARATION.toString())));
-		
-		return typeDef;
-	}
 	
-	class TypeDeclarationRenderer extends KnowWEDomRenderer{
+	
+	static class TypeDeclarationRenderer extends KnowWEDomRenderer{
 
 		@Override
 		public void render(KnowWEArticle article, Section sec,
@@ -93,6 +75,27 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType{
 			
 		}
 		
+	}
+	
+	static class QuestionTypeDeclaration extends DefaultAbstractKnowWEObjectType {
+		
+		public static final String [] QUESTION_DECLARATIONS = { "oc", "mc", "jn", "yn", "num", "date", "text" };
+
+		
+		@Override
+		protected void init() {
+			SectionFinder typeFinder = new SectionFinder() {
+				
+				@Override
+				public List<SectionFinderResult> lookForSections(String text, Section father) {
+					
+					return SectionFinderResult.createSingleItemList(new SectionFinderResult(SplitUtility.indexOfUnquoted(text, "["), SplitUtility.indexOfUnquoted(text, "]")+1));
+				}
+			};
+			this.setSectionFinder(typeFinder);
+			this.setCustomRenderer(new TypeDeclarationRenderer());
+			this.addReviseSubtreeHandler(new StringEnumChecker(QUESTION_DECLARATIONS, new SimpleMessageError("Invalid Question type - allowing only: "+QUESTION_DECLARATIONS.toString())));
+		}
 	}
 
 }

@@ -1,4 +1,4 @@
-package de.d3web.we.questionTreeNew;
+package de.d3web.we.kdom.questionTreeNew;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;

@@ -1,4 +1,4 @@
-package de.d3web.we.questionTreeNew;
+package de.d3web.we.kdom.questionTreeNew;
 
 import java.util.List;
 

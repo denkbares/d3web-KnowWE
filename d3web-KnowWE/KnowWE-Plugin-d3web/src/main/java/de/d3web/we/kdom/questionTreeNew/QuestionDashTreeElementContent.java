@@ -1,4 +1,4 @@
-package de.d3web.we.questionTreeNew;
+package de.d3web.we.kdom.questionTreeNew;
 
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 
@@ -9,6 +9,7 @@ public class QuestionDashTreeElementContent extends DashTreeElementContent {
 		this.childrenTypes.add(new NumericCondLine());
 		this.childrenTypes.add(new SetValueLine());
 		this.childrenTypes.add(new AnswerLine());
+		this.childrenTypes.add(new QClassLine());
 		this.childrenTypes.add(new IndicationLine());
 	}
 

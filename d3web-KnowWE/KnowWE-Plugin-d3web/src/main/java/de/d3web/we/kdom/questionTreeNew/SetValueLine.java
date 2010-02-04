@@ -1,4 +1,4 @@
-package de.d3web.we.questionTreeNew;
+package de.d3web.we.kdom.questionTreeNew;
 
 import java.util.List;
 
@@ -8,13 +8,14 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.decisionTree.QuestionDef;
+import de.d3web.we.kdom.objects.ObjectRef;
+import de.d3web.we.kdom.questionTreeNew.QuestionLine.TypeDeclarationRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.questionTreeNew.QuestionLine.TypeDeclarationRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -48,6 +49,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType{
 		return qid;
 	}
 
+	
 	private AnonymousType createArgumentType() {
 		AnonymousType typeDef = new AnonymousType(SETVALUE_ARGUMENT);
 		SectionFinder typeFinder = new SectionFinder() {
