@@ -18,6 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+
 package de.d3web.we.d3webModule;
 
 import java.io.File;
@@ -72,6 +73,7 @@ import de.d3web.we.kdom.bulletLists.scoring.BulletScoring;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
 import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.kopic.Kopic;
 import de.d3web.we.kdom.kopic.renderer.AnnotationInlineAnswerRenderer;
 import de.d3web.we.kdom.rules.RulesSection;
@@ -81,6 +83,8 @@ import de.d3web.we.kdom.xcl.CoveringListSection;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.module.PageAppendHandler;
+import de.d3web.we.questionTreeNew.QuestionDashTree;
+import de.d3web.we.questionTreeNew.QuestionTree;
 import de.d3web.we.renderer.xml.GraphMLOwlRenderer;
 import de.d3web.we.taghandler.DialogPaneTagHandler;
 import de.d3web.we.taghandler.KBRenderer;
@@ -142,6 +146,9 @@ public class D3webModule implements KnowWEModule {
 		rootTypes.add(new CoveringListSection());
 		rootTypes.add(new RulesSection());
 		rootTypes.add(new BulletScoring());
+		DefaultMarkup markup = new DefaultMarkup("QuestionTree");
+		markup.addContentType(new QuestionDashTree());
+		rootTypes.add(new QuestionTree(markup));
 		return rootTypes;
 	}
 
