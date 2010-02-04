@@ -84,6 +84,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	protected String id;
 	
 	protected String specificID;
+	
+	protected boolean preAssignedID;
 
 	/**
 	 * Contains the text of this KDOM-node
@@ -191,12 +193,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		offSetFromFatherText = beginIndexFather;
 		
 		if (sectionID == null) {
+			this.preAssignedID = false;
 			if (objectType instanceof KnowWEArticle) {
 				this.id = new SectionID(getTitle()).toString();
 			} else {
 				this.id = new SectionID(father, objectType).toString();
 			}
 		} else {
+			this.preAssignedID = true;
 			this.id = sectionID.toString();
 			this.specificID = sectionID.getSpecificID();
 		}
