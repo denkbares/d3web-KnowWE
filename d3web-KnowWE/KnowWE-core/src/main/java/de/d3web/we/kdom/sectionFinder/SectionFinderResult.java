@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.d3web.we.kdom.SectionID;
 
 
@@ -42,6 +45,12 @@ public class SectionFinderResult implements Comparable<SectionFinderResult>{
 	public SectionFinderResult(int start, int end) {
 		this.start = start;
 		this.end = end;
+	}
+	
+	public static List<SectionFinderResult> createSingleItemList(SectionFinderResult s){
+		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>();
+		resultList.add(s);
+		return resultList;
 	}
 	
 	

@@ -34,7 +34,7 @@ public class StyleRenderer extends KnowWEDomRenderer {
 	
 	public StyleRenderer(String cssStyle) {
 		this(null, cssStyle);
-	}
+	}	
 	
 	public StyleRenderer(String cssClass, String cssStyle) {
 		this.cssClass = cssClass;

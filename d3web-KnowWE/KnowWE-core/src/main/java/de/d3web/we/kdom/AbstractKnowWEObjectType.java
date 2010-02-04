@@ -30,10 +30,12 @@ import org.apache.log4j.Logger;
 
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.error.DefaultErrorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
+import de.d3web.we.taghandler.KDOMRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
@@ -388,10 +390,16 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 		return getDefaultRenderer();
 	}
+	
+	public KnowWEDomRenderer getErrorRenderer() {
+		return DefaultErrorRenderer.getInstance();
+	}
 
 	protected KnowWEDomRenderer getDefaultRenderer() {
 		return DelegateRenderer.getInstance();
 	}
+	
+	
 
 	/**
 	 * Allows to set a custom renderer for this type

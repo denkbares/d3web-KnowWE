@@ -52,6 +52,7 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new DashTreeElement());
 		// rescursive type definition
 		this.childrenTypes.add(this);
+		this.childrenTypes.add(new OverdashedElement());
 	}
 
 	/**

@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.error.KDOMError;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -97,34 +98,35 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	// }
 
 	@Override
-	public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder builder) {
+	public void render(KnowWEArticle article, Section section,
+			KnowWEUserContext user, StringBuilder builder) {
 
 		boolean renderTypes = isRenderTypes(user.getUrlParameterMap());
-		if (renderTypes) renderType(section, true, builder);
-		
+		if (renderTypes)
+			renderType(section, true, builder);
+
 		try {
 			List<Section<?>> subSections = section.getChildren();
 			if (subSections.size() == 0) {
-//				KnowWEDomRenderer renderer = getRenderer(section, user);
-//				if (renderer == this) {
-//					// avoid endless recursion
-//					builder.append(section.getOriginalText());
-//				}
-//				else {
-//					// otherwise use section's renderer instead
-//					renderer.render(article, section, user, builder);
-//				}
+				// KnowWEDomRenderer renderer = getRenderer(section, user);
+				// if (renderer == this) {
+				// // avoid endless recursion
+				// builder.append(section.getOriginalText());
+				// }
+				// else {
+				// // otherwise use section's renderer instead
+				// renderer.render(article, section, user, builder);
+				// }
 				builder.append(section.getOriginalText());
-			}
-			else {
+			} else {
 				for (Section<?> subSection : subSections) {
+
 					// use subSection's renderer
 					KnowWEDomRenderer renderer = getRenderer(subSection, user);
 					renderer.render(article, subSection, user, builder);
 				}
 			}
-		}
-		catch (Throwable e) {
+		} catch (Throwable e) {
 			// wow, that was evil!
 			// System.out.println(section.getObjectType());
 			// e.printStackTrace();
@@ -135,22 +137,32 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 			builder.append("internal error while rendering section: " + e);
 			builder.append(KnowWEUtils.maskHTML("</span>"));
 		}
-		
-		if (renderTypes) renderType(section, false, builder);
+
+		if (renderTypes)
+			renderType(section, false, builder);
 	}
 
-	private void renderType(Section<?> section, boolean openIt, StringBuilder builder) {
+	private void renderType(Section<?> section, boolean openIt,
+			StringBuilder builder) {
 		builder.append(KnowWEUtils.maskHTML("<sub>&lt;"));
-		if (!openIt) builder.append('/');
+		if (!openIt)
+			builder.append('/');
 		builder.append(section.getObjectType().getName());
 		builder.append(KnowWEUtils.maskHTML("&gt;</sub>"));
 	}
 
-	private KnowWEDomRenderer getRenderer(Section<?> section, KnowWEUserContext user) {
+	private KnowWEDomRenderer getRenderer(Section<?> section,
+			KnowWEUserContext user) {
+		KnowWEDomRenderer renderer = null;
+		if (KDOMError.getErrors(section) != null) {
+			renderer = section.getObjectType().getErrorRenderer();
+		}
+
 		KnowWEObjectType objectType = section.getObjectType();
-		KnowWEDomRenderer renderer =
-				RendererManager.getInstance().getRenderer(
-				objectType, user.getUsername(), section.getTitle());
+		if (renderer == null) {
+			renderer = RendererManager.getInstance().getRenderer(objectType,
+					user.getUsername(), section.getTitle());
+		}
 		if (renderer == null) {
 			renderer = objectType.getRenderer();
 		}

@@ -161,6 +161,23 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
         return new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded,adress);
     }
 
+	
+	
+	/**
+	 * looks for the child at a specific offset.
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public Section getChildSectionAtPosition(int index) {
+		for (Section child : this.children) {
+			if(child.getOffSetFromFatherText() <= index && index < child.getOffSetFromFatherText() + child.getOriginalText().length()) {
+				return child;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * 
 	 * Constructor of a node Important: parses itself recursively by getting the

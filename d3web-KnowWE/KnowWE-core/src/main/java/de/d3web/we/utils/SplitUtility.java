@@ -54,4 +54,27 @@ public class SplitUtility {
 		return parts;
 	}
 
+	public static boolean containsUnquoted(String text, String symbol) {
+		return splitUnquoted(text+"1", symbol).size() > 1; 
+	}
+	
+	public static int indexOfUnquoted(String text, String symbol) {
+		boolean quoted = false;
+		for (int i = 0; i < text.length(); i++) {
+
+			if (text.charAt(i) == '"') {
+				quoted = !quoted;
+			}
+			if (quoted) {
+				continue;
+			}
+			if ((i + symbol.length() <= text.length()) 
+					&& text.subSequence(i, i + symbol.length()).equals(symbol)) {
+				return i;
+			}
+
+		}
+		return -1;
+	}
+	
 }

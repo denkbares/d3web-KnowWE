@@ -8,6 +8,13 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class ExactlyOneFindingConstraint implements SectionFinderConstraint {
+	
+	private static ExactlyOneFindingConstraint instance;
+	
+	public static  ExactlyOneFindingConstraint getInstance() {
+		if(instance == null) instance = new ExactlyOneFindingConstraint();
+		return instance;
+	}
 
 	@Override
 	public void filterCorrectResults(
