@@ -2,7 +2,7 @@
  * @author Franz Schwab
  */
  
- function refactoring() {
+function refactoring() {
  	var formElements = _KS('.refactoring');
  	var formMap = new Object();
  	for (var i = 0; i < formElements.length; i++){

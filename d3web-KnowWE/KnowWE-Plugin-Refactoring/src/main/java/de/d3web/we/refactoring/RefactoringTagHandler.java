@@ -47,7 +47,7 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 		Section<?> articleSection = article.getSection();
 		List<Section<Refactoring>> refactorings = new ArrayList<Section<Refactoring>>();
 		articleSection.findSuccessorsOfType(new Refactoring(), refactorings);
-		StringBuilder html = new StringBuilder();
+		StringBuffer html = new StringBuffer();
 		KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
 		html.append("<div id='refactoring-panel' class='panel'><h3>Refactoring Konsole</h3><div id='refactoring-content'>"
 				+ "<fieldset><div class='left'>" + "<p>Es wurden <strong>" + refactorings.size()
@@ -66,7 +66,6 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 			html.append("<option value='" + refactoring.findChildOfType(RefactoringContent.class).getId() + "'>" + attributes.get("name")
 					+ "</option>");
 		}
-		// FIXME onlick ersetzen, d.h. den button explizit registrieren
 		html.append("</select></div><div><input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/>"
 				+ "</div></fieldset></div></form></div>");
 		return html.toString();

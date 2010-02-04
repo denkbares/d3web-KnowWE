@@ -59,9 +59,12 @@ public class WordBasedRenamingAction extends AbstractKnowWEAction {
 	public String perform(KnowWEParameterMap parameterMap) {
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest());
 		// get the selected sections from the section selection tree
-		String s = parameterMap.get("SelectedSections");
-		Gson gson = new Gson();
-		String[] sections = gson.fromJson(s, String[].class);
+		String[] sections = null;
+		if (parameterMap.containsKey("SelectedSections")) {
+			String s = parameterMap.get("SelectedSections");
+			Gson gson = new Gson();
+			sections = gson.fromJson(s, String[].class);
+		}
 
 		String queryString = parameterMap.get(KnowWEAttributes.TARGET);
 		String queryContextPrevious = parameterMap.get(KnowWEAttributes.CONTEXT_PREVIOUS);

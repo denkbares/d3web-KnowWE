@@ -8,10 +8,12 @@ import groovy.lang.Script;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.locks.Condition;
@@ -103,11 +105,11 @@ public class RefactoringSession {
 			Section<?> refactoringSection = findRefactoringSection();
 			String identity = "R_E_F_A_C_T_O_R_I_N_G___S_E_S_S_I_O_N";
 //			String identity = "rs";
-			String ls = System.getProperty("line.separator");
+//			String ls = System.getProperty("line.separator");
 			StringBuffer sb = new StringBuffer();
-			sb.append(identity + ".identity{" + ls);
+			sb.append(identity + ".identity{");
 			sb.append(refactoringSection.getOriginalText());
-			sb.append(ls + "}");
+			sb.append("}");
 			Class<?> groovyClass = loader.parseClass(sb.toString());
 //			GroovyObject gob = new XCLToRules();
 			GroovyObject gob = (GroovyObject) groovyClass.newInstance();
@@ -151,7 +153,31 @@ public class RefactoringSession {
 				System.out.println(e.getClass().getName() + " thrown while executing Groovy script."); // I18N
 			}
 		}
-		
+		Set<String> changedArticles = new HashSet<String>();
+		for (String changedSectionID: changedSections.keySet()) {
+			String title;
+			// es muss so umständlich gemacht werden, wenn man sich die section holen will um den article zu bestimmen kann
+			// dies zu problemen führen, denn die section könnte ja gelöscht worden sein.
+			if (changedSectionID.contains("/")) {
+				title = changedSectionID.substring(0, changedSectionID.indexOf("/"));
+			} else {
+				title = changedSectionID;
+			}
+			changedArticles.add(title);
+		}
+		for (String changedArticle: changedArticles) {
+			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
+			int versionBefore = we.getPage(changedArticle).getVersion();
+			manager.replaceKDOMNode(parameters, changedArticle, changedArticle, 
+					manager.findNode(changedArticle).getOriginalText());
+			// tracking of article versions
+			int versionAfter = we.getPage(changedArticle).getVersion();
+			if (! changedWikiPages.containsKey(changedArticle)) {
+				changedWikiPages.put(changedArticle, new int[] {versionBefore, versionAfter});
+			} else {
+				changedWikiPages.put(changedArticle, new int[] {changedWikiPages.get(changedArticle)[0], versionAfter});
+			}
+		}
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameterMap) {
@@ -181,7 +207,6 @@ public class RefactoringSession {
 						+ "<select name='selectUndo' class='refactoring'>");
 				html.append("<option value='nein'>nein</option>");
 				html.append("<option value='ja'>ja</option>");
-				// FIXME onlick ersetzen, d.h. den button explizit registrieren
 				html.append("</select></div><div>"
 						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
 				return html.toString();
@@ -214,20 +239,18 @@ public class RefactoringSession {
 		lock.lock();
 		runDialog.signal();
 		lock.unlock();
-		// FIXME wie wäre es, wenn sich der Thread gleich aus der HashMap von RefactoringAction selbst enfernt? 
+		// TODO wie wäre es, wenn sich der Thread gleich aus der HashMap von RefactoringAction selbst enfernt? 
 		// sehr wichtig: Thread freigeben, da Script nun fertig
 		terminated  = true;
 	}
 
 	// GROOVY-METHODEN TODO auslagern?!
 	
-	// TODO saveArticle sollte implizit/automatisch durchgeführt werden und nicht innerhalb des Refactorings durchgeführt werden müssen
-	// Vorschlag: bei changedArticles bzw. changedSections abfragen am Ende des Refs - (oder besser sofort nach einer Änderung abspeichern,
-	// damit anschließende Modifikationen dieses Refactoring auch sehen - tun sie das nicht sowieso?) ...
-	public void saveArticle(StringBuilder sb, Section<RulesSectionContent> rulesSectionContent) {
-		replaceSection(rulesSectionContent, rulesSectionContent.getOriginalText() + sb.toString(), true);
+	public void addRulesText(StringBuffer sb, Section<RulesSectionContent> rulesSectionContent) {
+		replaceSection(rulesSectionContent, rulesSectionContent.getOriginalText() + sb.toString());
 	}
 
+	// TODO wenn es noch keine RulesSection gibt, dann muss die noch gebaut werden
 	public Section<RulesSectionContent> findRulesSectionContent(Section<?> knowledgeSection) {
 		KnowWEArticle article = knowledgeSection.getArticle();
 		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(new RulesSectionContent());
@@ -235,11 +258,11 @@ public class RefactoringSession {
 	}
 
 	public void deleteXCList(Section<?> knowledgeSection) {
-		replaceSection(knowledgeSection, "\n", false);
+		replaceSection(knowledgeSection, "\n");
 	}
 
 	// TODO für dieses Refactoring sollten die Werte besser berechnet werden
-	public void createRulesText(String solutionID, StringBuilder sb, Section<Finding> sec) {
+	public void createRulesText(Section<Finding> sec, String solutionID, StringBuffer sb) {
 		sb.append("\nIF " + sec.getOriginalText());
 		sb.append("\n    THEN ");
 		sb.append(solutionID + " = P7");
@@ -256,7 +279,7 @@ public class RefactoringSession {
 		return findings;
 	}
 
-	public Section<?> findKnowledgeSection() {
+	public Section<?> findXCList() {
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
@@ -265,7 +288,7 @@ public class RefactoringSession {
 				for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
 					topics.add(it.next().getTitle());
 				}
-				StringBuilder html = new StringBuilder();
+				StringBuffer html = new StringBuffer();
 				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Wählen Sie die zu transformierende Überdeckungsliste aus:</p></div>"
@@ -281,7 +304,6 @@ public class RefactoringSession {
 								+ xclist.findSuccessor(new SolutionID()).getOriginalText() + "</option>");
 					}
 				}
-				// FIXME onlick ersetzen, d.h. den button explizit registrieren
 				html.append("</select></div><div>"
 						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
 				return html.toString();
@@ -320,10 +342,7 @@ public class RefactoringSession {
 		return refactoring;
 	}
 	
-	// TODO Momentan muss die letzte Änderung mit saveArticle = true ausgeführt werden.
-	// Verbesserungsmöglichkeit: Es sollte immer mit saveArticle = false gearbeitet werden, und am Ende wird der Article standardmässig mit
-	// saveArticle = true abgespeichert. Dann kann man auch 2 Methoden draus machen.
-	private void replaceSection(Section<?> section, String newText, boolean saveArticle) {
+	private void replaceSection(Section<?> section, String newText) {
 		if (! changedSections.containsKey(section.getId())) {
 			changedSections.put(section.getId(), new String[] {section.getOriginalText(), newText});
 		} else {
@@ -331,22 +350,8 @@ public class RefactoringSession {
 		}
 		KnowWEArticle article = section.getArticle();
 		String topic = article.getTitle();
-		if (saveArticle) {
-			// tracking of article versions
-			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
-			int versionBefore = we.getPage(topic).getVersion();
-			manager.replaceKDOMNode(parameters, topic, section.getId(), newText);
-			int versionAfter = we.getPage(topic).getVersion();
-			if (! changedWikiPages.containsKey(topic)) {
-				changedWikiPages.put(topic, new int[] {versionBefore, versionAfter});
-			} else {
-				changedWikiPages.put(topic, new int[] {changedWikiPages.get(topic)[0], versionAfter});
-			}
-		} else {
-			String text = manager.replaceKDOMNodeWithoutSave(parameters, topic, section.getId(), newText);
-			article = new KnowWEArticle(text, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
-			manager.saveUpdatedArticle(article);
-		}
+		String text = manager.replaceKDOMNodeWithoutSave(parameters, topic, section.getId(), newText);
+		article = new KnowWEArticle(text, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
+		manager.saveUpdatedArticle(article);
 	}
-	
 }

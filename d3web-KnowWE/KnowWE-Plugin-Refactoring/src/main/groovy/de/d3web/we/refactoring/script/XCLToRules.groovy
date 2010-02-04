@@ -8,7 +8,7 @@ import de.d3web.we.kdom.rules.RulesSectionContent;
 
 @Deprecated
 // Coveringlist-Section mit der id holen
-Section<?> knowledgeSection = ra.findKnowledgeSection();
+Section<?> knowledgeSection = ra.findXCList();
 // Alle Finding 's dieser Section holen
 List<Section<Finding>> findingSections = ra.findFindings(knowledgeSection);
 // SolutionID holen
