@@ -104,7 +104,7 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 					m = Pattern.compile("^\\s*" + "-{"+level+"}" + "[^-]",
 							Pattern.MULTILINE).matcher(text);
 				} else {
-					m = Pattern.compile("^\\s*[\\w]+.*$",
+					m = Pattern.compile("^\\s*[\\w\"]+.*$",
 							Pattern.MULTILINE).matcher(text);
 				}
 			} catch (StackOverflowError e) {

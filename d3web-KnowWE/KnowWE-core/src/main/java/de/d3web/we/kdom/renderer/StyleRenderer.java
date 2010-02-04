@@ -49,7 +49,7 @@ public class StyleRenderer extends KnowWEDomRenderer {
 		}
 		if (cssStyle != null) {
 			string.append(" style='").append(cssStyle).append("'");
-		}
+		}		
 		string.append(KnowWEUtils.maskHTML(">"));
 		DelegateRenderer.getInstance().render(article, sec, user, string);
 		string.append(KnowWEUtils.maskHTML("</span>"));

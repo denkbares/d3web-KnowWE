@@ -31,7 +31,7 @@ public class FontColorRenderer extends StyleRenderer {
 	public static String COLOR4 = "color:rgb(200, 0, 200)";
 	public static String COLOR5 = "color:rgb(128, 128, 0)";
 	public static String COLOR6 = "color:rgb(0, 0, 255)";
-	public static String COLOR7 = "color:rgb(255, 0, 102)";
+	public static String COLOR7 = "color:rgb(125, 80, 102)";
 	public static String COLOR8 = "color:rgb(0, 0, 102)";
 	
 	private static Map<String, FontColorRenderer> renderers = new HashMap<String, FontColorRenderer>();
