@@ -78,7 +78,7 @@ public class RegexSectionFinder extends SectionFinder {
 		int index = 0;
 		while (m.find(index)) {
 			result.add(createSectionFinderResult(m));
-			int next = m.end(group) + 1;
+			int next = m.end(group);
 			// avoid endless iterations with "wrong" expressions
 			if (next <= index) break;
 			// detect if we reached the end, 
