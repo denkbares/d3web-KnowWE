@@ -7,9 +7,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.decisionTree.QuestionDef;
-import de.d3web.we.kdom.objects.ObjectRef;
-import de.d3web.we.kdom.questionTreeNew.QuestionLine.TypeDeclarationRenderer;
+import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -43,7 +41,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType{
 	}
 	
 	private KnowWEObjectType createObjectRefTypeBefore(KnowWEObjectType typeAfter) {
-		ObjectRef qid = new ObjectRef();
+		QuestionID qid = new QuestionID();
 		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
 		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
 		return qid;

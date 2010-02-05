@@ -23,8 +23,17 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 
+		initSectionFinder();
+		
+		
 		QuestionnaireID qc = new QuestionnaireID();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR5));
+		qc.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		qc.addReviseSubtreeHandler(new CreateQuestionnaireHandler());
+		this.childrenTypes.add(qc);
+	}
+
+	private void initSectionFinder() {
 		this.sectionFinder = new ConditionalAllTextFinder() {
 
 			@Override
@@ -48,9 +57,6 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 				return false;
 			}
 		};
-		qc.setSectionFinder(AllTextFinderTrimmed.getInstance());
-		qc.addReviseSubtreeHandler(new CreateQuestionnaireHandler());
-		this.childrenTypes.add(qc);
 	}
 
 	static class CreateQuestionnaireHandler implements ReviseSubTreeHandler {

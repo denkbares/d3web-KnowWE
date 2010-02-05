@@ -7,7 +7,7 @@ import de.d3web.we.utils.KnowWEObjectTypeUtils;
 public class QuestionTreeAnswerID extends AnswerID {
 
 	@Override
-	public Section<QuestionID> getQuestion(Section<AnswerID> s) {
+	public Section<QuestionID> getQuestionSection(Section<? extends AnswerID> s) {
 
 		Section<DashTreeElement> localDashTreeElement = KnowWEObjectTypeUtils.getAncestorOfType(s, new DashTreeElement());
 		
@@ -17,5 +17,7 @@ public class QuestionTreeAnswerID extends AnswerID {
 		
 		return qid;
 	}
+
+
 
 }
