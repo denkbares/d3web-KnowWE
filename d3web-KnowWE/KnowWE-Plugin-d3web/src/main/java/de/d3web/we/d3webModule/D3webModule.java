@@ -73,11 +73,9 @@ import de.d3web.we.kdom.bulletLists.scoring.BulletScoring;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
 import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.kopic.Kopic;
 import de.d3web.we.kdom.kopic.renderer.AnnotationInlineAnswerRenderer;
-import de.d3web.we.kdom.questionTreeNew.QuestionDashTree;
-import de.d3web.we.kdom.questionTreeNew.QuestionTree;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeRootType;
 import de.d3web.we.kdom.rules.RulesSection;
 import de.d3web.we.kdom.table.attributes.AttributeTableSection;
 import de.d3web.we.kdom.table.xcl.CoveringTableSection;
@@ -146,9 +144,8 @@ public class D3webModule implements KnowWEModule {
 		rootTypes.add(new CoveringListSection());
 		rootTypes.add(new RulesSection());
 		rootTypes.add(new BulletScoring());
-		DefaultMarkup markup = new DefaultMarkup("QuestionTree");
-		markup.addContentType(new QuestionDashTree());
-		rootTypes.add(new QuestionTree(markup));
+		rootTypes.add(new QuestionTreeRootType());
+		
 		return rootTypes;
 	}
 
