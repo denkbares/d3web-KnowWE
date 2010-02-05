@@ -38,7 +38,7 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLContent;
 
 /**
- * This class manages all Includes (not the old TextIncludes!).
+ * This class manages all Includes.
  * Keeps tack and links them to their target Sections. 
  * 
  * @author astriffler

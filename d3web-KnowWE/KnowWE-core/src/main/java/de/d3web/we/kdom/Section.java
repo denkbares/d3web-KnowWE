@@ -180,7 +180,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	
 	/**
 	 * 
-	 * Constructor of a node Important: parses itself recursively by getting the
+	 * Constructor of a node <p/>
+	 * Important: parses itself recursively by getting the
 	 * allowed childrenTypes of the local type
 	 * 
 	 * @param text 
@@ -270,8 +271,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 		
 		childrenParsingOrder.addAll(children);
-
-		sortChildrenParsingOrder();
 		
 		/**
 		 * sort children sections in text-order
@@ -441,6 +440,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			return getChildren();
 		} 
 		else {
+			sortChildrenParsingOrder();
 			return childrenParsingOrder;
 		}
 	}
