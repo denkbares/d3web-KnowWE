@@ -1,5 +1,6 @@
 package de.d3web.we.refactoring.session;
 
+
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
@@ -23,6 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import name.fraser.neil.plaintext.diff_match_patch;
 import name.fraser.neil.plaintext.diff_match_patch.Diff;
 
+import org.apache.log4j.Logger;
 import org.ceryle.xml.XHTML;
 
 import com.ecyrd.jspwiki.WikiContext;
@@ -44,6 +46,8 @@ import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.xcl.XCList;
 
 public class RefactoringSession {
+	
+	private static Logger log = Logger.getLogger(RefactoringSession.class);
 	
 	private Thread thread = new Thread(new Runnable() {
 		@Override
@@ -121,36 +125,35 @@ public class RefactoringSession {
 			} else {
 				gob.invokeMethod("run", args);
 			}
-			System.out.println("interpret complete."); // I18N
 		} catch (MissingPropertyException mpe) {
-			System.out.println("MissingPropertyException while interpreting script: " + mpe.getMessage()); // I18N
+			log.error("MissingPropertyException while interpreting script: " + mpe.getMessage()); // I18N
 			if (mpe.getMessage() != null) {
-				System.out.println(mpe.getMessage() + XHTML.Tag_br
+				warning(mpe.getMessage() + XHTML.Tag_br
 						+ "MissingPropertyException is often due to the content not being a valid Groovy script."); // I18N
 			} else {
-				System.out.println("MissingPropertyException thrown while executing Groovy script."); // I18N
+				warning("MissingPropertyException thrown while executing Groovy script."); // I18N
 			}
 		} catch (InstantiationException ie) {
-			System.out.println("unable to instantiate Groovy interpreter: " + ie.getMessage()); // I18N
+			log.error("unable to instantiate Groovy interpreter: " + ie.getMessage()); // I18N
 			if (ie.getMessage() != null) {
-				System.out.println(ie.getMessage());
+				warning(ie.getMessage());
 			} else {
-				System.out.println("InstantiationException thrown while executing Groovy script."); // I18N
+				warning("InstantiationException thrown while executing Groovy script."); // I18N
 			}
 		} catch (IllegalAccessException iae) {
-			System.out.println("illegal access instantiating Groovy interpreter: " + iae.getMessage()); // I18N
+			log.error("illegal access instantiating Groovy interpreter: " + iae.getMessage()); // I18N
 			if (iae.getMessage() != null) {
-				System.out.println(iae.getMessage());
+				warning(iae.getMessage());
 			} else {
-				System.out.println("IllegalAccessException thrown while executing Groovy script."); // I18N
+				warning("IllegalAccessException thrown while executing Groovy script."); // I18N
 			}
 		} catch (Exception e) {
-			System.out.println(e.getClass().getName() + " thrown interpreting Groovy script: " + e.getMessage()); // I18N
+			log.error(e.getClass().getName() + " thrown interpreting Groovy script: " + e.getMessage()); // I18N
 			if (e.getMessage() != null) {
-				System.out.println(e.getClass().getName() + " thrown interpreting Groovy script: " + e.getMessage()); // I18N
+				error(e.getClass().getName() + " thrown interpreting Groovy script: " + e.getMessage()); // I18N
 				e.printStackTrace(System.err);
 			} else {
-				System.out.println(e.getClass().getName() + " thrown while executing Groovy script."); // I18N
+				warning(e.getClass().getName() + " thrown while executing Groovy script."); // I18N
 			}
 		}
 		Set<String> changedArticles = new HashSet<String>();
@@ -317,6 +320,60 @@ public class RefactoringSession {
 	
 	
 	// HILFSMETHODEN
+	
+	/**
+	 * Write the contents of the String <tt>message</tt> to the output as a
+	 * warning message.
+	 * <p>
+	 * The message is contained within a paragraph with a 'warning' class.
+	 */
+	public void warning(String message) {
+		log.warn("Warning: " + message); // I18N
+		final StringBuffer html = new StringBuffer();
+		html.append(XHTML.STag_p_class);
+		html.append("warning");
+		html.append(XHTML.QuotCl);
+		html.append('\n');
+		html.append(message);
+		html.append(XHTML.ETag_p);
+		performNextAction(new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				return html.toString();
+			}
+		});
+	}
+
+	/**
+	 * Process a fatal error by clearing the existing buffer and populating it
+	 * with an error message.
+	 * <p>
+	 * The message is contained within a paragraph with an 'error' class.
+	 */
+	private void error(String message) {
+		log.error("Error: " + message); // I18N
+		final StringBuffer html = new StringBuffer();
+		html.setLength(0);
+		html.append(XHTML.STag_div_class);
+		html.append("error");
+		html.append(XHTML.QuotCl);
+		html.append('\n');
+		html.append(XHTML.STag_b);
+		html.append("Groovy Script Failed: "); // I18N
+		html.append(XHTML.ETag_b);
+		html.append(XHTML.Tag_br);
+		if (message != null) { // error message, if any
+			html.append(message);
+			html.append(XHTML.Tag_br);
+		}
+		html.append(XHTML.ETag_div);
+		performNextAction(new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				return html.toString();
+			}
+		});
+	}
 
 	private void performNextAction(KnowWEAction action) {
 		nextAction = action;
