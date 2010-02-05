@@ -120,12 +120,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	
 	protected T t;
 
-	 public void add(T t) {
-	        this.t = t;
-	    }
+//	 public void add(T t) {
+//	        this.t = t;
+//	    }
 
 	    public T get() {
-	        return t;
+	        return objectType;
 	    }
 
 	
