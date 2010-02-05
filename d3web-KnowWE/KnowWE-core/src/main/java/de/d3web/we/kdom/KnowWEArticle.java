@@ -197,6 +197,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	
 	}
 
+	public KnowWEArticle() {
+		// TODO Auto-generated constructor stub
+	}
+
 	private void clearTypeStore(
 			List<? extends KnowWEObjectType> allowedObjects2, String title) {
 

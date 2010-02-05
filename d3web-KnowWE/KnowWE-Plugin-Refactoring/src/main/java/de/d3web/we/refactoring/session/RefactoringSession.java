@@ -7,6 +7,8 @@ import groovy.lang.GroovyObject;
 import groovy.lang.MissingPropertyException;
 import groovy.lang.Script;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,10 +40,14 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.KnowWEScriptLoader;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.decisionTree.SolutionID;
+import de.d3web.we.kdom.objects.QuestionID;
+import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
+import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.xcl.XCList;
 
@@ -100,7 +106,6 @@ public class RefactoringSession {
 		this.gsonFormMap = gsonFormMap;
 	}
 	
-	// FIXME bessere Integration des Groovy-Plugins, Fehlermeldungen müssten z.B. im Wiki angezeigt werden.
 	public void runSession() {
 		try {
 			Object[] args = {};
@@ -125,6 +130,7 @@ public class RefactoringSession {
 			} else {
 				gob.invokeMethod("run", args);
 			}
+		// TODO Stacktracing der Fehlermeldungen im Wiki anzeigen, nicht nur die Fehlermeldung
 		} catch (MissingPropertyException mpe) {
 			log.error("MissingPropertyException while interpreting script: " + mpe.getMessage()); // I18N
 			if (mpe.getMessage() != null) {
@@ -147,6 +153,8 @@ public class RefactoringSession {
 			} else {
 				warning("IllegalAccessException thrown while executing Groovy script."); // I18N
 			}
+		} catch(NullPointerException npe) {
+		    warning(getStackTraceString(npe));
 		} catch (Exception e) {
 			log.error(e.getClass().getName() + " thrown interpreting Groovy script: " + e.getMessage()); // I18N
 			if (e.getMessage() != null) {
@@ -247,6 +255,14 @@ public class RefactoringSession {
 		terminated  = true;
 	}
 
+	private String getStackTraceString(Exception e) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		e.printStackTrace(pw);
+		String s = sw.toString();
+		return s;
+	}
+
 	// GROOVY-METHODEN TODO auslagern?!
 	
 	public void addRulesText(StringBuffer sb, Section<RulesSectionContent> rulesSectionContent) {
@@ -286,13 +302,12 @@ public class RefactoringSession {
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
-				
+				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				StringBuffer html = new StringBuffer();
 				SortedSet<String> topics = new TreeSet<String>();
 				for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
 					topics.add(it.next().getTitle());
 				}
-				StringBuffer html = new StringBuffer();
-				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Wählen Sie die zu transformierende Überdeckungsliste aus:</p></div>"
 						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>XCList</label>"
@@ -312,10 +327,84 @@ public class RefactoringSession {
 				return html.toString();
 			}
 		});
-		
 		Section<?> knowledge = manager.findNode(gsonFormMap.get("selectXCList")[0]);
-
 		return knowledge;
+	}
+	
+	public AbstractKnowWEObjectType findRenamingType() {
+		performNextAction(new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				StringBuffer html = new StringBuffer();
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Wählen Sie den Typ des Objekts aus, welches sie umbenennen möchten:</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objekttyp</label>"
+						+ "<select name='selectRenamingType' class='refactoring'>");
+				html.append("<option value='KnowWEArticle'>KnowWEArticle (Wikiseite)</option>");
+				html.append("<option value='QuestionnaireID'>QuestionnaireID (Fragebogen)</option>");
+				html.append("<option value='QuestionID'>QuestionID (Frage)</option>");
+				html.append("<option value='QuestionTreeAnswerID'>QuestionTreeAnswerID (Antwort)</option>");
+				html.append("<option value='SolutionID'>SolutionID (Lösung)</option>");
+				html.append("</select></div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		String typeString = gsonFormMap.get("selectRenamingType")[0];
+		AbstractKnowWEObjectType type = null;
+		if(typeString.equals("KnowWEArticle")) {
+			type = new KnowWEArticle();
+		} else if(typeString.equals("QuestionnaireID")) {
+			type = new QuestionnaireID();
+		} else if(typeString.equals("QuestionID")) {
+			type = new QuestionID();
+		} else if(typeString.equals("QuestionTreeAnswerID")) {
+			type = new QuestionTreeAnswerID();
+		} else if(typeString.equals("SolutionID")) {
+			type = new SolutionID();
+		}
+		return type;
+	}
+	
+	public <T extends AbstractKnowWEObjectType> String findOldName(final T type) {
+		//FIXME doppelte rausfiltern
+		performNextAction(new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				StringBuffer html = new StringBuffer();
+				SortedSet<String> topics = new TreeSet<String>();
+				for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
+					topics.add(it.next().getTitle());
+				}
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Wählen Sie den Namen des Objekts mit dem Typ <strong>" + type.getName() + "</strong>:</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objektname</label>"
+						+ "<select name='selectOldName' class='refactoring'>");
+				for(Iterator<String> it = topics.iterator(); it.hasNext();) {
+					KnowWEArticle article = manager.getArticle(it.next());
+					Section<?> articleSection = article.getSection();
+					List<Section<T>> objects = new ArrayList<Section<T>>();
+					articleSection.findSuccessorsOfType(type, objects);
+					for (Section<?> object : objects) {
+						String name;
+						if(type instanceof KnowWEArticle) {
+							name = object.getId();
+						} else {
+							name = object.getOriginalText();
+						}
+						html.append("<option value='" + name + "'>Seite: " + article.getTitle() + " - Objekt: " 
+								+ name + "</option>");
+					}
+				}
+				html.append("</select></div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		String oldName = gsonFormMap.get("selectOldName")[0];
+		return oldName;
 	}
 	
 	
