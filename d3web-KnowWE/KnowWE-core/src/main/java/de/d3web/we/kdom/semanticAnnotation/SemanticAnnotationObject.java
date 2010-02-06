@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
@@ -95,7 +97,9 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 			URI soluri = sol.getSolutionURI();
 			try {
 				if (PropertyManager.getInstance().isRDFS(prop)) {
-					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));
+					Statement stmnt=uo.getHelper().createStatement(soluri, prop, stringa);
+					
+					io.addStatement(stmnt);
 				} else if (PropertyManager.getInstance().isRDF(prop)) {
 					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));
 				} else if (PropertyManager.getInstance().isNary(prop)) {
@@ -107,6 +111,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 				else {
 					io.addStatement(uo.getHelper().createStatement(soluri, prop, stringa));	
 				}
+				
 			} catch (RepositoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -101,8 +101,8 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 //					return KnowWEEnvironment.maskHTML(DefaultTextType
 //							.getErrorUnknownConcept(op, text));
 //				}
-				String s = DefaultTextType.getRenderedInput(q.getId(), q.getText(),
-						service.getId(), user, "Annotation", text, op);
+				String s = "<a href=\"#"+sec.getId()+"\"></a>"+DefaultTextType.getRenderedInput(q.getId(), q.getText(),
+						service.getId(), user, "Annotation", text, op);				
 				String masked = KnowWEEnvironment.maskHTML(s);
 				return masked;
 			} else {

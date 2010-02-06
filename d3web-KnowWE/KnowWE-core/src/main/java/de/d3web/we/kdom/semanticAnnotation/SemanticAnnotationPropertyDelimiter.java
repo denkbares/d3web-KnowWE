@@ -37,5 +37,4 @@ public class SemanticAnnotationPropertyDelimiter extends DefaultAbstractKnowWEOb
     	this.sectionFinder = new StringSectionFinder("::");
     }
 
-
 }

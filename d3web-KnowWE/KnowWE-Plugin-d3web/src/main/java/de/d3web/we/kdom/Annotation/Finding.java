@@ -98,6 +98,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 
 			ArrayList<Statement> slist = new ArrayList<Statement>();
 			try {
+				uo.getHelper().attachTextOrigin(literalinstance, section, io);
 				slist.add(uo.getHelper().createStatement(literalinstance,
 						RDF.TYPE, uo.getHelper().createURI("Literal")));
 				slist.add(uo.getHelper().createStatement(literalinstance,

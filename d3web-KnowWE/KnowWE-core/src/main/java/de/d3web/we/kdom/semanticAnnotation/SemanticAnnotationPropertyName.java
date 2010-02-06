@@ -36,32 +36,33 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
  * @author kazamatzuri
  * 
  */
-public class SemanticAnnotationPropertyName extends DefaultAbstractKnowWEObjectType  {
+public class SemanticAnnotationPropertyName extends
+		DefaultAbstractKnowWEObjectType {
 
-    @Override
-    public void init() {
-	this.sectionFinder = new AllTextSectionFinder();
-    }
+	@Override
+	public void init() {
+		this.sectionFinder = new AllTextSectionFinder();
+	}
 
-    @Override
-    public IntermediateOwlObject getOwl(Section s) {
-	IntermediateOwlObject io = new IntermediateOwlObject();
-	UpperOntology uo = UpperOntology.getInstance();
-	String prop = s.getOriginalText();
-	URI property=null;
-	if (prop.equals("subClassOf") || prop.equals("subPropertyOf")){
-	    property = uo.getRDFS(prop);
-	}else if (prop.equals("type")){
-	    property = uo.getRDF(prop);
-	}else if (prop.contains(":")){
-		property=uo.getHelper().createURI(SemanticCore.getInstance().getNameSpaces().get(prop.split(":")[0]), prop.split(":")[1]);
+	@Override
+	public IntermediateOwlObject getOwl(Section s) {
+		IntermediateOwlObject io = new IntermediateOwlObject();
+		UpperOntology uo = UpperOntology.getInstance();
+		String prop = s.getOriginalText();
+		URI property = null;
+		if (prop.equals("subClassOf") || prop.equals("subPropertyOf")) {
+			property = uo.getRDFS(prop);
+		} else if (prop.equals("type")) {
+			property = uo.getRDF(prop);
+		} else if (prop.contains(":")) {
+			property = uo.getHelper().createURI(
+					SemanticCore.getInstance().getNameSpaces().get(
+							prop.split(":")[0]), prop.split(":")[1]);
+		} else {
+			property = uo.getHelper().createlocalURI(prop);
+		}				
+		io.addLiteral(property);
+		return io;
 	}
-	else
-	{
-	     property = uo.getHelper().createlocalURI(prop);
-	}
-	io.addLiteral(property); 
-	return io;
-    }
 
 }
