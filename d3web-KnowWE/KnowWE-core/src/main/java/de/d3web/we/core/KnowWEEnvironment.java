@@ -514,36 +514,38 @@ public class KnowWEEnvironment {
 				}
 			}
 			JPFPluginManager.init(pluginFiles.toArray(new File[pluginFiles.size()]));
-		}
-		Plugin[] plugins = PluginManager.getInstance().getPlugins();
-		
-		for (Plugin p: plugins) {
-			Resource[] resources = p.getResources();
-			for (Resource r: resources) {
-				String pathName = r.getPathName();
-				if (!pathName.endsWith("/")&&pathName.startsWith("webapp/")) {
-					pathName = pathName.substring("webapp/".length());
-					try {
-						File file = new File(new File(knowweExtensionPath).getParentFile().getCanonicalPath()+"/"+pathName);
-						File parent = file.getParentFile();
-						if (!parent.isDirectory()) {
-							parent.mkdirs();
-						}
-						FileOutputStream out = new FileOutputStream(file);
-						InputStream in = r.getInputStream();
+			
+			Plugin[] plugins = PluginManager.getInstance().getPlugins();
+			
+			for (Plugin p: plugins) {
+				Resource[] resources = p.getResources();
+				for (Resource r: resources) {
+					String pathName = r.getPathName();
+					if (!pathName.endsWith("/")&&pathName.startsWith("webapp/")) {
+						pathName = pathName.substring("webapp/".length());
 						try {
-							stream(in, out);
-						} finally {
-							in.close();
-							out.close();
+							File file = new File(new File(knowweExtensionPath).getParentFile().getCanonicalPath()+"/"+pathName);
+							File parent = file.getParentFile();
+							if (!parent.isDirectory()) {
+								parent.mkdirs();
+							}
+							FileOutputStream out = new FileOutputStream(file);
+							InputStream in = r.getInputStream();
+							try {
+								stream(in, out);
+							} finally {
+								in.close();
+								out.close();
+							}
 						}
-					}
-					catch (IOException e) {
-						throw new InstantiationError("Cannot instantiate plugin "+p+", the following error occured while extracting its resources: "+e.getMessage());
+						catch (IOException e) {
+							throw new InstantiationError("Cannot instantiate plugin "+p+", the following error occured while extracting its resources: "+e.getMessage());
+						}
 					}
 				}
 			}
 		}
+		
 		
 		for (Instantiation inst: Plugins.getInstantiations()) {
 			inst.init(context);
