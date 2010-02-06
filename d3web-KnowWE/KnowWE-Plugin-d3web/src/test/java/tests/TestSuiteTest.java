@@ -20,9 +20,12 @@
 
 package tests;
 
+import java.io.IOException;
+
 import utils.KBCreationTestUtil;
 import de.d3web.empiricalTesting.TestSuite;
 import de.d3web.empiricalTesting.RatedTestCase;
+import de.d3web.plugin.test.InitPluginManager;
 import junit.framework.TestCase;
 
 /**
@@ -35,6 +38,10 @@ import junit.framework.TestCase;
  * 
  */
 public class TestSuiteTest extends TestCase {
+	
+	protected void setUp() throws IOException {
+		InitPluginManager.init();
+	}
 	
 	/**
 	 * Test some aspects of the TestSuite

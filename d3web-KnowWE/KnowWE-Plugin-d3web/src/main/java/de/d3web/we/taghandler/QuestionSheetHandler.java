@@ -23,21 +23,18 @@ package de.d3web.we.taghandler;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import de.d3web.kernel.XPSCase;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.supportknowledge.DCElement;
 import de.d3web.kernel.supportknowledge.DCMarkup;
-import de.d3web.kernel.supportknowledge.MMInfoObject;
-import de.d3web.kernel.supportknowledge.MMInfoStorage;
 import de.d3web.kernel.supportknowledge.MMInfoSubject;
 import de.d3web.kernel.supportknowledge.Property;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.utils.D3webUtils;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuestionSheetHandler  extends AbstractTagHandler{
@@ -66,7 +63,7 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 		
 		XPSCase xpsCase = D3webUtils.getXPSCase(topic, user, web);
 		
-		D3webKnowledgeService service = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);
+		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 		
@@ -88,21 +85,17 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 				
 				if(xpsCase != null) {
 					answerstring += " : ";
-					List answers = question.getValue(xpsCase);
+					List<?> answers = question.getValue(xpsCase);
 					for (Object object : answers) {
 						answerstring += object.toString()+", ";
 					}
 					answerstring = answerstring.substring(0, answerstring.length()-2);
 				}
 				
-				MMInfoStorage storage = (MMInfoStorage)question.getProperties().getProperty(Property.MMINFO);
 				DCMarkup markup = new DCMarkup();
 		        markup.setContent(DCElement.SOURCE, question.getId());
 		        markup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT.getName());      
-		        if(storage != null) {
-		        	Set<MMInfoObject> o = storage.getMMInfo(markup);
-		        }
-				String rendered = DefaultTextType.getRenderedInput(question.getId(), question.getText(), service.getId(), user.getUsername(), "Question", question.getText(),"");
+		        String rendered = KnowWEUtils.getRenderedInput(question.getId(), question.getText(), service.getId(), user.getUsername(), "Question", question.getText(),"");
 				html.append("<li class=\"pointer\"><img src=\"KnowWEExtension/images/arrow_right.png\" border=\"0\"/>" +" "+ rendered + answerstring+"</li>\n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 			}
 			html.append("</ul>");

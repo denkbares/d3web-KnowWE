@@ -22,30 +22,14 @@ package de.d3web.we.core;
 
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import org.apache.commons.fileupload.FileItem;
 
-import de.d3web.we.action.GlobalReplaceAction;
 import de.d3web.we.action.KnowWEAction;
-import de.d3web.we.action.KnowWEObjectTypeActivationAction;
-import de.d3web.we.action.KnowWEObjectTypeBrowserAction;
-import de.d3web.we.action.ParseWebOfflineRenderer;
-import de.d3web.we.action.ReplaceKDOMNodeAction;
-import de.d3web.we.action.SetQuickEditFlagAction;
-import de.d3web.we.action.TagHandlingAction;
-import de.d3web.we.action.UpdateTableKDOMNodesAction;
-import de.d3web.we.action.WordBasedRenameFinding;
-import de.d3web.we.action.WordBasedRenamingAction;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.upload.UploadManager;
+import de.knowwe.plugin.Plugins;
 
 
 /**
@@ -61,11 +45,6 @@ import de.d3web.we.upload.UploadManager;
  * 
  */
 public class KnowWEFacade {
-
-	/**
-	 * holds all possible Actions, that can be performed by the KnowWEEngine
-	 */
-	private Map<Class<? extends KnowWEAction>, KnowWEAction> actionMap = new HashMap<Class<? extends KnowWEAction>, KnowWEAction>();
 
 	/**
 	 * Singleton instance
@@ -94,43 +73,6 @@ public class KnowWEFacade {
 	}
 
 	private KnowWEFacade() {
-		initActions();
-	}
-
-	/**
-	 * initialises all supported actions dont forget to register your new
-	 * written actions here!
-	 */
-	private void initActions() {
-
-		registerAction(SetQuickEditFlagAction.class, new SetQuickEditFlagAction());
-		registerAction(WordBasedRenamingAction.class, new WordBasedRenamingAction());
-		registerAction(GlobalReplaceAction.class, new GlobalReplaceAction());
-
-		registerAction(ReplaceKDOMNodeAction.class, new ReplaceKDOMNodeAction());
-		registerAction(UpdateTableKDOMNodesAction.class, new UpdateTableKDOMNodesAction());
-		registerAction(KnowWEObjectTypeBrowserAction.class, new KnowWEObjectTypeBrowserAction());
-		registerAction(KnowWEObjectTypeActivationAction.class, new KnowWEObjectTypeActivationAction());
-		
-		registerAction(TagHandlingAction.class, new TagHandlingAction());
-		
-		List<KnowWEModule> modules = KnowWEEnvironment.getInstance()
-				.getModules();
-		
-		for (KnowWEModule knowWEModule : modules) {
-			knowWEModule.addAction(actionMap);
-		}
-	}
-
-	/**
-	 * Registers an action instance for an action class.
-	 */
-	private KnowWEAction registerAction(
-			Class<? extends KnowWEAction> actionClass, KnowWEAction action) {
-		
-		Logger.getLogger(this.getClass().getName()).info("Registering action: " + actionClass);
-		
-		return actionMap.put(actionClass, action);
 	}
 
 	/**
@@ -140,7 +82,7 @@ public class KnowWEFacade {
 	 * @return
 	 */
 	public String replaceKDOMNode(KnowWEParameterMap map) {
-		return this.actionMap.get(ReplaceKDOMNodeAction.class).perform(map);
+		return this.tryLoadingAction("ReplaceKDOMNodeAction").perform(map);
 	}
 	
 	/**
@@ -156,46 +98,6 @@ public class KnowWEFacade {
 		return performAction("CodeCompletionRenderer", parameterMap);
 	}
 
-	/**
-	 * (re-)parses the whole web/wiki
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public String parseAll(KnowWEParameterMap parameterMap) {
-
-		
-
-		KnowWEAction action = actionMap.get(ParseWebOfflineRenderer.class);
-		return action.perform(parameterMap);
-	}
-
-	/**
-	 * Allows to perform actions by Class
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public KnowWEAction getAction(Class<? extends KnowWEAction> clazz) {
-		return actionMap.get(clazz);
-	}
-
-	/**
-	 * Allows to perform actions by Classname
-	 * 
-	 * @param parameterMap
-	 * @return
-	 */
-	public KnowWEAction getAction(String name) {
-		Set<Class<? extends KnowWEAction>> classSet = actionMap.keySet();
-		for (Class<? extends KnowWEAction> class1 : classSet) {
-			if (class1.getName().equals(name)) {
-				return actionMap.get(class1);
-			}
-		}
-		return null;
-	}
-
 	public String performAction(String action, KnowWEParameterMap parameterMap) {
 		if (action == null) {
 			action = parameterMap.get("action");
@@ -204,10 +106,7 @@ public class KnowWEFacade {
 			}
 		}
 		
-		//Hotfix: search in ActionMap
-		KnowWEAction actionInstance = findInActionMap(action); 
-		if(actionInstance == null)
-			actionInstance = tryLoadingAction(action);
+		KnowWEAction actionInstance  = tryLoadingAction(action);
 		
 		if (actionInstance.isAdminAction())
 			return performAdminAction(actionInstance, parameterMap);
@@ -251,55 +150,19 @@ public class KnowWEFacade {
 	 * @throws various exceptions depending on the exact error 
 	 * 
 	 */
-	private KnowWEAction tryLoadingAction(String actionName) {
-		try {
-			// check is action is fully qualified class name
-			if (!actionName.contains(".")) {
-				// if not, use d3web default package
-				actionName = "de.d3web.we.action." + actionName;
-			}
-			Class clazz = Class.forName(actionName);
-			KnowWEAction actionInstance = actionMap.get(clazz);
-			if (actionInstance == null) {
-				Logger.getLogger(this.getClass().getName()).warning(
-						"Action/Render " + actionName + " wasn't registered.");
-				actionInstance = (KnowWEAction)clazz.newInstance();
-
-				//register the new Action for reusage
-				registerAction(clazz, actionInstance);
-				
-			} 
-			return actionInstance; //can not be null at this point
-		} 
-		catch (ClassNotFoundException e) {
-			String msg = "action's class not found: "+actionName;
-			Logger.getLogger(this.getClass().getName()).severe(msg);
-			throw new IllegalArgumentException(msg, e);
+	public KnowWEAction tryLoadingAction(String actionName) {
+		// check is action is fully qualified class name
+		if (!actionName.contains(".")) {
+			// if not, use d3web default package
+			actionName = "de.d3web.we.action." + actionName;
 		}
-		catch (InstantiationException e) {
-			String msg = "action cannot be instanciated: "+actionName;
-			Logger.getLogger(this.getClass().getName()).severe(msg);
-			throw new IllegalArgumentException(msg, e);
-		} 
-		catch (IllegalAccessException e) {
-			String msg = "action constructor cannot be accessed: "+actionName;
-			Logger.getLogger(this.getClass().getName()).severe(msg);
-			throw new IllegalArgumentException(msg, e);
-		}
-		catch (ClassCastException e) {
-			String msg = "action is not an implementation of KnowWEAction: "+actionName;
-			Logger.getLogger(this.getClass().getName()).severe(msg);
-			throw new IllegalArgumentException(msg, e);
-		}
-	}
-
-	private KnowWEAction findInActionMap(String action) {
-		for(Entry<Class<? extends KnowWEAction>, KnowWEAction> entry : this.actionMap.entrySet()) {
-			if(entry.getValue().getClass().getName().contains(action)) {
-				return entry.getValue();
+		List<KnowWEAction> knowWEActions = Plugins.getKnowWEAction();
+		for (KnowWEAction action: knowWEActions) {
+			if (action.getClass().getName().equals(actionName)) {
+				return action;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("No action "+actionName+" available");
 	}
 
 	public String performAction(KnowWEParameterMap parameterMap) {
@@ -322,16 +185,4 @@ public class KnowWEFacade {
 	public void writeOwl(OutputStream stream){
 	    SemanticCore.getInstance().writeDump(stream);
 	}
-	
-	/**
-	 * This is for the JUnit Test of the Renaming Tool.
-	 */
-	public Map<KnowWEArticle, Collection<WordBasedRenameFinding>> renamingToolTest(
-			KnowWEParameterMap map) {
-		return ((WordBasedRenamingAction) this.actionMap
-				.get(WordBasedRenamingAction.class)).scanForFindings(map
-				.getWeb(), map.get(KnowWEAttributes.TARGET), map.get(
-				KnowWEAttributes.CONTEXT_PREVIOUS).length(), null);
-	}
-
 }

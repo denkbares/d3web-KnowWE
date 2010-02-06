@@ -29,10 +29,8 @@ import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
@@ -90,8 +88,6 @@ public class SemanticAnnotationAction extends AbstractKnowWEAction {
 			topic = namespace.substring(0, namespace.indexOf(".."));
 		}
 		
-		D3webKnowledgeService service = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(webname, topic);		
-
 		if (targetUrlPrefix == null) {
 			targetUrlPrefix = "KnowWE.jsp";
 		}
@@ -113,7 +109,7 @@ public class SemanticAnnotationAction extends AbstractKnowWEAction {
 		}
 		StringBuffer sb = new StringBuffer();
 
-		LocalTerminologyAccess access = dpse.getTerminologyServer()
+		LocalTerminologyAccess<?> access = dpse.getTerminologyServer()
 				.getStorage().getTerminology(TerminologyType.getType(type),
 						namespace);
 	

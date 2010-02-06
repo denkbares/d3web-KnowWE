@@ -19,35 +19,23 @@
  */
 package de.d3web.we.plugin.calendar;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
 
-import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.module.AbstractDefaultKnowWEModule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.knowwe.plugin.Instantiation;
 
 
-public class CalendarModule extends AbstractDefaultKnowWEModule{
+public class CalendarModule implements Instantiation{
 
-	private static CalendarModule instance;
 	private static Map<String,String> persons;
 
-	public static CalendarModule getInstance() {
-		if(instance == null) {
-			instance = new CalendarModule();
-		}
-		return instance;
-	}
-	
 	public static ResourceBundle getCalendarBundle() {
 		
 		return ResourceBundle.getBundle("Calendar_messages");
@@ -63,7 +51,7 @@ public class CalendarModule extends AbstractDefaultKnowWEModule{
 		return persons;
 	}
 
-	private void importPersons() {
+	private static void importPersons() {
 		ResourceBundle rb = ResourceBundle.getBundle("persons");
 				
 		Map<String, String> persons = new HashMap<String, String>();
@@ -83,20 +71,7 @@ public class CalendarModule extends AbstractDefaultKnowWEModule{
 	}
 	
 	@Override
-	public List<KnowWEObjectType> getRootTypes() {
-		List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
-		rootTypes.add(new Appointment());
-		return rootTypes;
-	}
-	
-	@Override
-	public void initModule(ServletContext context) {
-		super.initModule(context);
+	public void init(ServletContext context) {
 		importPersons();
-	}
-	
-	public void addAction(
-			Map<Class<? extends KnowWEAction>, KnowWEAction> actionMap) {
-		actionMap.put(de.d3web.we.plugin.calendar.CalendarAction.class, new CalendarAction());
 	}
 }

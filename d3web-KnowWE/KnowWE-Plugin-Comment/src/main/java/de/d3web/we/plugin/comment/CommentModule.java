@@ -20,37 +20,22 @@
 
 package de.d3web.we.plugin.comment;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
 
-import de.d3web.we.action.ForumBoxAction;
-import de.d3web.we.action.KnowWEAction;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.module.AbstractDefaultKnowWEModule;
-import de.d3web.we.plugin.forum.Forum;
+import de.knowwe.plugin.Instantiation;
 
 
-public class CommentModule extends AbstractDefaultKnowWEModule{
+public class CommentModule implements Instantiation{
 
 	private static Map<String, String> commentTypes;
 	private static Map<String, Integer> ids;
 	
-	private static CommentModule instance;
-		
-	public static CommentModule getInstance() {
-		if(instance == null) {
-			instance = new CommentModule();
-		}
-		return instance;
-	}
-	
-	private void importTypes() {
+	private static void importTypes() {
 		ResourceBundle rb = ResourceBundle.getBundle("commentTypes");
 		
 		Map<String, String> types = new HashMap<String, String>();
@@ -82,21 +67,7 @@ public class CommentModule extends AbstractDefaultKnowWEModule{
 	}
 	
 	@Override
-	public List<KnowWEObjectType> getRootTypes() {
-		List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
-		rootTypes.add(new CommentType());
-		rootTypes.add(new Forum());
-		return rootTypes;
-	}
-	
-	@Override
-	public void initModule(ServletContext context) {
-		super.initModule(context);
+	public void init(ServletContext context) {
 		importTypes();
-	}
-	
-	public void addAction(
-			Map<Class<? extends KnowWEAction>, KnowWEAction> actionMap) {
-		actionMap.put(de.d3web.we.action.ForumBoxAction.class, new ForumBoxAction());
 	}
 }

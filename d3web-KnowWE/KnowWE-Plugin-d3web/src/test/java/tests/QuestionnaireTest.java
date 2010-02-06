@@ -20,11 +20,14 @@
 
 package tests;
 
+import java.io.IOException;
+
 import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.qasets.QContainer;
 import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.logging.Logging;
 
 /**
@@ -36,6 +39,10 @@ import de.d3web.we.logging.Logging;
  * @see KBCreationTest.txt to modify the Article which is tested
  */
 public class QuestionnaireTest extends TestCase {
+	
+	protected void setUp() throws IOException {
+		InitPluginManager.init();
+	}
 	
 	public void testNumberOfQuestionnaires() {
 		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();

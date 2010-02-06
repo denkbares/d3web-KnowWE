@@ -46,7 +46,7 @@ public class AnswerCellHandler implements ReviseSubTreeHandler {
 	@Override
 	public void reviseSubtree(KnowWEArticle article, Section s) {
 		
-		KnowledgeBaseManagement mgn = D3webModule.getInstance()
+		KnowledgeBaseManagement mgn = D3webModule
 			.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 		
 		if (mgn == null) {

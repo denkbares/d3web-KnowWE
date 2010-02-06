@@ -20,6 +20,8 @@
 
 package tests;
 
+import java.io.IOException;
+
 import utils.KBCreationTestUtil;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.qasets.Question;
@@ -31,6 +33,7 @@ import de.d3web.kernel.supportknowledge.MMInfoObject;
 import de.d3web.kernel.supportknowledge.MMInfoStorage;
 import de.d3web.kernel.supportknowledge.MMInfoSubject;
 import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.logging.Logging;
 import junit.framework.TestCase;
 
@@ -44,6 +47,10 @@ import junit.framework.TestCase;
  * 
  */
 public class QuestionTreeTest extends TestCase {
+	
+	protected void setUp() throws IOException {
+		InitPluginManager.init();
+	}
 	
 	public void testNumberOfQuestions() {
 		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();

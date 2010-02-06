@@ -19,10 +19,12 @@
  */
 
 package tests;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -83,6 +85,10 @@ public class d3webSectionFinderTest extends TestCase {
 	private static final String WRONG_COUNT = "Children count wrong";
 	private static final String WRONG_TYPE = "Wrong KnowWEObjectType";
 	private static final String WRONG_TYPE_COUNT = "Wrong KnowWEObjectType  section count:";
+	
+	protected void setUp() throws IOException {
+		InitPluginManager.init();
+	}
 	
 	public void testAllAnnotationRelatedSectionFinder() {
 		

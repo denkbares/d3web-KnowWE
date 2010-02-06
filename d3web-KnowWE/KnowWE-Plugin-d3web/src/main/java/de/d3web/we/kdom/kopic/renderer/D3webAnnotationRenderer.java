@@ -35,7 +35,7 @@ import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.semanticAnnotation.AnnotatedString;
 import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
-import de.d3web.we.module.DefaultTextType;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class D3webAnnotationRenderer extends KnowWEDomRenderer {
@@ -69,7 +69,7 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 		}
 
 		D3webKnowledgeService service =
-					D3webModule.getInstance().
+					D3webModule.
 						getAD3webKnowledgeServiceInTopic(sec.getWeb(), sec.getTitle());
 
 		
@@ -101,12 +101,12 @@ public class D3webAnnotationRenderer extends KnowWEDomRenderer {
 //					return KnowWEEnvironment.maskHTML(DefaultTextType
 //							.getErrorUnknownConcept(op, text));
 //				}
-				String s = "<a href=\"#"+sec.getId()+"\"></a>"+DefaultTextType.getRenderedInput(q.getId(), q.getText(),
+				String s = "<a href=\"#"+sec.getId()+"\"></a>"+KnowWEUtils.getRenderedInput(q.getId(), q.getText(),
 						service.getId(), user, "Annotation", text, op);				
 				String masked = KnowWEEnvironment.maskHTML(s);
 				return masked;
 			} else {
-				return KnowWEEnvironment.maskHTML(DefaultTextType.getErrorQ404(
+				return KnowWEEnvironment.maskHTML(KnowWEUtils.getErrorQ404(
 						question, text));
 			}
 		}

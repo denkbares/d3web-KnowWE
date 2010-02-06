@@ -47,7 +47,7 @@ public class EntryCellContentSubtreeHandler implements ReviseSubTreeHandler {
 	public void reviseSubtree(KnowWEArticle article, Section s) {
 		if (s.getOriginalText().trim().length() > 0) {
 
-			KnowledgeBaseManagement mgn = D3webModule.getInstance()
+			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 			
 			if (mgn == null) {

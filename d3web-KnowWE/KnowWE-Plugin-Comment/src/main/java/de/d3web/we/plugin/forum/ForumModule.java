@@ -20,27 +20,14 @@
 
 package de.d3web.we.plugin.forum;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.module.AbstractDefaultKnowWEModule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class ForumModule extends AbstractDefaultKnowWEModule{
+public class ForumModule {
 
-		private static ForumModule instance;
-		
-		public static ForumModule getInstance() {
-			if(instance == null) {
-				instance = new ForumModule();
-			}
-			return instance;
-		}
-		
 		public static ResourceBundle getForumBundle() {
 			
 			return ResourceBundle.getBundle("Forum_messages");
@@ -51,12 +38,5 @@ public class ForumModule extends AbstractDefaultKnowWEModule{
 			Locale.setDefault(KnowWEEnvironment.getInstance().getWikiConnector().getLocale(user.getHttpRequest()));
 			return getForumBundle();
 
-		}
-		
-		@Override
-		public List<KnowWEObjectType> getRootTypes() {
-			List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
-			rootTypes.add(new Forum());
-			return rootTypes;
 		}
 }

@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.flow.FlowchartSectionRenderer;
-import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.FlowchartTerminologySubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -41,18 +40,12 @@ public class FlowchartType extends AbstractXMLObjectType {
 	
 	protected KnowWEDomRenderer renderer = new FlowchartSectionRenderer();
 
-	private static FlowchartType instance;
-
-	private FlowchartType() {
+	
+	public FlowchartType() {
 		super("flowchart");
 	}
 
-	public static FlowchartType getInstance() {
-		if (instance == null)
-			instance = new FlowchartType();
-
-		return instance;
-	}
+	
 
 
 	

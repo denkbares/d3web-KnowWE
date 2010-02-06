@@ -20,7 +20,6 @@
 package de.d3web.we.flow.type;
 
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.module.DefaultTextType;
 
 /**
  *

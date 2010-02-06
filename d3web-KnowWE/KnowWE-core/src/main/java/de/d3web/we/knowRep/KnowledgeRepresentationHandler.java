@@ -27,14 +27,18 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
 
-public abstract class KnowledgeRepresentationHandler {
+public interface KnowledgeRepresentationHandler {
 	
-	public abstract void initArticle(KnowWEArticle art);
+	void initArticle(KnowWEArticle art);
 	
-	public abstract void finishArticle(KnowWEArticle art);
+	void finishArticle(KnowWEArticle art);
 	
-	public abstract boolean buildKnowledge(KnowWEArticle article, Section s);
+	boolean buildKnowledge(KnowWEArticle article, Section s);
 	
-	public abstract URL saveKnowledge(String title) throws IOException;
+	URL saveKnowledge(String title) throws IOException;
+
+	String getKey();
+	
+	void setWeb(String web);
 
 }

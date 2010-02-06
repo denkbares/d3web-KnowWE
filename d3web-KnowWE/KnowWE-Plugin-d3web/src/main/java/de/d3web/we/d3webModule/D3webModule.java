@@ -24,94 +24,36 @@ package de.d3web.we.d3webModule;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import de.d3web.we.action.ClearDPSSessionAction;
-import de.d3web.we.action.CodeCompletionAction;
-import de.d3web.we.action.DPSDialogsAction;
-import de.d3web.we.action.DPSSolutionsAction;
-import de.d3web.we.action.ExplanationRenderer2;
-import de.d3web.we.action.GenerateKBAction;
-import de.d3web.we.action.KSSViewHistoryAction;
-import de.d3web.we.action.KnowWEAction;
-import de.d3web.we.action.KnowledgeSummerizeAction;
-import de.d3web.we.action.ParseWebOfflineRenderer;
-import de.d3web.we.action.QuestionStateReportAction;
-import de.d3web.we.action.ReInitDPSEnvironmentAction;
-import de.d3web.we.action.RefreshHTMLDialogAction;
-import de.d3web.we.action.RequestDialogRenderer;
-import de.d3web.we.action.SaveDialogAsXCLAction;
-import de.d3web.we.action.SemanticAnnotationAction;
-import de.d3web.we.action.SetFindingAction;
-import de.d3web.we.action.SetSingleFindingAction;
-import de.d3web.we.action.SolutionLogAction;
-import de.d3web.we.action.UserFindingsAction;
-import de.d3web.we.action.XCLExplanationAction;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.TerminalType;
 import de.d3web.we.kdom.Annotation.Annotation;
-import de.d3web.we.kdom.bulletLists.scoring.BulletScoring;
-import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
-import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
-import de.d3web.we.kdom.decisionTree.QuestionsSection;
-import de.d3web.we.kdom.kopic.Kopic;
 import de.d3web.we.kdom.kopic.renderer.AnnotationInlineAnswerRenderer;
-import de.d3web.we.kdom.questionTreeNew.QuestionTreeRootType;
-import de.d3web.we.kdom.rules.RulesSection;
-import de.d3web.we.kdom.table.attributes.AttributeTableSection;
-import de.d3web.we.kdom.table.xcl.CoveringTableSection;
-import de.d3web.we.kdom.xcl.CoveringListSection;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
-import de.d3web.we.module.KnowWEModule;
-import de.d3web.we.module.PageAppendHandler;
-import de.d3web.we.renderer.xml.GraphMLOwlRenderer;
-import de.d3web.we.taghandler.DialogPaneTagHandler;
-import de.d3web.we.taghandler.KBRenderer;
+import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.taghandler.KnOfficeUploadHandler;
-import de.d3web.we.taghandler.ObjectInfoTagHandler;
-import de.d3web.we.taghandler.QuestionSheetHandler;
-import de.d3web.we.taghandler.ShowAllKBsHandler;
-import de.d3web.we.taghandler.SolutionStateViewHandler;
-import de.d3web.we.taghandler.TagHandler;
-import de.d3web.we.taghandler.TestsuiteTagHandler;
-import de.d3web.we.taghandler.WikiSolutionsTagHandler;
 import de.d3web.we.terminology.D3webTerminologyHandler;
-import de.d3web.we.testsuite.TestsuiteSection;
 import de.d3web.we.upload.UploadManager;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class D3webModule implements KnowWEModule {
+public class D3webModule {
 
-	private String defaultJarsPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/KBrepository/";
-	private String ontfile = "d3web.owl";
-	private Map<Class<? extends KnowWEAction>, KnowWEAction> actionMap = new HashMap<Class<? extends KnowWEAction>, KnowWEAction>();
-
-	private List<de.d3web.we.taghandler.TagHandler> tagHandlers = new ArrayList<de.d3web.we.taghandler.TagHandler>();
-
-	private static D3webModule instance;
-
-	private Map<String, D3webTerminologyHandler> handlers = new HashMap<String, D3webTerminologyHandler>();
-
+	private static final String defaultJarsPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/KBrepository/";
+	private static final String ontfile = "d3web.owl";
+	
 	public static ResourceBundle getKwikiBundle_d3web() {
 
 		return ResourceBundle.getBundle("KnowWE_plugin_d3web_messages");
@@ -131,95 +73,26 @@ public class D3webModule implements KnowWEModule {
 		return getKwikiBundle_d3web();
 	}
 
-	public List<KnowWEObjectType> getRootTypes() {
-		List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
-		rootTypes.add(new Kopic());
-		rootTypes.add(new SolutionsSection());
-		rootTypes.add(new QuestionnairesSection());
-		rootTypes.add(new QuestionsSection());
-		rootTypes.add(new AttributeTableSection());
-		rootTypes.add(new Annotation());
-		rootTypes.add(new TestsuiteSection());
-		rootTypes.add(new CoveringTableSection());
-		rootTypes.add(new CoveringListSection());
-		rootTypes.add(new RulesSection());
-		rootTypes.add(new BulletScoring());
-		rootTypes.add(new QuestionTreeRootType());
-		
-		return rootTypes;
-	}
-
-	@Override
-	public List<TerminalType> getGlobalTypes() {
-		return null;
-	}
-
-	public static D3webModule getInstance() {
-		if (instance == null) {
-			instance = new D3webModule();
-		}
-		return instance;
-	}
-
-	public String performAction(String action, KnowWEParameterMap parameterMap) {
-		if (action == null) {
-			action = parameterMap.get("action");
-		}
-		if (action != null) {
-			action = "de.d3web.we.renderer." + action;
-			Class<?> clazz;
-			try {
-				clazz = Class.forName(action);
-				KnowWEAction a = actionMap.get(clazz);
-				return a.perform(parameterMap);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return "class not found: " + action;
-	}
-
-	@Override
-	public void initModule(ServletContext context) {
-		this.addTagHandler(new QuestionSheetHandler());
-		this.addTagHandler(new KBRenderer());
-		this.addTagHandler(new ShowAllKBsHandler());
-		this.addTagHandler(new SolutionStateViewHandler());
-		this.addTagHandler(new WikiSolutionsTagHandler());
-		this.addTagHandler(new DialogPaneTagHandler());
-		this.addTagHandler(new ObjectInfoTagHandler());
-		this.addTagHandler(new TestsuiteTagHandler());
-
+	public static void initModule(ServletContext context) {
 		boolean registerRenderer = KnowWEEnvironment.getInstance()
 				.registerConditionalRendererToType(Annotation.class,
-						new AnnotationInlineAnswerRenderer());
-
+				new AnnotationInlineAnswerRenderer());
 		if (!registerRenderer) {
 			Logger.getLogger(KnowWEUtils.class.getName()).warning(
 					"Failed to register Renderer for Type: "
-							+ Annotation.class.getName() + " - "
-							+ AnnotationInlineAnswerRenderer.class.getName());
+					+ Annotation.class.getName() + " - "
+					+ AnnotationInlineAnswerRenderer.class.getName());
 
 		}
 		// Introduce my ontology parts to the core
 		SemanticCore sc = SemanticCore.getInstance();
-		
-		sc.getUpper().loadOwlFile(new File(KnowWEEnvironment.getInstance().getKnowWEExtensionPath()+File.separatorChar+ontfile));
+		sc.getUpper().loadOwlFile(
+				new File(KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
+						+ File.separatorChar + ontfile));
 
-		this.addAction(actionMap);
-		this.loadData(context);
+		loadData(context);
 
 		UploadManager.getInstance().registerHandler(new KnOfficeUploadHandler());
-		
-		//add the javascript files
-		KnowWEScriptLoader.getInstance().add("KnowWE-plugin-d3web.js",false);
-		KnowWEScriptLoader.getInstance().add( "silveripe.0.2.js",false);
-	}
-
-	protected void addTagHandler(de.d3web.we.taghandler.TagHandler handler) {
-		tagHandlers.add(handler);
-
 	}
 
 	/**
@@ -228,7 +101,7 @@ public class D3webModule implements KnowWEModule {
 	 * 
 	 * @param context
 	 */
-	private void loadData(ServletContext context) {
+	private static void loadData(ServletContext context) {
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
 		String webPath = rb.getString("knowwe.config.path.webs");
 		webPath = getRealPath(context, webPath);
@@ -239,10 +112,11 @@ public class D3webModule implements KnowWEModule {
 						+ path.getAbsolutePath());
 				File dweb = new File(path + "/default_web");
 				dweb.mkdirs();
-			} catch (SecurityException e) {
+			}
+			catch (SecurityException e) {
 				System.err
 						.println("KB directory creation failed, check permissions!! path:"
-								+ path.getAbsolutePath());
+						+ path.getAbsolutePath());
 				e.printStackTrace();
 				// System.exit(1);
 			}
@@ -262,63 +136,13 @@ public class D3webModule implements KnowWEModule {
 
 	}
 
-	public void addAction(
-			Map<Class<? extends KnowWEAction>, KnowWEAction> actionMap) {
-		actionMap.put(GenerateKBAction.class, new GenerateKBAction());
-		actionMap.put(SemanticAnnotationAction.class,
-				new SemanticAnnotationAction());
-		actionMap.put(GraphMLOwlRenderer.class, new GraphMLOwlRenderer());
-		actionMap.put(DPSSolutionsAction.class, new DPSSolutionsAction());
-
-		actionMap.put(KnowledgeSummerizeAction.class,
-				new KnowledgeSummerizeAction());
-		actionMap.put(ReInitDPSEnvironmentAction.class,
-				new ReInitDPSEnvironmentAction());
-		actionMap.put(RequestDialogRenderer.class, new RequestDialogRenderer());
-
-		actionMap.put(DPSSolutionsAction.class, new DPSSolutionsAction());
-		actionMap.put(DPSDialogsAction.class, new DPSDialogsAction());
-		actionMap.put(UserFindingsAction.class, new UserFindingsAction());
-		actionMap.put(KSSViewHistoryAction.class, new KSSViewHistoryAction());
-		actionMap.put(ExplanationRenderer2.class, new ExplanationRenderer2());
-		actionMap.put(SolutionLogAction.class, new SolutionLogAction());
-		actionMap.put(QuestionStateReportAction.class,
-				new QuestionStateReportAction());
-		actionMap.put(CodeCompletionAction.class, new CodeCompletionAction());
-		actionMap.put(XCLExplanationAction.class,
-				new XCLExplanationAction());
-		actionMap.put(SetSingleFindingAction.class,
-				new SetSingleFindingAction());
-		actionMap.put(ParseWebOfflineRenderer.class,
-				new ParseWebOfflineRenderer());
-		actionMap.put(ClearDPSSessionAction.class, new ClearDPSSessionAction());
-		actionMap.put(RefreshHTMLDialogAction.class,
-				new RefreshHTMLDialogAction());
-		actionMap.put(SetFindingAction.class, new SetFindingAction());
-		actionMap.put(SaveDialogAsXCLAction.class, new SaveDialogAsXCLAction());
-	}
-
-	/**
-	 * returns a knowledge-service from the distributed reasoing engine for a
-	 * given web and knowledge-service id
-	 * 
-	 * @param web
-	 * @param id
-	 * @return
-	 */
-	public KnowledgeService getKnowledgeService(String web, String id) {
-		DPSEnvironment env = DPSEnvironmentManager.getInstance()
-				.getEnvironment(web, defaultJarsPath);
-		return env.getService(id);
-	}
-
 	/**
 	 * returns all KnowledgeServices for a given web.
 	 * 
 	 * @param web
 	 * @return
 	 */
-	public Collection<KnowledgeService> getKnowledgeServices(String web) {
+	public static Collection<KnowledgeService> getKnowledgeServices(String web) {
 		DPSEnvironment env = DPSEnvironmentManager.getInstance()
 				.getEnvironment(web, defaultJarsPath);
 		return env.getServices();
@@ -331,7 +155,7 @@ public class D3webModule implements KnowWEModule {
 	 * @param topic
 	 * @return
 	 */
-	public D3webKnowledgeService getAD3webKnowledgeServiceInTopic(String web,
+	public static D3webKnowledgeService getAD3webKnowledgeServiceInTopic(String web,
 			String topic) {
 		DPSEnvironment env = DPSEnvironmentManager.getInstance()
 				.getEnvironment(web, defaultJarsPath);
@@ -384,11 +208,12 @@ public class D3webModule implements KnowWEModule {
 		URL url = null;
 		try {
 			url = new File(varPath).toURI().toURL();
-		} catch (MalformedURLException e) {
+		}
+		catch (MalformedURLException e) {
 			Logger.getLogger(KnowWEUtils.class.getName())
 					.warning(
-							"Cannot identify url for knowledgebase : "
-									+ e.getMessage());
+					"Cannot identify url for knowledgebase : "
+					+ e.getMessage());
 		}
 		return url;
 	}
@@ -426,35 +251,14 @@ public class D3webModule implements KnowWEModule {
 		return varPath;
 	}
 
-	@Override
-	public void onSave(String topic) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void registerKnowledgeRepresentationHandler(KnowledgeRepresentationManager mgr) {
-		D3webTerminologyHandler handler = handlers.get(mgr.getWeb());
-		if (handler == null) {
-			handler = new D3webTerminologyHandler(mgr.getWeb());
-			handlers.put(mgr.getWeb(), handler);
+	public static D3webTerminologyHandler getKnowledgeRepresentationHandler(String web) {
+		Collection<KnowledgeRepresentationHandler> handlers = KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web).getHandlers();
+		for (KnowledgeRepresentationHandler handler: handlers) {
+			if (handler instanceof D3webTerminologyHandler) {
+				return (D3webTerminologyHandler) handler;
+			}
 		}
-		mgr.registerHandler("d3web", handler);
-		
-	}
-
-	public D3webTerminologyHandler getKnowledgeRepresentationHandler(String web) {
-		return handlers.get(web);
-	}
-
-	@Override
-	public List<TagHandler> getTagHandlers() {
-		return this.tagHandlers;
-	}
-
-	@Override
-	public List<PageAppendHandler> getPageAppendHandlers() {
-		return new ArrayList<PageAppendHandler>();
+		return null;
 	}
 
 }

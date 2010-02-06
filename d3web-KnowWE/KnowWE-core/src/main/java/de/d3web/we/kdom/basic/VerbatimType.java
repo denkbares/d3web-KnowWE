@@ -43,7 +43,7 @@ public class VerbatimType extends DefaultAbstractKnowWEObjectType {
 		return instance;
 	}
 	
-	private VerbatimType() {
+	public VerbatimType() {
 		
 	}
     /*

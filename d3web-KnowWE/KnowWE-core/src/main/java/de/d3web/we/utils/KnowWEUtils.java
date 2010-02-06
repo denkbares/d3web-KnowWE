@@ -20,6 +20,7 @@
 
 package de.d3web.we.utils;
 
+import java.net.URLEncoder;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
@@ -29,7 +30,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.store.SectionStore;
-import de.d3web.we.module.DefaultTextType;
 
 public class KnowWEUtils {
 
@@ -146,9 +146,6 @@ public class KnowWEUtils {
 				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_OPEN, "\\[\\{");
 		htmlContent = htmlContent.replaceAll(
 				KnowWEEnvironment.HTML_PLUGIN_BRACKETS_CLOSE, "}]");
-
-		htmlContent = htmlContent.replaceAll(DefaultTextType.BLOB, "");
-
 		htmlContent = htmlContent.replaceAll(
 				KnowWEEnvironment.HTML_DOUBLEQUOTE, "\"");
 		htmlContent = htmlContent
@@ -273,7 +270,28 @@ public class KnowWEUtils {
 		return sessionDir;
 	}
 	
+	public static String getRenderedInput(String questionid, String question,
+			String namespace, String userName, String title, String text,
+			String type) {
+		question = URLEncoder.encode(question);
+		// text=URLEncoder.encode(text);
+		
+		String rendering = "<span class=\"semLink\" " 
+			+ "rel=\"{type: '"+type+"', objectID: '"+questionid+"', termName: '"+text+"', user:'"+userName+"'}\">"
+         	+ text + "</span>";
+		return rendering;
+	}
+	
+	public static String getErrorQ404(String question, String text) {
+		String rendering = "<span class=\"semLink\"><a href=\"#\" title=\""
+				+ "Question not found:"
+				+ question
+				+ "\" >"
+				+ text
+				+ "</a></span>";
+		return rendering;
 
+	}
 	
 //	public static String getWebEnvironmentPath(String web) {
 //		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");

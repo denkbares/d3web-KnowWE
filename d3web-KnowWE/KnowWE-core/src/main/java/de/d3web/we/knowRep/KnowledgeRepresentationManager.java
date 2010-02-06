@@ -55,6 +55,10 @@ public class KnowledgeRepresentationManager {
 		handlers.put(key, handler);
 	}
 	
+	public void registerHandler(KnowledgeRepresentationHandler handler) {
+		handlers.put(handler.getKey(), handler);
+	}
+	
 	
 	public void initArticle(KnowWEArticle art) {
 		for(KnowledgeRepresentationHandler handler : handlers.values()) {

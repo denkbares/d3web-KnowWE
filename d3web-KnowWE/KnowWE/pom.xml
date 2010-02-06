@@ -92,39 +92,6 @@
 							</tasks>
 						</configuration>
 					</execution>
-					<execution>
-						<id>JPF-Plugins</id>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<phase>prepare-package</phase>
-						<configuration>
-							<tasks>
-								<mkdir dir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/Plugins/" />
-								<move todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/Plugins/">
-									<fileset dir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/lib/">
-										<include name="*jpf-plugin*.jar"/>
-									</fileset>
-								</move>
-							</tasks>
-						</configuration>
-					</execution>
-					<execution>
-						<id>JPF-Plugins delete</id>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<phase>package</phase>
-						<configuration>
-							<tasks>
-								<delete>
-									<fileset dir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/lib/">
-										<include name="*jpf-plugin*.jar"/>
-									</fileset>
-								</delete>
-							</tasks>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 		</plugins>
@@ -153,7 +120,6 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
-							<packagingExcludes>WEB-INF/lib/*jpf-plugin*.jar</packagingExcludes>
 							<webResources>
 								<resource>
 									<directory>src/resources/local</directory>
@@ -179,40 +145,11 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Comment</artifactId>
+					<artifactId>KnowWE-Plugin-Comment-jpf-plugin</artifactId>
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>comment-plugin</id>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<phase>process-resources</phase>
-
-								<configuration>
-									<tasks>
-										<copy todir="${project.build.directory}/${pom.name}-${pom.version}/">
-											<fileset dir="../KnowWE-Plugin-Comment/src/main/webapp" />
-										</copy>
-										<copy
-											file="../KnowWE-Plugin-Comment/src/main/wikiplugin/de.d3web.we.plugin.comment.CommentModule.module"
-											todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/" />
-									</tasks>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 
 		<!-- Calendar plugin -->
@@ -227,40 +164,11 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Calendar</artifactId>
+					<artifactId>KnowWE-Plugin-Calendar-jpf-plugin</artifactId>
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>calendar-plugin</id>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<phase>process-resources</phase>
-
-								<configuration>
-									<tasks>
-										<copy todir="${project.build.directory}/${pom.name}-${pom.version}">
-											<fileset dir="../KnowWE-Plugin-Calendar/src/main/webapp" />
-										</copy>
-										<copy
-											file="../KnowWE-Plugin-Calendar/src/main/wikiplugin/de.d3web.we.plugin.calendar.CalendarModule.module"
-											todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/" />
-									</tasks>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 
 		<!-- Hermes Module -->
@@ -275,40 +183,11 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-HermesModule</artifactId>
+					<artifactId>KnowWE-Plugin-HermesModule-jpf-plugin</artifactId>
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>hermes-plugin</id>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<phase>process-resources</phase>
-
-								<configuration>
-									<tasks>
-										<copy todir="${project.build.directory}/${pom.name}-${pom.version}">
-											<fileset dir="../KnowWE-Plugin-HermesModule/src/main/webapp" />
-										</copy>
-										<copy
-											file="../KnowWE-Plugin-HermesModule/src/main/wikiplugin/de.d3web.we.hermes.HermesPlugin.module"
-											todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/" />
-									</tasks>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 
 		<!-- Flowchart Module -->
@@ -323,59 +202,11 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Flowchart</artifactId>
+					<artifactId>KnowWE-Plugin-Flowchart-jpf-plugin</artifactId>
 					<version>0-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>flowchart-plugin</id>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<phase>process-resources</phase>
-
-								<configuration>
-									<tasks>
-										<copy
-											file="../KnowWE-Plugin-Flowchart/src/main/wikiplugin/de.d3web.we.flow.FlowchartPlugin.module"
-											todir="${project.build.directory}/${pom.name}-${pom.version}/KnowWEExtension/modules/" />
-
-										<property name="flowchartDir"
-											value="${basedir}/../KnowWE-Plugin-Flowchart" />
-										<mkdir
-											dir="${project.build.directory}/${pom.name}-${pom.version}/cc" />
-										<copy
-											todir="${project.build.directory}/${pom.name}-${pom.version}/cc">
-											<fileset dir="../KnowWE-Plugin-Flowchart/src/main/webapp/html">
-												<include name="**/*.js" />
-												<include name="**/*.css" />
-												<include name="**/*.html" />
-												<include name="**/*.gif" />
-												<include name="**/*.png" />
-												<include name="**/*.jpg" />
-											</fileset>
-										</copy>
-										<copy todir="${project.build.directory}/${pom.name}-${pom.version}">
-											<fileset dir="../KnowWE-Plugin-Flowchart/src/main/webapp/jsp" />
-											<!-- fileset dir="${flowchartDir}/src/main/webapp/jsp"/-->
-										</copy>
-
-
-									</tasks>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 	</profiles>
 
@@ -518,12 +349,6 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web</artifactId>
-			<version>0-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-JSPWiki-Connector</artifactId>
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
@@ -576,6 +401,18 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-SharedKnowledgePersistence-jpf-plugin</artifactId>
+			<version>0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+			<version>0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

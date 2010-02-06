@@ -1,0 +1,611 @@
+<?xml version="1.0" ?><GlobalTerms Type="symptom"><Terms>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air filter]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air filter o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[no]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air filter o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[yes]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air filter o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air filter o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air intake system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[no]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air intake system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[yes]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air intake system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air intake system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Average mileage /100km]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="de.d3web.we.alignment.NumericalIdentity"><![CDATA[NumericalIdentity]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Average mileage /100km]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Average mileage /100km]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Battery o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[no]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Battery o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[yes]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Battery o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Battery o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[delayed take-off]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[everything is fine]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[insufficient power on full load]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[insufficient power on partial load]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[low idle speed]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[no /else]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[unsteady idle speed]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[weak acceleration]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Driving]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine noises]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[knocking]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine noises]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[no /else]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine noises]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[ringing]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine noises]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine noises]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine start]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[does not start]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine start]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[engine barely starts]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine start]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[engine starts]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine start]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Engine start]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust fumes]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[black]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust fumes]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[blue]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust fumes]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[invisible]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust fumes]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust fumes]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[brown]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[grey]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[light grey]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[sooty black]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[abnormal]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[normal]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Exhaust pipe color evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Fuel]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[diesel]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Fuel]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[unleaded gasoline]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Fuel]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Fuel]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[General]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Idle speed system]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Idle speed system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[No]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Idle speed system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[Yes]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Idle speed system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[no]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Idle speed system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[yes]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Idle speed system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Idle speed system o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Ignition timing]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Ignition timing o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[no]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Ignition timing o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[yes]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Ignition timing o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Ignition timing o.k.?]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[BMW]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[Fiat]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[Mazda]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[Mercedes Benz]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[Opel]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[Other]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[Porsche]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[Toyota]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[VW]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Make of car]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Mileage evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[increased]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Mileage evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[normal]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Mileage evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[slightly increased]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Mileage evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Mileage evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Num. Mileage evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="de.d3web.we.alignment.NumericalIdentity"><![CDATA[NumericalIdentity]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Num. Mileage evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Num. Mileage evaluation]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Observations]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Other]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Other]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Real mileage  /100km]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="de.d3web.we.alignment.NumericalIdentity"><![CDATA[NumericalIdentity]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Real mileage  /100km]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Real mileage  /100km]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Starter]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[does not turn over]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Starter]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[turns over]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Starter]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Starter]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Technical Examinations]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="java.lang.String"><![CDATA[MaU]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Year of construction]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termValue" TermInfoClass="de.d3web.we.alignment.NumericalIdentity"><![CDATA[NumericalIdentity]]></TermInfo>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Year of construction]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Year of construction]]></TermInfo>
+</TermInfos>
+</Term></Terms><GlobalTerminology>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Observations]]></TermInfo>
+</TermInfos>
+
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Idle speed system]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Air filter]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Ignition timing]]></TermInfo>
+</TermInfos>
+</Term></Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[Technical Examinations]]></TermInfo>
+</TermInfos>
+</Term>
+<Term>
+<TermInfos>
+<TermInfo TermInfoType="termName" TermInfoClass="java.lang.String"><![CDATA[General]]></TermInfo>
+</TermInfos>
+</Term></GlobalTerminology></GlobalTerms>

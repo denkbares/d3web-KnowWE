@@ -20,6 +20,7 @@
 
 package tests;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import utils.KBCreationTestUtil;
@@ -28,6 +29,7 @@ import de.d3web.kernel.domainModel.KnowledgeSlice;
 import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
 import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
+import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.logging.Logging;
 import junit.framework.TestCase;
 
@@ -41,6 +43,10 @@ import junit.framework.TestCase;
  *
  */
 public class XCLTest extends TestCase {
+	
+	protected void setUp() throws IOException {
+		InitPluginManager.init();
+	}
 	
 	public void testNumberOfXCLModels() {
 		// load KnowledgeBases

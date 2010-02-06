@@ -51,7 +51,7 @@ import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
  * 
  * @author astriffler
  */
-public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
+public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	
 	private String web;
 	
@@ -131,6 +131,10 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 		this.web = web;
 	}
 	
+	public D3webTerminologyHandler() {
+		this.web = KnowWEEnvironment.DEFAULT_WEB;
+	}
+	
 	public Map<String, HashSet<Class<? extends KnowledgeRecyclingObjectType>>> getCleanedTypes() {
 		return this.typesToClean;
 	}
@@ -199,7 +203,7 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			KnowledgeBaseManagement kbm = this.getKBM(art, art.getSection());
 			if(!isEmpty(kbm)) {
 				DistributedRegistrationManager.getInstance().registerKnowledgeBase(kbm, 
-						art.getTitle(), web);
+						art.getTitle(), art.getWeb());
 			}
 			finishedKBM.put(art.getTitle(), true);
 	}
@@ -400,6 +404,16 @@ public class D3webTerminologyHandler extends KnowledgeRepresentationHandler {
 			return home;
 		}
 		return null;
+	}
+
+	@Override
+	public String getKey() {
+		return "d3web";
+	}
+
+	@Override
+	public void setWeb(String web) {
+		this.web=web;
 	}
 	
 }

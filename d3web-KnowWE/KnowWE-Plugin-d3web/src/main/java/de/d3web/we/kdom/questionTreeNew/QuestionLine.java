@@ -70,7 +70,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			
 			String name = sec.getOriginalText();
 
-			KnowledgeBaseManagement mgn = D3webModule.getInstance()
+			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, sec);
 

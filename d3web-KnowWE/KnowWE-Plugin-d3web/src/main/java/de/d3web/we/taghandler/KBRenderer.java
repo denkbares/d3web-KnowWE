@@ -61,7 +61,7 @@ public class KBRenderer extends AbstractTagHandler {
 	
 	@Override
 	public String render(String topic, KnowWEUserContext user,Map<String,String> values, String web) {
-		D3webKnowledgeService service = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);
+		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 		

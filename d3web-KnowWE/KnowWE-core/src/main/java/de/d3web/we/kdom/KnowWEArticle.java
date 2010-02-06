@@ -40,7 +40,6 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.validation.Validator;
-import de.d3web.we.module.KnowWEModule;
 
 /**
  * @author Jochen
@@ -122,9 +121,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes = allowedObjects;
 		
 		lastVersion = articleManager.getArticle(title);
-		
-		// call Save hooks for KnowWEModules
-		callSaveHooks(title);
 		
 		// run initHooks at TerminologyManager
 		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web).initArticle(this);
@@ -227,16 +223,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			}
 		}
 
-	}
-
-	private void callSaveHooks(String topic) {
-		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
-		if (instance != null) {
-			List<KnowWEModule> modules = instance.getModules();
-			for (KnowWEModule knowWEModule : modules) {
-				knowWEModule.onSave(topic);
-			}
-		}
 	}
 
 	/**

@@ -276,7 +276,7 @@ public class DPSSolutionsAction extends AbstractKnowWEAction {
 //	}
 
 	private String findTopicNameForSolution(String solution, String web) {
-		Collection<KnowledgeService> services = D3webModule.getInstance().getKnowledgeServices(web);
+		Collection<KnowledgeService> services = D3webModule.getKnowledgeServices(web);
 		for (KnowledgeService knowledgeService : services) {
 			if (knowledgeService instanceof D3webKnowledgeService) {
 				D3webKnowledgeService ks = ((D3webKnowledgeService) knowledgeService);

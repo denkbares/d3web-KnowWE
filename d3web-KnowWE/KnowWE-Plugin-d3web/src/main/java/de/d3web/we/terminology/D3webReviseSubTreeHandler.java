@@ -35,7 +35,7 @@ public abstract class D3webReviseSubTreeHandler implements ReviseSubTreeHandler 
 	 * is returned if the Knowledge of the given section doesn't need to be rebuild.
 	 */
 	protected KnowledgeBaseManagement getKBM(KnowWEArticle article, Section sec) {
-		return D3webModule.getInstance().getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, sec);
+		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, sec);
 	}
 	
 //	/**

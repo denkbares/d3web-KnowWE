@@ -20,6 +20,7 @@
 
 package tests;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -36,6 +37,7 @@ import de.d3web.kernel.psMethods.nextQASet.ActionRefine;
 import de.d3web.kernel.psMethods.nextQASet.PSMethodNextQASet;
 import de.d3web.kernel.psMethods.questionSetter.ActionQuestionSetter;
 import de.d3web.kernel.psMethods.questionSetter.PSMethodQuestionSetter;
+import de.d3web.plugin.test.InitPluginManager;
 import junit.framework.TestCase;
 
 /**
@@ -52,6 +54,10 @@ import junit.framework.TestCase;
  * 
  */
 public class RulesTest extends TestCase {
+	
+	protected void setUp() throws IOException {
+		InitPluginManager.init();
+	}
 	
 	public void testHeuristicRules() {
 		

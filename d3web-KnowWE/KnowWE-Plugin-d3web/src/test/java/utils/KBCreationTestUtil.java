@@ -171,7 +171,7 @@ public class KBCreationTestUtil {
 		
 		// Initialize KnowWE
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
-		D3webTerminologyHandler d3Handler = D3webModule.getInstance().getKnowledgeRepresentationHandler("default_web");
+		D3webTerminologyHandler d3Handler = D3webModule.getKnowledgeRepresentationHandler("default_web");
 		
 		// Create Article
 		KnowWEArticle article = new KnowWEArticle(content, "KBCreationTest", 
@@ -183,7 +183,7 @@ public class KBCreationTestUtil {
 		
 		// Load TestSuite	
 		// TODO: HOTFIX!! I don't think this is the proper way to get the TestsuiteSection...
-		Section s = article.getSection().getChildren().get(0).findChildOfType(TestsuiteSection.class);
+		Section<?> s = article.getSection().getChildren().get(0).findChildOfType(TestsuiteSection.class);
 		loadedTS = (TestSuite) KnowWEUtils.getStoredObject("default_web", "KBCreationTest", s.getId(), "TestsuiteSection_Testsuite");
 		
 	}

@@ -20,6 +20,8 @@
 
 package tests;
 
+import java.io.IOException;
+
 import utils.KBCreationTestUtil;
 import de.d3web.kernel.domainModel.Diagnosis;
 import de.d3web.kernel.domainModel.KnowledgeBase;
@@ -29,6 +31,7 @@ import de.d3web.kernel.supportknowledge.MMInfoObject;
 import de.d3web.kernel.supportknowledge.MMInfoStorage;
 import de.d3web.kernel.supportknowledge.MMInfoSubject;
 import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.plugin.test.InitPluginManager;
 import junit.framework.TestCase;
 
 /**
@@ -39,6 +42,10 @@ import junit.framework.TestCase;
  *
  */
 public class AttributeTableTest extends TestCase {
+	
+	protected void setUp() throws IOException {
+		InitPluginManager.init();
+	}
 	
 	public void testMMInfo() {
 		

@@ -60,7 +60,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 				Question q = questionID.get().getObject(questionID);
 				
 				
-				KnowledgeBaseManagement mgn = D3webModule.getInstance()
+				KnowledgeBaseManagement mgn = D3webModule
 				.getKnowledgeRepresentationHandler(article.getWeb())
 				.getKBM(article, s);
 				

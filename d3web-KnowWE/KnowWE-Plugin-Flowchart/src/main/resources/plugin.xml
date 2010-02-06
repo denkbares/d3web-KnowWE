@@ -1,0 +1,90 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-Flowchart" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-d3web" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="FlowchartTagHandler">
+		<parameter id="class"
+			value="de.d3web.we.flow.FlowchartTagHandler" />
+		<parameter id="name" value="FlowchartTagHandler" />
+		<parameter id="description" value="TagHandler FlowchartTagHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="FlowchartType">
+		<parameter id="class"
+			value="de.d3web.we.flow.type.FlowchartType" />
+		<parameter id="name" value="FlowchartType" />
+		<parameter id="description" value="KnowWEObjectType FlowchartType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+		id="AddSubFlowchart">
+		<parameter id="class"
+			value="de.d3web.we.flow.kbinfo.AddSubFlowchart" />
+		<parameter id="name" value="AddSubFlowchart" />
+		<parameter id="description" value="KnowWEAction AddSubFlowchart" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+		id="GetInfoObjects">
+		<parameter id="class"
+			value="de.d3web.we.flow.kbinfo.GetInfoObjects" />
+		<parameter id="name" value="GetInfoObjects" />
+		<parameter id="description" value="KnowWEAction GetInfoObjects" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+		id="SearchInfoObjects">
+		<parameter id="class"
+			value="de.d3web.we.flow.kbinfo.SearchInfoObjects" />
+		<parameter id="name" value="SearchInfoObjects" />
+		<parameter id="description" value="KnowWEAction SearchInfoObjects" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+		id="UpdateQuestions">
+		<parameter id="class"
+			value="de.d3web.we.flow.kbinfo.UpdateQuestions" />
+		<parameter id="name" value="UpdateQuestions" />
+		<parameter id="description" value="KnowWEAction UpdateQuestions" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+		id="UpdateSolutions">
+		<parameter id="class"
+			value="de.d3web.we.flow.kbinfo.UpdateSolutions" />
+		<parameter id="name" value="UpdateSolutions" />
+		<parameter id="description" value="KnowWEAction UpdateSolutions" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+</plugin>

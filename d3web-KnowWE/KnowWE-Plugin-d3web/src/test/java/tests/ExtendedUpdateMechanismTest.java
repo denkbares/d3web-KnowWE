@@ -20,6 +20,7 @@
 
 package tests;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -30,6 +31,7 @@ import junit.framework.TestCase;
 import utils.Utils;
 import de.d3web.kernel.domainModel.KnowledgeBase;
 import de.d3web.kernel.domainModel.KnowledgeSlice;
+import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -45,14 +47,16 @@ import de.d3web.we.kdom.rules.RulesSection;
 import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.xml.XMLHead;
 import de.d3web.we.kdom.xml.XMLTail;
-import de.d3web.we.knowRep.KnowledgeRepresentationManager;
-import de.d3web.we.module.DefaultTextType;
 import de.d3web.we.terminology.D3webTerminologyHandler;
 import dummies.KnowWETestWikiConnector;
 
 public class ExtendedUpdateMechanismTest extends TestCase {
 	
 	private String web = "default_web";
+	
+	protected void setUp() throws IOException {
+		InitPluginManager.init();
+	}
 	
 	public void testWithIdenticalArticles() {
 		/*
@@ -67,10 +71,10 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		
 		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();;
 		types.add(new Kopic());
-		types.add(DefaultTextType.getInstance());
+//		types.add(DefaultTextType.getInstance());
 		
 		D3webTerminologyHandler d3Handler = 
-			D3webModule.getInstance().getKnowledgeRepresentationHandler(web);
+			D3webModule.getKnowledgeRepresentationHandler(web);
 		
 		/*
 		 * Init first Article
@@ -122,7 +126,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();;
 		types.add(new Kopic());
 		
-		D3webTerminologyHandler d3Handler =  D3webModule.getInstance().getKnowledgeRepresentationHandler(web);
+		D3webTerminologyHandler d3Handler =  D3webModule.getKnowledgeRepresentationHandler(web);
 		
 		/*
 		 * Init first Article

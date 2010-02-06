@@ -22,11 +22,11 @@ package de.d3web.we.core;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,35 +39,21 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import de.d3web.plugin.JPFPluginManager;
+import de.d3web.plugin.Plugin;
+import de.d3web.plugin.PluginManager;
+import de.d3web.plugin.Resource;
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.TerminalType;
-import de.d3web.we.kdom.basic.VerbatimType;
-import de.d3web.we.kdom.css.CSS;
-import de.d3web.we.kdom.dashTree.XMLDashTree;
-import de.d3web.we.kdom.dashTree.subclassing.SubClassing;
-import de.d3web.we.kdom.edit.Edit;
-import de.d3web.we.kdom.namespaces.Namespaces;
-import de.d3web.we.kdom.owlextension.Extension;
-import de.d3web.we.kdom.owlextension.OwlProperties;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
-import de.d3web.we.kdom.semanticFactSheet.Info;
-import de.d3web.we.kdom.sparql.Sparql;
-import de.d3web.we.kdom.table.Table;
-import de.d3web.we.kdom.tagging.Tags;
+import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
-import de.d3web.we.module.DefaultTextType;
-import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.module.PageAppendHandler;
-import de.d3web.we.module.ValidationPageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
-import de.d3web.we.search.SearchTerminologyHandler;
 import de.d3web.we.taghandler.FactSheet;
 import de.d3web.we.taghandler.ImportKnOfficeHandler;
 import de.d3web.we.taghandler.KDOMRenderer;
@@ -77,13 +63,14 @@ import de.d3web.we.taghandler.OwlDownloadHandler;
 import de.d3web.we.taghandler.ParseAllButton;
 import de.d3web.we.taghandler.RenamingTagHandler;
 import de.d3web.we.taghandler.TagHandler;
-import de.d3web.we.taghandler.TagHandlerType;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWEObjectTypeSet;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
+import de.knowwe.plugin.Instantiation;
+import de.knowwe.plugin.Plugins;
 import dummies.KnowWETestWikiConnector;
 
 /**
@@ -99,7 +86,7 @@ import dummies.KnowWETestWikiConnector;
 
 public class KnowWEEnvironment {
 
-	//private KnowWETopicLoader topicLoader;
+	// private KnowWETopicLoader topicLoader;
 
 	private List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
 	private List<KnowWEObjectType> globalTypes = new ArrayList<KnowWEObjectType>();
@@ -119,7 +106,6 @@ public class KnowWEEnvironment {
 	 * default paths, used only, if null is given to the constructor as path
 	 * should NOT BE USED, path a read from the KnowWE_config properties file.
 	 */
-	private String defaultReportPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/reports/";
 	private String knowweExtensionPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/";
 
 	private String pathPrefix = "";
@@ -138,8 +124,8 @@ public class KnowWEEnvironment {
 	private Map<String, KnowWEArticleManager> articleManagers = new HashMap<String, KnowWEArticleManager>();
 
 	/**
-	 * An knowledge manager for each web. In case of JSPWiki there is only on web
-	 * ('default_web')
+	 * An knowledge manager for each web. In case of JSPWiki there is only on
+	 * web ('default_web')
 	 */
 	private Map<String, KnowledgeRepresentationManager> knowledgeManagers = new HashMap<String, KnowledgeRepresentationManager>();
 
@@ -148,12 +134,6 @@ public class KnowWEEnvironment {
 	 * ('default_web')
 	 */
 	private Map<String, KnowWEIncludeManager> includeManagers = new HashMap<String, KnowWEIncludeManager>();
-
-	/**
-	 * The registered KnowWE-modules. Initialized in initModules() by
-	 * constructor
-	 */
-	private List<KnowWEModule> modules = new java.util.ArrayList<KnowWEModule>();
 
 	// /**
 	// * The servlet context of the running application. Necessary to determine
@@ -223,7 +203,7 @@ public class KnowWEEnvironment {
 	public static final String HTML_PLUGIN_BRACKETS_CLOSE = "KNOWEPLUGIN_BRACKETS_CLOSE";
 	public static final String HTML_CURLY_BRACKET_OPEN = "KNOWWE_CURLY_BRACKET_OPEN";
 	public static final String HTML_CURLY_BRACKET_CLOSE = "KNOWWE_CURLY_BRACKET_CLOSE";
-	
+
 	public static final String NEWLINE = "KNOWWE_NEWLINE";
 
 	/**
@@ -320,7 +300,7 @@ public class KnowWEEnvironment {
 		}
 		return mgr;
 	}
-	
+
 	public KnowledgeRepresentationManager getKnowledgeRepresentationManager(String web) {
 		KnowledgeRepresentationManager mgr = this.knowledgeManagers.get(web);
 		if (mgr == null) {
@@ -329,7 +309,7 @@ public class KnowWEEnvironment {
 		}
 		return mgr;
 	}
-	
+
 	/**
 	 * returns the ArtilceManager for a given web
 	 * 
@@ -366,34 +346,34 @@ public class KnowWEEnvironment {
 				// convert the $web_app$-variable from the resourcebundle
 				// defaultJarsPath = KnowWEUtils.getRealPath(context, bundle
 				// .getString("path_to_jars"));
-				defaultReportPath = KnowWEUtils.getRealPath(wikiConnector
-						.getServletContext(), bundle
-						.getString("path_to_reports"));
+				
 				knowweExtensionPath = KnowWEUtils.getRealPath(wikiConnector
 						.getServletContext(), bundle
 						.getString("path_to_knowweextension"));
 
 			}
-			if (wiki instanceof KnowWETestWikiConnector){
-				String userdir=System.getProperty("user.dir");
-				knowweExtensionPath=userdir+"/../KnowWE/src/main/webapp/KnowWEExtension/";
-				
+			if (wiki instanceof KnowWETestWikiConnector) {
+				String userdir = System.getProperty("user.dir");
+				knowweExtensionPath = userdir
+						+ "/../KnowWE/src/main/webapp/KnowWEExtension/";
+
 			}
-			
+
 			rootTypes.add(RootType.getInstance());
-			
-			//adding TaggingMangler as SearchProvider to KnowWE-MultiSearch
+
+			// adding TaggingMangler as SearchProvider to KnowWE-MultiSearch
 			MultiSearchEngine.getInstance().addProvider(TaggingMangler.getInstance());
-			
+
 			initDefaultTagHandlers();
 			// loadData(context);
-			 initWikiSolutionsPage();
+			initWikiSolutionsPage();
 			SemanticCore sc = SemanticCore.getInstance(this);
 
 			System.out.println("INITIALISED KNOWWE ENVIRONMENT");
 			// this doesnt look nice, but its way easier to find bugs here than
 			// in JSPWiki...
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
@@ -464,10 +444,9 @@ public class KnowWEEnvironment {
 		TagHandler owlDownloadHandler = new OwlDownloadHandler();
 		this.tagHandlers.put(owlDownloadHandler.getTagName(),
 				owlDownloadHandler);
-		
+
 		TagHandler parseButton = new ParseAllButton();
 		this.tagHandlers.put(parseButton.getTagName(), parseButton);
-		
 
 		// read ModuleNames from taghandler.txt:
 		ArrayList<String> handlerStrings = new ArrayList<String>();
@@ -484,7 +463,8 @@ public class KnowWEEnvironment {
 				}
 			}
 			in.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"Could not find taghandler.txt!");
 			// e.printStackTrace();
@@ -498,14 +478,17 @@ public class KnowWEEnvironment {
 				TagHandler newhandler = (TagHandler) Class.forName(handlerName,
 						true, classLoader).newInstance();
 				this.tagHandlers.put(newhandler.getTagName(), newhandler);
-			} catch (IllegalAccessException e) {
+			}
+			catch (IllegalAccessException e) {
 				Logger.getLogger(this.getClass().getName()).warning(
 						"Module " + handlerName
-								+ " cannot be instantiated - Illegal Access");
-			} catch (InstantiationException e) {
+						+ " cannot be instantiated - Illegal Access");
+			}
+			catch (InstantiationException e) {
 				Logger.getLogger(this.getClass().getName()).warning(
 						"Module " + handlerName + " cannot be instantiated");
-			} catch (ClassNotFoundException e) {
+			}
+			catch (ClassNotFoundException e) {
 				Logger.getLogger(this.getClass().getName()).warning(
 						"Module Class for " + handlerName + " not found");
 			}
@@ -518,178 +501,86 @@ public class KnowWEEnvironment {
 	private void initModules(ServletContext context, String web) {
 		// add the default modules
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
-		addRootType(VerbatimType.getInstance());
-
-		// Loading modules from the single files in modules/
-		ArrayList<String> moduleStrings = new ArrayList<String>();
-		File modulesDir = new File(knowweExtensionPath + "/modules");
-		JPFPluginManager.init(knowweExtensionPath+"/Plugins");
-		if (!modulesDir.isDirectory()) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"Could not read modules directory");
-		}
-
-		FilenameFilter ffilter = new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".module");
-			}
-		};
-
-		if (modulesDir != null) {
-			String[] moduleArray = modulesDir.list(ffilter);
-			if (moduleArray != null) {
-				for (String module : moduleArray) {
-					moduleStrings.add(module.replaceAll("\\.module$", ""));
-				}
-			}
-		}
-
-		// DEPRECATED! DO NOT USE FOR NEW PLUG-INS
-		// read ModuleNames from modules txt:
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(
-					knowweExtensionPath + "/modules.txt"));
-			String line = null;
-			while ((line = in.readLine()) != null) {
-				// eliminate ending whitespaces
-				line = line.trim();
-				if (!line.isEmpty() && !line.startsWith("//")) {
-					moduleStrings.add(line);
-				}
-			}
-			in.close();
-		} catch (IOException e) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"Could not find module.txt!");
-			// e.printStackTrace();
-		}
-
-		// each of these String try to find and init the Module
-		for (String moduleName : moduleStrings) {
-			try {
-				Class guidelineClass = Class.forName(moduleName);
-				if (guidelineClass != null
-						&& KnowWEModule.class.isAssignableFrom(guidelineClass)) {
-					try {
-						KnowWEModule moduleInstance = null;
-						try {
-							Method m = guidelineClass.getMethod("getInstance",
-									null);
-							Object o = m.invoke(null, null);
-							if (o instanceof KnowWEModule) {
-								moduleInstance = (KnowWEModule) o;
-							}
-						} catch (SecurityException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (InvocationTargetException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (NoSuchMethodException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						if (moduleInstance == null) {
-							moduleInstance = (KnowWEModule) guidelineClass
-									.newInstance();
-						}
-						modules.add(moduleInstance);
-					} catch (InstantiationException e) {
-						Logger.getLogger(this.getClass().getName()).warning(
-								"Module " + moduleName
-										+ " cannot be instantiated");
-					} catch (IllegalAccessException e) {
-						Logger
-								.getLogger(this.getClass().getName())
-								.warning(
-										"Module "
-												+ moduleName
-												+ " cannot be instantiated - Illegal Access");
-					}
-				}
-			} catch (ClassNotFoundException e) {
-				Logger.getLogger(this.getClass().getName()).warning(
-						"Module Class for " + moduleName + " not found");
-				// e.printStackTrace();
-			}
-		}
-
-		DefaultTextType defaultTextType = DefaultTextType.getInstance();
-
-		// add the default TextType (as this type takes all non-claimed
-		// sections, this type has to be last!
-
-		//this.rootTypes.add(defaultTextType);
-		addRootType(new SubClassing());
-		addRootType(new XMLDashTree());
-		addRootType(new Table());
-		addRootType(new Edit());
-		addRootType(new CSS());
-		addRootType(new TagHandlerType());
-		addRootType(new Sparql());
-		addRootType(new Namespaces());
-		addRootType(new Extension());
-		addRootType(new OwlProperties());
-		addRootType(new SemanticAnnotation());
-		addRootType(new Info());
-		addRootType(new Tags());
-
-		// init modules and add root types
-		for (KnowWEModule modul : modules) {
-
-			// INIT
-			modul.initModule(context);
-
-			// TERMINLOGY-HANDLER
-			modul.registerKnowledgeRepresentationHandler(this.getKnowledgeRepresentationManager(web));
-
-			// GET TAGHANDLERS
-			List<TagHandler> handlers = modul.getTagHandlers();
-			if (handlers != null) {
-
-				for (TagHandler tagHandler : handlers) {
-					String tagName = tagHandler.getTagName();
-
-					if (tagHandlers.containsKey(tagName)) {
-						Logger.getLogger(this.getClass().getName()).warning(
-								"TagHandler for tag '" + tagName
-										+ "' had already been added.");
-					} else {
-						this.tagHandlers.put(tagName, tagHandler);
-					}
-				}
-			}
-			
-			
-			
-			
-			// ADD PageAppendHandlers
-			this.appendHandlers.addAll(modul.getPageAppendHandlers());
-
-			// ADD ROOT TYPES
-			List<? extends KnowWEObjectType> moduleRoots = modul.getRootTypes();
-			if (moduleRoots != null) {
-				
-				for (KnowWEObjectType type : moduleRoots) {
-					addRootType(type);
-				}
-				
-			}
-
-			// ADD Global TYPES
-			List<? extends TerminalType> moduleGlobals = modul.getGlobalTypes();
-			if (moduleGlobals != null) {
-				this.globalTypes.addAll(moduleGlobals);
-			}
-		}
-
-		// ensuring it is last in list
-		//this.rootTypes.remove(defaultTextType);
-		addRootType(defaultTextType);
 		
-		this.appendHandlers.add(ValidationPageAppendHandler.getInstance());
+		File libDir = new File(knowweExtensionPath+"/../WEB-INF/lib");
+		//when testing, libDir doesn't exist, but the pluginframework is initialised
+		//in junittest, so there is no problem
+		//if libDir is doesn't exist in runtime, nothing will work, so this code won't be reached ;-)
+		if (libDir.exists()) {
+			List<File> pluginFiles = new ArrayList<File>();
+			for (File file: libDir.listFiles()) {
+				if (file.getName().contains("jpf-plugin")) {
+					pluginFiles.add(file);
+				}
+			}
+			JPFPluginManager.init(pluginFiles.toArray(new File[pluginFiles.size()]));
+		}
+		Plugin[] plugins = PluginManager.getInstance().getPlugins();
+		
+		for (Plugin p: plugins) {
+			Resource[] resources = p.getResources();
+			for (Resource r: resources) {
+				String pathName = r.getPathName();
+				if (!pathName.endsWith("/")&&pathName.startsWith("webapp/")) {
+					pathName = pathName.substring("webapp/".length());
+					try {
+						File file = new File(new File(knowweExtensionPath).getParentFile().getCanonicalPath()+"/"+pathName);
+						File parent = file.getParentFile();
+						if (!parent.isDirectory()) {
+							parent.mkdirs();
+						}
+						FileOutputStream out = new FileOutputStream(file);
+						InputStream in = r.getInputStream();
+						try {
+							stream(in, out);
+						} finally {
+							in.close();
+							out.close();
+						}
+					}
+					catch (IOException e) {
+						throw new InstantiationError("Cannot instantiate plugin "+p+", the following error occured while extracting its resources: "+e.getMessage());
+					}
+				}
+			}
+		}
+		
+		for (Instantiation inst: Plugins.getInstantiations()) {
+			inst.init(context);
+		}
+		
+		for (TagHandler tagHandler: Plugins.getTagHandlers() ) {
+			initTagHandler(tagHandler);
+		}
+		
+		appendHandlers = Plugins.getPageAppendHandlers();
+		
+		for (KnowWEObjectType type: Plugins.getRootTypes()) {
+			addRootType(type);
+		}
+		this.globalTypes=Plugins.getGlobalTypes();
+		KnowledgeRepresentationManager manager = this.getKnowledgeRepresentationManager(web);
+		for (KnowledgeRepresentationHandler handler: Plugins.getKnowledgeRepresentationHandlers()) {
+			handler.setWeb(web);
+			manager.registerHandler(handler);
+		}
+		
+		
+		
+		Plugins.initJS();
+	}
 
+	private void initTagHandler(TagHandler tagHandler) {
+		String tagName = tagHandler.getTagName();
+
+		if (tagHandlers.containsKey(tagName)) {
+			Logger.getLogger(this.getClass().getName()).warning(
+					"TagHandler for tag '" + tagName
+					+ "' had already been added.");
+		}
+		else {
+			this.tagHandlers.put(tagName, tagHandler);
+		}
 	}
 
 	private boolean addRootType(KnowWEObjectType type) {
@@ -776,8 +667,6 @@ public class KnowWEEnvironment {
 	//
 	// }
 
-
-
 	/**
 	 * Replaced with introduction of DOM. Delete when DOM established
 	 * 
@@ -813,10 +702,9 @@ public class KnowWEEnvironment {
 			String topic, String web) {
 		return this.getArticleManager(web).saveUpdatedArticle(
 				new KnowWEArticle(content, topic, KnowWEEnvironment
-						.getInstance().getRootTypes(), web)).getHTML();
+				.getInstance().getRootTypes(), web)).getHTML();
 	}
 
-	
 	/**
 	 * Called by the Core-Junit-Tests
 	 * 
@@ -831,10 +719,6 @@ public class KnowWEEnvironment {
 		this.rootTypes = types;
 		this.articleManagers.get(web).saveUpdatedArticle(
 				new KnowWEArticle(content, topic, types, web));
-	}
-
-	public List<KnowWEModule> getModules() {
-		return modules;
 	}
 
 	public ServletContext getContext() {
@@ -910,7 +794,7 @@ public class KnowWEEnvironment {
 	 * @param htmlContent
 	 * @return
 	 */
-	@Deprecated 
+	@Deprecated
 	public static String maskHTML(String htmlContent) {
 		return KnowWEUtils.maskHTML(htmlContent);
 	}
@@ -944,7 +828,7 @@ public class KnowWEEnvironment {
 			for (KnowWEObjectType type : getRootTypes()) {
 				KnowWEObjectTypeSet s = KnowWEObjectTypeUtils
 						.getAllChildrenTypesRecursive(type,
-								new KnowWEObjectTypeSet());
+						new KnowWEObjectTypeSet());
 				allTypes.addAll(s.toList());
 			}
 
@@ -963,5 +847,13 @@ public class KnowWEEnvironment {
 		// mod.findTypeInstances(clazz, instances);
 		// }
 		return instances;
+	}
+	
+	private static void stream(InputStream in, OutputStream out) throws IOException {
+		byte[] buf = new byte[1024];
+		int len;
+		while ((len = in.read(buf)) != -1) {
+			out.write(buf, 0, len);
+		}
 	}
 }

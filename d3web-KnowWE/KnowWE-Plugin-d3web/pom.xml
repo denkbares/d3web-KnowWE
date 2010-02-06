@@ -6,11 +6,34 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.uniwue.d3web</groupId>
-  <artifactId>KnowWE-Plugin-d3web</artifactId>
+  <artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
   <name>KnowWE Plugin: d3web</name>
   <version>0-SNAPSHOT</version>
   <build>
 	<defaultGoal>package</defaultGoal>
+  	<plugins>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-dependency-plugin</artifactId>
+        	<executions>
+    	      <execution>
+	            <id>copy-dependencies</id>
+            	<phase>test-compile</phase>
+        	    <goals>
+    	          <goal>build-classpath</goal>
+	            </goals>
+            	<configuration>
+        	      <outputDirectory>target/dependencies</outputDirectory>
+    	          <overWriteReleases>false</overWriteReleases>
+	              <overWriteSnapshots>false</overWriteSnapshots>
+            	  <overWriteIfNewer>true</overWriteIfNewer>
+            	  <pathSeparator>;</pathSeparator>
+            	  <outputFile>target/dependencies/output.txt</outputFile>
+        	    </configuration>
+    	      </execution>
+	        </executions>
+  		</plugin>
+  	</plugins>
   </build>
   <dependencies>
   	<dependency>
@@ -122,6 +145,18 @@
   		<version>6.0.20</version>
   		<type>jar</type>
   		<scope>provided</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+  		<version>0-SNAPSHOT</version>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-ExtensionPoints-jpf-plugin</artifactId>
+  		<version>0-SNAPSHOT</version>
+  		<scope>compile</scope>
   	</dependency>
   </dependencies>  
 </project>

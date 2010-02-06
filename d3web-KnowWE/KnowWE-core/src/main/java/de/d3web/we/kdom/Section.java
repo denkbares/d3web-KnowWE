@@ -39,11 +39,8 @@ import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeAddress;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
-import de.d3web.we.module.DefaultTextType;
-import de.d3web.we.module.KnowWEModule;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.PairOfInts;
 
@@ -238,10 +235,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			types.add(Include.getInstance());
 		}
 		
-		if (types.remove(DefaultTextType.getInstance())) {
-			types.add(DefaultTextType.getInstance());
-		}
-		
 		/**
 		 * adding the registered global types to the children-list
 		 * 
@@ -302,23 +295,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				article.getTitle() : this.getObjectType().getClass().getName() + " l:"
 				+ this.getOriginalText().length()) + " - "
 				+ this.getOriginalText();
-	}
-
-	/**
-	 * ascends in the tree up to the module level and returns module of this
-	 * subtree
-	 * 
-	 * @return module of the subtree this node is in
-	 */
-	public String getModuleName() {
-		if (this.objectType instanceof KnowWEModule) {
-			return objectType.getName();
-		} else {
-			if (father == null)
-				return "modulename not found";
-			return father.getModuleName();
-		}
-
 	}
 
 	/**

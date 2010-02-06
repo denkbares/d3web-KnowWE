@@ -48,7 +48,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 			String score = string.substring(string.indexOf("=") + 1).trim();
 			String question = s.getOriginalText();
 
-			KnowledgeBaseManagement kbm = D3webModule.getInstance()
+			KnowledgeBaseManagement kbm = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 
 			if(kbm == null) return; //dirty hack for testing

@@ -95,7 +95,7 @@ public class SaveDialogAsXCLAction extends AbstractKnowWEAction {
 	private void createXCLRelation(XPSCase c, List<? extends Question> answeredQuestions, StringBuffer newXCL,
 			Diagnosis d){
 		for( Question q : answeredQuestions ){
-			List answers = q.getValue( c );
+			List<?> answers = q.getValue( c );
 			for (Object o : answers) {
 				if( o instanceof Answer ){
 					Answer a = (Answer) o;
@@ -123,8 +123,8 @@ public class SaveDialogAsXCLAction extends AbstractKnowWEAction {
 	 * @return
 	 */
 	private XPSCase getXPSCase(String web, String topic, String user){
-		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);
-		D3webKnowledgeService service = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);	
+		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
+		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);	
 		service.getBase();
 		
 		if(knowledgeServiceInTopic == null) return null;
@@ -159,7 +159,7 @@ public class SaveDialogAsXCLAction extends AbstractKnowWEAction {
 	 * @return
 	 */
 	private Diagnosis findDiagnosis(String web, String topic, String solution){
-		D3webKnowledgeService ks = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);
+		D3webKnowledgeService ks = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		
 		Diagnosis d = getKBM( ks.getBase()).findDiagnosis(solution);
 		return d;

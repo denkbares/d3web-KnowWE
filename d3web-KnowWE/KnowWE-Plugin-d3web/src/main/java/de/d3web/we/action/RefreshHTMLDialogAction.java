@@ -58,7 +58,7 @@ public class RefreshHTMLDialogAction extends AbstractKnowWEAction {
 		
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(request);
 		
-		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topic);
+		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		if(knowledgeServiceInTopic == null) return rb.getString("KnowWE.DialogPane.error");
 		String kbid = knowledgeServiceInTopic.getId();
 		//String kbid = topic+".."+KnowWEEnvironment.generateDefaultID(topic);

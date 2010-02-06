@@ -48,7 +48,7 @@ public class DialogLinkTagHandler extends AbstractTagHandler {
 	
 	@Override
 	public String getDescription(KnowWEUserContext user) {
-		return D3webModule.getInstance().getKwikiBundle_d3web(user).getString("KnowWE.DialogLink.description");
+		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.DialogLink.description");
 	}
 	
 	public static String generateDialogLink(String user, HttpServletRequest request, String topic, String actualID) {
