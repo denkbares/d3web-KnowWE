@@ -30,17 +30,8 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 public class Refactoring extends AbstractXMLObjectType{
 
 	
-	private static Refactoring instance;
-
-	protected Refactoring() {
+	public Refactoring() {
 		super("Refactoring");
-	}
-
-	public static Refactoring getInstance() {
-		if (instance == null)
-			instance = new Refactoring();
-
-		return instance;
 	}
 
 	/* (non-Javadoc)

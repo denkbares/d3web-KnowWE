@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uniwue.d3web</groupId>
-	<artifactId>KnowWE-Plugin-Refactoring</artifactId>
+	<artifactId>KnowWE-Plugin-Refactoring-jpf-plugin</artifactId>
 	<packaging>jar</packaging>
 	<name>KnowWE-Plugin: Refactoring</name>
 	<version>0-SNAPSHOT</version>
@@ -104,15 +104,9 @@
 							<tasks>
 								<echo>Copying external Plugin ${project.name} into KnowWE...</echo>
 								<echo>KnowWE is expected at: ${project.build.directory}/../${knowwe.path}/</echo>
-								 <copy todir="${project.build.directory}/../${knowwe.path}/target/KnowWE-${knowwe.version}/">
-									<fileset dir="src/main/webapp" />
-								</copy>
-								 <copy todir="${project.build.directory}/../${knowwe.path}/target/KnowWE-${knowwe.version}/WEB-INF/lib/">
+								<copy todir="${project.build.directory}/../${knowwe.path}/target/KnowWE-${knowwe.version}/WEB-INF/lib/">
 									<fileset dir="target" includes="*.jar" />
 								</copy>
-								<copy
-									file="src/main/wikiplugin/de.d3web.we.refactoring.RefactoringPlugin.module"
-									todir="${project.build.directory}/../${knowwe.path}/target/KnowWE-${knowwe.version}/KnowWEExtension/modules/" />
 								<echo>done.</echo>
 							</tasks>
 						</configuration>
