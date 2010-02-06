@@ -6,6 +6,6 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.uniwue.d3web</groupId>
-  <artifactId>KnowWE-ExtensionPoints</artifactId>
+  <artifactId>KnowWE-ExtensionPoints-jpf-plugin</artifactId>
   <version>0-SNAPSHOT</version>
 </project>
