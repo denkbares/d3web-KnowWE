@@ -391,7 +391,7 @@ public class FlowchartDiffProvider implements DiffProvider
         
         for (String line : lines) {
             if (line.startsWith("edge")) {
-                String id = line.substring(9, line.indexOf(">") - 1);
+                String id = line.substring(11, line.indexOf(">") - 1);
                 edges.add(new FlowchartEdge(id));
             } else if (line.startsWith("origin")) {
                 String source = line.substring(7);
@@ -404,6 +404,7 @@ public class FlowchartDiffProvider implements DiffProvider
                 edges.get(edges.size() -1).setGuard(guard);
             }
         }    
+        Logging.getInstance().info("edges: " + edges);
         return edges;
     }
     
@@ -506,7 +507,7 @@ public class FlowchartDiffProvider implements DiffProvider
         version = version.substring(version.indexOf(">") + 1);
       
         // get all the nodes
-        String[] nodes = version.split("<DIV class=\"Node\" fcid=\"");
+        String[] nodes = version.split("<DIV class=\"Node\" id=\"");
 
         
         for (int i = 1; i < nodes.length; i++) {  
@@ -547,12 +548,14 @@ public class FlowchartDiffProvider implements DiffProvider
     	
         String temp = version;
         
+        Logging.getInstance().info(version);
+        
         // get the lower part of the flowchart
         version = version.substring(version.indexOf("<DIV class=\"Flowchart\""));
         version = version.substring(version.indexOf(">") + 1);
       
         // get all the nodes
-        String[] edges = version.split("<DIV class=\"Rule\" fcid=\"");
+        String[] edges = version.split("<DIV class=\"Rule\" id=\"");
 
         
         for (int i = 1; i < edges.length; i++) {  

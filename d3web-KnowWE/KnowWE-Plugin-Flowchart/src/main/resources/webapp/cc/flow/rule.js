@@ -299,7 +299,7 @@ Rule.prototype.destroy = function() {
 
 Rule.prototype.toXML = function() {
 	var xml = '\t<edge' +
-			(this.fcid ? ' fcid="'+this.id+'"' : '')+
+			(this.fcid ? ' fcid="'+this.fcid+'"' : '')+
 			'>\n';
 	xml += '\t\t<origin>'+this.sourceNode.getNodeModel().fcid+'</origin>\n';
 	xml += '\t\t<target>'+this.targetNode.getNodeModel().fcid+'</target>\n';
