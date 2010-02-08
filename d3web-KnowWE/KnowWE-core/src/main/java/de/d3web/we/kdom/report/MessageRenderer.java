@@ -18,8 +18,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.error;
+package de.d3web.we.kdom.report;
 
-public abstract class KDOMNotice extends KDOMReportMessage{
+import de.d3web.we.wikiConnector.KnowWEUserContext;
+
+public interface MessageRenderer {
+	
+	public String renderMessage(KDOMReportMessage m, KnowWEUserContext user);
 
 }

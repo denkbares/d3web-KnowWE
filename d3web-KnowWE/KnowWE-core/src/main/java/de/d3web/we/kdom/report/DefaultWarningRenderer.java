@@ -18,12 +18,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.error;
+package de.d3web.we.kdom.report;
 
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public interface MessageRenderer {
-	
-	public String renderMessage(KDOMReportMessage m, KnowWEUserContext user);
+public class DefaultWarningRenderer implements MessageRenderer {
 
+private static DefaultWarningRenderer instance = null;
+	
+	public static DefaultWarningRenderer getInstance() {
+		if (instance == null) {
+			instance = new DefaultWarningRenderer();
+			
+		}
+
+		return instance;
+	}
+	
+	@Override
+	public String renderMessage(KDOMReportMessage notice, KnowWEUserContext user) {
+		
+		StringBuffer buffy = new StringBuffer();
+		
+		buffy.append(" <img style='vertical-align:middle;' height='12' src='KnowWEExtension/images/lo.gif'");
+		
+		buffy.append(" title='"+notice.getVerbalization(user)+"'>");
+		
+		return  KnowWEUtils.maskHTML(buffy.toString());
+		
+	}
 }

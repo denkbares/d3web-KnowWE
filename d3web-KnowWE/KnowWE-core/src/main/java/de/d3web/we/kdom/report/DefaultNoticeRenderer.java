@@ -18,18 +18,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.error;
+package de.d3web.we.kdom.report;
 
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class DefaultWarningRenderer implements MessageRenderer {
+public class DefaultNoticeRenderer implements MessageRenderer{
 
-private static DefaultWarningRenderer instance = null;
+	private static DefaultNoticeRenderer instance = null;
 	
-	public static DefaultWarningRenderer getInstance() {
+	public static DefaultNoticeRenderer getInstance() {
 		if (instance == null) {
-			instance = new DefaultWarningRenderer();
+			instance = new DefaultNoticeRenderer();
 			
 		}
 
@@ -41,11 +44,12 @@ private static DefaultWarningRenderer instance = null;
 		
 		StringBuffer buffy = new StringBuffer();
 		
-		buffy.append(" <img style='vertical-align:middle;' height='12' src='KnowWEExtension/images/lo.gif'");
+		buffy.append(" <img height='6' src='KnowWEExtension/images/green_bulb.gif'");
 		
 		buffy.append(" title='"+notice.getVerbalization(user)+"'>");
 		
 		return  KnowWEUtils.maskHTML(buffy.toString());
 		
 	}
+
 }

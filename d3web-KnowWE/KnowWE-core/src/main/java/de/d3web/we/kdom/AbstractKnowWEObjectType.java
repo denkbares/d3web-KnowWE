@@ -30,12 +30,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.or.jms.MessageRenderer;
 
 import de.d3web.report.Message;
-import de.d3web.we.kdom.error.DefaultErrorRenderer;
-import de.d3web.we.kdom.error.DefaultNoticeRenderer;
-import de.d3web.we.kdom.error.DefaultWarningRenderer;
-import de.d3web.we.kdom.error.KDOMReportMessage;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.DefaultErrorRenderer;
+import de.d3web.we.kdom.report.DefaultNoticeRenderer;
+import de.d3web.we.kdom.report.DefaultWarningRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.utils.KnowWEUtils;
@@ -399,11 +399,11 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return DefaultErrorRenderer.getInstance();
 	}
 	
-	public de.d3web.we.kdom.error.MessageRenderer getNoticeRenderer() {
+	public de.d3web.we.kdom.report.MessageRenderer getNoticeRenderer() {
 		return DefaultNoticeRenderer.getInstance();
 	}
 	
-	public de.d3web.we.kdom.error.MessageRenderer getWarningRenderer() {
+	public de.d3web.we.kdom.report.MessageRenderer getWarningRenderer() {
 		return DefaultWarningRenderer.getInstance();
 	}
 

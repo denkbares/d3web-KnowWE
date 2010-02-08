@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.error.KDOMError;
+import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 

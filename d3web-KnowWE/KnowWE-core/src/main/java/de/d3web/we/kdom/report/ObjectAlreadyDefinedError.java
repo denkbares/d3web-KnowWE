@@ -1,4 +1,4 @@
-package de.d3web.we.kdom.error;
+package de.d3web.we.kdom.report;
 
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 

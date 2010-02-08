@@ -20,7 +20,7 @@
 
 package de.d3web.we.kdom;
 
-import de.d3web.we.kdom.error.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 
 
 /**

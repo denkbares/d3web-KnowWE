@@ -26,7 +26,7 @@ import java.util.Map;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.error.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class TagHandlerAttributeSectionFinder implements ReviseSubTreeHandler {

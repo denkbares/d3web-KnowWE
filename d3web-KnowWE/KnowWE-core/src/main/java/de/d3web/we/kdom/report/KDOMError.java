@@ -1,4 +1,4 @@
-package de.d3web.we.kdom.error;
+package de.d3web.we.kdom.report;
 
 import java.util.HashSet;
 import java.util.Set;

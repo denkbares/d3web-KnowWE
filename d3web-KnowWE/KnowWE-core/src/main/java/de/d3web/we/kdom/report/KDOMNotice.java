@@ -18,38 +18,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.error;
+package de.d3web.we.kdom.report;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
-
-public class DefaultNoticeRenderer implements MessageRenderer{
-
-	private static DefaultNoticeRenderer instance = null;
-	
-	public static DefaultNoticeRenderer getInstance() {
-		if (instance == null) {
-			instance = new DefaultNoticeRenderer();
-			
-		}
-
-		return instance;
-	}
-	
-	@Override
-	public String renderMessage(KDOMReportMessage notice, KnowWEUserContext user) {
-		
-		StringBuffer buffy = new StringBuffer();
-		
-		buffy.append(" <img height='6' src='KnowWEExtension/images/green_bulb.gif'");
-		
-		buffy.append(" title='"+notice.getVerbalization(user)+"'>");
-		
-		return  KnowWEUtils.maskHTML(buffy.toString());
-		
-	}
+public abstract class KDOMNotice extends KDOMReportMessage{
 
 }

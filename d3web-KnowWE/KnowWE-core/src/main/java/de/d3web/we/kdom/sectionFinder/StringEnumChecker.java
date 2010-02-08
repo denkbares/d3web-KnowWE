@@ -23,8 +23,8 @@ package de.d3web.we.kdom.sectionFinder;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.error.KDOMError;
-import de.d3web.we.kdom.error.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 
 
 public class StringEnumChecker implements ReviseSubTreeHandler{
