@@ -2,10 +2,14 @@ package de.d3web.we.kdom.objects;
 
 import de.d3web.we.kdom.Section;
 
-public abstract class D3webID extends ObjectRef {
+public abstract class D3webID<T> extends ObjectRef<T> {
+
+	public D3webID(String key) {
+		super(key);
+	}
 
 	@Override
-	public String getID(Section<? extends ObjectRef> s) {
+	public String getID(Section<? extends ObjectRef<T>> s) {
 		String content = s.getOriginalText();
 		
 		String trimmed = content.trim();
@@ -16,6 +20,8 @@ public abstract class D3webID extends ObjectRef {
 		
 		return trimmed;
 	}
+	
+	
 
 	
 

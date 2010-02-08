@@ -99,7 +99,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 
 				QContainer qc = mgn.createQContainer(name, parent);
 				if (qc != null) {
-					qcSec.get().storeQuestionnaire(qcSec, qc);
+					qcSec.get().storeObject(qcSec, qc);
 					return new NewObjectCreated(qc.getClass().getSimpleName()
 							+ " " + qc.getText());
 				} else {

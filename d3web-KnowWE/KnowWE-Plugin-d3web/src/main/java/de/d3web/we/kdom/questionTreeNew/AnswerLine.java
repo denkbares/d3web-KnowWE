@@ -72,7 +72,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 				
 				if(q instanceof QuestionChoice) {
 					Answer a = mgn.addChoiceAnswer((QuestionChoice)q, name);
-					answer.get().storeAnswer(answer, a);
+					answer.get().storeObject(answer, a);
 					return new NewObjectCreated(a.getClass().getSimpleName()+"  "+a.getText());
 				}
 				return new ObjectCreationError(name, this.getClass());
