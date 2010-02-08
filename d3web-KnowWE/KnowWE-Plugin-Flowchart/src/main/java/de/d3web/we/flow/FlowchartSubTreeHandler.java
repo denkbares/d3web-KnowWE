@@ -79,6 +79,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 
@@ -92,17 +93,17 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 
 	@Override
-	public void reviseSubtree(KnowWEArticle article, Section s) {
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 		
 		KnowledgeBaseManagement kbm = getKBM(article, s);
 		
 		if (kbm == null)
-			return;
+			return null;
 
 		Section content = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
 		if (content == null) 
-			return;
+			return null;
 		
 		List<Message> errors = new ArrayList<Message>();
 		
@@ -155,7 +156,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		if (!errors.isEmpty())
 			System.out.println(errors.size() +" errors in Flow '" + name +"': " + errors);
 		
-		
+		return null;
 	}
 
 

@@ -25,6 +25,7 @@ import java.util.List;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 
 /**
  * Applies the subtree handler to all childs of s of the given type
@@ -44,7 +45,7 @@ public class DelegateSubtreeHandler implements ReviseSubTreeHandler {
 	}
 
 	@Override
-	public void reviseSubtree(KnowWEArticle article, Section s) {
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 
 		List<Section> found = new ArrayList();
 		s.findSuccessorsOfType(sectionType, found);
@@ -55,6 +56,8 @@ public class DelegateSubtreeHandler implements ReviseSubTreeHandler {
 			handler.reviseSubtree(article, child);
 			
 		}
+		
+		return null;
 		
 	}
 
