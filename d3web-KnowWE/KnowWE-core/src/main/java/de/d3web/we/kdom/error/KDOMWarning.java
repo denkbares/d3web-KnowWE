@@ -18,40 +18,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.sectionFinder;
+package de.d3web.we.kdom.error;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.error.KDOMError;
-import de.d3web.we.kdom.error.KDOMReportMessage;
-
-
-public class StringEnumChecker implements ReviseSubTreeHandler{
-
-	private String [] values;
-	private KDOMError error;
-	
-	public StringEnumChecker(String [] values, KDOMError error ) {
-		this.values = values;
-		this.error = error;
-	}
-	
-	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-		boolean found = false;
-		for (String string : values) {
-			if(s.getOriginalText().contains(string)) {
-				found = true;
-			}
-		}
-		
-		if(!found) {
-			return error;
-		}
-		return null;
-		
-		
-	}
+public abstract class KDOMWarning extends KDOMReportMessage{
 
 }

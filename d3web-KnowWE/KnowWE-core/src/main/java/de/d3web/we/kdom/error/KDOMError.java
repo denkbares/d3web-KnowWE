@@ -7,7 +7,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public abstract class KDOMError {
+public abstract class KDOMError extends KDOMReportMessage {
 	
 	public static final String ERROR_STORE_KEY = "ERROR-SET";
 	

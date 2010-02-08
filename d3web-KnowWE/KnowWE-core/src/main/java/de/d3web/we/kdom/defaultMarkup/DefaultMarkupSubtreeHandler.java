@@ -7,7 +7,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
-import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.error.KDOMReportMessage;
 
 public class DefaultMarkupSubtreeHandler implements ReviseSubTreeHandler {
 

@@ -18,39 +18,37 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.sectionFinder;
+package de.d3web.we.kdom.error;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.error.KDOMError;
-import de.d3web.we.kdom.error.KDOMReportMessage;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
+public class DefaultNoticeRenderer implements MessageRenderer{
 
-public class StringEnumChecker implements ReviseSubTreeHandler{
-
-	private String [] values;
-	private KDOMError error;
+	private static DefaultNoticeRenderer instance = null;
 	
-	public StringEnumChecker(String [] values, KDOMError error ) {
-		this.values = values;
-		this.error = error;
+	public static DefaultNoticeRenderer getInstance() {
+		if (instance == null) {
+			instance = new DefaultNoticeRenderer();
+			
+		}
+
+		return instance;
 	}
 	
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-		boolean found = false;
-		for (String string : values) {
-			if(s.getOriginalText().contains(string)) {
-				found = true;
-			}
-		}
+	public String renderMessage(KDOMReportMessage notice, KnowWEUserContext user) {
 		
-		if(!found) {
-			return error;
-		}
-		return null;
+		StringBuffer buffy = new StringBuffer();
 		
+		buffy.append(" <img height='6' src='KnowWEExtension/images/green_bulb.gif'");
+		
+		buffy.append(" title='"+notice.getVerbalization(user)+"'>");
+		
+		return  KnowWEUtils.maskHTML(buffy.toString());
 		
 	}
 

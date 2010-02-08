@@ -26,13 +26,14 @@ import java.util.Map;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.error.KDOMReportMessage;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class TagHandlerAttributeSectionFinder implements ReviseSubTreeHandler {
 
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 	
-	public void reviseSubtree(KnowWEArticle art, Section sec) {
+	public KDOMReportMessage reviseSubtree(KnowWEArticle art, Section sec) {
 				
 		String text = sec.getOriginalText();
 		
@@ -55,7 +56,7 @@ public class TagHandlerAttributeSectionFinder implements ReviseSubTreeHandler {
 		}
 		
 		KnowWEUtils.storeSectionInfo(sec.getWeb(),sec.getTitle(), sec.getFather().getId(), ATTRIBUTE_MAP, values);
-		
+		return null;
 		
 	}
 }
