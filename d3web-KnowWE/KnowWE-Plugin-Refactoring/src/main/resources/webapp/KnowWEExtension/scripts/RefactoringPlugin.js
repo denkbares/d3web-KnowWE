@@ -30,7 +30,7 @@ function refactoring() {
  		}
 	}
 	var params = {
-		action : 'RefactoringAction',
+		action : 'de.d3web.we.refactoring.action.RefactoringAction',
 		jsonFormMap : JSON.stringify(formMap),
 	}
 	var options = {
