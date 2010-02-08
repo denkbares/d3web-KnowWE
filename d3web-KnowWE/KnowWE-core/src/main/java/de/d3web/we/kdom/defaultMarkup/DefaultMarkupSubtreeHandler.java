@@ -7,6 +7,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 
 public class DefaultMarkupSubtreeHandler implements ReviseSubTreeHandler {
 
@@ -17,7 +18,7 @@ public class DefaultMarkupSubtreeHandler implements ReviseSubTreeHandler {
 	}
 
 	@Override
-	public void reviseSubtree(KnowWEArticle article, Section markupSection) {
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section markupSection) {
 		// check defined annotations
 		for (Annotation annotation : this.markup.getAnnotations()) {
 			String name = annotation.getName();
@@ -50,5 +51,7 @@ public class DefaultMarkupSubtreeHandler implements ReviseSubTreeHandler {
 				DefaultMarkupType.addErrorMessage(markupSection, message);
 			}
 		}
+		
+		return null;
 	}
 }

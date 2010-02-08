@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 
@@ -88,6 +89,10 @@ public interface KnowWEObjectType extends KnowWEType{
 	public void cleanStoredInfos(String articleName);
 	
 	public KnowWEDomRenderer getErrorRenderer();
+	
+	public MessageRenderer getNoticeRenderer();
+	
+	public MessageRenderer getWarningRenderer();
 	
 	public boolean isLeafType();
 	

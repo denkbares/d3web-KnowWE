@@ -29,13 +29,15 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import de.d3web.report.Message;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.error.DefaultErrorRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.DefaultErrorRenderer;
+import de.d3web.we.kdom.report.DefaultNoticeRenderer;
+import de.d3web.we.kdom.report.DefaultWarningRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.taghandler.KDOMRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
@@ -350,7 +352,9 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	public final void reviseSubtree(KnowWEArticle article, Section s) {
 		for (ReviseSubTreeHandler handler : subtreeHandler) {
 			try {
-				handler.reviseSubtree(article, s);
+				KDOMReportMessage message = handler.reviseSubtree(article, s);
+				KDOMReportMessage.storeMessage(s, message);
+				
 			}
 			catch (Throwable e) {
 				String text = "unexpected internal error in subtree handler '" + handler + "'";
@@ -393,6 +397,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	
 	public KnowWEDomRenderer getErrorRenderer() {
 		return DefaultErrorRenderer.getInstance();
+	}
+	
+	public MessageRenderer getNoticeRenderer() {
+		return DefaultNoticeRenderer.getInstance();
+	}
+	
+	public MessageRenderer getWarningRenderer() {
+		return DefaultWarningRenderer.getInstance();
 	}
 
 	protected KnowWEDomRenderer getDefaultRenderer() {

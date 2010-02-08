@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom;
 
+import de.d3web.we.kdom.report.KDOMReportMessage;
+
 
 /**
  * Abstract class for a ReviseSubtreeHandler. This handler has to be registered to a type and then,
@@ -38,6 +40,6 @@ public interface ReviseSubTreeHandler {
 	 * 		article the Section is hooked into directly, since Sections can also be included!
 	 * @param s is the root section of the subtree to revise
 	 */
-	public void reviseSubtree(KnowWEArticle article, Section s);
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s);
 
 }
