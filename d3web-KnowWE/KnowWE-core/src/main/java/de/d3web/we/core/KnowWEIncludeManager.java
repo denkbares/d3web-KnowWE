@@ -62,7 +62,7 @@ public class KnowWEIncludeManager {
 	private Map<String, Set<Section<Include>>> target2src = new HashMap<String, Set<Section<Include>>>();
 	
 	/**
-	 * List that keeps track of all articles that are initializing at the moment.
+	 * List that keeps track of all articles that are sectionizing at the moment.
 	 */
 	private Set<String> sectionizingArticles = new HashSet<String>();
 	
@@ -86,19 +86,17 @@ public class KnowWEIncludeManager {
 			// this is the Section the Include Section wants to include
 			Section<? extends KnowWEObjectType> target = null;
 			
-			// check for include loops
-			// (This algorithm later initializes articles, if they are not
-			// yet build but the Include Sections wants to include from
-			// it. If these initializing Articles directly or indirectly include
-			// this article, which isn't completely build itself, we got a loop.)
 			if (address == null) {
 				
 				target = getNoValidAddressErrorSection(src);
 				
 			} else if (sectionizingArticles.contains(address.getTargetArticle())) {
-				
-				target = new IncludeErrorSection("Error: Include loop detected!", 
-						src, src.getArticle());
+				// check for include loops
+				// (This algorithm later initializes articles, if they are not
+				// yet build but the Include Sections wants to include from
+				// it. If these initializing Articles directly or indirectly include
+				// this article, which isn't completely build itself, we got a loop.)
+				target = getIncludeLoopErrorSection(src);
 				
 			} else {
 				// no loops found then, get the targeted article
@@ -215,12 +213,25 @@ public class KnowWEIncludeManager {
 			target = new IncludeErrorSection("Error: Include '"
 					+ address.getOriginalAddress() + "' not found.", src, src.getArticle());
 		}
+		// check if the included Section originates from the requesting article,
+		// but isn't directly included from it -> causes update loops
+		// (auto includes are allowed, but not via other articles)
+		if (!(target instanceof IncludeErrorSection)
+				&& !address.getTargetArticle().equals(src.getTitle())
+				&& target.getTitle().equals(src.getTitle())) {
+			target = getIncludeLoopErrorSection(src);
+		}
 		return target;
 	}
 	
 	private IncludeErrorSection getNoValidAddressErrorSection(Section<Include> src) {
 		return new IncludeErrorSection("Error: No valid address found in '" + 
 				src.getOriginalText().trim() + "'.", src, src.getArticle());
+	}
+	
+	private IncludeErrorSection getIncludeLoopErrorSection(Section<Include> src) {
+		return new IncludeErrorSection("Error: Include loop detected!", 
+				src, src.getArticle());
 	}
 	
 	/**
@@ -250,11 +261,9 @@ public class KnowWEIncludeManager {
 					getIncludingSectionsForArticle(inc.getIncludeAddress().getTargetArticle()).add(inc);
 				}
 				// don't revise the article that is currently revised again
-				// and don't revise if the error message hasn't changed
-				boolean sameError = lastTarget instanceof IncludeErrorSection 
-					&& target instanceof IncludeErrorSection
-					&& lastTarget.getOriginalText().equals(target.getOriginalText());
-				if (!inc.getTitle().equals(article.getTitle()) && !sameError) {
+				// and don't revise if the originalText hasn't changed
+				if (!inc.getTitle().equals(article.getTitle()) 
+						&& !lastTarget.getOriginalText().equals(target.getOriginalText())) {
 					reviseArticles.put(inc.getTitle(), inc.getArticle());
 				}
 			}
