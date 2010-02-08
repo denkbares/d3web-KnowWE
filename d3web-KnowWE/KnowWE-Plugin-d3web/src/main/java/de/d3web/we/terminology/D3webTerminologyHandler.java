@@ -42,6 +42,7 @@ import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DistributedRegistrationManager;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 
@@ -373,9 +374,9 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	private void useNewKBM(KnowWEArticle article, Section s) {
 		usingNewKBM.put(article.getTitle(), true);
 		savedToJar.put(article.getTitle(), false);
-		List<Section> sectionsToRevise = article.getAllNodesParsingPostOrder();
-		List<Section> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));
-		for (Section sec:strSub) {
+		List<Section<? extends KnowWEObjectType>> sectionsToRevise = article.getAllNodesParsingPostOrder();
+		List<Section<? extends KnowWEObjectType>> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));
+		for (Section<? extends KnowWEObjectType> sec:strSub) {
 			sec.getObjectType().reviseSubtree(article, sec);
 		}
 	}
