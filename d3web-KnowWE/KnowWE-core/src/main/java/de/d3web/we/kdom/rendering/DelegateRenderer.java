@@ -22,13 +22,17 @@ package de.d3web.we.kdom.rendering;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.KDOMNotice;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMWarning;
+import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -124,6 +128,33 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 					// use subSection's renderer
 					KnowWEDomRenderer renderer = getRenderer(subSection, user);
 					renderer.render(article, subSection, user, builder);
+
+					// Render notices
+					Set<? extends KDOMNotice> notices = KDOMReportMessage
+							.getNotices(section);
+					if (notices != null && notices.size() > 0) {
+						for (KDOMNotice kdomNotice : notices) {
+							MessageRenderer noticeRenderer = subSection.get()
+									.getNoticeRenderer();
+							if (noticeRenderer != null) {
+								builder.append(noticeRenderer.renderMessage(kdomNotice, user));
+							}
+						}
+					}
+
+					// Render warnings
+					Set<? extends KDOMWarning> warnings = KDOMReportMessage
+							.getWarnings(subSection);
+					if (warnings != null && warnings.size() > 0) {
+						for (KDOMWarning kdomWarning : warnings) {
+							MessageRenderer warningRenderer = subSection.get()
+									.getWarningRenderer();
+							if (warningRenderer != null) {
+								builder.append(warningRenderer
+										.renderMessage(kdomWarning, user));
+							}
+						}
+					}
 				}
 			}
 		} catch (Throwable e) {
@@ -154,7 +185,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	private KnowWEDomRenderer getRenderer(Section<?> section,
 			KnowWEUserContext user) {
 		KnowWEDomRenderer renderer = null;
-		if (KDOMError.getErrors(section) != null) {
+		if (KDOMReportMessage.getErrors(section) != null) {
 			renderer = section.getObjectType().getErrorRenderer();
 		}
 
