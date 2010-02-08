@@ -43,6 +43,7 @@ import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.condition.FindingToConditionBuilder;
 import de.d3web.we.kdom.condition.NegatedFinding;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.terminology.KnowledgeRecyclingObjectType;
@@ -67,7 +68,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 //		private Diagnosis currentdiag;
 		
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			
 			// Set currentWeb
 			String currentWeb = s.getWeb();
@@ -82,6 +83,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				}
 			}
 
+			return null;
 		}
 		
 		

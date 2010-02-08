@@ -19,5 +19,44 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 		};
 		
 		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
+		
+	}
+	
+	public static Double getValue(Section<NumericCondLine> sec) {
+		String content = sec.getOriginalText();
+		if(content.startsWith("\"") && content.endsWith("\"")) {
+			content = content.substring(1, content.length()-1);
+		}
+		
+			String value = content.substring(getComparator(sec).length()).trim();
+			Double d = null;
+			try {
+			d = Double.parseDouble(value);
+			} catch (Exception e) {
+				
+			}
+			return d;
+	}
+	
+	public static String getComparator(Section<NumericCondLine> sec) {
+		String content = sec.getOriginalText();
+		if(content.startsWith("\"") && content.endsWith("\"")) {
+			content = content.substring(1, content.length()-1).trim();
+		}
+		
+		String [] comps = {"<=", ">=", "<", ">", "="};
+		for (String string : comps) {
+			if(content.startsWith(string)) {
+				return string;
+			}
+		}
+		return null;
+	}
+	
+	public boolean isIntervall(Section<NumericCondLine> sec) {
+		if(sec.getOriginalText().startsWith("[") && sec.getOriginalText().endsWith("]")) {
+			return true;
+		}
+		return false;
 	}
 }

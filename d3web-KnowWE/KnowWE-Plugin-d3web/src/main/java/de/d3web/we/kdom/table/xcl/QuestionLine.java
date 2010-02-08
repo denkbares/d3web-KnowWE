@@ -26,6 +26,7 @@ import java.util.List;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.TableLine;
@@ -55,18 +56,18 @@ public class QuestionLine extends TableLine {
 	class QuestionLineHandler implements ReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			
-			Section headerCell = s.findSuccessor(TableColumnHeaderCellContent.class);
+			Section<TableColumnHeaderCellContent> headerCell = s.findSuccessor(TableColumnHeaderCellContent.class);
 			headerCell.setType(QuestionCell.getInstance());
 			
-			List<Section> cells = new ArrayList<Section>();
+			List<Section<TableCellContent>> cells = new ArrayList<Section<TableCellContent>>();
 			s.findSuccessorsOfType(TableCellContent.class, cells);
-			for (Section section : cells) {
+			for (Section<TableCellContent> section : cells) {
 				section.setType(QuestionLineCell.getInstance());
 			}
 			
-			
+			return null;
 		}
 		
 	}

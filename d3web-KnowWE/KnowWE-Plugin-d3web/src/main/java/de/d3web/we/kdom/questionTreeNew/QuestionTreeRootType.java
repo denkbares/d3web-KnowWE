@@ -15,11 +15,5 @@ public class QuestionTreeRootType extends QuestionTree{
 		super(m);
 	}
 	
-//	@Override
-//	protected void init() {
-//		DefaultMarkup markup = ;
-//		markup.;
-//		this.childrenTypes.add(new QuestionTree(markup));
-//	}
 
 }

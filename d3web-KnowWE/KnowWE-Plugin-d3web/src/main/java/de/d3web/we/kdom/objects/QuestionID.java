@@ -5,7 +5,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 
 
-public class QuestionID extends ObjectRef{
+public class QuestionID extends D3webID{
 	
 	private static String QUESTION_STORE_KEY = "QUESTION_STORE_KEY";
 

@@ -29,6 +29,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableContentRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
@@ -53,7 +54,7 @@ public class AttributeTableContent extends XMLContent {
 		}
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
@@ -62,6 +63,7 @@ public class AttributeTableContent extends XMLContent {
 						builder.addKnowledge(new StringReader(s.getOriginalText()), 
 								new SingleKBMIDObjectManager(kbm), null));
 			}
+			return null;
 		}
 	}
 	

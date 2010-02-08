@@ -32,6 +32,7 @@ import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 
 public class QuestionsSection extends AbstractKopicSection {
@@ -52,7 +53,7 @@ public class QuestionsSection extends AbstractKopicSection {
 	private class QuestionsSectionSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 	
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
@@ -74,6 +75,7 @@ public class QuestionsSection extends AbstractKopicSection {
 					s.getArticle().getReport().addReport(result);
 				}
 			}
+			return null;
 		}
 	}
 

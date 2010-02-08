@@ -36,6 +36,7 @@ import de.d3web.we.d3webModule.KnowledgeUtils;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -44,13 +45,13 @@ public class AnswerCellHandler implements ReviseSubTreeHandler {
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
-	public void reviseSubtree(KnowWEArticle article, Section s) {
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 		
 		KnowledgeBaseManagement mgn = D3webModule
 			.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 		
 		if (mgn == null) {
-			return;
+			return null;
 		}
 		
 		Section questionCell = AnswerCellContent.getQuestionCellContent(s);
@@ -102,6 +103,8 @@ public class AnswerCellHandler implements ReviseSubTreeHandler {
 			}
 
 		}
+		
+		return null;
 
 	}
 

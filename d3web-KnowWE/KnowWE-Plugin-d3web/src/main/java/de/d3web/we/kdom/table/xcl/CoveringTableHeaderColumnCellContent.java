@@ -25,6 +25,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.TableContent;
 import de.d3web.we.kdom.table.TableLine;
@@ -50,12 +51,12 @@ public class CoveringTableHeaderColumnCellContent extends
 			ReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 			
 			if (mgn == null) {
-				return;
+				return null;
 			}
 			
 			String text = s.getOriginalText();
@@ -91,6 +92,7 @@ public class CoveringTableHeaderColumnCellContent extends
 
 				}
 			}
+			return null;
 
 		}
 

@@ -2,18 +2,25 @@ package de.d3web.we.kdom.questionTreeNew;
 
 import de.d3web.kernel.domainModel.IDObject;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.kernel.domainModel.Rule;
+import de.d3web.kernel.domainModel.RuleFactory;
+import de.d3web.kernel.domainModel.qasets.QContainer;
+import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.error.KDOMError;
-import de.d3web.we.kdom.error.NoSuchObjectError;
-import de.d3web.we.kdom.error.ObjectAlreadyDefinedError;
+import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.NoSuchObjectError;
 import de.d3web.we.kdom.objects.QuestionnaireID;
-import de.d3web.we.kdom.questionTreeNew.QClassLine.CreateQuestionnaireHandler;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.report.CreateRelationFailed;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
 public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 
@@ -31,21 +38,40 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 	static class CreateIndication implements ReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, s);
 
-			String name = s.getOriginalText();
+			Section<QuestionnaireID> indicationSec = ((Section<QuestionnaireID>) s);
 
-			IDObject o = mgn.findQContainer(name);
-			
-			if (o != null) {
-				//TODO
+			// current DashTreeElement
+			Section<DashTreeElement> element = KnowWEObjectTypeUtils
+					.getAncestorOfType(s, new DashTreeElement());
+
+			String name = indicationSec.get().getID(indicationSec);
+
+			QContainer qc = mgn.findQContainer(name);
+
+			if (qc != null) {
+				String newRuleID = mgn.findNewIDFor(Rule.class);
+				AbstractCondition cond = Utils.createCondition(element);
+				if (cond != null) {
+					Rule r = RuleFactory.createIndicationRule(newRuleID, qc,
+							cond);
+					if (r != null) {
+						return new ObjectCreatedMessage(r.getClass() + " : "
+								+ r.getId());
+					}
+					
+				}
+				return new CreateRelationFailed(Rule.class
+						.getSimpleName());
 			} else {
-				
+
 				KDOMError.storeError(s, new NoSuchObjectError(name));
 			}
+			return null;
 		}
 
 	}

@@ -1,5 +1,6 @@
 package de.d3web.we.kdom.questionTreeNew;
 
+import de.d3web.kernel.domainModel.Answer;
 import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
 import de.d3web.kernel.domainModel.qasets.Question;
 import de.d3web.kernel.domainModel.qasets.QuestionChoice;
@@ -12,6 +13,9 @@ import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.NewObjectCreated;
+import de.d3web.we.kdom.report.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 
@@ -48,12 +52,14 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 	static class createAnswerHandler implements ReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
-
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			
+			
+			
 			if(s.getObjectType() instanceof QuestionTreeAnswerID) {
 				//"safe unsafe cast"
 				Section<QuestionTreeAnswerID> answer = (Section<QuestionTreeAnswerID>) s;
-				
+				String name = answer.get().getID(answer);
 				Section<QuestionID> questionID = answer.get().getQuestionSection(answer);
 				
 				//Section<QuestionID> questionID = ((QuestionTreeAnswerID)answer.getObjectType()).getQuestionSection(answer);
@@ -65,10 +71,13 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 				.getKBM(article, s);
 				
 				if(q instanceof QuestionChoice) {
-					mgn.addChoiceAnswer((QuestionChoice)q, s.getOriginalText());
+					Answer a = mgn.addChoiceAnswer((QuestionChoice)q, name);
+					answer.get().storeAnswer(answer, a);
+					return new NewObjectCreated(a.getClass().getSimpleName()+"  "+a.getText());
 				}
+				return new ObjectCreationError(name, this.getClass());
 			}
-			
+			return new ObjectCreationError(null, this.getClass());
 		}
 	}
 }

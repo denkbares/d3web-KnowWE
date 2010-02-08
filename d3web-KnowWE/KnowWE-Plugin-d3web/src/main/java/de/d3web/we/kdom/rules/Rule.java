@@ -45,6 +45,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.DefaultTextRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
@@ -155,7 +156,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	class RuleSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 
 			boolean lazy = false;
 			Section xml = KnowWEObjectTypeUtils.getAncestorOfType(s,
@@ -219,6 +220,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 				// update-inconstistencies
 				storeErrorMessages(article, s, null);
 			}
+			return null;
 		}
 	}
 

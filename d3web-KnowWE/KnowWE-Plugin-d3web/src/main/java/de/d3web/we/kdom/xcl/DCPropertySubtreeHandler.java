@@ -33,6 +33,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.logging.Logging;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 
@@ -50,19 +51,20 @@ import de.d3web.we.terminology.D3webReviseSubTreeHandler;
  */
 public class DCPropertySubtreeHandler extends D3webReviseSubTreeHandler {
 
-	public void reviseSubtree(KnowWEArticle article, Section s) {
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 
 		KnowledgeBaseManagement kbm = getKBM(article, s);
 
 		if (kbm == null)
-			return;
+			return null;
 
 		NamedObject obj = getNamedObject(s, kbm);
 
 		if (obj == null)
-			return;
+			return null;
 		storeMMInfo(s, obj);
 		
+		return null;
 
 	}
 

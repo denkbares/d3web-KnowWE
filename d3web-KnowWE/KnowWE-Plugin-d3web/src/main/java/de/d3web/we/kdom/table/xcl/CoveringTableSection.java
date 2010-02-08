@@ -28,6 +28,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.kopic.renderer.KopicTableSectionRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.ITable;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
@@ -53,7 +54,7 @@ public class CoveringTableSection extends AbstractKopicSection implements ITable
 	private class CoveringTableSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			
 			
 			// Set the headerline of the table as type SolutionHeaderLine
@@ -104,6 +105,7 @@ public class CoveringTableSection extends AbstractKopicSection implements ITable
 				section.setType(new EntryCellContent());
 			}
 			
+			return null;
 		}
 	}
 }

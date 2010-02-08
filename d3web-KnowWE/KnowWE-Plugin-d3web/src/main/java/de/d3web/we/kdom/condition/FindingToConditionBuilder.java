@@ -89,20 +89,8 @@ public class FindingToConditionBuilder {
 			
 			QuestionNum questionNum = (QuestionNum) kbQuest;
 			
-			if (comparator.equals("="))
-				return new CondNumEqual(questionNum, valueOf);
-			else if (comparator.equals(">"))
-				return new CondNumGreater(questionNum, valueOf);
-			else if (comparator.equals(">="))
-				return new CondNumGreaterEqual(questionNum, valueOf);
-			else if (comparator.equals("<"))
-				return new CondNumLess(questionNum, valueOf);
-			else if (comparator.equals("<="))
-				return new CondNumLessEqual(questionNum, valueOf);
-			else {
-				storeMessage(article, "Unkown comparator '" + comparator +"'.", comp);
-				return null;
-			}
+			return createCondNum(article, comp, comparator, valueOf,
+					questionNum);
 		} else {
 			if (comparator.equals("="))
 				return new CondEqual(kbQuest, kbAns);
@@ -113,6 +101,25 @@ public class FindingToConditionBuilder {
 		}
 	
 		
+	}
+
+	public static AbstractCondition createCondNum(KnowWEArticle article,
+			Section comp, String comparator, Double valueOf,
+			QuestionNum questionNum) {
+		if (comparator.equals("="))
+			return new CondNumEqual(questionNum, valueOf);
+		else if (comparator.equals(">"))
+			return new CondNumGreater(questionNum, valueOf);
+		else if (comparator.equals(">="))
+			return new CondNumGreaterEqual(questionNum, valueOf);
+		else if (comparator.equals("<"))
+			return new CondNumLess(questionNum, valueOf);
+		else if (comparator.equals("<="))
+			return new CondNumLessEqual(questionNum, valueOf);
+		else {
+			storeMessage(article, "Unkown comparator '" + comparator +"'.", comp);
+			return null;
+		}
 	}
 
 	private static Double parseNumAnswer(KnowWEArticle article, String value, Section answer) {

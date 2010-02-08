@@ -18,6 +18,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -25,20 +26,21 @@ import de.d3web.we.utils.KnowWEUtils;
 public class CreateScoresHandler implements ReviseSubTreeHandler {
 
 	@Override
-	public void reviseSubtree(KnowWEArticle article, Section s) {
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 
 		Section scoringSection = KnowWEObjectTypeUtils.getAncestorOfType(s,
 				BulletScoring.class);
 		List<String> targets = BulletScoring
 				.getScoringTargets(scoringSection);
 		
-		if(targets == null) return; 
+		if(targets == null) return null; 
 
 		String defaultValue = BulletScoring.getDefaultValue(scoringSection);
 
 		for (String string : targets) {
 			createScoringRule(article, string, defaultValue, s);
 		}
+		return null;
 
 	}
 

@@ -10,10 +10,13 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.error.KDOMError;
-import de.d3web.we.kdom.error.ObjectAlreadyDefinedError;
+import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.NewObjectCreated;
+import de.d3web.we.kdom.report.ObjectAlreadyDefinedWarning;
+import de.d3web.we.kdom.report.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
@@ -24,8 +27,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 
 		initSectionFinder();
-		
-		
+
 		QuestionnaireID qc = new QuestionnaireID();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR5));
 		qc.setSectionFinder(AllTextFinderTrimmed.getInstance());
@@ -62,7 +64,10 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 	static class CreateQuestionnaireHandler implements ReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			
+			Section<QuestionnaireID> qcSec = ((Section<QuestionnaireID> )s);
+			
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, s);
@@ -72,28 +77,35 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 			IDObject o = mgn.findQContainer(name);
 
 			if (o != null) {
-				KDOMError.storeError(s, new ObjectAlreadyDefinedError(o
-						.getClass().getSimpleName()));
+				return new ObjectAlreadyDefinedWarning(o.getClass()
+						.getSimpleName());
 			} else {
 				Section<DashTreeElement> element = KnowWEObjectTypeUtils
-				.getAncestorOfType(s, new DashTreeElement());
+						.getAncestorOfType(s, new DashTreeElement());
 				Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
 						.getDashTreeFather(element);
-				QASet parent = mgn.getKnowledgeBase()
-				.getRootQASet();
+				QASet parent = mgn.getKnowledgeBase().getRootQASet();
 				if (dashTreeFather != null) {
 					// is child of a QClass declaration => also declaration
 					Section<QClassLine> parentQclass = dashTreeFather
 							.findSuccessor(new QClassLine());
 					if (parentQclass != null) {
-						QASet localParent = mgn.findQContainer(parentQclass.getOriginalText());
-						if(localParent != null) {
+						QASet localParent = mgn.findQContainer(parentQclass
+								.getOriginalText());
+						if (localParent != null) {
 							parent = localParent;
 						}
 					}
 				}
-				
-				mgn.createQContainer(name, parent);
+
+				QContainer qc = mgn.createQContainer(name, parent);
+				if (qc != null) {
+					qcSec.get().storeQuestionnaire(qcSec, qc);
+					return new NewObjectCreated(qc.getClass().getSimpleName()
+							+ " " + qc.getText());
+				} else {
+					return new ObjectCreationError(name, this.getClass());
+				}
 			}
 		}
 

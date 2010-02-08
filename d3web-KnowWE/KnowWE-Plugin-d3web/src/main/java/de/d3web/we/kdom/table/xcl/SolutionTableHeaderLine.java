@@ -27,6 +27,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableContent;
@@ -56,17 +57,17 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 		 * 
 		 */
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 
 
-			List<Section> cells = new ArrayList<Section>();
+			List<Section<TableCell>> cells = new ArrayList<Section<TableCell>>();
 			s.findSuccessorsOfType(TableCell.class, cells);
 
-			Section tableContent = KnowWEObjectTypeUtils.getAncestorOfType(s,
+			Section<TableContent> tableContent = KnowWEObjectTypeUtils.getAncestorOfType(s,
 					TableContent.class);
 
-			for (Section section : cells) {
-				Section findChildOfType = section.findSuccessor(TableCellContent.class);
+			for (Section<TableCell> section : cells) {
+				Section<TableCellContent> findChildOfType = section.findSuccessor(TableCellContent.class);
 				if(findChildOfType == null) continue;
 				findChildOfType.setType(SolutionCellContent.getInstance());
 				String solution = null;
@@ -83,7 +84,7 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 							new SolutionColumnContext(tableContent, col, solution));
 				}
 			}
-
+			return null;
 		}
 
 	}

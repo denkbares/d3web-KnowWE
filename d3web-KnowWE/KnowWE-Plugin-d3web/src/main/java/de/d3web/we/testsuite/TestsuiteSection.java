@@ -33,6 +33,7 @@ import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -60,7 +61,7 @@ public class TestsuiteSection extends AbstractKopicSection{
 	private class TestsuiteSectionSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 	
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
@@ -96,6 +97,8 @@ public class TestsuiteSection extends AbstractKopicSection{
 							TestsuiteSection.TESTSUITEKEY, builder.getTestsuite());
 				}
 			}
+			
+			return null;
 		}
 	
 	}

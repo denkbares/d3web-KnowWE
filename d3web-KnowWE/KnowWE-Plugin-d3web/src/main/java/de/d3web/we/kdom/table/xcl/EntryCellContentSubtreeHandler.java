@@ -33,6 +33,7 @@ import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.kdom.table.TableUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
@@ -44,14 +45,14 @@ public class EntryCellContentSubtreeHandler implements ReviseSubTreeHandler {
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
-	public void reviseSubtree(KnowWEArticle article, Section s) {
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 		if (s.getOriginalText().trim().length() > 0) {
 
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 			
 			if (mgn == null) {
-				return;
+				return null;
 			}
 			
 			SingleKBMIDObjectManager mgr = new SingleKBMIDObjectManager(mgn);
@@ -63,7 +64,7 @@ public class EntryCellContentSubtreeHandler implements ReviseSubTreeHandler {
 			if(c == null) {
 				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
 				"No solution context found"));
-				return;
+				return null;
 			}
 
 			Section lineSec = KnowWEObjectTypeUtils.getAncestorOfType(s,
@@ -88,7 +89,7 @@ public class EntryCellContentSubtreeHandler implements ReviseSubTreeHandler {
 				if(question == null) {
 					KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
 					"No question found"));
-					return;
+					return null;
 				}
 
 				List<Message> messages = KnowledgeUtils.addKnowledge(mgr,
@@ -112,7 +113,10 @@ public class EntryCellContentSubtreeHandler implements ReviseSubTreeHandler {
 				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
 						"AnswerSection not found"));
 			}
+			
 		}
+		
+		return null;
 	}
 
 }

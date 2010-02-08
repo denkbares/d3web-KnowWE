@@ -38,6 +38,7 @@ import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.decisionTree.SolutionID;
+import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.logging.Logging;
@@ -65,13 +66,13 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	private class XCLHeadSubtreeHandler extends D3webReviseSubTreeHandler {
 		
 
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMError reviseSubtree(KnowWEArticle article, Section s) {
 			
 			Section father = s.getFather();
 			
 			if (!father.getObjectType().getClass().equals(XCList.class)) {
 				Logging.getInstance().log(Level.WARNING, "Expected different fathertype: XCList");
-				return;
+				return null;
 			}
 			
 			String string = s.getOriginalText().trim();
@@ -83,6 +84,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 			DefaultSubjectContext context = new DefaultSubjectContext(string);
 			ContextManager.getInstance().attachContext(father, context);
 			
+			return null;
 			
 		}
 		
