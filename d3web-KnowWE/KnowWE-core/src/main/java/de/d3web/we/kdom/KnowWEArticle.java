@@ -422,8 +422,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return nodes;
 	}
 	
-	public List<Section> getAllNodesParsingPostOrder() {
-		List<Section> nodes = new ArrayList<Section>();
+	public List<Section<? extends KnowWEObjectType>> getAllNodesParsingPostOrder() {
+		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
 		sec.getAllNodesParsingPostOrder(nodes);
 		return nodes;
 	}
@@ -438,8 +438,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	public void reviseArticle() {
-		List<Section> nodes = getAllNodesParsingPostOrder();
-		for (Section node:nodes) {
+		List<Section<? extends KnowWEObjectType>> nodes = getAllNodesParsingPostOrder();
+		for (Section<? extends KnowWEObjectType> node:nodes) {
 			node.getObjectType().reviseSubtree(this, node);
 		}
 	}

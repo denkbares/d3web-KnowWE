@@ -59,7 +59,7 @@ import de.d3web.we.utils.PairOfInts;
  * 
  */
 // TODO: vb: Section causes hundreds/thousands of compile warnings ==> use it consequent or remove Template declaration!
-public class Section<T extends KnowWEObjectType> implements Visitable, Comparable<Section<? extends KnowWEObjectType>> {
+public class Section<T extends KnowWEObjectType> implements Visitable, Comparable<Section<KnowWEObjectType>> {
 
 //	private boolean reused = false;
 	
@@ -115,7 +115,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	protected T objectType;
 	
-	protected T t;
+//	protected T t;
 
 //	 public void add(T t) {
 //	        this.t = t;
@@ -154,7 +154,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.startPosFromTmp = startPosFromTmp;
 	}
 	
-	public static <T extends KnowWEObjectType>Section<T> createTypedSection(String text, T o, Section father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded, IncludeAddress adress, T type) {
+	public static <T extends KnowWEObjectType>Section<T> createTypedSection(String text, T o, Section<? extends KnowWEObjectType> father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded, IncludeAddress adress, T type) {
         return new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded,adress);
     }
 
@@ -166,8 +166,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param index
 	 * @return
 	 */
-	public Section getChildSectionAtPosition(int index) {
-		for (Section child : this.children) {
+	public Section<? extends KnowWEObjectType> getChildSectionAtPosition(int index) {
+		for (Section<?> child : this.children) {
 			if(child.getOffSetFromFatherText() <= index && index < child.getOffSetFromFatherText() + child.getOriginalText().length()) {
 				return child;
 			}
@@ -191,7 +191,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 *          is the article this section is hooked in
 	 * @param address
 	 */
-	 private Section(String text, T objectType, Section father,
+	 private Section(String text, T objectType, Section<? extends KnowWEObjectType> father,
 			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
 			boolean isExpanded, IncludeAddress address) {
 		
@@ -279,13 +279,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.article = article;
 	}
 
-	/**
-	 * don't allow Sections without a KnowWEArticle and ids
-	 */
-	private Section() {
 
-	}
-	
 	/*
 	 * verbalizes this node
 	 */
@@ -301,7 +295,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 * 
 	 */
-	public void addChild(Section s) {
+	public void addChild(Section<?> s) {
 		if (s.getOffSetFromFatherText() == -1) {
 			// WEAK! TODO: Find other way..
 			if (s.father != null) {
@@ -355,9 +349,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param filter
 	 *            the filter to be matched
 	 */
-	public List<Section> getChildren(SectionFilter filter) {
-		ArrayList<Section> list = new ArrayList<Section>();
-		for (Section current : getChildren()) {
+	public List<Section<? extends KnowWEObjectType>> getChildren(SectionFilter filter) {
+		ArrayList<Section<? extends KnowWEObjectType>> list = new ArrayList<Section<? extends KnowWEObjectType>>();
+		for (Section<? extends KnowWEObjectType> current : getChildren()) {
 			if (filter.accept(current))
 				list.add(current);
 		}
@@ -373,8 +367,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 	
-	public void getAllNodesParsingPostOrder(List<Section> nodes) {
-		for (Section node:this.getChildrenParsingOrder()) {
+	public void getAllNodesParsingPostOrder(List<Section<? extends KnowWEObjectType>> nodes) {
+		for (Section<? extends KnowWEObjectType> node:this.getChildrenParsingOrder()) {
 			if (node.isExpanded) {
 				node.getAllNodesPreOrder(nodes);
 			} else {
@@ -384,10 +378,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		nodes.add(this);
 	}
 	
-	public void getAllNodesParsingPreOrderWithoutIncludes(List<Section> nodes) {
+	public void getAllNodesParsingPreOrderWithoutIncludes(List<Section<? extends KnowWEObjectType>> nodes) {
 		nodes.add(this);
 		if (!(objectType instanceof Include)) {
-			for (Section node:this.getChildrenParsingOrder()) {
+			for (Section<? extends KnowWEObjectType> node:this.getChildrenParsingOrder()) {
 				if (node.isExpanded) {
 					node.getAllNodesPreOrder(nodes);
 				} else {
@@ -397,9 +391,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 	
-	public void getAllNodesParsingPreOrder(List<Section> nodes) {
+	public void getAllNodesParsingPreOrder(List<Section<? extends KnowWEObjectType>> nodes) {
 		nodes.add(this);
-		for (Section node:this.getChildrenParsingOrder()) {
+		for (Section<? extends KnowWEObjectType> node:this.getChildrenParsingOrder()) {
 			if (node.isExpanded) {
 				node.getAllNodesPreOrder(nodes);
 			} else {
@@ -552,13 +546,13 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param text
 	 * @return
 	 */
-	public boolean hasRightSonOfType(Class class1, String text) {
+	public boolean hasRightSonOfType(Class<? extends KnowWEObjectType> class1, String text) {
 		if(this.getObjectType() instanceof EmbracedType) {
 			if(this.getFather().hasRightSonOfType(class1, text)) {
 				return true;
 			}
 		}
-		for (Section child : getChildren()) {
+		for (Section<? extends KnowWEObjectType> child : getChildren()) {
 			if (child.getObjectType().isAssignableFromType(class1)) {
 				if (this.originalText.indexOf(text) < child
 						.getOffSetFromFatherText()) {
@@ -577,13 +571,13 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param text
 	 * @return
 	 */
-	public boolean hasLeftSonOfType(Class class1, String text) {
+	public boolean hasLeftSonOfType(Class<? extends KnowWEObjectType> class1, String text) {
 		if(this.getObjectType() instanceof EmbracedType) {
 			if(this.getFather().hasLeftSonOfType(class1, text)) {
 				return true;
 			}
 		}
-		for (Section child : getChildren()) {
+		for (Section<? extends KnowWEObjectType> child : getChildren()) {
 			if (child.getObjectType().isAssignableFromType(class1)) {
 				if (this.originalText.indexOf(text) > child
 						.getOffSetFromFatherText()) {
@@ -658,7 +652,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 	
 	@Override
-	public int compareTo(Section o) {
+	public int compareTo(Section<KnowWEObjectType> o) {
 		return Integer.valueOf(this.getOffSetFromFatherText())
 				.compareTo(Integer.valueOf(o.getOffSetFromFatherText()));
 	}
@@ -672,18 +666,18 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @return
 	 */
 	@Deprecated
-	public Section getNode(String nodeID) {
+	public Section<? extends KnowWEObjectType> getNode(String nodeID) {
 		if (this.id.equals(nodeID))
 			return this;
-		for (Section child : getChildren()) {
-			Section s = child.getNode(nodeID);
+		for (Section<? extends KnowWEObjectType> child : getChildren()) {
+			Section<? extends KnowWEObjectType> s = child.getNode(nodeID);
 			if (s != null)
 				return s;
 		}
 		return null;
 	}
 
-	public void removeChild(Section s) {
+	public void removeChild(Section<? extends KnowWEObjectType> s) {
 		this.children.remove(s);
 
 	}
@@ -694,25 +688,25 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param id2
 	 * @return
 	 */
-	public Section findChild(String id2) {
+	public Section<? extends KnowWEObjectType> findChild(String id2) {
 		if (this.id.equals(id2))
 			return this;
-		for (Section child : getChildren()) {
-			Section s = child.findChild(id2);
+		for (Section<? extends KnowWEObjectType> child : getChildren()) {
+			Section<? extends KnowWEObjectType> s = child.findChild(id2);
 			if (s != null)
 				return s;
 		}
 		return null;
 	}
 
-	public Section findSmallestNodeContaining(int start, int end) {
-		Section s = null;
+	public Section<? extends KnowWEObjectType> findSmallestNodeContaining(int start, int end) {
+		Section<? extends KnowWEObjectType> s = null;
 		int nodeStart = this.getAbsolutePositionStartInArticle();
 		if (nodeStart <= start && nodeStart + originalText.length() >= end
 				&& (!(this.getObjectType() instanceof PlainText))) {
 			s = this;
-			for (Section sec : getChildren()) {
-				Section sub = sec.findSmallestNodeContaining(start, end);
+			for (Section<? extends KnowWEObjectType> sec : getChildren()) {
+				Section<? extends KnowWEObjectType> sub = sec.findSmallestNodeContaining(start, end);
 				if (sub != null && (!(s.getObjectType() instanceof PlainText))) {
 					s = sub;
 				}
@@ -721,13 +715,13 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return s;
 	}
 
-	public Section findSmallestNodeContaining(String text) {
-		Section s = null;
+	public Section<?> findSmallestNodeContaining(String text) {
+		Section<?> s = null;
 		if (this.getOriginalText().contains(text)
 				&& (!(this.getObjectType() instanceof PlainText))) {
 			s = this;
-			for (Section sec : getChildren()) {
-				Section sub = sec.findSmallestNodeContaining(text);
+			for (Section<?> sec : getChildren()) {
+				Section<?> sub = sec.findSmallestNodeContaining(text);
 				if (sub != null && (!(s.getObjectType() instanceof PlainText))) {
 					s = sub;
 				}

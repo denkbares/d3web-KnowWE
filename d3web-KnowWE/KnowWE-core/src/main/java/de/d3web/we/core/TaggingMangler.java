@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.tagging.TagsContent;
 import de.d3web.we.search.GenericSearchResult;
@@ -96,7 +97,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 				output += temptag + " ";
 			}
 			output=output.trim();
-			Section keep = tagslist.get(0);
+			Section<TagsContent> keep = tagslist.get(0);
 			if (multiple) {
 				for (int i = 1; i < tagslist.size(); i++) {
 					article.getSection().removeChild(tagslist.get(i));
