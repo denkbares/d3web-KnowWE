@@ -31,6 +31,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.TextLine;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -81,8 +82,8 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 	private class TableLineHandler implements ReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
-			Section colHeaderCell = s.findSuccessor(new TableCell());
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			Section<TableCell> colHeaderCell = s.findSuccessor(new TableCell());
 			if (colHeaderCell != null) {
 
 				Section content = colHeaderCell
@@ -92,6 +93,7 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 					content.setType(colHeaderType);
 				}
 			}
+			return null;
 		}
 	}
 }

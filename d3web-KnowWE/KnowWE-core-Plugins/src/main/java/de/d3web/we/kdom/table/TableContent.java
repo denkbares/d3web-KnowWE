@@ -24,6 +24,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
 
 /**
@@ -46,12 +47,13 @@ public class TableContent extends XMLContent {
 	private class TableSubTreeHandler implements ReviseSubTreeHandler {
 
 		@Override
-		public void reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			Section headerLine = s.findSuccessor(new TableLine());
 			AbstractKnowWEObjectType solutionHeaderType = new TableHeaderLine();
 			if (headerLine != null) {
 				headerLine.setType(solutionHeaderType);
 			}
+			return null;
 		}
 	}
 }
