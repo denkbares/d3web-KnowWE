@@ -42,8 +42,10 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
+import de.d3web.we.kdom.decisionTree.QClassID;
 import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
@@ -405,6 +407,57 @@ public class RefactoringSession {
 		});
 		String oldName = gsonFormMap.get("selectOldName")[0];
 		return oldName;
+	}
+	
+	public String findNewName() {
+		//FIXME doppelte rausfiltern
+		performNextAction(new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				StringBuffer html = new StringBuffer();
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Wählen Sie den neuen Namen des gewählten Objekts:</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objektname</label>"
+						+ "<input type='text' name='selectNewName' class='refactoring'>");
+				html.append("</div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		String newName = gsonFormMap.get("selectNewName")[0];
+		return newName;
+	}
+	
+	public <T extends AbstractKnowWEObjectType> List<Section<? extends AbstractKnowWEObjectType>> findRenamingList(T type, String oldName) {
+		List<Section<? extends AbstractKnowWEObjectType>> filteredList = new ArrayList<Section<? extends AbstractKnowWEObjectType>>();
+		SortedSet<String> topics = new TreeSet<String>();
+		for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
+			topics.add(it.next().getTitle());
+		}
+		for(Iterator<String> it = topics.iterator(); it.hasNext();) {
+			KnowWEArticle article = manager.getArticle(it.next());
+			Section<?> articleSection = article.getSection();
+			List<Section<? extends AbstractKnowWEObjectType>> fullList = new ArrayList<Section<? extends AbstractKnowWEObjectType>>();
+			List<Section<T>> objects = new ArrayList<Section<T>>();
+			articleSection.findSuccessorsOfType(type, objects);
+			fullList.addAll(objects);
+			if (type instanceof QuestionnaireID) {
+				List<Section<QClassID>> objects2 = new ArrayList<Section<QClassID>>();
+				articleSection.findSuccessorsOfType(new QClassID(), objects2);
+				fullList.addAll(objects2);
+			}
+			for (Section<? extends AbstractKnowWEObjectType> object : fullList) {
+				if (object.getOriginalText().equals(oldName)){
+					filteredList.add(object);
+				}
+			}
+		}
+		return filteredList;
+	}
+	
+	public void renameElement(Section<? extends AbstractKnowWEObjectType> section, String newName){
+		replaceSection(section, newName);
 	}
 	
 	

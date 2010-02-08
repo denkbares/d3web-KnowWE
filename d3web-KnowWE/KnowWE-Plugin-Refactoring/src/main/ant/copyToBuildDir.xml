@@ -17,7 +17,7 @@ So no need to build after changes in these files. Reload the page is sufficient
 			<fileset dir="${knowweDir}/src/main/webapp/KnowWEExtension/scripts">
 				<include name="*.js" />
 			</fileset>
-			<fileset dir="${refactoringDir}/src/main/webapp/KnowWEExtension/scripts">
+			<fileset dir="${refactoringDir}/src/main/resources/webapp/KnowWEExtension/scripts">
 				<include name="*.js" />
 			</fileset>
 		</copy>
