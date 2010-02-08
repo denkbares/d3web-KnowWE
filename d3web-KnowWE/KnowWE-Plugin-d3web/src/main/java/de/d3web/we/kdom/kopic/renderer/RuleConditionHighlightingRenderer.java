@@ -119,8 +119,10 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 				}
 			}
 		}
-		
-		this.renderConditionLine(article, sec, rule, xpsCase, user, result);
+		if (rule != null)
+			this.renderConditionLine(article, sec, rule, xpsCase, user, result);
+		else
+			result.append(sec.getOriginalText());
 	}
 
 	/**
