@@ -33,6 +33,7 @@ import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
+import com.ecyrd.jspwiki.content.PageRenamer;
 
 import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
@@ -42,9 +43,10 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
+import de.d3web.we.kdom.Annotation.FindingAnswer;
+import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.decisionTree.QClassID;
 import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.objects.QuestionID;
@@ -369,7 +371,8 @@ public class RefactoringSession {
 		return type;
 	}
 	
-	public <T extends AbstractKnowWEObjectType> String findOldName(final T type) {
+	// TODO bereits hier alternative Typen berücksichtigen (QClassID, QuestionnaireID)
+	public <T extends AbstractKnowWEObjectType> String findObjectID(final T type) {
 		//FIXME doppelte rausfiltern
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
@@ -383,20 +386,16 @@ public class RefactoringSession {
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Wählen Sie den Namen des Objekts mit dem Typ <strong>" + type.getName() + "</strong>:</p></div>"
 						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objektname</label>"
-						+ "<select name='selectOldName' class='refactoring'>");
+						+ "<select name='selectObjectID' class='refactoring'>");
 				for(Iterator<String> it = topics.iterator(); it.hasNext();) {
 					KnowWEArticle article = manager.getArticle(it.next());
 					Section<?> articleSection = article.getSection();
 					List<Section<T>> objects = new ArrayList<Section<T>>();
 					articleSection.findSuccessorsOfType(type, objects);
 					for (Section<?> object : objects) {
-						String name;
-						if(type instanceof KnowWEArticle) {
-							name = object.getId();
-						} else {
-							name = object.getOriginalText();
-						}
-						html.append("<option value='" + name + "'>Seite: " + article.getTitle() + " - Objekt: " 
+						String name = (type instanceof KnowWEArticle) ? object.getId() : object.getOriginalText();
+						String question = (type instanceof QuestionTreeAnswerID) ? " - Frage: " + findQuestion(object.getId()).getOriginalText() : "";
+						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
 								+ name + "</option>");
 					}
 				}
@@ -405,8 +404,14 @@ public class RefactoringSession {
 				return html.toString();
 			}
 		});
-		String oldName = gsonFormMap.get("selectOldName")[0];
-		return oldName;
+		String objectID = gsonFormMap.get("selectObjectID")[0];
+		return objectID;
+	}
+	
+	private Section<QuestionID> findQuestion(String answerID) {
+		Section <?> answerSection = manager.findNode(answerID);
+		// TODO verbessern
+		return answerSection.getFather().getFather().getFather().getFather().getFather().findSuccessor(new QuestionID());
 	}
 	
 	public String findNewName() {
@@ -429,37 +434,97 @@ public class RefactoringSession {
 		return newName;
 	}
 	
-	public <T extends AbstractKnowWEObjectType> List<Section<? extends AbstractKnowWEObjectType>> findRenamingList(T type, String oldName) {
+	
+	public <T extends AbstractKnowWEObjectType> List<Section<? extends AbstractKnowWEObjectType>> findRenamingList(T type, String objectID) {
+		return findRenamingList(type, objectID, null);
+	}
+	
+	public <T extends AbstractKnowWEObjectType> List<Section<? extends AbstractKnowWEObjectType>> findRenamingList(T type, String objectID, String newName) {
+		List<Section<? extends AbstractKnowWEObjectType>> fullList = new ArrayList<Section<? extends AbstractKnowWEObjectType>>();
 		List<Section<? extends AbstractKnowWEObjectType>> filteredList = new ArrayList<Section<? extends AbstractKnowWEObjectType>>();
-		SortedSet<String> topics = new TreeSet<String>();
-		for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
-			topics.add(it.next().getTitle());
-		}
-		for(Iterator<String> it = topics.iterator(); it.hasNext();) {
-			KnowWEArticle article = manager.getArticle(it.next());
-			Section<?> articleSection = article.getSection();
-			List<Section<? extends AbstractKnowWEObjectType>> fullList = new ArrayList<Section<? extends AbstractKnowWEObjectType>>();
-			List<Section<T>> objects = new ArrayList<Section<T>>();
-			articleSection.findSuccessorsOfType(type, objects);
-			fullList.addAll(objects);
-			if (type instanceof QuestionnaireID) {
-				List<Section<QClassID>> objects2 = new ArrayList<Section<QClassID>>();
-				articleSection.findSuccessorsOfType(new QClassID(), objects2);
-				fullList.addAll(objects2);
+		if (type instanceof QuestionTreeAnswerID) {
+			Section<QuestionID> question = findQuestion(objectID);
+			List<Section<QuestionTreeAnswerID>> answers = new LinkedList<Section<QuestionTreeAnswerID>>();
+			// TODO verbessern
+			question.getFather().getFather().getFather().getFather().findSuccessorsOfType(new QuestionTreeAnswerID(), 5 , answers);
+			fullList.addAll(answers);
+			// hole alle FindingQuestion's welche den gleichen getOriginalText() haben wie die Question, zu welcher die QuestionTreeAnswerID
+			// gehört
+			List<Section<? extends AbstractKnowWEObjectType>> findingQuestions = findRenamingList(new FindingQuestion(), question.getId());
+			// bestimme dafür die passenden Antworten
+			for (Section<? extends AbstractKnowWEObjectType> questionSection : findingQuestions) {
+				Section<? extends AbstractKnowWEObjectType> answer = questionSection.getFather().findSuccessor(new FindingAnswer());
+				fullList.add(answer);
 			}
-			for (Section<? extends AbstractKnowWEObjectType> object : fullList) {
-				if (object.getOriginalText().equals(oldName)){
-					filteredList.add(object);
+		} else {
+			SortedSet<String> topics = new TreeSet<String>();
+			for (Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
+				topics.add(it.next().getTitle());
+			}
+			for (Iterator<String> it = topics.iterator(); it.hasNext();) {
+				KnowWEArticle article = manager.getArticle(it.next());
+				Section<?> articleSection = article.getSection();
+				List<Section<T>> objects = new ArrayList<Section<T>>();
+				articleSection.findSuccessorsOfType(type, objects);
+				fullList.addAll(objects);
+				if (type instanceof QuestionnaireID || type instanceof QuestionID) {
+					List<Section<QClassID>> objects2 = new ArrayList<Section<QClassID>>();
+					articleSection.findSuccessorsOfType(new QClassID(), objects2);
+					fullList.addAll(objects2);
 				}
+				if (type instanceof QuestionID) {
+					List<Section<FindingQuestion>> objects2 = new ArrayList<Section<FindingQuestion>>();
+					articleSection.findSuccessorsOfType(new FindingQuestion(), objects2);
+					fullList.addAll(objects2);
+				}
+				// FIXME Solutions müssen ebenfalls behandelt werden!
+			}
+		}
+		for (Section<? extends AbstractKnowWEObjectType> object : fullList) {
+			String name = (newName != null) ? newName : manager.findNode(objectID).getOriginalText();
+			if (object.getOriginalText().equals(name)) {
+				filteredList.add(object);
 			}
 		}
 		return filteredList;
 	}
-	
-	public void renameElement(Section<? extends AbstractKnowWEObjectType> section, String newName){
-		replaceSection(section, newName);
+
+	public <T extends AbstractKnowWEObjectType> void renameElement(Section<? extends AbstractKnowWEObjectType> section, String newName, T type){
+		// FIXME Report und Undo von umbenannten Wiki-Seiten, include-Referenzen mit umbenennen
+		if (type instanceof KnowWEArticle) {
+			PageRenamer pr = new PageRenamer();
+			try {
+				WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
+				WikiPage page = we.getPage(section.getId());
+				WikiContext wc = new WikiContext(we, page);
+				pr.renamePage(wc, section.getId(), newName, true);
+			} catch (WikiException e) {
+				// FIXME Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			replaceSection(section, newName);
+		}
 	}
 	
+	// TODO die Refactoring-Session muss noch anständig terminiert werden (dies gilt auch für Sessions, die durch eine warning oder einen error
+	// unterbrochen wurden
+	public void printExistingElements(final List<Section<? extends AbstractKnowWEObjectType>> existingElements) {
+		performNextAction(new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameterMap) {
+				StringBuffer html = new StringBuffer();
+				html.append("<br />Das Refactoring kann nicht durchgeführt werden, da es Konflikte mit folgenden Sektionen gibt:<br /><br />");
+				for (Section<? extends AbstractKnowWEObjectType> section: existingElements) {
+					html.append("<br />ID: " + section.getId() + "<br />");
+					html.append("Inhalt: " + section.getOriginalText() + "<br />");
+				}
+				html.append("<fieldset><form name='refactoringForm'><div>"
+						+ "<input type='button' value='Abbrechen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+	}
 	
 	// HILFSMETHODEN
 	
