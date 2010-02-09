@@ -21,14 +21,19 @@
 package de.d3web.we.kdom.basic;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
 
 public class TextLine extends DefaultAbstractKnowWEObjectType {	
 	
 	public TextLine() {
+		this(LineContent.getInstance());
+	}
+	
+	public TextLine(KnowWEObjectType lineContent) {
 		this.setNumberedType(true);
 		childrenTypes.add(new LineBreak());
-		childrenTypes.add(new LineContent());
+		childrenTypes.add(lineContent);
 		sectionFinder = LineSectionFinder.getInstance();
 	}
 	

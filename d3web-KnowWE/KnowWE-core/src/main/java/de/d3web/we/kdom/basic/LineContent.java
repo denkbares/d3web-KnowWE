@@ -26,6 +26,17 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
 public class LineContent extends DefaultAbstractKnowWEObjectType{
 
+	private static LineContent instance = null;
+	
+	public static LineContent getInstance() {
+		if (instance == null) {
+			instance = new LineContent();
+			
+		}
+
+		return instance;
+	}
+	
 	@Override
 	protected void init() {
 		this.sectionFinder = new AllTextSectionFinder();
