@@ -161,9 +161,8 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
 		resultBuffy.append(" <table class=\"wikitable\" >");
 
-		resultBuffy
-				.append(" <tr>  <th align=\"left\">Page</th>    ");
-		//resultBuffy.append(" <th align=\"left\">Score</th>  </tr>");
+		resultBuffy.append(" <tr>  <th align=\"left\">Page</th>    ");
+		resultBuffy.append(" <th align=\"left\">Context</th>  </tr>");
 
 		for (GenericSearchResult genericSearchResult : results) {
 
@@ -180,7 +179,11 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 			//resultBuffy.append("<td><span class=\"gbar\">"
 			//		+ genericSearchResult.getScore() + "</span> </td>");
 
-			// resultBuffy.append(genericSearchResult.getContexts()[0]);
+			resultBuffy.append("<td>");
+			if (genericSearchResult.getContexts().length != 0)
+				resultBuffy.append(genericSearchResult.getContexts()[0]);
+			resultBuffy.append("</td>");
+			
 			resultBuffy.append("</tr>");
 		}
 
