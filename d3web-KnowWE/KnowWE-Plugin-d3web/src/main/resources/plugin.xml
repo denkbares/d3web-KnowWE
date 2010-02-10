@@ -495,5 +495,15 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+		id="ReRenderQuestionSheetAction">
+		<parameter id="class"
+			value="de.d3web.we.action.ReRenderQuestionSheetAction" />
+		<parameter id="name" value="ReRenderQuestionSheetAction" />
+		<parameter id="description" value="KnowWEAction ReRenderQuestionSheetAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
 	
 </plugin>
