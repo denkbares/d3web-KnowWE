@@ -79,6 +79,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 			buffy.append(doOverview());
 		} else {
 			buffy.append("<div id=\"objectinfo-panel\" class=\"panel\"><h3>" + rb.getString("KnowWE.ObjectInfoTagHandler.info_for") + " <em>" + html_escape(object) + "</em></h3>");
+			buffy.append(rb.getString("KnowWE.ObjectInfoTagHandler.newPage")+" <a href='Edit.jsp?page="+object+"'>"+object+"</a>");
 			buffy.append(doObject(object, web, type, fuzzy, sortOrder));
 			buffy.append("</div>");
 		}
@@ -92,6 +93,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		
 		buffy.append("<div id=\"objectinfo-panel\" class=\"panel\"><h3>" + rb.getString("KnowWE.ObjectInfoTagHandler.look_up") + "</em></h3>");
 
+		
+		
 		buffy.append("<form action=\"\" method=\"get\">");
 		buffy.append("<input type=\"hidden\" name=\"page\" value=\"" + urlencode(topic) + "\" />");
 		buffy.append("<input type=\"text\" name=\"objectname\" /> ");
