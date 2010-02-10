@@ -51,7 +51,6 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 
 /**
- * 
  *
  * @author Reinhard Hatko
  * Created on: 12.10.2009
@@ -59,6 +58,7 @@ import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandler {
 	
 	
+	private static final String FLOWCHART_QUESTIONNAIRE_NAME = "Questionnaire";
 	public static final String STARTNODES_QUESTION_NAME = "Start";
 	public static final String EXITNODES_QUESTION_NAME = "Exit";
 
@@ -93,7 +93,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 			name = "unnamed";
 		
 		
-		String id = attributeMap.get("id");
+		String id = attributeMap.get("fcid");
 		
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, new ArrayList<IEdge>());
 		
@@ -107,12 +107,13 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 		
 	}
 
+	
+	
 	private void createTerminology(Flow flow, KnowledgeBaseManagement kbm) {
-
 		
 		
 		QContainer flowQC;
-		String name = flow.getName() + "_Questionnaire";
+		String name = flow.getName() + "_" + FLOWCHART_QUESTIONNAIRE_NAME;
 		
 		//reuse QContainer if already defined
 		flowQC = kbm.findQContainer(name);
@@ -127,7 +128,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 				
 		createQuestion(flowQC, flow.getName() + "_" + EXITNODES_QUESTION_NAME, flow.getExitNodes(), kbm);
 		
-		flow.setTerminology(flowQC);
+//		flow.setTerminology(flowQC);
 		
 	}
 
