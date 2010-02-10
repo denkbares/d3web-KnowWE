@@ -45,7 +45,7 @@ public class DefaultMarkupSubtreeHandler implements ReviseSubTreeHandler {
 		for (Section<AnnotationType> annotationSection : subSections) {
 			// check annotations pattern
 			Annotation annotation = annotationSection.getObjectType().getAnnotation();
-			if (annotation.matches(annotationSection.getOriginalText())) {
+			if (!annotation.matches(annotationSection.getOriginalText())) {
 				String name = annotation.getName();
 				Message message = new Message(Message.ERROR, "The value of annotation @"+name+" is invalid.", "", -1, "");
 				DefaultMarkupType.addErrorMessage(markupSection, message);
