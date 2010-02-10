@@ -64,7 +64,7 @@ public class DialogLinkTagHandler extends AbstractTagHandler {
 				+ "a target=kwiki-dialog href="
 				+ prefix
 				+ (prefix.length() != 0 ? "/" : "")
-				+ "KnowWE.jsp?renderer=KWiki_dialog&KWikisessionid="
+				+ "KnowWE.jsp?action=RequestDialogRenderer&KWikisessionid="
 				+ URLEncoder.encode(actualID)
 				+ "&KWikiWeb=default_web&KWikiUser="
 				+ user
