@@ -45,18 +45,22 @@ public class ObjectInfoLinkRenderer extends KnowWEDomRenderer {
 		renderer.render(article, sec, user, b);
 		
 		
-		boolean pageExists = KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(sec.getOriginalText());
+		String objectName = sec.getOriginalText();
+		boolean pageExists = KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(objectName);
 		
 		if (pageExists) {			
 			string.append(KnowWEUtils.maskHTML("<a href=\"Wiki.jsp?page="
-								+ sec.getOriginalText() + "\">"
+								+ objectName + "\">"
 								+ b.toString()
-								+ "</a>"));
+								+ "</a>"+" <a href=\"Wiki.jsp?page="
+								+ objectName + "\">"
+
+								+ "<img style='vertical-align:middle;' title='-> Wikipage "+objectName+"' src='KnowWEExtension/images/dt_icon_premises.gif' height='11' /></a>"));
 		} else {
 			// TODO: Maybe make the page name non-hardcoded
 			string.append(KnowWEUtils.maskHTML(
 								"<a href=\"Wiki.jsp?page=ObjectInfoPage&objectname="
-								+ URLEncoder.encode(sec.getOriginalText())
+								+ URLEncoder.encode(objectName)
 								+ "\">"
 								+ b.toString()
 								+ "</a>"));
