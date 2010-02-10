@@ -22,6 +22,7 @@ package de.d3web.we.kdom.renderer;
 
 import java.net.URLEncoder;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -43,9 +44,12 @@ public class ObjectInfoLinkRenderer extends KnowWEDomRenderer {
 		StringBuilder b = new StringBuilder();
 		renderer.render(article, sec, user, b);
 		
-		if (sec.getTitle().equals("ObjectInfoPage")) {			
+		
+		boolean pageExists = KnowWEEnvironment.getInstance().getWikiConnector().doesPageExist(sec.getOriginalText());
+		
+		if (pageExists) {			
 			string.append(KnowWEUtils.maskHTML("<a href=\"Wiki.jsp?page="
-								+ sec.getTitle() + "\">"
+								+ sec.getOriginalText() + "\">"
 								+ b.toString()
 								+ "</a>"));
 		} else {
