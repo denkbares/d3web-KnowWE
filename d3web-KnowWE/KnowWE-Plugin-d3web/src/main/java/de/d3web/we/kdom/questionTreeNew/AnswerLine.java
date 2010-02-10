@@ -51,6 +51,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
 	static class createAnswerHandler implements ReviseSubTreeHandler {
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			

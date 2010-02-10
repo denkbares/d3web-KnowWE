@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.or.jms.MessageRenderer;
 
 import de.d3web.report.Message;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
