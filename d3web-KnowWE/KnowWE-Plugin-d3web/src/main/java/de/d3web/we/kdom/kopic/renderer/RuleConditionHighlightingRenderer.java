@@ -23,9 +23,9 @@ package de.d3web.we.kdom.kopic.renderer;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.kernel.XPSCase;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.Rule;
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.session.XPSCase;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;

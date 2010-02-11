@@ -31,16 +31,16 @@ import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
-import de.d3web.kernel.domainModel.Answer;
-import de.d3web.kernel.domainModel.IDObject;
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.domainModel.qasets.Question;
-import de.d3web.kernel.supportknowledge.DCElement;
-import de.d3web.kernel.supportknowledge.DCMarkup;
-import de.d3web.kernel.supportknowledge.MMInfoObject;
-import de.d3web.kernel.supportknowledge.MMInfoStorage;
-import de.d3web.kernel.supportknowledge.MMInfoSubject;
-import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.core.terminology.Answer;
+import de.d3web.core.terminology.IDObject;
+import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.terminology.Question;
+import de.d3web.core.terminology.info.DCElement;
+import de.d3web.core.terminology.info.DCMarkup;
+import de.d3web.core.terminology.info.MMInfoObject;
+import de.d3web.core.terminology.info.MMInfoStorage;
+import de.d3web.core.terminology.info.MMInfoSubject;
+import de.d3web.core.terminology.info.Property;
 import de.d3web.report.Message;
 
 

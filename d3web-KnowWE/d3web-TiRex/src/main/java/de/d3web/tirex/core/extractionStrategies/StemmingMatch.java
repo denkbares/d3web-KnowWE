@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import tartarus.snowball.ext.englishStemmer;
-import de.d3web.kernel.domainModel.IDObject;
+import de.d3web.core.terminology.IDObject;
 import de.d3web.tirex.core.OriginalMatchAndStrategy;
 import de.d3web.tirex.core.TiRexUtilities;
 

@@ -20,9 +20,9 @@
 
 package de.d3web.we.kdom.kopic.renderer;
 
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.terminology.Question;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;

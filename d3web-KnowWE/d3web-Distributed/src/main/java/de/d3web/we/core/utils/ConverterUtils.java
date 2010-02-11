@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.kernel.XPSCase;
-import de.d3web.kernel.domainModel.IDObject;
-import de.d3web.kernel.domainModel.answers.AnswerNum;
+import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.values.AnswerNum;
+import de.d3web.core.terminology.IDObject;
 
 public class ConverterUtils {
 

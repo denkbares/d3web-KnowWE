@@ -24,9 +24,9 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.qasets.QContainer;
-import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.terminology.QContainer;
+import de.d3web.core.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.logging.Logging;
 

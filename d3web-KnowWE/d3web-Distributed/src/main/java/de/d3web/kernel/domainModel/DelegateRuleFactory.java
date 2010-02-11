@@ -22,7 +22,10 @@ package de.d3web.kernel.domainModel;
 
 import java.util.List;
 
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.terminology.NamedObject;
 import de.d3web.kernel.psMethods.delegate.ActionDelegate;
 import de.d3web.kernel.psMethods.delegate.ActionInstantDelegate;
 

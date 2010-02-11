@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.psMethods.MethodKind;
-import de.d3web.kernel.psMethods.heuristic.PSMethodHeuristic;
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.MethodKind;
+import de.d3web.core.terminology.Diagnosis;
+import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;

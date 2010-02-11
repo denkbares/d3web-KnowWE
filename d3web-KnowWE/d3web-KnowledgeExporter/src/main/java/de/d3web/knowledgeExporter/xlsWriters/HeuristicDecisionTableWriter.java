@@ -27,19 +27,19 @@ import jxl.Cell;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WriteException;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.domainModel.ruleCondition.CondAnd;
-import de.d3web.kernel.domainModel.ruleCondition.CondDState;
-import de.d3web.kernel.domainModel.ruleCondition.CondNot;
-import de.d3web.kernel.domainModel.ruleCondition.CondOr;
-import de.d3web.kernel.domainModel.ruleCondition.NonTerminalCondition;
-import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
-import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.CondAnd;
+import de.d3web.core.inference.condition.CondDState;
+import de.d3web.core.inference.condition.CondNot;
+import de.d3web.core.inference.condition.CondOr;
+import de.d3web.core.inference.condition.NonTerminalCondition;
+import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.kernel.verbalizer.CondVerbalization;
 import de.d3web.kernel.verbalizer.NonTerminalCondVerbalization;
 import de.d3web.kernel.verbalizer.TerminalCondVerbalization;
 import de.d3web.knowledgeExporter.KnowledgeManager;
+import de.d3web.scoring.ActionHeuristicPS;
 
 public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 

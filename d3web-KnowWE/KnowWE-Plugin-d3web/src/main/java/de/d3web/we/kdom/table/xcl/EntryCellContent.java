@@ -22,11 +22,8 @@ package de.d3web.we.kdom.table.xcl;
 
 import java.util.Collection;
 
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.kernel.verbalizer.ConditionVerbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
 import de.d3web.report.Message;
@@ -38,6 +35,9 @@ import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.XCLRelation;
+import de.d3web.xcl.inference.PSMethodXCL;
 
 /**
  * @author jochen

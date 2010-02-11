@@ -29,22 +29,22 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.domainModel.QASet;
-import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.domainModel.qasets.Question;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.domainModel.ruleCondition.CondDState;
-import de.d3web.kernel.domainModel.ruleCondition.CondQuestion;
-import de.d3web.kernel.domainModel.ruleCondition.NonTerminalCondition;
-import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
-import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
-import de.d3web.kernel.psMethods.nextQASet.ActionIndication;
-import de.d3web.kernel.psMethods.nextQASet.ActionNextQASet;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.CondDState;
+import de.d3web.core.inference.condition.CondQuestion;
+import de.d3web.core.inference.condition.NonTerminalCondition;
+import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.terminology.QASet;
+import de.d3web.core.terminology.Question;
+import de.d3web.indication.ActionIndication;
+import de.d3web.indication.ActionNextQASet;
+import de.d3web.scoring.ActionHeuristicPS;
 
 /**
  * The class KnowledgeManager provides the KnowledgeWriters with
@@ -204,13 +204,14 @@ public class KnowledgeManager {
 		
 		if (!filterOn) {
 			Set<QASet> s = new HashSet<QASet>();
-			Iterator<QASet> iter = kb.getQASetIterator();
-			for (Iterator<QASet> iterator = iter; iterator.hasNext();) {
-				QASet element = iterator.next();
-				if (element != null && !(element instanceof Question)) {
-					s.add(element);
-				}
-			}
+			s.addAll(kb.getQContainers());
+//			Iterator<QASet> iter = kb.getQASetIterator();
+//			for (Iterator<QASet> iterator = iter; iterator.hasNext();) {
+//				QASet element = iterator.next();
+//				if (element != null && !(element instanceof Question)) {
+//					s.add(element);
+//				}
+//			}
 			return s;
 	
 		}

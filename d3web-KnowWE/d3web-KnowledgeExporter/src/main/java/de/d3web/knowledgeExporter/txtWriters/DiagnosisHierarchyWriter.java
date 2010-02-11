@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.kernel.domainModel.Diagnosis;
+import de.d3web.core.terminology.Diagnosis;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.knowledgeExporter.KnowledgeManager;
 

@@ -28,13 +28,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.terminology.Diagnosis;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -48,6 +45,9 @@ import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.terminology.KnowledgeRecyclingObjectType;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.XCLRelationType;
+import de.d3web.xcl.inference.PSMethodXCL;
 
 public class CoveringListContent extends XMLContent implements KnowledgeRecyclingObjectType {
 	

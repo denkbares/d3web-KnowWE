@@ -22,12 +22,12 @@ package de.d3web.we.action;
 
 import java.util.List;
 
-import de.d3web.kernel.XPSCase;
-import de.d3web.kernel.domainModel.Answer;
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.XPSCase;
+import de.d3web.core.terminology.Answer;
+import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.terminology.Question;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;

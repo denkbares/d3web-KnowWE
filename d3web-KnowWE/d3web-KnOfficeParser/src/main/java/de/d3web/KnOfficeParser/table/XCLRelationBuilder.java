@@ -24,11 +24,11 @@ import java.util.ResourceBundle;
 
 import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.report.Message;
+import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.XCLRelationType;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.terminology.Diagnosis;
 
 /**
  * Erstellt XCL Relationen aus einer Tabellenzelle

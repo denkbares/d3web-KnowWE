@@ -22,18 +22,21 @@ package de.d3web.kernel.dialogControl;
 
 import java.util.List;
 
-import de.d3web.kernel.dialogControl.exceptions.InvalidQASetRequestException;
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.domainModel.QASet;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.psMethods.PSMethod;
-import de.d3web.kernel.psMethods.PSMethodInit;
+import de.d3web.core.inference.PSMethod;
+import de.d3web.core.inference.PSMethodInit;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.session.interviewmanager.DialogController;
+import de.d3web.core.session.interviewmanager.InvalidQASetRequestException;
+import de.d3web.core.session.interviewmanager.MQDialogController;
+import de.d3web.core.session.interviewmanager.OQDialogController;
+import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.terminology.QASet;
+import de.d3web.core.terminology.info.Property;
+import de.d3web.indication.inference.PSMethodNextQASet;
 import de.d3web.kernel.psMethods.delegate.AbstractActionDelegate;
 import de.d3web.kernel.psMethods.delegate.ActionDelegate;
 import de.d3web.kernel.psMethods.delegate.ActionInstantDelegate;
 import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
-import de.d3web.kernel.psMethods.nextQASet.PSMethodNextQASet;
-import de.d3web.kernel.supportknowledge.Property;
 
 public class DistributedDialogController implements DialogController {
 

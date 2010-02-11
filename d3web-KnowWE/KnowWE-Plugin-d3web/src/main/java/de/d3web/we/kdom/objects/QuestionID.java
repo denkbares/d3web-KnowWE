@@ -1,6 +1,6 @@
 package de.d3web.we.kdom.objects;
 
-import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.core.terminology.Question;
 
 
 public class QuestionID extends D3webID<Question>{

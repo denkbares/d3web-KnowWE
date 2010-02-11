@@ -23,10 +23,10 @@ package de.d3web.we.core.knowledgeService;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.d3web.kernel.domainModel.IDObject;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.NamedObject;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.terminology.IDObject;
+import de.d3web.core.terminology.NamedObject;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.terminology.local.D3webLocalDiagnosisTerminology;

@@ -28,15 +28,11 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.terminology.Diagnosis;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
@@ -47,6 +43,10 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.bulletLists.BulletContentType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.XCLRelation;
+import de.d3web.xcl.XCLRelationType;
+import de.d3web.xcl.inference.PSMethodXCL;
 
 public class KBRenderer extends AbstractTagHandler {
 
@@ -157,7 +157,7 @@ public class KBRenderer extends AbstractTagHandler {
 					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
 			boolean appendedXCLHeadline = false;
 			for (KnowledgeSlice slice : xclRels) {
-				if (slice instanceof de.d3web.kernel.psMethods.xclPattern.XCLModel) {
+				if (slice instanceof de.d3web.xcl.XCLModel) {
 					if (!appendedXCLHeadline) {
 						if (appendedSolutionsHeadline || appendedRulesHeadline) {
 							text.append("<br/>");
@@ -165,7 +165,7 @@ public class KBRenderer extends AbstractTagHandler {
 						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.xclModels") + ":</strong>");
 						appendedXCLHeadline = true;
 					}
-					de.d3web.kernel.psMethods.xclPattern.XCLModel model = ((de.d3web.kernel.psMethods.xclPattern.XCLModel) slice);
+					de.d3web.xcl.XCLModel model = ((de.d3web.xcl.XCLModel) slice);
 					
 					//adds tresholds if different from default
 					String thresholds = "";

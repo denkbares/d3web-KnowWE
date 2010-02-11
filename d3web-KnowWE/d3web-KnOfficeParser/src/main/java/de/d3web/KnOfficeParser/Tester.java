@@ -33,7 +33,7 @@ import org.antlr.runtime.RecognitionException;
 import de.d3web.KnOfficeParser.decisiontree.D3DTBuilder;
 import de.d3web.KnOfficeParser.rule.D3ruleBuilder;
 import de.d3web.report.Message;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 
 
 /**

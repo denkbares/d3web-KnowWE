@@ -2,16 +2,16 @@ package de.d3web.we.kdom.questionTreeNew;
 
 import java.util.List;
 
-import de.d3web.kernel.domainModel.Answer;
-import de.d3web.kernel.domainModel.IDObject;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.QASet;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.domainModel.RuleFactory;
-import de.d3web.kernel.domainModel.qasets.Question;
-import de.d3web.kernel.domainModel.qasets.QuestionChoice;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.domainModel.ruleCondition.CondEqual;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.terminology.Answer;
+import de.d3web.core.terminology.IDObject;
+import de.d3web.core.terminology.QASet;
+import de.d3web.core.terminology.Question;
+import de.d3web.core.terminology.QuestionChoice;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;

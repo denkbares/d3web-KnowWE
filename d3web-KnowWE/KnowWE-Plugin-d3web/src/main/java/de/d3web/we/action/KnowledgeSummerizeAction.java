@@ -29,12 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.Rule;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -43,6 +40,9 @@ import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.taghandler.DialogLinkTagHandler;
+import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.XCLRelation;
+import de.d3web.xcl.XCLRelationType;
 
 public class KnowledgeSummerizeAction extends AbstractKnowWEAction {
 
@@ -121,7 +121,7 @@ public class KnowledgeSummerizeAction extends AbstractKnowWEAction {
 				int ruleCount = 0;
 				for (Iterator iter = all.iterator(); iter.hasNext();) {
 					KnowledgeSlice element = (KnowledgeSlice) iter.next();
-					if(element instanceof de.d3web.kernel.psMethods.xclPattern.XCLModel) {
+					if(element instanceof de.d3web.xcl.XCLModel) {
 						Map<XCLRelationType,Collection<XCLRelation>> map = ((XCLModel)element).getTypedRelations();
 						for(java.util.Map.Entry<XCLRelationType,Collection<XCLRelation>> entry : map.entrySet()) {
 							xclCount += entry.getValue().size();

@@ -24,9 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import de.d3web.core.KnowledgeBase;
 import de.d3web.core.kpers.PersistenceManager;
 import de.d3web.core.kpers.progress.ConsoleProgressListener;
-import de.d3web.kernel.domainModel.KnowledgeBase;
 
 /**
  * This singleton class contains the data and methods needed for TiRex to

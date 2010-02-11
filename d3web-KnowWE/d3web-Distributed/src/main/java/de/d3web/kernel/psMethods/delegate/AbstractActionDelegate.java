@@ -23,10 +23,10 @@ package de.d3web.kernel.psMethods.delegate;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.kernel.XPSCase;
-import de.d3web.kernel.dialogControl.QASetManager;
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.domainModel.RuleAction;
+import de.d3web.core.inference.RuleAction;
+import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.interviewmanager.QASetManager;
+import de.d3web.core.terminology.NamedObject;
 
 public abstract class AbstractActionDelegate extends RuleAction {
 

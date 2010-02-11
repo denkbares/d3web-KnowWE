@@ -23,8 +23,8 @@ package de.d3web.we.terminology.local;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.terminology.info.Property;
 
 public class D3webNamedObjectTerminologyHandler extends LocalTerminologyHandler<NamedObject, NamedObject> {
 	

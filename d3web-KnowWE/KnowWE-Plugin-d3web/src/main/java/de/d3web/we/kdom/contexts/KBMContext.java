@@ -23,7 +23,7 @@
  */
 package de.d3web.we.kdom.contexts;
 
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.Section;
 
 /**

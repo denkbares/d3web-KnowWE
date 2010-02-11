@@ -22,16 +22,16 @@ package de.d3web.KnOfficeParser.util;
 
 import java.util.List;
 
-import de.d3web.kernel.domainModel.NumericalInterval;
-import de.d3web.kernel.domainModel.qasets.QuestionNum;
-import de.d3web.kernel.domainModel.ruleCondition.CondNumEqual;
-import de.d3web.kernel.domainModel.ruleCondition.CondNumGreater;
-import de.d3web.kernel.domainModel.ruleCondition.CondNumGreaterEqual;
-import de.d3web.kernel.domainModel.ruleCondition.CondNumIn;
-import de.d3web.kernel.domainModel.ruleCondition.CondNumLess;
-import de.d3web.kernel.domainModel.ruleCondition.CondNumLessEqual;
-import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
-import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.core.inference.condition.CondNumEqual;
+import de.d3web.core.inference.condition.CondNumGreater;
+import de.d3web.core.inference.condition.CondNumGreaterEqual;
+import de.d3web.core.inference.condition.CondNumIn;
+import de.d3web.core.inference.condition.CondNumLess;
+import de.d3web.core.inference.condition.CondNumLessEqual;
+import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.terminology.QuestionNum;
+import de.d3web.core.terminology.info.NumericalInterval;
+import de.d3web.core.terminology.info.Property;
 import de.d3web.report.Message;
 
 public class ConditionGenerator {

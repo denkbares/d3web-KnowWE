@@ -25,9 +25,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.terminology.info.Property;
 import de.d3web.we.alignment.AlignmentUtilRepository;
 import de.d3web.we.alignment.GlobalAlignment;
 import de.d3web.we.alignment.NumericalIdentity;

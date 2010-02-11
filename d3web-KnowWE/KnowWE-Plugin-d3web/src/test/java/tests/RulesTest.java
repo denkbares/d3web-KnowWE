@@ -25,19 +25,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import utils.KBCreationTestUtil;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.domainModel.formula.FormulaExpression;
-import de.d3web.kernel.psMethods.PSMethod;
-import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
-import de.d3web.kernel.psMethods.heuristic.PSMethodHeuristic;
-import de.d3web.kernel.psMethods.nextQASet.ActionIndication;
-import de.d3web.kernel.psMethods.nextQASet.ActionRefine;
-import de.d3web.kernel.psMethods.nextQASet.PSMethodNextQASet;
-import de.d3web.kernel.psMethods.questionSetter.ActionQuestionSetter;
-import de.d3web.kernel.psMethods.questionSetter.PSMethodQuestionSetter;
+import de.d3web.abstraction.ActionQuestionSetter;
+import de.d3web.abstraction.formula.FormulaExpression;
+import de.d3web.abstraction.inference.PSMethodQuestionSetter;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.PSMethod;
+import de.d3web.core.inference.Rule;
+import de.d3web.indication.ActionIndication;
+import de.d3web.indication.ActionRefine;
+import de.d3web.indication.inference.PSMethodNextQASet;
 import de.d3web.plugin.test.InitPluginManager;
+import de.d3web.scoring.ActionHeuristicPS;
+import de.d3web.scoring.inference.PSMethodHeuristic;
 import junit.framework.TestCase;
 
 /**

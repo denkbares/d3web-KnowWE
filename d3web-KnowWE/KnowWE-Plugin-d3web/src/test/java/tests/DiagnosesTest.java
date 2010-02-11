@@ -23,9 +23,9 @@ package tests;
 import java.io.IOException;
 
 import utils.KBCreationTestUtil;
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.logging.Logging;
 import junit.framework.TestCase;

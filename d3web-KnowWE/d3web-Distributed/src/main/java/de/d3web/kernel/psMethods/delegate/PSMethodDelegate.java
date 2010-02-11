@@ -23,13 +23,13 @@ package de.d3web.kernel.psMethods.delegate;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.PSMethodAdapter;
+import de.d3web.core.inference.PropagationEntry;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.Facts;
-import de.d3web.kernel.XPSCase;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.psMethods.PSMethodAdapter;
-import de.d3web.kernel.psMethods.PropagationEntry;
 
 public class PSMethodDelegate extends PSMethodAdapter {
 	private static PSMethodDelegate instance = new PSMethodDelegate();

@@ -25,13 +25,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
-import de.d3web.kernel.domainModel.KnowledgeSlice;
+import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.kernel.psMethods.verbalizer.XclVerbalizer;
-import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
 import de.d3web.knowledgeExporter.KnowledgeManager;
+import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.inference.PSMethodXCL;
 
 public class XCLWriter extends TxtKnowledgeWriter {
 	

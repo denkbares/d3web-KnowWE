@@ -24,13 +24,13 @@ import java.util.ResourceBundle;
 
 import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.report.Message;
+import de.d3web.scoring.Score;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.KnOfficeParser.util.Scorefinder;
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.domainModel.RuleFactory;
-import de.d3web.kernel.domainModel.Score;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.terminology.Diagnosis;
 /**
  * Erstellet Scoring Rules aus Tabellenzellen
  * @author Markus Friedrich

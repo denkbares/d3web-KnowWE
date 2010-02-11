@@ -22,9 +22,9 @@ package de.d3web.we.action;
 
 import java.util.List;
 
-import de.d3web.kernel.domainModel.Answer;
-import de.d3web.kernel.domainModel.QASet;
-import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.core.terminology.Answer;
+import de.d3web.core.terminology.QASet;
+import de.d3web.core.terminology.Question;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -94,7 +94,7 @@ public class QuestionStateReportAction extends AbstractKnowWEAction {
 		if(kss instanceof de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession && q != null) {
 			
 			D3webKnowledgeServiceSession d3kss = ((D3webKnowledgeServiceSession)kss);
-			de.d3web.kernel.XPSCase case1 = d3kss.getXpsCase();
+			de.d3web.core.session.XPSCase case1 = d3kss.getXpsCase();
 			List<? extends Question> answeredQuestions = case1.getAnsweredQuestions();
 			if(answeredQuestions.contains(q)) {
 				List answers = q.getValue(case1);

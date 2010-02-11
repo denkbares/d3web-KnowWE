@@ -38,13 +38,13 @@ import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.qasets.QContainer;
-import de.d3web.kernel.domainModel.qasets.Question;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.terminology.QContainer;
+import de.d3web.core.terminology.Question;
 import de.d3web.kernel.psMethods.SCMCBR.SCMCBRModel;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
 import de.d3web.report.Message;
+import de.d3web.xcl.XCLRelationType;
 /**
  * Builder für d3web und den SCMCBR Parser
  * @author Markus Friedrich

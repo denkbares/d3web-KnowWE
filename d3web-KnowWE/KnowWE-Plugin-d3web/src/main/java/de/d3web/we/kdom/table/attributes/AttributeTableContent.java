@@ -24,7 +24,7 @@ import java.io.StringReader;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.txttable.TxtAttributeTableBuilder;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;

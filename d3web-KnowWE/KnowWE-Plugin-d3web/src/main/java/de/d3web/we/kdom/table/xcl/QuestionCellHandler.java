@@ -22,8 +22,8 @@ package de.d3web.we.kdom.table.xcl;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.terminology.Question;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.KnowledgeUtils;

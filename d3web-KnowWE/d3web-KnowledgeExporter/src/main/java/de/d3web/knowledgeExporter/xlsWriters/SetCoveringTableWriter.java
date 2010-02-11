@@ -24,15 +24,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
-import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelationType;
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.kernel.verbalizer.TerminalCondVerbalization;
 import de.d3web.knowledgeExporter.KnowledgeManager;
+import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.XCLRelation;
+import de.d3web.xcl.XCLRelationType;
+import de.d3web.xcl.inference.PSMethodXCL;
 
 public class SetCoveringTableWriter extends QDTableWriter {
 	

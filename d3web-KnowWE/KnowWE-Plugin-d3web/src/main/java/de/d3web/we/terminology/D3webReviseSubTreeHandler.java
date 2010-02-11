@@ -20,7 +20,7 @@
 
 package de.d3web.we.terminology;
 
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;

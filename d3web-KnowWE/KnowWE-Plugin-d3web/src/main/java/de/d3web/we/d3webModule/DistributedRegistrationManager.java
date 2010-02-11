@@ -20,8 +20,8 @@
 
 package de.d3web.we.d3webModule;
 
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;

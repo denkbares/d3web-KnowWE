@@ -23,18 +23,18 @@ package de.d3web.knowledgeExporter;
 import java.io.File;
 import java.io.IOException;
 
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.domainModel.Score;
-import de.d3web.kernel.domainModel.qasets.Question;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.domainModel.ruleCondition.CondDState;
-import de.d3web.kernel.domainModel.ruleCondition.CondQuestion;
-import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
-import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
-import de.d3web.kernel.psMethods.questionSetter.ActionQuestionSetter;
+import de.d3web.abstraction.ActionQuestionSetter;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.CondDState;
+import de.d3web.core.inference.condition.CondQuestion;
+import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.terminology.Question;
 import de.d3web.kernel.verbalizer.ConditionVerbalizer;
+import de.d3web.scoring.ActionHeuristicPS;
+import de.d3web.scoring.Score;
 
 public abstract class KnowledgeWriter {
 	

@@ -24,26 +24,26 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import de.d3web.kernel.domainModel.Answer;
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.QASet;
-import de.d3web.kernel.domainModel.RuleAction;
-import de.d3web.kernel.domainModel.Rule;
-import de.d3web.kernel.domainModel.formula.FormulaExpression;
-import de.d3web.kernel.domainModel.qasets.Question;
-import de.d3web.kernel.domainModel.ruleCondition.AbstractCondition;
-import de.d3web.kernel.domainModel.ruleCondition.TerminalCondition;
-import de.d3web.kernel.psMethods.contraIndication.ActionContraIndication;
-import de.d3web.kernel.psMethods.heuristic.ActionHeuristicPS;
-import de.d3web.kernel.psMethods.nextQASet.ActionInstantIndication;
-import de.d3web.kernel.psMethods.nextQASet.ActionNextQASet;
-import de.d3web.kernel.psMethods.questionSetter.ActionAddValue;
-import de.d3web.kernel.psMethods.questionSetter.ActionQuestionSetter;
-import de.d3web.kernel.psMethods.questionSetter.ActionSetValue;
-import de.d3web.kernel.psMethods.suppressAnswer.ActionSuppressAnswer;
+import de.d3web.abstraction.ActionAddValue;
+import de.d3web.abstraction.ActionQuestionSetter;
+import de.d3web.abstraction.ActionSetValue;
+import de.d3web.abstraction.formula.FormulaExpression;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.terminology.Answer;
+import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.terminology.QASet;
+import de.d3web.core.terminology.Question;
+import de.d3web.indication.ActionContraIndication;
+import de.d3web.indication.ActionInstantIndication;
+import de.d3web.indication.ActionNextQASet;
+import de.d3web.indication.ActionSuppressAnswer;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
 import de.d3web.knowledgeExporter.KnowledgeManager;
+import de.d3web.scoring.ActionHeuristicPS;
 
 
 /**

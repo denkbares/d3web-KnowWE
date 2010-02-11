@@ -23,12 +23,12 @@ package de.d3web.we.terminology.local;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.kernel.domainModel.Answer;
-import de.d3web.kernel.domainModel.IDObject;
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.domainModel.qasets.QuestionChoice;
-import de.d3web.kernel.supportknowledge.PropertiesContainer;
-import de.d3web.kernel.supportknowledge.Property;
+import de.d3web.core.terminology.Answer;
+import de.d3web.core.terminology.IDObject;
+import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.terminology.QuestionChoice;
+import de.d3web.core.terminology.info.PropertiesContainer;
+import de.d3web.core.terminology.info.Property;
 
 public class D3webIDObjectTerminologyHandler extends LocalTerminologyHandler<IDObject, IDObject> {
 

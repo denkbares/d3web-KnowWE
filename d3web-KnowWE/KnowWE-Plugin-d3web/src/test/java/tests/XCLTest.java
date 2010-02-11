@@ -24,13 +24,13 @@ import java.io.IOException;
 import java.util.Collection;
 
 import utils.KBCreationTestUtil;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.KnowledgeSlice;
-import de.d3web.kernel.psMethods.xclPattern.PSMethodXCL;
-import de.d3web.kernel.psMethods.xclPattern.XCLModel;
-import de.d3web.kernel.psMethods.xclPattern.XCLRelation;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.logging.Logging;
+import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.XCLRelation;
+import de.d3web.xcl.inference.PSMethodXCL;
 import junit.framework.TestCase;
 
 /**

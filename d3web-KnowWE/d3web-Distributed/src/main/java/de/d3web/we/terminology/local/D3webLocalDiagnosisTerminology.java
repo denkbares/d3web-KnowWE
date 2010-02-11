@@ -22,9 +22,9 @@ package de.d3web.we.terminology.local;
 
 import java.util.Collection;
 
-import de.d3web.kernel.domainModel.Diagnosis;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
-import de.d3web.kernel.domainModel.NamedObject;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.terminology.NamedObject;
 import de.d3web.we.alignment.AlignmentUtilRepository;
 
 public class D3webLocalDiagnosisTerminology implements LocalTerminologyAccess<NamedObject>{

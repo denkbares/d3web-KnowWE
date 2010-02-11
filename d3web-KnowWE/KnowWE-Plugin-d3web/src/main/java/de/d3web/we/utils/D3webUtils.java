@@ -20,10 +20,10 @@
 
 package de.d3web.we.utils;
 
-import de.d3web.kernel.XPSCase;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.answers.AnswerChoice;
-import de.d3web.kernel.domainModel.qasets.Question;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.terminology.Question;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
@@ -34,7 +34,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class D3webUtils {
 	
-	public static de.d3web.kernel.domainModel.qasets.Question getQuestion(KnowledgeServiceSession kss, String qid) {
+	public static de.d3web.core.terminology.Question getQuestion(KnowledgeServiceSession kss, String qid) {
 		if(kss instanceof D3webKnowledgeServiceSession) {
 			D3webKnowledgeServiceSession session = ((D3webKnowledgeServiceSession)kss);
 			KnowledgeBase kb = session.getBaseManagement().getKnowledgeBase();

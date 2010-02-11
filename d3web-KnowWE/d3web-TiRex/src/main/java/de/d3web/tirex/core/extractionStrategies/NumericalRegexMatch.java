@@ -25,8 +25,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.kernel.domainModel.IDObject;
-import de.d3web.kernel.domainModel.answers.AnswerChoice;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.terminology.IDObject;
 import de.d3web.tirex.core.OriginalMatchAndStrategy;
 import de.d3web.tirex.core.TiRexSettings;
 

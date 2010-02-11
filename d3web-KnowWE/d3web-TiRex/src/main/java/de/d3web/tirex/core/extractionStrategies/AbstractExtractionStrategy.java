@@ -20,9 +20,9 @@
 
 package de.d3web.tirex.core.extractionStrategies;
 
-import de.d3web.kernel.domainModel.IDObject;
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.domainModel.answers.AnswerChoice;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.terminology.IDObject;
+import de.d3web.core.terminology.NamedObject;
 import de.d3web.tirex.core.OriginalMatchAndStrategy;
 import de.d3web.tirex.core.TiRexSettings;
 

@@ -22,8 +22,8 @@ package de.d3web.kernel.psMethods.delegate;
 
 import java.util.ArrayList;
 
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.domainModel.RuleAction;
+import de.d3web.core.inference.RuleAction;
+import de.d3web.core.terminology.NamedObject;
 
 public class ActionInstantDelegate extends AbstractActionDelegate {
 	

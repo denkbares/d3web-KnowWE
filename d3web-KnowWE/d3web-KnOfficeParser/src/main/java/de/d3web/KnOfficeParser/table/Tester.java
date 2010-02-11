@@ -25,7 +25,7 @@ import java.util.List;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.report.Message;
-import de.d3web.kernel.domainModel.KnowledgeBaseManagement;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 /**
  * Einfache Testklasse um den Inhalt dieses Packages zu testen 
  * @author Markus Friedrich

@@ -20,7 +20,7 @@
 
 package de.d3web.KnOfficeParser.util;
 
-import de.d3web.kernel.domainModel.Score;
+import de.d3web.scoring.Score;
 
 /**
  * Klasse bietet statische Methoden um Score zu finden 

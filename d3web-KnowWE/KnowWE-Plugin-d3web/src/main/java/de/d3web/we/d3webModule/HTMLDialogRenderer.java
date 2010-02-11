@@ -23,13 +23,13 @@ package de.d3web.we.d3webModule;
 import java.net.URLEncoder;
 import java.util.List;
 
-import de.d3web.kernel.XPSCase;
-import de.d3web.kernel.domainModel.KnowledgeBase;
-import de.d3web.kernel.domainModel.NamedObject;
-import de.d3web.kernel.domainModel.answers.AnswerChoice;
-import de.d3web.kernel.domainModel.answers.AnswerNum;
-import de.d3web.kernel.domainModel.qasets.Question;
-import de.d3web.kernel.domainModel.qasets.QuestionChoice;
+import de.d3web.core.KnowledgeBase;
+import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.AnswerNum;
+import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.terminology.Question;
+import de.d3web.core.terminology.QuestionChoice;
 
 /**
  * Class for rendering the HTML table-based interview
@@ -48,7 +48,7 @@ public class HTMLDialogRenderer {
 		KnowledgeBase b = c.getKnowledgeBase();
 		
 		// get all qcontainers of kb into a list
-		java.util.List<de.d3web.kernel.domainModel.qasets.QContainer> containers = b
+		java.util.List<de.d3web.core.terminology.QContainer> containers = b
 				.getQContainers();
 		
 		StringBuffer buffi = new StringBuffer();
@@ -66,7 +66,7 @@ public class HTMLDialogRenderer {
 		boolean first = true;
 		
 		// go through all qcontainers of the knowledge base
-		for (de.d3web.kernel.domainModel.qasets.QContainer container : containers) {
+		for (de.d3web.core.terminology.QContainer container : containers) {
 			
 			// skipt the rootiest root element "Q000"
 			if (container.getText().endsWith("Q000"))
