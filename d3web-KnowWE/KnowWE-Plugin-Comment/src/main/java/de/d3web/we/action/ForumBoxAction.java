@@ -34,6 +34,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.xml.XMLTail;
+import de.d3web.we.plugin.forum.Forum;
 import de.d3web.we.plugin.forum.ForumRenderer;
 
 public class ForumBoxAction extends AbstractKnowWEAction {
@@ -76,7 +77,7 @@ public class ForumBoxAction extends AbstractKnowWEAction {
 				Section sec = KnowWEEnvironment.getInstance().getArticle(web, topic).getSection();
 				
 				List<Section> found = new ArrayList<Section>();
-				sec.findSuccessorsOfType(XMLTail.class, found);
+				sec.findSuccessor(new Forum()).findSuccessorsOfType(new XMLTail(), found);
 				
 				if (found.size() != 0) {
 					Section changeSec = found.get(found.size() - 1);
