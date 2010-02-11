@@ -158,7 +158,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		if (xpsCase == null)
 			return preview;
 		
-		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
+		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
 		
 		CaseObjectSource flowSet = FluxSolver.getFlowSet(xpsCase);
 		
@@ -176,8 +176,8 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 
 	private String highlightPath(String preview, String flowID, PathEntry startEntry) {
 		 // get all the nodes
-        String[] nodes = preview.split("<DIV class=\"Node\" fcid=\"");
-        String[] edges = preview.split("<DIV class=\"Rule\" fcid=\"");
+        String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
+        String[] edges = preview.split("<DIV class=\"Rule\" id=\"");
 
 		PathEntry currentEntry = startEntry;
 		
