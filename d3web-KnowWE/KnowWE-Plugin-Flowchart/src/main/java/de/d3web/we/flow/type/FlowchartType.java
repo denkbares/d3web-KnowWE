@@ -23,17 +23,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.we.flow.DelegateSubtreeHandler;
 import de.d3web.we.flow.FlowchartSectionRenderer;
+import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.FlowchartTerminologySubTreeHandler;
+import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 
 /**
- * 
- *
- * @author hatko
+ * @author Reinhard Hatko
  * Created on: 09.10.2009
  */
 public class FlowchartType extends AbstractXMLObjectType {
@@ -55,9 +57,13 @@ public class FlowchartType extends AbstractXMLObjectType {
 		
 		this.childrenTypes.add(FlowchartContentType.getInstance());
 		addReviseSubtreeHandler(new FlowchartTerminologySubTreeHandler());
-		
+
+		RootType.getInstance().addReviseSubtreeHandler(new DelegateSubtreeHandler(new FlowchartSubTreeHandler(), FlowchartType.class));
 //		setNotRecyclable(true);
+		
+		
 	}
+	
 	
 	@Override
 	public KnowWEDomRenderer getRenderer() {

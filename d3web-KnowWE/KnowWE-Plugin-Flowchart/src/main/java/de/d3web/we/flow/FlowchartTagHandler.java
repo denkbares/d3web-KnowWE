@@ -41,6 +41,12 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
+		
+		XPSCase theCase = D3webUtils.getXPSCase(topic, user, web);
+
+		if (!FluxSolver.getInstance().isFlowCase(theCase)) {
+			return "No Flowchart found.";
+		}
 
 		
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
@@ -50,7 +56,6 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		
 		article.getSection().findSuccessorsOfType(FlowchartType.class, flows);
 
-		XPSCase theCase = D3webUtils.getXPSCase(topic, user, web);
 		
 		StringBuilder builder = new StringBuilder();
 		
@@ -146,6 +151,8 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 
 	private String createPreviewWithHighlightedPath(Section section, XPSCase xpsCase) {
 		
+		
+		
 		String preview = FlowchartUtils.extractPreview(section);
 		
 		if (xpsCase == null)
@@ -169,8 +176,8 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 
 	private String highlightPath(String preview, String flowID, PathEntry startEntry) {
 		 // get all the nodes
-        String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
-        String[] edges = preview.split("<DIV class=\"Rule\" id=\"");
+        String[] nodes = preview.split("<DIV class=\"Node\" fcid=\"");
+        String[] edges = preview.split("<DIV class=\"Rule\" fcid=\"");
 
 		PathEntry currentEntry = startEntry;
 		

@@ -80,8 +80,10 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * 
@@ -105,7 +107,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		if (content == null) 
 			return null;
 		
-		List<Message> errors = new ArrayList<Message>();
+		final List<Message> errors = new ArrayList<Message>();
 		
 		List<Section> nodeSections = new ArrayList<Section>();
 		List<Section> edgeSections = new ArrayList<Section>();
@@ -154,9 +156,21 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		
 		if (!errors.isEmpty())
-			System.out.println(errors.size() +" errors in Flow '" + name +"': " + errors);
+			System.out.println(errors.size() +" errors in FlowTerminology '" + name +"': " + errors);
 		
-		return null;
+		return new KDOMWarning() {
+			
+			@Override
+			public String getVerbalization(KnowWEUserContext usercontext) {
+				StringBuffer buffer = new StringBuffer();
+				
+				for (Message message : errors) {
+					buffer.append(message.getLineNo() + ": " + message.getMessageText());
+				}
+				
+				return buffer.toString();
+			}
+		};
 	}
 
 

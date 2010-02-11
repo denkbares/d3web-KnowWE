@@ -26,6 +26,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMWarning;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Applies the subtree handler to all childs of s of the given type
@@ -53,7 +55,9 @@ public class DelegateSubtreeHandler implements ReviseSubTreeHandler {
 		
 		for (Section child : found) {
 			
-			handler.reviseSubtree(article, child);
+			
+			KDOMReportMessage message = handler.reviseSubtree(article, child);
+			KDOMReportMessage.storeMessage(child, message);
 			
 		}
 		
