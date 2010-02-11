@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.report.Message;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -58,8 +59,10 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 		
 		String srclink;
 		if (sec.getObjectType() instanceof Include && sec.getIncludeAddress() != null) {
-			Section child = (Section) sec.getChildren().get(0);
-			srclink = "<a class=\"wikipage\" href=\"/KnowWE/Wiki.jsp?page=" 
+			Section<Include> child = (Section<Include>) sec.getChildren().get(0);
+			String baseURL = KnowWEEnvironment.getInstance().getWikiConnector().getBaseUrl();
+			srclink = "<a href=\"" + baseURL + (baseURL.endsWith("/") ? "" : "/") 
+				+ "Wiki.jsp?page=" 
 				+ sec.getIncludeAddress().getTargetArticle() 
 				+ (!child.getTitle().equals(sec.getTitle()) ? "#" + child.getId() : "") + "\">" 
 				+ "Include: src=\"" +  sec.getIncludeAddress().getOriginalAddress() + "\"</a>";
