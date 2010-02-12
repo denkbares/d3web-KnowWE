@@ -119,7 +119,11 @@ public class KnowWEObjectTypeUtils {
 		
 		// check all allowed children types from this type
 		if(type.getAllowedChildrenTypes() != null) {
-			List<? extends KnowWEObjectType> moreChildren = type.getAllowedChildrenTypes();
+			
+			// NOTE: .getAllowedChildrenTypes() now returns an unmodifiable list => copy
+			List<KnowWEObjectType> unModList = type.getAllowedChildrenTypes();
+			List<KnowWEObjectType> moreChildren = new ArrayList<KnowWEObjectType>();
+			moreChildren.addAll(unModList);
 			
 			// Loop Protection
 			if (hasTypeInList(moreChildren, type))

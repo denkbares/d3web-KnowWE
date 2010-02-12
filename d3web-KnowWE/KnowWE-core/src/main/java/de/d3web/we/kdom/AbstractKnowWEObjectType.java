@@ -325,8 +325,23 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 */
 	@Override
 	public List<KnowWEObjectType> getAllowedChildrenTypes() {
-		return childrenTypes;
+		return Collections.unmodifiableList(childrenTypes);
 	}
+	
+	public boolean addChildType(KnowWEObjectType t) {
+		return this.childrenTypes.add(t);
+	}
+	
+	public boolean removeChildType(KnowWEObjectType t) {
+		return this.childrenTypes.remove(t);
+	}
+	
+	public KnowWEObjectType removeChild(int i) {
+		return this.childrenTypes.remove(i);
+	}
+	
+	
+	
 
 	@Override
 	@Deprecated

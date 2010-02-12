@@ -28,7 +28,7 @@ public class FontColorRenderer extends StyleRenderer {
 	public static String COLOR1 = "color:rgb(40, 40, 160)";
 	public static String COLOR2 = "color:rgb(255, 0, 0)";
 	public static String COLOR3 = "color:rgb(0, 128, 0)";
-	public static String COLOR4 = "color:rgb(200, 0, 200)";
+	public static String COLOR4 = "color:rgb(150, 90, 180)";
 	public static String COLOR5 = "color:rgb(128, 128, 0)";
 	public static String COLOR6 = "color:rgb(0, 0, 255)";
 	public static String COLOR7 = "color:rgb(125, 80, 102)";

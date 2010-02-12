@@ -586,7 +586,7 @@ public class KnowWEEnvironment {
 	}
 
 	private boolean addRootType(KnowWEObjectType type) {
-		return RootType.getInstance().getAllowedChildrenTypes().add(type);
+		return RootType.getInstance().addChildType(type);
 	}
 
 	/**
