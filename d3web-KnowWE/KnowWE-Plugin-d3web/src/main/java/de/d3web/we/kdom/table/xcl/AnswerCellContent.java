@@ -79,7 +79,8 @@ class AnswerCellRenderer extends TableCellContentRenderer {
 		String sectionID = sec.getId();
 		StringBuilder html = new StringBuilder();
 		html.append("<td title='"+title+"' style='background-color:#888888;'>   ");
-		html.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		//html.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		html.append("  ");
 		generateContent(sectionText, sec, user, sectionID, html);
 			
 		html.append("</td>");

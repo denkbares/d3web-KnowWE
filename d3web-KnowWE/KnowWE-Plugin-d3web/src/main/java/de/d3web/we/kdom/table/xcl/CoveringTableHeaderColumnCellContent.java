@@ -59,10 +59,15 @@ public class CoveringTableHeaderColumnCellContent extends
 				return null;
 			}
 			
-			String text = s.getOriginalText();
+			String text = s.getOriginalText().trim();
 			if (mgn.findQuestion(text) != null) {
 				Section lineSec = KnowWEObjectTypeUtils.getAncestorOfType(s,
 						TableLine.class);
+				
+				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
+						.getTitle(), KnowWEObjectTypeUtils.getAncestorOfType(s,
+						TableContent.class).getId(), QUESTION_CELL, s);
+				
 				lineSec.setType(QuestionLine.getInstance());
 
 			}
