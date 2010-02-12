@@ -493,7 +493,7 @@ public class KBCreationTestUtil {
 		// --- Other problem (P7)
 		// ---- Other [text]
 		Question question = createdKBM.findQuestion("Other");
-		List<Question> action = new ArrayList<Question>();
+		List<QASet> action = new ArrayList<QASet>();
 		action.add(question);
 		String ruleID = createdKBM.findNewIDFor(Rule.class);
 		Diagnosis diag = createdKBM.findDiagnosis("Other problem");
