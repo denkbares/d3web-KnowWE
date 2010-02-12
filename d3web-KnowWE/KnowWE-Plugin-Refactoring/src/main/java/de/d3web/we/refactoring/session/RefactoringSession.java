@@ -1,6 +1,5 @@
 package de.d3web.we.refactoring.session;
 
-
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
@@ -47,12 +46,15 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
+import de.d3web.we.kdom.basic.AnonymousType;
+import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.decisionTree.QClassID;
 import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.rules.RulesSectionContent;
+import de.d3web.we.kdom.xcl.CoveringListContent;
 import de.d3web.we.kdom.xcl.XCList;
 
 public class RefactoringSession {
@@ -279,6 +281,13 @@ public class RefactoringSession {
 		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(new RulesSectionContent());
 		return rulesSectionContent;
 	}
+	
+	// TODO wenn es noch keine CoveringListSection gibt, dann muss die noch gebaut werden
+	public Section<CoveringListContent> findCoveringListContent(Section<?> knowledgeSection) {
+		KnowWEArticle article = knowledgeSection.getArticle();
+		Section<CoveringListContent> coveringListContent = article.getSection().findSuccessor(new CoveringListContent());
+		return coveringListContent;
+	}
 
 	public void deleteXCList(Section<?> knowledgeSection) {
 		replaceSection(knowledgeSection, "\n");
@@ -356,6 +365,11 @@ public class RefactoringSession {
 			}
 		});
 		String typeString = gsonFormMap.get("selectRenamingType")[0];
+		AbstractKnowWEObjectType type = getTypeFromString(typeString);
+		return type;
+	}
+
+	public AbstractKnowWEObjectType getTypeFromString(String typeString) {
 		AbstractKnowWEObjectType type = null;
 		if(typeString.equals("KnowWEArticle")) {
 			type = new KnowWEArticle();
@@ -394,7 +408,7 @@ public class RefactoringSession {
 					articleSection.findSuccessorsOfType(type, objects);
 					for (Section<?> object : objects) {
 						String name = (type instanceof KnowWEArticle) ? object.getId() : object.getOriginalText();
-						String question = (type instanceof QuestionTreeAnswerID) ? " - Frage: " + findQuestion(object.getId()).getOriginalText() : "";
+						String question = (type instanceof QuestionTreeAnswerID) ? " - Frage: " + findQuestion(object).getOriginalText() : "";
 						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
 								+ name + "</option>");
 					}
@@ -408,10 +422,20 @@ public class RefactoringSession {
 		return objectID;
 	}
 	
-	private Section<QuestionID> findQuestion(String answerID) {
-		Section <?> answerSection = manager.findNode(answerID);
+	private Section<QuestionID> findQuestion(Section<?> answerSection) {
 		// TODO verbessern
-		return answerSection.getFather().getFather().getFather().getFather().getFather().findSuccessor(new QuestionID());
+		return answerSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(new QuestionID());
+	}
+	private Section<QuestionTreeAnswerID> findAnswer(Section<?> diagnosisSection) {
+		// TODO verbessern
+//		System.out.println(diagnosisID);
+//		System.out.println(diagnosisSection.getOriginalText());
+		return diagnosisSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(new QuestionTreeAnswerID());
+	}
+	
+	private Section<QuestionTreeAnswerID> findAnswerIndicatingQuestion(Section <?> questionSection) {
+		// TODO verbessern
+		return questionSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(new QuestionTreeAnswerID());
 	}
 	
 	public String findNewName() {
@@ -443,7 +467,7 @@ public class RefactoringSession {
 		List<Section<? extends AbstractKnowWEObjectType>> fullList = new ArrayList<Section<? extends AbstractKnowWEObjectType>>();
 		List<Section<? extends AbstractKnowWEObjectType>> filteredList = new ArrayList<Section<? extends AbstractKnowWEObjectType>>();
 		if (type instanceof QuestionTreeAnswerID) {
-			Section<QuestionID> question = findQuestion(objectID);
+			Section<QuestionID> question = findQuestion(manager.findNode(objectID));
 			List<Section<QuestionTreeAnswerID>> answers = new LinkedList<Section<QuestionTreeAnswerID>>();
 			// TODO verbessern
 			question.getFather().getFather().getFather().getFather().findSuccessorsOfType(new QuestionTreeAnswerID(), 5 , answers);
@@ -525,6 +549,53 @@ public class RefactoringSession {
 			}
 		});
 	}
+	
+	// TODO wird im KDOM leider als QuestionID und nicht als SolutionID geparsed, mal mit Jochen reden
+	public List<Section<QuestionID>> findSolutions(String value, String pageName) {
+		List<Section<QuestionID>> returnList = new LinkedList<Section<QuestionID>>();
+		Section<?> articleSection = manager.findNode(pageName);
+		List<Section<AnonymousType>> found = new ArrayList<Section<AnonymousType>>();
+		// FIXME es muss noch überprüft werden, ob AnonymousType.getName().equals("SetValueArgument") gilt.
+		articleSection.findSuccessorsOfType(new AnonymousType(""), found);
+		for (Section<AnonymousType> atSection: found) {
+			if (atSection.getOriginalText().equals(value)) {
+				Section<QuestionID> foundSolution = atSection.getFather().findSuccessor(new QuestionID());
+				returnList.add(foundSolution);
+			}
+		}
+		return returnList;
+	}
+	
+	public void createXCLFromFindingsTrace (Section<QuestionID> solution) {
+		Section<QuestionTreeAnswerID> answer = findAnswer(solution);
+		Section<QuestionID> question = findQuestion(answer);
+		StringBuffer sb = new StringBuffer();
+		sb.append("\n" + solution.getOriginalText() +"{\n");
+		traceFindings(sb, question, answer);
+		sb.append("}");
+		Section<CoveringListContent> covCon = findCoveringListContent(solution);
+		replaceSection(covCon, covCon.getOriginalText() + sb.toString());
+	}
+
+	private void traceFindings(StringBuffer sb, Section<QuestionID> question, Section<QuestionTreeAnswerID> answer) {
+		sb.append("\t" + question.getOriginalText() + " = " + answer.getOriginalText() + ",\n");
+		Section<QuestionTreeAnswerID> nextAnswer = findAnswerIndicatingQuestion(question);
+		if(nextAnswer != null) {
+			Section<QuestionID> nextQuestion = findQuestion(nextAnswer);
+			traceFindings(sb, nextQuestion, nextAnswer);
+		}
+	}
+	
+	public void deleteSolutionOccurrences (Section<QuestionID> solution) {
+		List<Section<QuestionID>> list = new LinkedList<Section<QuestionID>>();
+		solution.getArticle().getSection().findSuccessorsOfType(new QuestionID(), list);
+		for(Section<QuestionID> sqid: list) {
+			if (sqid.getOriginalText().equals(solution.getOriginalText())) {
+				replaceSection(sqid.getFather().getFather().getFather(), "");
+			}
+		}
+	}
+	
 	
 	// HILFSMETHODEN
 	
@@ -615,7 +686,7 @@ public class RefactoringSession {
 		KnowWEArticle article = section.getArticle();
 		String topic = article.getTitle();
 		String text = manager.replaceKDOMNodeWithoutSave(parameters, topic, section.getId(), newText);
-		article = new KnowWEArticle(text, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
-		manager.saveUpdatedArticle(article);
+		KnowWEArticle newArticle = new KnowWEArticle(text, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
+		manager.saveUpdatedArticle(newArticle);
 	}
 }
