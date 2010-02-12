@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import de.d3web.core.KnowledgeBase;
-import de.d3web.core.kpers.PersistenceManager;
+import de.d3web.core.io.PersistenceManager;
 
 public class TestLoader {
 

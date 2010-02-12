@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import de.d3web.core.KnowledgeBase;
-import de.d3web.core.kpers.PersistenceManager;
+import de.d3web.core.io.PersistenceManager;
 import de.d3web.knowledgeExporter.KnowledgeManager;
 import de.d3web.knowledgeExporter.txtWriters.DecisionTreeWriter;
 import de.d3web.knowledgeExporter.txtWriters.DiagnosisHierarchyWriter;

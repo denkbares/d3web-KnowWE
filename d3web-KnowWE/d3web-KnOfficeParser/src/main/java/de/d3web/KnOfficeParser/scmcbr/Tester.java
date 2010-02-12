@@ -33,8 +33,8 @@ import org.antlr.runtime.RecognitionException;
 import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.RestrictedIDObjectManager;
 import de.d3web.core.KnowledgeBase;
-import de.d3web.core.kpers.PersistenceManager;
-import de.d3web.core.kpers.progress.ProgressListener;
+import de.d3web.core.io.PersistenceManager;
+import de.d3web.core.io.progress.ProgressListener;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 
