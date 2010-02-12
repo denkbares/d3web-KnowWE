@@ -23,6 +23,7 @@ package de.d3web.we.kdom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -324,7 +325,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 */
 	@Override
 	public List<KnowWEObjectType> getAllowedChildrenTypes() {
-		return this.childrenTypes;
+		return Collections.unmodifiableList(childrenTypes);
 	}
 
 	@Override
