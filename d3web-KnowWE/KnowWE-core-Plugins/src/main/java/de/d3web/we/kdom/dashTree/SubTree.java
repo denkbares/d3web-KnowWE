@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.KnowWEUtils;
@@ -53,6 +54,7 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 		// rescursive type definition
 		this.childrenTypes.add(this);
 		this.childrenTypes.add(new OverdashedElement());
+		this.childrenTypes.add(new CommentLineType());
 	}
 
 	/**

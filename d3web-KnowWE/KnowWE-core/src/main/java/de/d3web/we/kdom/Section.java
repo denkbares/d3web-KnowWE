@@ -681,6 +681,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.children.remove(s);
 
 	}
+	
+	public void removeAllChildren() {
+		this.children = new LinkedList<Section<? extends KnowWEObjectType>>();
+		//this.childrenParsingOrder = new LinkedList<Section<? extends KnowWEObjectType>>();
+	}
 
 	/**
 	 * Scanning subtree for Section with given id

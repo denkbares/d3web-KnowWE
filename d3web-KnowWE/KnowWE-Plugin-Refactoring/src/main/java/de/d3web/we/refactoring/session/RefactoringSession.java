@@ -47,9 +47,11 @@ import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.basic.AnonymousType;
+import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.decisionTree.QClassID;
 import de.d3web.we.kdom.decisionTree.SolutionID;
+import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 import de.d3web.we.kdom.objects.QuestionnaireID;
@@ -185,8 +187,9 @@ public class RefactoringSession {
 		for (String changedArticle: changedArticles) {
 			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
 			int versionBefore = we.getPage(changedArticle).getVersion();
-			manager.replaceKDOMNode(parameters, changedArticle, changedArticle, 
-					manager.findNode(changedArticle).getOriginalText());
+			StringBuilder newArticleText = new StringBuilder();
+			manager.findNode(changedArticle).collectTextsFromLeaves(newArticleText);
+			manager.replaceKDOMNode(parameters, changedArticle, changedArticle, newArticleText.toString());
 			// tracking of article versions
 			int versionAfter = we.getPage(changedArticle).getVersion();
 			if (! changedWikiPages.containsKey(changedArticle)) {
@@ -522,6 +525,9 @@ public class RefactoringSession {
 				WikiPage page = we.getPage(section.getId());
 				WikiContext wc = new WikiContext(we, page);
 				pr.renamePage(wc, section.getId(), newName, true);
+				
+				
+				
 			} catch (WikiException e) {
 				// FIXME Auto-generated catch block
 				e.printStackTrace();
@@ -596,6 +602,14 @@ public class RefactoringSession {
 		}
 	}
 	
+	public void deleteComments (String sectionID) {
+		Section<?> section = manager.findNode(sectionID);
+		List<Section<CommentLineType>> list = new LinkedList<Section<CommentLineType>>();
+		section.getArticle().getSection().findSuccessorsOfType(new CommentLineType(), list);
+		for(Section<CommentLineType> commentLine: list) {
+			replaceSection(commentLine, "");
+		}
+	}
 	
 	// HILFSMETHODEN
 	
@@ -683,10 +697,36 @@ public class RefactoringSession {
 		} else {
 			changedSections.put(section.getId(), new String[] {changedSections.get(section.getId())[0], newText});
 		}
-		KnowWEArticle article = section.getArticle();
+		KnowWEArticle article = section.getArticle(); 
 		String topic = article.getTitle();
-		String text = manager.replaceKDOMNodeWithoutSave(parameters, topic, section.getId(), newText);
-		KnowWEArticle newArticle = new KnowWEArticle(text, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
-		manager.saveUpdatedArticle(newArticle);
+		customReplaceKDOMNodeWithoutSave(parameters, topic, section.getId(), newText);
+		//KnowWEArticle newArticle = new KnowWEArticle(text, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
+		//manager.saveUpdatedArticle(newArticle);
+	}
+	
+
+	public void customReplaceKDOMNodeWithoutSave(KnowWEParameterMap map, String articleName,
+			String nodeID, String replacingText) {
+		KnowWEArticle art = manager.getArticle(articleName);
+		if (art == null) {
+			throw new RuntimeException("customReplaceKDOMNodeWithoutSave: Article " + articleName + " could not be found.");
+		}
+		Section<KnowWEArticle> root = art.getSection();
+		replaceNodeTextSetLeaf(root, nodeID, replacingText);
+	}
+	
+	private void replaceNodeTextSetLeaf(Section<?> sec, String nodeID, String replacingText) {
+		if (sec.getId().equals(nodeID)) {
+			sec.setOriginalText(replacingText);
+			sec.removeAllChildren();
+			return;
+		}
+		List<Section<?>> children = sec.getChildren();
+		if (children == null || children.isEmpty() || sec.getObjectType() instanceof Include) {
+			return;
+		}
+		for (Section<?> section : children) {
+			replaceNodeTextSetLeaf(section, nodeID, replacingText);
+		}
 	}
 }

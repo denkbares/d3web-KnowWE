@@ -22,6 +22,7 @@ package de.d3web.we.kdom.dashTree;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
@@ -39,6 +40,7 @@ public class DashTree extends DefaultAbstractKnowWEObjectType{
 	public DashTree() {
 		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new SubTree());
+		this.childrenTypes.add(new CommentLineType());
 		this.setCustomRenderer(new PreRenderer());
 	}
 	
