@@ -2,6 +2,7 @@ package de.d3web.we.kdom.defaultMarkup;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import de.d3web.report.Message;
@@ -198,7 +199,14 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.getObjectType().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		return section.findChildOfType(AnnotationType.class);
+		List<Section<AnnotationType>> children = section.findChildrenOfType(AnnotationType.class);
+		for (Section<AnnotationType> child : children) {
+			String childName = child.getObjectType().getName();
+			if (childName.equalsIgnoreCase(name)) {
+				return child;
+			}
+		}
+		return null;
 	}
 
 	/**
