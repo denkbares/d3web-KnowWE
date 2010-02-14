@@ -55,7 +55,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 
 			if (qc != null) {
 				String newRuleID = mgn.findNewIDFor(Rule.class);
-				AbstractCondition cond = Utils.createCondition(element);
+				AbstractCondition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 				if (cond != null) {
 					Rule r = RuleFactory.createIndicationRule(newRuleID, qc,
 							cond);

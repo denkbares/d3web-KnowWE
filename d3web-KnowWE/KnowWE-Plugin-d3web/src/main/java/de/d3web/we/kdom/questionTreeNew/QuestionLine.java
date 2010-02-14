@@ -101,7 +101,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 				String newRuleID = mgn.findNewIDFor(Rule.class);
 
-				AbstractCondition cond = Utils.createCondition(element);
+				AbstractCondition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 
 				Rule r = RuleFactory.createIndicationRule(newRuleID, qidSection
 						.get().getObject(qidSection), cond);

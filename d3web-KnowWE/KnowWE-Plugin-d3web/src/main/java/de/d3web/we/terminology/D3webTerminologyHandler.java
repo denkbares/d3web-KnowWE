@@ -78,8 +78,8 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	private Map<String, Boolean> usingOldKBM = new HashMap<String, Boolean>();
 	
 	/**
-	 * Store whether the KnowledgeBase already got cleaned from Knowledge of
-	 * a specific ObjectType.
+	 * List of all ObjectTypes whose knowledge needs to get cleaned from the
+	 * KnowledgeBase.
 	 */
 	private Map<String, HashSet<Class<? extends KnowledgeRecyclingObjectType>>> typesToClean 
 			= new HashMap<String, HashSet<Class<? extends KnowledgeRecyclingObjectType>>>();
@@ -222,7 +222,7 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	 * (respectively got reused), <tt>false</tt> is returned and no flags get set.
 	 * As soon as a changed Sections calls this, the method decides whether the old
 	 * KnowledgeBase is reusable or if a complete rebuild of the KnowledgeBase
-	 * is necessary. Then, on the one hand the needed actions are performed to the
+	 * is necessary. Then, on the one hand the needed actions are performed on the
 	 * KnowledgeBase, on the other hand, to save this decision for the following 
 	 * Sections calling this method, according flags are set.
 	 * An additional review is performed when this method is called with the root
@@ -230,7 +230,7 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	 * called after all Sections of the Articles are revised. In this review the
 	 * number of knowledge containing Sections in the article gets checked against
 	 * the number of knowledge containing Sections in the last version of the
-	 * article. If it differs it is again checked, depending on the nature of
+	 * article. If it differs, it again gets checked, depending on the nature of
 	 * Sections that are missing, if the KnowledgeBase needs to be rebuild or if
 	 * it is simply possible to erase the knowledge of the removed Section from
 	 * the KnowledgeBase...
@@ -250,8 +250,8 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 		
 		// if the finishedKBM flag is set, always return true, so the KBM gets
 		// returned from the getKBM method
-		// the flag gets set after revising all Sections respectively after
-		// the knowledge is completely build or recycled, so
+		// the flag gets set after all Sections are revised, respectively after
+		// the knowledge is completely build or recycled... so
 		// for example renderer get the KBM without further checks.
 		if (finishedKBM.get(title)) {
 			return true;
@@ -326,7 +326,7 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 				// if there exists a previous version of the KnowledgeBase, there hasn't been
 				// added any knowledge to the current KnowledgeBase and the current (changed) Section
 				// contains knowledge that can be modified in the KnowledgeBase or the current Section
-				// is the root Section but the number of terminology containing Sections hasn't changed
+				// is the root Section and the number of terminology containing Sections hasn't changed
 				// in the article, then the last version of the KnowledgeBase can be reused.
 				lastKbms.remove(title);
 				usingOldKBM.put(title, true);
@@ -338,7 +338,8 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 				if (s.getObjectType() instanceof KnowWEArticle) {
 					// this is the root Section respectively the last time in the process of
 					// building this article this method is called, so its time to clean the
-					// KnowledgeBase
+					// KnowledgeBase (it is still possible, that the some knowledge containing
+					// Sections got deleted, so their knowledge needs to get deleted too)
 					cleanKnowledge(article);
 				}
 				return true;
@@ -356,6 +357,8 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 		Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> lastCountMap = lastKnowledgeSectionsCount.get(article.getTitle());
 		for (Class<? extends KnowledgeRecyclingObjectType> clazz:lastCountMap.keySet()) {
 			if (countMap.get(clazz) == null || !countMap.get(clazz).equals(lastCountMap.get(clazz))) {
+				// add the ObjectTypes whose number of Sections in the article has changed
+				// to the list of ObjectTypes to clean
 				typesToClean.get(article.getTitle()).add(clazz);
 			}
 		}

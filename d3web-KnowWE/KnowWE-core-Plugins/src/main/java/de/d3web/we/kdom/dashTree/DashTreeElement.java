@@ -73,12 +73,30 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 			if(father != null) {
 				Section grandFather = father.getFather();
 				if(grandFather != null) {
-					return grandFather.findChildOfType(new DashTreeElement());
+					return grandFather.findChildOfType(DashTreeElement.class);
 				}
 			}
 		}
 		return null;
 		
+	}
+	
+	
+	public static List<Section<? extends DashTreeElement>> getDashTreeAncestors(Section<? extends DashTreeElement> s) {
+		List<Section<? extends DashTreeElement>> ancestors = new ArrayList<Section<? extends DashTreeElement>>();
+		List<Section> ancestorSubTrees = new ArrayList<Section>();
+		Section father = s.getFather();
+		if (father != null && father.getObjectType().isAssignableFromType(SubTree.class)) {
+			father = father.getFather();
+		}
+		while (father != null && father.getObjectType().isAssignableFromType(SubTree.class)) {
+			ancestorSubTrees.add(father);
+			father = father.getFather();
+		}
+		for (Section subTree:ancestorSubTrees) {
+			ancestors.add(subTree.findChildOfType(DashTreeElement.class));
+		}
+		return ancestors;
 	}
 	
 	/**
