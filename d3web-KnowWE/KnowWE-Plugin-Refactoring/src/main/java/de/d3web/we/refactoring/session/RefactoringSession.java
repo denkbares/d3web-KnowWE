@@ -58,6 +58,7 @@ import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.xcl.CoveringListContent;
 import de.d3web.we.kdom.xcl.XCList;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 public class RefactoringSession {
 	
@@ -174,21 +175,14 @@ public class RefactoringSession {
 		}
 		Set<String> changedArticles = new HashSet<String>();
 		for (String changedSectionID: changedSections.keySet()) {
-			String title;
-			// es muss so umständlich gemacht werden, wenn man sich die section holen will um den article zu bestimmen kann
-			// dies zu problemen führen, denn die section könnte ja gelöscht worden sein.
-			if (changedSectionID.contains("/")) {
-				title = changedSectionID.substring(0, changedSectionID.indexOf("/"));
-			} else {
-				title = changedSectionID;
-			}
+			String title = getArticleName(changedSectionID);
 			changedArticles.add(title);
 		}
 		for (String changedArticle: changedArticles) {
 			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
 			int versionBefore = we.getPage(changedArticle).getVersion();
 			StringBuilder newArticleText = new StringBuilder();
-			manager.findNode(changedArticle).collectTextsFromLeaves(newArticleText);
+			customCollectTextsFromLeaves(manager.findNode(changedArticle), newArticleText);
 			manager.replaceKDOMNode(parameters, changedArticle, changedArticle, newArticleText.toString());
 			// tracking of article versions
 			int versionAfter = we.getPage(changedArticle).getVersion();
@@ -262,6 +256,18 @@ public class RefactoringSession {
 		// TODO wie wäre es, wenn sich der Thread gleich aus der HashMap von RefactoringAction selbst enfernt? 
 		// sehr wichtig: Thread freigeben, da Script nun fertig
 		terminated  = true;
+	}
+
+	private String getArticleName(String changedSectionID) {
+		String title;
+		// es muss so umständlich gemacht werden, wenn man sich die section holen will um den article zu bestimmen kann
+		// dies zu problemen führen, denn die section könnte ja gelöscht worden sein.
+		if (changedSectionID.contains("/")) {
+			title = changedSectionID.substring(0, changedSectionID.indexOf("/"));
+		} else {
+			title = changedSectionID;
+		}
+		return title;
 	}
 
 	private String getStackTraceString(Exception e) {
@@ -532,6 +538,21 @@ public class RefactoringSession {
 				// FIXME Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			for (Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
+				KnowWEArticle art = it.next();
+				List<Section<Include>> includes = new LinkedList<Section<Include>>();
+				art.getSection().findSuccessorsOfType(Include.getInstance(), includes);
+				for(Section<Include> inc : includes) {
+					Map<String,String> attributes = AbstractXMLObjectType.getAttributeMapFor(inc);
+					String src = attributes.get("src");
+					String articleName = getArticleName(src);
+					String newSrc = src.replaceFirst(articleName, newName);
+					StringBuffer replacement = new StringBuffer( "<include src=\"" + newSrc + "\" />");
+					replaceSection(inc, replacement.toString());
+				}
+			}
+			
 		} else {
 			replaceSection(section, newName);
 		}
@@ -728,5 +749,17 @@ public class RefactoringSession {
 		for (Section<?> section : children) {
 			replaceNodeTextSetLeaf(section, nodeID, replacingText);
 		}
+	}
+
+	private void customCollectTextsFromLeaves(Section<?> section, StringBuilder buffi) {
+		if (section.getChildren() != null && section.getChildren().size() > 0
+				&& !(section.getObjectType() instanceof Include)) {
+			for (Section<?> s : section.getChildren()) {
+				customCollectTextsFromLeaves(s, buffi);
+			}
+		} else {
+			buffi.append(section.getOriginalText());
+		}
+
 	}
 }
