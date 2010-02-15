@@ -1,5 +1,7 @@
 package de.d3web.we.refactoring.session;
 
+import de.d3web.we.refactoring.script.DeleteComments;
+
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
@@ -42,6 +44,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.KnowWEScriptLoader;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
@@ -57,6 +60,7 @@ import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.xcl.CoveringListContent;
+import de.d3web.we.kdom.xcl.CoveringListSection;
 import de.d3web.we.kdom.xcl.XCList;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
@@ -115,13 +119,13 @@ public class RefactoringSession {
 		this.gsonFormMap = gsonFormMap;
 	}
 	
-	public void runSession() {
+	private void runSession() {
 		try {
 			Object[] args = {};
 			ClassLoader parent = getClass().getClassLoader();
 			GroovyClassLoader loader = new GroovyClassLoader(parent);
 			Section<?> refactoringSection = findRefactoringSection();
-			String identity = "R_E_F_A_C_T_O_R_I_N_G___S_E_S_S_I_O_N";
+			String identity = "refactoringSession";
 //			String identity = "rs";
 //			String ls = System.getProperty("line.separator");
 			StringBuffer sb = new StringBuffer();
@@ -129,7 +133,7 @@ public class RefactoringSession {
 			sb.append(refactoringSection.getOriginalText());
 			sb.append("}");
 			Class<?> groovyClass = loader.parseClass(sb.toString());
-//			GroovyObject gob = new XCLToRules();
+//			GroovyObject gob = new DeleteComments(this);
 			GroovyObject gob = (GroovyObject) groovyClass.newInstance();
 			if (gob instanceof groovy.lang.Script) {
 				Script script = (Script) gob;
@@ -258,14 +262,14 @@ public class RefactoringSession {
 		terminated  = true;
 	}
 
-	private String getArticleName(String changedSectionID) {
+	private String getArticleName(String sectionID) {
 		String title;
 		// es muss so umständlich gemacht werden, wenn man sich die section holen will um den article zu bestimmen kann
 		// dies zu problemen führen, denn die section könnte ja gelöscht worden sein.
-		if (changedSectionID.contains("/")) {
-			title = changedSectionID.substring(0, changedSectionID.indexOf("/"));
+		if (sectionID.contains("/")) {
+			title = sectionID.substring(0, sectionID.indexOf("/"));
 		} else {
-			title = changedSectionID;
+			title = sectionID;
 		}
 		return title;
 	}
@@ -295,6 +299,23 @@ public class RefactoringSession {
 	public Section<CoveringListContent> findCoveringListContent(Section<?> knowledgeSection) {
 		KnowWEArticle article = knowledgeSection.getArticle();
 		Section<CoveringListContent> coveringListContent = article.getSection().findSuccessor(new CoveringListContent());
+		if (coveringListContent == null) {
+//			Section<RootType> srt = article.getSection().findSuccessor(RootType.getInstance());
+//			replaceSection(srt, srt.getOriginalText().concat(
+//					"\r\n<SetCoveringList-section>\r\n" + 
+//					"\r\n" + 
+//					"</SetCoveringList-section>\r\n"));
+//			StringBuilder newArticleText = new StringBuilder();
+//			customCollectTextsFromLeaves(article.getSection(), newArticleText);
+			StringBuilder newArticleText = new StringBuilder(article.getSection().getOriginalText());
+			//TODO ganz böse - der Artikel wird gespeichert in einer Zwischenversion, nur um an die SetCoveringList-section ranzukommen...
+			manager.replaceKDOMNode(parameters, article.getTitle(), article.getTitle(), newArticleText.append("\r\n<SetCoveringList-section>\r\n" + 
+					"\r\n" + 
+					"</SetCoveringList-section>\r\n").toString());
+			KnowWEArticle articleNew = manager.getArticle(article.getTitle());
+			Section<CoveringListContent> coveringListContentNew = articleNew.getSection().findSuccessor(new CoveringListContent());
+			return coveringListContentNew;
+		}
 		return coveringListContent;
 	}
 
