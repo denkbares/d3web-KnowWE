@@ -29,7 +29,7 @@ import java.util.Set;
 import de.d3web.we.core.KnowWEParameterMap;
 
 /**
- * KnowWEs MultiSearchEngine mananges multple SearchProviders which are all asked
+ * KnowWEs MultiSearchEngine manages multiple SearchProviders which are all asked
  * when a search query comes in. 
  * 
  * @author Jochen
@@ -40,10 +40,8 @@ public class MultiSearchEngine {
 	private static MultiSearchEngine instance;
 
 	public static MultiSearchEngine getInstance() {
-		if (instance == null) {
+		if (instance == null)
 			instance = new MultiSearchEngine();
-
-		}
 		return instance;
 	}
 
