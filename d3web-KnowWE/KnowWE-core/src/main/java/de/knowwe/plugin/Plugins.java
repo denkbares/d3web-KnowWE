@@ -7,7 +7,7 @@ import java.util.List;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.action.KnowWEAction;
-import de.d3web.we.core.KnowWEScriptLoader;
+import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.module.PageAppendHandler;
@@ -153,7 +153,7 @@ public class Plugins {
 		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_KnowWEObjectType));
 		getStripts(files, PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_TagHandler));
 		for (String s: files) {
-			KnowWEScriptLoader.getInstance().add(s, false);
+			KnowWERessourceLoader.getInstance().add(s, KnowWERessourceLoader.RESOURCE_SCRIPT);
 		}
 	}
 

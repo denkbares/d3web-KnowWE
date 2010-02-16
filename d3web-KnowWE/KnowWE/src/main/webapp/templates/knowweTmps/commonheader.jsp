@@ -27,9 +27,6 @@
 <wiki:IncludeResources type="stylesheet"/>
 <wiki:IncludeResources type="inlinecss" />
 
-  <link rel="stylesheet" media="screen, projection" type="text/css"
-     href="KnowWEExtension/css/general.css"/>
-
 <%-- display the more-menu inside the leftmenu, when javascript is not avail --%>
 <noscript>
 <style type="text/css">

@@ -775,8 +775,6 @@ font-size:120%;
     margin: 5px 0 5px 2px;
 }
 
-
-
 #KNOWWE-ajax-loader{
     position: fixed;
     top: 50%;
@@ -797,78 +795,6 @@ font-size:120%;
 .semLink:hover {
 	text-decoration:underline;
 }
-
-
-/* ################################################## */
-/* -------------- Biolog search       --------------- */
-/* ################################################## */
-#biologsearch {
-    border: 1px solid #1D7D35;
-    padding:30px;
-}
-
-#biologsearch .form li {
-    /*left:0;
-    position:absolute;
-    top:0;
-    width:590px;*/
-}
-#biologsearch .form li label, #biologsearch .form li input {
-    border:0 none;
-    left:5px;
-    padding:5px;
-    position:absolute;
-    top:4px;
-    width:80%;
-}
-#biologsearch ul.form {
-    height:25px;
-    position:relative;
-    width:100%;
-    -moz-border-radius-bottomleft:5px;
-    -moz-border-radius-bottomright:5px;
-    -moz-border-radius-topleft:5px;
-    -moz-border-radius-topright:5px;
-    background: #1D7D35 none repeat scroll 0 0;
-    display:block;
-    padding:5px 5px 4px;    
-    list-style-type:none;
-}
-#biologsearch input#searchsubmit {
-    background: #1D7D35 none repeat scroll 0 0;
-    color: rgb(255,255,255);
-    left:auto;
-    position:absolute;
-    right:1%;
-    text-align:center;
-    width:20%;
-}
-.biolog-cloud-link{
-    color: rgb(29,125,53);
-    cursor: pointer;	
-}
-#knowwe-autocompletion{
-    background-color: rgb(255,255,255);
-	border: 1px solid rgb(0,0,0);
-	margin-left: 5px;
-    overflow: auto;
-    position: absolute;
-    width:30%;
-    z-index: 300;
-}
-#knowwe-autocompletion ul{
-    list-style-type: none;
-    margin: 0px;
-    padding: 5px;
-}
-#knowwe-autocompletion .highlight{
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.3); 
-}
-#knowwe-autocompletion strong{
-    color: rgb(0, 0, 255);
-}
-
 
 /* ################################################## */
 /* -------------- Flowchart           --------------- */

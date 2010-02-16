@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -39,7 +40,6 @@ import org.apache.commons.io.FileUtils;
 
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
-import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.event.WikiEvent;
 import com.ecyrd.jspwiki.event.WikiEventListener;
 import com.ecyrd.jspwiki.event.WikiEventUtils;
@@ -48,11 +48,11 @@ import com.ecyrd.jspwiki.filters.BasicPageFilter;
 import com.ecyrd.jspwiki.filters.FilterException;
 import com.ecyrd.jspwiki.plugin.PluginException;
 import com.ecyrd.jspwiki.plugin.WikiPlugin;
-import com.ecyrd.jspwiki.providers.ProviderException;
+import com.ecyrd.jspwiki.ui.TemplateManager;
 
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEScriptLoader;
+import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
@@ -276,12 +276,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 				}
 			}
 		
-			KnowWEScriptLoader.getInstance().add("KnowWE.js", true);
-			KnowWEScriptLoader.getInstance().add("KnowWE-helper.js", true);
-			
-			String jsModuleIncludes = KnowWEScriptLoader.getInstance().getIncludes();
-			articleString.append( KnowWEUtils.maskHTML(jsModuleIncludes) );
-				
+		    this.handleIncludes( wikiContext );
+
 
 			// long timeEnde = System.currentTimeMillis();
 
@@ -347,6 +343,39 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 			amgr.deleteArticle(amgr.getArticle(e.getPageName()));
 		}
 		
+	}
+	
+	/**
+	 * Adds the CSS and JS files to the current page.
+	 * @param wikiContext
+	 */
+	private void handleIncludes(WikiContext wikiContext){
+		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
+		KnowWERessourceLoader loader = KnowWERessourceLoader.getInstance();
+		
+		
+		loader.addFirst("KnowWE.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+		loader.addFirst("KnowWE-helper.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+		
+		LinkedList<String> script = loader.getScriptIncludes();
+		for (String resource : script) {
+			if( ctx != null && !ctx.toString().contains( resource )) {
+			    TemplateManager.addResourceRequest(wikiContext, KnowWERessourceLoader.RESOURCE_SCRIPT, KnowWERessourceLoader.defaultScript+resource);
+			} else if( ctx == null ) {
+				TemplateManager.addResourceRequest(wikiContext, KnowWERessourceLoader.RESOURCE_SCRIPT, KnowWERessourceLoader.defaultScript+resource);
+			}
+		}
+		
+		loader.addFirst("general.css", KnowWERessourceLoader.RESOURCE_STYLESHEET);
+		
+		LinkedList<String> css = loader.getStylesheetIncludes();
+		for (String resource : css) {
+			if( ctx != null && !ctx.toString().contains( resource )) {
+			    TemplateManager.addResourceRequest(wikiContext, KnowWERessourceLoader.RESOURCE_STYLESHEET, KnowWERessourceLoader.defaultStylesheet+resource);
+			} else if( ctx == null ) {
+				TemplateManager.addResourceRequest(wikiContext, KnowWERessourceLoader.RESOURCE_STYLESHEET, KnowWERessourceLoader.defaultStylesheet+resource);
+			}
+		}	
 	}
 
 }
