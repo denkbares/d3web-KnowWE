@@ -71,9 +71,10 @@ public class CoveringTableHeaderColumnCellContent extends
 				lineSec.setType(QuestionLine.getInstance());
 
 			}
+			
+			//&& mgn.findQuestion(removeQTypeMarkup(text)) != null
 
-			if (containsQTypeMarkup(text)
-					&& mgn.findQuestion(removeQTypeMarkup(text)) != null) {
+			if (containsQTypeMarkup(text)) {
 				Section lineSec = KnowWEObjectTypeUtils.getAncestorOfType(s,
 						TableLine.class);
 
