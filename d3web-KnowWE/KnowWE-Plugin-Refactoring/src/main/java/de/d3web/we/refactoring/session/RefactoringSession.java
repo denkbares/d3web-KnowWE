@@ -1,7 +1,5 @@
 package de.d3web.we.refactoring.session;
 
-import de.d3web.we.refactoring.script.DeleteComments;
-
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
@@ -42,9 +40,8 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.KnowWEScriptLoader;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.RootType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
@@ -60,7 +57,6 @@ import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.xcl.CoveringListContent;
-import de.d3web.we.kdom.xcl.CoveringListSection;
 import de.d3web.we.kdom.xcl.XCList;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
