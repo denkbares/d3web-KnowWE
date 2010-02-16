@@ -27,7 +27,7 @@ import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.KnowWEScriptLoader;
+import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.decisionTree.SolutionID;
@@ -69,7 +69,7 @@ public class GetXCLAction extends AbstractKnowWEAction {
 		List<Section<XCList>> xclists = new ArrayList<Section<XCList>>();
 		articleSection.findSuccessorsOfType(new XCList(), xclists);
 		StringBuilder html = new StringBuilder();
-		KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+		KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 		html.append("<fieldset><div class='left'>"
 				+ "<p>Es wurden <strong>x</strong> Refactorings gefunden. Bitte wählen Sie das gewünschte Refactoring aus.</p></div>"
 				+ "<div style='clear:both'></div><form name='refactoringform'><div class='left'><label for='article'>Refactoring</label>"

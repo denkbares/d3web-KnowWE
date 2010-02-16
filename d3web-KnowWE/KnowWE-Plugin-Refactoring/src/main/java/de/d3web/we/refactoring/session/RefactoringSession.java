@@ -39,7 +39,7 @@ import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.KnowWEScriptLoader;
+import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -214,7 +214,7 @@ public class RefactoringSession {
 					".<br />");
 				}
 				 
-				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Möchten Sie die Änderungen rückgängig machen?</p></div>"
 						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Undo</label>"
@@ -341,7 +341,7 @@ public class RefactoringSession {
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
-				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 				StringBuffer html = new StringBuffer();
 				SortedSet<String> topics = new TreeSet<String>();
 				for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
@@ -374,7 +374,7 @@ public class RefactoringSession {
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
-				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 				StringBuffer html = new StringBuffer();
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Wählen Sie den Typ des Objekts aus, welches sie umbenennen möchten:</p></div>"
@@ -417,7 +417,7 @@ public class RefactoringSession {
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
-				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 				StringBuffer html = new StringBuffer();
 				SortedSet<String> topics = new TreeSet<String>();
 				for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
@@ -468,7 +468,7 @@ public class RefactoringSession {
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
-				KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 				StringBuffer html = new StringBuffer();
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Wählen Sie den neuen Namen des gewählten Objekts:</p></div>"

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEScriptLoader;
+import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
@@ -48,7 +48,7 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 		List<Section<Refactoring>> refactorings = new ArrayList<Section<Refactoring>>();
 		articleSection.findSuccessorsOfType(new Refactoring(), refactorings);
 		StringBuffer html = new StringBuffer();
-		KnowWEScriptLoader.getInstance().add("RefactoringPlugin.js", false);
+		KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 		html.append("<div id='refactoring-panel' class='panel'><h3>Refactoring Konsole</h3><div id='refactoring-content'>"
 				+ "<fieldset><div class='left'>" + "<p>Es wurden <strong>" + refactorings.size()
 				+ "</strong> Refactorings auf dieser Seite gefunden. Bitte wählen Sie das gewünschte Refactoring aus.</p></div>"
