@@ -129,7 +129,6 @@ public class SearchTerminologyHandler {
 
 		Set<SearchTerm> filtered = new HashSet<SearchTerm>();
 
-		int cnt = 0;
 		int maxTerms = 20;
 
 		SearchTerm exactMatch = null;
@@ -148,9 +147,10 @@ public class SearchTerminologyHandler {
 //					.expandSearchTerm(exactMatch));
 //		}
 
-		maxTerms = maxTerms - filtered.size();
+		maxTerms -= filtered.size();
 
 		// TODO implement more efficiently
+		int cnt = 0;
 		while (cnt < maxTerms) {
 			cnt++;
 			double max = Double.NEGATIVE_INFINITY;
@@ -163,8 +163,8 @@ public class SearchTerminologyHandler {
 				}
 			}
 			similarities.remove(minTerm);
-			filtered.add(minTerm);
-
+			if (minTerm != null)
+				filtered.add(minTerm);
 		}
 		
 		if(filtered.size() > 25) {
