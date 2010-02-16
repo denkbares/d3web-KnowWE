@@ -229,9 +229,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 
 		if (objectType != null
-				&& !objectType.equals(Include.getInstance())
-				&& !objectType.equals(PlainText.getInstance())
-				&& !objectType.equals(VerbatimType.getInstance())) {
+				&& !objectType.getClass().equals(Include.class)
+				&& !objectType.getClass().equals(PlainText.class)
+				&& !objectType.getClass().equals(VerbatimType.class)) {
 			types.add(Include.getInstance());
 		}
 		
@@ -247,7 +247,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 
 		if (types.size() == 0 && objectType != null) {
-			if (!objectType.equals(PlainText.getInstance())) {
+			if (!objectType.getClass().equals(PlainText.class)) {
 				types.add(PlainText.getInstance());
 			}
 		}
@@ -256,8 +256,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		 * searches for children types and splits recursively
 		 */
 		if (!(this instanceof UndefinedSection)
-				&& !objectType.equals(PlainText.getInstance()) 
-				&& !objectType.equals(Include.getInstance())
+				&& !objectType.getClass().equals(PlainText.class)
+				&& !objectType.getClass().equals(Include.class)
 				&& !isExpanded) {
 			Sectionizer.getInstance().splitToSections(originalText, types, this,
 					article);
