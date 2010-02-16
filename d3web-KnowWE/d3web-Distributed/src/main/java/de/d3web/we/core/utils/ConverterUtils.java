@@ -22,10 +22,13 @@ package de.d3web.we.core.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.values.AnswerDate;
 import de.d3web.core.session.values.AnswerNum;
+import de.d3web.core.session.values.EvaluatableAnswerDateValue;
 import de.d3web.core.terminology.IDObject;
 
 public class ConverterUtils {
@@ -56,7 +59,15 @@ public class ConverterUtils {
 				if(value != null) {
 					result.add(value);
 				}
-			} else if(idObject instanceof IDObject) {
+			}
+			else if (idObject instanceof AnswerDate) {
+				EvaluatableAnswerDateValue dateEval = (EvaluatableAnswerDateValue) ((AnswerDate)idObject).getValue(theCase);
+				Date value = dateEval.eval(theCase);
+				if(value != null) {
+					result.add(value);
+				}
+			}
+			else if(idObject instanceof IDObject) {
 				result.add(((IDObject) idObject).getId());
 			}
 		}
