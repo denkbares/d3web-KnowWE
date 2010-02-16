@@ -82,13 +82,13 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 
 	private final static String SECTION_REGEXP =
 				// Declaration
-	"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=]?\\p{Blank}*" +
+	"^\\p{Blank}*%%$NAME$\\p{Blank}*" +
 			"(?:" +
 				// multi-line content with termination
 			// starts with an empty rest of the line (only comment is allowed)
 			// and followed by any text terminated by a single "% in a line with
 			// no other content
-			"(?:(?://[^$]*?)?$" + // only comment allowed before end-of-line
+			"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" + // only comment allowed before end-of-line
 			"(.*?)" + // CONTENT --> anything in multiple lines (reluctant
 			// match)
 			"^\\p{Blank}*%\\p{Blank}*$" + // only % in a line
@@ -97,7 +97,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 			"|(?:" +
 						// at least one non-whitespace character followed by any
 			// non-line-break item
-			"\\p{Blank}*([^/][^$]*?)$" + // CONTENT --> anything in a single
+			"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)$" + // CONTENT --> anything in a single
 			// line
 			// (reluctant match)
 			"))";

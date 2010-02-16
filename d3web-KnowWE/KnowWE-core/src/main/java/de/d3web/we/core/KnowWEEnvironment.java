@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -43,7 +44,6 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
@@ -256,19 +256,16 @@ public class KnowWEEnvironment {
 		instance.initModules(wiki.getServletContext(), DEFAULT_WEB);
 	}
 
-	public boolean registerConditionalRendererToType(Class clazz,
+	public boolean registerConditionalRendererToType(Class<? extends KnowWEObjectType> clazz,
 			KnowWEDomRenderer renderer) {
 		List<KnowWEObjectType> instances = KnowWEEnvironment.getInstance()
 				.searchTypeInstances(clazz);
 
 		for (KnowWEObjectType annoType : instances) {
-
-			if (annoType instanceof AbstractKnowWEObjectType) {
-				if (annoType.getRenderer() instanceof ConditionalRenderer) {
-					((ConditionalRenderer) annoType.getRenderer())
-							.addConditionalRenderer(renderer);
-					return true;
-				}
+			if (annoType.getRenderer() instanceof ConditionalRenderer) {
+				((ConditionalRenderer) annoType.getRenderer())
+						.addConditionalRenderer(renderer);
+				return true;
 			}
 		}
 
@@ -367,18 +364,15 @@ public class KnowWEEnvironment {
 			initDefaultTagHandlers();
 			// loadData(context);
 			initWikiSolutionsPage();
-			SemanticCore sc = SemanticCore.getInstance(this);
+			SemanticCore.getInstance(this); /// init lazy instance
 
 			System.out.println("INITIALISED KNOWWE ENVIRONMENT");
-			// this doesnt look nice, but its way easier to find bugs here than
-			// in JSPWiki...
 		}
 		catch (Exception e) {
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
-			Logger.getLogger(KnowWEEnvironment.class.getName());
-			// e.printStackTrace();
+			Logger.getLogger("KnowWE").log(Level.SEVERE, "unexpected exception during KnowWE initialization", e);
 		}
 
 	}
@@ -805,7 +799,7 @@ public class KnowWEEnvironment {
 		if (web == null || topic == null)
 			return null;
 		KnowWEArticle art = this.articleManagers.get(web).getArticle(topic);
-		Section sec = art.getNode(nodeID);
+		Section<?> sec = art.getNode(nodeID);
 		String data = "Node not found: " + nodeID;
 		if (sec != null) {
 			data = sec.getOriginalText();
@@ -840,7 +834,7 @@ public class KnowWEEnvironment {
 		return this.allKnowWEObjectTypes;
 	}
 
-	public List<KnowWEObjectType> searchTypeInstances(Class clazz) {
+	public List<KnowWEObjectType> searchTypeInstances(Class<?> clazz) {
 		List<KnowWEObjectType> instances = new ArrayList<KnowWEObjectType>();
 		for (KnowWEObjectType type : getRootTypes()) {
 			type.findTypeInstances(clazz, instances);

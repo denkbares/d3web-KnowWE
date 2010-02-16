@@ -54,6 +54,7 @@ public class DefaultMarkup {
 		 */
 		public boolean matches(String annotationContent) {
 			if (pattern == null) return true;
+			if (annotationContent == null) return false;
 			return pattern.matcher(annotationContent).matches();
 		}
 

@@ -11,7 +11,7 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 	private final static int FLAGS = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 	private final static String SECTION_REGEXP =
 			// prefix (declare the markup section)
-			"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=]?\\p{Blank}*" +
+			"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=\\p{Space}]\\p{Blank}*" +
 			// content (any reluctant matched)
 			"\\p{Space}*(.*?)\\p{Space}*" +
 			// suffix: terminate-tag or end-of-input or declare next parameter
@@ -19,7 +19,7 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 			"|" +
 			"(?:\\z)" +
 			"|" +
-			"(?:^\\p{Blank}*@\\w+))";
+			"(?:\\p{Space}*@\\w+))";
 
 	private final DefaultMarkup markup;
 	

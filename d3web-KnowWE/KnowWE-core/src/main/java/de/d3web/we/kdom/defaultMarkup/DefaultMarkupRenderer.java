@@ -18,17 +18,19 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
 		string.append("{{{\n");
-		
-		Collection<Message> messages = DefaultMarkupType.getErrorMessages(section);
-		renderMessageBlock(getMessagesOfType(messages, Message.ERROR), string);
-		renderMessageBlock(getMessagesOfType(messages, Message.WARNING), string);
-		renderMessageBlock(getMessagesOfType(messages, Message.NOTE), string);
-
+		renderMessages(section, string);
 		DelegateRenderer.getInstance().render(article, section, user, string);
 		string.append("}}}");
 	}
 
 
+	public static void renderMessages(Section<?> section, StringBuilder string) {
+		Collection<Message> messages = DefaultMarkupType.getErrorMessages(section);
+		renderMessageBlock(getMessagesOfType(messages, Message.ERROR), string);
+		renderMessageBlock(getMessagesOfType(messages, Message.WARNING), string);
+		renderMessageBlock(getMessagesOfType(messages, Message.NOTE), string);
+	}
+	
 	private static Message[] getMessagesOfType(Collection<Message> allMessages, String messageType) {
 		if (allMessages == null) return null;
 		Collection<Message> result = new LinkedList<Message>();
@@ -40,7 +42,7 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer {
 		return result.toArray(new Message[result.size()]);
 	}
 	
-	private void renderMessageBlock(Message[] messages, StringBuilder string) {
+	private static void renderMessageBlock(Message[] messages, StringBuilder string) {
 		if (messages == null) return;
 		if (messages.length == 0) return;
 
