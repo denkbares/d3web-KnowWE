@@ -71,15 +71,15 @@ public class CalendarHandler extends AbstractTagHandler{
 		
 		for(String elem: articleMap.keySet()) {
 			
-			Map<String,Section> found = new HashMap<String,Section>();
+			Map<String,Section<Appointment>> found = new HashMap<String,Section<Appointment>>();
 			
 			KnowWEArticle article = instance.getArticle(web, elem);
 			
 			if(article == null) continue; // TODO perhaps some dates are not imported
 			
-			article.getSection().findSuccessorsOfType(Appointment.class, found);
+			article.getSection().findSuccessorsOfTypeAsMap(Appointment.class, found);
 			
-			for(java.util.Map.Entry<String, Section> mapEntry : found.entrySet()) {
+			for(java.util.Map.Entry<String, Section<Appointment>> mapEntry : found.entrySet()) {
 				Section[] s = new Section[4];
 				String[] entry = new String[4];
 				
