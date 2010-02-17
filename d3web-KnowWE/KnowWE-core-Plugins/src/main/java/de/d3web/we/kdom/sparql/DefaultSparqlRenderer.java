@@ -31,6 +31,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.utils.KnowWEUtils;
 
 public class DefaultSparqlRenderer implements SparqlRenderer {
 
@@ -59,7 +60,7 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 	String output = "";
 	boolean tablemode = false;
 
-	table.append(KnowWEEnvironment.maskHTML("<ul>"));
+	table.append(KnowWEUtils.maskHTML("<ul>"));
 
 	try {
 	    while (result.hasNext()) {
@@ -70,7 +71,7 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 		    tablemode = names.size() > 1;
 		}
 		if (tablemode) {
-		    table.append(KnowWEEnvironment.maskHTML("<tr>"));
+		    table.append(KnowWEUtils.maskHTML("<tr>"));
 		}
 
 		for (String cur : names) {
@@ -78,10 +79,16 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 		    if (erg.split("#").length == 2)
 			erg = erg.split("#")[1];
 		    if (links) {
-			if (KnowWEEnvironment.getInstance().getWikiConnector()
-				.doesPageExist(erg)) {
-			    erg = "<a href=\"Wiki.jsp?page=" + erg + "\">"
-				    + erg + "</a>";
+			try {
+				if (KnowWEEnvironment.getInstance().getWikiConnector()
+					.doesPageExist(erg)|| KnowWEEnvironment.getInstance().getWikiConnector()
+					.doesPageExist(URLDecoder.decode(erg,"UTF-8)"))) {
+				    erg = KnowWEUtils.maskHTML("<a href=\"Wiki.jsp?page=" + erg + "\">"
+					    + erg + "</a>");
+				}
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		    }
 		    try {
@@ -91,11 +98,11 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 			e.printStackTrace();
 		    }
 		    if (tablemode) {
-			table.append(KnowWEEnvironment.maskHTML("<td>") + erg
-				+ KnowWEEnvironment.maskHTML("</td>"));
+			table.append(KnowWEUtils.maskHTML("<td>") + erg
+				+ KnowWEUtils.maskHTML("</td>"));
 		    } else {
-			table.append(KnowWEEnvironment.maskHTML("<li>") + erg
-				+ KnowWEEnvironment.maskHTML("</li>\n"));
+			table.append(KnowWEUtils.maskHTML("<li>") + erg
+				+ KnowWEUtils.maskHTML("</li>\n"));
 		    }
 
 		}
