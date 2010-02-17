@@ -249,7 +249,7 @@ public class KnowWEIncludeManager {
 			// if the target stays the same but contains an Include, it is possible, 
 			// that the target of that Include has changed and therefore the article
 			// also needs to be rebuild
-			if (lastTarget != target || target.findSuccessor(Include.getInstance()) != null) {
+			if (lastTarget != target || target.findSuccessor(Include.class) != null) {
 				if (lastTarget != null) {
 					// since the target has changed, the including article doesn't 
 					// reuse the last target

@@ -751,7 +751,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Deprecated
 	public <OT extends KnowWEObjectType> Section<? extends OT> findChildOfType(OT objectTypeInstance) {
 		return (Section<? extends OT>) findChildOfType(objectTypeInstance.getClass());
 	}
@@ -777,6 +777,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * 
 	 * @param section
 	 */
+	@Deprecated
 	public <OT extends KnowWEObjectType> List<Section<OT>> findChildrenOfType(OT t) {
 		List<Section<OT>> result = new ArrayList<Section<OT>>();
 		for (Section s : this.getChildren())
@@ -785,13 +786,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return result;
 	}
 	
-	public <T extends KnowWEObjectType>Section<T> findSuccessor(T t) {
+	@Deprecated
+	public <T extends KnowWEObjectType> Section<T> findSuccessorForType(T t) {
 		Class<?> class1 = t.getClass();
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
 			return (Section<T>) this;
 		}
 		for (Section sec : getChildren()) {
-			Section<T> s = sec.findSuccessor(t);
+			Section<T> s = sec.findSuccessorForType(t);
 			if (s != null)
 				return s;
 		}
@@ -799,11 +801,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return null;
 	}
 	
-	@Deprecated
-	public Section findSuccessor(Class<?> class1) {
+	@SuppressWarnings("unchecked")
+	public<OT extends KnowWEObjectType> Section<OT> findSuccessor(Class<OT> class1) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
-			return this;
+			return (Section<OT>)this;
 		}
 		for (Section sec : getChildren()) {
 			Section s = sec.findSuccessor(class1);
@@ -818,8 +820,23 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * Finds all successors of type <code>class1</code> in the KDOM below this
 	 * Section.
 	 */
+	@SuppressWarnings("unchecked")
+	public<OT extends KnowWEObjectType> void findSuccessorsOfType(Class<OT> class1, List<Section<OT>> found) {
+
+		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
+			found.add((Section<OT>)this);
+		}
+		for (Section sec : getChildren()) {
+			sec.findSuccessorsOfType(class1, found);
+		}
+	}
+	
+	/**
+	 * Finds all successors of type <code>class1</code> in the KDOM below this
+	 * Section.
+	 */
 	@Deprecated
-	public void findSuccessorsOfType(Class<?> class1, List<Section> found) {
+	public void findSuccessorsOfTypeUntyped(Class class1, List<Section> found) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
 			found.add(this);
@@ -829,6 +846,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 	
+	@Deprecated
 	public <T extends KnowWEObjectType>void findSuccessorsOfType(T t, List<Section<T>> found) {
 		Class<?> class1 = t.getClass();
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
@@ -839,23 +857,24 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 	
+	
 	/**
 	 * Finds all successors of type <code>class1</code> in the KDOM below this
 	 * Section and stores them in a Map, using their originalText as key.
 	 */
-	@Deprecated
-	public void findSuccessorsOfType(Class<?> class1, Map<String, Section> found) {
+	@SuppressWarnings("unchecked")
+	public<OT extends KnowWEObjectType>  void findSuccessorsOfTypeAsMap(Class<OT> class1, Map<String, Section<OT>> found) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
 			Section tmp = found.get(this.getOriginalText());
 			// only replace the finding by this Section, if this Section is not reused
 			// but the Section already in the map is reused
 			if (tmp == null || (tmp.isReusedBy(getTitle()) && !this.isReusedBy(getTitle()))) {
-				found.put(this.getOriginalText(), this);
+				found.put((this).getOriginalText(), (Section<OT>)this);
 			}
 		}
 		for (Section sec : getChildren()) {
-			sec.findSuccessorsOfType(class1, found);
+			sec.findSuccessorsOfTypeAsMap(class1, found);
 		}
 
 	}
@@ -864,6 +883,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * Finds all successors of type <code>class1</code> in the KDOM below this
 	 * Section and stores them in a Map, using their originalText as key.
 	 */
+	@Deprecated
 	public <T extends KnowWEObjectType>void findSuccessorsOfType(T t, Map<String, Section<T>> found) {
 
 		if (t.getClass().isAssignableFrom(this.getObjectType().getClass())) {
@@ -879,17 +899,20 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 
 	}
+	
+	
+	
 
 	/**
 	 * Finds all successors of type <code>class1</code> in the KDOM to the depth
 	 * of <code>depth</code> below this Section.
 	 */
-	@Deprecated
-	public void findSuccessorsOfType(Class<?> class1, int depth,
-			List<Section> found) {
+	@SuppressWarnings("unchecked")
+	public<OT extends KnowWEObjectType> void findSuccessorsOfType(Class<OT> class1, int depth,
+			List<Section<OT>> found) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
-			found.add(this);
+			found.add((Section<OT>)this);
 		}
 		if (depth == 0) {
 			return;
@@ -904,6 +927,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * Finds all successors of type <code>class1</code> in the KDOM to the depth
 	 * of <code>depth</code> below this Section.
 	 */
+	@Deprecated
 	public <T extends KnowWEObjectType> void findSuccessorsOfType(T t, int depth,
 			List<Section<T>> found) {
 
@@ -1089,9 +1113,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.father = father;
 	}
 	
-	public boolean setType(T newType) {
+	@SuppressWarnings("unchecked")
+	public boolean setType(KnowWEObjectType newType) {
 		if(objectType.getClass() != (newType.getClass()) && objectType.getClass().isAssignableFrom(newType.getClass())) {
-			this.objectType = newType;
+			this.objectType = (T) newType;
 			newType.reviseSubtree(getArticle(), this);
 			return true;
 		}

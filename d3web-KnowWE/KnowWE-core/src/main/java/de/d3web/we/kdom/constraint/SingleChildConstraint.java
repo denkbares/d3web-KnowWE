@@ -40,7 +40,7 @@ public class SingleChildConstraint implements SectionFinderConstraint {
 	@Override
 	public boolean satisfiesConstraint(List<SectionFinderResult> found,
 			Section father, KnowWEObjectType type) {
-		List findChildrenOfType = father.findChildrenOfType(type);
+		List<Section<? extends KnowWEObjectType>> findChildrenOfType = father.findChildrenOfType(type.getClass());
 		if(findChildrenOfType != null && findChildrenOfType.size() > 0) {
 			return false;
 		}

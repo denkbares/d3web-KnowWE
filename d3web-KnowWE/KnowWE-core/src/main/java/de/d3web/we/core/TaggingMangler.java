@@ -80,7 +80,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				pagename);
 		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
-		article.getSection().findSuccessorsOfType(new TagsContent(), tagslist);
+		article.getSection().findSuccessorsOfType(TagsContent.class, tagslist);
 		HashSet<String> tags = new HashSet<String>();
 		if (tagslist.size() > 0) {
 			boolean multiple = tagslist.size() > 1;
@@ -121,11 +121,11 @@ public class TaggingMangler implements KnowWESearchProvider {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				pagename);
-		ArrayList<Section> tagslist = new ArrayList<Section>();
+		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
 		article.getSection().findSuccessorsOfType(TagsContent.class, tagslist);
 		HashSet<String> tags = new HashSet<String>();
 		boolean multiple = tagslist.size() > 1;
-		for (Section cur : tagslist) {
+		for (Section<TagsContent> cur : tagslist) {
 			for (String temptag : cur.getOriginalText().split(" |,")) {
 				tags.add(temptag.trim());
 			}
@@ -292,7 +292,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				topic);
-		ArrayList<Section> tagslist = new ArrayList<Section>();
+		ArrayList<Section<TagsContent>> tagslist = new ArrayList<Section<TagsContent>>();
 		article.getSection().findSuccessorsOfType(TagsContent.class, tagslist);
 		boolean multiple = tagslist.size() > 1;
 		String output = "";

@@ -141,8 +141,9 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 		List<Section<? extends KnowWEObjectType>> children = s.getChildren();
 		for (Section section : children) {
 			if (section.getObjectType() instanceof XMLContent) {
-				List<Section<AbstractXMLObjectType>> nodes = section
-						.findChildrenOfType(AbstractXMLObjectType.getDefaultInstance());
+				Section<XMLContent> conSec = (Section<XMLContent>)section;
+				List<Section<AbstractXMLObjectType>> nodes = conSec
+						.findChildrenOfType(AbstractXMLObjectType.class);
 				for (Section<AbstractXMLObjectType> section2 : nodes) {
 					findSubSectionsOfTag(
 							tagname, section2,  c);
