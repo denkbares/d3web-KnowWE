@@ -20,7 +20,6 @@
 
 package de.d3web.KnOfficeParser.util;
 
-import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 import org.antlr.runtime.FailedPredicateException;
@@ -30,399 +29,349 @@ import org.antlr.runtime.RecognitionException;
 import de.d3web.core.terminology.info.NumericalInterval;
 import de.d3web.report.Message;
 /**
- * Generieungsklasse für Fehlermeldung
+ * Class for generating error messages
  * @author Markus Friedrich
  *
  */
 public class MessageKnOfficeGenerator {
 	private static ResourceBundle rb = ResourceBundle.getBundle("errors");
 	
+	private static MessageGenerator mg = new MessageGenerator(rb);
+	
 	public static ResourceBundle getResourceBundle() {
 		return rb;
 	}
 	
 	public static Message createLexerNVAE(String file, RecognitionException re) {
-		return createErrorMSG("lexernvae", file, re.line, "", ErrorMsg.getCharString(re.c));
+		return mg.createErrorMSG("lexernvae", file, re.line, "", ErrorMsg.getCharString(re.c));
 	}
 	
 	public static Message createLexerMTE(String file, MismatchedTokenException mte) {
-		return createErrorMSG("lexermte", file, mte.line, "", ErrorMsg.getCharString(mte.c), ErrorMsg.getCharString(mte.expecting));
+		return mg.createErrorMSG("lexermte", file, mte.line, "", ErrorMsg.getCharString(mte.c), ErrorMsg.getCharString(mte.expecting));
 	}
 	
 	public static Message createUnknownLexerError(String file, RecognitionException re) {
-		return createErrorMSG("unknownReadError", file, re.line, "", "Lexer");
+		return mg.createErrorMSG("unknownReadError", file, re.line, "", "Lexer");
 	}
 	
 	public static Message createPropertieError(String file, String propertiefile) {
-		return createErrorMSG("propertyfile", file, 0, "", propertiefile);
+		return mg.createErrorMSG("propertyfile", file, 0, "", propertiefile);
 	}
 	
 	public static Message createParserNVAE(String file, RecognitionException re) {
-		return createErrorMSG("parsernvae", file, re.line, "", ErrorMsg.getTokenString(re.token));
+		return mg.createErrorMSG("parsernvae", file, re.line, "", ErrorMsg.getTokenString(re.token));
 	}
 	
 	public static Message createEmptyLineEndingException(String file, RecognitionException re) {
-		return createErrorMSG("emptylineending", file, re.line, "");
+		return mg.createErrorMSG("emptylineending", file, re.line, "");
 	}
 	
 	public static Message createParserMTE(String file, MismatchedTokenException mte, String expected) {
-		return createErrorMSG("parsermte", file, mte.line, "", expected, ErrorMsg.getTokenString(mte.token));
+		return mg.createErrorMSG("parsermte", file, mte.line, "", expected, ErrorMsg.getTokenString(mte.token));
 	}
 	
 	public static Message createUnknownParserError(String file, RecognitionException re) {
-		return createErrorMSG("unknownReadError", file, re.line, "", "Parser");
+		return mg.createErrorMSG("unknownReadError", file, re.line, "", "Parser");
 	}
 	
 	public static Message createQuestionNotFoundException(String file, int line, String linetext, String question) {
-		return createErrorMSG("qnf", file, line, linetext, question);
+		return mg.createErrorMSG("qnf", file, line, linetext, question);
 	}
 	
 	public static Message createQuestionNotFoundException(String file, int line, int column, String linetext, String question) {
-		return createErrorMSG("qnf", file, line, column, linetext, question);
+		return mg.createErrorMSG("qnf", file, line, column, linetext, question);
 	}
 	
 	public static Message createTypeRecognitionError(String file, int line, String linetext, String question, String type) {
-		return createErrorMSG("typerecognitionerror", file, line, linetext, question, type);
+		return mg.createErrorMSG("typerecognitionerror", file, line, linetext, question, type);
 	}
 	
 	public static Message createTypeMismatchWarning(String file, int line, String linetext, String question, String type) {
-		return createWarningMSG("typemismatch", file, line, linetext, question, type);
+		return mg.createWarningMSG("typemismatch", file, line, linetext, question, type);
 	}
 	
 	public static Message createTypeMismatchWarning(String file, int line, int column, String linetext, String question, String type) {
-		return createWarningMSG("typemismatch", file, line, column, linetext, question, type);
+		return mg.createWarningMSG("typemismatch", file, line, column, linetext, question, type);
 	}
 	
 	public static Message createNaNException(String file, int line, String linetext, String number) {
-		return createErrorMSG("nan", file, line, linetext, number);
+		return mg.createErrorMSG("nan", file, line, linetext, number);
 	}
 	
 	public static Message createUnknownOpException(String file, int line, String linetext, String op) {
-		return createErrorMSG("unknownOp", file, line, linetext, op);
+		return mg.createErrorMSG("unknownOp", file, line, linetext, op);
 	}
 	
 	public static Message createWrongYNAnswer(String file, int line, String linetext, String question) {
-		return createErrorMSG("ynQuestion", file, line, linetext, question);
+		return mg.createErrorMSG("ynQuestion", file, line, linetext, question);
 	}
 	
 	public static Message createAnswerNotFoundException(String file, int line, String linetext, String answer, String question) {
-		return createErrorMSG("anf", file, line, linetext, answer, question);
+		return mg.createErrorMSG("anf", file, line, linetext, answer, question);
 	}
 	
 	public static Message createAnswerNotFoundException(String file, int line, int column, String linetext, String answer, String question) {
-		return createErrorMSG("anf", file, line, column, linetext, answer, question);
+		return mg.createErrorMSG("anf", file, line, column, linetext, answer, question);
 	}
 	
 	public static Message createNoAnswerAllowedException(String file, int line, String linetext) {
-		return createErrorMSG("naa", file, line, linetext);
+		return mg.createErrorMSG("naa", file, line, linetext);
 	}
 	
 	public static Message createIntervallRangeError(String file, int line, String linetext) {
-		return createErrorMSG("intervallRangeError", file, line, linetext);
+		return mg.createErrorMSG("intervallRangeError", file, line, linetext);
 	}
 	
 	public static Message createIntervallQuestionError(String file, int line, String linetext) {
-		return createErrorMSG("intervallQuestionError", file, line, linetext);
+		return mg.createErrorMSG("intervallQuestionError", file, line, linetext);
 	}
 	
 	public static Message createNoValidCondsException(String file, int line, String linetext) {
-		return createErrorMSG("noConds", file, line, linetext);
+		return mg.createErrorMSG("noConds", file, line, linetext);
 	}
 	
 	public static Message createQuestionClassNotFoundException(String file, int line, String linetext, String qc) {
-		return createErrorMSG("qcnf", file, line, linetext, qc);
+		return mg.createErrorMSG("qcnf", file, line, linetext, qc);
 	}
 	
 	public static Message createQuestionClassNotFoundException(String file, int line, int column, String linetext, String qc) {
-		return createErrorMSG("qcnf", file, line, column, linetext, qc);
+		return mg.createErrorMSG("qcnf", file, line, column, linetext, qc);
 	}
 	
 	public static Message createQuestionClassorQuestionNotFoundException(String file, int line, String linetext, String qc) {
-		return createErrorMSG("qcnf", file, line, linetext, qc);
+		return mg.createErrorMSG("qcnf", file, line, linetext, qc);
 	}
 	
 	public static Message createNoValidQuestionsException(String file, int line, String linetext) {
-		return createErrorMSG("noQuestion", file, line, linetext);
+		return mg.createErrorMSG("noQuestion", file, line, linetext);
 	}
 	
 	public static Message createNoValidAnswerException(String file, int line, String linetext) {
-		return createErrorMSG("noAnswer", file, line, linetext);
+		return mg.createErrorMSG("noAnswer", file, line, linetext);
 	}
 	
 	public static Message createSupressError(String file, int line, String linetext) {
-		return createErrorMSG("supress", file, line, linetext);
+		return mg.createErrorMSG("supress", file, line, linetext);
 	}
 	
 	public static Message createWrongOperatorInAbstractionRule(String file, int line, String linetext) {
-		return createErrorMSG("wrongOpAbs", file, line, linetext);
+		return mg.createErrorMSG("wrongOpAbs", file, line, linetext);
 	}
 	
 	public static Message createQuestionOrDiagnosisNotFoundException(String file, int line, String linetext, String question) {
-		return createErrorMSG("qodnf", file, line, linetext, question);
+		return mg.createErrorMSG("qodnf", file, line, linetext, question);
 	}
 	
 	public static Message createOnlyNumOrChoiceAllowedError(String file, int line, String linetext) {
-		return createErrorMSG("onlyNumOrChoice", file, line, linetext);
+		return mg.createErrorMSG("onlyNumOrChoice", file, line, linetext);
 	}
 	
 	public static Message createWrongOperatorForDiag(String file, int line, String linetext) {
-		return createErrorMSG("wrongOpDiag", file, line, linetext);
+		return mg.createErrorMSG("wrongOpDiag", file, line, linetext);
 	}
 	
 	public static Message createScoreDoesntExistError(String file, int line, String linetext, String score) {
-		return createErrorMSG("scoreMissing", file, line, linetext, score);
+		return mg.createErrorMSG("scoreMissing", file, line, linetext, score);
 	}
 	
 	public static Message createScoreDoesntExistError(String file, int line, int column, String linetext, String score) {
-		return createErrorMSG("scoreMissing", file, line, column, linetext, score);
+		return mg.createErrorMSG("scoreMissing", file, line, column, linetext, score);
 	}
 	
 	public static Message createWrongOperatorforChoiceQuestionsException(String file, int line, String linetext) {
-		return createErrorMSG("wrongOpChoice", file, line, linetext);
+		return mg.createErrorMSG("wrongOpChoice", file, line, linetext);
 	}
 	
 	public static Message createOnlyNumInFormulaError(String file, int line, String linetext) {
-		return createErrorMSG("onlyNumInFormula", file, line, linetext);
+		return mg.createErrorMSG("onlyNumInFormula", file, line, linetext);
 	}
 	
 	public static Message createOnlyNumOrDoubleError(String file, int line, String linetext) {
-		return createErrorMSG("onlyNumOrDouble", file, line, linetext);
+		return mg.createErrorMSG("onlyNumOrDouble", file, line, linetext);
 	}
 	
 	public static Message createAntlrInputError(String file, int line, String linetext) {
-		return createErrorMSG("antlrInputError", file, line, linetext);
+		return mg.createErrorMSG("antlrInputError", file, line, linetext);
+	}
+	
+	public static Message createAntlrInputError(String file, int line, int column, String linetext) {
+		return mg.createErrorMSG("antlrInputError", file, line, column, linetext);
 	}
 	
 	public static Message createDiagnosisNotFoundException(String file, int line, String linetext, String diagnosis) {
-		return createErrorMSG("dnf", file, line, linetext, diagnosis);
+		return mg.createErrorMSG("dnf", file, line, linetext, diagnosis);
 	}
 	
 	public static Message createDiagnosisNotFoundException(String file, int line, int column, String linetext, String diagnosis) {
-		return createErrorMSG("dnf", file, line, column, linetext, diagnosis);
+		return mg.createErrorMSG("dnf", file, line, column, linetext, diagnosis);
 	}
 	
 	public static Message createAnswerNotNumericException(String file, int line, String linetext, String answer) {
-		return createErrorMSG("ann", file, line, linetext, answer);
+		return mg.createErrorMSG("ann", file, line, linetext, answer);
 	}
 	
 	public static Message createAnswerNotNumericException(String file, int line, int column, String linetext, String answer) {
-		return createErrorMSG("ann", file, line, column, linetext, answer);
+		return mg.createErrorMSG("ann", file, line, column, linetext, answer);
 	}
 	
 	public static Message createAnswerNotYNException(String file, int line, String linetext, String answer) {
-		return createErrorMSG("anyn", file, line, linetext, answer);
+		return mg.createErrorMSG("anyn", file, line, linetext, answer);
 	}
 	
 	public static Message createAnswerNotYNException(String file, int line, int column, String linetext, String answer) {
-		return createErrorMSG("anyn", file, line, column, linetext, answer);
+		return mg.createErrorMSG("anyn", file, line, column, linetext, answer);
 	}
 	
 	public static Message createAnswerCreationUnambiguousException(String file, int line, String linetext, String answer) {
-		return createErrorMSG("acu", file, line, linetext, answer);
+		return mg.createErrorMSG("acu", file, line, linetext, answer);
 	}
 	
 	public static Message createAnswerCreationUnambiguousException(String file, int line, int column, String linetext, String answer) {
-		return createErrorMSG("acu", file, line, column, linetext, answer);
+		return mg.createErrorMSG("acu", file, line, column, linetext, answer);
 	}
 	
 	public static Message createQuestionTypeNotSupportetException(String file, int line, String linetext, String question) {
-		return createErrorMSG("qtns", file, line, linetext, question);
+		return mg.createErrorMSG("qtns", file, line, linetext, question);
 	}
 	
 	public static Message createQuestionTypeNotSupportetException(String file, int line, int column, String linetext, String question) {
-		return createErrorMSG("qtns", file, line, linetext, column, question);
+		return mg.createErrorMSG("qtns", file, line, linetext, column, question);
 	}
 	
 	public static Message createNoXlsFileException(String file, int line, String linetext) {
-		return createErrorMSG("nxls", file, line, linetext);
+		return mg.createErrorMSG("nxls", file, line, linetext);
 	}
 	
 	public static Message createNoValidWeightException(String file, int line, String linetext, String weight) {
-		return createErrorMSG("nweight", file, line, linetext, weight);
+		return mg.createErrorMSG("nweight", file, line, linetext, weight);
 	}
 	
 	public static Message createNoValidWeightException(String file, int line, int column, String linetext, String weight) {
-		return createErrorMSG("nweight", file, line, column, linetext, weight);
+		return mg.createErrorMSG("nweight", file, line, column, linetext, weight);
 	}
 	
 	public static Message createNoValidThresholdException(String file, int line, String linetext, String threshold) {
-		return createErrorMSG("tnf", file, line, linetext, threshold);
+		return mg.createErrorMSG("tnf", file, line, linetext, threshold);
 	}
 	
 	public static Message createIntervallOutOfBoundsWarning(String file, int line, String linetext, Double d, String question, String op, NumericalInterval range) {
-		return createWarningMSG("iobe", file, line, linetext, op+d, range.toString(), question);
+		return mg.createWarningMSG("iobe", file, line, linetext, op+d, range.toString(), question);
 	}
 	
 	public static Message createIntervallOutOfBoundsWarning(String file, int line, String linetext, Double a, Double b, String question, NumericalInterval range) {
-		return createWarningMSG("iobe2", file, line, linetext, a, b, range, question);
+		return mg.createWarningMSG("iobe2", file, line, linetext, a, b, range, question);
 	}
 	
 	public static Message createNoNumQuestionException(String file, int line, String linetext) {
-		return createErrorMSG("numanswer", file, line, linetext);
+		return mg.createErrorMSG("numanswer", file, line, linetext);
 	}
 	
 	public static Message createNoQuestionOnStack(String file, int line, String linetext) {
-		return createErrorMSG("noquestiononstack", file, line, linetext);
+		return mg.createErrorMSG("noquestiononstack", file, line, linetext);
 	}
 	
 	public static Message createNoQuestionOnStack(String file, int line, int column, String linetext) {
-		return createErrorMSG("noquestiononstack", file, line, column, linetext);
+		return mg.createErrorMSG("noquestiononstack", file, line, column, linetext);
 	}
 	
 	public static Message createTooManyPropertiesOnQuestionLinkWarning(String file, int line, String linetext) {
-		return createWarningMSG("tmpoqc", file, line, linetext);
+		return mg.createWarningMSG("tmpoqc", file, line, linetext);
 	}
 	
 	public static Message createNoDescriptionsAtQuestionClassWarning(String file, int line, String linetext) {
-		return createWarningMSG("ndaqc", file, line, linetext);
+		return mg.createWarningMSG("ndaqc", file, line, linetext);
 	}
 	
 	public static Message createNoAddtoLink(String file, int line, String linetext) {
-		return createErrorMSG("natl", file, line, linetext);
+		return mg.createErrorMSG("natl", file, line, linetext);
 	}
 	
 	public static Message createTypeNotAllowed(String file, int line, String linetext, String type) {
-		return createErrorMSG("tna", file, line, linetext, type);
+		return mg.createErrorMSG("tna", file, line, linetext, type);
 	}
 	
 	public static Message createDescriptionNotAllowed(String file, int line, String linetext) {
-		return createErrorMSG("dna", file, line, linetext);
+		return mg.createErrorMSG("dna", file, line, linetext);
 	}
 	
 	public static Message createNotUsedDescriptionsAtFeatureDerivationWarning(String file, int line, String linetext) {
-		return createWarningMSG("nudafd", file, line, linetext);
+		return mg.createWarningMSG("nudafd", file, line, linetext);
 	}
 	
 	public static Message createSetOnlyAllowedAtFeatureDerivationWarning(String file, int line, String linetext) {
-		return createWarningMSG("soaafd", file, line, linetext);
+		return mg.createWarningMSG("soaafd", file, line, linetext);
 	}
 	
 	public static Message createNoParentQuestionError(String file, int line, String linetext) {
-		return createErrorMSG("npq", file, line, linetext);
+		return mg.createErrorMSG("npq", file, line, linetext);
 	}
 	
 	public static Message createTypInexistentError(String file, int line, String linetext, String question) {
-		return createErrorMSG("tie", file, line, linetext, question);
+		return mg.createErrorMSG("tie", file, line, linetext, question);
 	}
 	
 	public static Message createUnitAndRangeOnlyAtNumWarning(String file, int line, String linetext) {
-		return createWarningMSG("uaroan", file, line, linetext);
+		return mg.createWarningMSG("uaroan", file, line, linetext);
 	}
 	
 	public static Message createDescriptionTextNotFoundError(String file, int line, String linetext, String value) {
-		return createErrorMSG("dtnf", file, line, linetext, value);
+		return mg.createErrorMSG("dtnf", file, line, linetext, value);
 	}
 	
 	public static Message createNaNAtFeatureDerivationError(String file, int line, String linetext, String value) {
-		return createErrorMSG("nanafd", file, line, linetext, value);
+		return mg.createErrorMSG("nanafd", file, line, linetext, value);
 	}
 	
 	public static Message createDTparsedNote(String file, int line, String linetext, int i) {
-		return createNoteMSG("dtparsed", file, line, linetext, i);
+		return mg.createNoteMSG("dtparsed", file, line, linetext, i);
 	}
 	
 	public static Message createSolutionsParsedNote(String file, int line, String linetext, int i) {
-		return createNoteMSG("solutionsparsed", file, line, linetext, i);
+		return mg.createNoteMSG("solutionsparsed", file, line, linetext, i);
 	}
 	
 	public static Message createQContainerParsedNote(String file, int line, String linetext, int i) {
-		return createNoteMSG("qcontainersparsed", file, line, linetext, i);
+		return mg.createNoteMSG("qcontainersparsed", file, line, linetext, i);
 	}
 	
 	public static Message createTestsuiteParsedNote(String file, int line, String linetext, int i) {
-		return createNoteMSG("testsuiteparsed", file, line, linetext, i);
+		return mg.createNoteMSG("testsuiteparsed", file, line, linetext, i);
 	}
 	
 	public static Message createNameNotAllowedWarning(String file, int line, String linetext, String name) {
-		return createWarningMSG("nna", file, line, linetext, name);
+		return mg.createWarningMSG("nna", file, line, linetext, name);
 	}
 	
 	public static Message createWrongDiagState(String file, int line, String linetext, String state) {
-		return createErrorMSG("wds", file, line, linetext, state);
+		return mg.createErrorMSG("wds", file, line, linetext, state);
 	}
 	
 	public static Message createWrongDiagScore(String file, int line, String linetext) {
-		return createErrorMSG("wdsc", file, line, linetext);
+		return mg.createErrorMSG("wdsc", file, line, linetext);
 	}
 	
 	public static Message createTooManyDashes(String file, int line, String linetext) {
-		return createErrorMSG("tmd", file, line, linetext);
+		return mg.createErrorMSG("tmd", file, line, linetext);
 	}
 	
 	public static Message createAmbiguousOrderError(String file, int line, String linetext, int id) {
-		return createErrorMSG("ambiorder", file, line, linetext, id);
+		return mg.createErrorMSG("ambiorder", file, line, linetext, id);
 	}
 	
-	/**
-	 * Eigentliche Methode um Fehler zu generieren
-	 * @param key Schlüssel in der properties Datei
-	 * @param file Datei in der der Fehler auftrat
-	 * @param line Zeile in der der Fehler auftrat
-	 * @param linetext Text der Zeile in der der Fehler auftrat
-	 * @param adds In die Fehlermeldung einzufügende Objekte
-	 * @return Fehlermeldung
-	 */
-	public static Message createErrorMSG(String key, String file, int line, String linetext, Object... adds ) {
-		return Message.createError(generateText(key, adds), file, line, linetext);
-	}
-	
-	public static Message createErrorMSG(String key, String file, int line, int column, String linetext, Object... adds ) {
-		return Message.createError(generateText(key, adds), file, line, column, linetext);
-	}
-	
-	/**
-	 * Eigentliche Methode um Warnungen zu generieren
-	 * @param key Schlüssel in der properties Datei
-	 * @param file Datei in der der Fehler auftrat
-	 * @param line Zeile in der der Fehler auftrat
-	 * @param linetext Text der Zeile in der der Fehler auftrat
-	 * @param adds In die Fehlermeldung einzufügende Objekte
-	 * @return Fehlermeldung
-	 */
-	public static Message createWarningMSG(String key, String file, int line, String linetext, Object... adds ) {
-		return Message.createWarning(generateText(key, adds), file, line, linetext);
-	}
-	
-	public static Message createWarningMSG(String key, String file, int line, int column, String linetext, Object... adds ) {
-		return Message.createWarning(generateText(key, adds), file, line, column, linetext);
-	}
-	
-	public static Message createNoteMSG(String key, String file, int line, String linetext, Object... adds ) {
-		return Message.createNote(generateText(key, adds), file, line, linetext);
-	}
-	
-	public static Message createNoteMSGWithCount(String key, String file, int line, String linetext, Object... adds) {
-		int count = 0;
-		if (adds.length == 1 && adds[0] instanceof Integer) {
-			count = (Integer) adds[0];
-		}
-		return Message.createNoteWithCount(generateText(key, adds), file, line, linetext, count);
-	}
-
-	private static String generateText(String key, Object... adds) {
-		String result = rb.getString("unknownError") + ": " + key;
-		try {
-			result = MessageFormat.format(rb.getString(key), adds);
-		} catch (Exception e) {
-			
-		}
-		return result;
-	}
-
 	public static Message createRulesFinishedNote(String file, int rulecount) {
-		return createNoteMSGWithCount("rule", file, 0, "", rulecount);
+		return mg.createNoteMSGWithCount("rule", file, 0, "", rulecount);
 	}
 	
 	public static Message createXCLFinishedNote(String file, int i, String countfindings) {
-		return createNoteMSG("xcl", file, 0, "", i, countfindings);
+		return mg.createNoteMSG("xcl", file, 0, "", i, countfindings);
 	}
 
 	public static Message createNoDiagsError(String file, int startrow) {
-		return createErrorMSG("nodiagsinxls", file, startrow, "");
+		return mg.createErrorMSG("nodiagsinxls", file, startrow, "");
 	}
 
 	public static Message createXLSFileParsed(String file, int counter) {
-		return createNoteMSG("xls", file, 0, "", counter);
+		return mg.createNoteMSG("xls", file, 0, "", counter);
 	}
 
 	public static Message createParserFPE(String file,
@@ -434,6 +383,57 @@ public class MessageKnOfficeGenerator {
 		}
 	}
 	
+	public static Message createWorkbookError(String file) {
+		return mg.createErrorMSG("workbookloading", file, 0, null, file);
+	}
 	
+	public static Message createNoFloatError(String file, int line, int column, String text) {
+		return mg.createErrorMSG("nofloat", file, line, column, null, text);
+	}
 
+	
+	/**
+	 * Deprecated: use propertie file to store messages
+	 */
+	@Deprecated
+	public static Message createWarningMSG(String string, String idlink,
+			int line, String linetext, Object... adds) {
+		return mg.createWarningMSG(string, idlink, line, linetext, adds);
+	}
+
+	/**
+	 * Deprecated: use propertie file to store messages
+	 */
+	@Deprecated
+	public static Message createErrorMSG(String string, String file,
+			int line, String lineText, Object[] objects) {
+		return mg.createErrorMSG(string, file, line, lineText, objects);
+	}
+
+	/**
+	 * Deprecated: use propertie file to store messages
+	 */
+	@Deprecated
+	public static Message createErrorMSG(String string, String file,
+			int line, String lineText, String objectString) {
+		return mg.createErrorMSG(string, file, line, lineText, objectString);
+	}
+	
+	/**
+	 * Deprecated: use propertie file to store messages
+	 */
+	@Deprecated
+	public static Message createNoteMSG(String string, String file, int line,
+			String lineText, String string2) {
+		return mg.createNoteMSG(string, file, line, lineText, string2);
+	}
+	
+	/**
+	 * Deprecated: use propertie file to store messages
+	 */
+	@Deprecated
+	public static Message createNoteMSG(String string, String file, int line,
+			String lineText, int parsedAttributes) {
+		return mg.createNoteMSG(string, file, line, lineText, parsedAttributes);
+	}
 }

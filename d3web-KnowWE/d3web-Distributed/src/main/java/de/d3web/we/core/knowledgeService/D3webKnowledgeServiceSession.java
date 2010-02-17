@@ -154,8 +154,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			List<Object> values = new ArrayList<Object>();
 			List<Object> xclInferenceValues = new ArrayList<Object>();
 			DiagnosisState xclstate = model.getState(theCase);
-			Double precision = model.computeXCLScore(theCase);
-			Double support = model.computeSupport(theCase);
+			Double precision = model.getInferenceTrace(theCase).getScore();
+			Double support = model.getInferenceTrace(theCase).getSupport();
 			xclInferenceValues.add(precision);
 			xclInferenceValues.add(support);
 			values = new ArrayList<Object>();

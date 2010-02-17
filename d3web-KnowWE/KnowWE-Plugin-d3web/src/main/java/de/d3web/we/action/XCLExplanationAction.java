@@ -45,10 +45,10 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.xcl.InferenceTrace;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.inference.PSMethodXCL;
-import de.d3web.xcl.inference.XCLInferenceTrace;
 
 public class XCLExplanationAction extends AbstractKnowWEAction {
 	
@@ -122,7 +122,7 @@ public class XCLExplanationAction extends AbstractKnowWEAction {
 				if (knowledgeSlice instanceof XCLModel) {
 					if (((XCLModel) knowledgeSlice).getSolution().equals(
 							solution)) {
-						XCLInferenceTrace trace = ((XCLModel) knowledgeSlice)
+						InferenceTrace trace = ((XCLModel) knowledgeSlice)
 								.getInferenceTrace(c);
 						if (trace == null) {
 							return rb.getString("xclrenderer.notrace");
@@ -137,7 +137,7 @@ public class XCLExplanationAction extends AbstractKnowWEAction {
 	}
 
 
-	private String verbalizeTrace(XCLInferenceTrace trace, String solution) {
+	private String verbalizeTrace(InferenceTrace trace, String solution) {
 		this.template= new StringBuffer();
 		this.labels = ResourceBundle.getBundle("KnowWE_config", Locale.getDefault());
 		loadTemplate();

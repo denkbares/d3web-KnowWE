@@ -336,9 +336,9 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 			Collection<KnowledgeSlice> slices = kbm.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
 			for (KnowledgeSlice slice:slices) {
 				XCLModel model = (XCLModel) slice;
-				for (String id:model.getAllRelations().keySet()) {
-					if (!kbIDs.contains(id)) {
-						model.removeRelation(id);
+				for (de.d3web.xcl.XCLRelation rel: model.getAllRelations()) {
+					if (!kbIDs.contains(rel.getId())) {
+						model.removeRelation(rel);
 					}
 				}
 				if (model.getAllRelations().isEmpty()) {
