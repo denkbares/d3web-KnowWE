@@ -76,8 +76,8 @@ public class ForumBoxAction extends AbstractKnowWEAction {
 		
 				Section sec = KnowWEEnvironment.getInstance().getArticle(web, topic).getSection();
 				
-				List<Section> found = new ArrayList<Section>();
-				sec.findSuccessor(new Forum()).findSuccessorsOfType(new XMLTail(), found);
+				List<Section<XMLTail>> found = new ArrayList<Section<XMLTail>>();
+				sec.findSuccessor(Forum.class).findSuccessorsOfType(XMLTail.class, found);
 				
 				if (found.size() != 0) {
 					Section changeSec = found.get(found.size() - 1);
