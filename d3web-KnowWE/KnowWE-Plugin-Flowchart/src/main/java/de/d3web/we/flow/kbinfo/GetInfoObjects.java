@@ -167,8 +167,8 @@ public class GetInfoObjects extends AbstractKnowWEAction {
 			appendChilds(web, d3Service, qsets, buffer);
 			appendChilds(web, d3Service, base.getRootDiagnosis(), buffer);
 			// TODO: append flowcharts out of knowledge base here
-			List<Section> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
-			for (Section flowchart : flowcharts) {
+			List<Section<FlowchartType>> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
+			for (Section<FlowchartType> flowchart : flowcharts) {
 				FlowchartType type = (FlowchartType) flowchart.getObjectType();
 				buffer.append("\t\t<child>");
 				buffer.append(service.getId() + "/" + type.getFlowchartID(flowchart));
@@ -194,8 +194,8 @@ public class GetInfoObjects extends AbstractKnowWEAction {
 		else {
 			// if not inside knowledge base
 			// look for a flowchart th the article
-			List<Section> flowcharts = ManagerUtils.getFlowcharts(web, service);
-			for (Section flowchart : flowcharts) {
+			List<Section<FlowchartType>> flowcharts = ManagerUtils.getFlowcharts(web, service);
+			for (Section<FlowchartType> flowchart : flowcharts) {
 				FlowchartType type = (FlowchartType) flowchart.getObjectType();
 				String id = type.getFlowchartID(flowchart);
 				if (id.equalsIgnoreCase(objectID)) {

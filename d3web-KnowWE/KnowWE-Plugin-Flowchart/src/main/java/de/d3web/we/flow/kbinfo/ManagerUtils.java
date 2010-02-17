@@ -44,9 +44,9 @@ public class ManagerUtils {
 		return article;
 	}
 	
-	public static List<Section> getFlowcharts(String web, KnowledgeService service) {
+	public static List<Section<FlowchartType>> getFlowcharts(String web, KnowledgeService service) {
 		KnowWEArticle article = ManagerUtils.getArticle(web, service);
-		List<Section> result = new LinkedList<Section>();
+		List<Section<FlowchartType>> result = new LinkedList<Section<FlowchartType>>();
 		if (article != null) {
 			article.getSection().findSuccessorsOfType(FlowchartType.class, result);
 		}

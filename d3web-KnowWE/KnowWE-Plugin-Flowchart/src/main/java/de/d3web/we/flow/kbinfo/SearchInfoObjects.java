@@ -141,8 +141,8 @@ public class SearchInfoObjects extends AbstractKnowWEAction {
 				if (classes == null || classes.contains("flowchart")) {
 					// we may have a knowledge base without article 
 					// (seen for KnowWE-ExamplePage but no sense detected in that)
-					List<Section> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
-					for (Section flowchart : flowcharts) {
+					List<Section<FlowchartType>> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
+					for (Section<FlowchartType> flowchart : flowcharts) {
 						FlowchartType type = (FlowchartType) flowchart.getObjectType();
 						if (matches(type.getFlowchartName(flowchart).toLowerCase(), phrases)) {
 							result.add(d3Service.getId() + "/" + type.getFlowchartID(flowchart));

@@ -52,7 +52,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = artManager.getArticle(topic);
 		
-		List<Section> flows = new ArrayList<Section>();
+		List<Section<FlowchartType>> flows = new ArrayList<Section<FlowchartType>>();
 		
 		article.getSection().findSuccessorsOfType(FlowchartType.class, flows);
 
@@ -68,7 +68,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 			builder.append(getPathendText(theCase));
 		//
 		
-		for (Section section : flows) {
+		for (Section<FlowchartType> section : flows) {
 			
 			Map<String, String> attributeMap = AbstractXMLObjectType.getAttributeMapFor(section);
 			String name = attributeMap.get("name");
