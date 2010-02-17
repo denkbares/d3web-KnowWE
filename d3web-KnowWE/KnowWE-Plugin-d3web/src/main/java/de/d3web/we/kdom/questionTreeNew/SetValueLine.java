@@ -200,7 +200,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 		private String getArgumentString(Section s) {
 			String argument = null;
 			List<Section<AnonymousType>> children = new ArrayList<Section<AnonymousType>>();
-			s.getFather().findSuccessorsOfType(new AnonymousType(""), children);
+			s.getFather().findSuccessorsOfType(AnonymousType.class, children);
 			for (Section<AnonymousType> section : children) {
 				if (section.get().getName().equals(SETVALUE_ARGUMENT)) {
 					argument = section.getOriginalText().substring(1,

@@ -30,7 +30,6 @@ import java.util.Map.Entry;
 
 import de.d3web.core.KnowledgeBase;
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.AbstractCondition;
 import de.d3web.core.terminology.Diagnosis;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
@@ -41,6 +40,7 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.bulletLists.BulletContentType;
+import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLModel;
@@ -121,18 +121,26 @@ public class KBRenderer extends AbstractTagHandler {
 						}
 						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.rules") + ":</strong><p/>");
 						appendedRulesHeadline = true;
-						List<Section> allRules = new ArrayList<Section>();
+						List<Section<Rule>> allRules = new ArrayList<Section<de.d3web.we.kdom.rules.Rule>>();
+						List<Section<BulletContentType>> allBulletContentTypes = new ArrayList<Section<BulletContentType>>();
+						
 						KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
-								.getSection().findSuccessorsOfType(Rule.class, allRules);
+								.getSection().findSuccessorsOfType(BulletContentType.class, allBulletContentTypes);
 						KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
-								.getSection().findSuccessorsOfType(BulletContentType.class, allRules);
-						for (Section rule:allRules) {
+						.getSection().findSuccessorsOfType(Rule.class, allRules);
+						for (Section<Rule> rule:allRules) {
 							String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), topic, 
 									rule.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
 							idMap.put(kbRuleId, rule.getId());
 						}
+						
+						for (Section<BulletContentType> bullet:allBulletContentTypes) {
+							String kbRuleId = (String) KnowWEUtils.getStoredObject(bullet.getWeb(), topic, 
+									bullet.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
+							idMap.put(kbRuleId, bullet.getId());
+						}
 					}
-					Rule rule = ((Rule) knowledgeSlice);
+					de.d3web.core.inference.Rule rule = ((de.d3web.core.inference.Rule) knowledgeSlice);
 						
 					String kdomid = idMap.get(rule.getId());
 		

@@ -324,11 +324,11 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 			
 			long startTime = System.currentTimeMillis();
 			
-			List<Section> newXCLs = new ArrayList<Section>();
+			List<Section<XCLRelation>> newXCLs = new ArrayList<Section<XCLRelation>>();
 			article.getSection().findSuccessorsOfType(XCLRelation.class, newXCLs);
 			
 			Set<String> kbIDs = new HashSet<String>();
-			for (Section xcl:newXCLs) {
+			for (Section<XCLRelation> xcl:newXCLs) {
 				kbIDs.add((String) KnowWEUtils.getStoredObject(article.getWeb(), article
 						.getTitle(), xcl.getId(), CoveringListContent.KBID_KEY));
 			}

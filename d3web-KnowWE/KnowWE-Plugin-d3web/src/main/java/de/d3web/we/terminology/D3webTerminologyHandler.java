@@ -376,6 +376,7 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	
 	private void useNewKBM(KnowWEArticle article, Section s) {
 		usingNewKBM.put(article.getTitle(), true);
+		
 		savedToJar.put(article.getTitle(), false);
 		List<Section<? extends KnowWEObjectType>> sectionsToRevise = article.getAllNodesParsingPostOrder();
 		List<Section<? extends KnowWEObjectType>> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));

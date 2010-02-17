@@ -50,7 +50,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 						.getDashTreeFather(s);
 				if (dashTreeFather != null) {
 					// is child of a QClass declration => also declaration
-					if (dashTreeFather.findSuccessor(new QClassLine()) != null) {
+					if (dashTreeFather.findSuccessor(QClassLine.class) != null) {
 						return true;
 					}
 				}
@@ -87,7 +87,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 				if (dashTreeFather != null) {
 					// is child of a QClass declaration => also declaration
 					Section<QClassLine> parentQclass = dashTreeFather
-							.findSuccessor(new QClassLine());
+							.findSuccessor(QClassLine.class);
 					if (parentQclass != null) {
 						QASet localParent = mgn.findQContainer(parentQclass
 								.getOriginalText());

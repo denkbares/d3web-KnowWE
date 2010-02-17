@@ -60,8 +60,8 @@ public class Utils {
 			Section<? extends DashTreeElement> grandFather) {
 
 		Section<QuestionTreeAnswerID> answerSec = father
-				.findSuccessor(new QuestionTreeAnswerID());
-		Section<QuestionID> qSec = grandFather.findSuccessor(new QuestionID());
+				.findSuccessor(QuestionTreeAnswerID.class);
+		Section<QuestionID> qSec = grandFather.findSuccessor(QuestionID.class);
 
 		Question q = qSec.get().getObject(qSec);
 
@@ -74,7 +74,7 @@ public class Utils {
 		}
 
 		Section<NumericCondLine> numCondSec = father
-				.findSuccessor(new NumericCondLine());
+				.findSuccessor(NumericCondLine.class);
 
 		if (numCondSec != null && q instanceof QuestionNum) {
 			Double d = NumericCondLine.getValue(numCondSec);

@@ -9,6 +9,9 @@ public abstract class AnswerID extends D3webID<Answer> {
 		super("ANSWER_STORE_KEY");
 	}
 
-	public abstract Section<QuestionID> getQuestionSection(Section<? extends AnswerID> s);
+	//public abstract Section<QuestionID> getQuestionSection(Section<? extends AnswerID> s);
+
+	
+	public abstract <T extends QuestionID> Section<? extends QuestionID> getQuestionSection(Section<? extends AnswerID> s) ;
 
 }

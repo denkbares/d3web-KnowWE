@@ -33,7 +33,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 					Section<? extends DashTreeElement> dashFather = DashTreeElement
 							.getDashTreeFather((Section<DashTreeElement>) dashTreeElement);
 					if (dashFather != null
-							&& dashFather.findSuccessor(new QuestionLine()) != null) {
+							&& dashFather.findSuccessor(QuestionLine.class) != null) {
 						return true;
 					}
 				}
@@ -61,7 +61,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 				//"safe unsafe cast"
 				Section<QuestionTreeAnswerID> answer = (Section<QuestionTreeAnswerID>) s;
 				String name = answer.get().getID(answer);
-				Section<QuestionID> questionID = answer.get().getQuestionSection(answer);
+				Section<? extends QuestionID> questionID = answer.get().getQuestionSection(answer);
 				
 				//Section<QuestionID> questionID = ((QuestionTreeAnswerID)answer.getObjectType()).getQuestionSection(answer);
 				Question q = questionID.get().getObject(questionID);

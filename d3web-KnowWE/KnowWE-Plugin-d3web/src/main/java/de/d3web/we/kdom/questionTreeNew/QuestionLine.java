@@ -72,12 +72,18 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		qid.addReviseSubtreeHandler(new CreateIndicationHandler());
 		return qid;
 	}
+	
+	static <T extends KnowWEObjectType> Section<T> badCast(T t, Section o) {
+		return (Section<T>)o;
+	}
 
 	static class CreateIndicationHandler implements ReviseSubTreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			Section<QuestionID> qidSection = ((Section<QuestionID>) s);
+			//Section<QuestionID> qidSection = ((Section<QuestionID>) s);
+			
+			Section<QuestionID> qidSection = badCast(new QuestionID(), s);
 
 			String name = qidSection.get().getID(qidSection);
 
@@ -89,9 +95,9 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 					.getDashTreeFather(element);
 
 			Section<QuestionTreeAnswerID> answerSec = dashTreeFather
-					.findSuccessor(new QuestionTreeAnswerID());
+					.findSuccessor(QuestionTreeAnswerID.class);
 			Section<NumericCondLine> numCondSec = dashTreeFather
-			.findSuccessor(new NumericCondLine());
+			.findSuccessor(NumericCondLine.class);
 
 			
 			if (answerSec != null || numCondSec != null) {
@@ -207,16 +213,15 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				Section<? extends DashTreeElement> dashTreeElement,
 				KnowledgeBaseManagement mgn) {
 
-			if (dashTreeElement.findSuccessor(new QuestionnaireID()) != null) {
-				String qClassName = dashTreeElement.findSuccessor(
-						new QuestionnaireID()).getOriginalText();
+			if (dashTreeElement.findSuccessor(QuestionnaireID.class) != null) {
+				String qClassName = dashTreeElement.findSuccessor(QuestionnaireID.class).getOriginalText();
 				QASet parent = mgn.findQContainer(qClassName);
 				if (parent != null)
 					return parent;
 			}
 
-			if (dashTreeElement.findSuccessor(new QuestionID()) != null) {
-				String qName = dashTreeElement.findSuccessor(new QuestionID())
+			if (dashTreeElement.findSuccessor(QuestionID.class) != null) {
+				String qName = dashTreeElement.findSuccessor(QuestionID.class)
 						.getOriginalText();
 				QASet parent = mgn.findQuestion(qName);
 				if (parent != null)
@@ -271,7 +276,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		public static QuestionType getQuestionType(Section<QuestionID> s) {
 			Section<QuestionTypeDeclaration> typeSection = s.getFather()
-					.findSuccessor(new QuestionTypeDeclaration());
+					.findSuccessor(QuestionTypeDeclaration.class);
 			if (typeSection == null)
 				return null;
 			String embracedContent = typeSection.getOriginalText();

@@ -78,11 +78,11 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 		if (kbm != null) {
 
 			// get new Rules if necessary
-			List<Section> newRules = new ArrayList<Section>();
+			List<Section<Rule>> newRules = new ArrayList<Section<Rule>>();
 			article.getSection().findSuccessorsOfType(Rule.class, newRules);
 			
 			Set<String> kbIDs = new HashSet<String>();
-			for (Section r:newRules) {
+			for (Section<Rule> r:newRules) {
 				kbIDs.add((String) KnowWEUtils.getStoredObject(article.getWeb(), article
 						.getTitle(), r.getId(), Rule.KBID_KEY));
 			}
