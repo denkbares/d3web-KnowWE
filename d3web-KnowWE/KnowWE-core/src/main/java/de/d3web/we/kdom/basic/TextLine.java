@@ -33,6 +33,7 @@ public class TextLine extends DefaultAbstractKnowWEObjectType {
 	public TextLine(KnowWEObjectType lineContent) {
 		this.setNumberedType(true);
 		childrenTypes.add(new LineBreak());
+		childrenTypes.add(new EndLineComment());
 		childrenTypes.add(lineContent);
 		sectionFinder = LineSectionFinder.getInstance();
 	}
