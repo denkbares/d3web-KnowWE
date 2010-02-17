@@ -62,17 +62,17 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent {
 	public IntermediateOwlObject getOwl(Section s) {
 		Section<PropertyDashTreeElementContent> sec = (Section<PropertyDashTreeElementContent>)s;
 		if (s.getObjectType() instanceof PropertyDashTreeElementContent) {
-			Section<PropertyIDDefinition> propIDSection = sec.findSuccessor(PropertyIDDefinition.getDefaultInstance());
+			Section<PropertyIDDefinition> propIDSection = sec.findSuccessor(PropertyIDDefinition.class);
 			if (propIDSection != null) {
 				String propertyName = propIDSection.getOriginalText();
 				String rangeDef = null;
 				String domainDef = null;
-				Section<DomainDefinition> domainDefS = sec.findSuccessor(DomainDefinition.getDefaultInstance());
+				Section<DomainDefinition> domainDefS = sec.findSuccessor(DomainDefinition.class);
 				if (domainDefS != null) {
 					domainDef = domainDefS.getOriginalText();
 				}
 
-				Section<RangeDefinition> rangeDefS = sec.findSuccessor(RangeDefinition.getDefaultInstance());
+				Section<RangeDefinition> rangeDefS = sec.findSuccessor(RangeDefinition.class);
 				if (rangeDefS != null) {
 					rangeDef = rangeDefS.getOriginalText();
 				}
@@ -92,7 +92,7 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent {
 					// creates a Subproperty relation IF father exists
 					Section<? extends DashTreeElement> fatherElement = DashTreeElement.getDashTreeFather((Section<DashTreeElement>)sec.getFather());
 					if(fatherElement != null) {
-						Section fatherID  = fatherElement.findSuccessor(PropertyIDDefinition.getDefaultInstance());
+						Section<PropertyIDDefinition> fatherID  = fatherElement.findSuccessor(PropertyIDDefinition.class);
 						if(fatherID != null) {
 							io.addStatement(helper.createStatement(
 									propURI, RDFS.SUBPROPERTYOF, helper

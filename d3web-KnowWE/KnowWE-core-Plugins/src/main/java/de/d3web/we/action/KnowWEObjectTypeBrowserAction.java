@@ -80,7 +80,7 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 						map.getWeb()).getArticleIterator();
 				while (it.hasNext()) {
 					KnowWEArticle art = it.next();
-					art.getSection().findSuccessorsOfType(Class.forName(types),
+					art.getSection().findSuccessorsOfTypeUntyped(Class.forName(types),
 							found);
 				}
 			}

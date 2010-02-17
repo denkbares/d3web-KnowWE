@@ -34,6 +34,7 @@ import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -43,23 +44,27 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 	
 	
 	@Override
-	public void renderDefault(Section sec, KnowWEUserContext user,
+	public void renderDefault(Section s, KnowWEUserContext user,
 			StringBuilder string) {
+		
+		
+		Section<?> sec = (Section<?>)s;
+		
 
 		String object = "no object found";
-		Section objectSection = sec.findSuccessor(new SimpleAnnotation());
+		Section<SimpleAnnotation> objectSection = sec.findSuccessor(SimpleAnnotation.class);
 		if (objectSection != null) {
 			object = objectSection.getOriginalText();
 		}
 
-		Section astring = sec.findSuccessor(new AnnotatedString());
+		Section<AnnotatedString> astring = sec.findSuccessor(AnnotatedString.class);
 		String text = "";
 		if (astring != null)
 			text = "''" + astring.getOriginalText() + "''";
 		else
 			text = "<b>" + object + "</b>";
-		Section content = sec.findSuccessor(new SemanticAnnotationContent());
-		Section propSection = sec.findSuccessor(new SemanticAnnotationPropertyName());
+		Section<SemanticAnnotationContent> content = sec.findSuccessor(SemanticAnnotationContent.class);
+		Section<SemanticAnnotationPropertyName> propSection = sec.findSuccessor(SemanticAnnotationPropertyName.class);
 
 		String property = "no property found";
 		if (propSection != null) {
@@ -68,7 +73,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 		String subject = "no subject found";
 
-		Section subjectSectin = sec.findSuccessor(new SemanticAnnotationSubject());
+		Section<SemanticAnnotationSubject> subjectSectin = sec.findSuccessor(SemanticAnnotationSubject.class);
 		if (subjectSectin != null
 				&& subjectSectin.getOriginalText().trim().length() > 0) {
 			subject = subjectSectin.getOriginalText();
@@ -105,11 +110,11 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 		if (content != null) {
 			String title = subject + " " + property + " " + object;
-			text = KnowWEEnvironment.maskHTML("<span title='" + title + "'>"
+			text = KnowWEUtils.maskHTML("<span title='" + title + "'>"
 					+ text + "</span>");
 		}
 		if (!sec.getObjectType().getOwl(sec).getValidPropFlag()) {
-			text = KnowWEEnvironment
+			text = KnowWEUtils
 					.maskHTML("<p class=\"box error\">invalid annotation attribute:"
 							+ sec.getObjectType().getOwl(sec).getBadAttribute()
 							+ "</p>");

@@ -83,7 +83,7 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			Section<TableCell> colHeaderCell = s.findSuccessor(new TableCell());
+			Section<TableCell> colHeaderCell = s.findSuccessor(TableCell.class);
 			if (colHeaderCell != null) {
 
 				Section content = colHeaderCell

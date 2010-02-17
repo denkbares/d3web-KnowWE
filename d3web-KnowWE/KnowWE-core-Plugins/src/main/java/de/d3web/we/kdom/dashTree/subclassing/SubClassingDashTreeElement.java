@@ -39,7 +39,7 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 			Section<? extends DashTreeElement> father = DashTreeElement.getDashTreeFather(element);
 			if (father != null) {
 				Section<? extends DashTreeElementContent> fatherElement = father
-						.findChildOfType(new DashTreeElementContent());
+						.findChildOfType(DashTreeElementContent.class);
 				Section<? extends DashTreeElementContent> childElement = element.findChildOfType(DashTreeElementContent.getDefaultInstance());
 				createSubClassRelation(childElement,
 						fatherElement, io);
