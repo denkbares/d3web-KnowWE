@@ -67,7 +67,7 @@ public class GetXCLAction extends AbstractKnowWEAction {
 		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic);
 		Section<?> articleSection = article.getSection();
 		List<Section<XCList>> xclists = new ArrayList<Section<XCList>>();
-		articleSection.findSuccessorsOfType(new XCList(), xclists);
+		articleSection.findSuccessorsOfType(XCList.class, xclists);
 		StringBuilder html = new StringBuilder();
 		KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 		html.append("<fieldset><div class='left'>"
@@ -76,7 +76,7 @@ public class GetXCLAction extends AbstractKnowWEAction {
 				+ "<select name='refactoringselect'>");
 		for (Section<?> xclist : xclists) {
 			ArrayList<Section<SolutionID>> solutions = new ArrayList<Section<SolutionID>>();
-			xclist.findSuccessorsOfType(new SolutionID(), solutions);
+			xclist.findSuccessorsOfType(SolutionID.class, solutions);
 			html.append("<option value='" + xclist.getId() + "'>" + solutions.get(0).getOriginalText() + "</option>");
 		}
 		html.append("</select></div><div>"

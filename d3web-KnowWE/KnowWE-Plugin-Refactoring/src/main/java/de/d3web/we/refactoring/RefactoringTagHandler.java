@@ -46,7 +46,7 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic);
 		Section<?> articleSection = article.getSection();
 		List<Section<Refactoring>> refactorings = new ArrayList<Section<Refactoring>>();
-		articleSection.findSuccessorsOfType(new Refactoring(), refactorings);
+		articleSection.findSuccessorsOfType(Refactoring.class, refactorings);
 		StringBuffer html = new StringBuffer();
 		KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 		html.append("<div id='refactoring-panel' class='panel'><h3>Refactoring Konsole</h3><div id='refactoring-content'>"

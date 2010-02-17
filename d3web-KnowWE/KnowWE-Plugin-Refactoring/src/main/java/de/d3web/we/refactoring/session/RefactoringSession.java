@@ -287,13 +287,13 @@ public class RefactoringSession {
 	// TODO wenn es noch keine RulesSection gibt, dann muss die noch gebaut werden
 	public Section<RulesSectionContent> findRulesSectionContent(Section<?> knowledgeSection) {
 		KnowWEArticle article = knowledgeSection.getArticle();
-		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(new RulesSectionContent());
+		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(RulesSectionContent.class);
 		return rulesSectionContent;
 	}
 	
 	public Section<CoveringListContent> findCoveringListContent(Section<?> knowledgeSection) {
 		KnowWEArticle article = knowledgeSection.getArticle();
-		Section<CoveringListContent> coveringListContent = article.getSection().findSuccessor(new CoveringListContent());
+		Section<CoveringListContent> coveringListContent = article.getSection().findSuccessor(CoveringListContent.class);
 		if (coveringListContent == null) {
 //			Section<RootType> srt = article.getSection().findSuccessor(RootType.getInstance());
 //			replaceSection(srt, srt.getOriginalText().concat(
@@ -308,7 +308,7 @@ public class RefactoringSession {
 					"\r\n" + 
 					"</SetCoveringList-section>\r\n").toString());
 			KnowWEArticle articleNew = manager.getArticle(article.getTitle());
-			Section<CoveringListContent> coveringListContentNew = articleNew.getSection().findSuccessor(new CoveringListContent());
+			Section<CoveringListContent> coveringListContentNew = articleNew.getSection().findSuccessor(CoveringListContent.class);
 			return coveringListContentNew;
 		}
 		return coveringListContent;
@@ -327,7 +327,7 @@ public class RefactoringSession {
 	}
 
 	public String findSolutionID(Section<?> knowledgeSection) {
-		Section<SolutionID> solutionID = knowledgeSection.findSuccessor(new SolutionID());
+		Section<SolutionID> solutionID = knowledgeSection.findSuccessor(SolutionID.class);
 		return solutionID.getOriginalText();
 	}
 
@@ -358,7 +358,7 @@ public class RefactoringSession {
 					articleSection.findSuccessorsOfType(new XCList(), xclists);
 					for (Section<?> xclist : xclists) {
 						html.append("<option value='" + xclist.getId() + "'>Seite: " + article.getTitle() + " - XCList: " 
-								+ xclist.findSuccessor(new SolutionID()).getOriginalText() + "</option>");
+								+ xclist.findSuccessor(SolutionID.class).getOriginalText() + "</option>");
 					}
 				}
 				html.append("</select></div><div>"
@@ -450,18 +450,18 @@ public class RefactoringSession {
 	
 	private Section<QuestionID> findQuestion(Section<?> answerSection) {
 		// TODO verbessern
-		return answerSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(new QuestionID());
+		return answerSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(QuestionID.class);
 	}
 	private Section<QuestionTreeAnswerID> findAnswer(Section<?> diagnosisSection) {
 		// TODO verbessern
 //		System.out.println(diagnosisID);
 //		System.out.println(diagnosisSection.getOriginalText());
-		return diagnosisSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(new QuestionTreeAnswerID());
+		return diagnosisSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(QuestionTreeAnswerID.class);
 	}
 	
 	private Section<QuestionTreeAnswerID> findAnswerIndicatingQuestion(Section <?> questionSection) {
 		// TODO verbessern
-		return questionSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(new QuestionTreeAnswerID());
+		return questionSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(QuestionTreeAnswerID.class);
 	}
 	
 	public String findNewName() {
@@ -496,14 +496,14 @@ public class RefactoringSession {
 			Section<QuestionID> question = findQuestion(manager.findNode(objectID));
 			List<Section<QuestionTreeAnswerID>> answers = new LinkedList<Section<QuestionTreeAnswerID>>();
 			// TODO verbessern
-			question.getFather().getFather().getFather().getFather().findSuccessorsOfType(new QuestionTreeAnswerID(), 5 , answers);
+			question.getFather().getFather().getFather().getFather().findSuccessorsOfType(QuestionTreeAnswerID.class, 5 , answers);
 			fullList.addAll(answers);
 			// hole alle FindingQuestion's welche den gleichen getOriginalText() haben wie die Question, zu welcher die QuestionTreeAnswerID
 			// gehört
 			List<Section<? extends KnowWEObjectType>> findingQuestions = findRenamingList(new FindingQuestion(), question.getId());
 			// bestimme dafür die passenden Antworten
 			for (Section<? extends KnowWEObjectType> questionSection : findingQuestions) {
-				Section<? extends KnowWEObjectType> answer = questionSection.getFather().findSuccessor(new FindingAnswer());
+				Section<? extends KnowWEObjectType> answer = questionSection.getFather().findSuccessor(FindingAnswer.class);
 				fullList.add(answer);
 			}
 		} else {
@@ -604,7 +604,7 @@ public class RefactoringSession {
 		articleSection.findSuccessorsOfType(new AnonymousType(""), found);
 		for (Section<AnonymousType> atSection: found) {
 			if (atSection.getOriginalText().equals(value)) {
-				Section<QuestionID> foundSolution = atSection.getFather().findSuccessor(new QuestionID());
+				Section<QuestionID> foundSolution = atSection.getFather().findSuccessor(QuestionID.class);
 				returnList.add(foundSolution);
 			}
 		}
