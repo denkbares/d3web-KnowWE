@@ -231,6 +231,23 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>kmw</id>
+			<dependencies>
+				<dependency>
+					<groupId>cc.denkbar</groupId>
+					<artifactId>Fault-Cause-jpf-plugin</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+				<dependency>
+					<groupId>cc.denkbar</groupId>
+					<artifactId>KnowWE-Plugin-KMW-ExcelParser-jpf-plugin</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 	</profiles>
 
 	<dependencies>
