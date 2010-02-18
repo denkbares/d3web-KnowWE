@@ -117,6 +117,15 @@
     
 
 
+    <!-- http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#hasType -->
+
+    <owl:ObjectProperty rdf:about="#hasType">
+        <rdfs:range rdf:resource="#KnowledgeType"/>
+        <rdfs:domain rdf:resource="#TextOrigin"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#hasValue -->
 
     <owl:ObjectProperty rdf:about="#hasValue">
@@ -214,6 +223,14 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#Annotation -->
+
+    <owl:Class rdf:about="#Annotation">
+        <rdfs:subClassOf rdf:resource="#KnowledgeType"/>
+    </owl:Class>
     
 
 
@@ -343,7 +360,7 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="#hasPossibleValues"/>
                 <owl:onClass rdf:resource="#ValueChoice"/>
-                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -389,6 +406,12 @@
     
 
 
+    <!-- http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#KnowledgeType -->
+
+    <owl:Class rdf:about="#KnowledgeType"/>
+    
+
+
     <!-- http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#Literal -->
 
     <owl:Class rdf:about="#Literal">
@@ -411,7 +434,7 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="#negates"/>
                 <owl:onClass rdf:resource="#LogicExpression"/>
-                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -496,10 +519,10 @@
         <owl:equivalentClass>
             <owl:Class>
                 <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="#ValueSolutionExcluded"/>
-                    <rdf:Description rdf:about="#ValueSolutionSuggested"/>
-                    <rdf:Description rdf:about="#ValueSolutionEstablished"/>
                     <rdf:Description rdf:about="#ValueSolutionUndefined"/>
+                    <rdf:Description rdf:about="#ValueSolutionEstablished"/>
+                    <rdf:Description rdf:about="#ValueSolutionSuggested"/>
+                    <rdf:Description rdf:about="#ValueSolutionExcluded"/>
                 </owl:oneOf>
             </owl:Class>
         </owl:equivalentClass>
@@ -527,25 +550,33 @@
 
     <!-- http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#ValueSolutionEstablished -->
 
-    <ValueSolution rdf:about="#ValueSolutionEstablished"/>
+    <owl:Thing rdf:about="#ValueSolutionEstablished">
+        <rdf:type rdf:resource="#ValueSolution"/>
+    </owl:Thing>
     
 
 
     <!-- http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#ValueSolutionExcluded -->
 
-    <ValueSolution rdf:about="#ValueSolutionExcluded"/>
+    <owl:Thing rdf:about="#ValueSolutionExcluded">
+        <rdf:type rdf:resource="#ValueSolution"/>
+    </owl:Thing>
     
 
 
     <!-- http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#ValueSolutionSuggested -->
 
-    <ValueSolution rdf:about="#ValueSolutionSuggested"/>
+    <owl:Thing rdf:about="#ValueSolutionSuggested">
+        <rdf:type rdf:resource="#ValueSolution"/>
+    </owl:Thing>
     
 
 
     <!-- http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#ValueSolutionUndefined -->
 
-    <ValueSolution rdf:about="#ValueSolutionUndefined"/>
+    <ValueSolution rdf:about="#ValueSolutionUndefined">
+        <rdf:type rdf:resource="&owl;Thing"/>
+    </ValueSolution>
     
 
 
@@ -560,22 +591,8 @@
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDifferent"/>
         <owl:distinctMembers rdf:parseType="Collection">
-            <rdf:Description rdf:about="#ValueSolutionExcluded"/>
             <rdf:Description rdf:about="#ValueSolutionUndefined"/>
-        </owl:distinctMembers>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDifferent"/>
-        <owl:distinctMembers rdf:parseType="Collection">
             <rdf:Description rdf:about="#ValueSolutionSuggested"/>
-            <rdf:Description rdf:about="#ValueSolutionUndefined"/>
-        </owl:distinctMembers>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDifferent"/>
-        <owl:distinctMembers rdf:parseType="Collection">
-            <rdf:Description rdf:about="#ValueSolutionExcluded"/>
-            <rdf:Description rdf:about="#ValueSolutionEstablished"/>
         </owl:distinctMembers>
     </rdf:Description>
     <rdf:Description>
@@ -589,27 +606,41 @@
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDifferent"/>
         <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ValueSolutionEstablished"/>
             <rdf:Description rdf:about="#ValueSolutionExcluded"/>
-            <rdf:Description rdf:about="#ValueSolutionSuggested"/>
         </owl:distinctMembers>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDifferent"/>
         <owl:distinctMembers rdf:parseType="Collection">
-            <rdf:Description rdf:about="#ValueSolutionSuggested"/>
-            <rdf:Description rdf:about="#ValueSolutionEstablished"/>
-        </owl:distinctMembers>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDifferent"/>
-        <owl:distinctMembers rdf:parseType="Collection">
-            <rdf:Description rdf:about="#ValueSolutionEstablished"/>
             <rdf:Description rdf:about="#ValueSolutionUndefined"/>
+            <rdf:Description rdf:about="#ValueSolutionExcluded"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ValueSolutionUndefined"/>
+            <rdf:Description rdf:about="#ValueSolutionEstablished"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ValueSolutionSuggested"/>
+            <rdf:Description rdf:about="#ValueSolutionExcluded"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ValueSolutionEstablished"/>
+            <rdf:Description rdf:about="#ValueSolutionSuggested"/>
         </owl:distinctMembers>
     </rdf:Description>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 2.2.1.941) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net -->
 

@@ -28,7 +28,6 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
@@ -48,7 +47,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 			StringBuilder string) {
 		
 		
-		Section<?> sec = (Section<?>)s;
+		Section<?> sec = s;
 		
 
 		String object = "no object found";

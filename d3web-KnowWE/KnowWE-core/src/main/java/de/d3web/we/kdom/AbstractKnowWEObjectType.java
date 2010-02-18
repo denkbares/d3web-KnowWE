@@ -442,7 +442,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getOwl(de.d3web.we.kdom.Section)
 	 */
-	public <T extends KnowWEObjectType>IntermediateOwlObject getOwl(Section<T> s) {
+	public <T extends KnowWEObjectType> IntermediateOwlObject getOwl(Section<T> s) {
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		List<Section<? extends KnowWEObjectType>> childrenList = s.getChildren();
 		for (Section<? extends KnowWEObjectType> cur : childrenList) {

@@ -69,7 +69,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		return FontColorBackgroundRenderer.getRenderer(
 				FontColorRenderer.COLOR5, color);
 	}
-
+	
 	@Override
 	public IntermediateOwlObject getOwl(Section section) {
 		UpperOntology uo = UpperOntology.getInstance();
@@ -98,7 +98,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 
 			ArrayList<Statement> slist = new ArrayList<Statement>();
 			try {
-				uo.getHelper().attachTextOrigin(literalinstance, section, io);
+				uo.getHelper().attachTextOrigin(literalinstance, section, io,uo.getHelper().createURI("Annotation"));
 				slist.add(uo.getHelper().createStatement(literalinstance,
 						RDF.TYPE, uo.getHelper().createURI("Literal")));
 				slist.add(uo.getHelper().createStatement(literalinstance,

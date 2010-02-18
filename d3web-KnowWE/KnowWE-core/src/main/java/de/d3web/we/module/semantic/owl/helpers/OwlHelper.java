@@ -50,6 +50,7 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.PropertyManager;
@@ -158,7 +159,7 @@ public class OwlHelper {
 
 	}
 
-	private IntermediateOwlObject createTextOrigin(Section source, Resource to) throws RepositoryException {
+	private IntermediateOwlObject createTextOrigin(Section<KnowWEObjectType> source, Resource to) throws RepositoryException {
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		io.addStatement(createStatement(to, RDF.TYPE, createURI("TextOrigin")));
 		io.addStatement(createStatement(to, createURI("hasNode"),
@@ -327,7 +328,7 @@ public class OwlHelper {
 	}
 
 	public IntermediateOwlObject createProperty(String subject,
-			String property, String object, Section source) {
+			String property, String object, Section<KnowWEObjectType> source) {
 
 		UpperOntology uo = UpperOntology.getInstance();
 		URI suri = uo.getHelper().createlocalURI(subject);
@@ -368,6 +369,34 @@ public class OwlHelper {
 			e.printStackTrace();
 		}
 
+		return io;
+	}
+
+	public void attachTextOrigin(Resource attachto, Section<KnowWEObjectType> source,
+			IntermediateOwlObject io, URI type) {
+		try {
+			UpperOntology uo = UpperOntology.getInstance();
+			BNode to = uo.getVf().createBNode();
+			io.merge(createTextOrigin(source,to,type));
+			io.addStatement(uo.getHelper().createStatement(attachto,
+					RDFS.ISDEFINEDBY, to));
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private IntermediateOwlObject createTextOrigin(Section<KnowWEObjectType> source, Resource to,
+			URI type) throws RepositoryException {
+		IntermediateOwlObject io = new IntermediateOwlObject();
+		io.addStatement(createStatement(to, RDF.TYPE, createURI("TextOrigin")));
+		io.addStatement(createStatement(to, createURI("hasNode"),
+				createLiteral(source.getId())));
+		io.addStatement(createStatement(to, createURI("hasTopic"),
+				createlocalURI(source.getTitle())));
+		io.addStatement(createStatement(to, createURI("hasType"),
+				type));
 		return io;
 	}
 
