@@ -29,26 +29,14 @@ public class CarDiagnosisDialogTest extends KnowWETestCase{
 	Map<String, Integer[]> map = new HashMap();
 	boolean result;
 	
-	
-	public void testCDDialog1(){
-		initializeCDDTest();
-		map.put("Battery o.k.?", new Integer[] {2});
-		map.put("Ignition timing o.k.?", new Integer[] {2});
-		map.put("Air filter o.k.?", new Integer[] {2});	
-		map.put("Air intake system o.k.?", new Integer[] {2});
-		map.put("Idle speed system o.k.?", new Integer[] {2});
-		result = checkSolutions(new String[] {"Empty battery", "Bad ignition timing",
-				"Clogged air filter", "Leaking air intake system",
-				"Damaged idle speed system"}, map, isDialog);
-		assertEquals(comment, true, result);		
-	}
-	
+		
 	public void testCDDialog2(){
 		initializeCDDTest();
 		map.put("Engine noises", new Integer[] {2});
 		result = checkSolutions(new String[] {"Bad ignition timing"}, map, isDialog);
 		assertEquals(comment, true, result);
 	}
+	
 	
 	public void testCDDialog3(){
 		initializeCDDTest();	
@@ -66,6 +54,19 @@ public class CarDiagnosisDialogTest extends KnowWETestCase{
 		result = checkAndUncheckSolutions(new String[] {"Leaking air intake system"},
 				new String[] {"Clogged air filter"}, map, isDialog);
 		assertEquals(comment, true, result);
+	}
+	
+	public void testCDDialog1(){
+		initializeCDDTest();
+		map.put("Battery o.k.?", new Integer[] {2});
+		map.put("Ignition timing o.k.?", new Integer[] {2});
+		map.put("Air filter o.k.?", new Integer[] {2});	
+		map.put("Air intake system o.k.?", new Integer[] {2});
+		map.put("Idle speed system o.k.?", new Integer[] {2});
+		result = checkSolutions(new String[] {"Empty battery", "Bad ignition timing",
+				"Clogged air filter", "Leaking air intake system",
+				"Damaged idle speed system"}, map, isDialog);
+		assertEquals(comment, true, result);		
 	}
 		
 	public void testCDDialog5(){
