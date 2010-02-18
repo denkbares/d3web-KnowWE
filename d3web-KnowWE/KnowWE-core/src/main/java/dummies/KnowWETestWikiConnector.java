@@ -35,6 +35,7 @@ import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.wikiConnector.ConnectorAttachment;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class KnowWETestWikiConnector implements KnowWEWikiConnector {
@@ -82,7 +83,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
     }
 
     @Override
-    public LinkedList<String> getAttachments() {
+    public LinkedList<String> getJarAttachments() {
 	// TODO Auto-generated method stub
 	return null;
     }
@@ -187,5 +188,11 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	// TODO Auto-generated method stub
 	return false;
     }
+
+	@Override
+	public Collection<ConnectorAttachment> getAttachments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

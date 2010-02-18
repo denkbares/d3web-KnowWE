@@ -79,11 +79,16 @@ public interface KnowWEWikiConnector {
     public boolean saveArticle(String name, String text, KnowWEParameterMap map);
 
     /**
-     * Returns a list of all attachment files of the wiki
+     * Returns a list of all jar attachment files of the wiki
      * 
      * @return
      */
-    public List<String> getAttachments();
+    public List<String> getJarAttachments();
+    
+    /**
+     * @return a List of all ConnectorAttachments
+     */
+    public Collection<ConnectorAttachment> getAttachments();
 
     /**
      * Returns the filenames of the attachments of the given wiki page

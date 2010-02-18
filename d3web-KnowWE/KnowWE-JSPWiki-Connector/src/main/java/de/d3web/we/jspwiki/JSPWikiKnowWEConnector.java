@@ -53,6 +53,7 @@ import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.TaggingMangler;
 import de.d3web.we.search.GenericSearchResult;
+import de.d3web.we.wikiConnector.ConnectorAttachment;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 /**
@@ -103,7 +104,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
     }
 
     @Override
-    public LinkedList<String> getAttachments() {
+    public LinkedList<String> getJarAttachments() {
 	try {
 	    LinkedList<String> sortedAttList = new LinkedList<String>();
 	    AttachmentManager attachmentManager = this.engine
@@ -123,6 +124,25 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	    return null;
 	}
     }
+    
+    @Override
+	public Collection<ConnectorAttachment> getAttachments() {
+		try {
+			Collection<?> attachments = this.engine.getAttachmentManager().getAllAttachments();
+			Collection<ConnectorAttachment> ret = new LinkedList<ConnectorAttachment>();
+			for (Object o: attachments) {
+				if (o instanceof Attachment) {
+					ret.add(new JSPWikiConnectorAttachment((Attachment) o));
+				}
+			}
+			return ret;
+		} catch (ProviderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
 
     public boolean storeAttachment(String wikiPage, File attachmentFile) {
 	try {

@@ -560,4 +560,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return baseManagement;
 	}
 
+	public String getId() {
+		return id;
+	}
+
 }
