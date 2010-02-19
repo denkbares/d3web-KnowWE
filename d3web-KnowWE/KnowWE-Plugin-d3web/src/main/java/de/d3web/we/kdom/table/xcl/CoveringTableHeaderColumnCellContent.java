@@ -42,6 +42,8 @@ public class CoveringTableHeaderColumnCellContent extends
 		TableColumnHeaderCellContent {
 
 	public static final String QUESTION_CELL = "question_cell";
+	
+	public static final String QUESTIONNAIRE_CELL = "questionnaire_cell";
 
 	public void init() {
 		this.addReviseSubtreeHandler(new CoveringTableHeaderColumnCellContentHandler());
@@ -55,40 +57,65 @@ public class CoveringTableHeaderColumnCellContent extends
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 			
+			Section<CoveringTableHeaderColumnCellContent> cell = (Section<CoveringTableHeaderColumnCellContent>)s;
+			
 			if (mgn == null) {
 				return null;
 			}
 			
 			String text = s.getOriginalText().trim();
+			
+			//if it is an already defined QContainer
+			Section<TableContent> tableContentSection = KnowWEObjectTypeUtils.getAncestorOfType(cell,
+			TableContent.class);
+			if(mgn.findQContainer(text) != null) {
+				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
+						TableLine.class);
+				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
+						.getTitle(), tableContentSection.getId(), QUESTIONNAIRE_CELL, s);
+				
+				lineSec.setType(QuestionnaireLine.getInstance());
+			}
+			
+			//if it is a marked up new QContainer
+			if(QuestionnaireCellContent.hasQContainerDeclarationSyntax(text)) {
+				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
+						TableLine.class);
+				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
+						.getTitle(), tableContentSection.getId(), QUESTIONNAIRE_CELL, s);
+				
+				lineSec.setType(QuestionnaireLine.getInstance());
+			}
+			
+			
+			//if it is an already defined Question
 			if (mgn.findQuestion(text) != null) {
-				Section lineSec = KnowWEObjectTypeUtils.getAncestorOfType(s,
+				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
 						TableLine.class);
 				
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
-						.getTitle(), KnowWEObjectTypeUtils.getAncestorOfType(s,
-						TableContent.class).getId(), QUESTION_CELL, s);
+						.getTitle(), tableContentSection.getId(), QUESTION_CELL, s);
 				
 				lineSec.setType(QuestionLine.getInstance());
 
 			}
 			
-			//&& mgn.findQuestion(removeQTypeMarkup(text)) != null
-
+			//if it is a new marked up question
 			if (containsQTypeMarkup(text)) {
-				Section lineSec = KnowWEObjectTypeUtils.getAncestorOfType(s,
+				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
 						TableLine.class);
 
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
-						.getTitle(), KnowWEObjectTypeUtils.getAncestorOfType(s,
-						TableContent.class).getId(), QUESTION_CELL, s);
+						.getTitle(), tableContentSection.getId(), QUESTION_CELL, s);
 				lineSec.setType(QuestionLine.getInstance());
 
 			} else {
-
+				// else: its is an answer
+				
+				
 				Section questionSection = (Section) KnowWEUtils
-						.getStoredObject(s.getArticle().getWeb(), s.getTitle(),
-								KnowWEObjectTypeUtils.getAncestorOfType(s,
-										TableContent.class).getId(),
+						.getStoredObject(cell.getArticle().getWeb(), cell.getTitle(),
+								tableContentSection.getId(),
 								QUESTION_CELL);
 				if (questionSection != null) {
 					KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
@@ -101,7 +128,8 @@ public class CoveringTableHeaderColumnCellContent extends
 			return null;
 
 		}
-
+		
+		
 		// TODO refactor
 		private boolean containsQTypeMarkup(String text) {
 			return text.contains("[num]") || text.contains("[oc]")
@@ -109,15 +137,15 @@ public class CoveringTableHeaderColumnCellContent extends
 		}
 
 		// TODO refactor
-		private String removeQTypeMarkup(String text) {
-			text = text.replaceAll("\\[num\\]", "");
-			text = text.replaceAll("\\[oc\\]", "");
-			text = text.replaceAll("\\[mc\\]", "");
-			text = text.replaceAll("\\[jn\\]", "");
-			text = text.replaceAll("__", "");
-			text = text.replaceAll("\\|", "");
-			return text.trim();
-		}
+//		private String removeQTypeMarkup(String text) {
+//			text = text.replaceAll("\\[num\\]", "");
+//			text = text.replaceAll("\\[oc\\]", "");
+//			text = text.replaceAll("\\[mc\\]", "");
+//			text = text.replaceAll("\\[jn\\]", "");
+//			text = text.replaceAll("__", "");
+//			text = text.replaceAll("\\|", "");
+//			return text.trim();
+//		}
 
 	}
 }

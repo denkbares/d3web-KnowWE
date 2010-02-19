@@ -20,79 +20,157 @@
 
 package de.d3web.we.kdom.table.xcl;
 
+import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
+import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.terminology.QContainer;
+import de.d3web.core.terminology.Question;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.d3webModule.KnowledgeUtils;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
+import de.d3web.we.kdom.table.TableContent;
+import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * @author jochen
  * 
- * A type for cells of the first column, that contain a question
- *
+ *         A type for cells of the first column, that contain a question
+ * 
  */
-public class QuestionCell extends CoveringTableHeaderColumnCellContent{
-	
+public class QuestionCell extends CoveringTableHeaderColumnCellContent {
+
 	private static QuestionCell instance;
-	
+
 	public static QuestionCell getInstance() {
-		if(instance == null) instance = new QuestionCell();
+		if (instance == null)
+			instance = new QuestionCell();
 		return instance;
 	}
-	
+
 	@Override
 	public KnowWEDomRenderer getRenderer() {
 		return QuestionCellRenderer.getInstance();
 	}
-	
-	
+
 	@Override
 	public void init() {
 		this.addReviseSubtreeHandler(new QuestionCellHandler());
 	}
-	
-	
 
 }
 
 class QuestionCellRenderer extends TableCellContentRenderer {
 
 	/**
-	 * Wraps the content of the cell (sectionText) with the HTML-Code needed for the table
+	 * Wraps the content of the cell (sectionText) with the HTML-Code needed for
+	 * the table
 	 */
-	protected String wrappContent(String sectionText, Section sec, KnowWEUserContext user) {
+	protected String wrappContent(String sectionText, Section sec,
+			KnowWEUserContext user) {
 
-		Context c = ContextManager.getInstance().getContextForClass(sec, SolutionColumnContext.class);
-		
+		Context c = ContextManager.getInstance().getContextForClass(sec,
+				SolutionColumnContext.class);
+
 		String title = "";
-		
-		Object o = KnowWEUtils.getStoredObject(sec, QuestionCellHandler.KEY_REPORT);
-		if(o != null && o instanceof Message) {
-			title = ((Message)o).getMessageText();
+
+		Object o = KnowWEUtils.getStoredObject(sec,
+				QuestionCellHandler.KEY_REPORT);
+		if (o != null && o instanceof Message) {
+			title = ((Message) o).getMessageText();
 		}
-		
+
 		String sectionID = sec.getId();
 		StringBuilder html = new StringBuilder();
-		html.append( "<td title='"+title+"' style='background-color:#EEEEEE;'>   " );
+		html.append("<td title='" + title
+				+ "' style='background-color:#EEEEEE;'>   ");
 		generateContent(sectionText, sec, user, sectionID, html);
-		if(c != null) html.append("col: "+((SolutionColumnContext)c).getSolution());
-		html.append( "</td>" );
-		return KnowWEEnvironment.maskHTML( html.toString() );
+		if (c != null)
+			html.append("col: " + ((SolutionColumnContext) c).getSolution());
+		html.append("</td>");
+		return KnowWEEnvironment.maskHTML(html.toString());
 	}
-	
+
 	private static QuestionCellRenderer instance = null;
-	
+
 	public static QuestionCellRenderer getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new QuestionCellRenderer();
 		}
 		return instance;
 	}
-	
-	
+
+}
+
+class QuestionCellHandler implements ReviseSubTreeHandler {
+
+	public static final String KEY_REPORT = "report_message";
+
+	@Override
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		KnowledgeBaseManagement mgn = D3webModule
+				.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
+						article, s);
+
+		if (mgn == null) {
+			return null;
+		}
+		SingleKBMIDObjectManager mgr = new SingleKBMIDObjectManager(mgn);
+		Section<TableContent> tableContentSection = KnowWEObjectTypeUtils
+				.getAncestorOfType(s, TableContent.class);
+		Section questionnaireSection = (Section) KnowWEUtils.getStoredObject(s
+				.getArticle().getWeb(), s.getTitle(), tableContentSection
+				.getId(),
+				CoveringTableHeaderColumnCellContent.QUESTIONNAIRE_CELL);
+
+		QContainer parent = null;
+
+		if (questionnaireSection != null) {
+			parent = mgr.findQContainer(QuestionnaireCellContent.trimQContainerDeclarationSyntax(questionnaireSection.getOriginalText().trim()));
+		}
+
+		String text = s.getOriginalText();
+
+		String type = KnowledgeUtils.getQuestionTypeFromDeclaration(text);
+		String name = KnowledgeUtils.getQuestionNameFromDeclaration(text);
+
+		Question q = mgr.findQuestion(name);
+
+		if (q == null) {
+			// create question
+			Question q2 = null;
+			if (parent == null) {
+				q2 = D3webQuestionFactory.createQuestion(name, type, mgr);
+			} else {
+				q2 = D3webQuestionFactory.createQuestion(mgr, parent, name, type);
+			}
+
+			if (q2 != null) {
+				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+						"Created question " + type + " : " + name));
+			} else {
+				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+						"Failed creating question " + type + " : " + name));
+			}
+
+		} else {
+			// TODO: CHECK Type match!
+			KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+					"Question already defined: " + name));
+
+		}
+
+		return null;
+
+	}
 }

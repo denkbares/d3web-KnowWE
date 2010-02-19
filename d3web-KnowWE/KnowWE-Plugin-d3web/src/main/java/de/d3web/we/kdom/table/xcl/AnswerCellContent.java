@@ -20,11 +20,27 @@
 
 package de.d3web.we.kdom.table.xcl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
+import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.terminology.Question;
+import de.d3web.core.terminology.QuestionChoice;
+import de.d3web.core.terminology.QuestionNum;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.d3webModule.KnowledgeUtils;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
+import de.d3web.we.kdom.table.TableUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -94,6 +110,76 @@ class AnswerCellRenderer extends TableCellContentRenderer {
 			instance = new AnswerCellRenderer();
 		}
 		return instance;
+	}
+
+}
+
+class AnswerCellHandler implements ReviseSubTreeHandler {
+
+	public static final String KEY_REPORT = "report_message";
+
+	@Override
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		
+		KnowledgeBaseManagement mgn = D3webModule
+			.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
+		
+		if (mgn == null) {
+			return null;
+		}
+		
+		Section questionCell = AnswerCellContent.getQuestionCellContent(s);
+
+		String qName = KnowledgeUtils
+				.getQuestionNameFromDeclaration(questionCell.getOriginalText());
+
+
+		SingleKBMIDObjectManager mgr = new SingleKBMIDObjectManager(mgn);
+
+		int line = TableUtils.getRow(s);
+
+		Question q = mgr.findQuestion(qName);
+
+		if (q == null) {
+
+			KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+					"Question not present : " + qName));
+
+		} else {
+
+			String answerText = s.getOriginalText().trim();
+			if (q instanceof QuestionChoice) {
+				AnswerChoice ac = mgr.findAnswerChoice(((QuestionChoice) q),
+						answerText);
+				if (ac == null) {
+					mgn.addChoiceAnswer(((QuestionChoice) q), answerText);
+					KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+							"Creating answer: " + answerText));
+				} else {
+					KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+							"Answer already present: " + answerText));
+				}
+			} else if (q instanceof QuestionNum) {
+				List<Message> errors = new ArrayList<Message>();
+				TerminalCondition cond = KnowledgeUtils.tryBuildCondNum(answerText, line, 1, s.getId(),
+						errors, (QuestionNum) q);
+				if(cond != null) {
+					KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+							"Numerical Condition OK: " + answerText));
+				}else {
+					KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+							"Numerical Condition wrong: " + errors.get(0).getMessageText()));
+				}
+
+			} else {
+				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+						"Cannot handler question type for: " + qName));
+			}
+
+		}
+		
+		return null;
+
 	}
 
 }

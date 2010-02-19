@@ -91,7 +91,7 @@ public class CoveringTableSection extends AbstractKopicSection implements ITable
 //			}
 			
 			
-			//Set headerColumn: first column is question/anser-column
+			//Set headerColumn: first column is question/answer-column
 			List<Section> headCells = new ArrayList<Section>();
 			s.findSuccessorsOfType(TableColumnHeaderCellContent.class, headCells);
 			for (Section section : headCells) {

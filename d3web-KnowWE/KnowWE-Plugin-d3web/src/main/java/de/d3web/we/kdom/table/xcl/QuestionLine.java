@@ -35,7 +35,7 @@ import de.d3web.we.kdom.table.TableLine;
  * @author jochen
  * 
  * A type for a line having a question in the header column. (These lines dont have
- * xclrealtion-entry (cause only the answer-lines have))
+ * xclrelation-entry (cause only the answer-lines have))
  *
  */
 public class QuestionLine extends TableLine {

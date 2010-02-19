@@ -20,10 +20,17 @@
 
 package de.d3web.we.kdom.table.xcl;
 
+import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.terminology.Diagnosis;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -87,6 +94,48 @@ class QuestionCellContentRenderer extends TableCellContentRenderer {
 		if (instance == null)
 			instance = new QuestionCellContentRenderer();
 		return instance;
+	}
+
+}
+
+class SolutionCellHandler implements ReviseSubTreeHandler {
+
+	public static final String KEY_REPORT = "report_message";
+
+	@Override
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		KnowledgeBaseManagement mgn = D3webModule
+				.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
+		
+		if (mgn == null) {
+			return null;
+		}
+		
+		SingleKBMIDObjectManager mgr = new SingleKBMIDObjectManager(mgn);
+
+		String name = s.getOriginalText();
+		name = name.replaceAll("__", "").trim();
+
+		Diagnosis d = mgr.findDiagnosis(name);
+
+		if (d == null) {
+			Diagnosis newD = mgr.createDiagnosis(name, mgr.getKnowledgeBase()
+					.getRootDiagnosis());
+			if (newD != null) {
+				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+						"Created solution : " + name));
+			} else {
+				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+						"Failed creating solution : " + name));
+			}
+		}
+		else {
+		KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
+				"Solution already defined: " + name));
+		}
+		
+		return null;
+
 	}
 
 }

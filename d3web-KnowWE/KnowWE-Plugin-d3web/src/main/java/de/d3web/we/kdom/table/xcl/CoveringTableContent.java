@@ -29,7 +29,8 @@ public class CoveringTableContent extends XMLContent{
 	@Override
 	protected void init() {
 		childrenTypes.add( new TableContent() );
-		
+
+		//add blank nodes in cells ?
 	}
 
 }
