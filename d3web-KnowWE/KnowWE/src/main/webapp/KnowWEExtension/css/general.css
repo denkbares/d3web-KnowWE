@@ -8,6 +8,7 @@ Table of content
 (6) Plugin KnowledgeBasesGenerator
 (7) Plugin KnowObjectTypeActivator
 (8) Plugin Testsuite
+(9) Plugin TemplateTagHandler
 
 used colors
 #D2D2D2 ~ even tbl column color
@@ -706,6 +707,36 @@ font-size:120%;
 #testsuite-panel a:selected {
     color: #000000;
     text-decoration: none;
+}
+
+/* ################################################## */
+/* ------->>> TemplateTaghandler  <<<------- --- */
+/* ################################################## */
+#TemplateTagHandler label{
+    width:120px;
+    margin:0px 50px;
+}
+
+#TemplateTagHandler input{
+    margin: 2px 15px;
+    padding: 6px;
+    width: 100px;
+}
+#TemplateTagHandler input.button {
+    border:1px solid #DEDEDE;
+    cursor:pointer;
+    margin: 2px 0px;
+}
+#TemplateTagHandler input.button:hover{
+    background-color:#E6EFC2;
+    border:1px solid #C6D880;
+    color:#529214;
+}
+#TemplateTagHandler input.field {
+    background-color: #F1F6FA;
+    border: 1px solid #96BBD9;
+    margin: 2px 15px;
+    width: 100px;
 }
 
 /* ################################################## */

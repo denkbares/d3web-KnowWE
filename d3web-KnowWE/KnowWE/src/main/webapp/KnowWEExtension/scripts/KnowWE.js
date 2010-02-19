@@ -913,6 +913,61 @@ KNOWWE.core.renaming = function(){
 }();
 
 /**
+ * Namespace: KNOWWE.core.template
+ * The KNOWWE template namespace.
+ */
+KNOWWE.core.template = function(){
+	return {
+		/**
+         * Function: init
+         * The template init function. Enables the
+         * templatetaghandler and templatetaghandler
+         * buttons.
+         */
+        init : function(){
+            //init TemplateTagHandler
+            if(_KS('#TemplateTagHandler')) {
+                var els = _KS('#TemplateTagHandler input[type=button]');
+                for (var i = 0; i < els.length; i++){
+                    _KE.add('click', els[i], KNOWWE.core.template.doTemplate); 
+                }
+            }
+            //add generate template button action
+            if(_KS('.generate-template').length != 0){
+                _KS('.generate-template').each(function( element ){
+                    _KE.add('click', element, KNOWWE.core.template.doTemplate);
+                });
+            }          
+        },
+        
+        /**
+         * Function: doTemplate
+         * Creates a new Wikipage out of a templateType.
+         * 
+         * Parameters:
+         *     event - The event from the create knowledgebase button. 
+         */
+        doTemplate : function( event ) {
+            var pageName = eval( "(" + _KE.target(event).getAttribute('rel') + ")").jar;
+
+            var params = {
+                action : 'de.d3web.we.action.TemplateGenerationAction',
+                NewPageName : _KS('#' + pageName ).value,
+                TemplateName : pageName
+            }
+            
+            var options = {
+                url : KNOWWE.core.util.getURL( params ),
+                response : {
+                    ids : ['TemplateGeneratingInfo']
+                }
+            }
+            new _KA( options ).send();
+        }
+	}
+}();
+
+/**
  * Namespace: KNOWWE.core.typebrowser
  * The KNOWWE typebrowser namespace.
  */
@@ -1229,6 +1284,7 @@ var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
             KNOWWE.core.util.tablesorter.init();
             KNOWWE.core.typebrowser.init();
             KNOWWE.core.rerendercontent.init();
+            KNOWWE.core.template.init();
 
             if(_KS('#testsuite-show-extend')){
                 _KE.add('click', _KS('#testsuite-show-extend'), KNOWWE.core.util.form.showExtendedPanel);

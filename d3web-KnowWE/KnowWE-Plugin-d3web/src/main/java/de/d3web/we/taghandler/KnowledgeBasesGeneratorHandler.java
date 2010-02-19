@@ -40,8 +40,6 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
  */
 public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 
-	private KnowWEWikiConnector wikiConnector;
-
 	public KnowledgeBasesGeneratorHandler () {
 		super("KnowledgeBasesUploader");		
 	}
@@ -57,10 +55,8 @@ public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 		
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 		
-		if(wikiConnector == null) {
-			wikiConnector = KnowWEEnvironment.getInstance().getWikiConnector();
-		}
-		
+		KnowWEWikiConnector wikiConnector = KnowWEEnvironment.getInstance().getWikiConnector();
+	
 		// update attachments
 		List <String> attchmnts = wikiConnector.getJarAttachments();
 		
@@ -72,13 +68,8 @@ public class KnowledgeBasesGeneratorHandler extends AbstractTagHandler {
 		html.append("<form method='post' action=''>");
 		html.append("<fieldset>");
 
-		// as long as there are KBs available do.
 		if ((attchmnts != null) && (!attchmnts.isEmpty())) {
 			
-			/*
-			 * For each jar File create a line like This.
-			 * File_newNameField_generateButton
-			 */
 			ListIterator<String> it = attchmnts.listIterator();
 			while (it.hasNext()) {
 				
