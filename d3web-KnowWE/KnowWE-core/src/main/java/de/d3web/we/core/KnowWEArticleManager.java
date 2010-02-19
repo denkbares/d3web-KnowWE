@@ -238,10 +238,14 @@ public class KnowWEArticleManager {
 		art.getSection().setReusedStateRecursively(art.getTitle(), false);
 		
 		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<<==== Finished building article '" + art.getTitle() + "' in " 
+			.log(Level.INFO,"<<==== Finished building article '" + art.getTitle() + "' in " + web + " in " 
 				+ (System.currentTimeMillis() - art.getStartTime()) + "ms <<====");
 		
 		return art.getReport();
+	}
+	
+	public void clearArticleMap() {
+		this.articleMap = new java.util.HashMap<String, KnowWEArticle>();
 	}
 	
 	/**
@@ -250,11 +254,11 @@ public class KnowWEArticleManager {
 	 * @param art The article to delete
 	 */
 	public void deleteArticle(KnowWEArticle art) {
-		KnowWEEnvironment.getInstance().processAndUpdateArticle("", "", art.getTitle(), KnowWEEnvironment.DEFAULT_WEB);
+		KnowWEEnvironment.getInstance().processAndUpdateArticle("", "", art.getTitle(), web);
 		articleMap.remove(art.getTitle());
 		
 		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"-> Deleted article '" + art.getTitle() + "'");
+			.log(Level.INFO,"-> Deleted article '" + art.getTitle() + "'" + " from " + web);
 	}
 	
 }

@@ -9,15 +9,10 @@ import groovy.lang.Script;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -33,6 +28,7 @@ import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.content.PageRenamer;
+import com.ecyrd.jspwiki.providers.ProviderException;
 
 import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
@@ -59,6 +55,7 @@ import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.xcl.CoveringListContent;
 import de.d3web.we.kdom.xcl.XCList;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.refactoring.management.RefactoringManager;
 
 public class RefactoringSession {
 	
@@ -94,25 +91,16 @@ public class RefactoringSession {
 		return nextAction;
 	}
 	
-	/**
-	 * Key: String - the KDOM-ID of the changed section
-	 * Val: String[0] - the section before the change; String[1] - the section after the change
-	 */
-	private Map<String, String[]> changedSections = new HashMap<String, String[]>();
-	/**
-	 * Key: String - the name of the changed wiki page
-	 * Val: int[0] - the version of the wiki page before the changes - int[0] - the version of the wiki page after the changes
-	 */
-	private Map<String, int[]> changedWikiPages = new HashMap<String, int[]>();
-	
 	private KnowWEParameterMap parameters;
-	private KnowWEArticleManager manager;
 	private Map<String,String[]> gsonFormMap;
+	
+	private RefactoringManager refManager;
+	private WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
 	
 	public void setParameters(KnowWEParameterMap parameters, Map<String, String[]> gsonFormMap) {
 		this.parameters = parameters;
-		this.manager = KnowWEEnvironment.getInstance().getArticleManager(parameters.getWeb());
 		this.gsonFormMap = gsonFormMap;
+		if (this.refManager == null) this.refManager = new RefactoringManager(parameters.getWeb());
 	}
 	
 	private void runSession() {
@@ -122,7 +110,6 @@ public class RefactoringSession {
 			GroovyClassLoader loader = new GroovyClassLoader(parent);
 			Section<?> refactoringSection = findRefactoringSection();
 			String identity = "refactoringSession";
-//			String identity = "rs";
 //			String ls = System.getProperty("line.separator");
 			StringBuffer sb = new StringBuffer();
 			sb.append(identity + ".identity{");
@@ -173,47 +160,45 @@ public class RefactoringSession {
 				warning(e.getClass().getName() + " thrown while executing Groovy script."); // I18N
 			}
 		}
-		Set<String> changedArticles = new HashSet<String>();
-		for (String changedSectionID: changedSections.keySet()) {
-			String title = getArticleName(changedSectionID);
-			changedArticles.add(title);
-		}
-		for (String changedArticle: changedArticles) {
-			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
-			int versionBefore = we.getPage(changedArticle).getVersion();
-			StringBuilder newArticleText = new StringBuilder();
-			customCollectTextsFromLeaves(manager.findNode(changedArticle), newArticleText);
-			manager.replaceKDOMNode(parameters, changedArticle, changedArticle, newArticleText.toString());
-			// tracking of article versions
-			int versionAfter = we.getPage(changedArticle).getVersion();
-			if (! changedWikiPages.containsKey(changedArticle)) {
-				changedWikiPages.put(changedArticle, new int[] {versionBefore, versionAfter});
-			} else {
-				changedWikiPages.put(changedArticle, new int[] {changedWikiPages.get(changedArticle)[0], versionAfter});
-			}
-		}
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameterMap) {
 				StringBuffer html = new StringBuffer();
 				
-				for (String id: changedSections.keySet()) {
-					html.append("<br />Die Section mit folgender ID hat sich geändert: " + id + "<br />");
+				for (KnowWEArticle changedArticle: refManager.getChangedArticles()) {
+					String changedArticleID = changedArticle.getTitle();
+					KnowWEArticleManager knowWEManager = KnowWEEnvironment.getInstance().getArticleManager(parameters.getWeb());
+
+					int versionBefore = we.getPage(changedArticleID).getVersion();
+					String textBefore = "textBefore";
+					try {
+						textBefore = we.getPageManager().getPageText(changedArticleID, versionBefore);
+					} catch (ProviderException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//FIXME der Artikel-KDOM wird gespeichert, aber der Artikel-Quelltext nicht ?!  Ist dieser Save hier nötig?
+					refManager.saveUpdatedArticle(changedArticle);
+					KnowWEArticle consinstentChangedArticle = refManager.getArticle(changedArticleID);
+					knowWEManager.replaceKDOMNode(parameters, changedArticleID, changedArticleID, consinstentChangedArticle.getSection().getOriginalText());
+					int versionAfter = we.getPage(changedArticleID).getVersion();
+					String textAfter = "textAfter";
+					try {
+						textAfter = we.getPageManager().getPageText(changedArticleID, versionAfter);
+					} catch (ProviderException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					html.append("<br />Der folgende Artikel hat sich geändert: " + changedArticleID + " von Version " +
+							versionBefore + " zu Version " + versionAfter + ".<br />");
 					diff_match_patch dmp = new diff_match_patch();
-					LinkedList<Diff> diffs = dmp.diff_main(changedSections.get(id)[0],changedSections.get(id)[1]);
+					LinkedList<Diff> diffs = dmp.diff_main(textBefore, textAfter);
 					dmp.diff_cleanupSemantic(diffs);
 					html.append(dmp.diff_prettyHtml(diffs) + "<br />");
 				}
 				html.append("<br />Refactorings abgeschlossen.<br />");
 				
-				WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
-											
-				for(String pageName: changedWikiPages.keySet()) {
-					html.append("<br />Die Seite [" + pageName + "] wurde verändert von Version " + changedWikiPages.get(pageName)[0] +
-					" zu Version " + changedWikiPages.get(pageName)[1] + ". Aktuelle Version der Seite ist " + we.getPage(pageName).getVersion() + 
-					".<br />");
-				}
-				 
 				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Möchten Sie die Änderungen rückgängig machen?</p></div>"
@@ -228,13 +213,13 @@ public class RefactoringSession {
 		});
 		
 		if (gsonFormMap.get("selectUndo")[0].equals("ja")) {
-			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
-			for (String st: changedWikiPages.keySet()) {
+			for (KnowWEArticle art: refManager.getChangedArticles()) {
+				String st = art.getTitle();
 				WikiPage page = we.getPage(st);
 				WikiContext wc = new WikiContext(we, page);
 				// TODO test, ob changedWikiPages.get(st)[0] == we.getPage(pageName).getVersion()
 				try {
-					we.saveText(wc, we.getPageManager().getPageText(st, changedWikiPages.get(st)[0]));
+					we.saveText(wc, we.getPageManager().getPageText(st, we.getPage(st).getVersion() - 1));
 				} catch (WikiException e) {
 					e.printStackTrace();
 				}
@@ -258,18 +243,6 @@ public class RefactoringSession {
 		terminated  = true;
 	}
 
-	private String getArticleName(String sectionID) {
-		String title;
-		// es muss so umständlich gemacht werden, wenn man sich die section holen will um den article zu bestimmen kann
-		// dies zu problemen führen, denn die section könnte ja gelöscht worden sein.
-		if (sectionID.contains("/")) {
-			title = sectionID.substring(0, sectionID.indexOf("/"));
-		} else {
-			title = sectionID;
-		}
-		return title;
-	}
-
 	private String getStackTraceString(Exception e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
@@ -286,29 +259,26 @@ public class RefactoringSession {
 
 	// TODO wenn es noch keine RulesSection gibt, dann muss die noch gebaut werden
 	public Section<RulesSectionContent> findRulesSectionContent(Section<?> knowledgeSection) {
-		KnowWEArticle article = knowledgeSection.getArticle();
+		// FIXME temporärer hack reloaded
+		KnowWEArticle article = refManager.getArticle(knowledgeSection.getArticle().getTitle());
+		
 		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(RulesSectionContent.class);
 		return rulesSectionContent;
 	}
 	
 	public Section<CoveringListContent> findCoveringListContent(Section<?> knowledgeSection) {
-		KnowWEArticle article = knowledgeSection.getArticle();
+		// FIXME temporärer hack reloaded
+		KnowWEArticle article = refManager.getArticle(knowledgeSection.getArticle().getTitle());
+		
 		Section<CoveringListContent> coveringListContent = article.getSection().findSuccessor(CoveringListContent.class);
 		if (coveringListContent == null) {
-//			Section<RootType> srt = article.getSection().findSuccessor(RootType.getInstance());
-//			replaceSection(srt, srt.getOriginalText().concat(
-//					"\r\n<SetCoveringList-section>\r\n" + 
-//					"\r\n" + 
-//					"</SetCoveringList-section>\r\n"));
-//			StringBuilder newArticleText = new StringBuilder();
-//			customCollectTextsFromLeaves(article.getSection(), newArticleText);
 			StringBuilder newArticleText = new StringBuilder(article.getSection().getOriginalText());
-			//TODO ganz böse - der Artikel wird gespeichert in einer Zwischenversion, nur um an die SetCoveringList-section ranzukommen...
-			manager.replaceKDOMNode(parameters, article.getTitle(), article.getTitle(), newArticleText.append("\r\n<SetCoveringList-section>\r\n" + 
+			//FIXME ganz böse - der Artikel wird gespeichert in einer Zwischenversion, nur um an die SetCoveringList-section ranzukommen...
+			refManager.replaceKDOMNode(article.getTitle(), article.getTitle(), newArticleText.append("\r\n<SetCoveringList-section>\r\n" + 
 					"\r\n" + 
 					"</SetCoveringList-section>\r\n").toString());
-			KnowWEArticle articleNew = manager.getArticle(article.getTitle());
-			Section<CoveringListContent> coveringListContentNew = articleNew.getSection().findSuccessor(CoveringListContent.class);
+			Section<CoveringListContent> coveringListContentNew = refManager.getArticle(article.getTitle())
+				.getSection().findSuccessor(CoveringListContent.class);
 			return coveringListContentNew;
 		}
 		return coveringListContent;
@@ -333,7 +303,7 @@ public class RefactoringSession {
 
 	public List<Section<Finding>> findFindings(Section<?> knowledgeSection) {
 		List<Section<Finding>> findings = new ArrayList<Section<Finding>>();
-		knowledgeSection.findSuccessorsOfType(new Finding(), findings);
+		knowledgeSection.findSuccessorsOfType(Finding.class, findings);
 		return findings;
 	}
 
@@ -343,19 +313,15 @@ public class RefactoringSession {
 			public String perform(KnowWEParameterMap parameters) {
 				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 				StringBuffer html = new StringBuffer();
-				SortedSet<String> topics = new TreeSet<String>();
-				for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
-					topics.add(it.next().getTitle());
-				}
 				html.append("<fieldset><div class='left'>"
 						+ "<p>Wählen Sie die zu transformierende Überdeckungsliste aus:</p></div>"
 						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>XCList</label>"
 						+ "<select name='selectXCList' class='refactoring'>");
-				for(Iterator<String> it = topics.iterator(); it.hasNext();) {
-					KnowWEArticle article = manager.getArticle(it.next());
+				for(Iterator<KnowWEArticle> it = refManager.getArticleIterator(); it.hasNext();) {
+					KnowWEArticle article = refManager.getArticle(it.next().getTitle());
 					Section<?> articleSection = article.getSection();
 					List<Section<XCList>> xclists = new ArrayList<Section<XCList>>();
-					articleSection.findSuccessorsOfType(new XCList(), xclists);
+					articleSection.findSuccessorsOfType(XCList.class, xclists);
 					for (Section<?> xclist : xclists) {
 						html.append("<option value='" + xclist.getId() + "'>Seite: " + article.getTitle() + " - XCList: " 
 								+ xclist.findSuccessor(SolutionID.class).getOriginalText() + "</option>");
@@ -366,11 +332,11 @@ public class RefactoringSession {
 				return html.toString();
 			}
 		});
-		Section<?> knowledge = manager.findNode(gsonFormMap.get("selectXCList")[0]);
+		Section<?> knowledge = refManager.findNode(gsonFormMap.get("selectXCList")[0]);
 		return knowledge;
 	}
 	
-	public KnowWEObjectType findRenamingType() {
+	public Class<? extends KnowWEObjectType> findRenamingType() {
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
@@ -390,51 +356,47 @@ public class RefactoringSession {
 				return html.toString();
 			}
 		});
-		String typeString = gsonFormMap.get("selectRenamingType")[0];
-		KnowWEObjectType type = getTypeFromString(typeString);
-		return type;
+		String clazzString = gsonFormMap.get("selectRenamingType")[0];
+		Class<? extends KnowWEObjectType> clazz = getTypeFromString(clazzString);
+		return clazz;
 	}
 
-	public KnowWEObjectType getTypeFromString(String typeString) {
-		KnowWEObjectType type = null;
-		if(typeString.equals("KnowWEArticle")) {
-			type = new KnowWEArticle();
-		} else if(typeString.equals("QuestionnaireID")) {
-			type = new QuestionnaireID();
-		} else if(typeString.equals("QuestionID")) {
-			type = new QuestionID();
-		} else if(typeString.equals("QuestionTreeAnswerID")) {
-			type = new QuestionTreeAnswerID();
-		} else if(typeString.equals("SolutionID")) {
-			type = new SolutionID();
+	public Class<? extends KnowWEObjectType> getTypeFromString(String clazzString) {
+		Class<? extends KnowWEObjectType> clazz = null;
+		if(clazzString.equals("KnowWEArticle")) {
+			clazz = KnowWEArticle.class;
+		} else if(clazzString.equals("QuestionnaireID")) {
+			clazz = QuestionnaireID.class;
+		} else if(clazzString.equals("QuestionID")) {
+			clazz = QuestionID.class;
+		} else if(clazzString.equals("QuestionTreeAnswerID")) {
+			clazz = QuestionTreeAnswerID.class;
+		} else if(clazzString.equals("SolutionID")) {
+			clazz = SolutionID.class;
 		}
-		return type;
+		return clazz;
 	}
 	
 	// TODO bereits hier alternative Typen berücksichtigen (QClassID, QuestionnaireID)
-	public <T extends KnowWEObjectType> String findObjectID(final T type) {
+	public <T extends KnowWEObjectType> String findObjectID(final Class<T> clazz) {
 		//TODO mehrfache Einträge für ein Element sollten vermieden werden
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
 				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
 				StringBuffer html = new StringBuffer();
-				SortedSet<String> topics = new TreeSet<String>();
-				for(Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
-					topics.add(it.next().getTitle());
-				}
 				html.append("<fieldset><div class='left'>"
-						+ "<p>Wählen Sie den Namen des Objekts mit dem Typ <strong>" + type.getName() + "</strong>:</p></div>"
+						+ "<p>Wählen Sie den Namen des Objekts mit dem Typ <strong>" + clazz.getName() + "</strong>:</p></div>"
 						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objektname</label>"
 						+ "<select name='selectObjectID' class='refactoring'>");
-				for(Iterator<String> it = topics.iterator(); it.hasNext();) {
-					KnowWEArticle article = manager.getArticle(it.next());
+				for(Iterator<KnowWEArticle> it = refManager.getArticleIterator(); it.hasNext();) {
+					KnowWEArticle article = refManager.getArticle(it.next().getTitle());
 					Section<?> articleSection = article.getSection();
 					List<Section<T>> objects = new ArrayList<Section<T>>();
-					articleSection.findSuccessorsOfType(type, objects);
+					articleSection.findSuccessorsOfType(clazz, objects);
 					for (Section<?> object : objects) {
-						String name = (type instanceof KnowWEArticle) ? object.getId() : object.getOriginalText();
-						String question = (type instanceof QuestionTreeAnswerID) ? " - Frage: " + findQuestion(object).getOriginalText() : "";
+						String name = (clazz == KnowWEArticle.class) ? object.getId() : object.getOriginalText();
+						String question = (clazz == QuestionTreeAnswerID.class) ? " - Frage: " + findQuestion(object).getOriginalText() : "";
 						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
 								+ name + "</option>");
 					}
@@ -454,8 +416,6 @@ public class RefactoringSession {
 	}
 	private Section<QuestionTreeAnswerID> findAnswer(Section<?> diagnosisSection) {
 		// TODO verbessern
-//		System.out.println(diagnosisID);
-//		System.out.println(diagnosisSection.getOriginalText());
 		return diagnosisSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(QuestionTreeAnswerID.class);
 	}
 	
@@ -484,54 +444,50 @@ public class RefactoringSession {
 	}
 	
 	
-	public <T extends KnowWEObjectType> List<Section<? extends KnowWEObjectType>> findRenamingList(T type, String objectID) {
-		return findRenamingList(type, objectID, null);
+	public <T extends KnowWEObjectType> List<Section<? extends KnowWEObjectType>> findRenamingList(Class<T> clazz, String objectID) {
+		return findRenamingList(clazz, objectID, null);
 	}
 	
 	// TODO den Algorithmus verständlicher gestalten
-	public <T extends KnowWEObjectType> List<Section<? extends KnowWEObjectType>> findRenamingList(T type, String objectID, String newName) {
+	public <T extends KnowWEObjectType> List<Section<? extends KnowWEObjectType>> findRenamingList(Class<T> clazz, String objectID, String newName) {
 		List<Section<? extends KnowWEObjectType>> fullList = new ArrayList<Section<? extends KnowWEObjectType>>();
 		List<Section<? extends KnowWEObjectType>> filteredList = new ArrayList<Section<? extends KnowWEObjectType>>();
-		if (type instanceof QuestionTreeAnswerID) {
-			Section<QuestionID> question = findQuestion(manager.findNode(objectID));
+		if (clazz == QuestionTreeAnswerID.class) {
+			Section<QuestionID> question = findQuestion(refManager.findNode(objectID));
 			List<Section<QuestionTreeAnswerID>> answers = new LinkedList<Section<QuestionTreeAnswerID>>();
 			// TODO verbessern
 			question.getFather().getFather().getFather().getFather().findSuccessorsOfType(QuestionTreeAnswerID.class, 5 , answers);
 			fullList.addAll(answers);
 			// hole alle FindingQuestion's welche den gleichen getOriginalText() haben wie die Question, zu welcher die QuestionTreeAnswerID
 			// gehört
-			List<Section<? extends KnowWEObjectType>> findingQuestions = findRenamingList(new FindingQuestion(), question.getId());
+			List<Section<? extends KnowWEObjectType>> findingQuestions = findRenamingList(FindingQuestion.class, question.getId());
 			// bestimme dafür die passenden Antworten
 			for (Section<? extends KnowWEObjectType> questionSection : findingQuestions) {
 				Section<? extends KnowWEObjectType> answer = questionSection.getFather().findSuccessor(FindingAnswer.class);
 				fullList.add(answer);
 			}
 		} else {
-			SortedSet<String> topics = new TreeSet<String>();
-			for (Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
-				topics.add(it.next().getTitle());
-			}
-			for (Iterator<String> it = topics.iterator(); it.hasNext();) {
-				KnowWEArticle article = manager.getArticle(it.next());
+			for (Iterator<KnowWEArticle> it = refManager.getArticleIterator(); it.hasNext();) {
+				KnowWEArticle article = refManager.getArticle(it.next().getTitle());
 				Section<?> articleSection = article.getSection();
 				List<Section<T>> objects = new ArrayList<Section<T>>();
-				articleSection.findSuccessorsOfType(type, objects);
+				articleSection.findSuccessorsOfType(clazz, objects);
 				fullList.addAll(objects);
-				if (type instanceof QuestionnaireID || type instanceof QuestionID) {
+				if (clazz == QuestionnaireID.class || clazz == QuestionID.class) {
 					List<Section<QClassID>> objects2 = new ArrayList<Section<QClassID>>();
-					articleSection.findSuccessorsOfType(new QClassID(), objects2);
+					articleSection.findSuccessorsOfType(QClassID.class, objects2);
 					fullList.addAll(objects2);
 				}
-				if (type instanceof QuestionID) {
+				if (clazz == QuestionID.class) {
 					List<Section<FindingQuestion>> objects2 = new ArrayList<Section<FindingQuestion>>();
-					articleSection.findSuccessorsOfType(new FindingQuestion(), objects2);
+					articleSection.findSuccessorsOfType(FindingQuestion.class, objects2);
 					fullList.addAll(objects2);
 				}
 				// TODO Solutions müssen ebenfalls behandelt werden!
 			}
 		}
 		for (Section<? extends KnowWEObjectType> object : fullList) {
-			String name = (newName != null) ? newName : manager.findNode(objectID).getOriginalText();
+			String name = (newName != null) ? newName : refManager.findNode(objectID).getOriginalText();
 			if (object.getOriginalText().equals(name)) {
 				filteredList.add(object);
 			}
@@ -539,38 +495,32 @@ public class RefactoringSession {
 		return filteredList;
 	}
 
-	public <T extends KnowWEObjectType> void renameElement(Section<? extends KnowWEObjectType> section, String newName, T type){
+	public <T extends KnowWEObjectType> void renameElement(Section<? extends KnowWEObjectType> section, String newName, Class<T> clazz){
 		// TODO Report und Undo von umbenannten Wiki-Seiten ermöglichen
-		if (type instanceof KnowWEArticle) {
+		if (clazz == KnowWEArticle.class) {
 			PageRenamer pr = new PageRenamer();
 			try {
-				WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
 				WikiPage page = we.getPage(section.getId());
 				WikiContext wc = new WikiContext(we, page);
 				pr.renamePage(wc, section.getId(), newName, true);
-				
-				
-				
 			} catch (WikiException e) {
 				// TODO wird z.B. geworfen wenn der Seitenname bereits vorhanden ist
 				e.printStackTrace();
 			}
-			
 			// include-Referenzen werden umbenannt
-			for (Iterator<KnowWEArticle> it = manager.getArticleIterator(); it.hasNext();) {
+			for (Iterator<KnowWEArticle> it = refManager.getArticleIterator(); it.hasNext();) {
 				KnowWEArticle art = it.next();
 				List<Section<Include>> includes = new LinkedList<Section<Include>>();
-				art.getSection().findSuccessorsOfType(Include.getInstance(), includes);
+				art.getSection().findSuccessorsOfType(Include.class, includes);
 				for(Section<Include> inc : includes) {
 					Map<String,String> attributes = AbstractXMLObjectType.getAttributeMapFor(inc);
 					String src = attributes.get("src");
-					String articleName = getArticleName(src);
+					String articleName = refManager.getArticleName(src);
 					String newSrc = src.replaceFirst(articleName, newName);
 					StringBuffer replacement = new StringBuffer( "<include src=\"" + newSrc + "\" />");
 					replaceSection(inc, replacement.toString());
 				}
 			}
-			
 		} else {
 			replaceSection(section, newName);
 		}
@@ -598,10 +548,10 @@ public class RefactoringSession {
 	// TODO wird im KDOM leider als QuestionID und nicht als SolutionID geparsed, mal mit Jochen reden
 	public List<Section<QuestionID>> findSolutions(String value, String pageName) {
 		List<Section<QuestionID>> returnList = new LinkedList<Section<QuestionID>>();
-		Section<?> articleSection = manager.findNode(pageName);
+		Section<?> articleSection = refManager.findNode(pageName);
 		List<Section<AnonymousType>> found = new ArrayList<Section<AnonymousType>>();
 		// TODO es muss noch überprüft werden, ob AnonymousType.getName().equals("SetValueArgument") gilt.
-		articleSection.findSuccessorsOfType(new AnonymousType(""), found);
+		articleSection.findSuccessorsOfType(AnonymousType.class, found);
 		for (Section<AnonymousType> atSection: found) {
 			if (atSection.getOriginalText().equals(value)) {
 				Section<QuestionID> foundSolution = atSection.getFather().findSuccessor(QuestionID.class);
@@ -632,8 +582,11 @@ public class RefactoringSession {
 	}
 	
 	public void deleteSolutionOccurrences (Section<QuestionID> solution) {
+		// FIXME temporärer hack reloaded
+		KnowWEArticle article = refManager.getArticle(solution.getArticle().getTitle());
+		
 		List<Section<QuestionID>> list = new LinkedList<Section<QuestionID>>();
-		solution.getArticle().getSection().findSuccessorsOfType(new QuestionID(), list);
+		article.getSection().findSuccessorsOfType(QuestionID.class, list);
 		for(Section<QuestionID> sqid: list) {
 			if (sqid.getOriginalText().equals(solution.getOriginalText())) {
 				replaceSection(sqid.getFather().getFather().getFather(), "");
@@ -642,9 +595,9 @@ public class RefactoringSession {
 	}
 	
 	public void deleteComments (String sectionID) {
-		Section<?> section = manager.findNode(sectionID);
+		Section<?> section = refManager.findNode(sectionID);
 		List<Section<CommentLineType>> list = new LinkedList<Section<CommentLineType>>();
-		section.getArticle().getSection().findSuccessorsOfType(new CommentLineType(), list);
+		section.getArticle().getSection().findSuccessorsOfType(CommentLineType.class, list);
 		for(Section<CommentLineType> commentLine: list) {
 			replaceSection(commentLine, "");
 		}
@@ -723,61 +676,16 @@ public class RefactoringSession {
 	}
 	
 	private Section<?> findRefactoringSection() {
-		// TODO momentan werden nur Refactorings betrachtet, die sich auf dieser Seite befinden - Integration von built-in Refactorings
-		Section<?> section = manager.getArticle(parameters.getTopic()).getSection();
+		// TODO momentan werden nur Refactorings betrachtet, die sich auf dieser Seite befinden - Integration von built-in Refactorings nötig!
+		Section<?> section = refManager.getArticle(parameters.getTopic()).getSection();
 		// siehe RefactoringTagHandler.java
 		Section<?> refactoring = section.findChild(gsonFormMap.get("selectRefactoring")[0]);
 		return refactoring;
 	}
 	
 	private void replaceSection(Section<?> section, String newText) {
-		if (! changedSections.containsKey(section.getId())) {
-			changedSections.put(section.getId(), new String[] {section.getOriginalText(), newText});
-		} else {
-			changedSections.put(section.getId(), new String[] {changedSections.get(section.getId())[0], newText});
-		}
 		KnowWEArticle article = section.getArticle(); 
 		String topic = article.getTitle();
-		customReplaceKDOMNodeWithoutSave(parameters, topic, section.getId(), newText);
-		//KnowWEArticle newArticle = new KnowWEArticle(text, article.getTitle(), article.getAllowedChildrenTypes(), article.getWeb());
-		//manager.saveUpdatedArticle(newArticle);
-	}
-	
-
-	public void customReplaceKDOMNodeWithoutSave(KnowWEParameterMap map, String articleName,
-			String nodeID, String replacingText) {
-		KnowWEArticle art = manager.getArticle(articleName);
-		if (art == null) {
-			throw new RuntimeException("customReplaceKDOMNodeWithoutSave: Article " + articleName + " could not be found.");
-		}
-		Section<KnowWEArticle> root = art.getSection();
-		replaceNodeTextSetLeaf(root, nodeID, replacingText);
-	}
-	
-	private void replaceNodeTextSetLeaf(Section<?> sec, String nodeID, String replacingText) {
-		if (sec.getId().equals(nodeID)) {
-			sec.setOriginalText(replacingText);
-			sec.removeAllChildren();
-			return;
-		}
-		List<Section<?>> children = sec.getChildren();
-		if (children == null || children.isEmpty() || sec.getObjectType() instanceof Include) {
-			return;
-		}
-		for (Section<?> section : children) {
-			replaceNodeTextSetLeaf(section, nodeID, replacingText);
-		}
-	}
-
-	private void customCollectTextsFromLeaves(Section<?> section, StringBuilder buffi) {
-		if (section.getChildren() != null && section.getChildren().size() > 0
-				&& !(section.getObjectType() instanceof Include)) {
-			for (Section<?> s : section.getChildren()) {
-				customCollectTextsFromLeaves(s, buffi);
-			}
-		} else {
-			buffi.append(section.getOriginalText());
-		}
-
+		refManager.replaceKDOMNodeWithoutSave(topic, section.getId(), newText);
 	}
 }
