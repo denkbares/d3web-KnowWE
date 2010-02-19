@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g 2009-10-14 10:10:52
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g 2010-02-19 17:16:32
 
 package de.d3web.KnOfficeParser.xcl;
 import de.d3web.KnOfficeParser.ConditionBuilder;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class XCL extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "String", "INT", "DOT", "DD", "COMMA", "SEMI", "EX", "AT", "ORS", "NS", "TILDE", "LP", "RP", "CBO", "CBC", "SBO", "SBC", "LE", "L", "GE", "G", "EQ", "PLUS", "MINUS", "PROD", "DIV", "WS", "COMMENT", "NL", "IF", "THEN", "AND", "OR", "NOT", "HIDE", "EXCEPT", "UNKNOWN", "KNOWN", "INSTANT", "MINMAX", "IN", "INTER", "ALL", "ALLOWEDNAMES", "INCLUDE", "DEFAULT", "INIT", "ABSTRACT", "SET", "REF", "FUZZY", "DIVTEXT", "DIVNORM", "ID", "BLUB", "Tokens", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "String", "INT", "DOT", "DD", "COMMA", "SEMI", "EX", "AT", "ORS", "NS", "TILDE", "LP", "RP", "CBO", "CBC", "SBO", "SBC", "LE", "L", "GE", "G", "EQ", "PLUS", "MINUS", "PROD", "DIV", "WS", "COMMENT", "NL", "IF", "THEN", "AND", "OR", "NOT", "HIDE", "EXCEPT", "UNKNOWN", "KNOWN", "INSTANT", "MINMAX", "IN", "INTER", "ALL", "ALLOWEDNAMES", "INCLUDE", "DEFAULT", "INIT", "ABSTRACT", "SET", "REF", "FUZZY", "DIVTEXT", "DIVNORM", "ID", "BLUB", "Tokens", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88"
     };
     public static final int HIDE=38;
     public static final int RP=16;
@@ -94,7 +94,7 @@ public class XCL extends Parser {
         
 
     public String[] getTokenNames() { return XCL.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g"; }
+    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g"; }
 
 
       private XCLBuilder builder;
@@ -129,13 +129,13 @@ public class XCL extends Parser {
 
 
     // $ANTLR start "knowledge"
-    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:68:1: knowledge : ( solutiondescription )* ;
+    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:68:1: knowledge : ( solutiondescription )* ;
     public final void knowledge() throws RecognitionException {
         try {
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:1: ( ( solutiondescription )* )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:3: ( solutiondescription )*
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:1: ( ( solutiondescription )* )
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:3: ( solutiondescription )*
             {
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:3: ( solutiondescription )*
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:3: ( solutiondescription )*
             loop1:
             do {
                 int alt1=2;
@@ -148,7 +148,7 @@ public class XCL extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:3: solutiondescription
+            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:69:3: solutiondescription
             	    {
             	    pushFollow(FOLLOW_solutiondescription_in_knowledge48);
             	    solutiondescription();
@@ -182,7 +182,7 @@ public class XCL extends Parser {
     };
 
     // $ANTLR start "solutiondescription"
-    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:71:1: solutiondescription : name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )? ;
+    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:71:1: solutiondescription : name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )? ;
     public final XCL.solutiondescription_return solutiondescription() throws RecognitionException {
         XCL.solutiondescription_return retval = new XCL.solutiondescription_return();
         retval.start = input.LT(1);
@@ -191,8 +191,8 @@ public class XCL extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:1: ( name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )? )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:3: name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )?
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:1: ( name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )? )
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:3: name CBO ( finding COMMA )+ CBC ( SBO thr ( COMMA thr )* SBC )?
             {
             pushFollow(FOLLOW_name_in_solutiondescription57);
             name1=name();
@@ -201,7 +201,7 @@ public class XCL extends Parser {
 
             builder.solution(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (name1!=null?name1.value:null));
             match(input,CBO,FOLLOW_CBO_in_solutiondescription61); 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:70: ( finding COMMA )+
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:70: ( finding COMMA )+
             int cnt2=0;
             loop2:
             do {
@@ -215,7 +215,7 @@ public class XCL extends Parser {
 
                 switch (alt2) {
             	case 1 :
-            	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:72: finding COMMA
+            	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:72: finding COMMA
             	    {
             	    pushFollow(FOLLOW_finding_in_solutiondescription65);
             	    finding();
@@ -237,7 +237,7 @@ public class XCL extends Parser {
             } while (true);
 
             match(input,CBC,FOLLOW_CBC_in_solutiondescription71); 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:92: ( SBO thr ( COMMA thr )* SBC )?
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:92: ( SBO thr ( COMMA thr )* SBC )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -246,7 +246,7 @@ public class XCL extends Parser {
             }
             switch (alt4) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:93: SBO thr ( COMMA thr )* SBC
+                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:93: SBO thr ( COMMA thr )* SBC
                     {
                     match(input,SBO,FOLLOW_SBO_in_solutiondescription74); 
                     pushFollow(FOLLOW_thr_in_solutiondescription76);
@@ -254,7 +254,7 @@ public class XCL extends Parser {
 
                     state._fsp--;
 
-                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:101: ( COMMA thr )*
+                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:101: ( COMMA thr )*
                     loop3:
                     do {
                         int alt3=2;
@@ -267,7 +267,7 @@ public class XCL extends Parser {
 
                         switch (alt3) {
                     	case 1 :
-                    	    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:102: COMMA thr
+                    	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:102: COMMA thr
                     	    {
                     	    match(input,COMMA,FOLLOW_COMMA_in_solutiondescription79); 
                     	    pushFollow(FOLLOW_thr_in_solutiondescription81);
@@ -309,21 +309,21 @@ public class XCL extends Parser {
 
 
     // $ANTLR start "finding"
-    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:1: finding : complexcondition ( weight )? ;
+    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:1: finding : complexcondition ( weight )? ;
     public final void finding() throws RecognitionException {
         XCL.weight_return weight2 = null;
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:9: ( complexcondition ( weight )? )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:11: complexcondition ( weight )?
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:9: ( complexcondition ( weight )? )
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:11: complexcondition ( weight )?
             {
             pushFollow(FOLLOW_complexcondition_in_finding95);
             complexcondition();
 
             state._fsp--;
 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:28: ( weight )?
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:28: ( weight )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -332,7 +332,7 @@ public class XCL extends Parser {
             }
             switch (alt5) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:28: weight
+                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:74:28: weight
                     {
                     pushFollow(FOLLOW_weight_in_finding97);
                     weight2=weight();
@@ -364,17 +364,17 @@ public class XCL extends Parser {
     };
 
     // $ANTLR start "weight"
-    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:76:1: weight : SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC ;
+    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:76:1: weight : SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC ;
     public final XCL.weight_return weight() throws RecognitionException {
         XCL.weight_return retval = new XCL.weight_return();
         retval.start = input.LT(1);
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:1: ( SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:3: SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:1: ( SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC )
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:3: SBO ( PLUS PLUS | MINUS MINUS | EX | INT ) SBC
             {
             match(input,SBO,FOLLOW_SBO_in_weight108); 
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:7: ( PLUS PLUS | MINUS MINUS | EX | INT )
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:7: ( PLUS PLUS | MINUS MINUS | EX | INT )
             int alt6=4;
             switch ( input.LA(1) ) {
             case PLUS:
@@ -406,7 +406,7 @@ public class XCL extends Parser {
 
             switch (alt6) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:8: PLUS PLUS
+                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:8: PLUS PLUS
                     {
                     match(input,PLUS,FOLLOW_PLUS_in_weight111); 
                     match(input,PLUS,FOLLOW_PLUS_in_weight113); 
@@ -414,7 +414,7 @@ public class XCL extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:18: MINUS MINUS
+                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:18: MINUS MINUS
                     {
                     match(input,MINUS,FOLLOW_MINUS_in_weight115); 
                     match(input,MINUS,FOLLOW_MINUS_in_weight117); 
@@ -422,14 +422,14 @@ public class XCL extends Parser {
                     }
                     break;
                 case 3 :
-                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:30: EX
+                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:30: EX
                     {
                     match(input,EX,FOLLOW_EX_in_weight119); 
 
                     }
                     break;
                 case 4 :
-                    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:33: INT
+                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:77:33: INT
                     {
                     match(input,INT,FOLLOW_INT_in_weight121); 
 
@@ -459,7 +459,7 @@ public class XCL extends Parser {
     };
 
     // $ANTLR start "thr"
-    // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:79:1: thr : name EQ d3double ;
+    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:79:1: thr : name EQ d3double ;
     public final XCL.thr_return thr() throws RecognitionException {
         XCL.thr_return retval = new XCL.thr_return();
         retval.start = input.LT(1);
@@ -470,8 +470,8 @@ public class XCL extends Parser {
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:79:4: ( name EQ d3double )
-            // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:79:6: name EQ d3double
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:79:4: ( name EQ d3double )
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:79:6: name EQ d3double
             {
             pushFollow(FOLLOW_name_in_thr131);
             name3=name();
@@ -502,19 +502,19 @@ public class XCL extends Parser {
     // $ANTLR end "thr"
 
     // Delegated rules
+    public XCL_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
+    public void startruleComplexCondition() throws RecognitionException { gComplexCondition.startruleComplexCondition(); }
+    public XCL_ComplexCondition.conjunct_return conjunct() throws RecognitionException { return gComplexCondition.conjunct(); }
+    public XCL_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
+    public XCL_ComplexCondition.disjunct_return disjunct() throws RecognitionException { return gComplexCondition.disjunct(); }
+    public XCL_ComplexCondition_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
     public XCL_ComplexCondition.complexcondition_return complexcondition() throws RecognitionException { return gComplexCondition.complexcondition(); }
     public String type() throws RecognitionException { return gBasicParser.type(); }
-    public XCL_ComplexCondition.conjunct_return conjunct() throws RecognitionException { return gComplexCondition.conjunct(); }
-    public XCL_ComplexCondition_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
-    public XCL_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
-    public XCL_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
+    public XCL_ComplexCondition_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
     public XCL_ComplexCondition.dnf_return dnf() throws RecognitionException { return gComplexCondition.dnf(); }
     public XCL_ComplexCondition.intervall_return intervall() throws RecognitionException { return gComplexCondition.intervall(); }
-    public XCL_ComplexCondition.disjunct_return disjunct() throws RecognitionException { return gComplexCondition.disjunct(); }
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
-    public void startruleComplexCondition() throws RecognitionException { gComplexCondition.startruleComplexCondition(); }
     public XCL_ComplexCondition_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
-    public XCL_ComplexCondition_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
 
 
  

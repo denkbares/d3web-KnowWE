@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2009-10-14 10:11:40
+// $ANTLR 3.1.1 BasicParser.g 2010-02-19 17:16:49
 
 package de.d3web.KnOfficeParser.complexcondition;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -148,7 +148,7 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
             if ( (LA3_0==String) ) {
                 int LA3_1 = input.LA(2);
 
-                if ( (LA3_1==EOF||(LA3_1>=COMMA && LA3_1<=SEMI)||LA3_1==RP||(LA3_1>=CBC && LA3_1<=EQ)||(LA3_1>=AND && LA3_1<=OR)||LA3_1==IN||LA3_1==ALL) ) {
+                if ( (LA3_1==EOF||(LA3_1>=COMMA && LA3_1<=SEMI)||LA3_1==ORS||LA3_1==RP||(LA3_1>=CBC && LA3_1<=EQ)||(LA3_1>=AND && LA3_1<=OR)||LA3_1==IN||LA3_1==ALL) ) {
                     alt3=2;
                 }
                 else if ( ((LA3_1>=String && LA3_1<=INT)||LA3_1==ID) ) {

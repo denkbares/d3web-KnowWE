@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2009-10-14 10:10:53
+// $ANTLR 3.1.1 BasicParser.g 2010-02-19 17:16:33
 
 package de.d3web.KnOfficeParser.xcl;
 import de.d3web.KnOfficeParser.ConditionBuilder;
@@ -148,7 +148,7 @@ public class XCL_ComplexCondition_BasicParser extends Parser {
             if ( (LA3_0==String) ) {
                 int LA3_1 = input.LA(2);
 
-                if ( ((LA3_1>=COMMA && LA3_1<=SEMI)||(LA3_1>=RP && LA3_1<=EQ)||(LA3_1>=AND && LA3_1<=OR)||LA3_1==IN||LA3_1==ALL) ) {
+                if ( ((LA3_1>=COMMA && LA3_1<=SEMI)||LA3_1==ORS||(LA3_1>=RP && LA3_1<=EQ)||(LA3_1>=AND && LA3_1<=OR)||LA3_1==IN||LA3_1==ALL) ) {
                     alt3=2;
                 }
                 else if ( ((LA3_1>=String && LA3_1<=INT)||LA3_1==ID) ) {
@@ -477,12 +477,6 @@ public class XCL_ComplexCondition_BasicParser extends Parser {
                         case SBO:
                             {
                             switch ( input.LA(4) ) {
-                                case EX:
-                                case PLUS:
-                                    {
-                                    alt6=1;
-                                    }
-                                    break;
                                 case MINUS:
                                     {
                                     int LA6_7 = input.LA(5);
@@ -501,12 +495,19 @@ public class XCL_ComplexCondition_BasicParser extends Parser {
                                     }
                                     }
                                     break;
+                                case EX:
+                                case PLUS:
+                                    {
+                                    alt6=1;
+                                    }
+                                    break;
                             }
 
                             }
                             break;
                         case COMMA:
                         case SEMI:
+                        case ORS:
                         case RP:
                         case CBC:
                         case SBC:

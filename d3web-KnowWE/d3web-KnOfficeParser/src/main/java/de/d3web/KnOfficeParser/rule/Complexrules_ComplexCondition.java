@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 ComplexCondition.g 2009-10-14 10:11:51
+// $ANTLR 3.1.1 ComplexCondition.g 2010-02-19 17:26:09
 
 package de.d3web.KnOfficeParser.rule;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -468,7 +468,7 @@ public class Complexrules_ComplexCondition extends Parser {
     };
 
     // $ANTLR start "condition"
-    // ComplexCondition.g:73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );
+    // ComplexCondition.g:73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );
     public final Complexrules_ComplexCondition.condition_return condition() throws RecognitionException {
         Complexrules_ComplexCondition.condition_return retval = new Complexrules_ComplexCondition.condition_return();
         retval.start = input.LT(1);
@@ -478,6 +478,8 @@ public class Complexrules_ComplexCondition extends Parser {
         Complexrules_ComplexCondition_BasicParser.name_return a = null;
 
         Complexrules_ComplexCondition_BasicParser.nameOrDouble_return nod = null;
+
+        Complexrules_ComplexCondition_BasicParser.nameOrDouble_return nod2 = null;
 
         Complexrules_ComplexCondition_BasicParser.name_return b = null;
 
@@ -497,12 +499,12 @@ public class Complexrules_ComplexCondition extends Parser {
 
 
         try {
-            // ComplexCondition.g:74:1: (a= name ( type )? ( eq nod= nameOrDouble | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC )
-            int alt15=4;
-            alt15 = dfa15.predict(input);
-            switch (alt15) {
+            // ComplexCondition.g:74:1: (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC )
+            int alt16=4;
+            alt16 = dfa16.predict(input);
+            switch (alt16) {
                 case 1 :
-                    // ComplexCondition.g:74:3: a= name ( type )? ( eq nod= nameOrDouble | (in= IN )? intervall )
+                    // ComplexCondition.g:74:3: a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall )
                     {
                     pushFollow(FOLLOW_name_in_condition151);
                     a=gComplexrules.name();
@@ -535,25 +537,25 @@ public class Complexrules_ComplexCondition extends Parser {
 
                     }
 
-                    // ComplexCondition.g:74:16: ( eq nod= nameOrDouble | (in= IN )? intervall )
-                    int alt8=2;
-                    int LA8_0 = input.LA(1);
+                    // ComplexCondition.g:74:16: ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall )
+                    int alt9=2;
+                    int LA9_0 = input.LA(1);
 
-                    if ( ((LA8_0>=LE && LA8_0<=EQ)) ) {
-                        alt8=1;
+                    if ( ((LA9_0>=LE && LA9_0<=EQ)) ) {
+                        alt9=1;
                     }
-                    else if ( (LA8_0==SBO||LA8_0==IN) ) {
-                        alt8=2;
+                    else if ( (LA9_0==SBO||LA9_0==IN) ) {
+                        alt9=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 8, 0, input);
+                            new NoViableAltException("", 9, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt8) {
+                    switch (alt9) {
                         case 1 :
-                            // ComplexCondition.g:74:17: eq nod= nameOrDouble
+                            // ComplexCondition.g:74:17: eq nod= nameOrDouble ( ORS nod2= nameOrDouble )?
                             {
                             pushFollow(FOLLOW_eq_in_condition157);
                             eq2=gComplexrules.eq();
@@ -566,6 +568,30 @@ public class Complexrules_ComplexCondition extends Parser {
                             state._fsp--;
 
                             builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod!=null?nod.value:null));
+                            // ComplexCondition.g:74:129: ( ORS nod2= nameOrDouble )?
+                            int alt7=2;
+                            int LA7_0 = input.LA(1);
+
+                            if ( (LA7_0==ORS) ) {
+                                alt7=1;
+                            }
+                            switch (alt7) {
+                                case 1 :
+                                    // ComplexCondition.g:74:130: ORS nod2= nameOrDouble
+                                    {
+                                    match(input,ORS,FOLLOW_ORS_in_condition166); 
+                                    pushFollow(FOLLOW_nameOrDouble_in_condition170);
+                                    nod2=gComplexrules.nameOrDouble();
+
+                                    state._fsp--;
+
+                                    builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod2!=null?nod2.value:null)); builder.orcond(input.toString(retval.start,input.LT(-1)));
+
+                                    }
+                                    break;
+
+                            }
+
 
                             }
                             break;
@@ -573,24 +599,24 @@ public class Complexrules_ComplexCondition extends Parser {
                             // ComplexCondition.g:75:3: (in= IN )? intervall
                             {
                             // ComplexCondition.g:75:5: (in= IN )?
-                            int alt7=2;
-                            int LA7_0 = input.LA(1);
+                            int alt8=2;
+                            int LA8_0 = input.LA(1);
 
-                            if ( (LA7_0==IN) ) {
-                                alt7=1;
+                            if ( (LA8_0==IN) ) {
+                                alt8=1;
                             }
-                            switch (alt7) {
+                            switch (alt8) {
                                 case 1 :
                                     // ComplexCondition.g:75:5: in= IN
                                     {
-                                    in=(Token)match(input,IN,FOLLOW_IN_in_condition169); 
+                                    in=(Token)match(input,IN,FOLLOW_IN_in_condition180); 
 
                                     }
                                     break;
 
                             }
 
-                            pushFollow(FOLLOW_intervall_in_condition172);
+                            pushFollow(FOLLOW_intervall_in_condition183);
                             intervall3=gComplexrules.intervall();
 
                             state._fsp--;
@@ -609,57 +635,57 @@ public class Complexrules_ComplexCondition extends Parser {
                     // ComplexCondition.g:76:3: ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC
                     {
                     // ComplexCondition.g:76:3: ( KNOWN | c= UNKNOWN )
-                    int alt9=2;
-                    int LA9_0 = input.LA(1);
+                    int alt10=2;
+                    int LA10_0 = input.LA(1);
 
-                    if ( (LA9_0==KNOWN) ) {
-                        alt9=1;
+                    if ( (LA10_0==KNOWN) ) {
+                        alt10=1;
                     }
-                    else if ( (LA9_0==UNKNOWN) ) {
-                        alt9=2;
+                    else if ( (LA10_0==UNKNOWN) ) {
+                        alt10=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 9, 0, input);
+                            new NoViableAltException("", 10, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt9) {
+                    switch (alt10) {
                         case 1 :
                             // ComplexCondition.g:76:4: KNOWN
                             {
-                            match(input,KNOWN,FOLLOW_KNOWN_in_condition182); 
+                            match(input,KNOWN,FOLLOW_KNOWN_in_condition193); 
 
                             }
                             break;
                         case 2 :
                             // ComplexCondition.g:76:10: c= UNKNOWN
                             {
-                            c=(Token)match(input,UNKNOWN,FOLLOW_UNKNOWN_in_condition186); 
+                            c=(Token)match(input,UNKNOWN,FOLLOW_UNKNOWN_in_condition197); 
 
                             }
                             break;
 
                     }
 
-                    match(input,SBO,FOLLOW_SBO_in_condition189); 
-                    pushFollow(FOLLOW_name_in_condition193);
+                    match(input,SBO,FOLLOW_SBO_in_condition200); 
+                    pushFollow(FOLLOW_name_in_condition204);
                     a=gComplexrules.name();
 
                     state._fsp--;
 
                     // ComplexCondition.g:76:32: ( type )?
-                    int alt10=2;
-                    int LA10_0 = input.LA(1);
+                    int alt11=2;
+                    int LA11_0 = input.LA(1);
 
-                    if ( (LA10_0==SBO) ) {
-                        alt10=1;
+                    if ( (LA11_0==SBO) ) {
+                        alt11=1;
                     }
-                    switch (alt10) {
+                    switch (alt11) {
                         case 1 :
                             // ComplexCondition.g:76:32: type
                             {
-                            pushFollow(FOLLOW_type_in_condition195);
+                            pushFollow(FOLLOW_type_in_condition206);
                             type4=gComplexrules.type();
 
                             state._fsp--;
@@ -670,7 +696,7 @@ public class Complexrules_ComplexCondition extends Parser {
 
                     }
 
-                    match(input,SBC,FOLLOW_SBC_in_condition198); 
+                    match(input,SBC,FOLLOW_SBC_in_condition209); 
                     builder.knowncondition(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type4, c!=null);
 
                     }
@@ -679,23 +705,23 @@ public class Complexrules_ComplexCondition extends Parser {
                     // ComplexCondition.g:77:3: a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC
                     {
                     List<String> answers= new ArrayList();
-                    pushFollow(FOLLOW_name_in_condition208);
+                    pushFollow(FOLLOW_name_in_condition219);
                     a=gComplexrules.name();
 
                     state._fsp--;
 
                     // ComplexCondition.g:77:51: ( type )?
-                    int alt11=2;
-                    int LA11_0 = input.LA(1);
+                    int alt12=2;
+                    int LA12_0 = input.LA(1);
 
-                    if ( (LA11_0==SBO) ) {
-                        alt11=1;
+                    if ( (LA12_0==SBO) ) {
+                        alt12=1;
                     }
-                    switch (alt11) {
+                    switch (alt12) {
                         case 1 :
                             // ComplexCondition.g:77:51: type
                             {
-                            pushFollow(FOLLOW_type_in_condition210);
+                            pushFollow(FOLLOW_type_in_condition221);
                             type5=gComplexrules.type();
 
                             state._fsp--;
@@ -706,31 +732,31 @@ public class Complexrules_ComplexCondition extends Parser {
 
                     }
 
-                    match(input,IN,FOLLOW_IN_in_condition213); 
-                    match(input,CBO,FOLLOW_CBO_in_condition215); 
-                    pushFollow(FOLLOW_name_in_condition219);
+                    match(input,IN,FOLLOW_IN_in_condition224); 
+                    match(input,CBO,FOLLOW_CBO_in_condition226); 
+                    pushFollow(FOLLOW_name_in_condition230);
                     b=gComplexrules.name();
 
                     state._fsp--;
 
                     answers.add((b!=null?b.value:null));
                     // ComplexCondition.g:77:96: ( COMMA d= name )*
-                    loop12:
+                    loop13:
                     do {
-                        int alt12=2;
-                        int LA12_0 = input.LA(1);
+                        int alt13=2;
+                        int LA13_0 = input.LA(1);
 
-                        if ( (LA12_0==COMMA) ) {
-                            alt12=1;
+                        if ( (LA13_0==COMMA) ) {
+                            alt13=1;
                         }
 
 
-                        switch (alt12) {
+                        switch (alt13) {
                     	case 1 :
                     	    // ComplexCondition.g:77:97: COMMA d= name
                     	    {
-                    	    match(input,COMMA,FOLLOW_COMMA_in_condition224); 
-                    	    pushFollow(FOLLOW_name_in_condition228);
+                    	    match(input,COMMA,FOLLOW_COMMA_in_condition235); 
+                    	    pushFollow(FOLLOW_name_in_condition239);
                     	    d=gComplexrules.name();
 
                     	    state._fsp--;
@@ -741,11 +767,11 @@ public class Complexrules_ComplexCondition extends Parser {
                     	    break;
 
                     	default :
-                    	    break loop12;
+                    	    break loop13;
                         }
                     } while (true);
 
-                    match(input,CBC,FOLLOW_CBC_in_condition234); 
+                    match(input,CBC,FOLLOW_CBC_in_condition245); 
                     builder.in(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type5, answers);
 
                     }
@@ -754,23 +780,23 @@ public class Complexrules_ComplexCondition extends Parser {
                     // ComplexCondition.g:78:3: a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC
                     {
                     List<String> answers= new ArrayList();
-                    pushFollow(FOLLOW_name_in_condition244);
+                    pushFollow(FOLLOW_name_in_condition255);
                     a=gComplexrules.name();
 
                     state._fsp--;
 
                     // ComplexCondition.g:78:51: ( type )?
-                    int alt13=2;
-                    int LA13_0 = input.LA(1);
+                    int alt14=2;
+                    int LA14_0 = input.LA(1);
 
-                    if ( (LA13_0==SBO) ) {
-                        alt13=1;
+                    if ( (LA14_0==SBO) ) {
+                        alt14=1;
                     }
-                    switch (alt13) {
+                    switch (alt14) {
                         case 1 :
                             // ComplexCondition.g:78:51: type
                             {
-                            pushFollow(FOLLOW_type_in_condition246);
+                            pushFollow(FOLLOW_type_in_condition257);
                             type6=gComplexrules.type();
 
                             state._fsp--;
@@ -781,31 +807,31 @@ public class Complexrules_ComplexCondition extends Parser {
 
                     }
 
-                    match(input,ALL,FOLLOW_ALL_in_condition249); 
-                    match(input,CBO,FOLLOW_CBO_in_condition251); 
-                    pushFollow(FOLLOW_name_in_condition255);
+                    match(input,ALL,FOLLOW_ALL_in_condition260); 
+                    match(input,CBO,FOLLOW_CBO_in_condition262); 
+                    pushFollow(FOLLOW_name_in_condition266);
                     b=gComplexrules.name();
 
                     state._fsp--;
 
                     answers.add((b!=null?b.value:null));
                     // ComplexCondition.g:78:97: ( COMMA d= name )*
-                    loop14:
+                    loop15:
                     do {
-                        int alt14=2;
-                        int LA14_0 = input.LA(1);
+                        int alt15=2;
+                        int LA15_0 = input.LA(1);
 
-                        if ( (LA14_0==COMMA) ) {
-                            alt14=1;
+                        if ( (LA15_0==COMMA) ) {
+                            alt15=1;
                         }
 
 
-                        switch (alt14) {
+                        switch (alt15) {
                     	case 1 :
                     	    // ComplexCondition.g:78:98: COMMA d= name
                     	    {
-                    	    match(input,COMMA,FOLLOW_COMMA_in_condition260); 
-                    	    pushFollow(FOLLOW_name_in_condition264);
+                    	    match(input,COMMA,FOLLOW_COMMA_in_condition271); 
+                    	    pushFollow(FOLLOW_name_in_condition275);
                     	    d=gComplexrules.name();
 
                     	    state._fsp--;
@@ -816,11 +842,11 @@ public class Complexrules_ComplexCondition extends Parser {
                     	    break;
 
                     	default :
-                    	    break loop14;
+                    	    break loop15;
                         }
                     } while (true);
 
-                    match(input,CBC,FOLLOW_CBC_in_condition270); 
+                    match(input,CBC,FOLLOW_CBC_in_condition281); 
                     builder.all(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type6, answers);
 
                     }
@@ -843,69 +869,69 @@ public class Complexrules_ComplexCondition extends Parser {
     // Delegated rules
 
 
-    protected DFA15 dfa15 = new DFA15(this);
-    static final String DFA15_eotS =
+    protected DFA16 dfa16 = new DFA16(this);
+    static final String DFA16_eotS =
         "\15\uffff";
-    static final String DFA15_eofS =
+    static final String DFA16_eofS =
         "\15\uffff";
-    static final String DFA15_minS =
-        "\3\4\1\uffff\1\5\1\21\1\4\2\uffff\1\4\1\24\1\uffff\1\23";
-    static final String DFA15_maxS =
-        "\3\71\1\uffff\1\71\1\23\1\71\2\uffff\1\71\1\24\1\uffff\1\56";
-    static final String DFA15_acceptS =
-        "\3\uffff\1\2\3\uffff\1\4\1\1\2\uffff\1\3\1\uffff";
-    static final String DFA15_specialS =
+    static final String DFA16_minS =
+        "\3\4\1\uffff\1\4\1\5\1\uffff\1\21\1\uffff\1\4\1\24\1\uffff\1\23";
+    static final String DFA16_maxS =
+        "\3\71\1\uffff\2\71\1\uffff\1\23\1\uffff\1\71\1\24\1\uffff\1\56";
+    static final String DFA16_acceptS =
+        "\3\uffff\1\2\2\uffff\1\4\1\uffff\1\1\2\uffff\1\3\1\uffff";
+    static final String DFA16_specialS =
         "\15\uffff}>";
-    static final String[] DFA15_transitionS = {
+    static final String[] DFA16_transitionS = {
             "\1\1\1\2\42\uffff\2\3\17\uffff\1\2",
-            "\1\6\1\2\15\uffff\1\4\1\uffff\5\10\22\uffff\1\5\1\uffff\1"+
-            "\7\12\uffff\1\2",
-            "\2\11\15\uffff\1\4\1\uffff\5\10\22\uffff\1\5\1\uffff\1\7\12"+
+            "\1\4\1\2\15\uffff\1\5\1\uffff\5\10\22\uffff\1\7\1\uffff\1"+
+            "\6\12\uffff\1\2",
+            "\2\11\15\uffff\1\5\1\uffff\5\10\22\uffff\1\7\1\uffff\1\6\12"+
             "\uffff\1\11",
             "",
+            "\1\4\1\2\63\uffff\1\2",
             "\1\10\25\uffff\1\10\35\uffff\1\12",
+            "",
             "\1\13\1\uffff\1\10",
-            "\1\6\1\2\63\uffff\1\2",
             "",
-            "",
-            "\2\11\15\uffff\1\4\1\uffff\5\10\22\uffff\1\5\1\uffff\1\7\12"+
+            "\2\11\15\uffff\1\5\1\uffff\5\10\22\uffff\1\7\1\uffff\1\6\12"+
             "\uffff\1\11",
             "\1\14",
             "",
-            "\1\10\1\uffff\5\10\22\uffff\1\5\1\uffff\1\7"
+            "\1\10\1\uffff\5\10\22\uffff\1\7\1\uffff\1\6"
     };
 
-    static final short[] DFA15_eot = DFA.unpackEncodedString(DFA15_eotS);
-    static final short[] DFA15_eof = DFA.unpackEncodedString(DFA15_eofS);
-    static final char[] DFA15_min = DFA.unpackEncodedStringToUnsignedChars(DFA15_minS);
-    static final char[] DFA15_max = DFA.unpackEncodedStringToUnsignedChars(DFA15_maxS);
-    static final short[] DFA15_accept = DFA.unpackEncodedString(DFA15_acceptS);
-    static final short[] DFA15_special = DFA.unpackEncodedString(DFA15_specialS);
-    static final short[][] DFA15_transition;
+    static final short[] DFA16_eot = DFA.unpackEncodedString(DFA16_eotS);
+    static final short[] DFA16_eof = DFA.unpackEncodedString(DFA16_eofS);
+    static final char[] DFA16_min = DFA.unpackEncodedStringToUnsignedChars(DFA16_minS);
+    static final char[] DFA16_max = DFA.unpackEncodedStringToUnsignedChars(DFA16_maxS);
+    static final short[] DFA16_accept = DFA.unpackEncodedString(DFA16_acceptS);
+    static final short[] DFA16_special = DFA.unpackEncodedString(DFA16_specialS);
+    static final short[][] DFA16_transition;
 
     static {
-        int numStates = DFA15_transitionS.length;
-        DFA15_transition = new short[numStates][];
+        int numStates = DFA16_transitionS.length;
+        DFA16_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA15_transition[i] = DFA.unpackEncodedString(DFA15_transitionS[i]);
+            DFA16_transition[i] = DFA.unpackEncodedString(DFA16_transitionS[i]);
         }
     }
 
-    class DFA15 extends DFA {
+    class DFA16 extends DFA {
 
-        public DFA15(BaseRecognizer recognizer) {
+        public DFA16(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 15;
-            this.eot = DFA15_eot;
-            this.eof = DFA15_eof;
-            this.min = DFA15_min;
-            this.max = DFA15_max;
-            this.accept = DFA15_accept;
-            this.special = DFA15_special;
-            this.transition = DFA15_transition;
+            this.decisionNumber = 16;
+            this.eot = DFA16_eot;
+            this.eof = DFA16_eof;
+            this.min = DFA16_min;
+            this.max = DFA16_max;
+            this.accept = DFA16_accept;
+            this.special = DFA16_special;
+            this.transition = DFA16_transition;
         }
         public String getDescription() {
-            return "73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );";
+            return "73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );";
         }
     }
  
@@ -936,30 +962,32 @@ public class Complexrules_ComplexCondition extends Parser {
     public static final BitSet FOLLOW_name_in_condition151 = new BitSet(new long[]{0x0000100003E80000L});
     public static final BitSet FOLLOW_type_in_condition153 = new BitSet(new long[]{0x0000100003E80000L});
     public static final BitSet FOLLOW_eq_in_condition157 = new BitSet(new long[]{0x0200000008000430L});
-    public static final BitSet FOLLOW_nameOrDouble_in_condition161 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IN_in_condition169 = new BitSet(new long[]{0x0000100003E80000L});
-    public static final BitSet FOLLOW_intervall_in_condition172 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_KNOWN_in_condition182 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_UNKNOWN_in_condition186 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_SBO_in_condition189 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_condition193 = new BitSet(new long[]{0x0000000000180000L});
-    public static final BitSet FOLLOW_type_in_condition195 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_condition198 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_condition208 = new BitSet(new long[]{0x0000100000080000L});
-    public static final BitSet FOLLOW_type_in_condition210 = new BitSet(new long[]{0x0000100000000000L});
-    public static final BitSet FOLLOW_IN_in_condition213 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_CBO_in_condition215 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_condition219 = new BitSet(new long[]{0x0000000000040100L});
-    public static final BitSet FOLLOW_COMMA_in_condition224 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_condition228 = new BitSet(new long[]{0x0000000000040100L});
-    public static final BitSet FOLLOW_CBC_in_condition234 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_condition244 = new BitSet(new long[]{0x0000400000080000L});
-    public static final BitSet FOLLOW_type_in_condition246 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_ALL_in_condition249 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_CBO_in_condition251 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_condition255 = new BitSet(new long[]{0x0000000000040100L});
-    public static final BitSet FOLLOW_COMMA_in_condition260 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_condition264 = new BitSet(new long[]{0x0000000000040100L});
-    public static final BitSet FOLLOW_CBC_in_condition270 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_nameOrDouble_in_condition161 = new BitSet(new long[]{0x0000000000001002L});
+    public static final BitSet FOLLOW_ORS_in_condition166 = new BitSet(new long[]{0x0200000008000430L});
+    public static final BitSet FOLLOW_nameOrDouble_in_condition170 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IN_in_condition180 = new BitSet(new long[]{0x0000100003E80000L});
+    public static final BitSet FOLLOW_intervall_in_condition183 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_KNOWN_in_condition193 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_UNKNOWN_in_condition197 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_SBO_in_condition200 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_condition204 = new BitSet(new long[]{0x0000000000180000L});
+    public static final BitSet FOLLOW_type_in_condition206 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_condition209 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_condition219 = new BitSet(new long[]{0x0000100000080000L});
+    public static final BitSet FOLLOW_type_in_condition221 = new BitSet(new long[]{0x0000100000000000L});
+    public static final BitSet FOLLOW_IN_in_condition224 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_CBO_in_condition226 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_condition230 = new BitSet(new long[]{0x0000000000040100L});
+    public static final BitSet FOLLOW_COMMA_in_condition235 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_condition239 = new BitSet(new long[]{0x0000000000040100L});
+    public static final BitSet FOLLOW_CBC_in_condition245 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_condition255 = new BitSet(new long[]{0x0000400000080000L});
+    public static final BitSet FOLLOW_type_in_condition257 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_ALL_in_condition260 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_CBO_in_condition262 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_condition266 = new BitSet(new long[]{0x0000000000040100L});
+    public static final BitSet FOLLOW_COMMA_in_condition271 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_condition275 = new BitSet(new long[]{0x0000000000040100L});
+    public static final BitSet FOLLOW_CBC_in_condition281 = new BitSet(new long[]{0x0000000000000002L});
 
 }
