@@ -99,9 +99,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		threadSleep(sleepTime);
 		refreshAndWait();
 		if (forwarding) {
-			selenium.getTitle(); //Sets new flag for waitForPageToLoad
-//			threadSleep(sleepTime);
-			selenium.waitForPageToLoad(pageLoadTime);
+			refreshAndWait();
 		}
 	}
 	
@@ -271,6 +269,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		String actSolutions = "";
 		comment = "";
 		clickAndWait("sstate-update");
+		assertEquals("No solutions displayed", true, selenium.isElementPresent("//div[@id='sstate-result']"));
 		if (selenium.isElementPresent("//div[@id='sstate-result']/div/ul/")) {
 			actSolutions = selenium.getText("//div[@id='sstate-result']/div/ul/");			
 		}
