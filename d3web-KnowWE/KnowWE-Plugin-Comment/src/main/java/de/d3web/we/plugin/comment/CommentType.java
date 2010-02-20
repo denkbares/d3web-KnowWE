@@ -33,7 +33,7 @@ public class CommentType extends AbstractKnowWEObjectType{
 		
 		Map<String, String> commentTypes = CommentModule.getCommentTypes();
 		
-		if(!commentTypes.isEmpty()) {
+		if(commentTypes!=null&&!commentTypes.isEmpty()) {
 		
 			StringBuffer regexString = new StringBuffer();
 			
