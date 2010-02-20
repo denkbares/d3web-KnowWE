@@ -18,35 +18,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-/**
- * 
- */
-package de.d3web.we.module.semantic.owl.tests;
+package de.d3web.we.module.semantic;
 
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 
-import de.d3web.we.module.semantic.owl.UpperOntology;
+public interface OwlGenerator {
 
-/**
- * @author kazamatzuri
- * 
- */
-public class UpperTest {
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		UpperOntology uo = UpperOntology
-				.getInstance("/home/kazamatzuri/workspaces/knowwe-semantic/KnowWE2/build/opened/KnowWEExtension");
-		RepositoryConnection con = uo.getConnection();
-		try {
-			con.close();
-		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	public <T extends KnowWEObjectType> IntermediateOwlObject getOwl(Section<T> s);
 
 }

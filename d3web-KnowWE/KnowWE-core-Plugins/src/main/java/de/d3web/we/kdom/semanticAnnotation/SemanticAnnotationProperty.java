@@ -29,15 +29,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.module.semantic.OwlGenerator;
+import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 
 /**
  * @author kazamatzuri
  *
  */
-public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
 
      @Override
     public void init() {
@@ -62,5 +65,13 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType 
 			return result;
 		}
 
+	}
+
+
+	@Override
+	public <T extends KnowWEObjectType> IntermediateOwlObject getOwl(
+			Section<T> s) {
+		Section name=s.findChildOfType(SemanticAnnotationPropertyName.class);		
+		return ((OwlGenerator)name.get()).getOwl(name);
 	}
 }

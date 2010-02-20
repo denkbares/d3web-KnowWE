@@ -26,12 +26,13 @@ import org.openrdf.repository.RepositoryException;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class SubClassingDashTreeElement extends DashTreeElement {
+public class SubClassingDashTreeElement extends DashTreeElement implements OwlGenerator{
 
-	@Override
+	
 	public IntermediateOwlObject getOwl(Section s) {   //warning
 		Section<DashTreeElement> element = (Section<DashTreeElement>)s;  //warning 
 		IntermediateOwlObject io = new IntermediateOwlObject();

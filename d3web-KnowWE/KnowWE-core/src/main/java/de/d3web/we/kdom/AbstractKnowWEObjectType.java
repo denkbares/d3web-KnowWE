@@ -437,23 +437,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		this.customRenderer = renderer;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.d3web.we.kdom.KnowWEObjectType#getOwl(de.d3web.we.kdom.Section)
-	 */
-	public <T extends KnowWEObjectType> IntermediateOwlObject getOwl(Section<T> s) {
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		List<Section<? extends KnowWEObjectType>> childrenList = s.getChildren();
-		for (Section<? extends KnowWEObjectType> cur : childrenList) {
-			if (cur.getObjectType() instanceof AbstractKnowWEObjectType) {
-				AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) cur
-						.getObjectType();
-				io.merge(handler.getOwl(cur));
-			}
-		}
-		return io;
-	}
 
 	/*
 	 * (non-Javadoc)

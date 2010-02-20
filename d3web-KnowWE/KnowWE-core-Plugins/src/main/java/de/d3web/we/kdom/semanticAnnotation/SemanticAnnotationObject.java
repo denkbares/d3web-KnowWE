@@ -36,6 +36,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.PropertyManager;
 import de.d3web.we.module.semantic.owl.UpperOntology;
@@ -44,7 +45,7 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
  * @author kazamatzuri
  * 
  */
-public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
+public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
 
 	@Override
 	public void init() {
@@ -59,7 +60,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 		return this.getClass().getName();
 	}
 
-	@Override
+	
 	public IntermediateOwlObject getOwl(Section s) {
 		UpperOntology uo = UpperOntology.getInstance();
 		IntermediateOwlObject io = new IntermediateOwlObject();

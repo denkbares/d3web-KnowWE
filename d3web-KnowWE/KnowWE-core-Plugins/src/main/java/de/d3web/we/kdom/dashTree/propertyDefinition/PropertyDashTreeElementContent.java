@@ -31,6 +31,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
@@ -44,7 +45,7 @@ import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
  * of the property.
  *
  */
-public class PropertyDashTreeElementContent extends DashTreeElementContent {
+public class PropertyDashTreeElementContent extends DashTreeElementContent implements OwlGenerator{
 
 	@Override
 	protected void init() {
@@ -58,7 +59,7 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent {
 	/* (non-Javadoc)
 	 * @see de.d3web.we.kdom.AbstractKnowWEObjectType#getOwl(de.d3web.we.kdom.Section)
 	 */
-	@Override
+	
 	public IntermediateOwlObject getOwl(Section s) {
 		Section<PropertyDashTreeElementContent> sec = (Section<PropertyDashTreeElementContent>)s;
 		if (s.getObjectType() instanceof PropertyDashTreeElementContent) {

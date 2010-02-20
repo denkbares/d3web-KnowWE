@@ -25,18 +25,19 @@ import org.openrdf.model.URI;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.NothingRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 
-public class TagsContent extends XMLContent {
+public class TagsContent extends XMLContent implements OwlGenerator{
 
 	@Override
 	protected void init() {
 		this.setCustomRenderer(NothingRenderer.getInstance());
 	}
 
-	@Override
+	
 	public IntermediateOwlObject getOwl(Section s) {
 		String text = s.getOriginalText();
 		IntermediateOwlObject io = new IntermediateOwlObject();

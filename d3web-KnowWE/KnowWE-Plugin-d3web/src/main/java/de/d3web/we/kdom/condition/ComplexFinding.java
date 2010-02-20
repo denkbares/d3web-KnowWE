@@ -46,10 +46,11 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
+public class ComplexFinding extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
 
 	@Override
 	protected void init() {
@@ -67,7 +68,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
 					getRenderer(FontColorRenderer.COLOR5, color);
 	}
 
-	@Override
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -86,8 +87,8 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
 			io.addLiteral(complexfinding);
 			List<Section> children = s.getChildren();
 			for (Section current : children) {
-				if (current.getObjectType() instanceof AbstractKnowWEObjectType) {
-					AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) current
+				if (current.getObjectType() instanceof OwlGenerator) {
+					OwlGenerator handler = (OwlGenerator) current
 							.getObjectType();
 					IntermediateOwlObject iohandler = handler.getOwl(current);
 					for (URI curi : iohandler.getLiterals()) {

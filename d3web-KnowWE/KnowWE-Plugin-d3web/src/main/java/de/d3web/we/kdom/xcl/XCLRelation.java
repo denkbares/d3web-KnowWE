@@ -36,22 +36,23 @@ import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.utils.Patterns;
 
-public class XCLRelation extends DefaultAbstractKnowWEObjectType {
+public class XCLRelation extends DefaultAbstractKnowWEObjectType implements
+		OwlGenerator {
 
 	@Override
-	protected  void init() {
+	protected void init() {
 		this.childrenTypes.add(new XCLRelationWeight());
 		this.childrenTypes.add(new ComplexFinding());
-		this.sectionFinder = new RegexSectionFinder(Patterns.XCRelation, Pattern.MULTILINE, 1);
+		this.sectionFinder = new RegexSectionFinder(Patterns.XCRelation,
+				Pattern.MULTILINE, 1);
 		this.setCustomRenderer(XCLRelationKdomIdWrapperRenderer.getInstance());
 	}
-	
-	
-	@Override
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -64,38 +65,40 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 		try {
 			UpperOntology uo = UpperOntology.getInstance();
 
-			URI explainsdings = uo.getHelper().createlocalURI(s.getTitle() + ".."
-					+ s.getId());
-			URI solutionuri = ((DefaultSubjectContext) ContextManager.getInstance()
-					.getContext(s, DefaultSubjectContext.CID)).getSolutionURI();
-			io.addStatement(uo.getHelper().createStatement(solutionuri, uo
-				.getHelper().createURI("isRatedBy"), explainsdings));
+			URI explainsdings = uo.getHelper().createlocalURI(
+					s.getTitle() + ".." + s.getId());
+			URI solutionuri = ((DefaultSubjectContext) ContextManager
+					.getInstance().getContext(s, DefaultSubjectContext.CID))
+					.getSolutionURI();
+			io.addStatement(uo.getHelper().createStatement(solutionuri,
+					uo.getHelper().createURI("isRatedBy"), explainsdings));
 			uo.getHelper().attachTextOrigin(explainsdings, s, io);
 
-			io.addStatement(uo.getHelper().createStatement(explainsdings, RDF.TYPE, uo
-				.getHelper().createURI("Explains")));
-			 List<Section> children = s.getChildren();
+			io.addStatement(uo.getHelper().createStatement(explainsdings,
+					RDF.TYPE, uo.getHelper().createURI("Explains")));
+			List<Section> children = s.getChildren();
 			for (Section current : children) {
-				if (current.getObjectType() instanceof ComplexFinding||current.getObjectType() instanceof Finding) {
-					AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) current
+				if (current.getObjectType() instanceof ComplexFinding
+						|| current.getObjectType() instanceof Finding) {
+					OwlGenerator handler = (OwlGenerator) current
 							.getObjectType();
 					for (URI curi : handler.getOwl(current).getLiterals()) {
-						Statement state = uo.getHelper().createStatement(explainsdings, uo
-							.getHelper().createURI("hasFinding"), curi);
+						Statement state = uo.getHelper().createStatement(
+								explainsdings,
+								uo.getHelper().createURI("hasFinding"), curi);
 						io.addStatement(state);
 						handler.getOwl(current).removeLiteral(curi);
 					}
 					io.merge(handler.getOwl(current));
 				} else if (current.getObjectType() instanceof XCLRelationWeight) {
-					AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) current
+					XCLRelationWeight handler = (XCLRelationWeight) current
 							.getObjectType();
-					if (handler.getOwl(current).getLiterals().size() > 0) {
-						io.addStatement(uo.getHelper().createStatement(explainsdings, uo
-							.getHelper().createURI("hasWeight"), handler
-								.getOwl(current).getLiterals().get(0)));
-						io.addAllStatements(handler.getOwl(current)
-								.getAllStatements());
-					}
+
+					io.addStatement(uo.getHelper().createStatement(
+							explainsdings,
+							uo.getHelper().createURI("hasWeight"),
+							uo.getHelper().createLiteral(current.getOriginalText())));					
+
 				}
 
 			}
@@ -104,5 +107,4 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 		}
 		return io;
 	}
-
 }

@@ -25,10 +25,11 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
+public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
     private static final String START_TAG = "<<ORT:";
     private static final String END_TAG = ">>";
 
@@ -39,7 +40,7 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
 	this.setCustomRenderer(new EditSectionRenderer(LocationRenderer.getInstance()));
     }
 
-    @Override
+    
     public IntermediateOwlObject getOwl(Section s) {
 	IntermediateOwlObject ioo = new IntermediateOwlObject();
 

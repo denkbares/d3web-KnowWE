@@ -42,11 +42,12 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xml.XMLContent;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class ExtensionContent extends XMLContent{
+public class ExtensionContent extends XMLContent implements OwlGenerator{
 
 	@Override
 	protected void init() {
@@ -55,8 +56,7 @@ public class ExtensionContent extends XMLContent{
 	
 	/* (non-Javadoc)
 	 * @see de.d3web.we.dom.AbstractKnowWEObjectType#getOwl(de.d3web.we.dom.Section)
-	 */
-	@Override
+	 */	
 	public IntermediateOwlObject getOwl(Section s) {
 		String text=s.getOriginalText();
 		

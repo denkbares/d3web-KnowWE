@@ -41,10 +41,11 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class Finding extends DefaultAbstractKnowWEObjectType {
+public class Finding extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
 
 	@Override
 	public void init() {
@@ -70,7 +71,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				FontColorRenderer.COLOR5, color);
 	}
 	
-	@Override
+	
 	public IntermediateOwlObject getOwl(Section section) {
 		UpperOntology uo = UpperOntology.getInstance();
 		IntermediateOwlObject io = new IntermediateOwlObject();

@@ -70,15 +70,12 @@ public class SemanticCore {
 	private HashMap<String, BNode> contextmap;
 	private HashMap<String, String> settings;
 	private HashMap<String, List<Statement>> statementcache;
-	private HashMap<String,String> namespaces;
-	private HashMap<String,String> defaultnamespaces;
-
+	private HashMap<String, String> namespaces;
+	private HashMap<String, String> defaultnamespaces;
 	private SemanticCore(KnowWEEnvironment ke) {
 		this.knowWEEnvironment = ke;
-		me=this;
+		me = this;
 		contextmap = new HashMap<String, BNode>();
-		
-
 		statementcache = new HashMap<String, List<Statement>>();
 		String path = ke.getKnowWEExtensionPath();
 		settingsbundle = ResourceBundle.getBundle("semanticdefaults");
@@ -88,14 +85,13 @@ public class SemanticCore {
 		}
 		uo = UpperOntology.getInstance(path);
 		initnamespaces();
-
 		readSettings();
 		readIncludings();
-
 	}
-	private void initnamespaces(){
-		namespaces=new HashMap<String,String>();
-		defaultnamespaces=new HashMap<String,String>();
+
+	private void initnamespaces() {
+		namespaces = new HashMap<String, String>();
+		defaultnamespaces = new HashMap<String, String>();
 		try {
 			uo.setLocaleNS(knowWEEnvironment.getWikiConnector().getBaseUrl());
 		} catch (RepositoryException e1) {
@@ -104,18 +100,19 @@ public class SemanticCore {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					"using default");
 		}
-		defaultnamespaces.put("ns",uo.getBaseNS());
-		defaultnamespaces.put("lns",uo.getLocaleNS());
-		defaultnamespaces.put("rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-		defaultnamespaces.put("owl","http://www.w3.org/2002/07/owl#");
-		defaultnamespaces.put("rdfs","http://www.w3.org/2000/01/rdf-schema#");
-		defaultnamespaces.put("xsd","http://www.w3.org/2001/XMLSchema#");
+		defaultnamespaces.put("ns", uo.getBaseNS());
+		defaultnamespaces.put("lns", uo.getLocaleNS());
+		defaultnamespaces.put("rdf",
+				"http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		defaultnamespaces.put("owl", "http://www.w3.org/2002/07/owl#");
+		defaultnamespaces.put("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+		defaultnamespaces.put("xsd", "http://www.w3.org/2001/XMLSchema#");
 	}
 
-	public void addNamespace(String sh,String ns){
+	public void addNamespace(String sh, String ns) {
 		namespaces.put(sh, ns);
 	}
-	
+
 	private void readIncludings() {
 		File[] files = getImportList();
 		if (files == null)
@@ -124,8 +121,6 @@ public class SemanticCore {
 			uo.loadOwlFile(f);
 		}
 	}
-
-
 
 	private void readSettings() {
 		PropertyManager pm = PropertyManager.getInstance();
@@ -171,7 +166,6 @@ public class SemanticCore {
 				}
 
 			}
-			
 
 		}
 		if (settings.get("persistence").equalsIgnoreCase("enabled")) {
@@ -187,8 +181,8 @@ public class SemanticCore {
 	 * @param pm
 	 * @param props
 	 */
-	private void addlocalPropertyData(RepositoryConnection con, PropertyManager pm,
-			String props) {
+	private void addlocalPropertyData(RepositoryConnection con,
+			PropertyManager pm, String props) {
 		do {
 			IntermediateOwlObject io = UpperOntology.getInstance().getHelper()
 					.createlocalProperty(props);
@@ -213,6 +207,7 @@ public class SemanticCore {
 			}
 		} while (!pm.isValid(props));
 	}
+
 	/**
 	 * @param con
 	 * @param pm
@@ -469,22 +464,25 @@ public class SemanticCore {
 			statementcache.remove(topic);
 		}
 	}
-	
-	public String getSparqlNamespaceShorts(){
-		StringBuffer buffy=new StringBuffer();
 
-        for (Entry<String,String> cur:namespaces.entrySet()){
-			buffy.append("PREFIX "+cur.getKey()+": <"+cur.getValue()+"> \n");
+	public String getSparqlNamespaceShorts() {
+		StringBuffer buffy = new StringBuffer();
+
+		for (Entry<String, String> cur : namespaces.entrySet()) {
+			buffy.append("PREFIX " + cur.getKey() + ": <" + cur.getValue()
+					+ "> \n");
 		}
-        for (Entry<String,String> cur:defaultnamespaces.entrySet()){
-			buffy.append("PREFIX "+cur.getKey()+": <"+cur.getValue()+"> \n");
+		for (Entry<String, String> cur : defaultnamespaces.entrySet()) {
+			buffy.append("PREFIX " + cur.getKey() + ": <" + cur.getValue()
+					+ "> \n");
 		}
 
 		return buffy.toString();
 	}
-	
-	public ArrayList<String> simpleQueryToList(String inquery,String targetbinding){
-		ArrayList<String> resultlist = new ArrayList<String>();		
+
+	public ArrayList<String> simpleQueryToList(String inquery,
+			String targetbinding) {
+		ArrayList<String> resultlist = new ArrayList<String>();
 		String querystring = getSparqlNamespaceShorts();
 		querystring = querystring + inquery;
 		RepositoryConnection con = UpperOntology.getInstance().getConnection();
@@ -499,7 +497,8 @@ public class SemanticCore {
 					org.apache.log4j.Level.ERROR, e.getMessage());
 		}
 		TupleQueryResult result = null;
-		if(query == null)return resultlist;
+		if (query == null)
+			return resultlist;
 		try {
 			result = ((TupleQuery) query).evaluate();
 		} catch (QueryEvaluationException e) {
@@ -511,23 +510,24 @@ public class SemanticCore {
 				while (result.hasNext()) {
 					BindingSet b = result.next();
 					Binding binding = b.getBinding(targetbinding);
-					if(binding == null) continue;
+					if (binding == null)
+						continue;
 					String tag = binding.toString();
 					if (tag.split("#").length == 2)
 						tag = tag.split("#")[1];
 					try {
 						tag = URLDecoder.decode(tag, "UTF-8");
-					} catch (UnsupportedEncodingException e) {					
+					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
-					if (tag.contains("=")){
-						tag=tag.split("=")[1];
+					if (tag.contains("=")) {
+						tag = tag.split("=")[1];
 					}
-					if (tag.startsWith("\"")){
-						tag=tag.substring(1);
+					if (tag.startsWith("\"")) {
+						tag = tag.substring(1);
 					}
-					if (tag.endsWith("\"")){
-						tag=tag.substring(0, tag.length()-1);
+					if (tag.endsWith("\"")) {
+						tag = tag.substring(0, tag.length() - 1);
 					}
 					resultlist.add(tag.trim());
 				}
@@ -537,13 +537,13 @@ public class SemanticCore {
 				try {
 					result.close();
 				} catch (QueryEvaluationException e) {
-					
+
 					e.printStackTrace();
 				}
 			}
 		}
 		return resultlist;
-		
+
 	}
 
 	/**
@@ -552,11 +552,14 @@ public class SemanticCore {
 	public void writeDump(OutputStream stream) {
 		uo.writeDump(stream);
 	}
-	
-	public HashMap<String,String> getDefaultNameSpaces() {		
+
+	public HashMap<String, String> getDefaultNameSpaces() {
 		return defaultnamespaces;
 	}
-	public HashMap<String, String> getNameSpaces() {		
+
+	public HashMap<String, String> getNameSpaces() {
 		return namespaces;
 	}
+
+
 }

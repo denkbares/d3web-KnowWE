@@ -39,10 +39,11 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class TimeEventType extends DefaultAbstractKnowWEObjectType {
+public class TimeEventType extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
 
     public static final String START_TAG = "<<";
     public static final String END_TAG = ">>";
@@ -64,7 +65,6 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
     public IntermediateOwlObject getOwl(Section section) {
 	UpperOntology uo = UpperOntology.getInstance();
 
@@ -184,8 +184,8 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 	}
 	List<Section> children = section.getChildren();
 	for (Section cur : children) {
-	    if (cur.getObjectType() instanceof AbstractKnowWEObjectType) {
-		AbstractKnowWEObjectType handler = (AbstractKnowWEObjectType) cur
+	    if (cur.getObjectType() instanceof OwlGenerator) {
+	    	OwlGenerator handler = (OwlGenerator) cur
 			.getObjectType();
 		io.merge(handler.getOwl(cur));
 	    }

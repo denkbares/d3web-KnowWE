@@ -15,12 +15,13 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class MapType extends AbstractXMLObjectType {
+public class MapType extends AbstractXMLObjectType implements OwlGenerator {
 
     private static final DecimalFormat format = new DecimalFormat("#.###");
 
@@ -39,7 +40,7 @@ public class MapType extends AbstractXMLObjectType {
 	return new MapRenderer();
     }
 
-    @Override
+    
     public IntermediateOwlObject getOwl(Section sec) {
 	IntermediateOwlObject ioo = new IntermediateOwlObject();
 	String url = getIFrameSrcURL(sec);

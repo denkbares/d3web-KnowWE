@@ -27,6 +27,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.xml.XMLContent;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.PropertyManager;
 import de.d3web.we.module.semantic.owl.UpperOntology;
@@ -35,7 +36,7 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
  * @author kazamatzuri
  * 
  */
-public class InfoContent extends XMLContent {
+public class InfoContent extends XMLContent implements OwlGenerator{
 
 
     @Override
@@ -49,8 +50,7 @@ public class InfoContent extends XMLContent {
      * 
      * @see
      * de.d3web.we.dom.AbstractKnowWEObjectType#getOwl(de.d3web.we.dom.Section)
-     */
-    @Override
+     */    
     public IntermediateOwlObject getOwl(Section s) {
 	IntermediateOwlObject io = new IntermediateOwlObject();
 	String text = s.getOriginalText();

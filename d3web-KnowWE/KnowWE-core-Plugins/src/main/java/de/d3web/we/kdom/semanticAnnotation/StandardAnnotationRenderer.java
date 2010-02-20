@@ -28,11 +28,13 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -112,10 +114,11 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 			text = KnowWEUtils.maskHTML("<span title='" + title + "'>"
 					+ text + "</span>");
 		}
-		if (!sec.getObjectType().getOwl(sec).getValidPropFlag()) {
+		KnowWEObjectType t=sec.getObjectType();
+		if (!((OwlGenerator)t).getOwl(sec).getValidPropFlag()) {
 			text = KnowWEUtils
 					.maskHTML("<p class=\"box error\">invalid annotation attribute:"
-							+ sec.getObjectType().getOwl(sec).getBadAttribute()
+							+ ((OwlGenerator)t).getOwl(sec).getBadAttribute()
 							+ "</p>");
 		}
 

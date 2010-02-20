@@ -35,10 +35,11 @@ import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.SolutionValueAssignment;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class Conjunct extends DefaultAbstractKnowWEObjectType {
+public class Conjunct extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
 
     @Override
     public void init() {
@@ -49,7 +50,7 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType {
     	this.sectionFinder = new AllTextFinderTrimmed();
     }
 
-    @Override /* (non-Javadoc)
+    /* (non-Javadoc)
 	* @see de.d3web.we.dom.AbstractOWLKnowWEObjectType#getOwl(de.d3web.we.dom.Section)
 	*/	
 	public IntermediateOwlObject getOwl(Section s) {
@@ -61,8 +62,8 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType {
 	    io.addLiteral(compositeexpression);
 	    List<Section> children = s.getChildren();
 	    for (Section current:children){
-		if (current.getObjectType() instanceof AbstractKnowWEObjectType) {
-		    AbstractKnowWEObjectType handler=(AbstractKnowWEObjectType) current.getObjectType();
+		if (current.getObjectType() instanceof OwlGenerator) {
+			OwlGenerator handler=(OwlGenerator) current.getObjectType();
 		    IntermediateOwlObject iohandler = handler.getOwl(current);		    
 		    for (URI curi:iohandler.getLiterals()){
 			Statement state=uo.getHelper().createStatement(compositeexpression,uo.getHelper().createURI("hasConjuncts"),curi);

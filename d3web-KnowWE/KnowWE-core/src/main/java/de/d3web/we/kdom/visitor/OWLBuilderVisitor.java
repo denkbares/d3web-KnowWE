@@ -22,9 +22,9 @@ package de.d3web.we.kdom.visitor;
 
 import java.util.List;
 
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 
 
@@ -37,9 +37,8 @@ public class OWLBuilderVisitor {
 	public IntermediateOwlObject visit(Section s) {
 	    	IntermediateOwlObject io=new IntermediateOwlObject();
 		KnowWEObjectType type = s.getObjectType();		
-		if (type instanceof AbstractKnowWEObjectType) {
-		    AbstractKnowWEObjectType owlsec=(AbstractKnowWEObjectType)type;
-		    io.merge(owlsec.getOwl(s));
+		if (type instanceof OwlGenerator) {					    
+		    io.merge(((OwlGenerator)type).getOwl(s));
 		} else {	
 			List<Section> children = s.getChildren();
 			for (Section cur : children) {

@@ -42,13 +42,14 @@ import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.logging.Logging;
+import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.utils.Patterns;
 
-public class XCLHead extends DefaultAbstractKnowWEObjectType {
+public class XCLHead extends DefaultAbstractKnowWEObjectType implements OwlGenerator {
 
 	
 	@Override
@@ -92,7 +93,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	
 	
 	
-	public class XCLHeadSectionFinder extends SectionFinder{
+	public class XCLHeadSectionFinder extends SectionFinder {
 		
 		private final Pattern pattern;
 		
@@ -119,7 +120,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	@Override
+	
 	public IntermediateOwlObject getOwl(Section section) {
 	    IntermediateOwlObject io = new IntermediateOwlObject();
 		DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager.getInstance()

@@ -82,7 +82,7 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 			try {
 				if (KnowWEEnvironment.getInstance().getWikiConnector()
 					.doesPageExist(erg)|| KnowWEEnvironment.getInstance().getWikiConnector()
-					.doesPageExist(URLDecoder.decode(erg,"UTF-8)"))) {
+					.doesPageExist(URLDecoder.decode(erg,"UTF-8"))) {
 				    erg = KnowWEUtils.maskHTML("<a href=\"Wiki.jsp?page=" + erg + "\">"
 					    + erg + "</a>");
 				}
