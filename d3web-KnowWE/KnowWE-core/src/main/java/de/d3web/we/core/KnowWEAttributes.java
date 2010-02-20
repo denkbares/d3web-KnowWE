@@ -43,6 +43,9 @@ public class KnowWEAttributes {
 	public static final String ATTACHMENT_NAME = "AttachmentName";
 	public static final String ATTACHMENT_PARENT = "AttachmentParent";
 	
+	public static final String NEW_PAGE_NAME = "NewPageName";
+	public static final String TEMPLATE_NAME = "TemplateName";
+	
 	public static final String TOPIC_FOR_XCL = "TopicForXCL";
 	
 	public static final String TYPE_BROWSER_QUERY = "TypeBrowserQuery";
