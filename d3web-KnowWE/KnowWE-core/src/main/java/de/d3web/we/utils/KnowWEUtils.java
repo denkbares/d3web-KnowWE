@@ -20,6 +20,7 @@
 
 package de.d3web.we.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ResourceBundle;
 
@@ -291,6 +292,34 @@ public class KnowWEUtils {
 				+ "</a></span>";
 		return rendering;
 
+	}
+	
+	/**
+	 * Escapes the given string for safely using user-input in web sites.
+	 * @param text Text to escape
+	 * @return Sanitized text
+	 */
+	public static String html_escape(String text) {
+		if (text == null)
+			return null;
+
+		return text.replaceAll("&", "&amp;").
+					replaceAll("\"", "&quot;").
+					replaceAll("<", "&lt;").
+					replaceAll(">", "&gt;");
+	}
+	
+	/**
+	 * Performs URL encoding on the sting
+	 * @param text
+	 * @return URLencoded string
+	 */
+	public static String urlencode(String text) {
+		try {
+			return URLEncoder.encode(text, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return URLEncoder.encode(text);
+		}
 	}
 	
 //	public static String getWebEnvironmentPath(String web) {
