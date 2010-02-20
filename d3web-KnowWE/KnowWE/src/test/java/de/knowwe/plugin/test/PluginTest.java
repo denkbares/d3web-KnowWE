@@ -39,8 +39,8 @@ public class PluginTest extends TestCase {
 	 */
 	public void testPlugins() throws IOException {
 		InitPluginManager.init();
-		Plugins.getGlobalTypes();
 		Plugins.getInstantiations();
+		Plugins.getGlobalTypes();
 		Plugins.getKnowledgeRepresentationHandlers();
 		Plugins.getKnowWEAction();
 		Plugins.getPageAppendHandlers();
