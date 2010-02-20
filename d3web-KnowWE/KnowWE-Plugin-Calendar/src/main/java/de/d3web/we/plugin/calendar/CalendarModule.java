@@ -34,6 +34,9 @@ import de.knowwe.plugin.Instantiation;
 
 public class CalendarModule implements Instantiation{
 
+	static {
+		importPersons();
+	}
 	private static Map<String,String> persons;
 
 	public static ResourceBundle getCalendarBundle() {
@@ -72,6 +75,6 @@ public class CalendarModule implements Instantiation{
 	
 	@Override
 	public void init(ServletContext context) {
-		importPersons();
+		
 	}
 }

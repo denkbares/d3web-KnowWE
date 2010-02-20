@@ -32,6 +32,10 @@ import de.knowwe.plugin.Instantiation;
 
 public class CommentModule implements Instantiation{
 
+	static {
+		importTypes();
+	}
+	
 	private static Map<String, String> commentTypes;
 	private static Map<String, Integer> ids;
 	
@@ -68,6 +72,5 @@ public class CommentModule implements Instantiation{
 	
 	@Override
 	public void init(ServletContext context) {
-		importTypes();
 	}
 }
