@@ -131,7 +131,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 
 					// Render notices
 					Set<? extends KDOMNotice> notices = KDOMReportMessage
-							.getNotices(section);
+							.getNotices(subSection);
 					if (notices != null && notices.size() > 0) {
 						for (KDOMNotice kdomNotice : notices) {
 							MessageRenderer noticeRenderer = subSection.get()
