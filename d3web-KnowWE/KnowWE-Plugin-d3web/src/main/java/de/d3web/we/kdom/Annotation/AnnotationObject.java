@@ -37,7 +37,8 @@ public class AnnotationObject extends DefaultAbstractKnowWEObjectType {
     @Override
     public void init() {
     	this.childrenTypes.add(new SemanticAnnotationProperty());
-    	this.childrenTypes.add(new Finding());    	
+    	this.childrenTypes.add(new Finding());
+    	this.childrenTypes.add(new SimpleAnnotation());
     	this.sectionFinder = new AllTextSectionFinder();
     }
     

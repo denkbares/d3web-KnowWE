@@ -61,7 +61,7 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 	boolean tablemode = false;
 
 	table.append(KnowWEUtils.maskHTML("<ul>"));
-
+	int count=1;
 	try {
 	    while (result.hasNext()) {
 		BindingSet b = result.next();
@@ -70,8 +70,9 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 		if (!tablemode) {
 		    tablemode = names.size() > 1;
 		}
+		tablemode=true;
 		if (tablemode) {
-		    table.append(KnowWEUtils.maskHTML("<tr>"));
+		    table.append(KnowWEUtils.maskHTML("<tr>"+"<td><bf>"+count++ +"</bf></td>"));
 		}
 
 		for (String cur : names) {

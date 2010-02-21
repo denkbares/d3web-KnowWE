@@ -62,6 +62,7 @@ import de.d3web.we.taghandler.KnowWETypeActivationHandler;
 import de.d3web.we.taghandler.OwlDownloadHandler;
 import de.d3web.we.taghandler.ParseAllButton;
 import de.d3web.we.taghandler.RenamingTagHandler;
+import de.d3web.we.taghandler.StatsHandler;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWEObjectTypeSet;
@@ -418,6 +419,9 @@ public class KnowWEEnvironment {
 
 		TagHandler factsheet = new FactSheet();
 		this.tagHandlers.put(factsheet.getTagName(), factsheet);
+
+		TagHandler stats = new StatsHandler();
+		this.tagHandlers.put(stats.getTagName(), stats);
 
 		// TagHandler kbGenerator = new KnowledgeBasesGeneratorHandler();
 		// this.knowWEDefaultTagHandlers
