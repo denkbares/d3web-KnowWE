@@ -113,7 +113,7 @@ public class TerminologyBroker {
 		result.addAll(getLocalIIOVMap(iio, iivs, DUMMY));
 		result.addAll(getGlobalIIOVMap(iio, iivs, info, DUMMY));
 		// [TODO]: find better solution for empty values.. dummy
-		result.removeAll(result.keySet(), DUMMY);
+		result.removeAll(new ArrayList<IdentifiableInstance>(result.keySet()), DUMMY);
 		return result;
 	}
 
@@ -305,9 +305,11 @@ public class TerminologyBroker {
 		for (IdentifiableInstance ii : new ArrayList<IdentifiableInstance>(
 				globalAlignments.keySet())) {
 			if (ii.getNamespace().equals(namespace)) {
-				for (GlobalAlignment alignment : new ArrayList<GlobalAlignment>(
-						globalAlignments.get(ii))) {
-					removeGlobalAlignment(alignment);
+				Set<GlobalAlignment> set = globalAlignments.get(ii);
+				if (set != null) {
+					for (GlobalAlignment alignment : new ArrayList<GlobalAlignment>(set)) {
+						removeGlobalAlignment(alignment);
+					}
 				}
 			}
 		}

@@ -301,7 +301,7 @@ public class DPSEnvironment {
 	
 	public void removeService(KnowledgeService service) {
 		Map<TerminologyType, LocalTerminologyAccess> map = service.getTerminologies();
-		for (TerminologyType type : map.keySet()) {
+		for (TerminologyType type : new ArrayList<TerminologyType>(map.keySet())) {
 			terminologyServer.removeTerminology(service.getId(), type);
 		}
 		services.remove(service.getId());

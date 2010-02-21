@@ -117,7 +117,7 @@ public class RefactoringManager {
 			return;
 		}
 		List<Section<?>> children = sec.getChildren();
-		if (children == null || children.isEmpty() || sec.getObjectType() instanceof Include) {
+		if (children == null || children.isEmpty() || sec.getObjectType().getClass() == Include.class) {
 			return;
 		}
 		for (Section<?> section : children) {
@@ -127,11 +127,14 @@ public class RefactoringManager {
 	
 	private void collectTextsFromLeaves(Section<?> section, StringBuilder buffi) {
 		if (section.getChildren() != null && section.getChildren().size() > 0
-				&& !(section.getObjectType() instanceof Include)) {
+				&& !(section.getObjectType().getClass() == Include.class)) {
 			for (Section<?> s : section.getChildren()) {
 				collectTextsFromLeaves(s, buffi);
 			}
 		} else {
+			if (section.getObjectType().getClass() == Include.class) {
+				System.out.println( "include tag complete text: " + section.getOriginalText());
+			}
 			buffi.append(section.getOriginalText());
 		}
 	}

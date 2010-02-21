@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -46,11 +47,15 @@ import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.decisionTree.QClassID;
+import de.d3web.we.kdom.decisionTree.QuestionsSection;
+import de.d3web.we.kdom.decisionTree.QuestionsSectionContent;
 import de.d3web.we.kdom.decisionTree.SolutionID;
+import de.d3web.we.kdom.defaultMarkup.ContentType;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 import de.d3web.we.kdom.objects.QuestionnaireID;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeRootType;
 import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.xcl.CoveringListContent;
 import de.d3web.we.kdom.xcl.XCList;
@@ -266,6 +271,28 @@ public class RefactoringSession {
 		return rulesSectionContent;
 	}
 	
+	public Section<CoveringListContent> findCoveringListContent(String articleID) {
+		return findCoveringListContent(refManager.getArticle(articleID).getSection());
+	}
+	
+	public List<Section<XCList>> findXCLs (Section<CoveringListContent> content) {
+		List<Section<XCList>> list = new LinkedList<Section<XCList>>();
+		content.findSuccessorsOfType(XCList.class, list);
+		return list;
+	}
+
+	public void setMergedCoveringListContent(Section<CoveringListContent> section , Map<String,Set<String>> map) {
+		StringBuffer sb = new StringBuffer();
+		for(String s: map.keySet()) {
+			sb.append("\n" + s +"{\n");
+			for(String finding: map.get(s)) {
+				sb.append("\t" + finding + ",\n");
+			}
+			sb.append("}");
+		}
+		replaceSection(section, sb.toString());
+	}
+
 	public Section<CoveringListContent> findCoveringListContent(Section<?> knowledgeSection) {
 		// FIXME temporärer hack reloaded
 		KnowWEArticle article = refManager.getArticle(knowledgeSection.getArticle().getTitle());
@@ -408,6 +435,39 @@ public class RefactoringSession {
 		});
 		String objectID = gsonFormMap.get("selectObjectID")[0];
 		return objectID;
+	}
+	
+	// TODO bereits hier alternative Typen berücksichtigen (QClassID, QuestionnaireID)
+	public <T extends KnowWEObjectType> String[] findObjectIDs(final Class<T> clazz) {
+		//TODO mehrfache Einträge für ein Element sollten vermieden werden
+		performNextAction(new AbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+				StringBuffer html = new StringBuffer();
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Wählen Sie den Namen des Objekts mit dem Typ <strong>" + clazz.getName() + "</strong>:</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objektname</label>"
+						+ "<select multiple size='" + refManager.getArticles().size() + "' name='selectObjectID' class='refactoring'>");
+				for(Iterator<KnowWEArticle> it = refManager.getArticleIterator(); it.hasNext();) {
+					KnowWEArticle article = refManager.getArticle(it.next().getTitle());
+					Section<?> articleSection = article.getSection();
+					List<Section<T>> objects = new ArrayList<Section<T>>();
+					articleSection.findSuccessorsOfType(clazz, objects);
+					for (Section<?> object : objects) {
+						String name = (clazz == KnowWEArticle.class) ? object.getId() : object.getOriginalText();
+						String question = (clazz == QuestionTreeAnswerID.class) ? " - Frage: " + findQuestion(object).getOriginalText() : "";
+						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
+								+ name + "</option>");
+					}
+				}
+				html.append("</select></div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		String[] objectIDs = gsonFormMap.get("selectObjectID");
+		return objectIDs;
 	}
 	
 	private Section<QuestionID> findQuestion(Section<?> answerSection) {
@@ -601,6 +661,20 @@ public class RefactoringSession {
 		for(Section<CommentLineType> commentLine: list) {
 			replaceSection(commentLine, "");
 		}
+	}
+	
+	public void transformToQuestionTree (String objectID) {
+		Section<?> section = refManager.findNode(objectID);
+		Section<QuestionsSection> qs = section.findSuccessor(QuestionsSection.class);
+		Section<QuestionsSectionContent> qsc = qs.findSuccessor(QuestionsSectionContent.class);
+		replaceSection(qs,"\n%%QuestionTree\n" + qsc.getOriginalText() + "\n%\n"); 
+	}
+	
+	public void transformToQuestionsSection (String objectID) {
+		Section<?> section = refManager.findNode(objectID);
+		Section<QuestionTreeRootType> qtrt = section.findSuccessor(QuestionTreeRootType.class);
+		Section<ContentType> ct = qtrt.findSuccessor(ContentType.class);
+		replaceSection(qtrt,"\n<Questions-section>\n" + ct.getOriginalText() + "\n</Questions-section>\n"); 
 	}
 	
 	// HILFSMETHODEN
