@@ -44,6 +44,7 @@ import com.ecyrd.jspwiki.event.WikiEvent;
 import com.ecyrd.jspwiki.event.WikiEventListener;
 import com.ecyrd.jspwiki.event.WikiEventUtils;
 import com.ecyrd.jspwiki.event.WikiPageEvent;
+import com.ecyrd.jspwiki.event.WikiPageRenameEvent;
 import com.ecyrd.jspwiki.filters.BasicPageFilter;
 import com.ecyrd.jspwiki.filters.FilterException;
 import com.ecyrd.jspwiki.plugin.PluginException;
@@ -115,7 +116,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
         }
         
 		WikiEventUtils.addWikiEventListener(engine.getPageManager(), WikiPageEvent.PAGE_DELETE_REQUEST, this);
-
+		WikiEventUtils.addWikiEventListener(engine.getPageManager(), WikiPageRenameEvent.PAGE_RENAMED, this);
     }
 	
 	private void initKnowWEEnvironmentIfNeeded(WikiEngine wEngine) {
@@ -341,8 +342,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 			KnowWEArticleManager amgr = KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
 			
 			amgr.deleteArticle(amgr.getArticle(e.getPageName()));
+		} else if (event instanceof WikiPageRenameEvent) {
+			WikiPageRenameEvent e = (WikiPageRenameEvent) event;
+			
+			KnowWEArticleManager amgr = KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
+			
+			amgr.deleteArticle(amgr.getArticle(e.getOldPageName()));s
 		}
-		
 	}
 	
 	/**
