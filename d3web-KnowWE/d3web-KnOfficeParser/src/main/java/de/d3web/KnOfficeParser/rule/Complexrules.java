@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g 2010-02-19 17:26:08
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Complexrules.g 2010-02-22 09:40:12
 
 package de.d3web.KnOfficeParser.rule;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -1237,28 +1237,28 @@ public class Complexrules extends Parser {
     static final String DFA4_eofS =
         "\1\uffff\2\3\5\uffff\1\3\1\uffff\1\3";
     static final String DFA4_minS =
-        "\3\4\2\uffff\1\4\1\71\1\uffff\1\4\1\24\1\11";
+        "\3\4\2\uffff\1\71\1\uffff\2\4\1\24\1\11";
     static final String DFA4_maxS =
-        "\3\71\2\uffff\2\71\1\uffff\1\71\1\24\1\41";
+        "\3\71\2\uffff\1\71\1\uffff\2\71\1\24\1\41";
     static final String DFA4_acceptS =
-        "\3\uffff\1\1\1\2\2\uffff\1\3\3\uffff";
+        "\3\uffff\1\1\1\2\1\uffff\1\3\4\uffff";
     static final String DFA4_specialS =
         "\13\uffff}>";
     static final String[] DFA4_transitionS = {
             "\1\1\1\2\37\uffff\1\3\1\4\3\uffff\1\3\16\uffff\1\2",
-            "\1\5\1\2\3\uffff\1\3\11\uffff\1\6\1\uffff\7\7\5\uffff\1\3"+
+            "\1\7\1\2\3\uffff\1\3\11\uffff\1\5\1\uffff\7\6\5\uffff\1\3"+
             "\27\uffff\1\2",
-            "\2\10\3\uffff\1\3\11\uffff\1\6\1\uffff\7\7\5\uffff\1\3\27"+
+            "\2\10\3\uffff\1\3\11\uffff\1\5\1\uffff\7\6\5\uffff\1\3\27"+
             "\uffff\1\10",
             "",
             "",
-            "\1\5\1\2\63\uffff\1\2",
             "\1\11",
             "",
-            "\2\10\3\uffff\1\3\11\uffff\1\6\1\uffff\7\7\5\uffff\1\3\27"+
+            "\1\7\1\2\63\uffff\1\2",
+            "\2\10\3\uffff\1\3\11\uffff\1\5\1\uffff\7\6\5\uffff\1\3\27"+
             "\uffff\1\10",
             "\1\12",
-            "\1\3\13\uffff\7\7\5\uffff\1\3"
+            "\1\3\13\uffff\7\6\5\uffff\1\3"
     };
 
     static final short[] DFA4_eot = DFA.unpackEncodedString(DFA4_eotS);

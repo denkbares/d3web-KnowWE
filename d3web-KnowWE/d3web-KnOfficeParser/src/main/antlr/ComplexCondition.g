@@ -71,7 +71,7 @@ conjunct
 | NOT conjunct {builder.notcond($text);};
 
 condition
-: a=name type? (eq nod=nameOrDouble {builder.condition( $start.getLine(), $text, $a.value, $type.value, $eq.text, $nod.value);} (ORS nod2=nameOrDouble {builder.condition( $start.getLine(), $text, $a.value, $type.value, $eq.text, $nod2.value); builder.orcond($text);})?
+: a=name type? (eq nod=nameOrDouble {builder.condition( $start.getLine(), $text, $a.value, $type.value, $eq.text, $nod.value);} (ORS nod2=nameOrDouble {builder.condition( $start.getLine(), $text, $a.value, $type.value, $eq.text, $nod2.value); builder.orcond($text);})*
 | in=IN? intervall  {builder.condition($start.getLine(), $text, $a.value, $type.value, $intervall.a, $intervall.b, (in!=null));}) 
 | (KNOWN|c=UNKNOWN) SBO a=name type? SBC {builder.knowncondition($start.getLine(), $text, $a.value, $type.value, c!=null);}
 | {List<String> answers= new ArrayList();} a=name type? IN CBO b=name {answers.add($b.value);} (COMMA d=name {answers.add($d.value);})* CBC {builder.in($start.getLine(), $text, $a.value, $type.value, answers);}

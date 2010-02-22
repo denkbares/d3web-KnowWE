@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 ComplexCondition.g 2010-02-19 17:16:33
+// $ANTLR 3.1.1 ComplexCondition.g 2010-02-22 09:40:24
 
 package de.d3web.KnOfficeParser.xcl;
 import de.d3web.KnOfficeParser.ConditionBuilder;
@@ -468,7 +468,7 @@ public class XCL_ComplexCondition extends Parser {
     };
 
     // $ANTLR start "condition"
-    // ComplexCondition.g:73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );
+    // ComplexCondition.g:73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );
     public final XCL_ComplexCondition.condition_return condition() throws RecognitionException {
         XCL_ComplexCondition.condition_return retval = new XCL_ComplexCondition.condition_return();
         retval.start = input.LT(1);
@@ -499,12 +499,12 @@ public class XCL_ComplexCondition extends Parser {
 
 
         try {
-            // ComplexCondition.g:74:1: (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC )
+            // ComplexCondition.g:74:1: (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC )
             int alt16=4;
             alt16 = dfa16.predict(input);
             switch (alt16) {
                 case 1 :
-                    // ComplexCondition.g:74:3: a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall )
+                    // ComplexCondition.g:74:3: a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall )
                     {
                     pushFollow(FOLLOW_name_in_condition151);
                     a=gXCL.name();
@@ -537,7 +537,7 @@ public class XCL_ComplexCondition extends Parser {
 
                     }
 
-                    // ComplexCondition.g:74:16: ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall )
+                    // ComplexCondition.g:74:16: ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall )
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -555,7 +555,7 @@ public class XCL_ComplexCondition extends Parser {
                     }
                     switch (alt9) {
                         case 1 :
-                            // ComplexCondition.g:74:17: eq nod= nameOrDouble ( ORS nod2= nameOrDouble )?
+                            // ComplexCondition.g:74:17: eq nod= nameOrDouble ( ORS nod2= nameOrDouble )*
                             {
                             pushFollow(FOLLOW_eq_in_condition157);
                             eq2=gXCL.eq();
@@ -568,29 +568,36 @@ public class XCL_ComplexCondition extends Parser {
                             state._fsp--;
 
                             builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod!=null?nod.value:null));
-                            // ComplexCondition.g:74:129: ( ORS nod2= nameOrDouble )?
-                            int alt7=2;
-                            int LA7_0 = input.LA(1);
+                            // ComplexCondition.g:74:129: ( ORS nod2= nameOrDouble )*
+                            loop7:
+                            do {
+                                int alt7=2;
+                                int LA7_0 = input.LA(1);
 
-                            if ( (LA7_0==ORS) ) {
-                                alt7=1;
-                            }
-                            switch (alt7) {
-                                case 1 :
-                                    // ComplexCondition.g:74:130: ORS nod2= nameOrDouble
-                                    {
-                                    match(input,ORS,FOLLOW_ORS_in_condition166); 
-                                    pushFollow(FOLLOW_nameOrDouble_in_condition170);
-                                    nod2=gXCL.nameOrDouble();
+                                if ( (LA7_0==ORS) ) {
+                                    alt7=1;
+                                }
 
-                                    state._fsp--;
 
-                                    builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod2!=null?nod2.value:null)); builder.orcond(input.toString(retval.start,input.LT(-1)));
+                                switch (alt7) {
+                            	case 1 :
+                            	    // ComplexCondition.g:74:130: ORS nod2= nameOrDouble
+                            	    {
+                            	    match(input,ORS,FOLLOW_ORS_in_condition166); 
+                            	    pushFollow(FOLLOW_nameOrDouble_in_condition170);
+                            	    nod2=gXCL.nameOrDouble();
 
-                                    }
-                                    break;
+                            	    state._fsp--;
 
-                            }
+                            	    builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod2!=null?nod2.value:null)); builder.orcond(input.toString(retval.start,input.LT(-1)));
+
+                            	    }
+                            	    break;
+
+                            	default :
+                            	    break loop7;
+                                }
+                            } while (true);
 
 
                             }
@@ -924,30 +931,30 @@ public class XCL_ComplexCondition extends Parser {
     static final String DFA16_eofS =
         "\15\uffff";
     static final String DFA16_minS =
-        "\3\4\1\uffff\1\4\1\5\1\uffff\1\21\1\uffff\1\4\1\24\1\uffff\1\23";
+        "\3\4\1\uffff\1\4\1\5\1\21\2\uffff\1\4\1\24\1\uffff\1\23";
     static final String DFA16_maxS =
-        "\3\71\1\uffff\2\71\1\uffff\1\23\1\uffff\1\71\1\24\1\uffff\1\56";
+        "\3\71\1\uffff\2\71\1\23\2\uffff\1\71\1\24\1\uffff\1\56";
     static final String DFA16_acceptS =
-        "\3\uffff\1\2\2\uffff\1\4\1\uffff\1\1\2\uffff\1\3\1\uffff";
+        "\3\uffff\1\2\3\uffff\1\1\1\4\2\uffff\1\3\1\uffff";
     static final String DFA16_specialS =
         "\15\uffff}>";
     static final String[] DFA16_transitionS = {
             "\1\1\1\2\42\uffff\2\3\17\uffff\1\2",
-            "\1\4\1\2\15\uffff\1\5\1\uffff\5\10\22\uffff\1\7\1\uffff\1"+
-            "\6\12\uffff\1\2",
-            "\2\11\15\uffff\1\5\1\uffff\5\10\22\uffff\1\7\1\uffff\1\6\12"+
+            "\1\4\1\2\15\uffff\1\5\1\uffff\5\7\22\uffff\1\6\1\uffff\1\10"+
+            "\12\uffff\1\2",
+            "\2\11\15\uffff\1\5\1\uffff\5\7\22\uffff\1\6\1\uffff\1\10\12"+
             "\uffff\1\11",
             "",
             "\1\4\1\2\63\uffff\1\2",
-            "\1\10\25\uffff\1\10\35\uffff\1\12",
+            "\1\7\25\uffff\1\7\35\uffff\1\12",
+            "\1\13\1\uffff\1\7",
             "",
-            "\1\13\1\uffff\1\10",
             "",
-            "\2\11\15\uffff\1\5\1\uffff\5\10\22\uffff\1\7\1\uffff\1\6\12"+
+            "\2\11\15\uffff\1\5\1\uffff\5\7\22\uffff\1\6\1\uffff\1\10\12"+
             "\uffff\1\11",
             "\1\14",
             "",
-            "\1\10\1\uffff\5\10\22\uffff\1\7\1\uffff\1\6"
+            "\1\7\1\uffff\5\7\22\uffff\1\6\1\uffff\1\10"
     };
 
     static final short[] DFA16_eot = DFA.unpackEncodedString(DFA16_eotS);
@@ -980,7 +987,7 @@ public class XCL_ComplexCondition extends Parser {
             this.transition = DFA16_transition;
         }
         public String getDescription() {
-            return "73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );";
+            return "73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );";
         }
     }
  
@@ -1013,7 +1020,7 @@ public class XCL_ComplexCondition extends Parser {
     public static final BitSet FOLLOW_eq_in_condition157 = new BitSet(new long[]{0x0200000008000430L});
     public static final BitSet FOLLOW_nameOrDouble_in_condition161 = new BitSet(new long[]{0x0000000000001002L});
     public static final BitSet FOLLOW_ORS_in_condition166 = new BitSet(new long[]{0x0200000008000430L});
-    public static final BitSet FOLLOW_nameOrDouble_in_condition170 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_nameOrDouble_in_condition170 = new BitSet(new long[]{0x0000000000001002L});
     public static final BitSet FOLLOW_IN_in_condition180 = new BitSet(new long[]{0x0000100003E80000L});
     public static final BitSet FOLLOW_intervall_in_condition183 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_KNOWN_in_condition193 = new BitSet(new long[]{0x0000000000080000L});

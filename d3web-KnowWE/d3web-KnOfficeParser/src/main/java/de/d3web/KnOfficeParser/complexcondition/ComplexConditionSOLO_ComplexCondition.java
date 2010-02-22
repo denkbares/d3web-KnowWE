@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 ComplexCondition.g 2010-02-19 17:16:49
+// $ANTLR 3.1.1 ComplexCondition.g 2010-02-22 09:40:01
 
 package de.d3web.KnOfficeParser.complexcondition;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -468,7 +468,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
     };
 
     // $ANTLR start "condition"
-    // ComplexCondition.g:73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );
+    // ComplexCondition.g:73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );
     public final ComplexConditionSOLO_ComplexCondition.condition_return condition() throws RecognitionException {
         ComplexConditionSOLO_ComplexCondition.condition_return retval = new ComplexConditionSOLO_ComplexCondition.condition_return();
         retval.start = input.LT(1);
@@ -499,12 +499,12 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
 
 
         try {
-            // ComplexCondition.g:74:1: (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC )
+            // ComplexCondition.g:74:1: (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC )
             int alt16=4;
             alt16 = dfa16.predict(input);
             switch (alt16) {
                 case 1 :
-                    // ComplexCondition.g:74:3: a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall )
+                    // ComplexCondition.g:74:3: a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall )
                     {
                     pushFollow(FOLLOW_name_in_condition151);
                     a=gComplexConditionSOLO.name();
@@ -537,7 +537,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
 
                     }
 
-                    // ComplexCondition.g:74:16: ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall )
+                    // ComplexCondition.g:74:16: ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall )
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -555,7 +555,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
                     }
                     switch (alt9) {
                         case 1 :
-                            // ComplexCondition.g:74:17: eq nod= nameOrDouble ( ORS nod2= nameOrDouble )?
+                            // ComplexCondition.g:74:17: eq nod= nameOrDouble ( ORS nod2= nameOrDouble )*
                             {
                             pushFollow(FOLLOW_eq_in_condition157);
                             eq2=gComplexConditionSOLO.eq();
@@ -568,29 +568,36 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
                             state._fsp--;
 
                             builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod!=null?nod.value:null));
-                            // ComplexCondition.g:74:129: ( ORS nod2= nameOrDouble )?
-                            int alt7=2;
-                            int LA7_0 = input.LA(1);
+                            // ComplexCondition.g:74:129: ( ORS nod2= nameOrDouble )*
+                            loop7:
+                            do {
+                                int alt7=2;
+                                int LA7_0 = input.LA(1);
 
-                            if ( (LA7_0==ORS) ) {
-                                alt7=1;
-                            }
-                            switch (alt7) {
-                                case 1 :
-                                    // ComplexCondition.g:74:130: ORS nod2= nameOrDouble
-                                    {
-                                    match(input,ORS,FOLLOW_ORS_in_condition166); 
-                                    pushFollow(FOLLOW_nameOrDouble_in_condition170);
-                                    nod2=gComplexConditionSOLO.nameOrDouble();
+                                if ( (LA7_0==ORS) ) {
+                                    alt7=1;
+                                }
 
-                                    state._fsp--;
 
-                                    builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod2!=null?nod2.value:null)); builder.orcond(input.toString(retval.start,input.LT(-1)));
+                                switch (alt7) {
+                            	case 1 :
+                            	    // ComplexCondition.g:74:130: ORS nod2= nameOrDouble
+                            	    {
+                            	    match(input,ORS,FOLLOW_ORS_in_condition166); 
+                            	    pushFollow(FOLLOW_nameOrDouble_in_condition170);
+                            	    nod2=gComplexConditionSOLO.nameOrDouble();
 
-                                    }
-                                    break;
+                            	    state._fsp--;
 
-                            }
+                            	    builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod2!=null?nod2.value:null)); builder.orcond(input.toString(retval.start,input.LT(-1)));
+
+                            	    }
+                            	    break;
+
+                            	default :
+                            	    break loop7;
+                                }
+                            } while (true);
 
 
                             }
@@ -980,7 +987,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
             this.transition = DFA16_transition;
         }
         public String getDescription() {
-            return "73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )? | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );";
+            return "73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );";
         }
     }
  
@@ -1013,7 +1020,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
     public static final BitSet FOLLOW_eq_in_condition157 = new BitSet(new long[]{0x0200000008000430L});
     public static final BitSet FOLLOW_nameOrDouble_in_condition161 = new BitSet(new long[]{0x0000000000001002L});
     public static final BitSet FOLLOW_ORS_in_condition166 = new BitSet(new long[]{0x0200000008000430L});
-    public static final BitSet FOLLOW_nameOrDouble_in_condition170 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_nameOrDouble_in_condition170 = new BitSet(new long[]{0x0000000000001002L});
     public static final BitSet FOLLOW_IN_in_condition180 = new BitSet(new long[]{0x0000100003E80000L});
     public static final BitSet FOLLOW_intervall_in_condition183 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_KNOWN_in_condition193 = new BitSet(new long[]{0x0000000000080000L});

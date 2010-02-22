@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2010-02-19 17:16:33
+// $ANTLR 3.1.1 BasicParser.g 2010-02-22 09:40:24
 
 package de.d3web.KnOfficeParser.xcl;
 import de.d3web.KnOfficeParser.ConditionBuilder;
@@ -477,6 +477,12 @@ public class XCL_ComplexCondition_BasicParser extends Parser {
                         case SBO:
                             {
                             switch ( input.LA(4) ) {
+                                case EX:
+                                case PLUS:
+                                    {
+                                    alt6=1;
+                                    }
+                                    break;
                                 case MINUS:
                                     {
                                     int LA6_7 = input.LA(5);
@@ -493,12 +499,6 @@ public class XCL_ComplexCondition_BasicParser extends Parser {
                                     if ( (LA6_8==SBC) ) {
                                         alt6=1;
                                     }
-                                    }
-                                    break;
-                                case EX:
-                                case PLUS:
-                                    {
-                                    alt6=1;
                                     }
                                     break;
                             }
