@@ -347,7 +347,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 			
 			KnowWEArticleManager amgr = KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
 			
-			amgr.deleteArticle(amgr.getArticle(e.getOldPageName()));s
+			amgr.deleteArticle(amgr.getArticle(e.getOldPageName()));
 		}
 	}
 	
