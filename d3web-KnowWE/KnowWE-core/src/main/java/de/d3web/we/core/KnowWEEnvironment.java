@@ -109,7 +109,6 @@ public class KnowWEEnvironment {
 	 */
 	private String knowweExtensionPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/";
 
-	private String pathPrefix = "";
 
 	/**
 	 * @return the defaultModulesPath
@@ -248,9 +247,7 @@ public class KnowWEEnvironment {
 		return UserSettingsManager.getInstance();
 	}
 
-	public String getPathPrefix() {
-		return pathPrefix;
-	}
+
 
 	public static void initKnowWE(KnowWEWikiConnector wiki) {
 		instance = new KnowWEEnvironment(wiki);
