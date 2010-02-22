@@ -9,6 +9,9 @@ import groovy.lang.Script;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +49,9 @@ import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.dashTree.SubTree;
+import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
+import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
 import de.d3web.we.kdom.decisionTree.QClassID;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
 import de.d3web.we.kdom.decisionTree.QuestionsSectionContent;
@@ -56,16 +62,33 @@ import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.questionTreeNew.QuestionTreeRootType;
+import de.d3web.we.kdom.rules.RulesSection;
 import de.d3web.we.kdom.rules.RulesSectionContent;
+import de.d3web.we.kdom.table.attributes.AttributeTableSection;
 import de.d3web.we.kdom.xcl.CoveringListContent;
+import de.d3web.we.kdom.xcl.CoveringListSection;
 import de.d3web.we.kdom.xcl.XCList;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.refactoring.management.RefactoringManager;
 
 public class RefactoringSession {
 	
-	private static Logger log = Logger.getLogger(RefactoringSession.class);
+	private final Collection<Class<? extends KnowWEObjectType>> KNOWLEDGE_MAIN_SECTIONS;
 	
+	public RefactoringSession() {
+		Set<Class<? extends KnowWEObjectType>> kms = new HashSet<Class<? extends KnowWEObjectType>>();
+		kms.add(RulesSection.class);
+		kms.add(CoveringListSection.class);
+		kms.add(QuestionTreeRootType.class);
+		kms.add(QuestionsSection.class);
+		kms.add(AttributeTableSection.class);
+		kms.add(SolutionsSection.class);
+		kms.add(QuestionnairesSection.class);
+		KNOWLEDGE_MAIN_SECTIONS = Collections.unmodifiableCollection(kms);
+	}
+	
+	private static Logger log = Logger.getLogger(RefactoringSession.class);
+
 	private Thread thread = new Thread(new Runnable() {
 		@Override
 		public void run() {
@@ -182,7 +205,7 @@ public class RefactoringSession {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					//FIXME der Artikel-KDOM wird gespeichert, aber der Artikel-Quelltext nicht ?!  Ist dieser Save hier nötig?
+					//der Artikel wird sicherheitshalber in einen konsistenten Zustand gebracht
 					refManager.saveUpdatedArticle(changedArticle);
 					KnowWEArticle consinstentChangedArticle = refManager.getArticle(changedArticleID);
 					knowWEManager.replaceKDOMNode(parameters, changedArticleID, changedArticleID, consinstentChangedArticle.getSection().getOriginalText());
@@ -262,16 +285,8 @@ public class RefactoringSession {
 		replaceSection(rulesSectionContent, rulesSectionContent.getOriginalText() + sb.toString());
 	}
 
-	// TODO wenn es noch keine RulesSection gibt, dann muss die noch gebaut werden
-	public Section<RulesSectionContent> findRulesSectionContent(Section<?> knowledgeSection) {
-		// FIXME temporärer hack reloaded
-		KnowWEArticle article = refManager.getArticle(knowledgeSection.getArticle().getTitle());
-		
-		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(RulesSectionContent.class);
-		return rulesSectionContent;
-	}
-	
 	public Section<CoveringListContent> findCoveringListContent(String articleID) {
+		//FIXME es soll keine neue erzeugt werden, wenn keine vorhanden
 		return findCoveringListContent(refManager.getArticle(articleID).getSection());
 	}
 	
@@ -292,16 +307,50 @@ public class RefactoringSession {
 		}
 		replaceSection(section, sb.toString());
 	}
-
-	public Section<CoveringListContent> findCoveringListContent(Section<?> knowledgeSection) {
+	
+	public Section<RulesSectionContent> findRulesSectionContent(Section<?> knowledgeSection) {
 		// FIXME temporärer hack reloaded
+		KnowWEArticle article = refManager.getArticle(knowledgeSection.getArticle().getTitle());
+		
+		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(RulesSectionContent.class);
+		if (rulesSectionContent == null) {
+			// TODO ancestoroftype
+			Section<? extends KnowWEObjectType> anc = knowledgeSection.findAncestor(KNOWLEDGE_MAIN_SECTIONS);
+			if (anc == null) {
+				anc = article.getSection();
+			} else {
+				// FIXME temporärer hack reloaded
+				anc = refManager.findNode(anc.getId());
+			}
+			StringBuilder newArticleText = new StringBuilder(anc.getOriginalText());
+			// Artikel wird gespeichert um an die RulesSection ranzukommen
+			refManager.replaceKDOMNode(anc.getArticle().getTitle(), anc.getId(), newArticleText.append("\r\n<Rules-section>\r\n" + 
+					"\r\n" + 
+					"</Rules-section>\r\n").toString());
+			Section<RulesSectionContent> rulesSectionContentNew = refManager.getArticle(article.getTitle())
+				.getSection().findSuccessor(RulesSectionContent.class);
+			return rulesSectionContentNew;
+		}
+		return rulesSectionContent;
+	}
+	
+	public Section<CoveringListContent> findCoveringListContent(Section<?> knowledgeSection) {
+		// FIXME temporärer hack reloaded		
 		KnowWEArticle article = refManager.getArticle(knowledgeSection.getArticle().getTitle());
 		
 		Section<CoveringListContent> coveringListContent = article.getSection().findSuccessor(CoveringListContent.class);
 		if (coveringListContent == null) {
-			StringBuilder newArticleText = new StringBuilder(article.getSection().getOriginalText());
-			//FIXME ganz böse - der Artikel wird gespeichert in einer Zwischenversion, nur um an die SetCoveringList-section ranzukommen...
-			refManager.replaceKDOMNode(article.getTitle(), article.getTitle(), newArticleText.append("\r\n<SetCoveringList-section>\r\n" + 
+			// TODO ancestoroftype
+			Section<? extends KnowWEObjectType> anc = knowledgeSection.findAncestor(KNOWLEDGE_MAIN_SECTIONS);
+			if (anc == null) {
+				anc = article.getSection();
+			} else {
+				// FIXME temporärer hack reloaded
+				anc = refManager.findNode(anc.getId());
+			}
+			StringBuilder newArticleText = new StringBuilder(anc.getOriginalText());
+			// Artikel wird gespeichert um an die CoveringListSection ranzukommen
+			refManager.replaceKDOMNode(anc.getArticle().getTitle(), anc.getId(), newArticleText.append("\r\n<SetCoveringList-section>\r\n" + 
 					"\r\n" + 
 					"</SetCoveringList-section>\r\n").toString());
 			Section<CoveringListContent> coveringListContentNew = refManager.getArticle(article.getTitle())
@@ -313,6 +362,8 @@ public class RefactoringSession {
 
 	public void deleteXCList(Section<?> knowledgeSection) {
 		replaceSection(knowledgeSection, "\n");
+		// FIXME hack
+		refManager.saveUpdatedArticle(refManager.getArticle(knowledgeSection.getArticle().getTitle()));
 	}
 
 	// TODO für dieses Refactoring sollten die Werte besser berechnet werden - das Refactoring muss auf die komplette Syntax von XCL-Listen
@@ -423,7 +474,9 @@ public class RefactoringSession {
 					articleSection.findSuccessorsOfType(clazz, objects);
 					for (Section<?> object : objects) {
 						String name = (clazz == KnowWEArticle.class) ? object.getId() : object.getOriginalText();
-						String question = (clazz == QuestionTreeAnswerID.class) ? " - Frage: " + findQuestion(object).getOriginalText() : "";
+						String question = (clazz == QuestionTreeAnswerID.class)
+							? " - Frage: " + findDashTreeFather(object, QuestionID.class).getOriginalText()
+							: "";
 						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
 								+ name + "</option>");
 					}
@@ -456,7 +509,9 @@ public class RefactoringSession {
 					articleSection.findSuccessorsOfType(clazz, objects);
 					for (Section<?> object : objects) {
 						String name = (clazz == KnowWEArticle.class) ? object.getId() : object.getOriginalText();
-						String question = (clazz == QuestionTreeAnswerID.class) ? " - Frage: " + findQuestion(object).getOriginalText() : "";
+						String question = (clazz == QuestionTreeAnswerID.class)
+							? " - Frage: " + findDashTreeFather(object, QuestionID.class).getOriginalText()
+							: "";
 						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
 								+ name + "</option>");
 					}
@@ -470,20 +525,12 @@ public class RefactoringSession {
 		return objectIDs;
 	}
 	
-	private Section<QuestionID> findQuestion(Section<?> answerSection) {
-		// TODO verbessern
-		return answerSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(QuestionID.class);
+	private <T extends KnowWEObjectType> Section<T> findDashTreeFather(Section<?> section, Class<T> clazz) {
+		return section
+			.findAncestor(SubTree.class).findAncestor(SubTree.class)
+			.findChildOfType(DashTreeElement.class).findSuccessor(clazz);
 	}
-	private Section<QuestionTreeAnswerID> findAnswer(Section<?> diagnosisSection) {
-		// TODO verbessern
-		return diagnosisSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(QuestionTreeAnswerID.class);
-	}
-	
-	private Section<QuestionTreeAnswerID> findAnswerIndicatingQuestion(Section <?> questionSection) {
-		// TODO verbessern
-		return questionSection.getFather().getFather().getFather().getFather().getFather().findChildOfType(DashTreeElement.class).findSuccessor(QuestionTreeAnswerID.class);
-	}
-	
+			
 	public String findNewName() {
 		performNextAction(new AbstractKnowWEAction() {
 			@Override
@@ -513,10 +560,9 @@ public class RefactoringSession {
 		List<Section<? extends KnowWEObjectType>> fullList = new ArrayList<Section<? extends KnowWEObjectType>>();
 		List<Section<? extends KnowWEObjectType>> filteredList = new ArrayList<Section<? extends KnowWEObjectType>>();
 		if (clazz == QuestionTreeAnswerID.class) {
-			Section<QuestionID> question = findQuestion(refManager.findNode(objectID));
+			Section<QuestionID> question = findDashTreeFather(refManager.findNode(objectID), QuestionID.class);
 			List<Section<QuestionTreeAnswerID>> answers = new LinkedList<Section<QuestionTreeAnswerID>>();
-			// TODO verbessern
-			question.getFather().getFather().getFather().getFather().findSuccessorsOfType(QuestionTreeAnswerID.class, 5 , answers);
+			question.findAncestor(SubTree.class).findSuccessorsOfType(QuestionTreeAnswerID.class, 5 , answers);
 			fullList.addAll(answers);
 			// hole alle FindingQuestion's welche den gleichen getOriginalText() haben wie die Question, zu welcher die QuestionTreeAnswerID
 			// gehört
@@ -622,8 +668,8 @@ public class RefactoringSession {
 	}
 	
 	public void createXCLFromFindingsTrace (Section<QuestionID> solution) {
-		Section<QuestionTreeAnswerID> answer = findAnswer(solution);
-		Section<QuestionID> question = findQuestion(answer);
+		Section<QuestionTreeAnswerID> answer = findDashTreeFather(solution, QuestionTreeAnswerID.class);
+		Section<QuestionID> question = findDashTreeFather(answer, QuestionID.class);
 		StringBuffer sb = new StringBuffer();
 		sb.append("\n" + solution.getOriginalText() +"{\n");
 		traceFindings(sb, question, answer);
@@ -634,9 +680,9 @@ public class RefactoringSession {
 
 	private void traceFindings(StringBuffer sb, Section<QuestionID> question, Section<QuestionTreeAnswerID> answer) {
 		sb.append("\t" + question.getOriginalText() + " = " + answer.getOriginalText() + ",\n");
-		Section<QuestionTreeAnswerID> nextAnswer = findAnswerIndicatingQuestion(question);
+		Section<QuestionTreeAnswerID> nextAnswer = findDashTreeFather(question, QuestionTreeAnswerID.class);
 		if(nextAnswer != null) {
-			Section<QuestionID> nextQuestion = findQuestion(nextAnswer);
+			Section<QuestionID> nextQuestion = findDashTreeFather(nextAnswer, QuestionID.class);
 			traceFindings(sb, nextQuestion, nextAnswer);
 		}
 	}
@@ -649,7 +695,7 @@ public class RefactoringSession {
 		article.getSection().findSuccessorsOfType(QuestionID.class, list);
 		for(Section<QuestionID> sqid: list) {
 			if (sqid.getOriginalText().equals(solution.getOriginalText())) {
-				replaceSection(sqid.getFather().getFather().getFather(), "");
+				replaceSection(sqid.findAncestor(SubTree.class).findChildOfType(DashTreeElement.class), "");
 			}
 		}
 	}

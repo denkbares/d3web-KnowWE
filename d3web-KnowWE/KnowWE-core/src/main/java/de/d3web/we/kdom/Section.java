@@ -21,6 +21,7 @@
 package de.d3web.we.kdom;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -736,6 +737,36 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	/**
+	 * Searches the ancestor for this section for a given class
+	 * @param <OT>
+	 * @param clazz
+	 * @return
+	 * @author Franz Schwab
+	 */
+	@SuppressWarnings("unchecked")
+	public <OT extends KnowWEObjectType> Section<OT> findAncestor(Class<OT> clazz) {
+		LinkedList<Class<? extends KnowWEObjectType>> l = new LinkedList<Class<? extends KnowWEObjectType>>();
+		l.add(clazz);
+		return (Section<OT>) findAncestor(l);
+	}
+	
+	/**
+	 * Searches the ancestor for this section for a given collection of classes
+	 * @param <OT>
+	 * @param clazz
+	 * @return
+	 * @author Franz Schwab
+	 */
+	public Section<? extends KnowWEObjectType> findAncestor(Collection<Class<? extends KnowWEObjectType>> classes) {
+		Section<? extends KnowWEObjectType> f = this.getFather();
+		while((f != null) && !(classes.contains(f.getObjectType().getClass()))) {
+			f = f.getFather();
+		}
+		return  f;
+	}
+	
+		
+	/**
 	 * Searches the Children of a Section and only the children of a Section for
 	 * a given class
 	 * 
@@ -1134,6 +1165,5 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			
 		}
 		
-	}
-	
+	}	
 }
