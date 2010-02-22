@@ -45,5 +45,15 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="CalendarHandler">
+		<parameter id="class"
+			value="de.d3web.we.plugin.calendar.CalendarHandler" />
+		<parameter id="name" value="CalendarHandler" />
+		<parameter id="description" value="TagHandler CalendarHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 
 </plugin>
