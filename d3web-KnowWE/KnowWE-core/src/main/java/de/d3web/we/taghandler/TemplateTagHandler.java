@@ -45,7 +45,7 @@ public class TemplateTagHandler extends AbstractTagHandler{
 
 
 	public TemplateTagHandler() {
-		super("templatetaghandler");
+		super("copytemplate");
 	}
 	
 	@Override
