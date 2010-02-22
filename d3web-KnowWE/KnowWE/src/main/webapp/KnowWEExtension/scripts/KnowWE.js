@@ -1064,7 +1064,7 @@ KNOWWE.core.typebrowser = function(){
             if(!document.typebrowser) return;
             var params = {
                 action : 'KnowWEObjectTypeBrowserAction',
-                TypeBrowserParams : (function () {
+                TypeBrowserQuery : (function () {
                     var box = document.typebrowser.Auswahl;
                     
                     if(box.selectedIndex){

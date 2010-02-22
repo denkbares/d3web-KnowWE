@@ -838,6 +838,22 @@ public class KnowWEEnvironment {
 		return this.allKnowWEObjectTypes;
 	}
 
+	/**
+	 * @See KnowWEObjectTypeBrowserAction
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public KnowWEObjectType searchType(Class clazz) {
+		for (KnowWEObjectType t : this.allKnowWEObjectTypes) {
+			if (t.isType(clazz)) {
+				return t;
+			}
+		}
+		return null;
+	}
+	
 	public List<KnowWEObjectType> searchTypeInstances(Class<?> clazz) {
 		List<KnowWEObjectType> instances = new ArrayList<KnowWEObjectType>();
 		for (KnowWEObjectType type : getRootTypes()) {

@@ -66,16 +66,14 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 		// Build the Findings
 		StringBuilder buildi = new StringBuilder();
 
-		// Get all searched Types from the parameterMap
-		String types = map.get("TypeBrowserParams");
+		String types = map.get("TypeBrowserQuery");
 		ArrayList<Section> found = new ArrayList<Section>();
 
-		// Get all instances of a Type over KnowWEEnvironment
-		List<KnowWEObjectType> typs = null;
+		KnowWEObjectType typ = null;
 		try {
-			typs = KnowWEEnvironment.getInstance().searchTypeInstances(Class.forName(types));
+			typ = KnowWEEnvironment.getInstance().searchType(Class.forName(types));
 
-			if (!typs.isEmpty()) {
+			if (typ != null) {
 				Iterator<KnowWEArticle> it = KnowWEEnvironment.getInstance().getArticleManager(
 						map.getWeb()).getArticleIterator();
 				while (it.hasNext()) {
