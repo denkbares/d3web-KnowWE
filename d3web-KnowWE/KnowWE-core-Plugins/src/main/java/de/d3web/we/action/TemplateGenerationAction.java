@@ -2,6 +2,7 @@ package de.d3web.we.action;
 
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -52,15 +53,19 @@ public class TemplateGenerationAction implements KnowWEAction {
 					getWikiConnector().createWikiPage(
 							pageName, text.getOriginalText(), map.getUser());
 			
+			String baseUrl = KnowWEEnvironment.getInstance().getWikiConnector().getBaseUrl();
+			
 			return "<p class='info box'>"
 			+ rb.getString("KnowWE.TemplateTagHandler.pageCreated")
-			+ " <a href=/KnowWE/Wiki.jsp?page=" + pageName + ">" + pageName + "</a>"
+			+ " <a href="+baseUrl+"Wiki.jsp?page=" + pageName + ">" + pageName + "</a>"
 			+ "</p>";
 			
 			
 			
 		} catch (Exception e) {
-			// Nothing
+			Logger.getLogger(this.getClass().getName()).severe(
+					"Problem generating page from template:" + e.getMessage());
+
 		}
 		
 		return "<p class='error box'>"
