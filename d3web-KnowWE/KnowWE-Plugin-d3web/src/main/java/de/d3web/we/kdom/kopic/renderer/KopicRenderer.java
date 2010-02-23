@@ -55,7 +55,7 @@ public class KopicRenderer extends KnowWEDomRenderer {
 	
 	private String generateLinkIcons(String user, String topic, String id,
 			String web, boolean error, String nodeID) {
-		StringBuilder result = new StringBuilder(generateReportLink(topic, web, error));
+		StringBuilder result = new StringBuilder();
 		if (!error) {
 			result.append(generateDialogLink(user, topic, id));
 		}
@@ -105,22 +105,5 @@ public class KopicRenderer extends KnowWEDomRenderer {
 				+ KnowWEEnvironment.HTML_GT;
 	}
 
-	private String generateReportLink(String topicname, String web,
-			boolean error) {
-		
-		String pic = "statistics.gif";
-		if (error) {
-			pic = "statisticsError.gif";
-		}
-		return KnowWEEnvironment.HTML_ST + "a href="
-				+ "KnowWE.jsp?action=getParseReport&topic="
-				+ URLEncoder.encode(topicname) + "&KWiki_Topic="
-				+ URLEncoder.encode(topicname) + "&web=" + web
-				+ " target=_blank" + KnowWEEnvironment.HTML_GT
-				+ KnowWEEnvironment.HTML_ST
-				+ "img src='KnowWEExtension/images/" + pic
-				+ "' title='Report'/" + KnowWEEnvironment.HTML_GT
-				+ KnowWEEnvironment.HTML_ST + "/a" + KnowWEEnvironment.HTML_GT;
-	}
 
 }
