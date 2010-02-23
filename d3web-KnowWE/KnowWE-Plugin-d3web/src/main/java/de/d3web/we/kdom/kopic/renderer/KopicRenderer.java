@@ -89,11 +89,8 @@ public class KopicRenderer extends KnowWEDomRenderer {
 
 	public String generateDialogLink(String user, String topic, String actualID) {
 
-		String prefix = KnowWEEnvironment.getInstance().getPathPrefix();
 		return KnowWEEnvironment.HTML_ST
 				+ "a target=kwiki-dialog href="
-				+ prefix
-				+ (prefix.length() != 0 ? "/" : "")
 				+ "KnowWE.jsp?renderer=KWiki_dialog&action=RequestDialogRenderer&KWikisessionid="
 				+ URLEncoder.encode(topic)
 				+ ".."
@@ -110,13 +107,11 @@ public class KopicRenderer extends KnowWEDomRenderer {
 
 	private String generateReportLink(String topicname, String web,
 			boolean error) {
-		String prefix = KnowWEEnvironment.getInstance().getPathPrefix();
 		String pic = "statistics.gif";
 		if (error) {
 			pic = "statisticsError.gif";
 		}
-		return KnowWEEnvironment.HTML_ST + "a href=" + prefix
-				+ (prefix.length() != 0 ? "/" : "")
+		return KnowWEEnvironment.HTML_ST + "a href="
 				+ "KnowWE.jsp?action=getParseReport&topic="
 				+ URLEncoder.encode(topicname) + "&KWiki_Topic="
 				+ URLEncoder.encode(topicname) + "&web=" + web

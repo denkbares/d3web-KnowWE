@@ -56,14 +56,10 @@ public class DialogLinkTagHandler extends AbstractTagHandler {
 			actualID = topic+".."+KnowWEEnvironment.generateDefaultID(topic);
 		}
 
-		String prefix = KnowWEEnvironment.getInstance().getPathPrefix();
-		
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(request);
 		
 		return KnowWEEnvironment.HTML_ST
 				+ "a target=kwiki-dialog href="
-				+ prefix
-				+ (prefix.length() != 0 ? "/" : "")
 				+ "KnowWE.jsp?action=RequestDialogRenderer&KWikisessionid="
 				+ URLEncoder.encode(actualID)
 				+ "&KWikiWeb=default_web&KWikiUser="
