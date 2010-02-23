@@ -20,11 +20,15 @@
 
 package de.d3web.we.action;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Section;
 
 /**
  * Changes the Activation-State of
@@ -37,24 +41,21 @@ import de.d3web.we.kdom.KnowWEObjectType;
 public class KnowWEObjectTypeActivationAction extends AbstractKnowWEAction {
 
 	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
+	public String perform(KnowWEParameterMap map) {
 		
-		// get the one needed and change is Activation state.
+		// get the one needed and change its Activation state.
 		List<KnowWEObjectType> types = KnowWEEnvironment.getInstance()
 				.getAllKnowWEObjectTypes();
-		int index = this.findIndexOfType(parameterMap.get("KnowWeObjectType"),
+		int index = this.findIndexOfType(map.get("KnowWeObjectType"),
 				types);
-
-		// if type found
+		
 		if (index != -1) {
-			List<KnowWEObjectType> toChange = KnowWEEnvironment.getInstance()
-					.searchTypeInstances(types.get(index).getClass());
-
-			for (KnowWEObjectType type : toChange) {
-				if (!type.getActivationStatus()) {
-					type.activateType();
+			KnowWEObjectType typ = types.get(index);
+			if (typ != null) {
+				if (!typ.getActivationStatus()) {
+					typ.activateType();
 				} else {
-					type.deactivateType();
+					typ.deactivateType();
 				}
 			}
 		}

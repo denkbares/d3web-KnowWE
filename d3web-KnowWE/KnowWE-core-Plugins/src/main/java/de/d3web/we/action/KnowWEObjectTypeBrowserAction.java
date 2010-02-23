@@ -36,7 +36,7 @@ import de.d3web.we.kdom.Section;
 /**
  * Renders the Mask for the findings of
  * an KnowWEObjectType in the running Wiki.
- * See also KnowWEObjectTypeBrowserHandler.
+ * @See KnowWEObjectTypeBrowserHandler.
  * 
  * @author Johannes Dienst
  *
@@ -52,6 +52,7 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 		
 		String atmUrl = map.get(KnowWEAttributes.ATM_URL);
 		String query = map.get(KnowWEAttributes.TYPE_BROWSER_QUERY);
+		
 		// handle show additional text
 		if (atmUrl != null) {
 			String web = map.getWeb();
@@ -65,12 +66,11 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 
 		// Build the Findings
 		StringBuilder buildi = new StringBuilder();
-
-		String types = map.get("TypeBrowserQuery");
 		ArrayList<Section> found = new ArrayList<Section>();
-
-		KnowWEObjectType typ = null;
+		String types = map.get("TypeBrowserQuery");
+		
 		try {
+			KnowWEObjectType typ = null;
 			typ = KnowWEEnvironment.getInstance().searchType(Class.forName(types));
 
 			if (typ != null) {
@@ -96,7 +96,6 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 			return buildi.toString();
 		}
 
-		// Render the Presentation of the findings
 		buildi.append(this.renderFindingsSelectionMask(found, types));
 		return buildi.toString();
 	}
@@ -108,6 +107,7 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 	 * @param found a List with all found Sections in it
 	 * @return a HTML formatted table witch lists all the findings in it
 	 */
+	@SuppressWarnings("unchecked")
 	private String renderFindingsSelectionMask(List<Section> found, String searchedType) {
 		StringBuilder mask = new StringBuilder();
 
@@ -302,6 +302,7 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 	 * @param sec
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private List<Section> getAllFathers(Section sec) {
 		ArrayList<Section> found2 = new ArrayList<Section>();
 	
@@ -332,6 +333,7 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 	 * @param sec
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private String createFindingsMaskFatherColumnAndPath(Section sec) {
 		StringBuilder mask = new StringBuilder();
 		
@@ -372,6 +374,7 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 	 * @param found
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private int getValidNextSection(int k, List<Section> found) {
 		for (;k < found.size();k++) {
 			try {

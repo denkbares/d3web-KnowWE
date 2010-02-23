@@ -35,12 +35,9 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  *
  */
 public class KnowWEObjectTypeBrowserHandler extends AbstractTagHandler{
-
-	private KnowWEEnvironment env;
 	
-	public KnowWEObjectTypeBrowserHandler(KnowWEEnvironment envi) {
+	public KnowWEObjectTypeBrowserHandler() {
 		super("TypeBrowser");
-		this.env = envi;
 	}
 	
 	@Override
@@ -60,20 +57,20 @@ public class KnowWEObjectTypeBrowserHandler extends AbstractTagHandler{
 			}
 		}
 		
-		List<KnowWEObjectType> types = env.getAllKnowWEObjectTypes();
+		List<KnowWEObjectType> types = KnowWEEnvironment.getInstance().getAllKnowWEObjectTypes();
 		StringBuilder html = new StringBuilder();
 		
-		// Create Header
+		// Header
 		html.append("<div id=\"KnowWEObjectTypeBrowser\" class=\"panel\"><h3>"
 				+ KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.KnowWeObjectTypeBrowser.topic")
 				+ "</h3>");
 		html.append("<form method='post' action='' name='typebrowser'>");
 		html.append("<fieldset>");
 		
-		// Create SelectList
+		// SelectList
 		html.append("<select name=\"Auswahl\" size=\"6\">");
 		
-		// Create entry for every Type
+		// Entry for every Type
 		String name = "";
 		for (KnowWEObjectType type : types) {
 			if (!type.getName().contains(".")) {

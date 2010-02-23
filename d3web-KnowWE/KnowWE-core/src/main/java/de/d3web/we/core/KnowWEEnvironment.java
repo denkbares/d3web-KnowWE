@@ -431,8 +431,7 @@ public class KnowWEEnvironment {
 		this.tagHandlers.put(knowWeObjectTypeHandler.getTagName(),
 				knowWeObjectTypeHandler);
 
-		TagHandler knowWEObjectTypeBrowserHandler = new KnowWEObjectTypeBrowserHandler(
-				this);
+		TagHandler knowWEObjectTypeBrowserHandler = new KnowWEObjectTypeBrowserHandler();
 		this.tagHandlers.put(knowWEObjectTypeBrowserHandler.getTagName(),
 				knowWEObjectTypeBrowserHandler);
 
