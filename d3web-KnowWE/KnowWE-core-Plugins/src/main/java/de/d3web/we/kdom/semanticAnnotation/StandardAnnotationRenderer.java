@@ -115,7 +115,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 					+ text + "</span>");
 		}
 		KnowWEObjectType t=sec.getObjectType();
-		if (!((OwlGenerator)t).getOwl(sec).getValidPropFlag()) {
+		if ((t instanceof OwlGenerator) && ((OwlGenerator)t).getOwl(sec).getValidPropFlag()) {
 			text = KnowWEUtils
 					.maskHTML("<p class=\"box error\">invalid annotation attribute:"
 							+ ((OwlGenerator)t).getOwl(sec).getBadAttribute()
