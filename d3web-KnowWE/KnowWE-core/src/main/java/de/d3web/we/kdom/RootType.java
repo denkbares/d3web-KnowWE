@@ -36,7 +36,8 @@ public class RootType extends DefaultAbstractKnowWEObjectType {
 	}
 	
 	private RootType() {
-		setSectionFinder(new AllTextSectionFinder());
+		this.setSectionFinder(new AllTextSectionFinder());
+
 	}
 
 	public static RootType getInstance() {

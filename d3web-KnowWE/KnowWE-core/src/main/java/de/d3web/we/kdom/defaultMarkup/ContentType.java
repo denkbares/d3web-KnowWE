@@ -19,7 +19,7 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 			"|" +
 			"(?:\\z)" +
 			"|" +
-			"(?:\\p{Space}*@\\w+))";
+			"(?:\\p{Space}+@\\w+))";
 
 	private final DefaultMarkup markup;
 	

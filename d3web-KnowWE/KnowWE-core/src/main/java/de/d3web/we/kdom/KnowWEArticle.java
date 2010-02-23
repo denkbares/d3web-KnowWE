@@ -101,7 +101,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		
 		Logger.getLogger(this.getClass().getName())
 			.log(Level.INFO,"====>> Starting to build article '" + title + "' ====>>");
-
 		
 		long startTime = System.currentTimeMillis();
 		startTimeOverall = System.currentTimeMillis();

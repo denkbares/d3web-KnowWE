@@ -121,40 +121,11 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 				// // otherwise use section's renderer instead
 				// renderer.render(article, section, user, builder);
 				// }
+				renderAnchor(section, builder);
 				builder.append(section.getOriginalText());
 			} else {
 				for (Section<?> subSection : subSections) {
-
-					// use subSection's renderer
-					KnowWEDomRenderer renderer = getRenderer(subSection, user);
-					renderer.render(article, subSection, user, builder);
-
-					// Render notices
-					Set<? extends KDOMNotice> notices = KDOMReportMessage
-							.getNotices(subSection);
-					if (notices != null && notices.size() > 0) {
-						for (KDOMNotice kdomNotice : notices) {
-							MessageRenderer noticeRenderer = subSection.get()
-									.getNoticeRenderer();
-							if (noticeRenderer != null) {
-								builder.append(noticeRenderer.renderMessage(kdomNotice, user));
-							}
-						}
-					}
-
-					// Render warnings
-					Set<? extends KDOMWarning> warnings = KDOMReportMessage
-							.getWarnings(subSection);
-					if (warnings != null && warnings.size() > 0) {
-						for (KDOMWarning kdomWarning : warnings) {
-							MessageRenderer warningRenderer = subSection.get()
-									.getWarningRenderer();
-							if (warningRenderer != null) {
-								builder.append(warningRenderer
-										.renderMessage(kdomWarning, user));
-							}
-						}
-					}
+					renderSubSection(article, subSection, user, builder);
 				}
 			}
 		} catch (Throwable e) {
@@ -171,6 +142,46 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 
 		if (renderTypes)
 			renderType(section, false, builder);
+	}
+
+	protected void renderSubSection(KnowWEArticle article, Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
+		renderAnchor(subSection, builder);
+
+		// use subSection's renderer
+		KnowWEDomRenderer renderer = getRenderer(subSection, user);
+		renderer.render(article, subSection, user, builder);
+
+		// Render notices
+		Set<? extends KDOMNotice> notices = KDOMReportMessage
+				.getNotices(subSection);
+		if (notices != null && notices.size() > 0) {
+			for (KDOMNotice kdomNotice : notices) {
+				MessageRenderer noticeRenderer = subSection.get()
+						.getNoticeRenderer();
+				if (noticeRenderer != null) {
+					builder.append(noticeRenderer.renderMessage(kdomNotice, user));
+				}
+			}
+		}
+
+		// Render warnings
+		Set<? extends KDOMWarning> warnings = KDOMReportMessage
+				.getWarnings(subSection);
+		if (warnings != null && warnings.size() > 0) {
+			for (KDOMWarning kdomWarning : warnings) {
+				MessageRenderer warningRenderer = subSection.get()
+						.getWarningRenderer();
+				if (warningRenderer != null) {
+					builder.append(warningRenderer
+							.renderMessage(kdomWarning, user));
+				}
+			}
+		}
+	}
+
+	private void renderAnchor(Section<?> subSection, StringBuilder builder) {
+//		String anchor = subSection.getId();
+//		builder.append(KnowWEUtils.maskHTML("<a name='kdomID-"+anchor+"'></a>"));
 	}
 
 	private void renderType(Section<?> section, boolean openIt,

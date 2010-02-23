@@ -93,8 +93,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
-	protected List<Section<? extends KnowWEObjectType>> children = new LinkedList<Section<? extends KnowWEObjectType>>();	
-	private LinkedList<Section<? extends KnowWEObjectType>> childrenParsingOrder = new LinkedList<Section<? extends KnowWEObjectType>>();
+	protected List<Section<? extends KnowWEObjectType>> children = new ArrayList<Section<? extends KnowWEObjectType>>();	
+	private List<Section<? extends KnowWEObjectType>> childrenParsingOrder = new LinkedList<Section<? extends KnowWEObjectType>>();
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through
