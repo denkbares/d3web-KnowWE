@@ -30,6 +30,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -52,7 +53,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @see KnowWEDomRenderer
  * @see Table
  */
-public class TableCellContentRenderer  extends KnowWEDomRenderer {
+public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellContent> {
 	
 
 	private static TableCellContentRenderer instance = null;
@@ -65,7 +66,7 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer {
 	}
 	
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section<TableCellContent> sec, KnowWEUserContext user, StringBuilder string) {
 		string.append(wrappContent(sec.getOriginalText(), sec, user));
 	}
 		
@@ -81,7 +82,7 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer {
 		generateContent(sectionText, sec, user, sectionID, html);
 		
 		html.append( "</td>" );
-		return KnowWEEnvironment.maskHTML( html.toString() );
+		return KnowWEUtils.maskHTML( html.toString() );
 	}
 
 
