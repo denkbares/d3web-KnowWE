@@ -103,10 +103,10 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 		}
 	}
 
-	private class RuleRenderer extends KnowWEDomRenderer {
+	private class RuleRenderer extends KnowWEDomRenderer<Rule> {
 
 		@Override
-		public void render(KnowWEArticle article, Section sec,
+		public void render(KnowWEArticle article, Section<Rule> sec,
 				KnowWEUserContext user, StringBuilder string) {
 
 			List<Message> errors = getErrorMessages(article, sec);

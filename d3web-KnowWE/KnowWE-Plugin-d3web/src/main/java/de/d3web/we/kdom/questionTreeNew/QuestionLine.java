@@ -1,5 +1,6 @@
 package de.d3web.we.kdom.questionTreeNew;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.List;
 
 import de.d3web.core.inference.Rule;
@@ -148,7 +149,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				QASet parent = findParent(sec, mgn);
 
 				QuestionType questionType = QuestionTypeDeclaration
-						.getQuestionType(qidSection);
+						.getQuestionType(qidSection.getFather().findSuccessor(QuestionTypeDeclaration.class));
 				Question q = null;
 				if (questionType.equals(QuestionType.OC)) {
 					q = mgn.createQuestionOC(name, parent, new String[] {});
@@ -233,7 +234,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	static class TypeDeclarationRenderer extends KnowWEDomRenderer {
+	static class TypeDeclarationRenderer extends KnowWEDomRenderer<QuestionTypeDeclaration> {
 
 		@Override
 		public void render(KnowWEArticle article, Section sec,
@@ -274,9 +275,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			OC, MC, YN, NUM, DATE, TEXT;
 		}
 
-		public static QuestionType getQuestionType(Section<QuestionID> s) {
-			Section<QuestionTypeDeclaration> typeSection = s.getFather()
-					.findSuccessor(QuestionTypeDeclaration.class);
+		public static QuestionType getQuestionType(Section<QuestionTypeDeclaration> typeSection) {
+			
 			if (typeSection == null)
 				return null;
 			String embracedContent = typeSection.getOriginalText();
