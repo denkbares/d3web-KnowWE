@@ -20,10 +20,16 @@
 package de.d3web.we.jspwiki;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -45,72 +51,103 @@ import de.d3web.we.search.SearchTerm;
 
 public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
-	public static List<SearchResult> getJSPWikiSearchResults(
+	public static List<GenericSearchResult> getJSPWikiSearchResults(
 			Collection<SearchTerm> searchTerms, HttpServletRequest request,
 			WikiEngine wiki) {
-
-		// assembling query for searchTerm bag
-		String query = "";
-		for (SearchTerm searchTerm : searchTerms) {
-			//re-insert quotes for jspwiki search
-			if (searchTerm.getTerm().contains(" ")) {
-				query += "\""+searchTerm.getTerm() +  "\""+ " ";
-			} else {
-				query += searchTerm.getTerm() + " ";
-			}
-		}
-
+		
+		
 		// Create wiki context and check for authorization
 		WikiContext wikiContext = wiki.createContext(request, WikiContext.FIND);
 
 		String pagereq = wikiContext.getName();
+		
+		Map<String,Set<SearchResult>> resultMap = new HashMap<String, Set<SearchResult>>();
 
-		// Get the search results
-		Collection list = null;
-		// String query = request.getParameter("query");
+		// assembling query for searchTerm bag
+		for (SearchTerm searchTerm : searchTerms) {
+			
+			Collection list = null;
+			 String query = searchTerm.getTerm();
+			 if(query.contains(" ")) {
+				 query = "\""+query+"\"";
+			 }
 
-		if (query != null) {
-			Logger.getLogger(JSPWikiSearchConnector.class).info(
-					"Searching for string " + query);
+			if (query != null) {
+//				Logger.getLogger(JSPWikiSearchConnector.class).info(
+//						"Searching for string " + query);
 
-			try {
-				list = wiki.findPages(query);
+				try {
+					list = wiki.findPages(query);
 
-				//
-				// Filter down to only those that we actually have a permission
-				// to view
-				//
-				AuthorizationManager mgr = wiki.getAuthorizationManager();
+					//
+					// Filter down to only those that we actually have a permission
+					// to view
+					//
+					AuthorizationManager mgr = wiki.getAuthorizationManager();
 
-				ArrayList<SearchResult> filteredList = new ArrayList();
+					ArrayList<SearchResult> filteredList = new ArrayList<SearchResult>();
 
-				for (Iterator i = list.iterator(); i.hasNext();) {
-					SearchResult r = (SearchResult) i.next();
+					for (Iterator<SearchResult> i = list.iterator(); i.hasNext();) {
+						SearchResult r =  i.next();
 
-					WikiPage p = r.getPage();
+						WikiPage p = r.getPage();
 
-					PagePermission pp = new PagePermission(p,
-							PagePermission.VIEW_ACTION);
+						PagePermission pp = new PagePermission(p,
+								PagePermission.VIEW_ACTION);
 
-					try {
-						if (mgr.checkPermission(wikiContext.getWikiSession(),
-								pp)) {
-							filteredList.add(r);
+						try {
+							if (mgr.checkPermission(wikiContext.getWikiSession(),
+									pp)) {
+								filteredList.add(r);
+							}
+						} catch (Exception e) {
+							Logger.getLogger(JSPWikiSearchConnector.class).error(
+									"Searching for page " + p, e);
 						}
-					} catch (Exception e) {
-						Logger.getLogger(JSPWikiSearchConnector.class).error(
-								"Searching for page " + p, e);
 					}
+					//store all results into map
+					for (SearchResult searchResult : filteredList) {
+						String article = searchResult.getPage().getName();
+						Set<SearchResult> set = resultMap.get(article);
+						if(set == null) {
+							Set<SearchResult> newSet = new HashSet<SearchResult>();
+							newSet.add(searchResult);
+							resultMap.put(article, newSet);
+						} else {
+							set.add(searchResult);
+						}
+					};
+
+				} catch (Exception e) {
+					wikiContext.getWikiSession().addMessage(e.getMessage());
 				}
-				return filteredList;
 
-			} catch (Exception e) {
-				wikiContext.getWikiSession().addMessage(e.getMessage());
 			}
-
 		}
+		
 
-		return null;
+		return aggregateResultMap(resultMap);
+	}
+
+	private static List<GenericSearchResult> aggregateResultMap(
+			Map<String, Set<SearchResult>> resultMap) {
+		
+		List<GenericSearchResult> resultList = new ArrayList<GenericSearchResult>();
+		
+		
+		for (Entry<String, Set<SearchResult>> entry : resultMap.entrySet()) {
+			String article = entry.getKey();
+			Set<SearchResult> results = entry.getValue();
+			List<String> contexts = new ArrayList<String>();
+			int matchingValue = 0;
+			for (SearchResult searchResult : results) {
+				matchingValue += searchResult.getScore();
+				contexts.addAll(Arrays.asList(searchResult.getContexts()));
+			}
+			
+			resultList.add(new GenericSearchResult(article, contexts.toArray(new String[contexts.size()]),matchingValue));
+		}
+		return resultList;
 	}
 
 	@Override
@@ -130,22 +167,22 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 				.getWikiConnector().getServletContext();
 		WikiEngine engine = WikiEngine.getInstance(context, null);
 
-		List<SearchResult> jspwikiResults = getJSPWikiSearchResults(words, map
+		List<GenericSearchResult> jspwikiResults = getJSPWikiSearchResults(words, map
 				.getRequest(), engine);
 
-		List<GenericSearchResult> knowweResult = new ArrayList<GenericSearchResult>();
+//		List<GenericSearchResult> knowweResult = new ArrayList<GenericSearchResult>();
+//
+//		if (jspwikiResults != null) {
+//
+//			// some conversion hack to get rid of jspwiki dependencies
+//			for (SearchResult result : jspwikiResults) {
+//				if(result.getPage().getName().contains("/")) continue;
+//				knowweResult.add(new GenericSearchResult(result.getPage()
+//						.getName(), result.getContexts(), result.getScore()));
+//			}
+//		}
 
-		if (jspwikiResults != null) {
-
-			// some conversion hack to get rid of jspwiki dependencies
-			for (SearchResult result : jspwikiResults) {
-				if(result.getPage().getName().contains("/")) continue;
-				knowweResult.add(new GenericSearchResult(result.getPage()
-						.getName(), result.getContexts(), result.getScore()));
-			}
-		}
-
-		return knowweResult;
+		return jspwikiResults;
 	}
 
 	@Override
@@ -166,13 +203,13 @@ public class JSPWikiSearchConnector implements KnowWESearchProvider {
 
 		for (GenericSearchResult genericSearchResult : results) {
 
-			
+			String score = ""+genericSearchResult.getScore();
 			
 			String url = "";
 
 			resultBuffy.append(" <tr>");
 			resultBuffy
-					.append("<td><a class=\"wikipage\" target='_blank' href=\"Wiki.jsp?page="
+					.append("<td><a title='"+score+"' class=\"wikipage\" target='_blank' href=\"Wiki.jsp?page="
 							+ genericSearchResult.getPagename() + "" + url
 							+ "\">" + genericSearchResult.getPagename()
 							+ "</a> </td>");
