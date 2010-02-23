@@ -185,13 +185,13 @@ public class KnowWEObjectTypeUtils {
 	 * @param child
 	 * @return
 	 */
-	@Deprecated
-	public static Section getAncestorOfType(Section child, Class clazz) {
+	@SuppressWarnings("unchecked")
+	public static<OT extends KnowWEObjectType> Section<OT> getAncestorOfType(Section<? extends KnowWEObjectType> child, Class<OT> clazz) {
 		if( child == null ) 
 			return null;		
 		
 		if( clazz.isAssignableFrom( child.getObjectType().getClass())) 
-			return child;
+			return (Section<OT>)child;
 		
 		return getAncestorOfType(child.getFather(), clazz);
 	}

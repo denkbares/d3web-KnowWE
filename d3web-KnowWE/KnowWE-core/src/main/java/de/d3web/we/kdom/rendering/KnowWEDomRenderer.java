@@ -21,10 +21,13 @@
 package de.d3web.we.kdom.rendering;
 
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public abstract class KnowWEDomRenderer {
+public abstract class KnowWEDomRenderer<T extends KnowWEObjectType> {
+	
+	
 	
 	/**
 	 * All rendered Sections will be appended to string.
@@ -37,6 +40,6 @@ public abstract class KnowWEDomRenderer {
 	 * 
 	 * @return
 	 */
-	public abstract void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string);
+	public abstract void render(KnowWEArticle article, Section<T> sec, KnowWEUserContext user, StringBuilder string);
 
 }
