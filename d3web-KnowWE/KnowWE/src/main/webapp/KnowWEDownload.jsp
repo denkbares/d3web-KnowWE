@@ -1,6 +1,4 @@
-<%@page import="de.d3web.we.core.*"%>
-<%@ page import="java.util.*,java.io.*"%>
-<%!
+<%@page import="de.d3web.we.core.*"%><%@ page import="java.util.*,java.io.*"%><%!
 String findParam( PageContext ctx, String key )
     {
         ServletRequest req = ctx.getRequest();
@@ -14,9 +12,9 @@ String findParam( PageContext ctx, String key )
 
         return val;
     }
-%>
-<%
-	
+%><%
+	/// DO NOT ALTER THE NON-JAVA-CONTENT OF THIS FILE!!! ///
+	// Every character outside of the java-scope gets appended to the generated file!!!
 	
 	//String value = 
 	String filename = findParam(pageContext,"filename");;
@@ -55,25 +53,24 @@ String findParam( PageContext ctx, String key )
 
 	ServletOutputStream outs = response.getOutputStream();
 	
-	int bit = 256;
-
+	int bit;
+	
+	
 	try {
-		while ((bit) >= 0) {
-			bit = in.read();
+		while ((bit = in.read()) >= 0) {
 			outs.write(bit);
 		}
-		//System.out.println("" +bit);
 
 
     } catch (IOException ioe) {
     	ioe.printStackTrace(System.out);
+    	response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.valueOf(ioe));
+    } finally {
+		in.close();	
     }
-    //		System.out.println( "\n" + i + " byt
-    //     es sent.");
-    //		System.out.println( "\n" + f.length(
-    //     ) + " bytes sent.");
+    
+    
 	outs.flush();
 	outs.close();
-	in.close();	
 
-            %>
+%>
