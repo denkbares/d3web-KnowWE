@@ -27,6 +27,17 @@
 		<filter-name>KnowWEUploadFilter</filter-name>
 		<url-pattern>/KnowWEUpload</url-pattern>
 	</filter-mapping>
+	
+	<!-- TestSuite Visualization Download Creation Servlet -->
+	<servlet>
+ 		<servlet-name>TestSuiteDownload</servlet-name>
+ 		<servlet-class>de.d3web.we.testsuite.TestSuiteServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+ 		<servlet-name>TestSuiteDownload</servlet-name>
+ 		<url-pattern>/testsuitedownload</url-pattern>
+	</servlet-mapping>
+	
 
    <!--
       WikiServletFilter defines a servlet filter which filters all requests. It was

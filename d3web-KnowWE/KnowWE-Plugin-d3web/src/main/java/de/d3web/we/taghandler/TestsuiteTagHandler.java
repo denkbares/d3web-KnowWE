@@ -33,8 +33,6 @@ import de.d3web.empiricalTesting.RatedSolution;
 import de.d3web.empiricalTesting.RatedTestCase;
 import de.d3web.empiricalTesting.SequentialTestCase;
 import de.d3web.empiricalTesting.TestSuite;
-import de.d3web.empiricalTesting.caseVisualization.dot.DDBuilder;
-import de.d3web.empiricalTesting.caseVisualization.jung.JUNGCaseVisualizer;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -577,29 +575,47 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 	
 	private String renderPDFDownload(TestSuite t) {
 		
-		long time = System.nanoTime();
-		
-		// Create PDF
-		StringBuilder path = new StringBuilder();
-		path.append(KnowWEEnvironment.getInstance().getContext().getRealPath(""));
-		path.append("/KnowWEExtension/tmp/");
-		path.append(article);
-		path.append("_testsuite_");
-		path.append(time);
-		path.append(".pdf");
-		JUNGCaseVisualizer.getInstance().writeToFile(t, path.toString());
+//		long time = System.nanoTime();
+//		
+//		// Create PDF
+//		StringBuilder path = new StringBuilder();
+//		path.append(KnowWEEnvironment.getInstance().getContext().getRealPath(""));
+//		path.append("/KnowWEExtension/tmp/");
+//		path.append(article);
+//		path.append("_testsuite_");
+//		path.append(time);
+//		path.append(".pdf");
+//		JUNGCaseVisualizer.getInstance().writeToFile(t, path.toString());
+//		
+//		// Render Download Button
+//		StringBuilder html = new StringBuilder();
+//		html.append("<div>");
+//		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
+//		html.append("<a style='margin-left:5px' href='");
+//		html.append(KnowWEEnvironment.getInstance().getContext().getContextPath());
+//		html.append("/KnowWEExtension/tmp/");
+//		html.append(article);
+//		html.append("_testsuite_");
+//		html.append(time);
+//		html.append(".pdf");
+//		html.append("'>");
+//		html.append(rb.getString("KnowWE.Testsuite.downloadpdf")); 
+//		html.append("</a>");
+//		html.append("</div>");
 		
 		// Render Download Button
 		StringBuilder html = new StringBuilder();
 		html.append("<div>");
 		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
-		html.append("<a style='margin-left:5px' href='");
-		html.append(KnowWEEnvironment.getInstance().getContext().getContextPath());
-		html.append("/KnowWEExtension/tmp/");
+		html.append("<a style='margin-left:5px' href='testsuitedownload?KWiki_Topic=");
 		html.append(article);
-		html.append("_testsuite_");
-		html.append(time);
-		html.append(".pdf");
+		html.append("&web=");
+		html.append(web);
+		html.append("&nodeID=");
+		html.append(testsuites.get(article).getId());
+		html.append("&filename=");
+		html.append(article);
+		html.append("_Visualization.pdf");
 		html.append("'>");
 		html.append(rb.getString("KnowWE.Testsuite.downloadpdf")); 
 		html.append("</a>");
@@ -613,29 +629,46 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 	
 	private String renderDOTDownload(TestSuite t) {
 		
-		long time = System.nanoTime();
+//		long time = System.nanoTime();
+//		
+//		// Create DOT
+//		StringBuilder path = new StringBuilder();
+//		path.append(KnowWEEnvironment.getInstance().getContext().getRealPath(""));
+//		path.append("/KnowWEExtension/tmp/");
+//		path.append(article);
+//		path.append("_testsuite_");
+//		path.append(time);
+//		path.append(".dot");
+//		DDBuilder.getInstance().writeToFile(t, path.toString());
+//		
+//		// Render Download Button
+//		StringBuilder html = new StringBuilder();
+//		html.append("<div>");
+//		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
+//		html.append("<a style='margin-left:5px' href='");
+//		html.append(KnowWEEnvironment.getInstance().getContext().getContextPath());
+//		html.append("/KnowWEExtension/tmp/");
+//		html.append(article);
+//		html.append("_testsuite_");
+//		html.append(time);
+//		html.append(".dot");
+//		html.append("'>");
+//		html.append(rb.getString("KnowWE.Testsuite.downloaddot")); 
+//		html.append("</a>");
+//		html.append("</div>");
 		
-		// Create DOT
-		StringBuilder path = new StringBuilder();
-		path.append(KnowWEEnvironment.getInstance().getContext().getRealPath(""));
-		path.append("/KnowWEExtension/tmp/");
-		path.append(article);
-		path.append("_testsuite_");
-		path.append(time);
-		path.append(".dot");
-		DDBuilder.getInstance().writeToFile(t, path.toString());
-		
-		// Render Download Button
 		StringBuilder html = new StringBuilder();
 		html.append("<div>");
 		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
-		html.append("<a style='margin-left:5px' href='");
-		html.append(KnowWEEnvironment.getInstance().getContext().getContextPath());
-		html.append("/KnowWEExtension/tmp/");
+		html.append("<a style='margin-left:5px' href='TestSuiteDownload.jsp?KWiki_Topic=");
 		html.append(article);
-		html.append("_testsuite_");
-		html.append(time);
-		html.append(".dot");
+		html.append("&web=");
+		html.append(web);
+		html.append("&nodeID=");
+		html.append(testsuites.get(article).getId());
+		html.append("&filename=");
+		html.append(article);
+		html.append("_Visualization.dot");
 		html.append("'>");
 		html.append(rb.getString("KnowWE.Testsuite.downloaddot")); 
 		html.append("</a>");
