@@ -72,6 +72,7 @@ public class SemanticCore {
 	private HashMap<String, List<Statement>> statementcache;
 	private HashMap<String, String> namespaces;
 	private HashMap<String, String> defaultnamespaces;
+
 	private SemanticCore(KnowWEEnvironment ke) {
 		this.knowWEEnvironment = ke;
 		me = this;
@@ -209,38 +210,6 @@ public class SemanticCore {
 	}
 
 	/**
-	 * @param con
-	 * @param pm
-	 * @param props
-	 */
-	private void addPropertyData(RepositoryConnection con, PropertyManager pm,
-			String props) {
-		do {
-			IntermediateOwlObject io = UpperOntology.getInstance().getHelper()
-					.createProperty(props);
-			List<Statement> allStatements = io.getAllStatements();
-
-			statementcache.put("SemanticSettings", allStatements);
-			try {
-				for (Statement current : allStatements) {
-					if (current != null) {
-						con.add(current);
-						Logger.getLogger(this.getClass().getName()).log(
-								Level.INFO,
-								"adding Property " + current.toString());
-						con.commit();
-					}
-				}
-
-				con.commit();
-			} catch (RepositoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} while (!pm.isValid(props));
-	}
-
-	/**
 	 * 
 	 * @return current settings
 	 */
@@ -352,7 +321,7 @@ public class SemanticCore {
 	}
 
 	/**
-	 * perform a spql graphquery
+	 * perform a sparql graphquery
 	 * 
 	 * @param query
 	 * @return
@@ -364,7 +333,7 @@ public class SemanticCore {
 	}
 
 	/**
-	 * perform a spql booleanquery
+	 * perform a sparql booleanquery
 	 * 
 	 * @param query
 	 * @return
@@ -560,6 +529,5 @@ public class SemanticCore {
 	public HashMap<String, String> getNameSpaces() {
 		return namespaces;
 	}
-
 
 }

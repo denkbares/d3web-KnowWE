@@ -22,12 +22,9 @@ package de.d3web.we.kdom.basic;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.bulletLists.CommentRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.utils.Patterns;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  *

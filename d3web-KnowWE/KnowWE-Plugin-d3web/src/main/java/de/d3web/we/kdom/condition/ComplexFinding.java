@@ -35,7 +35,6 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.KnOfficeParser.DefaultLexer;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;

@@ -86,6 +86,7 @@ public class d3webSectionFinderTest extends TestCase {
 	private static final String WRONG_TYPE = "Wrong KnowWEObjectType";
 	private static final String WRONG_TYPE_COUNT = "Wrong KnowWEObjectType  section count:";
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

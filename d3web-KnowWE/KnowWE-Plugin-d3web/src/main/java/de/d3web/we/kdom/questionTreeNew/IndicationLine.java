@@ -4,7 +4,6 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.AbstractCondition;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.terminology.IDObject;
 import de.d3web.core.terminology.QContainer;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -43,7 +42,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, s);
 
-			Section<QuestionnaireID> indicationSec = ((Section<QuestionnaireID>) s);
+			Section<QuestionnaireID> indicationSec = (s);
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils

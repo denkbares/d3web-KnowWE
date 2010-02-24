@@ -40,6 +40,7 @@ import de.d3web.we.logging.Logging;
  */
 public class QuestionnaireTest extends TestCase {
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

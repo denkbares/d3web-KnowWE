@@ -13,6 +13,7 @@ public class BulletScoring extends AbstractXMLObjectType{
 		super("BulletScoring");
 	}
 	
+	@Override
 	public void init() {
 		childrenTypes.add(new ScoringListContentType());
 		//this.setNotRecyclable(true);

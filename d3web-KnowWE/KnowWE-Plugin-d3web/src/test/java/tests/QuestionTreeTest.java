@@ -48,6 +48,7 @@ import junit.framework.TestCase;
  */
 public class QuestionTreeTest extends TestCase {
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

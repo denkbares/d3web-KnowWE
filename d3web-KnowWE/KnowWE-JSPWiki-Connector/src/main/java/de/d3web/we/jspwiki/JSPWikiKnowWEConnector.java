@@ -383,7 +383,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	@Override
 	public String getArticleSource(String name) {
-		if (this.engine.getPage(name) == null)
+		
+		if (this.engine==null || this.engine.getPage(name) == null)
 			return null;
 		WikiContext context = new WikiContext(this.engine, this.engine
 				.getPage(name));

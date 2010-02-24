@@ -65,7 +65,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			
-			Section<QuestionnaireID> qcSec = ((Section<QuestionnaireID> )s);
+			Section<QuestionnaireID> qcSec = (s);
 			
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())

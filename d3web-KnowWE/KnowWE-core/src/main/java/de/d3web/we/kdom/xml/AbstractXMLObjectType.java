@@ -88,7 +88,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 	
 	public static Section<AbstractXMLObjectType> getXMLFatherElement(Section<? extends AbstractXMLObjectType> s) {
 		Section xmlFather = KnowWEObjectTypeUtils.getAncestorOfType(s.getFather(), AbstractXMLObjectType.class);
-		return (Section<AbstractXMLObjectType>)xmlFather;
+		return xmlFather;
 	}
 
 	public static int getXMLDepth(Section<AbstractXMLObjectType> s) {
@@ -141,7 +141,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 		List<Section<? extends KnowWEObjectType>> children = s.getChildren();
 		for (Section section : children) {
 			if (section.getObjectType() instanceof XMLContent) {
-				Section<XMLContent> conSec = (Section<XMLContent>)section;
+				Section<XMLContent> conSec = section;
 				List<Section<AbstractXMLObjectType>> nodes = conSec
 						.findChildrenOfType(AbstractXMLObjectType.class);
 				for (Section<AbstractXMLObjectType> section2 : nodes) {

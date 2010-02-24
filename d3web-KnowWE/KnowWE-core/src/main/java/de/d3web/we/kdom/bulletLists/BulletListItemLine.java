@@ -13,6 +13,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class BulletListItemLine extends DefaultAbstractKnowWEObjectType {
 
+	@Override
 	public void init() {
 		this.sectionFinder = new BulletListItemLineFinder();
 		this.childrenTypes.add(new BulletType());

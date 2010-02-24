@@ -37,6 +37,7 @@ public class DialogLinkTagHandler extends AbstractTagHandler {
 	}
 	
 
+	@Override
 	public String getExampleString() {
 		return "[{KnowWEPlugin " + getTagName()+ " = &lt;articleName&gt;" + "}]";
 	}

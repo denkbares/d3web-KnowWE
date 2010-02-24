@@ -400,4 +400,24 @@ public class OwlHelper {
 		return io;
 	}
 
+	public IntermediateOwlObject createStatementSrc(URI soluri, URI prop, URI object,
+			Section s,URI type) {
+		IntermediateOwlObject io=new IntermediateOwlObject();
+		BNode bnode=UpperOntology.getInstance().getConnection().getValueFactory().createBNode();
+		
+		try {
+			io.addStatement(createStatement(bnode, RDF.SUBJECT, soluri));
+			io.addStatement(createStatement(bnode, RDF.PREDICATE, prop));
+			io.addStatement(createStatement(bnode, RDF.OBJECT, object));
+			io.addStatement(createStatement(bnode,RDF.TYPE,RDF.STATEMENT));
+			BNode to=UpperOntology.getInstance().getConnection().getValueFactory().createBNode();
+			io.merge(createTextOrigin(s, to, type));
+			io.addStatement(createStatement(bnode, RDFS.ISDEFINEDBY, to));
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return io;
+	}
+
 }

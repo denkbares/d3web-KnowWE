@@ -55,6 +55,7 @@ import junit.framework.TestCase;
  */
 public class RulesTest extends TestCase {
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

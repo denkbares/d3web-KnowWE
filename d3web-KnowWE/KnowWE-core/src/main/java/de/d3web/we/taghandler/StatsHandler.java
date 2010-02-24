@@ -65,8 +65,8 @@ public class StatsHandler extends AbstractTagHandler {
 			}
 
 	         public int compare(Object o1, Object o2) {
-	        	 Float e1 = (Float) _data.get(o1);
-	             Float e2 = (Float) _data.get(o2);
+	        	 Float e1 = _data.get(o1);
+	             Float e2 = _data.get(o2);
 	             return e2.compareTo(e1);
 	         }
 		}

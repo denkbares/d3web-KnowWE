@@ -37,7 +37,6 @@ import de.d3web.we.kdom.report.DefaultNoticeRenderer;
 import de.d3web.we.kdom.report.DefaultWarningRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {

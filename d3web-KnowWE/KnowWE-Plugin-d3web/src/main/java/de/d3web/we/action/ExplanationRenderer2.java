@@ -39,6 +39,7 @@ import de.d3web.we.d3webModule.ProblemSolverType;
 public class ExplanationRenderer2 extends AbstractKnowWEAction {
 
 
+	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		
 		String toExplain = parameterMap.get(KnowWEAttributes.EXPLAIN);

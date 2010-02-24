@@ -31,6 +31,7 @@ import de.d3web.we.d3webModule.D3webModule;
 public class RemoveD3webKnowledgeServiceAction extends AbstractKnowWEAction {
 
 
+	@Override
 	public String perform(KnowWEParameterMap map) {
 		String baseID = map.get(KnowWEAttributes.KNOWLEDGEBASE_ID);
 		if(baseID == null) return "no kbid to remove knowledge service";

@@ -1,6 +1,5 @@
 package de.d3web.we.kdom.constraint;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEObjectType;

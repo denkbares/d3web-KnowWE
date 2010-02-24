@@ -28,6 +28,7 @@ import de.d3web.we.d3webModule.D3webModule;
 public class ClearDPSSessionAction extends AbstractKnowWEAction {
 
 
+	@Override
 	public String perform(KnowWEParameterMap map) {
 		Broker broker = D3webModule.getBroker(map);
 		broker.clearDPSSession();

@@ -45,6 +45,7 @@ public class CoveringTableHeaderColumnCellContent extends
 	
 	public static final String QUESTIONNAIRE_CELL = "questionnaire_cell";
 
+	@Override
 	public void init() {
 		this.addReviseSubtreeHandler(new CoveringTableHeaderColumnCellContentHandler());
 	}
@@ -57,7 +58,7 @@ public class CoveringTableHeaderColumnCellContent extends
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
 			
-			Section<CoveringTableHeaderColumnCellContent> cell = (Section<CoveringTableHeaderColumnCellContent>)s;
+			Section<CoveringTableHeaderColumnCellContent> cell = s;
 			
 			if (mgn == null) {
 				return null;

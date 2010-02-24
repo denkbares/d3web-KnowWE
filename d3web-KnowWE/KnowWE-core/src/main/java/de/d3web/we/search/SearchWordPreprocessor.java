@@ -19,7 +19,6 @@
  */
 package de.d3web.we.search;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;

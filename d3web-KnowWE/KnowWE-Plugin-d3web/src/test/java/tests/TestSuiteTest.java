@@ -39,6 +39,7 @@ import junit.framework.TestCase;
  */
 public class TestSuiteTest extends TestCase {
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

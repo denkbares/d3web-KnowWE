@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.tagging.TagsContent;
 import de.d3web.we.search.GenericSearchResult;

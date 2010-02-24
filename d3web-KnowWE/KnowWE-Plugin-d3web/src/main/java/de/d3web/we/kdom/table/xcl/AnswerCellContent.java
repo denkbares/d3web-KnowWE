@@ -81,6 +81,7 @@ class AnswerCellRenderer extends TableCellContentRenderer {
 	 * Wraps the content of the cell (sectionText) with the HTML-Code needed for
 	 * the table
 	 */
+	@Override
 	protected String wrappContent(String sectionText, Section sec,
 			KnowWEUserContext user) {
 

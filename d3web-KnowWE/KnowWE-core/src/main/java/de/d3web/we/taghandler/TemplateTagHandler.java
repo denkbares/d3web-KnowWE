@@ -20,7 +20,6 @@
 package de.d3web.we.taghandler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -33,7 +32,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.Template;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
-import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 /**
  * @author Johannes Dienst

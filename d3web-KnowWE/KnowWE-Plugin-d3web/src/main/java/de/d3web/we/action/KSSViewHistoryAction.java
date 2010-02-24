@@ -47,6 +47,7 @@ public class KSSViewHistoryAction extends AbstractKnowWEAction {
 		dateFormat.applyPattern("dd.MM.yyyy HH:mm:ss");
 	}
 
+	@Override
 	public String perform(KnowWEParameterMap map){
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(map.getRequest());
 		String userString = map.get(KnowWEAttributes.USER);

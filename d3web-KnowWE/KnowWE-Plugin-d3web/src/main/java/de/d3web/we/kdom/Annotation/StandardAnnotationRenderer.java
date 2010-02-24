@@ -20,11 +20,11 @@
 
 package de.d3web.we.kdom.Annotation;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
 import de.d3web.we.kdom.semanticAnnotation.AnnotatedString;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationContent;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class StandardAnnotationRenderer extends ConditionalRenderer {
@@ -36,7 +36,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 			Section content = sec.findSuccessor(SemanticAnnotationContent.class);
 			if(content != null) {
 				String title = content.getOriginalText();
-				text = KnowWEEnvironment.maskHTML("<span title='"+title+"'>"+text+"</span>");
+				text = KnowWEUtils.maskHTML("<a href=\"#"+sec.getId()+"\"></a>"+"<span title='"+title+"'>"+text+"</span>");
 			}
 		
 			string.append(text);

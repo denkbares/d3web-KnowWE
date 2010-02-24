@@ -65,6 +65,7 @@ public class SolutionLogAction extends AbstractKnowWEAction {
 		iconURL = path + rb.getString("knowwe.config.path.images") + "tree/";
 	}
 
+	@Override
 	public String perform(KnowWEParameterMap map) {
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(map.getRequest());
 		String userString = map.get(KnowWEAttributes.USER);

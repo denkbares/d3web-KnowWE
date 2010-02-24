@@ -19,7 +19,6 @@
  */
 package de.d3web.we.kdom.kopic.rules.ruleActionLine;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Annotation.FindingComparator;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 

@@ -28,6 +28,7 @@ import de.d3web.we.d3webModule.D3webModule;
 public class ReInitDPSEnvironment extends AbstractKnowWEAction {
 
 
+	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 //		String web = parameterMap.get(KnowWEAttributes.WEB);
 		DPSEnvironment dpse = D3webModule.getDPSE(parameterMap);

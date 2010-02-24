@@ -69,10 +69,9 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 		Set<String> names = b.getBindingNames();
 		if (!tablemode) {
 		    tablemode = names.size() > 1;
-		}
-		tablemode=true;
+		}		
 		if (tablemode) {
-		    table.append(KnowWEUtils.maskHTML("<tr>"+"<td><bf>"+count++ +"</bf></td>"));
+		    table.append(KnowWEUtils.maskHTML("<tr>"));
 		}
 
 		for (String cur : names) {

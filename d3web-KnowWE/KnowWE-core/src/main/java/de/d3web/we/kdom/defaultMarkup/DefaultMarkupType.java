@@ -124,6 +124,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	// TODO: already exists in parent class! Is this a problem?
+	@Override
 	public String getName() {
 		return this.markup.getName();
 	}

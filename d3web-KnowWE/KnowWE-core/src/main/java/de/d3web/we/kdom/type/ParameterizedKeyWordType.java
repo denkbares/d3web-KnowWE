@@ -45,6 +45,7 @@ public abstract class ParameterizedKeyWordType extends DefaultAbstractKnowWEObje
 	}
 
 
+	@Override
 	public void init() {
 		setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR2));
 	}

@@ -40,6 +40,7 @@ public class DPSDialogsAction extends AbstractKnowWEAction {
 		iconURL = path + rb.getString("knowwe.config.path.images") + "";
 	}
 
+	@Override
 	public String perform(KnowWEParameterMap map){
 		StringBuffer sb = new StringBuffer();
 		Broker broker = D3webModule.getBroker(map);

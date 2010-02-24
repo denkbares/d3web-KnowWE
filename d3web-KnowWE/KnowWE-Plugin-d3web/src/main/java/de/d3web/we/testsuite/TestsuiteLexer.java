@@ -129,7 +129,8 @@ public class TestsuiteLexer extends Lexer {
         super(input,state);
         gBasicLexer = new TestsuiteLexer_BasicLexer(input, state, this);
     }
-    public String getGrammarFileName() { return "D:\\Eigene Projekte\\ANTLR\\Grammars\\TestsuiteLexer.g"; }
+    @Override
+	public String getGrammarFileName() { return "D:\\Eigene Projekte\\ANTLR\\Grammars\\TestsuiteLexer.g"; }
 
     // $ANTLR start "HEURISTIC"
     public final void mHEURISTIC() throws RecognitionException {
@@ -269,7 +270,8 @@ public class TestsuiteLexer extends Lexer {
     }
     // $ANTLR end "XCL"
 
-    public void mTokens() throws RecognitionException {
+    @Override
+	public void mTokens() throws RecognitionException {
         // D:\\Eigene Projekte\\ANTLR\\Grammars\\TestsuiteLexer.g:1:8: ( HEURISTIC | XCL | BasicLexer. Tokens )
         int alt3=3;
         alt3 = dfa3.predict(input);
@@ -397,7 +399,8 @@ public class TestsuiteLexer extends Lexer {
             this.special = DFA3_special;
             this.transition = DFA3_transition;
         }
-        public String getDescription() {
+        @Override
+		public String getDescription() {
             return "1:1: Tokens : ( HEURISTIC | XCL | BasicLexer. Tokens );";
         }
     }

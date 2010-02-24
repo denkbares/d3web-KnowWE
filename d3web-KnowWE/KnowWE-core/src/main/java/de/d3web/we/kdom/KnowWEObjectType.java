@@ -26,7 +26,6 @@ import java.util.List;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 
 /**
  * @author Jochen

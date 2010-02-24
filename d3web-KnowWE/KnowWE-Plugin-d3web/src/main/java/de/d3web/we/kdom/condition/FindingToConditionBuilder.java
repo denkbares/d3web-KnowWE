@@ -214,7 +214,7 @@ public class FindingToConditionBuilder {
 		List<Message> messages = new ArrayList<Message>(1);
 		messages.add(message);
 		
-		((AbstractKnowWEObjectType) section.getObjectType()).storeMessages(article, section, messages);
+		AbstractKnowWEObjectType.storeMessages(article, section, messages);
 		
 
 		

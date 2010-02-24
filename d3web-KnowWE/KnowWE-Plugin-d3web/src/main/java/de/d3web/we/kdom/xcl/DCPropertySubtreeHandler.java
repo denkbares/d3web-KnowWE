@@ -19,7 +19,6 @@
  */
 package de.d3web.we.kdom.xcl;
 
-import java.util.Set;
 import java.util.logging.Level;
 
 import de.d3web.core.manage.KnowledgeBaseManagement;

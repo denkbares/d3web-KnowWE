@@ -33,6 +33,7 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Return the name of the content type section.
 	 */
+	@Override
 	public String getName() {
 		return this.markup.getName()+"@content";
 	}

@@ -28,7 +28,6 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableContentRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
@@ -59,7 +58,7 @@ public class AttributeTableContent extends XMLContent {
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {			
-				((AbstractKnowWEObjectType) s.getFather().getObjectType()).storeMessages(article, s.getFather(), 
+				AbstractKnowWEObjectType.storeMessages(article, s.getFather(), 
 						builder.addKnowledge(new StringReader(s.getOriginalText()), 
 								new SingleKBMIDObjectManager(kbm), null));
 			}

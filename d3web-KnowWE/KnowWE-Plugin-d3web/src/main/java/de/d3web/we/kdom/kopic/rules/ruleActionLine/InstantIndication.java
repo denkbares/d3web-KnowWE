@@ -19,11 +19,7 @@
  */
 package de.d3web.we.kdom.kopic.rules.ruleActionLine;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.basic.SquareBracedType;
 import de.d3web.we.kdom.condition.QuotedQuestion;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.type.ParameterizedKeyWordType;
 
 /**

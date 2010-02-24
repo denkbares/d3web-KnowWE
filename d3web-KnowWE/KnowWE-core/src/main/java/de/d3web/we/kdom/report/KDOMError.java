@@ -28,6 +28,7 @@ public abstract class KDOMError extends KDOMReportMessage {
 		
 	}
 	
+	@Override
 	public abstract String getVerbalization(KnowWEUserContext usercontext);
 
 }

@@ -20,15 +20,9 @@
 
 package de.d3web.we.kdom.condition;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 
 public class NOT extends DefaultAbstractKnowWEObjectType {

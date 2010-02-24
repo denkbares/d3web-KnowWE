@@ -1,7 +1,6 @@
 package de.d3web.we.kdom.bulletLists.scoring;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;

@@ -34,6 +34,7 @@ public class AnnotationType extends DefaultAbstractKnowWEObjectType {
 	 * Returns the name of the underlying annotation defined.
 	 * @return the annotation's name
 	 */
+	@Override
 	public String getName() {
 		return this.annotation.getName();
 	}

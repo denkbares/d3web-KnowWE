@@ -49,6 +49,7 @@ public class VersionTagHandler extends AbstractTagHandler {
 		return html.toString();
 	}
 	
+	@Override
 	public String getDescription(KnowWEUserContext user) {
 		return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.Version.description");
 	}

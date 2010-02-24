@@ -24,6 +24,7 @@ import de.d3web.we.kdom.basic.TextLine;
 
 public class QuestionDefLine extends TextLine {
 	
+	@Override
 	protected void init() {
 		
 	}

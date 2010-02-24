@@ -48,6 +48,7 @@ public class QuestionLine extends TableLine {
 	}
 	
 	
+	@Override
 	public void init() {
 		this.addReviseSubtreeHandler(new QuestionLineHandler());
 	}

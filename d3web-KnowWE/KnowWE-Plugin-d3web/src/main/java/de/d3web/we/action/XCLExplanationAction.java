@@ -78,6 +78,7 @@ public class XCLExplanationAction extends AbstractKnowWEAction {
 	private Collection<XCLRelation> relations;
 	private XPSCase currentCase;
 	
+	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(parameterMap.getRequest());

@@ -10,6 +10,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class BulletType extends DefaultAbstractKnowWEObjectType {
 
+	@Override
 	public void init() {
 		this.sectionFinder = new BulletFinder();
 	}

@@ -34,6 +34,7 @@ public class UserInterventionRenderer extends AbstractKnowWEAction {
 
 	private static ResourceBundle rb;
 
+	@Override
 	public String perform(KnowWEParameterMap map){
 		rb = D3webModule.getKwikiBundle_d3web(map.getRequest());
 		StringBuffer sb = new StringBuffer();

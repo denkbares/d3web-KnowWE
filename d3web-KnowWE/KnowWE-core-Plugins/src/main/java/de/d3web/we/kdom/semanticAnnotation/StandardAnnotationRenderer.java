@@ -41,7 +41,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class StandardAnnotationRenderer extends ConditionalRenderer {
 
-	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> lns:hasTitle ?title }";
+	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> ns:hasTitle ?title }";
 	
 	
 	@Override
@@ -74,10 +74,10 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 		String subject = "no subject found";
 
-		Section<SemanticAnnotationSubject> subjectSectin = sec.findSuccessor(SemanticAnnotationSubject.class);
-		if (subjectSectin != null
-				&& subjectSectin.getOriginalText().trim().length() > 0) {
-			subject = subjectSectin.getOriginalText();
+		Section<SemanticAnnotationSubject> subjectSection = sec.findSuccessor(SemanticAnnotationSubject.class);
+		if (subjectSection != null
+				&& subjectSection.getOriginalText().trim().length() > 0) {
+			subject = subjectSection.getOriginalText();
 		} else {
 
 			Context context = ContextManager.getInstance().getContext(sec,
@@ -111,7 +111,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 		if (content != null) {
 			String title = subject + " " + property + " " + object;
-			text = KnowWEUtils.maskHTML("<span title='" + title + "'>"
+			text = KnowWEUtils.maskHTML("<a href=\"#"+s.getId()+"\"></a>"+"<span title='" + title + "'>"
 					+ text + "</span>");
 		}
 		KnowWEObjectType t=sec.getObjectType();

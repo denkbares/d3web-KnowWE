@@ -40,6 +40,7 @@ public class SaveSessionAction extends AbstractKnowWEAction {
 		dateFormat.applyPattern("yyyyMMddHHmmss");
 	}
 
+	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		String userID = parameterMap.get(KnowWEAttributes.USER);
 		//String userID = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.USER, String.class, true);

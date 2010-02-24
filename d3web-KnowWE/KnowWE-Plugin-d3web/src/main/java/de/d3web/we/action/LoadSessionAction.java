@@ -34,6 +34,7 @@ import de.d3web.we.persistence.SessionPersistenceHandler;
 public class LoadSessionAction extends AbstractKnowWEAction {
 
 
+	@Override
 	public String perform(KnowWEParameterMap map) {
 		String dir = D3webModule.getSessionPath(map);
 		String sessionFileName = map.get(KnowWEAttributes.SESSION_FILE);

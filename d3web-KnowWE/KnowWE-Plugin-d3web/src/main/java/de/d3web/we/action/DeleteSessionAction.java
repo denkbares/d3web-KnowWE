@@ -29,6 +29,7 @@ import de.d3web.we.d3webModule.D3webModule;
 public class DeleteSessionAction extends AbstractKnowWEAction {
 
 
+	@Override
 	public String perform(KnowWEParameterMap map) {
 		String dir = D3webModule.getSessionPath(map);
 		String sessionFileName = map.get(KnowWEAttributes.SESSION_FILE);

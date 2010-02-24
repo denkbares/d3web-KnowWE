@@ -25,11 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import javax.swing.text.html.ListView;
-
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.TaggingMangler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;

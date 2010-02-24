@@ -20,13 +20,11 @@
 
 package de.d3web.we.taghandler;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.TaggingMangler;
-import de.d3web.we.search.GenericSearchResult;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TagSearchHandler extends AbstractTagHandler {

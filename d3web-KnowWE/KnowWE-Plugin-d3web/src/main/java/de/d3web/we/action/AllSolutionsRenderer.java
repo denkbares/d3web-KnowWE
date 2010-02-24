@@ -54,6 +54,7 @@ private String iconURL;
 		iconURL = path + rb.getString("knowwe.config.path.images") + "tree/";
 	}
 
+	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		rb = D3webModule.getKwikiBundle_d3web(parameterMap.getRequest());
 		StringBuffer sb = new StringBuffer();

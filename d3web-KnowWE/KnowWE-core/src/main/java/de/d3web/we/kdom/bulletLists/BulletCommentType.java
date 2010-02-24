@@ -13,6 +13,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class BulletCommentType extends  DefaultAbstractKnowWEObjectType {
 
+	@Override
 	public void init() {
 		this.sectionFinder = new BulletCommentFinder();
 		this.setCustomRenderer(new CommentRenderer());

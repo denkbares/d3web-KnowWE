@@ -22,17 +22,12 @@ package de.d3web.we.kdom.Annotation;
 import java.util.List;
 
 import de.d3web.report.Message;
-import de.d3web.we.core.KnowWEArticleManager;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.renderer.ObjectInfoLinkRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.taghandler.KDOMRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -57,7 +52,7 @@ public class FindingQuestionAndAnswerRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
-		List<Message> messages = ((AbstractKnowWEObjectType) sec.getObjectType()).getMessages(article, sec);
+		List<Message> messages = AbstractKnowWEObjectType.getMessages(article, sec);
 		
 		if (messages.isEmpty() || messages.get(0).getMessageText().equals("")) {
 			delegate.render(article, sec, user, string);

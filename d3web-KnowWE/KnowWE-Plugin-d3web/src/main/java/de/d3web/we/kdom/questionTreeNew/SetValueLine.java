@@ -3,9 +3,7 @@ package de.d3web.we.kdom.questionTreeNew;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.RuleAction;
 import de.d3web.core.inference.condition.AbstractCondition;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
@@ -23,7 +21,6 @@ import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.ObjectRef;
 import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;

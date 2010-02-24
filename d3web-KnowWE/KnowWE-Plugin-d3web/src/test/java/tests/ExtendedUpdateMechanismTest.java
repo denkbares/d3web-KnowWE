@@ -54,6 +54,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 	
 	private String web = "default_web";
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

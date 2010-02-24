@@ -111,8 +111,10 @@ public class TestsuiteANTLR_BasicParser extends Parser {
         }
         
 
-    public String[] getTokenNames() { return TestsuiteANTLR.tokenNames; }
-    public String getGrammarFileName() { return "BasicParser.g"; }
+    @Override
+	public String[] getTokenNames() { return TestsuiteANTLR.tokenNames; }
+    @Override
+	public String getGrammarFileName() { return "BasicParser.g"; }
 
 
 

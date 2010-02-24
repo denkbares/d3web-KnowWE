@@ -1,7 +1,5 @@
 package de.d3web.we.kdom.objects;
 
-import de.d3web.we.kdom.KnowWEObjectType;
-
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;

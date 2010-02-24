@@ -20,12 +20,6 @@
 
 package de.d3web.we.kdom.renderer;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
-
 /**
  * Adds functionality to render a specific Background Color.
  * Used especially in Rendering XCLRelations.

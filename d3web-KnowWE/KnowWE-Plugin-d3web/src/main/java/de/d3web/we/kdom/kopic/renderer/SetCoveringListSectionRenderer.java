@@ -47,7 +47,7 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 		//string.append("! " +title + " \n");
 		if (sec.getObjectType() instanceof AbstractKnowWEObjectType) {
 			KnowWEObjectType type = sec.getObjectType();
-			Collection<Message> messages = ((AbstractKnowWEObjectType) type)
+			Collection<Message> messages = AbstractKnowWEObjectType
 												.getMessages(article, sec);
 			if (messages != null && !messages.isEmpty()) {
 				string.append("{{{");

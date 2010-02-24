@@ -43,6 +43,7 @@ import junit.framework.TestCase;
  */
 public class AttributeTableTest extends TestCase {
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

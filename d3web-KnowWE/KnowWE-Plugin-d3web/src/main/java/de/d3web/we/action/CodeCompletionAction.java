@@ -75,6 +75,7 @@ public class CodeCompletionAction extends AbstractKnowWEAction {
 	// out.print(result);
 	// }
 
+	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 
 		CompletionFinding[] options = calcOptions(parameterMap);

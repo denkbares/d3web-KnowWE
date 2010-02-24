@@ -1,18 +1,14 @@
 package de.d3web.we.kdom.questionTreeNew;
 
-import java.io.ObjectInputStream.GetField;
 import java.util.List;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.AbstractCondition;
-import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.terminology.Answer;
 import de.d3web.core.terminology.IDObject;
 import de.d3web.core.terminology.QASet;
 import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.QuestionChoice;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -75,7 +71,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	}
 	
 	static <T extends KnowWEObjectType> Section<T> badCast(T t, Section o) {
-		return (Section<T>)o;
+		return o;
 	}
 
 	static class CreateIndicationHandler implements ReviseSubTreeHandler {
@@ -132,7 +128,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article,
 				Section sec) {
 
-			Section<QuestionID> qidSection = ((Section<QuestionID>) sec);
+			Section<QuestionID> qidSection = (sec);
 
 			String name = qidSection.get().getID(qidSection);
 

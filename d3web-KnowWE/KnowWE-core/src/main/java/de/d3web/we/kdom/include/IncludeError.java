@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.include;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
 
 public class IncludeError extends DefaultAbstractKnowWEObjectType {
 	

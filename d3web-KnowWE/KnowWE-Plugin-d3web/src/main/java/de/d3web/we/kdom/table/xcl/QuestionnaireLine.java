@@ -1,8 +1,5 @@
 package de.d3web.we.kdom.table.xcl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;

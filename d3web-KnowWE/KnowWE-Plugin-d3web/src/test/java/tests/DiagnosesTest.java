@@ -41,6 +41,7 @@ import junit.framework.TestCase;
  */
 public class DiagnosesTest extends TestCase {
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

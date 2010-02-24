@@ -24,6 +24,7 @@ import de.d3web.we.kdom.basic.TextLine;
 
 public class NumericCondLine extends TextLine {
 
+	@Override
 	protected void init() {
 		
 	}
