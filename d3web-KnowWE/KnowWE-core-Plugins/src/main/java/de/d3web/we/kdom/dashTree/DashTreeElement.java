@@ -41,7 +41,9 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 		this.sectionFinder = new RootFinder();
 		this.childrenTypes.add(new DashesPrefix());
+		this.childrenTypes.add(new LineEndComment());
 		this.childrenTypes.add(new DashTreeElementContent());
+		
 	}
 
 	/**
