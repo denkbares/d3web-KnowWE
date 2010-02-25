@@ -30,13 +30,13 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.apache.tools.ant.util.ReaderInputStream;
 
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.KnowledgeBase;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.AnswerNum;
 import de.d3web.core.terminology.Answer;
 import de.d3web.core.terminology.Diagnosis;

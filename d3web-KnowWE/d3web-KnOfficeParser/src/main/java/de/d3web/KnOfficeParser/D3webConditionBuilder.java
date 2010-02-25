@@ -39,6 +39,7 @@ import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.terminology.Diagnosis;
 import de.d3web.core.terminology.DiagnosisState;

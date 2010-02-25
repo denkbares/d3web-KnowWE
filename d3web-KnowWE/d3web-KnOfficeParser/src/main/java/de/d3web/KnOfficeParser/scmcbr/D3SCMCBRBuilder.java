@@ -32,13 +32,13 @@ import org.apache.tools.ant.util.ReaderInputStream;
 
 import de.d3web.KnOfficeParser.D3webConditionBuilder;
 import de.d3web.KnOfficeParser.DefaultLexer;
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.terminology.Diagnosis;
 import de.d3web.core.terminology.QContainer;
 import de.d3web.core.terminology.Question;

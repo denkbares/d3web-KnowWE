@@ -20,9 +20,9 @@
 
 package de.d3web.KnOfficeParser.table;
 
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.report.Message;
 import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.terminology.Diagnosis;
 /**
  * Interface für Builder, die Wissen aus einer Tabellenzelle inklusive derren Kontext generieren

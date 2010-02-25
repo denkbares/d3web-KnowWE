@@ -33,7 +33,6 @@ import org.apache.tools.ant.util.ReaderInputStream;
 
 import de.d3web.KnOfficeParser.D3webConditionBuilder;
 import de.d3web.KnOfficeParser.DefaultLexer;
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
@@ -52,6 +51,7 @@ import de.d3web.abstraction.formula.Sub;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.AbstractCondition;
 import de.d3web.core.inference.condition.CondDState;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.terminology.Answer;

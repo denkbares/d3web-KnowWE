@@ -32,7 +32,6 @@ import org.antlr.runtime.RecognitionException;
 import org.apache.tools.ant.util.ReaderInputStream;
 
 import de.d3web.KnOfficeParser.DefaultLexer;
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.ConditionGenerator;
@@ -50,6 +49,7 @@ import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.manage.AnswerFactory;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.terminology.Answer;

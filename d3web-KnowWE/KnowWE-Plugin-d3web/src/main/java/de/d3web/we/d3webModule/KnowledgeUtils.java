@@ -23,7 +23,6 @@ package de.d3web.we.d3webModule;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.table.CellKnowledgeBuilder;
 import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
@@ -35,6 +34,7 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.terminology.Diagnosis;
 import de.d3web.core.terminology.Question;

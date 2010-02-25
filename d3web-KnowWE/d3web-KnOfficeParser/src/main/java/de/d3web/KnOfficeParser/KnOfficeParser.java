@@ -23,6 +23,7 @@ package de.d3web.KnOfficeParser;
 import java.io.Reader;
 import java.util.List;
 
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.report.Message;
 
 /**

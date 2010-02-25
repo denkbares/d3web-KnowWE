@@ -22,12 +22,12 @@ package de.d3web.KnOfficeParser.table;
 
 import java.util.ResourceBundle;
 
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.report.Message;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.terminology.Diagnosis;
 
 /**

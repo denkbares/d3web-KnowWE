@@ -21,6 +21,7 @@
 package de.d3web.KnOfficeParser;
 
 import de.d3web.core.KnowledgeBase;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.terminology.Answer;

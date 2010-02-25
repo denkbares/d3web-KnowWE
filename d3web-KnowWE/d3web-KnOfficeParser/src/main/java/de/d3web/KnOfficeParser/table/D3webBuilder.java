@@ -25,7 +25,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
@@ -38,6 +37,7 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.terminology.Diagnosis;
 import de.d3web.core.terminology.QASet;

@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.terminology.Answer;
 import de.d3web.core.terminology.IDObject;
 import de.d3web.core.terminology.NamedObject;

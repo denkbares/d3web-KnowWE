@@ -20,7 +20,7 @@
 
 package de.d3web.KnOfficeParser.util;
 
-import de.d3web.KnOfficeParser.IDObjectManagement;
+import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.terminology.QASet;
 import de.d3web.core.terminology.Question;
 import de.d3web.core.terminology.QuestionDate;
