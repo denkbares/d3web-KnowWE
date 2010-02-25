@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.KnOfficeParser.IDObjectManagement;
 import de.d3web.core.KnowledgeBase;
 import de.d3web.core.manage.AnswerFactory;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -41,7 +40,6 @@ import de.d3web.core.terminology.QuestionDate;
 import de.d3web.core.terminology.QuestionMC;
 import de.d3web.core.terminology.QuestionNum;
 import de.d3web.core.terminology.QuestionOC;
-import de.d3web.core.terminology.QuestionSolution;
 import de.d3web.core.terminology.QuestionText;
 import de.d3web.core.terminology.QuestionYN;
 import de.d3web.core.terminology.QuestionZC;
@@ -266,12 +264,6 @@ public class RestrictedIDObjectManager implements IDObjectManagement {
 	public QuestionOC createQuestionOC(String name, QASet parent,
 			String[] answers) {
 		return kbm.createQuestionOC(name, parent, answers);
-	}
-
-
-	@Override
-	public QuestionSolution createQuestionState(String name, QASet parent) {
-		return kbm.createQuestionState(name, parent);
 	}
 
 

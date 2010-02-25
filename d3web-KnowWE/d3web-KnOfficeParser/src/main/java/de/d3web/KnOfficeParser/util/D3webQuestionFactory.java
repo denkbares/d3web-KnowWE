@@ -27,7 +27,6 @@ import de.d3web.core.terminology.QuestionDate;
 import de.d3web.core.terminology.QuestionMC;
 import de.d3web.core.terminology.QuestionNum;
 import de.d3web.core.terminology.QuestionOC;
-import de.d3web.core.terminology.QuestionSolution;
 import de.d3web.core.terminology.QuestionText;
 import de.d3web.core.terminology.QuestionYN;
 import de.d3web.core.terminology.QuestionZC;
@@ -52,8 +51,6 @@ public class D3webQuestionFactory {
 			q = idom.createQuestionZC(name, parent);
 		} else if (type.equalsIgnoreCase("yn")||type.equalsIgnoreCase("jn")) {
 			q = idom.createQuestionYN(name, parent);
-		} else if (type.equalsIgnoreCase("state")) {
-			q = idom.createQuestionState(name, parent);
 		} else if (type.equalsIgnoreCase("text")) {
 			q = idom.createQuestionText(name, parent);
 		} else {
@@ -103,12 +100,6 @@ public class D3webQuestionFactory {
 			}
 		} else if (q instanceof QuestionText) {
 			if (type.equalsIgnoreCase("text")) {
-				return true;
-			} else {
-				return false;
-			}
-		} else if (q instanceof QuestionSolution) {
-			if (type.equalsIgnoreCase("state")) {
 				return true;
 			} else {
 				return false;

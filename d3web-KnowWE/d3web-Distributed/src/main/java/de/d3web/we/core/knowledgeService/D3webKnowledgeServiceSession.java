@@ -243,7 +243,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private void initCase() {
 		DistributedControllerFactory factory = getControllerFactory();
 		xpsCase = CaseFactory.createXPSCase(base, factory);
-		((D3WebCase) xpsCase).addUsedPSMethod(PSMethodXCL.getInstance());
 		((D3WebCase) xpsCase).addUsedPSMethod(PSMethodDelegate.getInstance());
 
 	}

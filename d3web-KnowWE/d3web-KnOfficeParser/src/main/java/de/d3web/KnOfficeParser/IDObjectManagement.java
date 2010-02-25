@@ -32,7 +32,6 @@ import de.d3web.core.terminology.QuestionDate;
 import de.d3web.core.terminology.QuestionMC;
 import de.d3web.core.terminology.QuestionNum;
 import de.d3web.core.terminology.QuestionOC;
-import de.d3web.core.terminology.QuestionSolution;
 import de.d3web.core.terminology.QuestionText;
 import de.d3web.core.terminology.QuestionYN;
 import de.d3web.core.terminology.QuestionZC;
@@ -65,7 +64,6 @@ public interface IDObjectManagement {
 	QuestionMC createQuestionMC(String name, QASet parent, String[] answers);
 	QuestionNum createQuestionNum(String name, QASet parent);
 	QuestionYN createQuestionYN(String name, QASet parent);
-	QuestionSolution createQuestionState(String name, QASet parent);
 	QuestionYN createQuestionYN(String name, String yesAlternativeText, String noAlternativeText, QASet parent);
 	QuestionDate createQuestionDate(String name, QASet parent);
 	QuestionText createQuestionText(String name, QASet parent);
