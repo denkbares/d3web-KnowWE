@@ -99,6 +99,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		threadSleep(sleepTime);
 		refreshAndWait();
 		if (forwarding) {
+			threadSleep(sleepTime);
 			selenium.getTitle(); //Setting new flag for "AndWait"
 			refreshAndWait();
 		}
