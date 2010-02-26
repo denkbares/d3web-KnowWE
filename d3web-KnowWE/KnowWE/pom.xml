@@ -75,7 +75,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
-					<execution>
+					<!-- <execution>
 						<id>buildtime</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -94,7 +94,7 @@
 									message="build.time=${last.updated}" />
 							</tasks>
 						</configuration>
-					</execution>
+					</execution>-->
 					<execution>
 						<id>corepages</id>
 						<goals>
@@ -111,6 +111,22 @@
 									<fileset dir="src/misc/resources/core-pages/" />
 								</copy>
 							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>de.uniwue.maven.plugins</groupId>
+				<artifactId>knowwe-versionator</artifactId>
+				<executions>
+					<execution>
+						<id>vers</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>versionate</goal>
+						</goals>
+						<configuration>
+							<targetDir>${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/classes/</targetDir>
 						</configuration>
 					</execution>
 				</executions>
