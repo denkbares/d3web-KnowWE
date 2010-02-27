@@ -21,19 +21,25 @@
 package de.d3web.we.taghandler;
 
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * A tag handler displaying the KnowWE build date from WEB-INF/classes/metadata.properties
+ * A tag handler displaying KnowWE build metadata from WEB-INF/classes/metadata.properties
  * @author Alex Legler
  */
 public class VersionTagHandler extends AbstractTagHandler {
 
 	public VersionTagHandler() {
 		super("version");
+	}
+	
+	@Override
+	public String getExampleString() {
+		return "[{KnowWEPlugin " + getTagName() + "( = &lt;chuck|buildnumber|buildtag|buildtype&gt;)" + "}]";
 	}
 
 	@Override
@@ -43,9 +49,41 @@ public class VersionTagHandler extends AbstractTagHandler {
 		StringBuffer html = new StringBuffer();
 		ResourceBundle rb = ResourceBundle.getBundle("metadata");
 		
-		html.append("KnowWE ");
-		html.append(rb.getString("build.time"));
-		
+		if (!values.containsKey("version")) {
+			html.append("KnowWE ");
+			html.append(rb.getString("build.time"));
+		} else {
+			String v = values.get("version");
+
+			if (v.equals("chuck")) {
+				try {
+					html.append(rb.getString("build.chuck"));
+				} catch (MissingResourceException e) {
+					html.append("No Chuck Norris line found. (Not a Hudson build?)");
+				}
+			} else if (v.equals("buildnumber")) {
+				try {
+					html.append(rb.getString("build.number"));
+				} catch (MissingResourceException e) {
+					html.append("No build number found. (Not a Hudson build?)");
+				}
+			} else if (v.equals("buildtag")) {
+				try {
+					html.append(rb.getString("build.tag"));
+				} catch (MissingResourceException e) {
+					html.append("No build tag found. (Not a Hudson build?)");
+				}
+			} else if (v.equals("buildtype")) {
+				try {
+					html.append(rb.getString("build.type"));
+				} catch (MissingResourceException e) {
+					html.append("No build type found. (Versionator probably failed)");
+				}
+			} else {
+				html.append("Invalid build metadata type. Valid types are: chuck, buildnumber, buildtag and buildtype.");
+			}
+		}
+
 		return html.toString();
 	}
 	
