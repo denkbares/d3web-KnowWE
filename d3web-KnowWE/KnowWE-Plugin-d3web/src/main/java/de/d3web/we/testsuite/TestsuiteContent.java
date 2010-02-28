@@ -20,6 +20,7 @@
 
 package de.d3web.we.testsuite;
 
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
 
 /**
@@ -32,6 +33,7 @@ public class TestsuiteContent extends XMLContent {
 	@Override
 	protected void init() {
 		childrenTypes.add(new SequentialTestCase());
+		this.setCustomRenderer(new EditSectionRenderer());
 	}
 
 }

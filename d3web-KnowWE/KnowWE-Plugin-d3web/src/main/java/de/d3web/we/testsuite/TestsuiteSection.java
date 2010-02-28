@@ -55,7 +55,14 @@ public class TestsuiteSection extends AbstractKopicSection{
 	protected void init() {
 		childrenTypes.add(new TestsuiteContent());
 		subtreeHandler.add(new TestsuiteSectionSubTreeHandler());
+		setCustomRenderer(new TestsuiteSectionRenderer());
 	}
+	
+	
+//	@Override
+//	public KnowWEDomRenderer getRenderer() {
+//		return new TestsuiteSectionRenderer();
+//	}
 	
 	
 	private class TestsuiteSectionSubTreeHandler extends D3webReviseSubTreeHandler {
