@@ -1,0 +1,28 @@
+%%QuestionTree 
+"LS: Andere Schmerzen"
+- "Bereich" [oc]
+-- Kopf
+//CommentTest
+--- "Ähnliche Kopfschmerzen bekannt?" [oc]
+---- ja
+----- "VD Muss Bleiben Test" (P1)
+----- "Übelkeit, Licht- u/o Geräuschempfindlichkeit?" [oc]
+------ ja
+------ nein
+---- nein
+
+%
+<SetCoveringList-section>
+
+"VD Migräne"{
+	"Bereich" = Kopf,
+	"Ähnliche Kopfschmerzen bekannt?" = ja,
+	"Übelkeit, Licht- u/o Geräuschempfindlichkeit?" = ja,
+}
+"VD Spannungskopfschmerz"{
+	"Bereich" = Kopf,
+	"Ähnliche Kopfschmerzen bekannt?" = ja,
+	"Ähnliche Kopfschmerzen bekannt?" = nein,
+	"Übelkeit, Licht- u/o Geräuschempfindlichkeit?" = nein,
+}</SetCoveringList-section>
+

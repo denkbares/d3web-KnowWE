@@ -104,9 +104,12 @@ public class RefactoringManager {
 	public void saveUpdatedArticle(KnowWEArticle art) {
 		String articleName = art.getTitle();
 		StringBuilder newArticleText = new StringBuilder();
-		collectTextsFromLeaves(refactoringWebManager.getArticle(articleName).getSection(), newArticleText);
-		KnowWEArticle newArticle = new KnowWEArticle(newArticleText.toString(), articleName,
-				art.getRootType(), REFACTORING_WEB);
+		
+		KnowWEArticle newArticle = art;
+		if (refactoringWebManager.getArticle(articleName) != null) {
+			collectTextsFromLeaves(refactoringWebManager.getArticle(articleName).getSection(), newArticleText);
+			newArticle = new KnowWEArticle(newArticleText.toString(), articleName, art.getRootType(), REFACTORING_WEB);
+		}
 		refactoringWebManager.saveUpdatedArticle(newArticle);
 	}
 	

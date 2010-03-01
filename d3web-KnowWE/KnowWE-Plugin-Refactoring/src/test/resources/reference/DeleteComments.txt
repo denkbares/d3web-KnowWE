@@ -1,0 +1,8 @@
+%%QuestionTree
+"LS: Test Schmerzen"
+- "Bereich" [oc]
+-- Kopf
+--- "VD Chronische Erkrankung" (N3)
+--- "VD A-Veränderungen" (N3)
+--- "VD B-Veränderungen" (N3)
+%

@@ -29,50 +29,50 @@ import com.google.gson.reflect.TypeToken;
 
 import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.refactoring.session.RefactoringSession;
+import de.d3web.we.refactoring.dialog.RefactoringSessionDialog;
 /**
  * @author Franz Schwab
  */
 public class RefactoringAction extends AbstractKnowWEAction {
 	
-	private Map<String, RefactoringSession> sessions = new HashMap<String, RefactoringSession>();
+	private Map<String, RefactoringSessionDialog> sessions = new HashMap<String, RefactoringSessionDialog>();
 	
 	@Override
 	public String perform(final KnowWEParameterMap parameters) {
 		// rs.set(parameters) immer aufrufen nicht vergessen
 		String user = parameters.getUser();
-		RefactoringSession rs = sessions.get(user);
+		RefactoringSessionDialog rsd = sessions.get(user);
 		Gson gson = new Gson();
 		Type mapType = new TypeToken<Map<String,String[]>>(){}.getType();
 		Map<String,String[]> gsonFormMap = gson.fromJson(parameters.get("jsonFormMap"),mapType);
 		// der Nutzer hatte noch keine RefactoringSession oder die vorherige ist bereits beendet
 		// oder die vorherige wurde abgebrochen und der Benutzer startet eine neue
-		if (rs == null || rs.isTerminated() || gsonFormMap.containsKey("startNewRefactoringSession")) {
-			rs = new RefactoringSession();
-			rs.setParameters(parameters, gsonFormMap);
-			sessions.put(user, rs);
-			rs.getThread().start();
+		if (rsd == null || rsd.isTerminated() || gsonFormMap.containsKey("startNewRefactoringSession")) {
+			rsd = new RefactoringSessionDialog();
+			rsd.setParameters(parameters, gsonFormMap);
+			sessions.put(user, rsd);
+			rsd.getThread().start();
 		// die vorhandene RefactoringSession wird wieder angeworfen
 		} else {
-			rs.setParameters(parameters, gsonFormMap);
-			rs.getLock().lock();
-			rs.getRunRefactoring().signal();
-			rs.getLock().unlock();
+			rsd.setParameters(parameters, gsonFormMap);
+			rsd.getLock().lock();
+			rsd.getRunRefactoring().signal();
+			rsd.getLock().unlock();
 		}
 
 		// hier könnte parallel ausgeführter Code stehen
 		
 		// der Benutzerdialog wird angehalten während das Refactoring läuft
-		rs.getLock().lock();
+		rsd.getLock().lock();
 		try {
-			rs.getRunDialog().await();
+			rsd.getRunDialog().await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			rs.getLock().unlock();
+			rsd.getLock().unlock();
 		}
 		// wurde das Refactoring wieder pausiert, dann gib die nächste Action zurück
-		return rs.getNextAction().perform(parameters);
+		return rsd.getNextAction().perform(parameters);
 	}
 
 

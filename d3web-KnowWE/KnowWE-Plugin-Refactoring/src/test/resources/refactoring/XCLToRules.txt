@@ -1,0 +1,6 @@
+xcList = findXCList()
+solutionID = findSolutionID(xcList)
+rulesText = new StringBuffer()
+findFindings(xcList).each{createRulesText it, solutionID, rulesText}
+deleteXCList xcList
+addRulesText rulesText, findRulesSectionContent(xcList)

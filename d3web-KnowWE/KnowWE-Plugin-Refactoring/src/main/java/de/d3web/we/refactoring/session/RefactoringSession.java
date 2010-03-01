@@ -17,12 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import name.fraser.neil.plaintext.diff_match_patch;
-import name.fraser.neil.plaintext.diff_match_patch.Diff;
 
 import org.apache.log4j.Logger;
 import org.ceryle.xml.XHTML;
@@ -32,14 +26,7 @@ import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.content.PageRenamer;
-import com.ecyrd.jspwiki.providers.ProviderException;
 
-import de.d3web.we.action.AbstractKnowWEAction;
-import de.d3web.we.action.KnowWEAction;
-import de.d3web.we.core.KnowWEArticleManager;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -71,7 +58,7 @@ import de.d3web.we.kdom.xcl.XCList;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.refactoring.management.RefactoringManager;
 
-public class RefactoringSession {
+public abstract class RefactoringSession {
 	
 	private final Collection<Class<? extends KnowWEObjectType>> KNOWLEDGE_MAIN_SECTIONS;
 	
@@ -87,61 +74,25 @@ public class RefactoringSession {
 		KNOWLEDGE_MAIN_SECTIONS = Collections.unmodifiableCollection(kms);
 	}
 	
-	private static Logger log = Logger.getLogger(RefactoringSession.class);
-
-	private Thread thread = new Thread(new Runnable() {
-		@Override
-		public void run() {
-			runSession();
-		}
-	});
-	public Thread getThread() {
-		return thread;
-	}
-	private boolean terminated = false;
-	public boolean isTerminated() {
-		return terminated;
-	}
-	private final Lock lock = new ReentrantLock();
-	public Lock getLock() {
-		return lock;
-	}
-	private final Condition runDialog = lock.newCondition();
-	public Condition getRunDialog() {
-		return runDialog;
-	}
-	private final Condition runRefactoring = lock.newCondition();
-	public Condition getRunRefactoring() {
-		return runRefactoring;
-	}
-	private KnowWEAction nextAction;
-	public KnowWEAction getNextAction() {
-		return nextAction;
+	protected static Logger log = Logger.getLogger(RefactoringSession.class);
+	protected RefactoringManager refManager;
+	protected WikiEngine we;
+	
+	public void setRefManager(String web) {
+		if (this.refManager == null) this.refManager = new RefactoringManager(web);
 	}
 	
-	private KnowWEParameterMap parameters;
-	private Map<String,String[]> gsonFormMap;
-	
-	private RefactoringManager refManager;
-	private WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
-	
-	public void setParameters(KnowWEParameterMap parameters, Map<String, String[]> gsonFormMap) {
-		this.parameters = parameters;
-		this.gsonFormMap = gsonFormMap;
-		if (this.refManager == null) this.refManager = new RefactoringManager(parameters.getWeb());
-	}
-	
-	private void runSession() {
+	public void runSession() {
 		try {
 			Object[] args = {};
 			ClassLoader parent = getClass().getClassLoader();
 			GroovyClassLoader loader = new GroovyClassLoader(parent);
-			Section<?> refactoringSection = findRefactoringSection();
+			String refactoring = findRefactoringSourceCode();
 			String identity = "refactoringSession";
 //			String ls = System.getProperty("line.separator");
 			StringBuffer sb = new StringBuffer();
 			sb.append(identity + ".identity{");
-			sb.append(refactoringSection.getOriginalText());
+			sb.append(refactoring);
 			sb.append("}");
 			Class<?> groovyClass = loader.parseClass(sb.toString());
 //			GroovyObject gob = new DeleteComments(this);
@@ -188,88 +139,10 @@ public class RefactoringSession {
 				warning(e.getClass().getName() + " thrown while executing Groovy script."); // I18N
 			}
 		}
-		performNextAction(new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameterMap) {
-				StringBuffer html = new StringBuffer();
-				
-				for (KnowWEArticle changedArticle: refManager.getChangedArticles()) {
-					String changedArticleID = changedArticle.getTitle();
-					KnowWEArticleManager knowWEManager = KnowWEEnvironment.getInstance().getArticleManager(parameters.getWeb());
-
-					int versionBefore = we.getPage(changedArticleID).getVersion();
-					String textBefore = "textBefore";
-					try {
-						textBefore = we.getPageManager().getPageText(changedArticleID, versionBefore);
-					} catch (ProviderException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					//der Artikel wird sicherheitshalber in einen konsistenten Zustand gebracht
-					refManager.saveUpdatedArticle(changedArticle);
-					KnowWEArticle consinstentChangedArticle = refManager.getArticle(changedArticleID);
-					knowWEManager.replaceKDOMNode(parameters, changedArticleID, changedArticleID, consinstentChangedArticle.getSection().getOriginalText());
-					int versionAfter = we.getPage(changedArticleID).getVersion();
-					String textAfter = "textAfter";
-					try {
-						textAfter = we.getPageManager().getPageText(changedArticleID, versionAfter);
-					} catch (ProviderException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					html.append("<br />Der folgende Artikel hat sich geändert: " + changedArticleID + " von Version " +
-							versionBefore + " zu Version " + versionAfter + ".<br />");
-					diff_match_patch dmp = new diff_match_patch();
-					LinkedList<Diff> diffs = dmp.diff_main(textBefore, textAfter);
-					dmp.diff_cleanupSemantic(diffs);
-					html.append(dmp.diff_prettyHtml(diffs) + "<br />");
-				}
-				html.append("<br />Refactorings abgeschlossen.<br />");
-				
-				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-				html.append("<fieldset><div class='left'>"
-						+ "<p>Möchten Sie die Änderungen rückgängig machen?</p></div>"
-						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Undo</label>"
-						+ "<select name='selectUndo' class='refactoring'>");
-				html.append("<option value='nein'>nein</option>");
-				html.append("<option value='ja'>ja</option>");
-				html.append("</select></div><div>"
-						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
-				return html.toString();
-			}
-		});
-		
-		if (gsonFormMap.get("selectUndo")[0].equals("ja")) {
-			for (KnowWEArticle art: refManager.getChangedArticles()) {
-				String st = art.getTitle();
-				WikiPage page = we.getPage(st);
-				WikiContext wc = new WikiContext(we, page);
-				// TODO test, ob changedWikiPages.get(st)[0] == we.getPage(pageName).getVersion()
-				try {
-					we.saveText(wc, we.getPageManager().getPageText(st, we.getPage(st).getVersion() - 1));
-				} catch (WikiException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		// TODO verbessern
-		nextAction = new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameterMap) {
-				return "Refactorings abgeschlossen";
-			}
-		};
-		
-		// Ende des Refactorings
-		lock.lock();
-		runDialog.signal();
-		lock.unlock();
-		// TODO wie wäre es, wenn sich der Thread gleich aus der HashMap von RefactoringAction selbst enfernt? 
-		// sehr wichtig: Thread freigeben, da Script nun fertig
-		terminated  = true;
+		saveAndFinish();
 	}
+
+	protected abstract void saveAndFinish();
 
 	private String getStackTraceString(Exception e) {
 		StringWriter sw = new StringWriter();
@@ -385,60 +258,6 @@ public class RefactoringSession {
 		return findings;
 	}
 
-	public Section<?> findXCList() {
-		performNextAction(new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameters) {
-				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-				StringBuffer html = new StringBuffer();
-				html.append("<fieldset><div class='left'>"
-						+ "<p>Wählen Sie die zu transformierende Überdeckungsliste aus:</p></div>"
-						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>XCList</label>"
-						+ "<select name='selectXCList' class='refactoring'>");
-				for(Iterator<KnowWEArticle> it = refManager.getArticleIterator(); it.hasNext();) {
-					KnowWEArticle article = refManager.getArticle(it.next().getTitle());
-					Section<?> articleSection = article.getSection();
-					List<Section<XCList>> xclists = new ArrayList<Section<XCList>>();
-					articleSection.findSuccessorsOfType(XCList.class, xclists);
-					for (Section<?> xclist : xclists) {
-						html.append("<option value='" + xclist.getId() + "'>Seite: " + article.getTitle() + " - XCList: " 
-								+ xclist.findSuccessor(SolutionID.class).getOriginalText() + "</option>");
-					}
-				}
-				html.append("</select></div><div>"
-						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
-				return html.toString();
-			}
-		});
-		Section<?> knowledge = refManager.findNode(gsonFormMap.get("selectXCList")[0]);
-		return knowledge;
-	}
-	
-	public Class<? extends KnowWEObjectType> findRenamingType() {
-		performNextAction(new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameters) {
-				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-				StringBuffer html = new StringBuffer();
-				html.append("<fieldset><div class='left'>"
-						+ "<p>Wählen Sie den Typ des Objekts aus, welches sie umbenennen möchten:</p></div>"
-						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objekttyp</label>"
-						+ "<select name='selectRenamingType' class='refactoring'>");
-				html.append("<option value='KnowWEArticle'>KnowWEArticle (Wikiseite)</option>");
-				html.append("<option value='QuestionnaireID'>QuestionnaireID (Fragebogen)</option>");
-				html.append("<option value='QuestionID'>QuestionID (Frage)</option>");
-				html.append("<option value='QuestionTreeAnswerID'>QuestionTreeAnswerID (Antwort)</option>");
-				html.append("<option value='SolutionID'>SolutionID (Lösung)</option>");
-				html.append("</select></div><div>"
-						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
-				return html.toString();
-			}
-		});
-		String clazzString = gsonFormMap.get("selectRenamingType")[0];
-		Class<? extends KnowWEObjectType> clazz = getTypeFromString(clazzString);
-		return clazz;
-	}
-
 	public Class<? extends KnowWEObjectType> getTypeFromString(String clazzString) {
 		Class<? extends KnowWEObjectType> clazz = null;
 		if(clazzString.equals("KnowWEArticle")) {
@@ -455,102 +274,12 @@ public class RefactoringSession {
 		return clazz;
 	}
 	
-	// TODO bereits hier alternative Typen berücksichtigen (QClassID, QuestionnaireID)
-	public <T extends KnowWEObjectType> String findObjectID(final Class<T> clazz) {
-		//TODO mehrfache Einträge für ein Element sollten vermieden werden
-		performNextAction(new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameters) {
-				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-				StringBuffer html = new StringBuffer();
-				html.append("<fieldset><div class='left'>"
-						+ "<p>Wählen Sie den Namen des Objekts mit dem Typ <strong>" + clazz.getName() + "</strong>:</p></div>"
-						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objektname</label>"
-						+ "<select name='selectObjectID' class='refactoring'>");
-				for(Iterator<KnowWEArticle> it = refManager.getArticleIterator(); it.hasNext();) {
-					KnowWEArticle article = refManager.getArticle(it.next().getTitle());
-					Section<?> articleSection = article.getSection();
-					List<Section<T>> objects = new ArrayList<Section<T>>();
-					articleSection.findSuccessorsOfType(clazz, objects);
-					for (Section<?> object : objects) {
-						String name = (clazz == KnowWEArticle.class) ? object.getId() : object.getOriginalText();
-						String question = (clazz == QuestionTreeAnswerID.class)
-							? " - Frage: " + findDashTreeFather(object, QuestionID.class).getOriginalText()
-							: "";
-						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
-								+ name + "</option>");
-					}
-				}
-				html.append("</select></div><div>"
-						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
-				return html.toString();
-			}
-		});
-		String objectID = gsonFormMap.get("selectObjectID")[0];
-		return objectID;
-	}
-	
-	// TODO bereits hier alternative Typen berücksichtigen (QClassID, QuestionnaireID)
-	public <T extends KnowWEObjectType> String[] findObjectIDs(final Class<T> clazz) {
-		//TODO mehrfache Einträge für ein Element sollten vermieden werden
-		performNextAction(new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameters) {
-				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-				StringBuffer html = new StringBuffer();
-				html.append("<fieldset><div class='left'>"
-						+ "<p>Wählen Sie den Namen des Objekts mit dem Typ <strong>" + clazz.getName() + "</strong>:</p></div>"
-						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objektname</label>"
-						+ "<select multiple size='" + refManager.getArticles().size() + "' name='selectObjectID' class='refactoring'>");
-				for(Iterator<KnowWEArticle> it = refManager.getArticleIterator(); it.hasNext();) {
-					KnowWEArticle article = refManager.getArticle(it.next().getTitle());
-					Section<?> articleSection = article.getSection();
-					List<Section<T>> objects = new ArrayList<Section<T>>();
-					articleSection.findSuccessorsOfType(clazz, objects);
-					for (Section<?> object : objects) {
-						String name = (clazz == KnowWEArticle.class) ? object.getId() : object.getOriginalText();
-						String question = (clazz == QuestionTreeAnswerID.class)
-							? " - Frage: " + findDashTreeFather(object, QuestionID.class).getOriginalText()
-							: "";
-						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
-								+ name + "</option>");
-					}
-				}
-				html.append("</select></div><div>"
-						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
-				return html.toString();
-			}
-		});
-		String[] objectIDs = gsonFormMap.get("selectObjectID");
-		return objectIDs;
-	}
-	
-	private <T extends KnowWEObjectType> Section<T> findDashTreeFather(Section<?> section, Class<T> clazz) {
+	protected <T extends KnowWEObjectType> Section<T> findDashTreeFather(Section<?> section, Class<T> clazz) {
 		return section
 			.findAncestor(SubTree.class).findAncestor(SubTree.class)
 			.findChildOfType(DashTreeElement.class).findSuccessor(clazz);
 	}
 			
-	public String findNewName() {
-		performNextAction(new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameters) {
-				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-				StringBuffer html = new StringBuffer();
-				html.append("<fieldset><div class='left'>"
-						+ "<p>Wählen Sie den neuen Namen des gewählten Objekts:</p></div>"
-						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Objektname</label>"
-						+ "<input type='text' name='selectNewName' class='refactoring'>");
-				html.append("</div><div>"
-						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
-				return html.toString();
-			}
-		});
-		String newName = gsonFormMap.get("selectNewName")[0];
-		return newName;
-	}
-	
-	
 	public <T extends KnowWEObjectType> List<Section<? extends KnowWEObjectType>> findRenamingList(Class<T> clazz, String objectID) {
 		return findRenamingList(clazz, objectID, null);
 	}
@@ -609,7 +338,12 @@ public class RefactoringSession {
 				WikiPage page = we.getPage(section.getId());
 				WikiContext wc = new WikiContext(we, page);
 				pr.renamePage(wc, section.getId(), newName, true);
-			} catch (WikiException e) {
+				//TODO wenn man die WikiEngine vermeiden möchte - Nachteil: Wiki-Links werden nicht mit umbenannt. Vorteil: man spart sich die
+				//NullpointerException wenn man den Test hierfür ausführt
+//				KnowWEArticle oldArt = section.getArticle();
+//				KnowWEArticle newArt = new KnowWEArticle(oldArt.toString(), newName, oldArt.getAllowedChildrenTypes(), oldArt.getWeb());
+//				refManager.saveUpdatedArticle(newArt);
+			} catch (Exception e) {
 				// TODO wird z.B. geworfen wenn der Seitenname bereits vorhanden ist
 				e.printStackTrace();
 			}
@@ -622,9 +356,11 @@ public class RefactoringSession {
 					Map<String,String> attributes = AbstractXMLObjectType.getAttributeMapFor(inc);
 					String src = attributes.get("src");
 					String articleName = refManager.getArticleName(src);
-					String newSrc = src.replaceFirst(articleName, newName);
-					StringBuffer replacement = new StringBuffer( "<include src=\"" + newSrc + "\" />");
-					replaceSection(inc, replacement.toString());
+					if (articleName.equals(section.getArticle().getTitle())) {
+						String newSrc = src.replaceFirst(articleName, newName);
+						StringBuffer replacement = new StringBuffer("<include src=\"" + newSrc + "\" />");
+						replaceSection(inc, replacement.toString());
+					}
 				}
 			}
 		} else {
@@ -634,22 +370,7 @@ public class RefactoringSession {
 	
 	// TODO die Refactoring-Session muss noch anständig terminiert werden (dies gilt auch für Sessions, die durch eine warning oder einen error
 	// unterbrochen wurden
-	public void printExistingElements(final List<Section<? extends KnowWEObjectType>> existingElements) {
-		performNextAction(new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameterMap) {
-				StringBuffer html = new StringBuffer();
-				html.append("<br />Das Refactoring kann nicht durchgeführt werden, da es Konflikte mit folgenden Sektionen gibt:<br /><br />");
-				for (Section<? extends KnowWEObjectType> section: existingElements) {
-					html.append("<br />ID: " + section.getId() + "<br />");
-					html.append("Inhalt: " + section.getOriginalText() + "<br />");
-				}
-				html.append("<fieldset><form name='refactoringForm'><div>"
-						+ "<input type='button' value='Abbrechen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
-				return html.toString();
-			}
-		});
-	}
+	public abstract void printExistingElements(final List<Section<? extends KnowWEObjectType>> existingElements);
 	
 	// TODO wird im KDOM leider als QuestionID und nicht als SolutionID geparsed, mal mit Jochen reden
 	public List<Section<QuestionID>> findSolutions(String value, String pageName) {
@@ -731,22 +452,7 @@ public class RefactoringSession {
 	 * <p>
 	 * The message is contained within a paragraph with a 'warning' class.
 	 */
-	public void warning(String message) {
-		log.warn("Warning: " + message); // I18N
-		final StringBuffer html = new StringBuffer();
-		html.append(XHTML.STag_p_class);
-		html.append("warning");
-		html.append(XHTML.QuotCl);
-		html.append('\n');
-		html.append(message);
-		html.append(XHTML.ETag_p);
-		performNextAction(new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameters) {
-				return html.toString();
-			}
-		});
-	}
+	public abstract void warning(String message);
 
 	/**
 	 * Process a fatal error by clearing the existing buffer and populating it
@@ -754,58 +460,22 @@ public class RefactoringSession {
 	 * <p>
 	 * The message is contained within a paragraph with an 'error' class.
 	 */
-	private void error(String message) {
-		log.error("Error: " + message); // I18N
-		final StringBuffer html = new StringBuffer();
-		html.setLength(0);
-		html.append(XHTML.STag_div_class);
-		html.append("error");
-		html.append(XHTML.QuotCl);
-		html.append('\n');
-		html.append(XHTML.STag_b);
-		html.append("Groovy Script Failed: "); // I18N
-		html.append(XHTML.ETag_b);
-		html.append(XHTML.Tag_br);
-		if (message != null) { // error message, if any
-			html.append(message);
-			html.append(XHTML.Tag_br);
-		}
-		html.append(XHTML.ETag_div);
-		performNextAction(new AbstractKnowWEAction() {
-			@Override
-			public String perform(KnowWEParameterMap parameters) {
-				return html.toString();
-			}
-		});
-	}
+	protected abstract void error(String message);
 
-	private void performNextAction(KnowWEAction action) {
-		nextAction = action;
-		lock.lock();
-		runDialog.signal();
-		lock.unlock();
-		// Hier könnte parallel ausgeführter Code stehen
-		lock.lock();
-		try {
-			runRefactoring.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			lock.unlock();
-		}
-	}
-	
-	private Section<?> findRefactoringSection() {
-		// TODO momentan werden nur Refactorings betrachtet, die sich auf dieser Seite befinden - Integration von built-in Refactorings nötig!
-		Section<?> section = refManager.getArticle(parameters.getTopic()).getSection();
-		// siehe RefactoringTagHandler.java
-		Section<?> refactoring = section.findChild(gsonFormMap.get("selectRefactoring")[0]);
-		return refactoring;
-	}
+	protected abstract String findRefactoringSourceCode();
 	
 	private void replaceSection(Section<?> section, String newText) {
 		KnowWEArticle article = section.getArticle(); 
 		String topic = article.getTitle();
 		refManager.replaceKDOMNodeWithoutSave(topic, section.getId(), newText);
 	}
+
+
+
+	public abstract Section<?> findXCList();
+	public abstract String findNewName();
+	public abstract <T extends KnowWEObjectType> String findObjectID(final Class<T> clazz);
+	public abstract <T extends KnowWEObjectType> String[] findObjectIDs(final Class<T> clazz);
+	public abstract Class<? extends KnowWEObjectType> findRenamingType(); 
+
 }

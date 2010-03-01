@@ -743,11 +743,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @return
 	 * @author Franz Schwab
 	 */
-	@SuppressWarnings("unchecked")
 	public <OT extends KnowWEObjectType> Section<OT> findAncestor(Class<OT> clazz) {
 		LinkedList<Class<? extends KnowWEObjectType>> l = new LinkedList<Class<? extends KnowWEObjectType>>();
 		l.add(clazz);
-		return (Section<OT>) findAncestor(l);
+		@SuppressWarnings("unchecked")
+		Section<OT> returnValue = (Section<OT>) findAncestor(l);
+		return returnValue;
 	}
 	
 	/**

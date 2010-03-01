@@ -1,0 +1,15 @@
+%%QuestionTree
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//  LS: Test Schmerzen
+//  Update : 20090512 (Vorlage von WL13.03.10)
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+"LS: Test Schmerzen"
+- "Bereich" [oc]
+-- Kopf
+// 20080702
+--- "VD Chronische Erkrankung" (N3)
+// 1
+// II
+--- "VD A-Veränderungen" (N3)
+--- "VD B-Veränderungen" (N3)
+%

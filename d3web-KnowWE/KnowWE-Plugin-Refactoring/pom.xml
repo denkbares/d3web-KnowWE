@@ -47,14 +47,30 @@
 				<version>2.1-beta-1-uniwue-1</version>
 			</plugin>
 
-			<!-- Nötig für Dependencies, wenn Refactoring-Plugin ein externes Plugin ist. Wenn Refactoring-Plugin intern wird,
-			kann dieser Eintrag gelöscht werden. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>build-classpath</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/dependencies</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<outputFile>target/dependencies/output.txt</outputFile>
+							<pathSeparator>;</pathSeparator>
+						</configuration>
+					</execution>
+					
+					<!-- Nötig für Dependencies, wenn Refactoring-Plugin ein externes Plugin ist. Wenn Refactoring-Plugin intern wird,
+					kann dieser Eintrag gelöscht werden. -->					
+					<execution>
+						<id>copy-dependencies-external-plugin</id>
 						<phase>package</phase>
 						<goals>
 							<goal>copy</goal>
@@ -85,9 +101,9 @@
 							<excludeScope>provided</excludeScope>
 							<excludeScope>system</excludeScope>
 						</configuration>
-					</execution>
+					</execution>					
 				</executions>
-			</plugin> 			
+			</plugin>			
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -164,24 +180,11 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-core</artifactId>
-			<version>0-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>6.0.20</version>
 			<type>jar</type>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Plugin-d3web</artifactId>
-			<version>0-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>groovy-plugin</groupId>
@@ -205,12 +208,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.ecryd.jspwiki</groupId>
-			<artifactId>jspwiki-jar</artifactId>
-			<version>2.8.2</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>1.3</version>
@@ -219,9 +216,35 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
 			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-core</artifactId>
+			<version>0-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.ecryd.jspwiki</groupId>
+			<artifactId>jspwiki-jar</artifactId>
+			<version>2.8.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.5.10</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

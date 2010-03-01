@@ -1,0 +1,18 @@
+%%QuestionTree 
+"LS: Andere Schmerzen"
+- "Bereich" [oc]
+-- Kopf
+//CommentTest
+--- "VD Migräne" (P3)
+--- "Ähnliche Kopfschmerzen bekannt?" [oc]
+---- ja
+----- "VD Muss Bleiben Test" (P1)
+----- "VD Spannungskopfschmerz" (P3)
+----- "Übelkeit, Licht- u/o Geräuschempfindlichkeit?" [oc]
+------ ja
+------- "VD Migräne" (!)
+------ nein
+------- "VD Spannungskopfschmerz" (!)
+---- nein
+----- "VD Spannungskopfschmerz" (!)
+%
