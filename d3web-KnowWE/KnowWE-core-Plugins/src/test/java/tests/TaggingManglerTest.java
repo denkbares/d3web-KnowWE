@@ -49,7 +49,7 @@ public class TaggingManglerTest extends TestCase {
 	private KnowWEArticleManager am;
 	private TaggingMangler tm;
 	private KnowWEParameterMap params;
-	private List<KnowWEObjectType> types; 
+	private KnowWEObjectType type; 
 	private KnowWEEnvironment ke;
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -63,7 +63,7 @@ public class TaggingManglerTest extends TestCase {
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
 		ke=KnowWEEnvironment.getInstance();
 		am= KnowWEEnvironment.getInstance().getArticleManager("default_web");
-		types=ke.getRootTypes();
+		type=ke.getRootType();
 		
 		
 		
@@ -71,7 +71,7 @@ public class TaggingManglerTest extends TestCase {
 		 * Init first Article
 		 */
 		KnowWEArticle article1 = new KnowWEArticle("", "TagTest",
-				types, "default_web");
+				type, "default_web");
 		
 		am.saveUpdatedArticle(article1);	
 		params=new KnowWEParameterMap("", "");
@@ -98,7 +98,7 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	public void testAddRemoveTag() {
 		KnowWEArticle article1 = new KnowWEArticle("", "AddTag",
-				types, "default_web");
+				type, "default_web");
 		am.saveUpdatedArticle(article1);	
 		tm.addTag("AddTag", "tagtest", params);
 		assertEquals("<tags>tagtest</tags>",am.getArticle("AddTag").getSection().getOriginalText());
@@ -112,11 +112,11 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	public void testGetPages() {
 		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				types, "default_web");
+				type, "default_web");
 		am.saveUpdatedArticle(article1);
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);
@@ -136,7 +136,7 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	public void testGetPageTags() {
 		KnowWEArticle article = new KnowWEArticle("", "Tag",
-				types, "default_web");
+				type, "default_web");
 		am.saveUpdatedArticle(article);
 		tm.addTag("Tag", "tick", params);
 		tm.addTag("Tag", "trick", params);	
@@ -152,11 +152,11 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	public void testGetAllTags() {
 		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				types, "default_web");
+				type, "default_web");
 		am.saveUpdatedArticle(article1);
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);
@@ -175,11 +175,11 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	public void testGetCloudList() {
 		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				types, "default_web");
+				type, "default_web");
 		am.saveUpdatedArticle(article1);
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);
@@ -197,11 +197,11 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	public void testGetCloudList2() {
 		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				types, "default_web");
+				type, "default_web");
 		am.saveUpdatedArticle(article1);
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);
@@ -220,7 +220,7 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	public void testSetTags() {
 		KnowWEArticle article1 = new KnowWEArticle("", "AddTag",
-				types, "default_web");
+				type, "default_web");
 		am.saveUpdatedArticle(article1);	
 		tm.setTags("AddTag", "tag1 tag2 tag3", params);
 		assertEquals("<tags>tag1 tag2 tag3</tags>",am.getArticle("AddTag").getSection().getOriginalText());
@@ -231,11 +231,11 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	public void testSearchPages() {
 		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				types, "default_web");
+				type, "default_web");
 		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				types, "default_web");
+				type, "default_web");
 		am.saveUpdatedArticle(article1);
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);

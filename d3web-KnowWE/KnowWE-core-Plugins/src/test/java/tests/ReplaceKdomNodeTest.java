@@ -30,9 +30,11 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEFacade;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.validation.Validator;
 import dummies.KnowWETestWikiConnector;
 import junit.framework.TestCase;
@@ -63,16 +65,21 @@ public class ReplaceKdomNodeTest extends TestCase {
 		 * Build an Article.
 		 */
 		String content = "aaa bbb -ababba- aba - bbbaa-abba aab";
-		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();
-		types.add(new SplitObjectType());
-		types.add(new WordObjectType());
-		_env.processAndUpdateArticleJunit("TestUser", content, "Test_Article", "default_web", types);
+		KnowWEObjectType rootType = new DefaultAbstractKnowWEObjectType(new AllTextSectionFinder()) {
+			
+			{
+				addChildType(new SplitObjectType());				
+				addChildType(new WordObjectType());				
+			}
+		};
+		
+		_env.processAndUpdateArticleJunit("TestUser", content, "Test_Article", "default_web", rootType);
 
 		/**
 		 * Replace KdomNode.
 		 */
 		KnowWEArticle article = _env.getArticle("default_web", "Test_Article");
-		Section artSec = article.getSection();
+		Section<?> artSec = article.getSection();
 		String toReplace = ((Section) artSec.getChildren().get(0)).getId();
 		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, "default_web");
 		map.put(KnowWEAttributes.TARGET, toReplace);
@@ -118,7 +125,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		actual = original.equals(content);
 		assertEquals("Original equals replaced", false, actual);
 		
-		artSec = (Section) artSec.getChildren().get(0);
+		artSec = (Section) artSec.getChildren().get(0).getChildren().get(0);
 		String objectTypeName = artSec.getObjectType().getName();
 		assertEquals("SplitObjectType not contained", "SplitObjectType", objectTypeName);		
 	}

@@ -132,7 +132,7 @@ public class GlobalReplaceAction extends AbstractKnowWEAction {
 			
 			KnowWEEnvironment.getInstance().saveArticle(web, art.getTitle(), text, parameterMap);
 			mgr.saveUpdatedArticle(new KnowWEArticle(text, art.getTitle(), KnowWEEnvironment
-					.getInstance().getRootTypes(),web));
+					.getInstance().getRootType(),web));
 		}
 
 		//Meldung gernerieren und zurueckgeben.

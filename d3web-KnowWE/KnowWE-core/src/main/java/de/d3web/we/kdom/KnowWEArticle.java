@@ -85,8 +85,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	private boolean fullParse;
 	
 	
-	public KnowWEArticle(String text, String title, List<KnowWEObjectType> allowedObjects, String web) {
-		this(text, title, allowedObjects, web, false);
+	public KnowWEArticle(String text, String title, KnowWEObjectType rootType, String web) {
+		this(text, title, rootType, web, false);
 	}
 	
 	/**
@@ -97,7 +97,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * @param allowedObjects
 	 */
 	public KnowWEArticle(String text, String title,
-			List<KnowWEObjectType> allowedObjects, String web, boolean fullParse) {
+			KnowWEObjectType rootType, String web, boolean fullParse) {
 		
 		Logger.getLogger(this.getClass().getName())
 			.log(Level.INFO,"====>> Starting to build article '" + title + "' ====>>");
@@ -117,7 +117,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		this.web = web;
 		report = new KnowWEDomParseReport(this);
 		
-		this.childrenTypes = allowedObjects;
+		this.childrenTypes.add(rootType);
 		
 		lastVersion = articleManager.getArticle(title);
 		
@@ -125,7 +125,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web).initArticle(this);
 
 		// clear KnowWETypeStorage before re-parsing data
-		clearTypeStore(allowedObjects, title);
+		clearTypeStore(rootType, title);
 		
 		Logger.getLogger(this.getClass().getName())
 			.log(Level.INFO,"<- Initialized article '" + title + "' in " 
@@ -193,7 +193,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	private void clearTypeStore(
-			List<? extends KnowWEObjectType> allowedObjects2, String title) {
+			KnowWEObjectType type, String title) {
 
 		ContextManager.getInstance().detachContexts(title);
 
@@ -211,11 +211,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			// System.out.println("ArticleManager for web is null: "+web);
 		}
 
-		for (KnowWEObjectType knowWEObjectType : allowedObjects2) {
-			if (knowWEObjectType instanceof AbstractKnowWEObjectType) {
-				((AbstractKnowWEObjectType) knowWEObjectType)
-						.clearTypeStoreRecursivly(title, new HashSet<KnowWEType>());
-			}
+		if (type instanceof AbstractKnowWEObjectType) {
+			((AbstractKnowWEObjectType) type)
+					.clearTypeStoreRecursivly(title, new HashSet<KnowWEType>());
 		}
 
 	}
@@ -441,6 +439,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	public boolean isFullParse() {
 		return this.fullParse;
+	}
+	
+	public KnowWEObjectType getRootType() {
+		return getAllowedChildrenTypes().get(0);
 	}
 
 }

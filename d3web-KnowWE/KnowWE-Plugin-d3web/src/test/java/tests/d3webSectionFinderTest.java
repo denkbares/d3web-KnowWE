@@ -99,9 +99,8 @@ public class d3webSectionFinderTest extends TestCase {
 		String test = "blablub {{the currently measured mileage"
 			+ " <=> asks:: Real mileage  /100km}}bla blub";
 		
-		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();
-		types.add(new de.d3web.we.kdom.Annotation.Annotation());
-		KnowWEArticle article = new KnowWEArticle(test, "Test_Article2", types, "default_web");
+		Annotation type = new de.d3web.we.kdom.Annotation.Annotation();
+		KnowWEArticle article = new KnowWEArticle(test, "Test_Article2", type, "default_web");
 		Section artSec = article.getSection();
 		List<Section> childs = artSec.getChildren();
 		
@@ -153,9 +152,7 @@ public class d3webSectionFinderTest extends TestCase {
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
 		KnowWEEnvironment.getInstance().getArticle("default_web", "Test_Article");
 		
-		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();
-		types.add(new ComplexFinding());
-		KnowWEArticle article = new KnowWEArticle(test, "Test_Article2", types, "default_web");
+		KnowWEArticle article = new KnowWEArticle(test, "Test_Article2", new ComplexFinding(), "default_web");
 		Section artSec = article.getSection();
 		List<Section> childs = artSec.getChildren();
 		

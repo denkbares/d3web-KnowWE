@@ -79,7 +79,7 @@ public class RefactoringManager {
 		} else {
 			article = defaultWebManager.getArticle(id);
 			KnowWEArticle cachedArticle = new KnowWEArticle(article.getSection().getOriginalText(), article.getTitle(),
-					article.getAllowedChildrenTypes(), REFACTORING_WEB);
+					article.getRootType(), REFACTORING_WEB);
 			refactoringWebManager.saveUpdatedArticle(cachedArticle);
 			return cachedArticle;
 		}
@@ -106,7 +106,7 @@ public class RefactoringManager {
 		StringBuilder newArticleText = new StringBuilder();
 		collectTextsFromLeaves(refactoringWebManager.getArticle(articleName).getSection(), newArticleText);
 		KnowWEArticle newArticle = new KnowWEArticle(newArticleText.toString(), articleName,
-				art.getAllowedChildrenTypes(), REFACTORING_WEB);
+				art.getRootType(), REFACTORING_WEB);
 		refactoringWebManager.saveUpdatedArticle(newArticle);
 	}
 	

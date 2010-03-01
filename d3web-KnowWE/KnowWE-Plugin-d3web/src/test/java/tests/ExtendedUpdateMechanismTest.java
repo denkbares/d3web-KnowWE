@@ -70,9 +70,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		 */
 		String content = Utils.readTxtFile("src/test/resources/UpdatingTest1.txt");
 		
-		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();;
-		types.add(new Kopic());
-//		types.add(DefaultTextType.getInstance());
+		KnowWEObjectType types = new Kopic();
 		
 		D3webTerminologyHandler d3Handler = 
 			D3webModule.getKnowledgeRepresentationHandler(web);
@@ -124,8 +122,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		String content2 = Utils.readTxtFile("src/test/resources/UpdatingTest2.txt");
 		String content3 = Utils.readTxtFile("src/test/resources/UpdatingTest3.txt");
 		
-		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();;
-		types.add(new Kopic());
+		KnowWEObjectType types = new Kopic();
 		
 		D3webTerminologyHandler d3Handler =  D3webModule.getKnowledgeRepresentationHandler(web);
 		

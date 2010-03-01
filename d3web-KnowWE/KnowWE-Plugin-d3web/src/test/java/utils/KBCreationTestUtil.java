@@ -175,7 +175,7 @@ public class KBCreationTestUtil {
 		
 		// Create Article
 		KnowWEArticle article = new KnowWEArticle(content, "KBCreationTest", 
-					KnowWEEnvironment.getInstance().getRootTypes(), "default_web");
+					KnowWEEnvironment.getInstance().getRootType(), "default_web");
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article);
 		
 		// Load KnowledgeBase

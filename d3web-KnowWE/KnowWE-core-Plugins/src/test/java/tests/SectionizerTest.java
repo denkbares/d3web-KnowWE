@@ -30,9 +30,11 @@ import objectTypes.WordObjectType;
 
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import dummies.KnowWETestWikiConnector;
 import junit.framework.TestCase;
 
@@ -60,18 +62,24 @@ public class SectionizerTest extends TestCase {
 		 * Build an Article.
 		 */
 		String content = "aaa bbb -ababba- aba - bbbaa-abba aab";
-		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();
-		types.add(new SplitObjectType());
-		types.add(new WordObjectType());
+		DefaultAbstractKnowWEObjectType rootType = new DefaultAbstractKnowWEObjectType(new AllTextSectionFinder()) {
+			
+			{
+				addChildType(new SplitObjectType());				
+				addChildType(new WordObjectType());				
+			}
+		};
 		
-		KnowWEArticle article = new KnowWEArticle(content, "Test_Article", types, "default_web");
+//		System.out.println(rootType.getAllowedChildrenTypes());;
+		
+		KnowWEArticle article = new KnowWEArticle(content, "Test_Article", rootType, "default_web");
 		
 		/**
 		 * The real tests
 		 * 1. Check some children-Counts
 		 */
 		int expected = 12;
-		Section root = article.getSection();
+		Section root = article.getSection().getChildren().get(0);
 		assertEquals(expected , root.getChildren().size());
 		
 		ArrayList<Section> children = new ArrayList<Section>(root.getChildren());

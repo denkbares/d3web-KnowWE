@@ -22,6 +22,7 @@ package de.d3web.we.taghandler;
 
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +156,6 @@ public class RenamingTagHandler extends AbstractTagHandler {
 		//fill
 		//TODO
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
-		List<KnowWEObjectType> typeList = ke.getRootTypes();
 		//set div and ul
 		Element div = dom.createElement("div");
 		div.setAttribute("id", "typeTree");
@@ -169,6 +169,11 @@ public class RenamingTagHandler extends AbstractTagHandler {
 		//li.setAttribute("class", "expanded");
 		ul.appendChild(li);
 		div.appendChild(ul);
+		
+		
+		
+		List<KnowWEObjectType> typeList = new ArrayList<KnowWEObjectType>(1);
+		typeList.add(ke.getRootType());
 		printULNodes(typeList, dom, li, new HashSet<String>());
 		
 		//output

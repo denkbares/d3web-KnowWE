@@ -47,7 +47,7 @@ public class ParseWebOfflineRenderer extends AbstractKnowWEAction {
 		for (String name : articleNames) {
 			KnowWEDomParseReport object = KnowWEEnvironment.getInstance()
 					.getArticleManager(webname).saveUpdatedArticle(new KnowWEArticle(articles.get(name),
-							name, KnowWEEnvironment.getInstance().getRootTypes(),webname));
+							name, KnowWEEnvironment.getInstance().getRootType(),webname));
 			
 			if (object.hasErrors()) {
 				reports.append("<p class=\"box error\">");

@@ -51,22 +51,20 @@ public class UpdateMechanismTest extends TestCase {
 		 */
 		String content = Utils.readTxtFile("src/test/resources/UpdatingTest1.txt");
 		
-		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();;
-		types.add(new GenericXMLObjectType());
 //		types.add(DefaultTextType.getInstance());
 		
 		/*
 		 * Init first Article
 		 */
 		KnowWEArticle article1 = new KnowWEArticle(content, "UpdatingTest",
-				types, "default_web");
+				new GenericXMLObjectType(), "default_web");
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article1);
 		
 		/*
 		 * Init a second, identical Article
 		 */
 		KnowWEArticle article2 = new KnowWEArticle(content, "UpdatingTest",
-				types, "default_web");
+				new GenericXMLObjectType(), "default_web");
 		
 		List<Section<? extends KnowWEObjectType>> sections1 = article1.getAllNodesPreOrder();
 		

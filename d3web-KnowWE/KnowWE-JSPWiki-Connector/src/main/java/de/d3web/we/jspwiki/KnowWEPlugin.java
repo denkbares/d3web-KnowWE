@@ -232,14 +232,14 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 				boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
 				if ((fullParse/* && !article.isFullParse()*/) || !originalText.equals(content)) {
 					article = new KnowWEArticle(content, topicName,
-							KnowWEEnvironment.getInstance().getRootTypes(),
+							KnowWEEnvironment.getInstance().getRootType(),
 							KnowWEEnvironment.DEFAULT_WEB, fullParse);
 					KnowWEEnvironment.getInstance().getArticleManager("default_web")
 						.saveUpdatedArticle(article);
 				}
 			} else {
 				article = new KnowWEArticle(content, topicName,
-						KnowWEEnvironment.getInstance().getRootTypes(),
+						KnowWEEnvironment.getInstance().getRootType(),
 						KnowWEEnvironment.DEFAULT_WEB);
 				if (pagedata.endsWith(content)) {
 					// INITIALISATION PHASE: when page is first requested

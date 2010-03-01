@@ -114,7 +114,7 @@ public class KnowWEIncludeManager {
 						if (artSrc != null) {
 							// build the targeted article
 							art = new KnowWEArticle(artSrc, address.getTargetArticle(), 
-									KnowWEEnvironment.getInstance().getRootTypes(), web);
+									KnowWEEnvironment.getInstance().getRootType(), web);
 							KnowWEEnvironment.getInstance()
 									.getArticleManager(web)
 									.saveUpdatedArticle(art);
@@ -273,7 +273,7 @@ public class KnowWEIncludeManager {
 		// changes to the Knowledge... the update mechanism will take care of that
 		for (KnowWEArticle ra:reviseArticles.values()) {
 			KnowWEArticle newArt = new KnowWEArticle(ra.getSection().getOriginalText(), ra.getTitle(), 
-					KnowWEEnvironment.getInstance().getRootTypes(), web);
+					KnowWEEnvironment.getInstance().getRootType(), web);
 			KnowWEEnvironment.getInstance().getArticleManager(web)
 				.saveUpdatedArticle(newArt);
 		}

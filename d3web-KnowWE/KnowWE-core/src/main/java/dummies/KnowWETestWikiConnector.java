@@ -115,7 +115,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
     public boolean saveArticle(String name, String text, KnowWEParameterMap map) {
 		KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
 			.saveUpdatedArticle(new KnowWEArticle(text, name,
-				KnowWEEnvironment.getInstance().getRootTypes(), KnowWEEnvironment.DEFAULT_WEB));
+				KnowWEEnvironment.getInstance().getRootType(), KnowWEEnvironment.DEFAULT_WEB));
 	return true;
     }
 

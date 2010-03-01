@@ -34,6 +34,7 @@ import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.xml.GenericXMLObjectType;
@@ -60,9 +61,8 @@ public class XMLSectionFinderTest extends TestCase {
 		 */
 		String content = this.readXMLFile("2");
 		
-		ArrayList<KnowWEObjectType> types = new ArrayList<KnowWEObjectType>();
 		KnowWEArticle article = new KnowWEArticle(content, "Test_Article",
-				types, "default_web");
+				RootType.getInstance(), "default_web");
 		Section artSec = article.getSection();
 		
 		/**
@@ -130,9 +130,7 @@ public class XMLSectionFinderTest extends TestCase {
 		 * Build a complete Article using GenericXMLObjectType 
 		 */
 		content = this.readXMLFile("0");
-		types = new ArrayList<KnowWEObjectType>();
-		types.add(new GenericXMLObjectType());
-		article = new KnowWEArticle(content, "Test_Article2", types, "default_web");
+		article = new KnowWEArticle(content, "Test_Article2", new GenericXMLObjectType(), "default_web");
 		artSec = article.getSection();
 
 		// Test children counts

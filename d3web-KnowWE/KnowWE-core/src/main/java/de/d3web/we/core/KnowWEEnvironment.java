@@ -89,7 +89,7 @@ public class KnowWEEnvironment {
 
 	// private KnowWETopicLoader topicLoader;
 
-	private List<KnowWEObjectType> rootTypes = new ArrayList<KnowWEObjectType>();
+	private KnowWEObjectType rootTypes;
 	private List<KnowWEObjectType> globalTypes = new ArrayList<KnowWEObjectType>();
 	private List<PageAppendHandler> appendHandlers = new ArrayList<PageAppendHandler>();
 
@@ -354,7 +354,7 @@ public class KnowWEEnvironment {
 
 			}
 
-			rootTypes.add(RootType.getInstance());
+			rootTypes = RootType.getInstance();
 
 			// adding TaggingMangler as SearchProvider to KnowWE-MultiSearch
 			MultiSearchEngine.getInstance().addProvider(TaggingMangler.getInstance());
@@ -698,7 +698,7 @@ public class KnowWEEnvironment {
 			String topic, String web) {
 		return this.getArticleManager(web).saveUpdatedArticle(
 				new KnowWEArticle(content, topic, KnowWEEnvironment
-				.getInstance().getRootTypes(), web)).getHTML();
+				.getInstance().getRootType(), web)).getHTML();
 	}
 
 	/**
@@ -711,10 +711,10 @@ public class KnowWEEnvironment {
 	 * @return
 	 */
 	public void processAndUpdateArticleJunit(String username, String content,
-			String topic, String web, List<KnowWEObjectType> types) {
-		this.rootTypes = types;
+			String topic, String web, KnowWEObjectType rootType) {
+		this.rootTypes = rootType;
 		this.articleManagers.get(web).saveUpdatedArticle(
-				new KnowWEArticle(content, topic, types, web));
+				new KnowWEArticle(content, topic, rootType, web));
 	}
 
 	public ServletContext getContext() {
@@ -807,7 +807,7 @@ public class KnowWEEnvironment {
 		return data;
 	}
 
-	public List<KnowWEObjectType> getRootTypes() {
+	public KnowWEObjectType getRootType() {
 		return rootTypes;
 	}
 
@@ -821,12 +821,10 @@ public class KnowWEEnvironment {
 		if (this.allKnowWEObjectTypes == null) {
 			KnowWEObjectTypeSet allTypes = new KnowWEObjectTypeSet();
 
-			for (KnowWEObjectType type : getRootTypes()) {
-				KnowWEObjectTypeSet s = KnowWEObjectTypeUtils
-						.getAllChildrenTypesRecursive(type,
-						new KnowWEObjectTypeSet());
-				allTypes.addAll(s.toList());
-			}
+			KnowWEObjectTypeSet s = KnowWEObjectTypeUtils
+					.getAllChildrenTypesRecursive(getRootType(),
+					new KnowWEObjectTypeSet());
+			allTypes.addAll(s.toList());
 
 			this.allKnowWEObjectTypes = allTypes.toLexicographicalList();
 		}
@@ -852,9 +850,7 @@ public class KnowWEEnvironment {
 	
 	public List<KnowWEObjectType> searchTypeInstances(Class<?> clazz) {
 		List<KnowWEObjectType> instances = new ArrayList<KnowWEObjectType>();
-		for (KnowWEObjectType type : getRootTypes()) {
-			type.findTypeInstances(clazz, instances);
-		}
+		getRootType().findTypeInstances(clazz, instances);
 		// for (KnowWEModule mod : this.modules) {
 		// mod.findTypeInstances(clazz, instances);
 		// }
