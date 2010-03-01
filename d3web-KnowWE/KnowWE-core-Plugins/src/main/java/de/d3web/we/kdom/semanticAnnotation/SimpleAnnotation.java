@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.openrdf.model.URI;
 
+import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -73,7 +74,8 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType implements
 			if (ns.equals("ns")){
 				ns=uo.getBaseNS();
 			}
-			anno = uo.getHelper().createURI(ns, list[1]);
+			
+			anno = uo.getHelper().createURI(SemanticCore.getInstance().expandNamespace(ns), list[1]);
 		} else {
 			anno = uo.getHelper().createlocalURI(annos);
 		}

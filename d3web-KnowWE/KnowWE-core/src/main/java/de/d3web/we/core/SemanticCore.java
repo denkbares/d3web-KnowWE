@@ -530,4 +530,14 @@ public class SemanticCore {
 		return namespaces;
 	}
 
+	public String expandNamespace(String ns) {
+		for(Entry<String,String> cur:namespaces.entrySet()){
+			if (ns.equals(cur.getKey())){
+				ns=cur.getValue();
+				break;
+			}
+		}
+		return ns;
+	}
+
 }

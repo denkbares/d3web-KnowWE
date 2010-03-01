@@ -108,15 +108,22 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 					stmnt = uo.getHelper().createStatement(soluri, prop,
 							stringa);
 					io.addStatement(stmnt);
+					io.merge(uo.getHelper().createStatementSrc(soluri, prop,
+							stringa, s.getFather().getFather(),
+							uo.getHelper().createURI("Annotation")));
 				} else if (PropertyManager.getInstance().isNary(prop)) {
 					IntermediateOwlObject tempio = UpperOntology.getInstance()
-							.getHelper().createProperty(soluri, prop, stringa,
-									s);
+							.getHelper().createAnnotationProperty(soluri, prop, stringa,
+									s.getFather().getFather());
 					io.merge(tempio);
 
 				} else {
-					io.addStatement(uo.getHelper().createStatement(soluri,
-							prop, stringa));
+					stmnt = uo.getHelper().createStatement(soluri, prop,
+							stringa);
+					io.addStatement(stmnt);
+					io.merge(uo.getHelper().createStatementSrc(soluri, prop,
+							stringa, s.getFather().getFather(),
+							uo.getHelper().createURI("Annotation")));
 				}
 
 			} catch (RepositoryException e) {

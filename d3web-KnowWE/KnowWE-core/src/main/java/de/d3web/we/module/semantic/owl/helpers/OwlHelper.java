@@ -371,6 +371,43 @@ public class OwlHelper {
 
 		return io;
 	}
+	/**
+	 * @param soluri
+	 * @param prop
+	 * @param stringa
+	 * @param id
+	 * @return
+	 */
+	public IntermediateOwlObject createAnnotationProperty(URI suri, URI puri, URI ouri,
+			Section source) {
+		UpperOntology uo = UpperOntology.getInstance();
+		IntermediateOwlObject io = new IntermediateOwlObject();
+		try {
+			BNode to = uo.getVf().createBNode();
+			OwlHelper helper = uo.getHelper();
+			URI nary = uo.getHelper().createlocalURI(
+					source.getTitle() + ".." + source.getId() + ".."
+							+ suri.getLocalName() + puri.getLocalName()
+							+ ouri.getLocalName());
+			io.merge(helper.createTextOrigin(source ,to));
+			io.addStatement(createStatement(to, createURI("hasType"),
+					createURI("Annotation")));
+			io.addStatement(helper.createStatement(nary, RDFS.ISDEFINEDBY, to));
+			io.addStatement(helper.createStatement(nary, RDF.TYPE,RDF.STATEMENT));
+			io.addStatement(helper.createStatement(nary, RDF.PREDICATE, puri));
+			io.addStatement(helper.createStatement(nary, RDF.OBJECT, ouri));
+			io.addStatement(helper.createStatement(nary, RDF.SUBJECT, suri));
+			
+			io.addLiteral(nary);
+
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return io;
+	}
+	
 
 	public void attachTextOrigin(Resource attachto, Section<KnowWEObjectType> source,
 			IntermediateOwlObject io, URI type) {
