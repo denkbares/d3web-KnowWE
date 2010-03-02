@@ -96,16 +96,11 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		selenium.openWindow(url, name);
 		selenium.selectWindow(name);
 		selenium.windowFocus();
-		System.out.println("Titel vor 1. Refresh: " + selenium.getTitle() + ", " + selenium.getLocation());
 		refreshAndWait();
-		System.out.println("Titel nach 1. Refresh: " + selenium.getTitle() + ", " + selenium.getLocation());
 		if (forwarding) {
-			System.out.println("Titel in if Zweig:" + selenium.getTitle() + ", " + selenium.getLocation());
 			threadSleep(sleepTime);
-			System.out.println("Titel nach warten:" + selenium.getTitle() + ", " + selenium.getLocation());
 			selenium.getTitle(); //Setting new flag for "AndWait"
 			refreshAndWait();
-			System.out.println("Titel nach 2. Refresh:" + selenium.getTitle() + ", " + selenium.getLocation() + "\n");
 		}
 	}
 	
