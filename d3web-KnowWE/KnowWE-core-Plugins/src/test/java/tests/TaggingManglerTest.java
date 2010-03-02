@@ -188,8 +188,8 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag3", "tod", params);
 		tm.addTag("Tag3","leben",params);
 		HashMap<String, Integer>tags=tm.getCloudList(10, 20);
-		assertEquals(new Integer(20),tags.get("leben"));
-		assertEquals( new Integer(10),tags.get("tod"));		
+		assertEquals(Integer.valueOf(20),tags.get("leben"));
+		assertEquals( Integer.valueOf(10),tags.get("tod"));		
 	}
 	
 	/**
@@ -209,9 +209,9 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag2", "leben", params);	
 		tm.addTag("Tag3", "tod", params);		
 		HashMap<String, Integer>tags=tm.getCloudList(10, 20);
-		assertEquals(new Integer(15),tags.get("leben"));
-		assertEquals( new Integer(15),tags.get("tod"));		
-		assertEquals( new Integer(15),tags.get("tag"));
+		assertEquals(Integer.valueOf(15),tags.get("leben"));
+		assertEquals( Integer.valueOf(15),tags.get("tod"));		
+		assertEquals( Integer.valueOf(15),tags.get("tag"));
 	}
 	
 

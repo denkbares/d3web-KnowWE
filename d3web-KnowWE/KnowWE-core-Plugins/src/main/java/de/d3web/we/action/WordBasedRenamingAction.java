@@ -49,7 +49,7 @@ import de.d3web.we.kdom.Section;
  */
 public class WordBasedRenamingAction extends AbstractKnowWEAction {
 
-	private static ResourceBundle rb;
+	private ResourceBundle rb;
 
 	private boolean caseSensitive;
 	

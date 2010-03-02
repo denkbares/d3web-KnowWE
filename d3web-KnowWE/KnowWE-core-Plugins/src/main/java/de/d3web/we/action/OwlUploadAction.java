@@ -80,7 +80,7 @@ public class OwlUploadAction extends AbstractKnowWEAction {
 		output+=e.getMessage();
 		return output;
 	    } catch (Exception e) {
-		output+=e.getMessage();		
+		   output+=e.getMessage();		
 		return output;
 	    }
 	}

@@ -40,7 +40,7 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
  */
 public class SetQuickEditFlagAction extends AbstractKnowWEAction {
 
-	private static ResourceBundle rb;
+	private ResourceBundle rb;
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

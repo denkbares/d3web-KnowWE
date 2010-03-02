@@ -86,11 +86,11 @@ public class WordBasedRenameFinding implements Comparable {
 			if (curWords > words.length)
 				return null;
 			
-			String context = "";
+			StringBuffer context = new StringBuffer();
 			for (int i = 0; i < curWords; i++)
-				context += " " + words[i];
+				context.append(" " + words[i]);
 				
-			return context;
+			return context.toString();
 			
 		} else if(direction.equals("p")){
 			curWords--;
@@ -161,11 +161,11 @@ public class WordBasedRenameFinding implements Comparable {
 			if (curWords > words.length)
 				return null;
 			
-			String context = "";
+			StringBuffer context = new StringBuffer();
 			for (int i = 0; i < curWords; i++)
-				context += " " + words[i];
+				context.append(" " + words[i]);
 				
-			return context;
+			return context.toString();
 			
 		} else if(direction.equals("p")){
 			curWords--;

@@ -339,19 +339,19 @@ public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
 		
 		mask.append("</td><td>");
 	
-		ArrayList<Section> fathers = new ArrayList<Section>();
-		fathers = new ArrayList<Section>(this.getAllFathers(sec));
-		String fString = "";
+		ArrayList<Section> fathers  = new ArrayList<Section>(this.getAllFathers(sec));
+		StringBuffer fstringbuffy=new StringBuffer();
+		
 		for (Section s : fathers) {
 			if (!(s.getObjectType() instanceof KnowWEArticle)) {
 				String name = s.getObjectType().getName() + ", ";
 				if (name.contains(".")) {
 					name = name.substring(name.indexOf('.') + 1);
 				}
-				fString += s.getObjectType().getName() + ", ";
+				fstringbuffy.append(s.getObjectType().getName() + ", ");
 			}
 		}
-	
+		String fString = fstringbuffy.toString();
 		if (fString.lastIndexOf(",") != -1) {
 			fString = fString.substring(0, (fString.lastIndexOf(",")));
 			mask.append(fString);

@@ -82,7 +82,7 @@ public class ExtensionContent extends XMLContent implements OwlGenerator{
 	
 	private IntermediateOwlObject extend(String value,Section s){
 		IntermediateOwlObject io=new IntermediateOwlObject();
-		SemanticCore sc=SemanticCore.getInstance();
+		//SemanticCore sc=SemanticCore.getInstance();
 		UpperOntology uo = UpperOntology.getInstance();
 		RepositoryConnection con = uo.getConnection();
 		String output="";

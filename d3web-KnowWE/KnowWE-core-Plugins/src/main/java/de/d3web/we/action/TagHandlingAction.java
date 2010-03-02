@@ -29,7 +29,7 @@ public class TagHandlingAction extends AbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
-		String web = parameterMap.getWeb();		
+		//String web = parameterMap.getWeb();		
 		String topic = parameterMap.getTopic();
 		String tagaction = parameterMap.get(KnowWEAttributes.TAGGING_ACTION);
 		String tag=parameterMap.get(KnowWEAttributes.TAGGING_TAG);	

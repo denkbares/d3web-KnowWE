@@ -46,9 +46,9 @@ public class SessionChooserRenderer extends AbstractKnowWEAction {
 		StringBuffer sb = new StringBuffer();
 		String sessionPath = KnowWEUtils.getSessionPath(map);
 		File sessionPathFile = new File(sessionPath);
-		String linkAction = map.get(KnowWEAttributes.LINK_ACTION);
-		String user = map.get(KnowWEAttributes.USER);
-		String web = map.get(KnowWEAttributes.WEB);
+//		String linkAction = map.get(KnowWEAttributes.LINK_ACTION);
+//		String user = map.get(KnowWEAttributes.USER);
+//		String web = map.get(KnowWEAttributes.WEB);
 		sb.append("<table>");
 		File[] files = sessionPathFile.listFiles(filter);
 		if(files == null || files.length == 0) {

@@ -47,7 +47,7 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class SparqlDelegateRenderer extends KnowWEDomRenderer {
-	private static ResourceBundle rb;
+	private ResourceBundle rb;
 	private static SparqlDelegateRenderer instance;
 	private HashMap<String, SparqlRenderer> renderers;
 

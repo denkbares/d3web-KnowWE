@@ -45,14 +45,14 @@ import de.d3web.we.kdom.table.TableLine;
  */
 public class KnowWESectionFinderTest extends TestCase {
 
-	private final String WRONG_FIRST_START = "Wrong start at first finding";
-	private final String WRONG_FIRST_END = "Wrong end at first finding";
-	private final String WRONG_SECOND_START = "Wrong start at second finding";
-	private final String WRONG_SECOND_END = "Wrong end at second finding";
-	private final String WRONG_THIRD_START = "Wrong start at third finding";
-	private final String WRONG_THIRD_END = "Wrong end at third finding";
-	private final String WRONG_FOURTH_START = "Wrong start at fourth finding";
-	private final String WRONG_FOURTH_END = "Wrong end at fourth finding";
+	private final static String WRONG_FIRST_START = "Wrong start at first finding";
+	private final static String WRONG_FIRST_END = "Wrong end at first finding";
+	private final static String WRONG_SECOND_START = "Wrong start at second finding";
+	private final static String WRONG_SECOND_END = "Wrong end at second finding";
+	private final static String WRONG_THIRD_START = "Wrong start at third finding";
+	private final static String WRONG_THIRD_END = "Wrong end at third finding";
+	private final static String WRONG_FOURTH_START = "Wrong start at fourth finding";
+	private final static String WRONG_FOURTH_END = "Wrong end at fourth finding";
 	
 	
 	public void testAllTextFinder() {

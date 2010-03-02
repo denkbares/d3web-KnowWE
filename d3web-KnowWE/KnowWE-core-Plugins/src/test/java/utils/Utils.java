@@ -89,7 +89,7 @@ public class Utils {
         return buffi.toString();
     }
     
-    public static String ReaderToString(Reader r) {
+    public static String convReaderToString(Reader r) {
         return readBytes(r).replace('@', '%');
     }
     

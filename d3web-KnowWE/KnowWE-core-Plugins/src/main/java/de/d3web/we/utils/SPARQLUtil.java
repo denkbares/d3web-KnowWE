@@ -51,7 +51,7 @@ public class SPARQLUtil {
 		} finally {
 
 		}
-		return null;
+		return false;
 	}
 
 	public static TupleQueryResult executeTupleQuery(String q, String topic) {
