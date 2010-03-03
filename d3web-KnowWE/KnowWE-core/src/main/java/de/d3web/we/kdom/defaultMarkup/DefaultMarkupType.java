@@ -128,6 +128,10 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	public String getName() {
 		return this.markup.getName();
 	}
+	
+	public DefaultMarkup getMarkup() {
+		return this.markup;
+	}
 
 	/**
 	 * Returns the contents of the default content block of the specified

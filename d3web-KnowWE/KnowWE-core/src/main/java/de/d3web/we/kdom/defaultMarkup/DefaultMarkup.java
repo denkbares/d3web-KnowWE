@@ -16,6 +16,7 @@ public class DefaultMarkup {
 		private final String name;
 		private final boolean mandatory;
 		private final Pattern pattern; // optional
+
 		private final Collection<KnowWEObjectType> types = new LinkedList<KnowWEObjectType>();
 
 		private Annotation(String name, boolean mandatory, Pattern pattern) {
@@ -76,6 +77,9 @@ public class DefaultMarkup {
 			return this.types.toArray(new KnowWEObjectType[this.types.size()]);
 		}
 
+		public Pattern getPattern() {
+			return pattern;
+		}
 	}
 
 	private final String name;
@@ -91,10 +95,63 @@ public class DefaultMarkup {
 		return this.name;
 	}
 
+	/**
+	 * Adds a new annotation to the markup with.
+	 * 
+	 * @param name
+	 *            the name of the annotation to be added
+	 * @param mandatory
+	 *            if the annotation is required for the markup
+	 */
 	public void addAnnotation(String name, boolean mandatory) {
-		this.addAnnotation(name, mandatory, null);
+		this.addAnnotation(name, mandatory, (Pattern) null);
 	}
 
+	/**
+	 * Adds a new annotation to the markup with a fixed list of possible values
+	 * (enumeration).
+	 * 
+	 * @param name
+	 *            the name of the annotation to be added
+	 * @param mandatory
+	 *            if the annotation is required for the markup
+	 * @param enumValues
+	 *            the allowed values for the annotation
+	 */
+	public void addAnnotation(String name, boolean mandatory, String... enumValues) {
+		String regex = "^("+de.d3web.we.utils.Strings.concat("|", enumValues)+")$";
+		int flags = Pattern.CASE_INSENSITIVE;
+		addAnnotation(name, mandatory, Pattern.compile(regex, flags));
+	}
+
+	/**
+	 * Adds a new annotation to the markup with a fixed list of possible values
+	 * (enumeration).
+	 * 
+	 * @param name
+	 *            the name of the annotation to be added
+	 * @param mandatory
+	 *            if the annotation is required for the markup
+	 * @param enumValues
+	 *            the allowed values for the annotation
+	 */
+	public void addAnnotation(String name, boolean mandatory, Enum<?>... enumValues) {
+		String regex = "^("+de.d3web.we.utils.Strings.concat("|", enumValues)+")$";
+		int flags = Pattern.CASE_INSENSITIVE;
+		addAnnotation(name, mandatory, Pattern.compile(regex, flags));
+	}
+
+	/**
+	 * Adds a new annotation to the markup with a pattern to specify the values
+	 * allowed for this annotation.
+	 * 
+	 * @param name
+	 *            the name of the annotation to be added
+	 * @param mandatory
+	 *            if the annotation is required for the markup
+	 * @param pattern
+	 *            a regular expression to check the allowed values
+	 */
 	public void addAnnotation(String name, boolean mandatory, Pattern pattern) {
 		// do not allow duplicates
 		String key = name.toLowerCase();
@@ -111,6 +168,12 @@ public class DefaultMarkup {
 		return this.annotations.get(key);
 	}
 
+	/**
+	 * Returns an array of all annotations of a specific markup. If the markup
+	 * has no annotations defined, an empty array is returned.
+	 * 
+	 * @return the annotations of the markup
+	 */
 	public Annotation[] getAnnotations() {
 		return this.annotations.values().toArray(new Annotation[this.annotations.size()]);
 	}
