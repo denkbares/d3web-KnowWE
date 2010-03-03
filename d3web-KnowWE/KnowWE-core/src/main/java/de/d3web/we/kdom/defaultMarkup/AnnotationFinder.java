@@ -29,10 +29,15 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class AnnotationFinder extends SectionFinder {
 
+	private final Pattern startPattern;
+	private final static Pattern nextAnnotationPattern = Pattern.compile("\\p{Space}@\\w+", Pattern.CASE_INSENSITIVE+Pattern.MULTILINE);
+	private final static Pattern endpattern = Pattern.compile("^\\p{Blank}*%\\p{Blank}$", Pattern.CASE_INSENSITIVE+Pattern.MULTILINE);
+	
 	private final String name;
 	
 	public AnnotationFinder(String name) {
 		this.name=name;
+		startPattern = Pattern.compile("@"+name+"[:=\\p{Space}]", Pattern.CASE_INSENSITIVE+Pattern.MULTILINE);
 	}
 	
 	@Override
@@ -40,14 +45,14 @@ public class AnnotationFinder extends SectionFinder {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		int pos = 0;
 		while (text.length()>0) {
-			int start = find(text.substring(pos), "@"+name+"[:=\\p{Space}]");
+			int start = find(text.substring(pos), startPattern);
 			if (start==-1) {
 				return result;
 			}
 			start +=  1 + name.length() + 1;
 			int end1 = text.substring(start).length();
-			int end2 = find(text.substring(start), "\\p{Space}@\\w+");
-			int end3 = find(text.substring(start), "^\\p{Blank}*%\\p{Blank}$");
+			int end2 = find(text.substring(start), nextAnnotationPattern);
+			int end3 = find(text.substring(start), endpattern);
 			if (end2==-1) {
 				end2=end1;
 			} if (end3==-1) {
@@ -61,8 +66,7 @@ public class AnnotationFinder extends SectionFinder {
 		return result;
 	}
 	
-	private int find(String text, String regEx) {
-		Pattern p = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE+Pattern.MULTILINE);
+	private int find(String text, Pattern p) {
 		Matcher matcher = p.matcher(text);
 		if (matcher.find()) {
 			return matcher.start();
