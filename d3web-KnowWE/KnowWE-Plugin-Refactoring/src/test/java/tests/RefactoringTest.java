@@ -40,6 +40,10 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.decisionTree.SolutionID;
+import de.d3web.we.kdom.objects.QuestionID;
+import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
+import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.xcl.XCList;
 import dummies.KnowWETestWikiConnector;
 
@@ -344,6 +348,223 @@ public class RefactoringTest extends TestCase {
 		assertCREquals("The Article 'QuestionsSectionToQuestionTree' was not correctly refactored: "
 				, expectedAfter, art.toString());
 	}
+	
+	@Test
+	public void testRenameQuestionnaire() throws ProviderException {
+	
+		/*
+		 * Setup
+		 */
+		String content = Utils.readTxtFile("src/test/resources/wiki/RenameObject.txt");
+		String content2 = Utils.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
+		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/Rename.txt");
+		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/RenameQuestionnaire/RenameObject.txt");
+		String expectedAfter2 = Utils.readTxtFile("src/test/resources/reference/RenameQuestionnaire/RenameObjectUNA.txt");
+		
+		/*
+		 * Init first Article
+		 */
+		KnowWEArticle art = new KnowWEArticle(content, "RenameObject",
+				type, "default_web");
+		am.saveUpdatedArticle(art);
+		
+		KnowWEArticle art2 = new KnowWEArticle(content2, "RenameObjectUNA",
+				type, "default_web");
+		am.saveUpdatedArticle(art2);
+				
+		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+			@Override
+			protected String findRefactoringSourceCode() {
+				return refactoring;
+			}
+			@Override
+			public Class<? extends KnowWEObjectType> findRenamingType() {
+				return QuestionnaireID.class;
+			}
+
+			@Override
+			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
+				return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/SubTree/SubTree/" +
+						"SubTree/SubTree/DashTreeElement/QuestionDashTreeElementContent/IndicationLine/QuestionnaireID";
+			}
+			
+			@Override
+			public String findNewName() {
+				return "Fragebogen Umbenannt";
+			}
+		};
+		rst.setRefManager("default_web");
+		rst.runSession();
+		art = am.getArticle("RenameObject");
+		assertCREquals("The Article 'RenameObject' was not correctly refactored: "
+				, expectedAfter, art.toString());
+		art2 = am.getArticle("RenameObjectUNA");
+		assertCREquals("The Article 'RenameObjectUNA' was not correctly refactored: "
+				, expectedAfter2, art2.toString());
+	}
+	
+	@Test
+	public void testRenameQuestion() throws ProviderException {
+	
+		/*
+		 * Setup
+		 */
+		String content = Utils.readTxtFile("src/test/resources/wiki/RenameObject.txt");
+		String content2 = Utils.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
+		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/Rename.txt");
+		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/RenameQuestion/RenameObject.txt");
+		String expectedAfter2 = Utils.readTxtFile("src/test/resources/reference/RenameQuestion/RenameObjectUNA.txt");
+		
+		/*
+		 * Init first Article
+		 */
+		KnowWEArticle art = new KnowWEArticle(content, "RenameObject",
+				type, "default_web");
+		am.saveUpdatedArticle(art);
+		
+		KnowWEArticle art2 = new KnowWEArticle(content2, "RenameObjectUNA",
+				type, "default_web");
+		am.saveUpdatedArticle(art2);
+				
+		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+			@Override
+			protected String findRefactoringSourceCode() {
+				return refactoring;
+			}
+			@Override
+			public Class<? extends KnowWEObjectType> findRenamingType() {
+				return QuestionID.class;
+			}
+
+			@Override
+			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
+				return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/SubTree/" +
+						"SubTree/DashTreeElement/QuestionDashTreeElementContent/QuestionLine/QuestionID";
+			}
+			
+			@Override
+			public String findNewName() {
+				return "Frage Umbenannt";
+			}
+		};
+		rst.setRefManager("default_web");
+		rst.runSession();
+		art = am.getArticle("RenameObject");
+		assertCREquals("The Article 'RenameObject' was not correctly refactored: "
+				, expectedAfter, art.toString());
+		art2 = am.getArticle("RenameObjectUNA");
+		assertCREquals("The Article 'RenameObjectUNA' was not correctly refactored: "
+				, expectedAfter2, art2.toString());
+	}
+	
+	@Test
+	public void testRenameSolution() throws ProviderException {
+	
+		/*
+		 * Setup
+		 */
+		String content = Utils.readTxtFile("src/test/resources/wiki/RenameObject.txt");
+		String content2 = Utils.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
+		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/Rename.txt");
+		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/RenameSolution/RenameObject.txt");
+		String expectedAfter2 = Utils.readTxtFile("src/test/resources/reference/RenameSolution/RenameObjectUNA.txt");
+		
+		/*
+		 * Init first Article
+		 */
+		KnowWEArticle art = new KnowWEArticle(content, "RenameObject",
+				type, "default_web");
+		am.saveUpdatedArticle(art);
+		
+		KnowWEArticle art2 = new KnowWEArticle(content2, "RenameObjectUNA",
+				type, "default_web");
+		am.saveUpdatedArticle(art2);
+				
+		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+			@Override
+			protected String findRefactoringSourceCode() {
+				return refactoring;
+			}
+			@Override
+			public Class<? extends KnowWEObjectType> findRenamingType() {
+				return SolutionID.class;
+			}
+
+			@Override
+			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
+				return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/" +
+						"SubTree/SubTree/SubTree2/SubTree/DashTreeElement/QuestionDashTreeElementContent/SetValueLine/QuestionID";
+			}
+			
+			@Override
+			public String findNewName() {
+				return "Lösung Umbenannt";
+			}
+		};
+		rst.setRefManager("default_web");
+		rst.runSession();
+		art = am.getArticle("RenameObject");
+		assertCREquals("The Article 'RenameObject' was not correctly refactored: "
+				, expectedAfter, art.toString());
+		art2 = am.getArticle("RenameObjectUNA");
+		assertCREquals("The Article 'RenameObjectUNA' was not correctly refactored: "
+				, expectedAfter2, art2.toString());
+	}
+	
+	@Test
+	public void testRenameAnswer() throws ProviderException {
+	
+		/*
+		 * Setup
+		 */
+		String content = Utils.readTxtFile("src/test/resources/wiki/RenameObject.txt");
+		String content2 = Utils.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
+		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/Rename.txt");
+		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/RenameAnswer/RenameObject.txt");
+		String expectedAfter2 = Utils.readTxtFile("src/test/resources/reference/RenameAnswer/RenameObjectUNA.txt");
+		
+		/*
+		 * Init first Article
+		 */
+		KnowWEArticle art = new KnowWEArticle(content, "RenameObject",
+				type, "default_web");
+		am.saveUpdatedArticle(art);
+		
+		KnowWEArticle art2 = new KnowWEArticle(content2, "RenameObjectUNA",
+				type, "default_web");
+		am.saveUpdatedArticle(art2);
+				
+		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+			@Override
+			protected String findRefactoringSourceCode() {
+				return refactoring;
+			}
+			@Override
+			public Class<? extends KnowWEObjectType> findRenamingType() {
+				return QuestionTreeAnswerID.class;
+			}
+
+			@Override
+			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
+				return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/" +
+						"SubTree/SubTree/SubTree/DashTreeElement/QuestionDashTreeElementContent/AnswerLine/QuestionTreeAnswerID";
+			}
+			
+			@Override
+			public String findNewName() {
+				return "Antwort Umbenannt";
+			}
+		};
+		rst.setRefManager("default_web");
+		rst.runSession();
+		art = am.getArticle("RenameObject");
+		assertCREquals("The Article 'RenameObject' was not correctly refactored: "
+				, expectedAfter, art.toString());
+		art2 = am.getArticle("RenameObjectUNA");
+		assertCREquals("The Article 'RenameObjectUNA' was not correctly refactored: "
+				, expectedAfter2, art2.toString());
+	}
+	
 	
 	/**
 	 * Asserts that two strings are equal when replacing all occurrences of \r\n with \n in both strings.

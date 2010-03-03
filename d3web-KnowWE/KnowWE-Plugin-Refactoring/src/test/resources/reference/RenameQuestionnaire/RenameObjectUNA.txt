@@ -1,0 +1,65 @@
+%%QuestionTree
+Fragebogen A
+- Frage 1 [oc]
+-- Antwort x
+--- Fragebogen Umbenannt
+-- Antwort y
+--- Lösung L (P3)
+---- Frage 5 [oc]
+- Frage 2 [oc]
+-- Antwort x
+--- Fragebogen Umbenannt
+-- Antwort y
+--- Lösung L (P3)
+- Frage 3 [oc]
+-- Antwort x
+--- Frage 4 [oc]
+---- Antwort y
+---- Antwort z
+----- Frage 1 (Antwort x)
+----- Frage 2 (Antwort x)
+
+Fragebogen Umbenannt
+- Frage 5 [oc]
+-- Antwort r
+-- Antwort s
+
+%
+
+
+<Questionnaires-section>
+Fragebogen A [1]
+Fragebogen Umbenannt
+</Questionnaires-section>
+
+<Solutions-section>
+Lösung L
+Lösung B
+</Solutions-section>
+
+<SetCoveringList-section>
+
+Lösung L{
+    Frage 1 = Antwort y,
+    Frage 2 = Antwort y
+}
+
+Lösung B{
+    Frage 1 = Antwort x,
+    Frage 2 = Antwort x    
+}
+
+</SetCoveringList-section>
+
+<Rules-section>
+IF Frage 1 = Antwort x THEN Fragebogen Umbenannt
+IF Frage 2 = Antwort x THEN Fragebogen Umbenannt
+IF Frage 4 = Antwort z THEN Frage 1 = Antwort x
+IF Frage 4 = Antwort z THEN Frage 2 = Antwort x
+IF Frage 2 = Antwort y THEN Lösung L= P2
+IF Lösung L= established THEN Lösung B = P2
+</Rules-section>
+
+%%KnowWEPlugin renderknowledge
+%%KnowWEPlugin validatekdom
+%%KnowWEPlugin renderkdom
