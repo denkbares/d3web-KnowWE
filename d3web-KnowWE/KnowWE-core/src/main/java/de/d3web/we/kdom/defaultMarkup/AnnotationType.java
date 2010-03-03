@@ -19,14 +19,15 @@ public class AnnotationType extends DefaultAbstractKnowWEObjectType {
 			"|" +
 			"(?:\\z)" +
 			"|" +
-			"(?:^\\p{Blank}+@\\w+))";
+			"(?:\\p{Blank}+@\\w+))";
 
 	private final DefaultMarkup.Annotation annotation;
 
 	public AnnotationType(DefaultMarkup.Annotation annotation) {
 		this.annotation = annotation;
 		Pattern pattern = getAnnotationPattern(this.annotation.getName());
-		this.setSectionFinder(new RegexSectionFinder(pattern, 1));
+//		this.setSectionFinder(new RegexSectionFinder(pattern, 1));
+		this.setSectionFinder(new AnnotationFinder(annotation.getName()));
 		Collections.addAll(this.childrenTypes, this.annotation.getTypes());
 	}
 
