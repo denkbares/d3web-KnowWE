@@ -203,7 +203,7 @@ public class RefactoringSessionDialog extends RefactoringSession {
 			}
 		});
 		String newName = gsonFormMap.get("selectNewName")[0];
-		return newName;
+		return newName.trim();
 	}
 
 

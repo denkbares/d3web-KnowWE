@@ -23,7 +23,6 @@ import org.ceryle.xml.XHTML;
 
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
-import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.content.PageRenamer;
 
@@ -38,6 +37,7 @@ import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.SubTree;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
+import de.d3web.we.kdom.dashTree.solutions.SolutionDef;
 import de.d3web.we.kdom.dashTree.solutions.SolutionsSection;
 import de.d3web.we.kdom.decisionTree.QClassID;
 import de.d3web.we.kdom.decisionTree.QuestionsSection;
@@ -49,6 +49,7 @@ import de.d3web.we.kdom.objects.QuestionID;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.questionTreeNew.QuestionTreeRootType;
+import de.d3web.we.kdom.questionTreeNew.SetValueLine;
 import de.d3web.we.kdom.rules.RulesSection;
 import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.table.attributes.AttributeTableSection;
@@ -290,16 +291,23 @@ public abstract class RefactoringSession {
 		List<Section<? extends KnowWEObjectType>> filteredList = new ArrayList<Section<? extends KnowWEObjectType>>();
 		if (clazz == QuestionTreeAnswerID.class) {
 			Section<QuestionID> question = findDashTreeFather(refManager.findNode(objectID), QuestionID.class);
-			List<Section<QuestionTreeAnswerID>> answers = new LinkedList<Section<QuestionTreeAnswerID>>();
-			question.findAncestor(SubTree.class).findSuccessorsOfType(QuestionTreeAnswerID.class, 5 , answers);
-			fullList.addAll(answers);
-			// hole alle FindingQuestion's welche den gleichen getOriginalText() haben wie die Question, zu welcher die QuestionTreeAnswerID
+
+			// TODO: diesen kommentar anpassen :-)/ hole alle FindingQuestion's welche den gleichen getOriginalText() haben wie die Question, zu welcher die QuestionTreeAnswerID
 			// gehört
-			List<Section<? extends KnowWEObjectType>> findingQuestions = findRenamingList(FindingQuestion.class, question.getId());
+			List<Section<? extends KnowWEObjectType>> questions = findRenamingList(QuestionID.class, question.getId());
 			// bestimme dafür die passenden Antworten
-			for (Section<? extends KnowWEObjectType> questionSection : findingQuestions) {
-				Section<? extends KnowWEObjectType> answer = questionSection.getFather().findSuccessor(FindingAnswer.class);
-				fullList.add(answer);
+			for (Section<? extends KnowWEObjectType> questionSection : questions){ 
+				if (questionSection.get().getClass() == FindingQuestion.class) {						Section<? extends KnowWEObjectType> answer = questionSection.getFather().findSuccessor(FindingAnswer.class);						fullList.add(answer);
+				}
+				if (questionSection.get().getClass() == QuestionID.class) {
+					List<Section<QuestionTreeAnswerID>> answers = new LinkedList<Section<QuestionTreeAnswerID>>();
+					questionSection.findAncestor(SubTree.class).findSuccessorsOfType(QuestionTreeAnswerID.class, 5 , answers);
+					fullList.addAll(answers);
+					
+					if(questionSection.getFather().get().getClass() == SetValueLine.class) {
+						fullList.add(questionSection.getFather().findChildOfType(AnonymousType.class));
+					}
+				};
 			}
 		} else {
 			for (Iterator<KnowWEArticle> it = refManager.getArticleIterator(); it.hasNext();) {
@@ -318,13 +326,29 @@ public abstract class RefactoringSession {
 					articleSection.findSuccessorsOfType(FindingQuestion.class, objects2);
 					fullList.addAll(objects2);
 				}
-				// TODO Solutions müssen ebenfalls behandelt werden!
+				if (clazz == SolutionID.class) {
+					List<Section<QuestionID>> objects2 = new ArrayList<Section<QuestionID>>();
+					articleSection.findSuccessorsOfType(QuestionID.class, objects2);
+					fullList.addAll(objects2);
+					List<Section<SolutionDef>> objects3 = new ArrayList<Section<SolutionDef>>();
+					articleSection.findSuccessorsOfType(SolutionDef.class, objects3);
+					fullList.addAll(objects3);
+					List<Section<FindingQuestion>> objects4 = new ArrayList<Section<FindingQuestion>>();
+					articleSection.findSuccessorsOfType(FindingQuestion.class, objects4);
+					fullList.addAll(objects4);
+				}
 			}
 		}
 		for (Section<? extends KnowWEObjectType> object : fullList) {
-			String name = (newName != null) ? newName : refManager.findNode(objectID).getOriginalText();
-			if (object.getOriginalText().equals(name)) {
+			String name = (newName != null) ? newName : refManager.findNode(objectID).getOriginalText().trim();
+			if (object.getOriginalText().trim().equals(name)) {
 				filteredList.add(object);
+			}
+			if (object.get().getClass() == AnonymousType.class) {
+				String oText = object.getOriginalText().trim();
+				if (oText.substring(1, oText.length()-1).trim().equals(name)) {
+					filteredList.add(object);
+				}
 			}
 		}
 		return filteredList;
@@ -363,7 +387,10 @@ public abstract class RefactoringSession {
 					}
 				}
 			}
-		} else {
+		} else if (section.get().getClass() == AnonymousType.class){
+			replaceSection(section, "(" + newName + ")");
+		}
+		else {
 			replaceSection(section, newName);
 		}
 	}
