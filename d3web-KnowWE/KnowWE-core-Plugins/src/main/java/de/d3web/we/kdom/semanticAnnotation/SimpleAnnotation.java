@@ -70,12 +70,13 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType implements
 		URI anno = null;
 		if (annos.contains(":")) {
 			String[] list = annos.split(":");
-			String ns =list[0];
-			if (ns.equals("ns")){
-				ns=uo.getBaseNS();
-			}
-			
+			String ns =list[0];		
+			try {
 			anno = uo.getHelper().createURI(SemanticCore.getInstance().expandNamespace(ns), list[1]);
+			} catch (IllegalArgumentException e){
+				io.setValidPropFlag(false);
+				io.setBadAttribute(ns);
+			}
 		} else {
 			anno = uo.getHelper().createlocalURI(annos);
 		}

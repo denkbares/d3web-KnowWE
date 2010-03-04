@@ -38,14 +38,13 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
  * 
  */
 public class SemanticAnnotationPropertyName extends
-		DefaultAbstractKnowWEObjectType implements OwlGenerator{
+		DefaultAbstractKnowWEObjectType implements OwlGenerator {
 
 	@Override
 	public void init() {
 		this.sectionFinder = new AllTextSectionFinder();
 	}
 
-	
 	public IntermediateOwlObject getOwl(Section s) {
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		UpperOntology uo = UpperOntology.getInstance();
@@ -56,12 +55,17 @@ public class SemanticAnnotationPropertyName extends
 		} else if (prop.equals("type")) {
 			property = uo.getRDF(prop);
 		} else if (prop.contains(":")) {
-			property = uo.getHelper().createURI(
-					SemanticCore.getInstance().getNameSpaces().get(
-							prop.split(":")[0]), prop.split(":")[1]);
+			String ns = SemanticCore.getInstance().getNameSpaces().get(
+					prop.split(":")[0]);
+			if (ns.equals(prop.split(":")[0])) {
+				io.setBadAttribute(ns);
+				io.setValidPropFlag(false);
+			} else {
+				property = uo.getHelper().createURI(ns, prop.split(":")[1]);
+			}
 		} else {
 			property = uo.getHelper().createlocalURI(prop);
-		}				
+		}
 		io.addLiteral(property);
 		return io;
 	}

@@ -35,6 +35,7 @@ import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
 import de.d3web.we.module.semantic.OwlGenerator;
+import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -115,12 +116,29 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 					+ text + "</span>");
 		}
 		KnowWEObjectType t=sec.getObjectType();
-		if ((t instanceof OwlGenerator) && ((OwlGenerator)t).getOwl(sec).getValidPropFlag()) {
+		if ((t instanceof OwlGenerator) && !(((OwlGenerator)t).getOwl(sec).getValidPropFlag())) {
 			text = KnowWEUtils
 					.maskHTML("<p class=\"box error\">invalid annotation attribute:"
 							+ ((OwlGenerator)t).getOwl(sec).getBadAttribute()
 							+ "</p>");
 		}
+		IntermediateOwlObject tempio=((OwlGenerator)objectSection.getObjectType()).getOwl(objectSection);
+		if (!tempio.getValidPropFlag()){
+			text = KnowWEUtils
+			.maskHTML("<p class=\"box error\">invalid annotation attribute:"
+					+ tempio.getBadAttribute()
+					+ "</p>");
+			
+		}
+		tempio=((OwlGenerator)propSection.getObjectType()).getOwl(propSection);
+		if (!tempio.getValidPropFlag()){
+			text = KnowWEUtils
+			.maskHTML("<p class=\"box error\">invalid annotation attribute:"
+					+ tempio.getBadAttribute()
+					+ "</p>");
+			
+		}
+		
 
 		string.append(text);
 	}

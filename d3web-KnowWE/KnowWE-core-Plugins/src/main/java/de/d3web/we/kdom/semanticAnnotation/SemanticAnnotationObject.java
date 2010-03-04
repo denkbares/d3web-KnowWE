@@ -67,24 +67,41 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 		List<Section> childs = s.getChildren();
 		URI prop = null;
 		URI stringa = null;
+		boolean erronousproperty = false;
+		String badprop = "";
 		for (Section cur : childs) {
 			if (cur.getObjectType().getClass().equals(
 					SemanticAnnotationProperty.class)) {
-				prop = ((SemanticAnnotationProperty) cur.getObjectType())
-						.getOwl(cur).getLiterals().get(0);
+				IntermediateOwlObject tempio = ((SemanticAnnotationProperty) cur
+						.getObjectType()).getOwl(cur);
+				prop = tempio.getLiterals().get(0);
+				erronousproperty = !tempio.getValidPropFlag();
+				if (erronousproperty) {
+					badprop = tempio.getBadAttribute();
+				}
 			} else if (cur.getObjectType().getClass().equals(
 					SimpleAnnotation.class)) {
-				stringa = ((SimpleAnnotation) cur.getObjectType()).getOwl(cur)
-						.getLiterals().get(0);
+				IntermediateOwlObject tempio = ((SimpleAnnotation) cur
+						.getObjectType()).getOwl(cur);
+				if (tempio.getValidPropFlag()) {
+					stringa = tempio.getLiterals().get(0);
+					prop = tempio.getLiterals().get(0);
+				} else {
+					badprop = tempio.getBadAttribute();
+				}
 			}
 
 		}
 
 		boolean validprop = false;
-		if (prop != null) {
+		if (erronousproperty) {
+			io.setBadAttribute(badprop);
+			io.setValidPropFlag(false);			
+		} else if (prop != null) {
 			validprop = PropertyManager.getInstance().isValid(prop);
 			io.setBadAttribute(prop.getLocalName());
 		}
+
 		io.setValidPropFlag(validprop);
 		if (!validprop) {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
@@ -113,8 +130,8 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 							uo.getHelper().createURI("Annotation")));
 				} else if (PropertyManager.getInstance().isNary(prop)) {
 					IntermediateOwlObject tempio = UpperOntology.getInstance()
-							.getHelper().createAnnotationProperty(soluri, prop, stringa,
-									s.getFather().getFather());
+							.getHelper().createAnnotationProperty(soluri, prop,
+									stringa, s.getFather().getFather());
 					io.merge(tempio);
 
 				} else {
