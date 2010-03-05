@@ -91,7 +91,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 			// delete the rules from the KnowledgeBase
 			Collection<KnowledgeSlice> ruleComplexes = kbm.getKnowledgeBase().getAllKnowledgeSlices();
 			for (KnowledgeSlice rc:ruleComplexes) {
-				if (!kbIDs.contains(rc.getId())) {
+				if (rc != null && !kbIDs.contains(rc.getId())) {
 					rc.remove();
 					//System.out.println("Deleted Rule: " + rc.getId());
 				}
