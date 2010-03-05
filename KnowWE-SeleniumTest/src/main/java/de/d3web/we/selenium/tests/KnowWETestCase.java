@@ -101,7 +101,12 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		System.out.println("Titel nach 1. Refresh: " + selenium.getTitle() + ", " + selenium.getLocation()+ " @ " + System.currentTimeMillis());
 		if (forwarding) {
 			System.out.println("Titel in if Zweig:" + selenium.getTitle() + ", " + selenium.getLocation()+ " @ " + System.currentTimeMillis());
-			threadSleep(sleepTime);
+			//Waiting till forwarded page starts loading
+			Long startTime = System.currentTimeMillis();
+			while (System.currentTimeMillis() - startTime < Long.parseLong(pageLoadTime)
+					&& selenium.getLocation().equals(url)) {
+				threadSleep(sleepTime);
+			}
 			System.out.println("Titel nach warten:" + selenium.getTitle() + ", " + selenium.getLocation()+ " @ " + System.currentTimeMillis());
 			selenium.getTitle(); //Setting new flag for "AndWait"
 			refreshAndWait();
