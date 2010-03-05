@@ -55,7 +55,8 @@ public class AnnotationFinder extends SectionFinder {
 				return result;
 			}
 
-			int end1 = text.length();
+			// find end (ends immediately if next annotation follows...)
+			int end1 = (text.charAt(start) == '@') ? start : text.length();
 			int end2 = findStart(text, start, nextAnnotationPattern);
 			int end3 = findStart(text, start, endpattern);
 			
