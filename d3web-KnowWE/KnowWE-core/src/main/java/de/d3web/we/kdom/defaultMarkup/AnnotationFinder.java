@@ -29,50 +29,67 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class AnnotationFinder extends SectionFinder {
 
-	private final Pattern startPattern;
-	private final static Pattern nextAnnotationPattern = Pattern.compile("\\p{Space}@\\w+", Pattern.CASE_INSENSITIVE+Pattern.MULTILINE);
-	private final static Pattern endpattern = Pattern.compile("^\\p{Blank}*%\\p{Blank}$", Pattern.CASE_INSENSITIVE+Pattern.MULTILINE);
-	
+	private final static Pattern nextAnnotationPattern = 
+		Pattern.compile("\\p{Space}+@\\w+", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
+
+	private final static Pattern endpattern = 
+		Pattern.compile("\\p{Space}*^\\p{Blank}*%\\p{Blank}*$", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
+
 	private final String name;
-	
+	private final Pattern startPattern;
+
 	public AnnotationFinder(String name) {
-		this.name=name;
-		startPattern = Pattern.compile("@"+name+"[:=\\p{Space}]", Pattern.CASE_INSENSITIVE+Pattern.MULTILINE);
+		this.name = name;
+		startPattern = Pattern.compile(
+				"@" + name + "\\p{Blank}*[:=\\p{Space}]\\p{Space}*",
+				Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
 	}
-	
+
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		int pos = 0;
-		while (text.length()>0) {
-			int start = find(text.substring(pos), startPattern);
-			if (start==-1) {
+		while (text.length() > 0) {
+			int start = findEnd(text, pos, startPattern);
+			if (start == -1) {
 				return result;
 			}
-			start +=  1 + name.length() + 1;
-			int end1 = text.substring(start).length();
-			int end2 = find(text.substring(start), nextAnnotationPattern);
-			int end3 = find(text.substring(start), endpattern);
-			if (end2==-1) {
-				end2=end1;
-			} if (end3==-1) {
-				end3=end1;
+
+			int end1 = text.length();
+			int end2 = findStart(text, start, nextAnnotationPattern);
+			int end3 = findStart(text, start, endpattern);
+			
+			// find the earliest match of all possible terminators
+			int end = end1;
+			if (end2 != -1 && end2 < end) {
+				end = end2;
 			}
-			end1 = Math.min(end1, end2);
-			end1 = Math.min(end1, end3);
-			result.add(new SectionFinderResult(pos+start, pos+start+end1));
-			pos = pos+start+end1;
+			if (end3 != -1 && end3 < end) {
+				end = end3;
+			}
+			result.add(new SectionFinderResult(start, end));
+			pos = end;
 		}
 		return result;
 	}
-	
-	private int find(String text, Pattern p) {
-		Matcher matcher = p.matcher(text);
-		if (matcher.find()) {
+
+	private int findStart(String text, int startIndex, Pattern pattern) {
+		Matcher matcher = pattern.matcher(text);
+		if (matcher.find(startIndex)) {
 			return matcher.start();
-		} else {
+		}
+		else {
 			return -1;
 		}
 	}
 
+	private int findEnd(String text, int startIndex, Pattern pattern) {
+		Matcher matcher = pattern.matcher(text);
+		if (matcher.find(startIndex)) {
+			return matcher.end();
+		}
+		else {
+			return -1;
+		}
+	}
 }
