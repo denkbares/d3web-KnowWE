@@ -29,26 +29,26 @@ import com.google.gson.reflect.TypeToken;
 
 import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.refactoring.dialog.RefactoringSessionDialog;
+import de.d3web.we.refactoring.dialog.RefactoringSession;
 /**
  * @author Franz Schwab
  */
 public class RefactoringAction extends AbstractKnowWEAction {
 	
-	private Map<String, RefactoringSessionDialog> sessions = new HashMap<String, RefactoringSessionDialog>();
+	private Map<String, RefactoringSession> sessions = new HashMap<String, RefactoringSession>();
 	
 	@Override
 	public String perform(final KnowWEParameterMap parameters) {
 		// rs.set(parameters) immer aufrufen nicht vergessen
 		String user = parameters.getUser();
-		RefactoringSessionDialog rsd = sessions.get(user);
+		RefactoringSession rsd = sessions.get(user);
 		Gson gson = new Gson();
 		Type mapType = new TypeToken<Map<String,String[]>>(){}.getType();
 		Map<String,String[]> gsonFormMap = gson.fromJson(parameters.get("jsonFormMap"),mapType);
 		// der Nutzer hatte noch keine RefactoringSession oder die vorherige ist bereits beendet
 		// oder die vorherige wurde abgebrochen und der Benutzer startet eine neue
 		if (rsd == null || rsd.isTerminated() || gsonFormMap.containsKey("startNewRefactoringSession")) {
-			rsd = new RefactoringSessionDialog();
+			rsd = new RefactoringSession();
 			rsd.setParameters(parameters, gsonFormMap);
 			sessions.put(user, rsd);
 			rsd.getThread().start();

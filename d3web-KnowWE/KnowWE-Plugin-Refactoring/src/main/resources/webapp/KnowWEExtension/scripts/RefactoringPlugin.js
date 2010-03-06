@@ -18,6 +18,10 @@ function refactoring() {
 	 			for (var j = 0; j < options.length; j++) {
 	 				if(options[j].selected == true) {
 	 					formMap[name].push(options[j].value);
+			 			if (formMap["optgroup"] == undefined) {
+				 			formMap["optgroup"] = new Array();
+			 			}	 					
+	 					formMap["optgroup"].push(options[j].getParent().id);
 	 					if (type == "select-one") {
 	 					 	break;	
 	 					}

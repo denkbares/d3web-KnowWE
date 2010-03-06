@@ -1,51 +1,15 @@
 package session;
 
-import java.util.List;
-
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.refactoring.session.RefactoringSession;
+import de.d3web.we.refactoring.dialog.RefactoringSession;
 
 public class RefactoringSessionTestImpl extends RefactoringSession {
 	
-	private KnowWEParameterMap parameters;
-
 	public RefactoringSessionTestImpl(KnowWEParameterMap params) {
 		this.parameters = params;
-	}
-
-	@Override
-	public String findNewName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T extends KnowWEObjectType> String[] findObjectIDs(Class<T> clazz) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Class<? extends KnowWEObjectType> findRenamingType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public void printExistingElements(List<Section<? extends KnowWEObjectType>> existingElements) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -60,18 +24,6 @@ public class RefactoringSessionTestImpl extends RefactoringSession {
 
 	}
 	
-	@Override
-	protected String findRefactoringSourceCode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Section<?> findXCList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	protected void saveAndFinish() {
 		for (KnowWEArticle changedArticle: refManager.getChangedArticles()) {
@@ -96,5 +48,4 @@ public class RefactoringSessionTestImpl extends RefactoringSession {
 
 		}
 	}
-	
 }

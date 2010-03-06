@@ -1,7 +1,0 @@
-type = getTypeFromString('KnowWEArticle')
-objectID = findObjectID(type)
-establishedSolutions = findSolutions('(!)', objectID)
-establishedSolutions.each{
-    createXCLFromFindingsTrace it
-    deleteSolutionOccurrences it
-}

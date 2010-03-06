@@ -7,7 +7,7 @@ import de.d3web.we.refactoring.renderer.GroovyDisplayRenderer;
 
 public class RefactoringContent extends XMLContent {
 	
-	KnowWEDomRenderer defaultRenderer;
+	KnowWEDomRenderer<?> defaultRenderer;
 	
 	public RefactoringContent() {
 		defaultRenderer = new EditSectionRenderer(new GroovyDisplayRenderer());
@@ -21,7 +21,7 @@ public class RefactoringContent extends XMLContent {
 	 * @see de.d3web.we.kdom.AbstractKnowWEObjectType#getDefaultRenderer()
 	 */
 	@Override
-	protected KnowWEDomRenderer getDefaultRenderer() {
+	protected KnowWEDomRenderer<?> getDefaultRenderer() {
 		return defaultRenderer;
 	}
 }

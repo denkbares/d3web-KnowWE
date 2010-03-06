@@ -20,15 +20,12 @@
 
 package tests;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.TestCase;
 
 import org.junit.Test;
 
 import session.RefactoringSessionTestImpl;
-import utils.Utils;
+import utilities.Utilities;
 
 import com.ecyrd.jspwiki.providers.ProviderException;
 
@@ -40,11 +37,19 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.decisionTree.SolutionID;
-import de.d3web.we.kdom.objects.QuestionID;
-import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
-import de.d3web.we.kdom.objects.QuestionnaireID;
-import de.d3web.we.kdom.xcl.XCList;
+import de.d3web.we.refactoring.dialog.RefactoringScript;
+import de.d3web.we.refactoring.dialog.RefactoringSession;
+import de.d3web.we.refactoring.script.DeleteCommentsT;
+import de.d3web.we.refactoring.script.EstablishedSolutionsFindingsTraceToXCLT;
+import de.d3web.we.refactoring.script.MergeXCLsT;
+import de.d3web.we.refactoring.script.QuestionTreeToQuestionsSectionT;
+import de.d3web.we.refactoring.script.QuestionsSectionToQuestionTreeT;
+import de.d3web.we.refactoring.script.RenameAnswerT;
+import de.d3web.we.refactoring.script.RenameArticleT;
+import de.d3web.we.refactoring.script.RenameQuestionT;
+import de.d3web.we.refactoring.script.RenameQuestionnaireT;
+import de.d3web.we.refactoring.script.RenameSolutionT;
+import de.d3web.we.refactoring.script.XCLToRulesT;
 import dummies.KnowWETestWikiConnector;
 
 public class RefactoringTest extends TestCase {
@@ -67,16 +72,16 @@ public class RefactoringTest extends TestCase {
 		type=ke.getRootType();
 		params=new KnowWEParameterMap(KnowWEAttributes.WEB, "default_web");
 	}
-	
+		
 	@Test
 	public void testXCLToRules() throws ProviderException {
 	
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/XCLToRules.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/XCLToRules.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/XCLToRules.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/XCLToRules.txt");
+//		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/XCLToRules.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/XCLToRules.txt");
 		
 		/*
 		 * Init first Article
@@ -86,17 +91,10 @@ public class RefactoringTest extends TestCase {
 		am.saveUpdatedArticle(art);
 		final Section<?> articleSection = am.getArticle("XCLToRules").getSection();
 		
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+		RefactoringSession rst = new RefactoringSessionTestImpl(params){
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-
-			@Override
-			public Section<?> findXCList() {
-				List<Section<XCList>> xclists = new ArrayList<Section<XCList>>();
-				articleSection.findSuccessorsOfType(XCList.class, xclists);
-				return xclists.get(0);
+			protected RefactoringScript findRefactoringScript() {
+				return new XCLToRulesT(articleSection);
 			}
 		};
 		rst.setRefManager("default_web");
@@ -112,9 +110,9 @@ public class RefactoringTest extends TestCase {
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/EstablishedSolutionsFindingsTraceToXCL.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/EstablishedSolutionsFindingsTraceToXCL.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/EstablishedSolutionsFindingsTraceToXCL.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/EstablishedSolutionsFindingsTraceToXCL.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/EstablishedSolutionsFindingsTraceToXCL.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/EstablishedSolutionsFindingsTraceToXCL.txt");
 		
 		/*
 		 * Init first Article
@@ -123,15 +121,10 @@ public class RefactoringTest extends TestCase {
 				type, "default_web");
 		am.saveUpdatedArticle(art);
 				
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+		RefactoringSession rst = new RefactoringSessionTestImpl(params) {
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "EstablishedSolutionsFindingsTraceToXCL";
+			protected RefactoringScript findRefactoringScript() {
+				return new EstablishedSolutionsFindingsTraceToXCLT();
 			}
 		};
 		rst.setRefManager("default_web");
@@ -147,9 +140,9 @@ public class RefactoringTest extends TestCase {
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/MergeXCLs.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/MergeXCLs.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/MergeXCLs.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/MergeXCLs.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/MergeXCLs.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/MergeXCLs.txt");
 		
 		/*
 		 * Init first Article
@@ -160,13 +153,8 @@ public class RefactoringTest extends TestCase {
 				
 		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "MergeXCLs";
+			protected RefactoringScript findRefactoringScript() {
+				return new MergeXCLsT();
 			}
 		};
 		rst.setRefManager("default_web");
@@ -182,9 +170,9 @@ public class RefactoringTest extends TestCase {
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/DeleteComments.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/DeleteComments.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/DeleteComments.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/DeleteComments.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/DeleteComments.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/DeleteComments.txt");
 		
 		/*
 		 * Init first Article
@@ -193,15 +181,10 @@ public class RefactoringTest extends TestCase {
 				type, "default_web");
 		am.saveUpdatedArticle(art);
 				
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+		RefactoringSession rst = new RefactoringSessionTestImpl(params){
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "DeleteComments";
+			protected RefactoringScript findRefactoringScript() {
+				return new DeleteCommentsT();
 			}
 		};
 		rst.setRefManager("default_web");
@@ -212,82 +195,16 @@ public class RefactoringTest extends TestCase {
 	}
 	
 	
-	@Test
-	public void testRenameArticle() throws ProviderException {
-	
-		/*
-		 * Setup
-		 */
-		String contentR = Utils.readTxtFile("src/test/resources/wiki/Rename.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/Rename.txt");
-		String expectedAfterR = Utils.readTxtFile("src/test/resources/reference/Rename.txt");
-		
-		String contentRA = Utils.readTxtFile("src/test/resources/wiki/RenameA.txt");
-		String expectedAfterRTest = Utils.readTxtFile("src/test/resources/reference/RenameTest.txt");
-		
-		String contentRB = Utils.readTxtFile("src/test/resources/wiki/RenameB.txt");
-		String expectedAfterRB = Utils.readTxtFile("src/test/resources/reference/RenameB.txt");
-		
-		/*
-		 * Init first Article
-		 */
-		KnowWEArticle art = new KnowWEArticle(contentR, "Rename",
-				type, "default_web");
-		am.saveUpdatedArticle(art);
-		
-		KnowWEArticle artA = new KnowWEArticle(contentRA, "RenameA",
-				type, "default_web");
-		am.saveUpdatedArticle(artA);
-		
-		KnowWEArticle artB = new KnowWEArticle(contentRB, "RenameB",
-				type, "default_web");
-		am.saveUpdatedArticle(artB);
-				
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
-			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-			@Override
-			public Class<? extends KnowWEObjectType> findRenamingType() {
-				return KnowWEArticle.class;
-			}
 
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "RenameA";
-			}
-			
-			@Override
-			public String findNewName() {
-				return "RenameTest";
-			}
-		};
-		rst.setRefManager("default_web");
-		rst.runSession();
-		art = am.getArticle("Rename");
-		assertCREquals("The Article 'Rename' was not correctly refactored: "
-				, expectedAfterR, art.toString());
-		
-		// Das Umbenennen des Artikelnamens kann leider nicht mit dem Wiki emuliert werden.
-		artA = am.getArticle("RenameA");
-		assertCREquals("The Article 'RenameA' was not correctly refactored: "
-				, expectedAfterRTest, artA.toString());
-		
-		artB = am.getArticle("RenameB");
-		assertCREquals("The Article 'RenameB' was not correctly refactored: "
-				, expectedAfterRB, artB.toString());
-	}
-	
 	@Test
 	public void testQuestionTreeToQuestionsSection() throws ProviderException {
 	
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/QuestionTreeToQuestionsSection.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/QuestionTreeToQuestionsSection.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/QuestionTreeToQuestionsSection.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/QuestionTreeToQuestionsSection.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/QuestionTreeToQuestionsSection.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/QuestionTreeToQuestionsSection.txt");
 		
 		/*
 		 * Init first Article
@@ -296,15 +213,10 @@ public class RefactoringTest extends TestCase {
 				type, "default_web");
 		am.saveUpdatedArticle(art);
 				
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+		RefactoringSession rst = new RefactoringSessionTestImpl(params){
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "QuestionTreeToQuestionsSection";
+			protected RefactoringScript findRefactoringScript() {
+				return new QuestionTreeToQuestionsSectionT();
 			}
 		};
 		rst.setRefManager("default_web");
@@ -320,9 +232,9 @@ public class RefactoringTest extends TestCase {
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/QuestionsSectionToQuestionTree.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/QuestionsSectionToQuestionTree.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/QuestionsSectionToQuestionTree.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/QuestionsSectionToQuestionTree.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/QuestionsSectionToQuestionTree.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/QuestionsSectionToQuestionTree.txt");
 		
 		/*
 		 * Init first Article
@@ -331,15 +243,10 @@ public class RefactoringTest extends TestCase {
 				type, "default_web");
 		am.saveUpdatedArticle(art);
 				
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+		RefactoringSession rst = new RefactoringSessionTestImpl(params){
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "QuestionsSectionToQuestionTree";
+			protected RefactoringScript findRefactoringScript() {
+				return new QuestionsSectionToQuestionTreeT();
 			}
 		};
 		rst.setRefManager("default_web");
@@ -348,18 +255,18 @@ public class RefactoringTest extends TestCase {
 		assertCREquals("The Article 'QuestionsSectionToQuestionTree' was not correctly refactored: "
 				, expectedAfter, art.toString());
 	}
-	
+
 	@Test
 	public void testRenameQuestionnaire() throws ProviderException {
 	
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/RenameObject.txt");
-		String content2 = Utils.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/Rename.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/RenameQuestionnaire/RenameObject.txt");
-		String expectedAfter2 = Utils.readTxtFile("src/test/resources/reference/RenameQuestionnaire/RenameObjectUNA.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/RenameObject.txt");
+		String content2 = Utilities.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/Rename.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/RenameQuestionnaire/RenameObject.txt");
+		String expectedAfter2 = Utilities.readTxtFile("src/test/resources/reference/RenameQuestionnaire/RenameObjectUNA.txt");
 		
 		/*
 		 * Init first Article
@@ -372,25 +279,10 @@ public class RefactoringTest extends TestCase {
 				type, "default_web");
 		am.saveUpdatedArticle(art2);
 				
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+		RefactoringSession rst = new RefactoringSessionTestImpl(params){
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-			@Override
-			public Class<? extends KnowWEObjectType> findRenamingType() {
-				return QuestionnaireID.class;
-			}
-
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/SubTree/SubTree/" +
-						"SubTree/SubTree/DashTreeElement/QuestionDashTreeElementContent/IndicationLine/QuestionnaireID";
-			}
-			
-			@Override
-			public String findNewName() {
-				return "Fragebogen Umbenannt";
+			protected RefactoringScript findRefactoringScript() {
+				return new RenameQuestionnaireT();
 			}
 		};
 		rst.setRefManager("default_web");
@@ -409,11 +301,11 @@ public class RefactoringTest extends TestCase {
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/RenameObject.txt");
-		String content2 = Utils.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/Rename.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/RenameQuestion/RenameObject.txt");
-		String expectedAfter2 = Utils.readTxtFile("src/test/resources/reference/RenameQuestion/RenameObjectUNA.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/RenameObject.txt");
+		String content2 = Utilities.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/Rename.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/RenameQuestion/RenameObject.txt");
+		String expectedAfter2 = Utilities.readTxtFile("src/test/resources/reference/RenameQuestion/RenameObjectUNA.txt");
 		
 		/*
 		 * Init first Article
@@ -426,25 +318,10 @@ public class RefactoringTest extends TestCase {
 				type, "default_web");
 		am.saveUpdatedArticle(art2);
 				
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+		RefactoringSession rst = new RefactoringSessionTestImpl(params){
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-			@Override
-			public Class<? extends KnowWEObjectType> findRenamingType() {
-				return QuestionID.class;
-			}
-
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/SubTree/" +
-						"SubTree/DashTreeElement/QuestionDashTreeElementContent/QuestionLine/QuestionID";
-			}
-			
-			@Override
-			public String findNewName() {
-				return "Frage Umbenannt";
+			protected RefactoringScript findRefactoringScript() {
+				return new RenameQuestionT();
 			}
 		};
 		rst.setRefManager("default_web");
@@ -463,11 +340,11 @@ public class RefactoringTest extends TestCase {
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/RenameObject.txt");
-		String content2 = Utils.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/Rename.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/RenameSolution/RenameObject.txt");
-		String expectedAfter2 = Utils.readTxtFile("src/test/resources/reference/RenameSolution/RenameObjectUNA.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/RenameObject.txt");
+		String content2 = Utilities.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/Rename.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/RenameSolution/RenameObject.txt");
+		String expectedAfter2 = Utilities.readTxtFile("src/test/resources/reference/RenameSolution/RenameObjectUNA.txt");
 		
 		/*
 		 * Init first Article
@@ -480,25 +357,10 @@ public class RefactoringTest extends TestCase {
 				type, "default_web");
 		am.saveUpdatedArticle(art2);
 				
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+		RefactoringSession rst = new RefactoringSessionTestImpl(params){
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-			@Override
-			public Class<? extends KnowWEObjectType> findRenamingType() {
-				return SolutionID.class;
-			}
-
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/" +
-						"SubTree/SubTree/SubTree2/SubTree/DashTreeElement/QuestionDashTreeElementContent/SetValueLine/QuestionID";
-			}
-			
-			@Override
-			public String findNewName() {
-				return "Lösung Umbenannt";
+			protected RefactoringScript findRefactoringScript() {
+				return new RenameSolutionT();
 			}
 		};
 		rst.setRefManager("default_web");
@@ -517,11 +379,11 @@ public class RefactoringTest extends TestCase {
 		/*
 		 * Setup
 		 */
-		String content = Utils.readTxtFile("src/test/resources/wiki/RenameObject.txt");
-		String content2 = Utils.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
-		final String refactoring = Utils.readTxtFile("src/test/resources/refactoring/Rename.txt");
-		String expectedAfter = Utils.readTxtFile("src/test/resources/reference/RenameAnswer/RenameObject.txt");
-		String expectedAfter2 = Utils.readTxtFile("src/test/resources/reference/RenameAnswer/RenameObjectUNA.txt");
+		String content = Utilities.readTxtFile("src/test/resources/wiki/RenameObject.txt");
+		String content2 = Utilities.readTxtFile("src/test/resources/wiki/RenameObjectUNA.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/Rename.txt");
+		String expectedAfter = Utilities.readTxtFile("src/test/resources/reference/RenameAnswer/RenameObject.txt");
+		String expectedAfter2 = Utilities.readTxtFile("src/test/resources/reference/RenameAnswer/RenameObjectUNA.txt");
 		
 		/*
 		 * Init first Article
@@ -534,25 +396,10 @@ public class RefactoringTest extends TestCase {
 				type, "default_web");
 		am.saveUpdatedArticle(art2);
 				
-		RefactoringSessionTestImpl rst = new RefactoringSessionTestImpl(params){
+		RefactoringSession rst = new RefactoringSessionTestImpl(params){
 			@Override
-			protected String findRefactoringSourceCode() {
-				return refactoring;
-			}
-			@Override
-			public Class<? extends KnowWEObjectType> findRenamingType() {
-				return QuestionTreeAnswerID.class;
-			}
-
-			@Override
-			public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
-				return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/" +
-						"SubTree/SubTree/SubTree/DashTreeElement/QuestionDashTreeElementContent/AnswerLine/QuestionTreeAnswerID";
-			}
-			
-			@Override
-			public String findNewName() {
-				return "Antwort Umbenannt";
+			protected RefactoringScript findRefactoringScript() {
+				return new RenameAnswerT();
 			}
 		};
 		rst.setRefManager("default_web");
@@ -564,6 +411,60 @@ public class RefactoringTest extends TestCase {
 		assertCREquals("The Article 'RenameObjectUNA' was not correctly refactored: "
 				, expectedAfter2, art2.toString());
 	}
+	
+	@Test
+	public void testRenameArticle() throws ProviderException {
+	
+		/*
+		 * Setup
+		 */
+		String contentR = Utilities.readTxtFile("src/test/resources/wiki/Rename.txt");
+//		final String refactoring = Utilities.readTxtFile("src/test/resources/refactoring/Rename.txt");
+		String expectedAfterR = Utilities.readTxtFile("src/test/resources/reference/Rename.txt");
+		
+		String contentRA = Utilities.readTxtFile("src/test/resources/wiki/RenameA.txt");
+		String expectedAfterRTest = Utilities.readTxtFile("src/test/resources/reference/RenameTest.txt");
+		
+		String contentRB = Utilities.readTxtFile("src/test/resources/wiki/RenameB.txt");
+		String expectedAfterRB = Utilities.readTxtFile("src/test/resources/reference/RenameB.txt");
+		
+		/*
+		 * Init first Article
+		 */
+		KnowWEArticle art = new KnowWEArticle(contentR, "Rename",
+				type, "default_web");
+		am.saveUpdatedArticle(art);
+		
+		KnowWEArticle artA = new KnowWEArticle(contentRA, "RenameA",
+				type, "default_web");
+		am.saveUpdatedArticle(artA);
+		
+		KnowWEArticle artB = new KnowWEArticle(contentRB, "RenameB",
+				type, "default_web");
+		am.saveUpdatedArticle(artB);
+				
+		RefactoringSession rst = new RefactoringSessionTestImpl(params){
+			@Override
+			protected RefactoringScript findRefactoringScript() {
+				return new RenameArticleT();
+			}
+		};
+		rst.setRefManager("default_web");
+		rst.runSession();
+		art = am.getArticle("Rename");
+		assertCREquals("The Article 'Rename' was not correctly refactored: "
+				, expectedAfterR, art.toString());
+		
+		// Das Umbenennen des Artikelnamens kann leider nicht mit dem Wiki emuliert werden.
+		artA = am.getArticle("RenameA");
+		assertCREquals("The Article 'RenameA' was not correctly refactored: "
+				, expectedAfterRTest, artA.toString());
+		
+		artB = am.getArticle("RenameB");
+		assertCREquals("The Article 'RenameB' was not correctly refactored: "
+				, expectedAfterRB, artB.toString());
+	}
+	
 	
 	
 	/**

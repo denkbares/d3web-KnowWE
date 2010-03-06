@@ -1,7 +1,5 @@
 package de.d3web.we.refactoring.renderer;
 
-import java.util.Map;
-
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;

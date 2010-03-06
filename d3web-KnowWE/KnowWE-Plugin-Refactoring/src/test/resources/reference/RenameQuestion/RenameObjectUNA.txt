@@ -4,13 +4,13 @@ Fragebogen A
 -- Antwort x
 --- Fragebogen B
 -- Antwort y
---- Lösung L (P3)
+--- Loesung L (P3)
 ---- Frage 5 [oc]
 - Frage 2 [oc]
 -- Antwort x
 --- Fragebogen B
 -- Antwort y
---- Lösung L (P3)
+--- Loesung L (P3)
 - Frage 3 [oc]
 -- Antwort x
 --- Frage 4 [oc]
@@ -33,18 +33,18 @@ Fragebogen B
 </Questionnaires-section>
 
 <Solutions-section>
-Lösung L
-Lösung B
+Loesung L
+Loesung B
 </Solutions-section>
 
 <SetCoveringList-section>
 
-Lösung L{
+Loesung L{
     Frage Umbenannt = Antwort y,
     Frage 2 = Antwort y
 }
 
-Lösung B{
+Loesung B{
     Frage Umbenannt = Antwort x,
     Frage 2 = Antwort x    
 }
@@ -56,8 +56,8 @@ IF Frage Umbenannt = Antwort x THEN Fragebogen B
 IF Frage 2 = Antwort x THEN Fragebogen B
 IF Frage 4 = Antwort z THEN Frage Umbenannt = Antwort x
 IF Frage 4 = Antwort z THEN Frage 2 = Antwort x
-IF Frage 2 = Antwort y THEN Lösung L= P2
-IF Lösung L= established THEN Lösung B = P2
+IF Frage 2 = Antwort y THEN Loesung L= P2
+IF Loesung L= established THEN Loesung B = P2
 </Rules-section>
 
 %%KnowWEPlugin renderknowledge
