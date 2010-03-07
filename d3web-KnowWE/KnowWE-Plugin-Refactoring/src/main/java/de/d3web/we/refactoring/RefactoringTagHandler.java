@@ -27,6 +27,10 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.ecyrd.jspwiki.WikiContext;
+import com.ecyrd.jspwiki.WikiEngine;
+import com.ecyrd.jspwiki.auth.authorize.Role;
+
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -49,17 +53,19 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class RefactoringTagHandler extends AbstractTagHandler {
 	public static final SortedMap<String, Class<? extends RefactoringScript>> SCRIPTS = createScriptMap();
+    /** If true, check to see that user is authenticated. The value is {@value}. */
+    public static final boolean CHECK_AUTHENTICATION = false;
 	
 	private static SortedMap<String,Class<? extends RefactoringScript>> createScriptMap(){
 		SortedMap<String, Class<? extends RefactoringScript>> SCRIPTS = new TreeMap<String, Class<? extends RefactoringScript>>();
-		SCRIPTS.put("DeleteComments", DeleteComments.class);
-		SCRIPTS.put("EstablishedSolutionsFindingsTraceToXCL", EstablishedSolutionsFindingsTraceToXCL.class);
-		SCRIPTS.put("MergeXCLs", MergeXCLs.class);
-		SCRIPTS.put("QuestionsSectionToQuestionTree", QuestionsSectionToQuestionTree.class);
-		SCRIPTS.put("QuestionTreeToQuestionsSection", QuestionTreeToQuestionsSection.class);
-		SCRIPTS.put("Rename",Rename.class);
-		SCRIPTS.put("XCLToRules",XCLToRules.class);
-		SCRIPTS.put("RefactoringScriptJavaConcrete", RefactoringScriptJavaConcrete.class);
+		SCRIPTS.put("DeleteComments",							DeleteComments.class);
+		SCRIPTS.put("EstablishedSolutionsFindingsTraceToXCL",	EstablishedSolutionsFindingsTraceToXCL.class);
+		SCRIPTS.put("MergeXCLs",								MergeXCLs.class);
+		SCRIPTS.put("QuestionsSectionToQuestionTree",			QuestionsSectionToQuestionTree.class);
+		SCRIPTS.put("QuestionTreeToQuestionsSection",			QuestionTreeToQuestionsSection.class);
+		SCRIPTS.put("Rename",									Rename.class);
+		SCRIPTS.put("XCLToRules",								XCLToRules.class);
+		SCRIPTS.put("RefactoringScriptJavaConcrete",			RefactoringScriptJavaConcrete.class);
 		return Collections.unmodifiableSortedMap(SCRIPTS);
 	}
 
@@ -69,14 +75,22 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 	
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+		StringBuffer html = new StringBuffer();
+		html.append("<div id='refactoring-panel' class='panel'><h3>Refactoring Konsole</h3><div id='refactoring-content'>");
+		if (CHECK_AUTHENTICATION) {
+			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
+			WikiContext context = we.createContext(user.getHttpRequest(), WikiContext.VIEW);
+			if (!we.getAuthorizationManager().isUserInRole(context.getWikiSession(), Role.AUTHENTICATED)) {
+				html.append("<p>Script execution not permitted for unauthenticated users.</p>");
+			}
+		}
 		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic);
 		Section<?> articleSection = article.getSection();
 		List<Section<Refactoring>> refactorings = new ArrayList<Section<Refactoring>>();
 		articleSection.findSuccessorsOfType(Refactoring.class, refactorings);
-		StringBuffer html = new StringBuffer();
 		KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-		html.append("<div id='refactoring-panel' class='panel'><h3>Refactoring Konsole</h3><div id='refactoring-content'>"
-				+ "<fieldset><div class='left'>" + "<p>Es wurden <strong>" + refactorings.size()
+		html.append("<fieldset><div class='left'>" + "<p>");
+		html.append("Es wurden <strong>" + refactorings.size()
 				+ "</strong> Refactorings auf dieser Seite und <strong>" + SCRIPTS.size()  
 				+ "</strong> Built-in Refactorings gefunden. Bitte wählen Sie das gewünschte Refactoring aus.</p></div>"
 				+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Refactoring</label>"

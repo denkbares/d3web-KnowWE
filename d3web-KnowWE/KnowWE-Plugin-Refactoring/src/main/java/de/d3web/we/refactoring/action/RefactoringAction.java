@@ -24,11 +24,16 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ecyrd.jspwiki.WikiContext;
+import com.ecyrd.jspwiki.WikiEngine;
+import com.ecyrd.jspwiki.auth.authorize.Role;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import de.d3web.we.action.AbstractKnowWEAction;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.refactoring.RefactoringTagHandler;
 import de.d3web.we.refactoring.dialog.RefactoringSession;
 /**
  * @author Franz Schwab
@@ -39,6 +44,13 @@ public class RefactoringAction extends AbstractKnowWEAction {
 	
 	@Override
 	public String perform(final KnowWEParameterMap parameters) {
+		if (RefactoringTagHandler.CHECK_AUTHENTICATION) {
+			WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
+			WikiContext context = we.createContext(parameters.getRequest(), WikiContext.VIEW);
+			if (!we.getAuthorizationManager().isUserInRole(context.getWikiSession(), Role.AUTHENTICATED)) {
+				return "<p>Script execution not permitted for unauthenticated users.</p>";
+			}
+		}		
 		// rs.set(parameters) immer aufrufen nicht vergessen
 		String user = parameters.getUser();
 		RefactoringSession rsd = sessions.get(user);
