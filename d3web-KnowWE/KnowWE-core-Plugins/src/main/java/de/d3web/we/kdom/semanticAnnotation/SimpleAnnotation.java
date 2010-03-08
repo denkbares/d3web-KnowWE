@@ -70,9 +70,14 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType implements
 		URI anno = null;
 		if (annos.contains(":")) {
 			String[] list = annos.split(":");
-			String ns =list[0];		
+			String ns =list[0];
+			String ens=SemanticCore.getInstance().expandNamespace(ns);
+			if (ns.equals(ens)){
+				io.setValidPropFlag(false);
+				io.setBadAttribute(ns+ " is no valid namespace");
+			}
 			try {
-			anno = uo.getHelper().createURI(SemanticCore.getInstance().expandNamespace(ns), list[1]);
+			anno = uo.getHelper().createURI(ens, list[1]);
 			} catch (IllegalArgumentException e){
 				io.setValidPropFlag(false);
 				io.setBadAttribute(ns);
