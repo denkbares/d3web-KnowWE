@@ -84,8 +84,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 				IntermediateOwlObject tempio = ((SimpleAnnotation) cur
 						.getObjectType()).getOwl(cur);
 				if (tempio.getValidPropFlag()) {
-					stringa = tempio.getLiterals().get(0);
-					prop = tempio.getLiterals().get(0);
+					stringa = tempio.getLiterals().get(0);					
 				} else {
 					badprop = tempio.getBadAttribute();
 				}
