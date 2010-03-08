@@ -539,5 +539,21 @@ public class SemanticCore {
 		}
 		return ns;
 	}
+	
+	/**
+	 * reduces any namespace to its shortcut
+	 * @param s
+	 * @return
+	 */
+	public String reduceNamespace(String s) {
+		for(Entry<String,String> cur:namespaces.entrySet()){
+			s=s.replaceAll(cur.getValue(),cur.getKey()+":");
+		}
+		for(Entry<String,String> cur:defaultnamespaces.entrySet()){
+			s=s.replaceAll(cur.getValue(),cur.getKey()+":");
+		}
+
+		return s;
+	}
 
 }
