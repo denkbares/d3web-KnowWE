@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ResourceBundle;
 
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.utils.KnowWEUtils;
@@ -41,6 +40,7 @@ public class SessionChooserRenderer extends AbstractKnowWEAction {
 		};
 	}
 
+	@Override
 	public String perform(KnowWEParameterMap map) {
 		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(map.getRequest());
 		StringBuffer sb = new StringBuffer();

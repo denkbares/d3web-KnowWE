@@ -20,18 +20,13 @@
 package de.d3web.we.kdom.owlextension;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openrdf.model.Statement;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -39,7 +34,6 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
 
-import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.module.semantic.OwlGenerator;

@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.table;
 
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.StringContext;
 
 public class TableColumnContext extends  StringContext {

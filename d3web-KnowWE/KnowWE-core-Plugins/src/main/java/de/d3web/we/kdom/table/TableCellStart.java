@@ -67,6 +67,7 @@ public class TableCellStart extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Returns the renderer for the <code>TableContent</code>.
 	 */
+	@Override
 	public KnowWEDomRenderer getRenderer() {
 		
 		/**

@@ -25,6 +25,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 public class RemoveKwikiUserAction extends AbstractKnowWEAction {
 
 
+	@Override
 	public String perform(KnowWEParameterMap map) {
 //		String userId = map.get(KnowWEAttributes.USER);
 		//[TODO]: Nothing? remove session + dir

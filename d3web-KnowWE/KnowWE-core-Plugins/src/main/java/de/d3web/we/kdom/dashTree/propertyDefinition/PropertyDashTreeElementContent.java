@@ -26,7 +26,6 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
@@ -61,7 +60,7 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent imple
 	 */
 	
 	public IntermediateOwlObject getOwl(Section s) {
-		Section<PropertyDashTreeElementContent> sec = (Section<PropertyDashTreeElementContent>)s;
+		Section<PropertyDashTreeElementContent> sec = s;
 		if (s.getObjectType() instanceof PropertyDashTreeElementContent) {
 			Section<PropertyIDDefinition> propIDSection = sec.findSuccessor(PropertyIDDefinition.class);
 			if (propIDSection != null) {

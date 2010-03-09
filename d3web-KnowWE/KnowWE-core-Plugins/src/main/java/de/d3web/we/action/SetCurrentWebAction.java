@@ -26,6 +26,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 public class SetCurrentWebAction  extends AbstractKnowWEAction {
 
 
+	@Override
 	public String perform(KnowWEParameterMap map) {
 //		String web = map.getWeb();
 		//model.setAttribute(KnowWEAttributes.WEB, web, model.getWebApp());

@@ -20,15 +20,11 @@
 
 package de.d3web.we.action;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
 
 /**
  * Changes the Activation-State of

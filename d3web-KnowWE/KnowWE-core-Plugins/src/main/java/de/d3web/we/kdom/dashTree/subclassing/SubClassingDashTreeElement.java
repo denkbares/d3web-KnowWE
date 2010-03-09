@@ -34,7 +34,7 @@ public class SubClassingDashTreeElement extends DashTreeElement implements OwlGe
 
 	
 	public IntermediateOwlObject getOwl(Section s) {   //warning
-		Section<DashTreeElement> element = (Section<DashTreeElement>)s;  //warning 
+		Section<DashTreeElement> element = s;  //warning 
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
 			Section<? extends DashTreeElement> father = DashTreeElement.getDashTreeFather(element);

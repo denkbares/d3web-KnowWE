@@ -43,7 +43,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class SparqlDelegateRenderer extends KnowWEDomRenderer {
@@ -68,7 +68,8 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec,
+			KnowWEUserContext user, StringBuilder string) {
 		String renderengine = "default";
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
 		SparqlRenderer currentrenderer = renderers.get(renderengine);
@@ -81,7 +82,10 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 		String value = sec.getOriginalText();
 		Map<String, String> params = AbstractXMLObjectType
 				.getAttributeMapFor(sec.getFather());
+		boolean debug = false;
+
 		if (params != null) {
+			debug = params.containsKey("debug");
 			if (params.containsKey("render")) {
 				renderengine = params.get("render");
 				if (renderers.get(renderengine) != null) {
@@ -94,10 +98,20 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 		String querystring = addNamespaces(value, sec.getTitle());
 
 		String res = executeQuery(currentrenderer, params, querystring);
-		if (res != null)
+
+		if (res != null) {
+			if (debug) {
+				res = querystring + KnowWEUtils.maskHTML("<hr /><br />\n")
+						+ res;
+			}
 			string.append(res);
-		else
+		} else {
+			if (debug) {
+				res = KnowWEUtils.maskHTML(querystring + "<hr /><br />\n")
+						+ res;
+			}
 			string.append(sec.getOriginalText());
+		}
 	}
 
 	@Deprecated
@@ -113,15 +127,19 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 			value = "";
 		value = value.replaceAll("\\$this", "\"" + topicenc + "\"");
 		String rawquery = value.trim();
-		String querystring = SemanticCore.getInstance().getSparqlNamespaceShorts()+rawquery;
+		String querystring = SemanticCore.getInstance()
+				.getSparqlNamespaceShorts()
+				+ rawquery;
 		return querystring;
 	}
-	
+
 	public static String addNamespaces(String value) {
 		if (value == null)
 			value = "";
 		String rawquery = value.trim();
-		String querystring = SemanticCore.getInstance().getSparqlNamespaceShorts()+rawquery;
+		String querystring = SemanticCore.getInstance()
+				.getSparqlNamespaceShorts()
+				+ rawquery;
 		return querystring;
 	}
 
@@ -151,8 +169,7 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 		try {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
-				return currentrenderer.render(
-						result, params);
+				return currentrenderer.render(result, params);
 			} else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
 				return "graphquery ouput implementation: TODO";
@@ -161,8 +178,8 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 				return result + "";
 			}
 		} catch (QueryEvaluationException e) {
-			return rb.getString("KnowWE.owl.query.evalualtion.error")
-					+ ":" + e.getMessage();
+			return rb.getString("KnowWE.owl.query.evalualtion.error") + ":"
+					+ e.getMessage();
 		} finally {
 
 		}

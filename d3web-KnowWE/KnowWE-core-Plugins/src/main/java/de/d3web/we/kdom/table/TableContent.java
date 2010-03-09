@@ -48,7 +48,7 @@ public class TableContent extends XMLContent {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section sec) {
-			Section<?> s = (Section<?>)sec;
+			Section<?> s = sec;
 			Section<TableLine> headerLine = s.findSuccessor(TableLine.class);
 			AbstractKnowWEObjectType solutionHeaderType = new TableHeaderLine();
 			if (headerLine != null) {

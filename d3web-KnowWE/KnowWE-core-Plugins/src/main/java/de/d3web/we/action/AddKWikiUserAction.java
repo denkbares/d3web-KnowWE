@@ -25,6 +25,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 public class AddKWikiUserAction extends AbstractKnowWEAction {
 
 
+	@Override
 	public String perform(KnowWEParameterMap map) {
 //		String userId = (String) map.get(KnowWEAttributes.USER);
 		//[TODO]: nothing??

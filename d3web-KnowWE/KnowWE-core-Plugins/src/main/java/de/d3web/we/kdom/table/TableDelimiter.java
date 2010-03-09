@@ -41,6 +41,7 @@ public class TableDelimiter extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Returns the renderer for the <code>TableContent</code>.
 	 */
+	@Override
 	public KnowWEDomRenderer getRenderer() {
 		/**
 		 * This is a renderer for the TableContent. I wraps the <code>Table</code>
