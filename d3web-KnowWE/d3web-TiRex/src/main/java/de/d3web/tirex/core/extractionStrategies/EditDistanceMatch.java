@@ -23,7 +23,7 @@ package de.d3web.tirex.core.extractionStrategies;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.d3web.core.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.tirex.core.OriginalMatchAndStrategy;
 import de.d3web.tirex.core.TiRexUtilities;
 

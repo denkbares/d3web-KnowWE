@@ -23,7 +23,7 @@ package de.d3web.kernel.psMethods.delegate;
 import java.util.ArrayList;
 
 import de.d3web.core.inference.RuleAction;
-import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 
 public class ActionDelegate extends AbstractActionDelegate {
 

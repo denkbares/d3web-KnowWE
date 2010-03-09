@@ -26,7 +26,7 @@ import java.util.Map;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.MethodKind;
-import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;

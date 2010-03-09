@@ -34,13 +34,13 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.terminology.Diagnosis;
-import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.QuestionChoice;
-import de.d3web.core.terminology.QuestionNum;
-import de.d3web.core.terminology.QuestionYN;
 import de.d3web.report.Message;
 
 public class KnowledgeUtils {

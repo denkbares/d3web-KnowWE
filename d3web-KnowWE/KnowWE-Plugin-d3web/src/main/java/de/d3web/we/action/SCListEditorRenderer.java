@@ -20,11 +20,11 @@
 
 package de.d3web.we.action;
 
-import de.d3web.core.KnowledgeBase;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.terminology.QASet;
-import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.QuestionChoice;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;

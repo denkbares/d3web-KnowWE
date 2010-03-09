@@ -21,13 +21,13 @@ package de.d3web.we.kdom.xcl;
 
 import java.util.logging.Level;
 
+import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.info.DCElement;
+import de.d3web.core.knowledge.terminology.info.DCMarkup;
+import de.d3web.core.knowledge.terminology.info.MMInfoObject;
+import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.terminology.NamedObject;
-import de.d3web.core.terminology.info.DCElement;
-import de.d3web.core.terminology.info.DCMarkup;
-import de.d3web.core.terminology.info.MMInfoObject;
-import de.d3web.core.terminology.info.MMInfoStorage;
-import de.d3web.core.terminology.info.Property;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import de.d3web.core.KnowledgeBase;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEParseResult;

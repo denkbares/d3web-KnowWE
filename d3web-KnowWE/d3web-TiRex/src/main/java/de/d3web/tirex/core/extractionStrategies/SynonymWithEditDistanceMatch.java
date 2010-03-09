@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import de.d3web.core.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.tirex.core.OriginalMatchAndStrategy;
 import de.d3web.tirex.core.TiRexSettings;
 import de.d3web.tirex.core.TiRexUtilities;

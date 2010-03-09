@@ -40,10 +40,10 @@ import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
+import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.core.knowledge.terminology.QContainer;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.core.terminology.QASet;
-import de.d3web.core.terminology.QContainer;
-import de.d3web.core.terminology.info.Property;
 import de.d3web.report.Message;
 
 

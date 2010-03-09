@@ -20,7 +20,7 @@
 
 package de.d3web.knowledgeExporter.tests.utils;
 
-import de.d3web.core.KnowledgeBase;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.report.Report;
 
 public class KnowledgeBaseAndReport {

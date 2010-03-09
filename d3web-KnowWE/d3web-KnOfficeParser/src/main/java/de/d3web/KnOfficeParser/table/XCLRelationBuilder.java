@@ -27,8 +27,8 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.core.terminology.Diagnosis;
 
 /**
  * Erstellt XCL Relationen aus einer Tabellenzelle

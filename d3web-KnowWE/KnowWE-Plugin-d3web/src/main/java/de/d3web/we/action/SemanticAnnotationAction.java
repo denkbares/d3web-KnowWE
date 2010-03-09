@@ -22,7 +22,7 @@ package de.d3web.we.action;
 
 import java.util.List;
 
-import de.d3web.core.terminology.Question;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.DPSEnvironment;

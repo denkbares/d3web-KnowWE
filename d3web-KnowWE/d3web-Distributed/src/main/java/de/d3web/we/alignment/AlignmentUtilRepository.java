@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.core.terminology.IDObject;
-import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.utilities.SetMap;
 import de.d3web.we.alignment.aligner.CompleteGlobalAligner;
 import de.d3web.we.alignment.aligner.GlobalAligner;

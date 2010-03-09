@@ -30,17 +30,17 @@ import java.util.regex.Pattern;
 import de.d3web.KnOfficeParser.KnOfficeParameterSet;
 import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
+import de.d3web.core.knowledge.terminology.Answer;
+import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.info.DCElement;
+import de.d3web.core.knowledge.terminology.info.DCMarkup;
+import de.d3web.core.knowledge.terminology.info.MMInfoObject;
+import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
+import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.core.terminology.Answer;
-import de.d3web.core.terminology.IDObject;
-import de.d3web.core.terminology.NamedObject;
-import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.info.DCElement;
-import de.d3web.core.terminology.info.DCMarkup;
-import de.d3web.core.terminology.info.MMInfoObject;
-import de.d3web.core.terminology.info.MMInfoStorage;
-import de.d3web.core.terminology.info.MMInfoSubject;
-import de.d3web.core.terminology.info.Property;
 import de.d3web.report.Message;
 
 

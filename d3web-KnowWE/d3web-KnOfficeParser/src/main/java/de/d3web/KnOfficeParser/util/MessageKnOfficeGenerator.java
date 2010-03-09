@@ -26,7 +26,7 @@ import org.antlr.runtime.FailedPredicateException;
 import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.RecognitionException;
 
-import de.d3web.core.terminology.info.NumericalInterval;
+import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.report.Message;
 /**
  * Class for generating error messages

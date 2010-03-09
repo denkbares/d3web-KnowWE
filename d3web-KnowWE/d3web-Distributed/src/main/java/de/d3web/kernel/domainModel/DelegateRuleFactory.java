@@ -24,8 +24,8 @@ import java.util.List;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.terminology.NamedObject;
 import de.d3web.kernel.psMethods.delegate.ActionDelegate;
 import de.d3web.kernel.psMethods.delegate.ActionInstantDelegate;
 

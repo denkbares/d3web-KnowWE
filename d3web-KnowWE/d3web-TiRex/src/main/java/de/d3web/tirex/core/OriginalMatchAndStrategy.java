@@ -20,7 +20,7 @@
 
 package de.d3web.tirex.core;
 
-import de.d3web.core.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.tirex.core.extractionStrategies.ExtractionStrategy;
 
 /**

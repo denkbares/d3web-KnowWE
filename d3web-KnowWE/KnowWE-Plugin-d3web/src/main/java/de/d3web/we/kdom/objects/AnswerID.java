@@ -1,6 +1,6 @@
 package de.d3web.we.kdom.objects;
 
-import de.d3web.core.terminology.Answer;
+import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.we.kdom.Section;
 
 public abstract class AnswerID extends D3webID<Answer> {

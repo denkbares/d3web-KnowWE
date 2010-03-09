@@ -27,10 +27,10 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.core.KnowledgeBase;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.terminology.Diagnosis;
-import de.d3web.core.terminology.Question;
 import de.d3web.tirex.core.extractionStrategies.ExtractionStrategy;
 
 /**

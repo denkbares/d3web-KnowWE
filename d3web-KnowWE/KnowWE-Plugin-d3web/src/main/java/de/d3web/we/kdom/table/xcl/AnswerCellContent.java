@@ -25,11 +25,11 @@ import java.util.List;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.QuestionChoice;
-import de.d3web.core.terminology.QuestionNum;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;

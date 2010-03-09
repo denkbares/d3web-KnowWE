@@ -21,10 +21,10 @@
 package de.d3web.we.alignment;
 
 
+import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.session.values.AnswerNum;
-import de.d3web.core.terminology.IDObject;
-import de.d3web.core.terminology.NamedObject;
 
 public class D3webAlignUtils {
 

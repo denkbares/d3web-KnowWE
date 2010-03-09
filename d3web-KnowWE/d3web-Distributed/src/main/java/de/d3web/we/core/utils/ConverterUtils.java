@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.values.AnswerDate;
 import de.d3web.core.session.values.AnswerNum;
 import de.d3web.core.session.values.EvaluatableAnswerDateValue;
-import de.d3web.core.terminology.IDObject;
 
 public class ConverterUtils {
 

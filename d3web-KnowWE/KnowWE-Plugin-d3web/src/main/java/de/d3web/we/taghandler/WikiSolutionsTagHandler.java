@@ -23,8 +23,8 @@ package de.d3web.we.taghandler;
 import java.util.Collection;
 import java.util.Map;
 
+import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.terminology.Diagnosis;
 import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;

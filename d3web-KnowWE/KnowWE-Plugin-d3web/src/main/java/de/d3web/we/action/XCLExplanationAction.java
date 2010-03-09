@@ -31,11 +31,11 @@ import java.util.ResourceBundle;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.knowledge.terminology.Answer;
+import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.XPSCase;
-import de.d3web.core.terminology.Answer;
-import de.d3web.core.terminology.Diagnosis;
-import de.d3web.core.terminology.Question;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;

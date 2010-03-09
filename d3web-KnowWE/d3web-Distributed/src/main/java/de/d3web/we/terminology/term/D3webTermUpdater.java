@@ -20,7 +20,7 @@
 
 package de.d3web.we.terminology.term;
 
-import de.d3web.core.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 
 public class D3webTermUpdater implements TermUpdater<NamedObject>{
 

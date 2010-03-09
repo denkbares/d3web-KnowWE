@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.core.KnowledgeBase;
 import de.d3web.core.io.PersistenceManager;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;

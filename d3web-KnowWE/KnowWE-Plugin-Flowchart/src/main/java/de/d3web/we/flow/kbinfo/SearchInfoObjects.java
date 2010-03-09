@@ -26,9 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.core.KnowledgeBase;
-import de.d3web.core.terminology.NamedObject;
-import de.d3web.core.terminology.Question;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.action.AbstractKnowWEAction;
 import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.DPSEnvironment;

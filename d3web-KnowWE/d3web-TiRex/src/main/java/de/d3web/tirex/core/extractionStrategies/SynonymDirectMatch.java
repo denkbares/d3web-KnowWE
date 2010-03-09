@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.core.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.tirex.core.OriginalMatchAndStrategy;
 import de.d3web.tirex.core.TiRexSettings;
 

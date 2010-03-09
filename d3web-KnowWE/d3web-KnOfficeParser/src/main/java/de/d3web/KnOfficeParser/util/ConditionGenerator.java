@@ -29,9 +29,9 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.terminology.QuestionNum;
-import de.d3web.core.terminology.info.NumericalInterval;
-import de.d3web.core.terminology.info.Property;
+import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.info.NumericalInterval;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.report.Message;
 
 public class ConditionGenerator {

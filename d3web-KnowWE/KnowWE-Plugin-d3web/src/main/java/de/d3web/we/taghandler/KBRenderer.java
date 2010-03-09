@@ -28,10 +28,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
-import de.d3web.core.KnowledgeBase;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.AbstractCondition;
-import de.d3web.core.terminology.Diagnosis;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;

@@ -39,14 +39,14 @@ import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.TerminalCondition;
+import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.DiagnosisState;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.terminology.Diagnosis;
-import de.d3web.core.terminology.DiagnosisState;
-import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.QuestionChoice;
-import de.d3web.core.terminology.QuestionNum;
-import de.d3web.core.terminology.QuestionYN;
 import de.d3web.report.Message;
 
 /**

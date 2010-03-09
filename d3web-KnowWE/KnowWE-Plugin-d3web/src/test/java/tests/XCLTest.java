@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.util.Collection;
 
 import utils.KBCreationTestUtil;
-import de.d3web.core.KnowledgeBase;
 import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.logging.Logging;
 import de.d3web.xcl.XCLModel;

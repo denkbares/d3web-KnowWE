@@ -20,16 +20,16 @@
 
 package de.d3web.KnOfficeParser.util;
 
+import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionDate;
+import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.QuestionOC;
+import de.d3web.core.knowledge.terminology.QuestionText;
+import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.core.terminology.QASet;
-import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.QuestionDate;
-import de.d3web.core.terminology.QuestionMC;
-import de.d3web.core.terminology.QuestionNum;
-import de.d3web.core.terminology.QuestionOC;
-import de.d3web.core.terminology.QuestionText;
-import de.d3web.core.terminology.QuestionYN;
-import de.d3web.core.terminology.QuestionZC;
 
 
 public class D3webQuestionFactory {

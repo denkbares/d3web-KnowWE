@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.core.inference.RuleAction;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.interviewmanager.QASetManager;
-import de.d3web.core.terminology.NamedObject;
 
 public abstract class AbstractActionDelegate extends RuleAction {
 

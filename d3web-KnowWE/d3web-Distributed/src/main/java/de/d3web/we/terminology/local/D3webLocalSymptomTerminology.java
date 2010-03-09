@@ -22,10 +22,10 @@ package de.d3web.we.terminology.local;
 
 import java.util.Collection;
 
+import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.terminology.IDObject;
-import de.d3web.core.terminology.QASet;
-import de.d3web.core.terminology.Question;
 import de.d3web.we.alignment.AlignmentUtilRepository;
 
 public class D3webLocalSymptomTerminology implements LocalTerminologyAccess<IDObject> {

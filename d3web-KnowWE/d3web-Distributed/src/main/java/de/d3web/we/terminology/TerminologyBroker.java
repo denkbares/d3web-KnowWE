@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.core.terminology.Diagnosis;
-import de.d3web.core.terminology.QContainer;
+import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.utilities.ISetMap;
 import de.d3web.utilities.SetMap;
 import de.d3web.we.alignment.AlignmentFilter;

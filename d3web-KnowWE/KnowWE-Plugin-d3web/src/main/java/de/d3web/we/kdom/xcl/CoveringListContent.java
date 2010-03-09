@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.terminology.Diagnosis;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;

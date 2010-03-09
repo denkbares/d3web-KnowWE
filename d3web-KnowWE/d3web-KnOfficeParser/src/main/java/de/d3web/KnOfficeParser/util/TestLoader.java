@@ -32,8 +32,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import de.d3web.core.KnowledgeBase;
 import de.d3web.core.io.PersistenceManager;
+import de.d3web.core.knowledge.KnowledgeBase;
 
 public class TestLoader {
 

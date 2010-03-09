@@ -5,13 +5,13 @@ import java.util.List;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.terminology.Diagnosis;
-import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.QuestionChoice;
-import de.d3web.core.terminology.QuestionNum;
 import de.d3web.scoring.Score;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;

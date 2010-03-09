@@ -23,14 +23,14 @@ package tests;
 import java.io.IOException;
 
 import utils.KBCreationTestUtil;
-import de.d3web.core.KnowledgeBase;
-import de.d3web.core.terminology.Diagnosis;
-import de.d3web.core.terminology.info.DCElement;
-import de.d3web.core.terminology.info.DCMarkup;
-import de.d3web.core.terminology.info.MMInfoObject;
-import de.d3web.core.terminology.info.MMInfoStorage;
-import de.d3web.core.terminology.info.MMInfoSubject;
-import de.d3web.core.terminology.info.Property;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.info.DCElement;
+import de.d3web.core.knowledge.terminology.info.DCMarkup;
+import de.d3web.core.knowledge.terminology.info.MMInfoObject;
+import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
+import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
 import junit.framework.TestCase;
 

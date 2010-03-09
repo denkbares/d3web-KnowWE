@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.core.terminology.QASet;
-import de.d3web.core.terminology.Question;
+import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.knowledgeExporter.KnowledgeManager;
 

@@ -27,12 +27,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.d3web.core.KnowledgeBase;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.QuestionChoice;
-import de.d3web.core.terminology.QuestionNum;
 
 public class KBLoaderTT implements TerminologyTester{
 

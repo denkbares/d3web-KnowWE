@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
+import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.terminology.Diagnosis;
 import de.d3web.utilities.ISetMap;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;

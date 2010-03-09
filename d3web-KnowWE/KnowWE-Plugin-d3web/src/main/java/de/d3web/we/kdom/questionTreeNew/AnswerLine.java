@@ -1,9 +1,9 @@
 package de.d3web.we.kdom.questionTreeNew;
 
+import de.d3web.core.knowledge.terminology.Answer;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.terminology.Answer;
-import de.d3web.core.terminology.Question;
-import de.d3web.core.terminology.QuestionChoice;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;

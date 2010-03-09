@@ -3,9 +3,9 @@ package de.d3web.we.kdom.table.xcl;
 import java.util.ArrayList;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
+import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.terminology.QASet;
-import de.d3web.core.terminology.QContainer;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;

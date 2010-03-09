@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import de.d3web.core.KnowledgeBase;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.Rule;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;

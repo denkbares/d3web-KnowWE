@@ -20,7 +20,7 @@
 
 package de.d3web.we.d3webModule;
 
-import de.d3web.core.KnowledgeBase;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;

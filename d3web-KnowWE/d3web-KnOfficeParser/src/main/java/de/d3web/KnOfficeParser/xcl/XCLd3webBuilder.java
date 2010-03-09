@@ -45,8 +45,8 @@ import de.d3web.xcl.inference.PSMethodXCL;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.core.terminology.Diagnosis;
 /**
  * Klasse um mithilfe des XCL Parsers d3web Wissen zu generieren 
  * @author Markus Friedrich

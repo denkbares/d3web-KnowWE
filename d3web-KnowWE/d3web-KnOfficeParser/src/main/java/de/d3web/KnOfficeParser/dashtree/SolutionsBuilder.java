@@ -37,16 +37,16 @@ import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
+import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.info.DCElement;
+import de.d3web.core.knowledge.terminology.info.DCMarkup;
+import de.d3web.core.knowledge.terminology.info.MMInfoObject;
+import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.terminology.Diagnosis;
-import de.d3web.core.terminology.NamedObject;
-import de.d3web.core.terminology.info.DCElement;
-import de.d3web.core.terminology.info.DCMarkup;
-import de.d3web.core.terminology.info.MMInfoObject;
-import de.d3web.core.terminology.info.MMInfoStorage;
-import de.d3web.core.terminology.info.Property;
 import de.d3web.report.Message;
 
 public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {

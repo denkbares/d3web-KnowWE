@@ -26,11 +26,11 @@ import java.util.Map;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.knowledge.terminology.QContainer;
+import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.terminology.QContainer;
-import de.d3web.core.terminology.QuestionMC;
 import de.d3web.diaFlux.IndicateFlowAction;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;

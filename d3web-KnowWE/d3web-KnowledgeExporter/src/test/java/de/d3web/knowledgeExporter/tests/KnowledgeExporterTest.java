@@ -10,7 +10,7 @@ import de.d3web.KnOfficeParser.dashtree.SolutionsBuilder;
 import de.d3web.KnOfficeParser.decisiontree.D3DTBuilder;
 import de.d3web.KnOfficeParser.rule.D3ruleBuilder;
 import de.d3web.KnOfficeParser.xcl.XCLd3webBuilder;
-import de.d3web.core.KnowledgeBase;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.knowledgeExporter.KnowledgeManager;
 
