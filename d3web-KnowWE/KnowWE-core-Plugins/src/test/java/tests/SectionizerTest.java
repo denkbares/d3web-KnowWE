@@ -32,7 +32,6 @@ import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import dummies.KnowWETestWikiConnector;
@@ -46,6 +45,7 @@ import junit.framework.TestCase;
  */
 public class SectionizerTest extends TestCase {
 
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

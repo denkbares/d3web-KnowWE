@@ -34,19 +34,19 @@ import de.d3web.we.kdom.xml.XMLContent;
  */
 public class SparqlContent extends XMLContent{
     
-    private HashMap<Section, String> queries;
+    private HashMap<Section<SparqlContent>, String> queries;
     
-	public void addQuery(Section s, String str){
+	public void addQuery(Section<SparqlContent> s, String str){
 		queries.put(s, str);
 	}
 	
-	public HashMap<Section, String>getQueries(){
+	public HashMap<Section<SparqlContent>, String>getQueries(){
 		return queries;
 	}
 	
 	@Override
 	public void init() {
-    	    queries=new HashMap<Section, String>();
+    	    queries=new HashMap<Section<SparqlContent>, String>();
     	    this.setCustomRenderer(SparqlDelegateRenderer.getInstance());
     	}
 	

@@ -23,12 +23,8 @@
  */
 package tests;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import org.openrdf.sail.rdbms.managers.HashManager;
 
 import junit.framework.TestCase;
 import de.d3web.plugin.test.InitPluginManager;

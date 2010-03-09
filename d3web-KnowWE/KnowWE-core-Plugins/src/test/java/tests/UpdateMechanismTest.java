@@ -21,7 +21,6 @@
 package tests;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -36,6 +35,7 @@ import dummies.KnowWETestWikiConnector;
 
 public class UpdateMechanismTest extends TestCase {
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

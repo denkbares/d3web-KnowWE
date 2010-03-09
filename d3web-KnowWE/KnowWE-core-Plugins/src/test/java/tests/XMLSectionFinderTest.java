@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import utils.Utils;
@@ -33,7 +32,6 @@ import utils.Utils;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -44,6 +42,7 @@ import junit.framework.TestCase;
 
 public class XMLSectionFinderTest extends TestCase {
 
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}

@@ -78,7 +78,7 @@ public class TimeEventSPARQLUtils {
 	Query query = null;
 	try {
 	    query = con.prepareQuery(QueryLanguage.SPARQL,
-		    SparqlDelegateRenderer.addNamespaces(querystring, "Main"));
+		    SparqlDelegateRenderer.addNamespaces(querystring));
 	} catch (RepositoryException e) {
 	    // return e.getMessage();
 	} catch (MalformedQueryException e) {

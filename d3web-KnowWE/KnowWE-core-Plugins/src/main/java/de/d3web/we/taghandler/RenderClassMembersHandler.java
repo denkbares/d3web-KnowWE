@@ -49,7 +49,7 @@ public class RenderClassMembersHandler extends AbstractTagHandler {
 	Query query = null;
 	try {
 	    query = con.prepareQuery(QueryLanguage.SPARQL,
-		    SparqlDelegateRenderer.addNamespaces(querystring, topic));
+		    SparqlDelegateRenderer.addNamespaces(querystring));
 	} catch (RepositoryException e) {
 	    return e.getMessage();
 	} catch (MalformedQueryException e) {

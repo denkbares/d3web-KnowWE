@@ -21,8 +21,6 @@
 package tests;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
 import objectTypes.SplitObjectType;
 import objectTypes.WordObjectType;
 import de.d3web.plugin.test.InitPluginManager;
@@ -47,6 +45,7 @@ import junit.framework.TestCase;
  */
 public class ReplaceKdomNodeTest extends TestCase {
 	
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}
@@ -125,7 +124,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		actual = original.equals(content);
 		assertEquals("Original equals replaced", false, actual);
 		
-		artSec = (Section) artSec.getChildren().get(0).getChildren().get(0);
+		artSec = artSec.getChildren().get(0).getChildren().get(0);
 		String objectTypeName = artSec.getObjectType().getName();
 		assertEquals("SplitObjectType not contained", "SplitObjectType", objectTypeName);		
 	}

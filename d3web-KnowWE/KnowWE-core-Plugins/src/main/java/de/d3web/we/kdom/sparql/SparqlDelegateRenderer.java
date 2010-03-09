@@ -46,7 +46,7 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class SparqlDelegateRenderer extends KnowWEDomRenderer {
+public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 	private ResourceBundle rb;
 	private static SparqlDelegateRenderer instance;
 	private HashMap<String, SparqlRenderer> renderers;
@@ -68,7 +68,7 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 	}
 
 	@Override
-	public void render(KnowWEArticle article, Section sec,
+	public void render(KnowWEArticle article, Section<SparqlContent> sec,
 			KnowWEUserContext user, StringBuilder string) {
 		String renderengine = "default";
 		rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
@@ -81,7 +81,7 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 
 		String value = sec.getOriginalText();
 		Map<String, String> params = AbstractXMLObjectType
-				.getAttributeMapFor(sec.getFather());
+				.getAttributeMapFor((Section<? extends AbstractXMLObjectType>) sec.getFather());
 		boolean debug = false;
 
 		if (params != null) {
@@ -95,7 +95,7 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 
 		}
 
-		String querystring = addNamespaces(value, sec.getTitle());
+		String querystring = addNamespaces(value);
 
 		String res = executeQuery(currentrenderer, params, querystring);
 
@@ -114,24 +114,7 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer {
 		}
 	}
 
-	@Deprecated
-	public static String addNamespaces(String value, String topic) {
-		String topicenc = null;
-		try {
-			topicenc = URLEncoder.encode(topic, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (value == null)
-			value = "";
-		value = value.replaceAll("\\$this", "\"" + topicenc + "\"");
-		String rawquery = value.trim();
-		String querystring = SemanticCore.getInstance()
-				.getSparqlNamespaceShorts()
-				+ rawquery;
-		return querystring;
-	}
+
 
 	public static String addNamespaces(String value) {
 		if (value == null)

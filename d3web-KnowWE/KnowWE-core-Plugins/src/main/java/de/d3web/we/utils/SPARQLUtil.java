@@ -35,7 +35,7 @@ public class SPARQLUtil {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
-					SparqlDelegateRenderer.addNamespaces(q, ""));
+					SparqlDelegateRenderer.addNamespaces(q));
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 		} catch (MalformedQueryException e) {
@@ -66,7 +66,7 @@ public class SPARQLUtil {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
-					SparqlDelegateRenderer.addNamespaces(q, topic));
+					SparqlDelegateRenderer.addNamespaces(q));
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 		} catch (MalformedQueryException e) {

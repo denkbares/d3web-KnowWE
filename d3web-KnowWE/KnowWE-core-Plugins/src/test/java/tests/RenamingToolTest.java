@@ -44,6 +44,7 @@ import junit.framework.TestCase;
 
 public class RenamingToolTest extends TestCase {
 
+	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}
