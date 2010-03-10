@@ -52,7 +52,7 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 
 	private SparqlDelegateRenderer() {
 		renderers = new HashMap<String, SparqlRenderer>();
-		SparqlRenderer defrenderer=new DefaultSparqlRenderer(); 
+		SparqlRenderer defrenderer=DefaultSparqlRenderer.getInstance(); 
 		renderers.put(defrenderer.getName(),defrenderer );
 	}
 	
@@ -111,8 +111,9 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 			debug = params.containsKey("debug");
 			if (params.containsKey("render")) {
 				renderengine = params.get("render");
-				if (renderers.get(renderengine) != null) {
-					currentrenderer = renderers.get(renderengine);
+				SparqlRenderer newr=renderers.get(renderengine);
+				if (newr != null) {
+					currentrenderer = newr;
 				}
 			}
 
@@ -175,7 +176,18 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 		try {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
-				return currentrenderer.render(result, params);
+				String erg="";
+				try {
+					erg= currentrenderer.render(result, params);
+				} catch (Exception e ){
+					
+					erg=e.getMessage();
+					for (StackTraceElement cur:e.getStackTrace()){
+						erg+=cur.getMethodName()+cur.getLineNumber()+"\n";
+					}
+				}
+		
+				return erg;
 			} else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();
 				return "graphquery ouput implementation: TODO";

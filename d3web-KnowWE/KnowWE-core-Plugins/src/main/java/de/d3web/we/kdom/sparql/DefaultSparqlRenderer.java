@@ -44,10 +44,14 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 		return instance;
 	}
 
+	private DefaultSparqlRenderer () {
+		myID=23;
+	}
 	private int myID;
 
 	public String render(TupleQueryResult result, Map<String, String> params) {
-
+//	 BindingSet bs=result.next();
+//	 bs.g
 		boolean links = false;
 		if (params.containsKey("render")) {
 			links = params.get("render").equals("links");
