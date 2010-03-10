@@ -37,7 +37,7 @@ public class TagEditPanel extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-		TaggingMangler tm = TaggingMangler.getInstance();
+		TaggingMangler tm = TaggingMangler.getInstance();		
 		ArrayList<String> tags = tm.getPageTags(topic);
 		String output = "<p>";
 		output += "Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):";

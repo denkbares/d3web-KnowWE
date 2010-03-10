@@ -57,7 +57,10 @@ public class SemanticAnnotationPropertyName extends
 		} else if (prop.contains(":")) {
 			String ns = SemanticCore.getInstance().getNameSpaces().get(
 					prop.split(":")[0]);
-			if (ns.equals(prop.split(":")[0])) {
+			if (ns==null|| ns.length()==0){
+				io.setBadAttribute("no namespace given");
+				io.setValidPropFlag(false);			
+			} else if (ns.equals(prop.split(":")[0])) {				
 				io.setBadAttribute(ns);
 				io.setValidPropFlag(false);
 			} else {
