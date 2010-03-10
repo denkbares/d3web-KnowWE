@@ -950,7 +950,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			return;
 		}
 		for (Section sec : getChildren()) {
-			sec.findSuccessorsOfType(class1, depth--, found);
+			sec.findSuccessorsOfType(class1, depth - 1, found);
 		}
 
 	}
@@ -970,7 +970,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			return;
 		}
 		for (Section sec : getChildren()) {
-			sec.findSuccessorsOfType(t, depth--, found);
+			sec.findSuccessorsOfType(t, depth - 1, found);
 		}
 
 	}
