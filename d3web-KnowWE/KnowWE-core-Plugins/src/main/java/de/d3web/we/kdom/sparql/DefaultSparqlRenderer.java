@@ -44,6 +44,8 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 		return instance;
 	}
 
+	private int myID;
+
 	public String render(TupleQueryResult result, Map<String, String> params) {
 
 		boolean links = false;
@@ -142,5 +144,23 @@ public class DefaultSparqlRenderer implements SparqlRenderer {
 			}
 		}
 		return output;
+	}
+
+	@Override
+	public String getName() {
+		
+		return "default";
+	}
+
+	@Override
+	public int getID() {
+		
+		return myID;
+	}
+
+	@Override
+	public void setID(int id) {
+	myID=id;
+		
 	}
 }

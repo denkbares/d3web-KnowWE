@@ -34,4 +34,7 @@ import org.openrdf.query.TupleQueryResult;
 public interface SparqlRenderer {
 
     public String render(TupleQueryResult result,Map<String, String> params);
+    public String getName();
+    public void setID(int id);
+    public int getID();
 }

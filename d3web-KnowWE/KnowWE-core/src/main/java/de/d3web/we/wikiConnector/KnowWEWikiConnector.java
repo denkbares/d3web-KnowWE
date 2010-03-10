@@ -46,223 +46,231 @@ import de.d3web.we.core.KnowWEParameterMap;
 
 public interface KnowWEWikiConnector {
 
-    /**
-     * Return the absolute path of the web-application
-     * 
-     * @return path of the web-application
-     */
-    public String getRealPath();
+	/**
+	 * Return the absolute path of the web-application
+	 * 
+	 * @return path of the web-application
+	 */
+	public String getRealPath();
 
-    /**
-     * Returns the current servlet-context object
-     * 
-     * @return
-     */
-    public ServletContext getServletContext();
+	/**
+	 * Returns the current servlet-context object
+	 * 
+	 * @return
+	 */
+	public ServletContext getServletContext();
 
-    /**
-     * Return the ActionDispatcher which is responsible to receive the
-     * http-request for the KnowWE-actions
-     * 
-     * @return
-     */
-    public KnowWEActionDispatcher getActionDispatcher();
+	/**
+	 * Returns a path to savely store owl files to. The path must be outside the
+	 * webapps dir to prevent the files to be deleted during a wiki-redeploy
+	 * 
+	 */
+	public String getSavePath();
+	
+	/**
+	 * Return the ActionDispatcher which is responsible to receive the
+	 * http-request for the KnowWE-actions
+	 * 
+	 * @return
+	 */
+	public KnowWEActionDispatcher getActionDispatcher();
 
-    /**
-     * Saves the article (persistently) into the connected wiki
-     * 
-     * @param name
-     * @param text
-     * @param map
-     * @return
-     */
-    public boolean saveArticle(String name, String text, KnowWEParameterMap map);
+	/**
+	 * Saves the article (persistently) into the connected wiki
+	 * 
+	 * @param name
+	 * @param text
+	 * @param map
+	 * @return
+	 */
+	public boolean saveArticle(String name, String text, KnowWEParameterMap map);
 
-    /**
-     * Returns a list of all jar attachment files of the wiki
-     * 
-     * @return
-     */
-    public List<String> getJarAttachments();
-    
-    /**
-     * @return a List of all ConnectorAttachments
-     */
-    public Collection<ConnectorAttachment> getAttachments();
+	/**
+	 * Returns a list of all jar attachment files of the wiki
+	 * 
+	 * @return
+	 */
+	public List<String> getJarAttachments();
 
-    /**
-     * Returns the filenames of the attachments of the given wiki page
-     * 
-     * @param pageName
-     * @return
-     */
-    public List<String> getAttachmentFilenamesForPage(String pageName);
+	/**
+	 * @return a List of all ConnectorAttachments
+	 */
+	public Collection<ConnectorAttachment> getAttachments();
 
-    /**
-     * Returns the path of the folder where the attachments are stored
-     * 
-     * @param JarName
-     * @return
-     */
-    public String getAttachmentPath(String JarName);
+	/**
+	 * Returns the filenames of the attachments of the given wiki page
+	 * 
+	 * @param pageName
+	 * @return
+	 */
+	public List<String> getAttachmentFilenamesForPage(String pageName);
 
-    /**
-     * Returns the URL of the running wiki
-     * 
-     * @return
-     */
-    public String getBaseUrl();
+	/**
+	 * Returns the path of the folder where the attachments are stored
+	 * 
+	 * @param JarName
+	 * @return
+	 */
+	public String getAttachmentPath(String JarName);
 
-    /**
-     * Returns the source text of the wiki page with the given name as one
-     * string
-     * 
-     * @param name
-     * @return
-     */
-    public String getArticleSource(String name);
+	/**
+	 * Returns the URL of the running wiki
+	 * 
+	 * @return
+	 */
+	public String getBaseUrl();
 
-    /**
-     * Returns a map of all wiki pages with page names as key and page sources
-     * as values
-     * 
-     * @param web
-     * @return
-     */
-    public Map<String, String> getAllArticles(String web);
+	/**
+	 * Returns the source text of the wiki page with the given name as one
+	 * string
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public String getArticleSource(String name);
 
-    /**
-     * tests if a page of the given name exists
-     * 
-     * @param Topic
-     * @return
-     */
-    public boolean doesPageExist(String Topic);
+	/**
+	 * Returns a map of all wiki pages with page names as key and page sources
+	 * as values
+	 * 
+	 * @param web
+	 * @return
+	 */
+	public Map<String, String> getAllArticles(String web);
 
-    /**
-     * Creates a new Wiki page with given name and content and author in the
-     * connected wiki
-     * 
-     * @param topic
-     * @param newContent
-     * @param author
-     * @return
-     */
-    public String createWikiPage(String topic, String newContent, String author);
+	/**
+	 * tests if a page of the given name exists
+	 * 
+	 * @param Topic
+	 * @return
+	 */
+	public boolean doesPageExist(String Topic);
 
-    /**
-     * Appends some content to the wiki page with the given name
-     * 
-     * @param topic
-     * @param pageContent
-     * @return
-     */
-    public String appendContentToPage(String topic, String pageContent);
+	/**
+	 * Creates a new Wiki page with given name and content and author in the
+	 * connected wiki
+	 * 
+	 * @param topic
+	 * @param newContent
+	 * @param author
+	 * @return
+	 */
+	public String createWikiPage(String topic, String newContent, String author);
 
-    /**
-     * Checks whether a user can edit a given page
-     * 
-     * @param articlename
-     * @return
-     */
-    public boolean userCanEditPage(String articlename);
+	/**
+	 * Appends some content to the wiki page with the given name
+	 * 
+	 * @param topic
+	 * @param pageContent
+	 * @return
+	 */
+	public String appendContentToPage(String topic, String pageContent);
 
-    /**
-     * Checks whether a user can edit a given page
-     * 
-     * @param articlename
-     * @return
-     */
-    public boolean userCanEditPage(String articlename, HttpServletRequest r);
+	/**
+	 * Checks whether a user can edit a given page
+	 * 
+	 * @param articlename
+	 * @return
+	 */
+	public boolean userCanEditPage(String articlename);
 
-    /**
-     * Checks whether a page has a editing lock (due to another user who has
-     * startet to edit it)
-     * 
-     * @param articlename
-     * @return
-     */
-    public boolean isPageLocked(String articlename);
+	/**
+	 * Checks whether a user can edit a given page
+	 * 
+	 * @param articlename
+	 * @return
+	 */
+	public boolean userCanEditPage(String articlename, HttpServletRequest r);
 
-    /**
-     * Sets an editing lock on the page, denoting that the page is currently
-     * editing by the given user.
-     * 
-     * @param articlename
-     * @param user
-     * @return
-     */
-    public boolean setPageLocked(String articlename, String user);
+	/**
+	 * Checks whether a page has a editing lock (due to another user who has
+	 * startet to edit it)
+	 * 
+	 * @param articlename
+	 * @return
+	 */
+	public boolean isPageLocked(String articlename);
 
-    /**
-     * Removes a page editing lock
-     * 
-     * @param articlename
-     */
-    public void undoPageLocked(String articlename);
+	/**
+	 * Sets an editing lock on the page, denoting that the page is currently
+	 * editing by the given user.
+	 * 
+	 * @param articlename
+	 * @param user
+	 * @return
+	 */
+	public boolean setPageLocked(String articlename, String user);
 
-    /**
-     * Checks whether a given page is locked by the given user
-     * 
-     * @param articlename
-     * @param user
-     * @return
-     */
-    public boolean isPageLockedCurrentUser(String articlename, String user);
+	/**
+	 * Removes a page editing lock
+	 * 
+	 * @param articlename
+	 */
+	public void undoPageLocked(String articlename);
 
-    /**
-     * reads the default locale of the connected wiki
-     * 
-     * @return
-     */
-    public Locale getLocale();
+	/**
+	 * Checks whether a given page is locked by the given user
+	 * 
+	 * @param articlename
+	 * @param user
+	 * @return
+	 */
+	public boolean isPageLockedCurrentUser(String articlename, String user);
 
-    /**
-     * reads the locale which was configured by the current user
-     * 
-     * @param request
-     * @return
-     */
-    public Locale getLocale(HttpServletRequest request);
+	/**
+	 * reads the default locale of the connected wiki
+	 * 
+	 * @return
+	 */
+	public Locale getLocale();
 
-    @SuppressWarnings("unchecked")
-    @Deprecated //What is this for ???
-    public Collection findPages(String query);
+	/**
+	 * reads the locale which was configured by the current user
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public Locale getLocale(HttpServletRequest request);
 
-    /**
-     * Creates a link to an article with the given text to display as link text
-     * in the syntax of the specific wiki. If the link text is null or empty it
-     * is omitted.
-     * 
-     * 
-     * @param articleName
-     *            name of the article to link to
-     * @param linkText
-     *            the text to show for the link. can be empty String or null
-     * @return s a string representing a link to the given article in wiki
-     *         syntax
-     */
-    String createWikiLink(String articleName, String linkText);
+	@SuppressWarnings("unchecked")
+	@Deprecated
+	// What is this for ???
+	public Collection findPages(String query);
 
-    /**
-     * Return a Map from pageNames to the number of (edited) versions of this
-     * page
-     * 
-     * @return
-     */
-    public Map<String, Integer> getVersionCounts();
+	/**
+	 * Creates a link to an article with the given text to display as link text
+	 * in the syntax of the specific wiki. If the link text is null or empty it
+	 * is omitted.
+	 * 
+	 * 
+	 * @param articleName
+	 *            name of the article to link to
+	 * @param linkText
+	 *            the text to show for the link. can be empty String or null
+	 * @return s a string representing a link to the given article in wiki
+	 *         syntax
+	 */
+	String createWikiLink(String articleName, String linkText);
 
-    /**
-     * Stores an File as an attachment to the given page. Returns whether the
-     * operation was successful or not.
-     * 
-     * @param wikiPage
-     *            the name of the page, to which this attachment should be
-     *            stored
-     * @param attachmentFile
-     *            the attachment to be stored
-     * @return
-     */
-    boolean storeAttachment(String wikiPage, File attachmentFile);
+	/**
+	 * Return a Map from pageNames to the number of (edited) versions of this
+	 * page
+	 * 
+	 * @return
+	 */
+	public Map<String, Integer> getVersionCounts();
+
+	/**
+	 * Stores an File as an attachment to the given page. Returns whether the
+	 * operation was successful or not.
+	 * 
+	 * @param wikiPage
+	 *            the name of the page, to which this attachment should be
+	 *            stored
+	 * @param attachmentFile
+	 *            the attachment to be stored
+	 * @return
+	 */
+	boolean storeAttachment(String wikiPage, File attachmentFile);
 
 }

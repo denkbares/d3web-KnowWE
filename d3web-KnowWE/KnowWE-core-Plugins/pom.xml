@@ -49,6 +49,7 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
+		
   	<dependency>
   		<groupId>de.uniwue.d3web</groupId>
   		<artifactId>KnowWE-ExtensionPoints-jpf-plugin</artifactId>

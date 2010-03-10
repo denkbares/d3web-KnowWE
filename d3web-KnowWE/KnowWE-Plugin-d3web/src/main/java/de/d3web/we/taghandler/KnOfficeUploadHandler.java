@@ -103,8 +103,10 @@ public class KnOfficeUploadHandler implements UploadHandler
 				String path = KnowWEEnvironment.getInstance()
 						.getKnowWEExtensionPath();
 				if (text != null && text.length() > 0) {
-					File file = new File(path + File.separatorChar
-							+ "owlincludes", fileItem.getName());
+					String p=KnowWEEnvironment.getInstance().getWikiConnector().getSavePath();
+					String inpath = (p!=null)?p:(KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
+							+ File.separatorChar + "owlincludes");
+					File file = new File(inpath, fileItem.getName());
 					File fpath = new File(path, "owlincludes");
 
 					try {

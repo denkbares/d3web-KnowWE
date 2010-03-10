@@ -518,7 +518,6 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	@Override
 	public String getRealPath() {
-
 		return context.getContextPath();
 	}
 
@@ -607,6 +606,12 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	@Override
+	public String getSavePath() {
+		String path = (String)engine.getWikiProperties().get("var.basedir");		
+		return path;
 	}
 
 }

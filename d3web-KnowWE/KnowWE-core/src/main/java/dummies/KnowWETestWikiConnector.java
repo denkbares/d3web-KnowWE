@@ -195,4 +195,10 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		return null;
 	}
 
+	@Override
+	public String getSavePath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

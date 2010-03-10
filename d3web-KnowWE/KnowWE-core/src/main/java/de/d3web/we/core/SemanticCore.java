@@ -391,8 +391,9 @@ public class SemanticCore {
 	 * @return
 	 */
 	public File[] getImportList() {
-		String inpath = knowWEEnvironment.getKnowWEExtensionPath()
-				+ File.separatorChar + "owlincludes";
+		String p=knowWEEnvironment.getWikiConnector().getSavePath();
+		String inpath = (p!=null)?p:(knowWEEnvironment.getKnowWEExtensionPath()
+				+ File.separatorChar + "owlincludes");
 		File includes = new File(inpath);
 		if (includes.exists()) {
 			File[] files = includes.listFiles(new FilenameFilter() {
@@ -409,14 +410,14 @@ public class SemanticCore {
 	 * @param filename
 	 */
 	public void removeFile(String filename) {
-		String inpath = knowWEEnvironment.getKnowWEExtensionPath()
-				+ File.separatorChar + "owlincludes";
+		String p=knowWEEnvironment.getWikiConnector().getSavePath();
+		String inpath = (p!=null)?p:(knowWEEnvironment.getKnowWEExtensionPath()
+				+ File.separatorChar + "owlincludes");
 		File includes = new File(inpath);
 		File file = new File(includes, filename);
 		if (file.canWrite()) {
 			file.delete();
 			clearContext(filename.toLowerCase());
-
 		}
 	}
 

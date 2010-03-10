@@ -20,11 +20,10 @@
 
 package de.d3web.we.kdom.sparql;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.GraphQuery;
@@ -53,7 +52,31 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 
 	private SparqlDelegateRenderer() {
 		renderers = new HashMap<String, SparqlRenderer>();
-		renderers.put("default", new DefaultSparqlRenderer());
+		SparqlRenderer defrenderer=new DefaultSparqlRenderer(); 
+		renderers.put(defrenderer.getName(),defrenderer );
+	}
+	
+	/**
+	 * checks if a renderer with a given id already exists
+	 * @param ID
+	 * @return
+	 */
+	public boolean hasRenderer(int ID){
+		for (Entry<String,SparqlRenderer> cur:renderers.entrySet()){
+			if (cur.getValue().getID()==ID){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * add a new Renderer to the sparqlrenderer
+	 * @param newrenderer
+	 */
+	public void addRenderer(SparqlRenderer newrenderer){
+		//rendere is always overwritten...
+		renderers.put(newrenderer.getName(),newrenderer);
 	}
 
 	public static synchronized SparqlDelegateRenderer getInstance() {
