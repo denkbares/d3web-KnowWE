@@ -1,0 +1,226 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.uniwue.d3web</groupId>
+	<artifactId>KnowWE-Plugin-SparqlTemplates-jpf-plugin</artifactId>
+	<packaging>jar</packaging>
+	<name>KnowWE-Plugin: SparqlTemplates</name>
+	<version>0-SNAPSHOT</version>
+	<url>http://www.d3web.de/</url>
+	<issueManagement>
+		<system>Trac</system>
+		<url>http://knowwetrac.informatik.uni-wuerzburg.de/</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Hudson</system>
+		<url>https://isci.informatik.uni-wuerzburg.de/hudson/</url>
+	</ciManagement>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License, version 3</name>
+			<url>http://www.gnu.org/licenses/lgpl.txt</url>
+		</license>
+	</licenses>
+	<build>
+		<defaultGoal>package</defaultGoal>
+		<plugins>
+			<!-- Set Java 1.6 as source and target -->
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<!-- Ignore test failures -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<testFailureIgnore>true</testFailureIgnore>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1-beta-1-uniwue-1</version>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>build-classpath</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/dependencies</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<outputFile>target/dependencies/output.txt</outputFile>
+							<pathSeparator>;</pathSeparator>
+						</configuration>
+					</execution>
+						<!-- Nötig für Dependencies, wenn Refactoring-Plugin ein externes Plugin ist. Wenn Refactoring-Plugin intern wird,
+					kann dieser Eintrag gelöscht werden. -->					
+					<execution>
+						<id>copy-dependencies-external-plugin</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>groovy-plugin</groupId>
+									<artifactId>groovy-plugin</artifactId>
+									<version>1.0a12</version>
+									<type>jar</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.codehaus.groovy</groupId>
+									<artifactId>groovy-all</artifactId>
+									<version>1.7.0</version>
+									<type>jar</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+								</artifactItem>								
+							</artifactItems>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<excludeScope>provided</excludeScope>
+							<excludeScope>system</excludeScope>
+						</configuration>
+					</execution>					
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sparqltemplates-plugin</id>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<phase>package</phase>
+
+						<configuration>
+							<tasks>
+								<echo>Copying external Plugin ${project.name} into KnowWE...</echo>
+								<echo>KnowWE is expected at: ${project.build.directory}/../${knowwe.path}/</echo>
+								<copy todir="${project.build.directory}/../${knowwe.path}/target/KnowWE-${knowwe.version}/WEB-INF/lib/">
+									<fileset dir="target" includes="*.jar" />
+								</copy>
+								<echo>done.</echo>
+							</tasks>
+						</configuration>
+					</execution>			
+						
+				 
+					
+				</executions>
+			</plugin>
+
+
+			
+
+		</plugins>
+	</build>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<repositories>
+		<repository>
+			<id>infovi-artifactory</id>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/repo/
+			</url>
+		</repository>
+		<repository>
+			<id>knowwe-snapshots</id>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/knowwe-snapshots/
+			</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>ignore</checksumPolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>contrib</id>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/infovi-contrib/
+			</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-core</artifactId>
+			<version>0-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>6.0.20</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+<dependency>
+			<groupId>groovy-plugin</groupId>
+			<artifactId>groovy-plugin</artifactId>
+			<version>1.0a12</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>1.7.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy.maven.runtime</groupId>
+			<artifactId>gmaven-runtime-default</artifactId>
+			<version>1.0-rc-3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+			<version>0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>knowwe-snapshots</id>
+			<name>d3web Snapshots</name>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/knowwe-snapshots/
+			</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<organization>
+		<name>Universität Würzburg</name>
+		<url>http://uni-wuerzburg.de/</url>
+	</organization>
+</project>
