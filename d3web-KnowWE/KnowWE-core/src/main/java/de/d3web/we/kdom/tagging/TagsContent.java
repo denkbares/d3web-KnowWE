@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.tagging;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import org.openrdf.model.URI;
 
 import de.d3web.we.kdom.Section;
@@ -43,10 +46,16 @@ public class TagsContent extends XMLContent implements OwlGenerator{
 		for (String cur : text.split(" |,")) {
 			if (cur.trim().length() > 0) {
 				UpperOntology uo = UpperOntology.getInstance();
-				URI suri = uo.getHelper().createlocalURI(s.getTitle());
-				URI puri = uo.getHelper().createURI("hasTag");
-				URI ouri = uo.getHelper().createlocalURI(cur.trim());				
-				io.merge(uo.getHelper().createProperty(suri, puri, ouri, s));
+				
+				try {
+					URI suri = uo.getHelper().createlocalURI(URLEncoder.encode(s.getTitle(),"UTF-8"));
+					URI puri = uo.getHelper().createURI("hasTag");
+					URI ouri = uo.getHelper().createlocalURI(cur.trim());				
+					io.merge(uo.getHelper().createProperty(suri, puri, ouri, s));
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		return io;
