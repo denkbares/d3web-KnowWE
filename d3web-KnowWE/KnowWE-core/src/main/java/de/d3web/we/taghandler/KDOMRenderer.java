@@ -32,7 +32,6 @@ public class KDOMRenderer extends AbstractTagHandler {
 		super("renderKDOM");
 	}
 	
-	
 	@Override
 	public String getDescription(KnowWEUserContext user) {
 		return KnowWEEnvironment.getInstance().getKwikiBundle(user).getString("KnowWE.KDOMRenderer.description");
@@ -43,8 +42,8 @@ public class KDOMRenderer extends AbstractTagHandler {
 		RenderKDOMVisitor v = new RenderKDOMVisitor();
 		v.visit(KnowWEEnvironment.getInstance().getArticle(web, topic)
 				.getSection());
-		String data = "<b>KDOM:<b><br><br>"
-				+ v.getRenderedKDOM() + "";
+		String data = "<div><h3>KDOM:</h3><tt>"
+				+ v.getRenderedKDOM() + "</tt></div>";
 		return data;
 	}
 

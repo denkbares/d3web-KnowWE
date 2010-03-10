@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.utils.KnowWEUtils;
 
 public class RenderKDOMVisitor implements Visitor {
 
@@ -33,30 +34,19 @@ public class RenderKDOMVisitor implements Visitor {
 	public void visit(Section s) {
 		buffi = new StringBuffer();
 		renderSubtree(s, 0, buffi);
-
 	}
 
 	public String getRenderedKDOM() {
 		return buffi.toString();
 	}
 	
-	private String translateHtml(String str) {
-//		str = str.replaceAll("<", "&lt;");
-//		str = str.replaceAll(">", "&gt;");
-//		str = str.replaceAll("\"", "&quot;");
-//		str = str.replaceAll("&", "&amp;");
-//		str = str.replaceAll("<", "{{{<");
-//		str = str.replaceAll(">", ">}}}");
-		return str;
-	}
-
 	private void renderSubtree(Section s, int i, StringBuffer buffi) {
 		buffi.append(getDashes(i));
 		buffi.append(" <span style=\"color:black\" title=\"" );
 		buffi.append(" ID: " + s.getId() + "\n");
 		buffi.append("\">");
-		buffi.append(translateHtml(s.verbalize()));
-		buffi.append("</span>\n <br>"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
+		buffi.append(KnowWEUtils.html_escape(s.verbalize()));
+		buffi.append("</span>\n <br />"); // \n only to avoid HTML-code being cut by JspWiki (String.length > 10000)
 		i++;
 		List<Section> children = s.getChildren();
 		if (children.size() == 1

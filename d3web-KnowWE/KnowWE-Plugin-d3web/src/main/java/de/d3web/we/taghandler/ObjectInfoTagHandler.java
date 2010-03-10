@@ -20,8 +20,6 @@
 
 package de.d3web.we.taghandler;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -36,6 +34,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.search.Result;
 import de.d3web.we.kdom.search.SearchEngine;
 import de.d3web.we.kdom.search.SearchOption;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ObjectInfoTagHandler extends AbstractTagHandler {
@@ -78,7 +77,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		if (object == null) {
 			buffy.append(doOverview());
 		} else {
-			buffy.append("<div id=\"objectinfo-panel\" class=\"panel\"><h3>" + rb.getString("KnowWE.ObjectInfoTagHandler.info_for") + " <em>" + html_escape(object) + "</em></h3>");
+			buffy.append("<div id=\"objectinfo-panel\" class=\"panel\"><h3>" + rb.getString("KnowWE.ObjectInfoTagHandler.info_for") + " <em>" + KnowWEUtils.html_escape(object) + "</em></h3>");
 			buffy.append(rb.getString("KnowWE.ObjectInfoTagHandler.newPage")+" <a href='Edit.jsp?page="+object+"'>"+object+"</a>");
 			buffy.append(doObject(object, web, type, fuzzy, sortOrder));
 			buffy.append("</div>");
@@ -96,7 +95,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		
 		
 		buffy.append("<form action=\"\" method=\"get\">");
-		buffy.append("<input type=\"hidden\" name=\"page\" value=\"" + urlencode(topic) + "\" />");
+		buffy.append("<input type=\"hidden\" name=\"page\" value=\"" + KnowWEUtils.urlencode(topic) + "\" />");
 		buffy.append("<input type=\"text\" name=\"objectname\" /> ");
 		buffy.append("<input type=\"submit\" value=\"&rarr;\" />");
 		buffy.append("</form>");
@@ -120,15 +119,15 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		
 		buffy.append("<div style=\"width: 15em; float: right;\"><h4>" + rb.getString("KnowWE.ObjectInfoTagHandler.settings") + "</h4>");
 		buffy.append("<form action=\"\" method=\"get\">");
-		buffy.append("<input type=\"hidden\" name=\"page\" value=\"" + urlencode(topic) + "\" />");
-		buffy.append("<input type=\"hidden\" name=\"objectname\" value=\"" + urlencode(obj) + "\" />");
+		buffy.append("<input type=\"hidden\" name=\"page\" value=\"" + KnowWEUtils.urlencode(topic) + "\" />");
+		buffy.append("<input type=\"hidden\" name=\"objectname\" value=\"" + KnowWEUtils.urlencode(obj) + "\" />");
 		buffy.append("<input type=\"hidden\" name=\"fuzzy\" value=\"" + (fuzzy ? "off" : "on") + "\" />");
 		buffy.append("<input type=\"submit\" value=\"" + rb.getString("KnowWE.ObjectInfoTagHandler.fuzzy." + (fuzzy ? "disable" : "enable")) + "\" />");
 		buffy.append("</form>");
 		
 		buffy.append("<form action=\"\" method=\"get\">");
-		buffy.append("<input type=\"hidden\" name=\"page\" value=\"" + urlencode(topic) + "\" />");
-		buffy.append("<input type=\"hidden\" name=\"objectname\" value=\"" + urlencode(obj) + "\" />");
+		buffy.append("<input type=\"hidden\" name=\"page\" value=\"" + KnowWEUtils.urlencode(topic) + "\" />");
+		buffy.append("<input type=\"hidden\" name=\"objectname\" value=\"" + KnowWEUtils.urlencode(obj) + "\" />");
 		buffy.append("<input type=\"hidden\" name=\"fuzzy\" value=\"" + (fuzzy ? "on" : "off") + "\" />");
 		buffy.append("<input type=\"hidden\" name=\"order\" value=\"" + (order.equals("default") ? "type" : "default") + "\" />");
 		buffy.append("<input type=\"submit\" value=\"" + rb.getString("KnowWE.ObjectInfoTagHandler.order." + (order.equals("default") ? "type" : "occurance")) + "\" />");
@@ -142,7 +141,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		Iterator<KnowWEArticle> iter = results.keySet().iterator();
 		while (iter.hasNext()) {
 			KnowWEArticle article = iter.next();
-			String articleTitle = html_escape(article.getTitle());
+			String articleTitle = KnowWEUtils.html_escape(article.getTitle());
 			
 			buffy.append(" <a href=\"#" + articleTitle + "-box\">" + articleTitle + "</a> (" + results.get(article).size() + ")" + (iter.hasNext() ? ", " : "")); 
 		}
@@ -156,7 +155,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		iter = results.keySet().iterator();
 		while (iter.hasNext()) {
 			KnowWEArticle article = iter.next();
-			String articleTitle = html_escape(article.getTitle());
+			String articleTitle = KnowWEUtils.html_escape(article.getTitle());
 			
 			buffy.append("<div id=\"" + articleTitle + "-box\" class=\"panel\"><h3>" + rb.getString("KnowWE.ObjectInfoTagHandler.on") + " <em>" + articleTitle + "</em></h3>");
 			buffy.append("<p>" + rb.getString("KnowWE.ObjectInfoTagHandler.goto") + " <strong><a href=\"Wiki.jsp?page=" + articleTitle + "\">" + articleTitle + "</a></strong></p>\n");
@@ -179,9 +178,9 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 					buffy.append("<tr>\n"
 							+ "<td><strong>" + r.getSection().getObjectType().getName() + "</strong></td>\n"		
 							+ "<td><code class=\"box\">\n"
-							+ "<span style=\"color: #333;\">&hellip;" + html_escape(r.getAdditionalContext(-30).replaceAll("\n", " ")) + "</span>" 
+							+ "<span style=\"color: #333;\">&hellip;" + KnowWEUtils.html_escape(r.getAdditionalContext(-30).replaceAll("\n", " ")) + "</span>" 
 							+ b.toString() 
-							+ "<span style=\"color: #333;\">" + html_escape(r.getAdditionalContext(30).replaceAll("\n", " ")) + "&hellip;</span>" 
+							+ "<span style=\"color: #333;\">" + KnowWEUtils.html_escape(r.getAdditionalContext(30).replaceAll("\n", " ")) + "&hellip;</span>" 
 							+ "</code></td></tr>\n");
 				}
 			}
@@ -192,29 +191,4 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		buffy.append("</div>");
 		return buffy.toString();
 	}
-	
-	/**
-	 * Escapes the given string for safely using user-input in web sites.
-	 * @param text Text to escape
-	 * @return Sanitized text
-	 */
-	private String html_escape(String text) {
-		if (text == null)
-			return null;
-
-		return text.replaceAll("&", "&amp;").
-					replaceAll("\"", "&quot;").
-					replaceAll("<", "&lt;").
-					replaceAll(">", "&gt;");
-	}
-	
-	private String urlencode(String text) {
-		try {
-			return URLEncoder.encode(text, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			return URLEncoder.encode(text);
-		}
-	}
-
-
 }
