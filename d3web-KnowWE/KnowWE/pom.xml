@@ -291,6 +291,23 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>sparqltemplates-plugin</id>
+			<activation>
+				<property>
+					<name>SparqlTemplates</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-SparqlTemplates-jpf-plugin</artifactId>
+					<version>0-SNAPSHOT</version>
+					<type>jar</type>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 	</profiles>
 
 	<dependencies>
