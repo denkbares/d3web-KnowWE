@@ -1,5 +1,6 @@
 package de.d3web.we.kdom.defaultMarkup;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,7 +89,8 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 			// starts with an empty rest of the line (only comment is allowed)
 			// and followed by any text terminated by a single "% in a line with
 			// no other content
-			"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" + // only comment allowed before end-of-line
+			"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" + // only comment allowed before
+			// end-of-line
 			"(.*?)" + // CONTENT --> anything in multiple lines (reluctant
 			// match)
 			"^\\p{Blank}*%\\p{Blank}*$" + // only % in a line
@@ -97,7 +99,8 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 			"|(?:" +
 						// at least one non-whitespace character followed by any
 			// non-line-break item
-			"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)$" + // CONTENT --> anything in a single
+			"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)$" + // CONTENT --> anything
+			// in a single
 			// line
 			// (reluctant match)
 			"))";
@@ -128,7 +131,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	public String getName() {
 		return this.markup.getName();
 	}
-	
+
 	public DefaultMarkup getMarkup() {
 		return this.markup;
 	}
@@ -189,7 +192,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Returns the first annotation section of the specified name. If the
 	 * section is not of type "DefaultMarkup" an IllegalArgumentException is
-	 * thrown. If there is no annotation section with the specified naÏme, null
+	 * thrown. If there is no annotation section with the specified name, null
 	 * is returned.
 	 * 
 	 * @param section
@@ -215,6 +218,34 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	/**
+	 * Returns all annotations section of the specified name. If the
+	 * section is not of type "DefaultMarkup" an IllegalArgumentException is
+	 * thrown. If there is no annotation section with the specified name, an empty list is returned.
+	 * 
+	 * @param section
+	 *            the section to be searched
+	 * @param name
+	 *            the name of the annotation
+	 * @return the list of annotation sections
+	 * @throws IllegalArgumentException
+	 *             if the specified section is not of {@link DefaultMarkupType}
+	 */
+	public static List<Section<? extends AnnotationType>> getAnnotationSections(Section<?> section, String name) {
+		if (!DefaultMarkupType.class.isAssignableFrom(section.getObjectType().getClass())) {
+			throw new IllegalArgumentException("section not of type DefaultMarkupType");
+		}
+		List<Section<AnnotationType>> children = section.findChildrenOfType(AnnotationType.class);
+		List<Section<? extends AnnotationType>> results = new ArrayList<Section<? extends AnnotationType>>();
+		for (Section<AnnotationType> child : children) {
+			String childName = child.getObjectType().getName();
+			if (childName.equalsIgnoreCase(name)) {
+				results.add(child);
+			}
+		}
+		return results;
+	}
+
+	/**
 	 * Returns the pattern to match a default mark-up section of a specified
 	 * name.
 	 * 
@@ -230,8 +261,10 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Stores a message for the specified default mark-up section.
 	 * 
-	 * @param section the section to store the message for
-	 * @param message the message to be stored
+	 * @param section
+	 *            the section to store the message for
+	 * @param message
+	 *            the message to be stored
 	 */
 	public static void addErrorMessage(Section<?> section, Message message) {
 		Collection<Message> messages = getErrorMessages(section);
@@ -245,12 +278,14 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Returns all stored message for the specified default mark-up section.
 	 * 
-	 * @param section the section to read the messages from
+	 * @param section
+	 *            the section to read the messages from
 	 * @return the messages
 	 */
 	@SuppressWarnings("unchecked")
 	public static Collection<Message> getErrorMessages(Section<?> section) {
-		return (Collection<Message>) KnowWEUtils.getStoredObject(section, ERROR_MESSAGE_STORE_KEY);
+		return (Collection<Message>) KnowWEUtils.getStoredObject(section,
+				ERROR_MESSAGE_STORE_KEY);
 	}
 
 }
