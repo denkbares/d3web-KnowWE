@@ -34,7 +34,7 @@ function refactoring() {
  		}
 	}
 	var params = {
-		action : 'de.d3web.we.refactoring.action.RefactoringAction',
+		action : 'RefactoringAction',
 		jsonFormMap : JSON.stringify(formMap),
 	}
 	var options = {
