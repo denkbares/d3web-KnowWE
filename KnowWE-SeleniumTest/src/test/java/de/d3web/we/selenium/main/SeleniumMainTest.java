@@ -29,6 +29,7 @@ import de.d3web.we.selenium.tests.CalendarTest;
 import de.d3web.we.selenium.tests.CarDiagnosisDialogTest;
 import de.d3web.we.selenium.tests.CarDiagnosisTest;
 import de.d3web.we.selenium.tests.CommentTest;
+import de.d3web.we.selenium.tests.QuickEditTest;
 
 /**
  * This TestClass organizes the Selenium test of KnowWE2.
@@ -72,6 +73,7 @@ public class SeleniumMainTest extends TestSuite {
 		mainSuite.addTestSuite(CalendarTest.class);
 		mainSuite.addTestSuite(CarDiagnosisTest.class);
 		mainSuite.addTestSuite(CommentTest.class);
+		mainSuite.addTestSuite(QuickEditTest.class);
 
 		return mainSuite;		
 	}
