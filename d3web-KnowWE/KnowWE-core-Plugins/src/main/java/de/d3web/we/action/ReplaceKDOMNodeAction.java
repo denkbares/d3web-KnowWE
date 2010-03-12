@@ -25,7 +25,7 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 
-public class ReplaceKDOMNodeAction extends AbstractKnowWEAction {
+public class ReplaceKDOMNodeAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

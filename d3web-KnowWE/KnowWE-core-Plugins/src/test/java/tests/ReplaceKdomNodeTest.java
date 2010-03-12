@@ -21,6 +21,8 @@
 package tests;
 
 import java.io.IOException;
+
+import junit.framework.TestCase;
 import objectTypes.SplitObjectType;
 import objectTypes.WordObjectType;
 import de.d3web.plugin.test.InitPluginManager;
@@ -35,7 +37,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.validation.Validator;
 import dummies.KnowWETestWikiConnector;
-import junit.framework.TestCase;
 
 /**
  * Name speaks for functionality.
@@ -50,7 +51,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		InitPluginManager.init();
 	}
 	
-	public void testReplaceKdomNode() {
+	public void testReplaceKdomNode() throws IOException {
 		
 		/**
 		 * Initialise KnowWEEnvironment

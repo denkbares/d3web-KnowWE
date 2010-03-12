@@ -12,12 +12,7 @@ import de.d3web.we.kdom.KnowWEArticle;
  * This action allows to append any String to the article source of an article
  *
  */
-public class AppendToPageContentAction implements KnowWEAction {
-
-	@Override
-	public boolean isAdminAction() {
-		return false;
-	}
+public class AppendToPageContentAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

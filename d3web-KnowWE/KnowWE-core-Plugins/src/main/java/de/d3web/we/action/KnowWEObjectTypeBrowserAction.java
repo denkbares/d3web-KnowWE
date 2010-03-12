@@ -41,7 +41,7 @@ import de.d3web.we.kdom.Section;
  * @author Johannes Dienst
  *
  */
-public class KnowWEObjectTypeBrowserAction extends AbstractKnowWEAction {
+public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEAction {
 
 	private ResourceBundle rb;
 	

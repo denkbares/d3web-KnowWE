@@ -38,7 +38,7 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 /**
  * 
  */
-public class SetQuickEditFlagAction extends AbstractKnowWEAction {
+public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 
 	private ResourceBundle rb;
 

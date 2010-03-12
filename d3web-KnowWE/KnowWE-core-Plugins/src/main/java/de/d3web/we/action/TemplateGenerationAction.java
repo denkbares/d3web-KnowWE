@@ -12,12 +12,7 @@ import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.Template;
 import de.d3web.we.taghandler.TemplateTagHandler;
 
-public class TemplateGenerationAction implements KnowWEAction {
-
-	@Override
-	public boolean isAdminAction() {
-		return false;
-	}
+public class TemplateGenerationAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap map) {

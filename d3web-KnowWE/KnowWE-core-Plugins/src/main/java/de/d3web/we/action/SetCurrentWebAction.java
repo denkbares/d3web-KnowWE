@@ -23,7 +23,7 @@ package de.d3web.we.action;
 
 import de.d3web.we.core.KnowWEParameterMap;
 
-public class SetCurrentWebAction  extends AbstractKnowWEAction {
+public class SetCurrentWebAction  extends DeprecatedAbstractKnowWEAction {
 
 
 	@Override

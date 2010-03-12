@@ -32,7 +32,7 @@ import de.d3web.we.core.KnowWEParameterMap;
  * @author smark
  * @see KnowWEAction
  */
-public class UpdateKDOMNodeAction extends AbstractKnowWEAction {
+public class UpdateKDOMNodeAction extends DeprecatedAbstractKnowWEAction {
 		
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) 

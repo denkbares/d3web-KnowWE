@@ -177,172 +177,172 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="TemplateGenerationAction">
 		<parameter id="class"
 			value="de.d3web.we.action.TemplateGenerationAction" />
 		<parameter id="name" value="TemplateGenerationAction" />
-		<parameter id="description" value="KnowWEAction TemplateGenerationAction" />
+		<parameter id="description" value="Action TemplateGenerationAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetQuickEditFlagAction">
 		<parameter id="class"
 			value="de.d3web.we.action.SetQuickEditFlagAction" />
 		<parameter id="name" value="SetQuickEditFlagAction" />
-		<parameter id="description" value="KnowWEAction SetQuickEditFlagAction" />
+		<parameter id="description" value="Action SetQuickEditFlagAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="WordBasedRenamingAction">
 		<parameter id="class"
 			value="de.d3web.we.action.WordBasedRenamingAction" />
 		<parameter id="name" value="WordBasedRenamingAction" />
-		<parameter id="description" value="KnowWEAction WordBasedRenamingAction" />
+		<parameter id="description" value="Action WordBasedRenamingAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GlobalReplaceAction">
 		<parameter id="class"
 			value="de.d3web.we.action.GlobalReplaceAction" />
 		<parameter id="name" value="GlobalReplaceAction" />
-		<parameter id="description" value="KnowWEAction GlobalReplaceAction" />
+		<parameter id="description" value="Action GlobalReplaceAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ReplaceKDOMNodeAction">
 		<parameter id="class"
 			value="de.d3web.we.action.ReplaceKDOMNodeAction" />
 		<parameter id="name" value="ReplaceKDOMNodeAction" />
-		<parameter id="description" value="KnowWEAction ReplaceKDOMNodeAction" />
+		<parameter id="description" value="Action ReplaceKDOMNodeAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="UpdateTableKDOMNodesAction">
 		<parameter id="class"
 			value="de.d3web.we.action.UpdateTableKDOMNodesAction" />
 		<parameter id="name" value="UpdateTableKDOMNodesAction" />
-		<parameter id="description" value="KnowWEAction UpdateTableKDOMNodesAction" />
+		<parameter id="description" value="Action UpdateTableKDOMNodesAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="KnowWEObjectTypeBrowserAction">
 		<parameter id="class"
 			value="de.d3web.we.action.KnowWEObjectTypeBrowserAction" />
 		<parameter id="name" value="KnowWEObjectTypeBrowserAction" />
-		<parameter id="description" value="KnowWEAction KnowWEObjectTypeBrowserAction" />
+		<parameter id="description" value="Action KnowWEObjectTypeBrowserAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="KnowWEObjectTypeActivationAction">
 		<parameter id="class"
 			value="de.d3web.we.action.KnowWEObjectTypeActivationAction" />
 		<parameter id="name" value="KnowWEObjectTypeActivationAction" />
-		<parameter id="description" value="KnowWEAction KnowWEObjectTypeActivationAction" />
+		<parameter id="description" value="Action KnowWEObjectTypeActivationAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="TagHandlingAction">
 		<parameter id="class"
 			value="de.d3web.we.action.TagHandlingAction" />
 		<parameter id="name" value="TagHandlingAction" />
-		<parameter id="description" value="KnowWEAction TagHandlingAction" />
+		<parameter id="description" value="Action TagHandlingAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="AddKWikiUserAction">
 		<parameter id="class"
 			value="de.d3web.we.action.AddKWikiUserAction" />
 		<parameter id="name" value="AddKWikiUserAction" />
-		<parameter id="description" value="KnowWEAction AddKWikiUserAction" />
+		<parameter id="description" value="Action AddKWikiUserAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="AppendToPageContentAction">
 		<parameter id="class"
 			value="de.d3web.we.action.AppendToPageContentAction" />
 		<parameter id="name" value="AppendToPageContentAction" />
-		<parameter id="description" value="KnowWEAction AppendToPageContentAction" />
+		<parameter id="description" value="Action AppendToPageContentAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 		
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ParseWebOfflineRenderer">
 		<parameter id="class"
 			value="de.d3web.we.action.ParseWebOfflineRenderer" />
 		<parameter id="name" value="ParseWebOfflineRenderer" />
-		<parameter id="description" value="KnowWEAction ParseWebOfflineRenderer" />
+		<parameter id="description" value="Action ParseWebOfflineRenderer" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RemoveKwikiUserAction">
 		<parameter id="class"
 			value="de.d3web.we.action.RemoveKwikiUserAction" />
 		<parameter id="name" value="RemoveKwikiUserAction" />
-		<parameter id="description" value="KnowWEAction RemoveKwikiUserAction" />
+		<parameter id="description" value="Action RemoveKwikiUserAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ReRenderContentPartAction">
 		<parameter id="class"
 			value="de.d3web.we.action.ReRenderContentPartAction" />
 		<parameter id="name" value="ReRenderContentPartAction" />
-		<parameter id="description" value="KnowWEAction ReRenderContentPartAction" />
+		<parameter id="description" value="Action ReRenderContentPartAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SessionChooserRenderer">
 		<parameter id="class"
 			value="de.d3web.we.action.SessionChooserRenderer" />
 		<parameter id="name" value="SessionChooserRenderer" />
-		<parameter id="description" value="KnowWEAction SessionChooserRenderer" />
+		<parameter id="description" value="Action SessionChooserRenderer" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetCurrentWebAction">
 		<parameter id="class"
 			value="de.d3web.we.action.SetCurrentWebAction" />
 		<parameter id="name" value="SetCurrentWebAction" />
-		<parameter id="description" value="KnowWEAction SetCurrentWebAction" />
+		<parameter id="description" value="Action SetCurrentWebAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="UpdateKDOMNodeAction">
 		<parameter id="class"
 			value="de.d3web.we.action.UpdateKDOMNodeAction" />
 		<parameter id="name" value="UpdateKDOMNodeAction" />
-		<parameter id="description" value="KnowWEAction UpdateKDOMNodeAction" />
+		<parameter id="description" value="Action UpdateKDOMNodeAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

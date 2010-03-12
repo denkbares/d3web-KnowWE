@@ -31,7 +31,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class ParseWebOfflineRenderer extends AbstractKnowWEAction {
+public class ParseWebOfflineRenderer extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

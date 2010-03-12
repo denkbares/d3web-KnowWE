@@ -25,7 +25,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.TaggingMangler;
 
-public class TagHandlingAction extends AbstractKnowWEAction {
+public class TagHandlingAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
