@@ -126,7 +126,9 @@ public class ActionContext {
 	}
 			
 	public Writer getWriter() throws IOException {
-		return this.response.getWriter();
+		if (response != null)
+			return this.response.getWriter();
+		return null;
 	}
 	
 	public OutputStream getOutputStream() throws IOException {
