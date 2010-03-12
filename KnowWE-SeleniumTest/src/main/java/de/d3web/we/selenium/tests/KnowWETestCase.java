@@ -96,13 +96,19 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		selenium.openWindow(url, name);
 		selenium.selectWindow(name);
 		selenium.windowFocus();
+		//Waiting till page starts loading
+		Long startTime = System.currentTimeMillis();
+		while (System.currentTimeMillis() - startTime < Long.parseLong(pageLoadTime)
+				&& selenium.getLocation().equals(url)) {
+			threadSleep(sleepTime);
+		}
 		System.out.println("Titel vor 1. Refresh: " + selenium.getTitle() + ", " + selenium.getLocation() + " @ " + System.currentTimeMillis());
 		refreshAndWait();
 		System.out.println("Titel nach 1. Refresh: " + selenium.getTitle() + ", " + selenium.getLocation()+ " @ " + System.currentTimeMillis());
 		if (forwarding) {
 			System.out.println("Titel in if Zweig:" + selenium.getTitle() + ", " + selenium.getLocation()+ " @ " + System.currentTimeMillis());
 			//Waiting till forwarded page starts loading
-			Long startTime = System.currentTimeMillis();
+			startTime = System.currentTimeMillis();
 			while (System.currentTimeMillis() - startTime < Long.parseLong(pageLoadTime)
 					&& selenium.getLocation().equals(url)) {
 				threadSleep(sleepTime);
@@ -118,7 +124,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * This method simulates the user's action clicking on the browser's
 	 * refresh and waits until the page finished loading.
 	 */
-	private void refreshAndWait() {
+	protected void refreshAndWait() {
 		selenium.refresh();
 		selenium.waitForPageToLoad(pageLoadTime);
 	}

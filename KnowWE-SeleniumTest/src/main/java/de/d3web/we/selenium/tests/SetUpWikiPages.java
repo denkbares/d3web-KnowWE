@@ -105,8 +105,14 @@ public class SetUpWikiPages extends KnowWETestCase{
 				rb.getString("KnowWE.SeleniumTest.KB"));
 		loadAndWait("ok");
 		
-		open("/KnowWE/Edit.jsp?page=CD-compiled-KB");
+		open(rb.getString("KnowWE.SeleniumTest.url") + "KnowWE/Edit.jsp?page=CD-compiled-KB");
 		loadAndWait("ok");
-		loadAndWait("link=Car-Diagnosis-Test");		
+		loadAndWait("link=Car-Diagnosis-Test");
+		
+		open(rb.getString("KnowWE.SeleniumTest.url") + "KnowWE/Wiki.jsp?page=Selenium-Test");
+		loadAndWait("link=Quick-Edit-Test");
+		type("editorarea",
+				rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test"));
+		loadAndWait("ok");
 	}
 }
