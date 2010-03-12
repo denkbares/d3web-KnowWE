@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.table;
 
+import java.util.ResourceBundle;
+
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -39,12 +42,16 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
+		final ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
+			
 		StringBuilder b = new StringBuilder();
 		StringBuilder buffi = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
 		
 		buffi.append( getOpeningTag(sec) );
-		buffi.append( generateQuickEdit(sec.getId()));
+		if (!sec.hasQuickEditModeSet(user.getUsername())) {
+			buffi.append( generateQuickEdit(sec.getId(), rb.getString("KnowWE.TableContentRenderer.setQE")));			
+		}
 		
 		buffi.append( "<table style='border:1px solid #999999;' class='wikitable knowwetable' border='1'><tbody>" );
 		buffi.append(getHeader());
@@ -52,7 +59,8 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 		buffi.append( "</tbody></table>" );
 		
 		if ( sec.hasQuickEditModeSet( user.getUsername() ) ) {
-			buffi.append( "<input id=\"" + sec.getId() + "\" type=\"submit\" value=\"save\"/>" );
+			buffi.append("<input class=\"pointer\" id=\"" + sec.getId() + "\" style=\"padding:0 0 0 0; width: 25px; height: 25px; background: #FFF url(KnowWEExtension/images/msg_checkmark.png) no-repeat; border: none; vertical-align:top;\" name=\"" + sec.getId() + "_accept\" type=\"submit\" value=\"\" title=\"" + rb.getString("KnowWE.TableContentRenderer.accept") + "\">" );
+			buffi.append("<img class=\"quickedit table pointer\" id=\"" + sec.getId() + "_cancel\" width=\"25\" title=\"" + rb.getString("KnowWE.TableContentRenderer.cancel") + "\" src=\"KnowWEExtension/images/msg_cross.png\"/>");
 		}
 		
 		buffi.append( getClosingTag() );
@@ -68,8 +76,8 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 	 * @param id        of the section the flag should assigned to
 	 * @return
 	 */
-	protected String generateQuickEdit(String id) {
-		String icon = " <img src='KnowWEExtension/images/pencil.png' title='Set QuickEdit-Mode' width='10' class='quickedit table pointer'/>";
+	protected String generateQuickEdit(String id, String title) {
+		String icon = " <img id='" + id + "_pencil' src='KnowWEExtension/images/pencil.png' title='" + title + "' width='10' class='quickedit table pointer'/>";
 		return icon;
 	}
 	
