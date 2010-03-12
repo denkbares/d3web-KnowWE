@@ -579,7 +579,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		StringBuilder html = new StringBuilder();
 		html.append("<div>");
 		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
-		html.append("<a style='margin-left:5px' href='testsuitedownload?type=visualization&KWiki_Topic=");
+		html.append("<a style='margin-left:5px' href='action/TestSuiteServlet?type=visualization&KWiki_Topic=");
 		html.append(article);
 		html.append("&web=");
 		html.append(web);
@@ -604,7 +604,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		StringBuilder html = new StringBuilder();
 		html.append("<div>");
 		html.append("<img src='KnowWEExtension/images/arrow_right.png' width='9' height='15' style='margin-left:2px' />");
-		html.append("<a style='margin-left:5px' href='testsuitedownload?type=visualization&KWiki_Topic=");
+		html.append("<a style='margin-left:5px' href='action/TestSuiteServlet?type=visualization&KWiki_Topic=");
 		html.append(article);
 		html.append("&web=");
 		html.append(web);

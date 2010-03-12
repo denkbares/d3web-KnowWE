@@ -36,7 +36,7 @@ import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.ProblemSolverType;
 
-public class ExplanationRenderer2 extends AbstractKnowWEAction {
+public class ExplanationRenderer2 extends DeprecatedAbstractKnowWEAction {
 
 
 	@Override

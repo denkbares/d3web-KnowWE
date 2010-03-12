@@ -174,62 +174,62 @@
 		<parameter id="script" value="Hermes.js" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SearchTimeEventsAction">
 		<parameter id="class"
 			value="de.d3web.we.hermes.action.SearchTimeEventsAction" />
 		<parameter id="name" value="SearchTimeEventsAction" />
-		<parameter id="description" value="KnowWEAction SearchTimeEventsAction" />
+		<parameter id="description" value="Action SearchTimeEventsAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetFilterLevelAction">
 		<parameter id="class"
 			value="de.d3web.we.hermes.action.SetFilterLevelAction" />
 		<parameter id="name" value="SetFilterLevelAction" />
-		<parameter id="description" value="KnowWEAction SetFilterLevelAction" />
+		<parameter id="description" value="Action SetFilterLevelAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="InsertRelationAction">
 		<parameter id="class"
 			value="de.d3web.we.hermes.action.InsertRelationAction" />
 		<parameter id="name" value="InsertRelationAction" />
-		<parameter id="description" value="KnowWEAction InsertRelationAction" />
+		<parameter id="description" value="Action InsertRelationAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="StartQuizAction">
 		<parameter id="class"
 			value="de.d3web.we.hermes.action.StartQuizAction" />
 		<parameter id="name" value="StartQuizAction" />
-		<parameter id="description" value="KnowWEAction StartQuizAction" />
+		<parameter id="description" value="Action StartQuizAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="StopQuizAction">
 		<parameter id="class"
 			value="de.d3web.we.hermes.action.StopQuizAction" />
 		<parameter id="name" value="StopQuizAction" />
-		<parameter id="description" value="KnowWEAction StopQuizAction" />
+		<parameter id="description" value="Action StopQuizAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetAnswerAction">
 		<parameter id="class"
 			value="de.d3web.we.hermes.action.SetAnswerAction" />
 		<parameter id="name" value="SetAnswerAction" />
-		<parameter id="description" value="KnowWEAction SetAnswerAction" />
+		<parameter id="description" value="Action SetAnswerAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

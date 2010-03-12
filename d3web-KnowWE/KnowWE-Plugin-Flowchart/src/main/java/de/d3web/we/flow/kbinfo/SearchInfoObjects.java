@@ -29,8 +29,7 @@ import java.util.Set;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.we.action.AbstractKnowWEAction;
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -40,7 +39,7 @@ import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 
-public class SearchInfoObjects extends AbstractKnowWEAction {
+public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

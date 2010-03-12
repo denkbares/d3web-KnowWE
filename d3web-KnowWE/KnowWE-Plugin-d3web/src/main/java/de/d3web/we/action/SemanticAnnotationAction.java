@@ -36,7 +36,7 @@ import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.local.LocalTerminologyAccess;
 import de.d3web.we.terminology.term.Term;
 
-public class SemanticAnnotationAction extends AbstractKnowWEAction {
+public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 
 	// private FindingXMLWriter questionWriter;
 	private FindingHTMLWriter questionWriter;

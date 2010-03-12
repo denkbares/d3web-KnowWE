@@ -26,7 +26,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
-public class HighlightNodeAction extends AbstractKnowWEAction {
+public class HighlightNodeAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

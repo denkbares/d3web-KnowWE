@@ -30,7 +30,7 @@ import com.ecyrd.jspwiki.auth.authorize.Role;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import de.d3web.we.action.AbstractKnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.refactoring.RefactoringTagHandler;
@@ -38,7 +38,7 @@ import de.d3web.we.refactoring.dialog.RefactoringSession;
 /**
  * @author Franz Schwab
  */
-public class RefactoringAction extends AbstractKnowWEAction {
+public class RefactoringAction extends DeprecatedAbstractKnowWEAction {
 	
 	private Map<String, RefactoringSession> sessions = new HashMap<String, RefactoringSession>();
 	

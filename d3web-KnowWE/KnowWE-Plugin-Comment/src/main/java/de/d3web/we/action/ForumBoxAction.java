@@ -28,7 +28,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.d3web.we.action.KnowWEAction;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.Section;
@@ -37,7 +36,7 @@ import de.d3web.we.kdom.xml.XMLTail;
 import de.d3web.we.plugin.forum.Forum;
 import de.d3web.we.plugin.forum.ForumRenderer;
 
-public class ForumBoxAction extends AbstractKnowWEAction {
+public class ForumBoxAction extends DeprecatedAbstractKnowWEAction {
 	
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

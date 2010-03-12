@@ -3,59 +3,52 @@ package de.d3web.we.testsuite;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import de.d3web.empiricalTesting.TestSuite;
 import de.d3web.empiricalTesting.caseConverter.CaseObjectToKnOffice;
 import de.d3web.empiricalTesting.caseConverter.CaseObjectToTestSuiteXML;
 import de.d3web.empiricalTesting.caseVisualization.dot.DDBuilder;
+import de.d3web.we.action.AbstractAction;
+import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class TestSuiteServlet extends HttpServlet {
+public class TestSuiteServlet extends AbstractAction {
 	
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String filename = request.getParameter("filename");;
-		String nodeID = request.getParameter("nodeID");
-		String topic = request.getParameter(KnowWEAttributes.TOPIC);
-		String web = request.getParameter("web");
-		String type = request.getParameter("type");
+	public void execute(ActionContext context) throws IOException {
+		String filename = context.getParameter("filename");;
+		String nodeID = context.getParameter("nodeID");
+		String topic = context.getParameter(KnowWEAttributes.TOPIC);
+		String web = context.getParameter("web");
+		String type = context.getParameter("type");
 		
 		// Load the TestSuite
 		TestSuite t = (TestSuite) KnowWEUtils.getStoredObject(web, topic, nodeID, TestsuiteSection.TESTSUITEKEY);
 				
 		if (type.equals("visualization"))
-			generateVisualization(response, t, filename);
+			generateVisualization(context, t, filename);
 		else if (type.equals("case"))
-			generateCaseFile(response, t, filename);
-				
+			generateCaseFile(context, t, filename);
+		
 	}
 	
 
-	private void generateVisualization(HttpServletResponse response, TestSuite t, String filename) throws IOException {
-		
-		response.reset();
-		
+	private void generateVisualization(ActionContext context, TestSuite t, String filename) throws IOException {
+			
 		if (filename.endsWith(".dot")) {
 			
 			//Get the file content
 			ByteArrayOutputStream bstream = DDBuilder.getInstance().getByteArrayOutputStream(t.getRepository());
 			
 			//Response
-			response.setContentType("text/x-graphviz");
-			response.setHeader("Content-Disposition", "attachment;filename=\""+filename+"\"");
-			response.setContentLength(bstream.size());
+			context.setContentType("text/x-graphviz");
+			context.setHeader("Content-Disposition", "attachment;filename=\""+filename+"\"");
+			context.setContentLength(bstream.size());
 			
 			//Write the data from the ByteArray to the ServletOutputStream of the response
-			bstream.writeTo(response.getOutputStream());
-			response.flushBuffer();
+			bstream.writeTo(context.getOutputStream());
 
 		} else if (filename.endsWith(".pdf")) {
 			
@@ -63,23 +56,20 @@ public class TestSuiteServlet extends HttpServlet {
 			ByteArrayOutputStream bstream = de.d3web.empiricalTesting.caseVisualization.jung.JUNGCaseVisualizer.getInstance().getByteArrayOutputStream(t.getRepository());
 			
 			//Response
-			response.setContentType("application/pdf");
-			response.setHeader("Content-Disposition", "attachment;filename=\""+filename+"\"");
-			response.setContentLength(bstream.size());
+			context.setContentType("application/pdf");
+			context.setHeader("Content-Disposition", "attachment;filename=\""+filename+"\"");
+			context.setContentLength(bstream.size());
 			
 			//Write the data from the ByteArray to the ServletOutputStream of the response
-			bstream.writeTo(response.getOutputStream());
-			response.flushBuffer();
+			bstream.writeTo(context.getOutputStream());
 			
 		}
 		
 	}
 	
 	
-	private void generateCaseFile(HttpServletResponse response, TestSuite t, String filename) throws IOException {
-		
-		response.reset();
-		
+	private void generateCaseFile(ActionContext context, TestSuite t, String filename) throws IOException {
+				
 		if (filename.endsWith(".txt")) {
 			
 			//Get the file content
@@ -87,13 +77,12 @@ public class TestSuiteServlet extends HttpServlet {
 			ByteArrayOutputStream bstream = c.getByteArrayOutputStream(t.getRepository());
 			
 			//Response
-			response.setContentType("text/plain");
-			response.setHeader("Content-Disposition", "attachment;filename=\""+filename+"\"");
-			response.setContentLength(bstream.size());
+			context.setContentType("text/plain");
+			context.setHeader("Content-Disposition", "attachment;filename=\""+filename+"\"");
+			context.setContentLength(bstream.size());
 			
 			//Write the data from the ByteArray to the ServletOutputStream of the response
-			bstream.writeTo(response.getOutputStream());
-			response.flushBuffer();
+			bstream.writeTo(context.getOutputStream());
 
 		} else if (filename.endsWith(".xml")) {
 			
@@ -102,21 +91,15 @@ public class TestSuiteServlet extends HttpServlet {
 			ByteArrayOutputStream bstream = c.getByteArrayOutputStream(t.getRepository());
 			
 			//Response
-			response.setContentType("text/xml");
-			response.setHeader("Content-Disposition", "attachment;filename=\""+filename+"\"");
-			response.setContentLength(bstream.size());
+			context.setContentType("text/xml");
+			context.setHeader("Content-Disposition", "attachment;filename=\""+filename+"\"");
+			context.setContentLength(bstream.size());
 			
 			//Write the data from the ByteArray to the ServletOutputStream of the response
-			bstream.writeTo(response.getOutputStream());
-			response.flushBuffer();
+			bstream.writeTo(context.getOutputStream());
 			
 		}
 		
 	}
 	
-	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
-
 }

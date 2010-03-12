@@ -125,7 +125,7 @@ public class TestsuiteSectionRenderer extends KnowWEDomRenderer {
 	
 	private String generateXMLLink(String topic, String web, String nodeID) {
 		String icon = "<img src=KnowWEExtension/images/drive_disk.png title='Download XML File' /></img>";
-		String result = "<a href='testsuitedownload?type=case&KWiki_Topic="
+		String result = "<a href='action/TestSuiteServlet?type=case&KWiki_Topic="
 			+ topic + "&web=" + web + "&nodeID=" + nodeID + "&filename=" + topic
 			+ "_testsuite.xml' >" + icon + "</a>";
 		return KnowWEUtils.maskHTML(result);
@@ -134,7 +134,7 @@ public class TestsuiteSectionRenderer extends KnowWEDomRenderer {
 	private String generateTXTLink(String topic, String web, String nodeID) {
 		
 		String icon = "<img src=KnowWEExtension/images/disk.png title='Download TXT File' /></img>";
-		String result = "<a href='testsuitedownload?type=case&KWiki_Topic="
+		String result = "<a href='action/TestSuiteServlet?type=case&KWiki_Topic="
 			+ topic + "&web=" + web + "&nodeID=" + nodeID + "&filename=" + topic
 			+ "_testsuite.txt' >" + icon + "</a>";
 		return KnowWEUtils.maskHTML(result);

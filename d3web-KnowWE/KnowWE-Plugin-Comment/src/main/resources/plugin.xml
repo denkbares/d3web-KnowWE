@@ -25,12 +25,12 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ForumBoxAction">
 		<parameter id="class"
 			value="de.d3web.we.action.ForumBoxAction" />
 		<parameter id="name" value="ForumBoxAction" />
-		<parameter id="description" value="KnowWEAction ForumBoxAction" />
+		<parameter id="description" value="Action ForumBoxAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

@@ -1,11 +1,10 @@
 package de.d3web.we.hermes.action;
 
-import de.d3web.we.action.AbstractKnowWEAction;
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.hermes.HermesUserManagement;
 
-public class SetFilterLevelAction extends AbstractKnowWEAction {
+public class SetFilterLevelAction extends DeprecatedAbstractKnowWEAction {
 
     @Override
     public String perform(KnowWEParameterMap parameterMap) {

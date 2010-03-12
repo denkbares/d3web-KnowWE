@@ -23,8 +23,7 @@ import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
-import de.d3web.we.action.AbstractKnowWEAction;
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -59,7 +58,7 @@ public class RefactoringSession {
 	private final Lock lock = new ReentrantLock();
 	private final Condition runDialog = lock.newCondition();
 	private final Condition runRefactoring = lock.newCondition();
-	private KnowWEAction nextAction;
+	private DeprecatedAbstractKnowWEAction nextAction;
 	protected KnowWEParameterMap parameters;
 	protected Map<String, String[]> gsonFormMap;
 
@@ -99,7 +98,7 @@ public class RefactoringSession {
 	}
 
 	protected void saveAndFinish() {
-		performNextAction(new AbstractKnowWEAction() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameterMap) {
 				StringBuffer html = new StringBuffer();
@@ -171,7 +170,7 @@ public class RefactoringSession {
 		}
 
 		// TODO verbessern
-		nextAction = new AbstractKnowWEAction() {
+		nextAction = new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameterMap) {
 				return "Refactorings abgeschlossen";
@@ -211,7 +210,7 @@ public class RefactoringSession {
 		html.append('\n');
 		html.append(message);
 		html.append(XHTML.ETag_p);
-		performNextAction(new AbstractKnowWEAction() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
 				return html.toString();
@@ -242,7 +241,7 @@ public class RefactoringSession {
 			html.append(XHTML.Tag_br);
 		}
 		html.append(XHTML.ETag_div);
-		performNextAction(new AbstractKnowWEAction() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
 				return html.toString();
@@ -270,11 +269,11 @@ public class RefactoringSession {
 		return runRefactoring;
 	}
 
-	public KnowWEAction getNextAction() {
+	public DeprecatedAbstractKnowWEAction getNextAction() {
 		return nextAction;
 	}
 
-	protected void performNextAction(KnowWEAction action) {
+	protected void performNextAction(DeprecatedAbstractKnowWEAction action) {
 		nextAction = action;
 		lock.lock();
 		runDialog.signal();

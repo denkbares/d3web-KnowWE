@@ -285,222 +285,232 @@
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GenerateKBAction">
 		<parameter id="class"
 			value="de.d3web.we.action.GenerateKBAction" />
 		<parameter id="name" value="GenerateKBAction" />
-		<parameter id="description" value="KnowWEAction GenerateKBAction" />
+		<parameter id="description" value="Action GenerateKBAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SemanticAnnotationAction">
 		<parameter id="class"
 			value="de.d3web.we.action.SemanticAnnotationAction" />
 		<parameter id="name" value="SemanticAnnotationAction" />
-		<parameter id="description" value="KnowWEAction SemanticAnnotationAction" />
+		<parameter id="description" value="Action SemanticAnnotationAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GraphMLOwlRenderer">
 		<parameter id="class"
 			value="de.d3web.we.renderer.xml.GraphMLOwlRenderer" />
 		<parameter id="name" value="GraphMLOwlRenderer" />
-		<parameter id="description" value="KnowWEAction GraphMLOwlRenderer" />
+		<parameter id="description" value="Action GraphMLOwlRenderer" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="KnowledgeSummerizeAction">
 		<parameter id="class"
 			value="de.d3web.we.action.KnowledgeSummerizeAction" />
 		<parameter id="name" value="KnowledgeSummerizeAction" />
-		<parameter id="description" value="KnowWEAction KnowledgeSummerizeAction" />
+		<parameter id="description" value="Action KnowledgeSummerizeAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RequestDialogRenderer">
 		<parameter id="class"
 			value="de.d3web.we.action.RequestDialogRenderer" />
 		<parameter id="name" value="RequestDialogRenderer" />
-		<parameter id="description" value="KnowWEAction RequestDialogRenderer" />
+		<parameter id="description" value="Action RequestDialogRenderer" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ReInitDPSEnvironmentAction">
 		<parameter id="class"
 			value="de.d3web.we.action.ReInitDPSEnvironmentAction" />
 		<parameter id="name" value="ReInitDPSEnvironmentAction" />
-		<parameter id="description" value="KnowWEAction ReInitDPSEnvironmentAction" />
+		<parameter id="description" value="Action ReInitDPSEnvironmentAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="DPSSolutionsAction">
 		<parameter id="class"
 			value="de.d3web.we.action.DPSSolutionsAction" />
 		<parameter id="name" value="DPSSolutionsAction" />
-		<parameter id="description" value="KnowWEAction DPSSolutionsAction" />
+		<parameter id="description" value="Action DPSSolutionsAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="DPSDialogsAction">
 		<parameter id="class"
 			value="de.d3web.we.action.DPSDialogsAction" />
 		<parameter id="name" value="DPSDialogsAction" />
-		<parameter id="description" value="KnowWEAction DPSDialogsAction" />
+		<parameter id="description" value="Action DPSDialogsAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="UserFindingsAction">
 		<parameter id="class"
 			value="de.d3web.we.action.UserFindingsAction" />
 		<parameter id="name" value="UserFindingsAction" />
-		<parameter id="description" value="KnowWEAction UserFindingsAction" />
+		<parameter id="description" value="Action UserFindingsAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="KSSViewHistoryAction">
 		<parameter id="class"
 			value="de.d3web.we.action.KSSViewHistoryAction" />
 		<parameter id="name" value="KSSViewHistoryAction" />
-		<parameter id="description" value="KnowWEAction KSSViewHistoryAction" />
+		<parameter id="description" value="Action KSSViewHistoryAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ExplanationRenderer2">
 		<parameter id="class"
 			value="de.d3web.we.action.ExplanationRenderer2" />
 		<parameter id="name" value="ExplanationRenderer2" />
-		<parameter id="description" value="KnowWEAction ExplanationRenderer2" />
+		<parameter id="description" value="Action ExplanationRenderer2" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SolutionLogAction">
 		<parameter id="class"
 			value="de.d3web.we.action.SolutionLogAction" />
 		<parameter id="name" value="SolutionLogAction" />
-		<parameter id="description" value="KnowWEAction SolutionLogAction" />
+		<parameter id="description" value="Action SolutionLogAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="QuestionStateReportAction">
 		<parameter id="class"
 			value="de.d3web.we.action.QuestionStateReportAction" />
 		<parameter id="name" value="QuestionStateReportAction" />
-		<parameter id="description" value="KnowWEAction QuestionStateReportAction" />
+		<parameter id="description" value="Action QuestionStateReportAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CodeCompletionAction">
 		<parameter id="class"
 			value="de.d3web.we.action.CodeCompletionAction" />
 		<parameter id="name" value="CodeCompletionAction" />
-		<parameter id="description" value="KnowWEAction CodeCompletionAction" />
+		<parameter id="description" value="Action CodeCompletionAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="XCLExplanationAction">
 		<parameter id="class"
 			value="de.d3web.we.action.XCLExplanationAction" />
 		<parameter id="name" value="XCLExplanationAction" />
-		<parameter id="description" value="KnowWEAction XCLExplanationAction" />
+		<parameter id="description" value="Action XCLExplanationAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetSingleFindingAction">
 		<parameter id="class"
 			value="de.d3web.we.action.SetSingleFindingAction" />
 		<parameter id="name" value="SetSingleFindingAction" />
-		<parameter id="description" value="KnowWEAction SetSingleFindingAction" />
+		<parameter id="description" value="Action SetSingleFindingAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ParseWebOfflineRenderer">
 		<parameter id="class"
 			value="de.d3web.we.action.ParseWebOfflineRenderer" />
 		<parameter id="name" value="ParseWebOfflineRenderer" />
-		<parameter id="description" value="KnowWEAction ParseWebOfflineRenderer" />
+		<parameter id="description" value="Action ParseWebOfflineRenderer" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ClearDPSSessionAction">
 		<parameter id="class"
 			value="de.d3web.we.action.ClearDPSSessionAction" />
 		<parameter id="name" value="ClearDPSSessionAction" />
-		<parameter id="description" value="KnowWEAction ClearDPSSessionAction" />
+		<parameter id="description" value="Action ClearDPSSessionAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RefreshHTMLDialogAction">
 		<parameter id="class"
 			value="de.d3web.we.action.RefreshHTMLDialogAction" />
 		<parameter id="name" value="RefreshHTMLDialogAction" />
-		<parameter id="description" value="KnowWEAction RefreshHTMLDialogAction" />
+		<parameter id="description" value="Action RefreshHTMLDialogAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetFindingAction">
 		<parameter id="class"
 			value="de.d3web.we.action.SetFindingAction" />
 		<parameter id="name" value="SetFindingAction" />
-		<parameter id="description" value="KnowWEAction SetFindingAction" />
+		<parameter id="description" value="Action SetFindingAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SaveDialogAsXCLAction">
 		<parameter id="class"
 			value="de.d3web.we.action.SaveDialogAsXCLAction" />
 		<parameter id="name" value="SaveDialogAsXCLAction" />
-		<parameter id="description" value="KnowWEAction SaveDialogAsXCLAction" />
+		<parameter id="description" value="Action SaveDialogAsXCLAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ReRenderQuestionSheetAction">
 		<parameter id="class"
 			value="de.d3web.we.action.ReRenderQuestionSheetAction" />
 		<parameter id="name" value="ReRenderQuestionSheetAction" />
-		<parameter id="description" value="KnowWEAction ReRenderQuestionSheetAction" />
+		<parameter id="description" value="Action ReRenderQuestionSheetAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+		<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="TestSuiteServlet">
+		<parameter id="class"
+			value="de.d3web.we.testsuite.TestSuiteServlet" />
+		<parameter id="name" value="TestSuiteServlet" />
+		<parameter id="description" value="Action TestSuiteServlet" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

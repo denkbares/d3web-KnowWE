@@ -38,8 +38,7 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.we.action.AbstractKnowWEAction;
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
@@ -48,7 +47,7 @@ import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.Section;
 
-public class GetInfoObjects extends AbstractKnowWEAction {
+public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 
 	public GetInfoObjects() {
 	}

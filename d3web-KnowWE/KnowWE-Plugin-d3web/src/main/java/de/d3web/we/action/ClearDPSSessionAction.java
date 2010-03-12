@@ -25,7 +25,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class ClearDPSSessionAction extends AbstractKnowWEAction {
+public class ClearDPSSessionAction extends DeprecatedAbstractKnowWEAction {
 
 
 	@Override

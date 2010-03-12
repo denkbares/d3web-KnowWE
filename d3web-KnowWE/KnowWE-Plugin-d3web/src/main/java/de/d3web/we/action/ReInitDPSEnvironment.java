@@ -25,7 +25,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.d3webModule.D3webModule;
 
 @Deprecated
-public class ReInitDPSEnvironment extends AbstractKnowWEAction {
+public class ReInitDPSEnvironment extends DeprecatedAbstractKnowWEAction {
 
 
 	@Override

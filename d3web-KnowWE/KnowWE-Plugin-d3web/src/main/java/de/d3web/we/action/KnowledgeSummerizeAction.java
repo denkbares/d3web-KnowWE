@@ -44,7 +44,7 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 
-public class KnowledgeSummerizeAction extends AbstractKnowWEAction {
+public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 
 //	public void render(Model model) throws Exception {
 //		List<KnowledgeService> ks = new ArrayList<KnowledgeService>(KnowWEUtils

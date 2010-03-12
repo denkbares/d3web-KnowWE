@@ -1,11 +1,11 @@
 package de.d3web.we.hermes.action;
 
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.hermes.quiz.QuizSessionManager;
 import de.d3web.we.hermes.taghandler.QuizHandler;
 
-public class StartQuizAction implements KnowWEAction{
+public class StartQuizAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public boolean isAdminAction() {

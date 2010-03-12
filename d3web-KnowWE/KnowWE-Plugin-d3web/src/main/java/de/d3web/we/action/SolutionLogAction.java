@@ -48,7 +48,7 @@ import de.d3web.we.terminology.local.LocalTerminologyAccess;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 
-public class SolutionLogAction extends AbstractKnowWEAction {
+public class SolutionLogAction extends DeprecatedAbstractKnowWEAction {
 
 	private String htmlHeader;
 	private SimpleDateFormat dateFormat;

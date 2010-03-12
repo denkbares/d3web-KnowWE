@@ -49,7 +49,7 @@ import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class DPSSolutionsAction extends AbstractKnowWEAction {
+public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 
 	private String iconURL;
 

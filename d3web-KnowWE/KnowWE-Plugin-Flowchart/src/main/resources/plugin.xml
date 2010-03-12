@@ -37,52 +37,52 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="AddSubFlowchart">
 		<parameter id="class"
 			value="de.d3web.we.flow.kbinfo.AddSubFlowchart" />
 		<parameter id="name" value="AddSubFlowchart" />
-		<parameter id="description" value="KnowWEAction AddSubFlowchart" />
+		<parameter id="description" value="Action AddSubFlowchart" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetInfoObjects">
 		<parameter id="class"
 			value="de.d3web.we.flow.kbinfo.GetInfoObjects" />
 		<parameter id="name" value="GetInfoObjects" />
-		<parameter id="description" value="KnowWEAction GetInfoObjects" />
+		<parameter id="description" value="Action GetInfoObjects" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SearchInfoObjects">
 		<parameter id="class"
 			value="de.d3web.we.flow.kbinfo.SearchInfoObjects" />
 		<parameter id="name" value="SearchInfoObjects" />
-		<parameter id="description" value="KnowWEAction SearchInfoObjects" />
+		<parameter id="description" value="Action SearchInfoObjects" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="UpdateQuestions">
 		<parameter id="class"
 			value="de.d3web.we.flow.kbinfo.UpdateQuestions" />
 		<parameter id="name" value="UpdateQuestions" />
-		<parameter id="description" value="KnowWEAction UpdateQuestions" />
+		<parameter id="description" value="Action UpdateQuestions" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="UpdateSolutions">
 		<parameter id="class"
 			value="de.d3web.we.flow.kbinfo.UpdateSolutions" />
 		<parameter id="name" value="UpdateSolutions" />
-		<parameter id="description" value="KnowWEAction UpdateSolutions" />
+		<parameter id="description" value="Action UpdateSolutions" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

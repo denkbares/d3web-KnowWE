@@ -38,7 +38,7 @@ import de.d3web.we.terminology.global.GlobalTerminology;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 
-public class CodeCompletionAction extends AbstractKnowWEAction {
+public class CodeCompletionAction extends DeprecatedAbstractKnowWEAction {
 
 	AbstractCompletionFinder defaultFinder = new DefaultCompletionFinder();
 

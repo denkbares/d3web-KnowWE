@@ -3,7 +3,7 @@ package de.d3web.we.action;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.taghandler.QuestionSheetHandler;
 
-public class ReRenderQuestionSheetAction extends AbstractKnowWEAction {
+public class ReRenderQuestionSheetAction extends DeprecatedAbstractKnowWEAction {
 	
 	@Override
 	public String perform(KnowWEParameterMap map) {	

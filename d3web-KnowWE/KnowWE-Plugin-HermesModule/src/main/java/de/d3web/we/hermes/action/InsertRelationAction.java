@@ -1,6 +1,6 @@
 package de.d3web.we.hermes.action;
 
-import de.d3web.we.action.AbstractKnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -9,7 +9,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
-public class InsertRelationAction extends AbstractKnowWEAction {
+public class InsertRelationAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

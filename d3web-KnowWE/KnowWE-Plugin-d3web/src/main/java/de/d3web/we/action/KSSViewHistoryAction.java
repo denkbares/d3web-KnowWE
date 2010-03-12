@@ -32,7 +32,7 @@ import de.d3web.we.core.dialog.Dialog;
 import de.d3web.we.core.dialog.DialogControl;
 import de.d3web.we.d3webModule.D3webModule;
 
-public class KSSViewHistoryAction extends AbstractKnowWEAction {
+public class KSSViewHistoryAction extends DeprecatedAbstractKnowWEAction {
 
 	private String htmlHeader;
 	private SimpleDateFormat dateFormat;

@@ -35,7 +35,7 @@ import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 
-public class QuestionStateReportAction extends AbstractKnowWEAction {
+public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 	/**
 	 * Used by GuidelineModul edit in GuidelineRenderer: Method: d3webVariablesScript
 	 * Don´t change output syntax

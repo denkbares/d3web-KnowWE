@@ -23,7 +23,7 @@ package de.d3web.we.refactoring.action;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.action.AbstractKnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -37,7 +37,7 @@ import de.d3web.we.kdom.xcl.XCList;
  * @author Franz Schwab
  */
 @Deprecated
-public class GetXCLAction extends AbstractKnowWEAction {
+public class GetXCLAction extends DeprecatedAbstractKnowWEAction {
 
 	KnowWEParameterMap parameters;
 	String id;

@@ -15,12 +15,12 @@
 		</library>
 	</runtime>
 	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEAction"
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RefactoringAction">
 		<parameter id="class"
 			value="de.d3web.we.refactoring.action.RefactoringAction" />
 		<parameter id="name" value="RefactoringAction" />
-		<parameter id="description" value="KnowWEAction RefactoringAction" />
+		<parameter id="description" value="Action RefactoringAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

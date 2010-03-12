@@ -20,11 +20,14 @@
 
 package de.d3web.we.action;
 
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import common.Logger;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionMC;
@@ -43,7 +46,7 @@ import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.utils.D3webUtils;
 
-public class SetSingleFindingAction extends AbstractKnowWEAction {
+public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -187,7 +190,13 @@ public class SetSingleFindingAction extends AbstractKnowWEAction {
 		kss.inform(info);
 		broker.update(info);
 
-		return KnowWEFacade.getInstance().performAction("RefreshHTMLDialogAction", parameterMap);
+		try {
+			KnowWEFacade.getInstance().performAction("RefreshHTMLDialogAction", parameterMap);
+		} catch (IOException e) {
+			Logger.getLogger(this.getClass()).error("Error while performing RefreshHTMLDialogAction" + e.getMessage());
+		}
+		
+		return null;
 	}
 
 }

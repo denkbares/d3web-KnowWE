@@ -50,7 +50,7 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.inference.PSMethodXCL;
 
-public class XCLExplanationAction extends AbstractKnowWEAction {
+public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 	
 	//properties only
 	private static final String SOLUTION = "SOLUTION";

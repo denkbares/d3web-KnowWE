@@ -20,11 +20,10 @@
 
 package de.d3web.we.plugin.calendar;
 
-import de.d3web.we.action.AbstractKnowWEAction;
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEParameterMap;
 
-public class CalendarAction extends AbstractKnowWEAction {
+public class CalendarAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {

@@ -15,7 +15,7 @@ import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.content.PageRenamer;
 
-import de.d3web.we.action.AbstractKnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -80,14 +80,14 @@ public abstract class RefactoringScript {
 		this.refactoringSession = refactoringSession;
 	}
 	
-	private void performNextAction(AbstractKnowWEAction a) {
+	private void performNextAction(DeprecatedAbstractKnowWEAction a) {
 		refactoringSession.performNextAction(a);
 	}
 	
 	public abstract void run();
 
 	public Section<?> findXCList() {
-		performNextAction(new AbstractKnowWEAction() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
 				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
@@ -118,7 +118,7 @@ public abstract class RefactoringScript {
 	}
 
 	public Class<? extends KnowWEObjectType> findRenamingType() {
-		performNextAction(new AbstractKnowWEAction() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
 				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
@@ -144,7 +144,7 @@ public abstract class RefactoringScript {
 
 	public <T extends KnowWEObjectType> String findObjectID(final Class<T> clazz) {
 		//TODO mehrfache Einträge für ein Element sollten vermieden werden
-		performNextAction(new AbstractKnowWEAction() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
 				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
@@ -178,7 +178,7 @@ public abstract class RefactoringScript {
 
 	public <T extends KnowWEObjectType> String[] findObjectIDs(final Class<T> clazz) {
 		//TODO mehrfache Einträge für ein Element sollten vermieden werden
-		performNextAction(new AbstractKnowWEAction() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
 				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
@@ -211,7 +211,7 @@ public abstract class RefactoringScript {
 	}
 
 	public String findNewName() {
-		performNextAction(new AbstractKnowWEAction() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
 				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
@@ -230,7 +230,7 @@ public abstract class RefactoringScript {
 	}
 
 	public void printExistingElements(final List<Section<? extends KnowWEObjectType>> existingElements) {
-		performNextAction(new AbstractKnowWEAction() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameterMap) {
 				StringBuffer html = new StringBuffer();

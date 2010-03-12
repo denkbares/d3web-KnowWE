@@ -20,9 +20,7 @@
 
 package de.d3web.we.flow.kbinfo;
 
-import org.apache.tools.ant.types.CommandlineJava.SysProperties;
-
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -34,7 +32,7 @@ import de.d3web.we.kdom.Section;
 /**
  * @author Florian Ziegler
  */
-public class UpdateQuestions implements KnowWEAction {
+public class UpdateQuestions extends DeprecatedAbstractKnowWEAction {
 	
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 

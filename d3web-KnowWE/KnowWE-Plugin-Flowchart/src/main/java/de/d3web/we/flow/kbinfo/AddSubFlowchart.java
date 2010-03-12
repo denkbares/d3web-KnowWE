@@ -1,11 +1,7 @@
 package de.d3web.we.flow.kbinfo;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -15,7 +11,7 @@ import de.d3web.we.logging.Logging;
 /**
  * @author Florian Ziegler
  */
-public class AddSubFlowchart implements KnowWEAction{
+public class AddSubFlowchart extends DeprecatedAbstractKnowWEAction {
 
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
