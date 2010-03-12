@@ -20,6 +20,8 @@
 
 package de.d3web.we.jspwiki;
 
+import java.io.IOException;
+
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEFacade;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -33,18 +35,17 @@ public class JSPActionDispatcher extends KnowWEActionDispatcher {
 	}
 		 
 	@Override
-	public String performAction(KnowWEParameterMap parameterMap) {
+	public void performAction(KnowWEParameterMap parameterMap) throws IOException {
 		String action = parameterMap.get("action");
 		parameterMap.put("env", "JSPWiki");
 		parameterMap.put("KWikiWeb", "default_web");
 		
 				
 		if(action != null) {
-			return fac.performAction(parameterMap);
-		}		
-		
-		return "no action found";
+			fac.performAction(parameterMap);
+		} else {
+			parameterMap.getResponse().getWriter().write("no action found");	
+		}
 	}
-
 }
 
