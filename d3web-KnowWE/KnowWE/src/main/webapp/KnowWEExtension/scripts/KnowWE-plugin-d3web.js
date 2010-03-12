@@ -731,7 +731,7 @@ KNOWWE.plugin.d3web.adminconsole = function(){
          */
         doParseWeb : function(){
             var params = {
-                action : 'ParseWebOffline',
+                action : 'ParseWebOfflineRenderer',
                 KWikiWeb : 'default_web'
             };
             var options = {

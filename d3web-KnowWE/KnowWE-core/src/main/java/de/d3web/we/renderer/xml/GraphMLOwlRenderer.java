@@ -26,12 +26,12 @@ import java.util.List;
 
 import org.openrdf.model.Statement;
 
-import de.d3web.we.action.AbstractKnowWEAction;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.SemanticCore;
 
-public class GraphMLOwlRenderer extends AbstractKnowWEAction {
+public class GraphMLOwlRenderer extends DeprecatedAbstractKnowWEAction {
 	private int id;
 	private HashMap<String,String> nodes;
 	private List<String> edges;

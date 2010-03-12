@@ -6,7 +6,7 @@ import java.util.List;
 
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.Action;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -21,7 +21,7 @@ public class Plugins {
 	public static final String SCOPE_ROOT = "root";
 	public static final String SCOPE_GLOBAL = "global";
 	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
-	public static final String EXTENDED_POINT_KnowWEAction = "KnowWEAction";
+	public static final String EXTENDED_POINT_KnowWEAction = "Action";
 	public static final String EXTENDED_POINT_KnowledgeRepresentationHandler = "KnowledgeRepresentationHandler";
 	public static final String EXTENDED_POINT_KnowWEObjectType = "KnowWEObjectType";
 	public static final String EXTENDED_POINT_TagHandler = "TagHandler";
@@ -46,11 +46,11 @@ public class Plugins {
 	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually
 	 * be clicking on pregenerated links on the wiki pages.
 	 */
-	public static List<KnowWEAction> getKnowWEAction() {
+	public static List<Action> getKnowWEAction() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_KnowWEAction);
-		List<KnowWEAction> ret = new ArrayList<KnowWEAction>();
+		List<Action> ret = new ArrayList<Action>();
 		for (Extension e: extensions) {
-			ret.add((KnowWEAction) e.getSingleton());
+			ret.add((Action) e.getSingleton());
 		}
 		return ret;
 	}

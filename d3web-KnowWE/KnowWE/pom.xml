@@ -188,6 +188,25 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<!-- Drools plugin -->
+		<profile>
+			<id>drools-plugin</id>
+			<activation>
+				<property>
+					<name>drools-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Drools-jpf-plugin</artifactId>
+					<version>0-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<!-- Refactoring plugin -->
 		<profile>

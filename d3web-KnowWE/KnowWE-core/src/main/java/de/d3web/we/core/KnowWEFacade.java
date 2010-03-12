@@ -20,14 +20,18 @@
 
 package de.d3web.we.core;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.log4j.Logger;
 
-import de.d3web.we.action.KnowWEAction;
+import de.d3web.we.action.Action;
+import de.d3web.we.action.ActionContext;
 import de.d3web.we.upload.UploadManager;
 import de.knowwe.plugin.Plugins;
 
@@ -80,9 +84,10 @@ public class KnowWEFacade {
 	 * 
 	 * @param map
 	 * @return
+	 * @throws IOException 
 	 */
-	public String replaceKDOMNode(KnowWEParameterMap map) {
-		return this.tryLoadingAction("ReplaceKDOMNodeAction").perform(map);
+	public void replaceKDOMNode(KnowWEParameterMap map) throws IOException {
+		performAction("ReplaceKDOMNodeAction", map);
 	}
 	
 	/**
@@ -93,12 +98,14 @@ public class KnowWEFacade {
 	 * 
 	 * @param parameterMap
 	 * @return propositions for autocompletion
+	 * @throws IOException 
+	 * @throws IOException 
 	 */
-	public String autoCompletion(KnowWEParameterMap parameterMap) {
-		return performAction("CodeCompletionRenderer", parameterMap);
+	public void autoCompletion(KnowWEParameterMap parameterMap) throws IOException {
+		performAction("CodeCompletionRenderer", parameterMap);
 	}
 
-	public String performAction(String action, KnowWEParameterMap parameterMap) {
+	public void performAction(String action, KnowWEParameterMap parameterMap) throws IOException {
 		if (action == null) {
 			action = parameterMap.get("action");
 			if (action == null) {
@@ -106,37 +113,60 @@ public class KnowWEFacade {
 			}
 		}
 		
-		KnowWEAction actionInstance  = tryLoadingAction(action);
+		// Create ActionContext
+		ActionContext context = new ActionContext(action, "", 
+												  getActionContextProperties(parameterMap), 
+												  parameterMap.getRequest(), 
+												  parameterMap.getResponse(), 
+												  parameterMap.getContext(),
+												  parameterMap);
 		
-		if (actionInstance.isAdminAction())
-			return performAdminAction(actionInstance, parameterMap);
-		else 
-			return actionInstance.perform(parameterMap);
+		// Get the Action
+		Action actionInstance = context.getAction();
+	
+		if (actionInstance == null) {
+			context.getWriter().write("Unable to load action: \"" + action + "\"");
+			Logger.getLogger(this.getClass()).error("Unable to load action: \"" + action + "\"");
+		} else if (actionInstance.isAdminAction()) {
+			performAdminAction(actionInstance, context);
+		} else { 
+			actionInstance.execute(context);
+		}
+	}
+	
+	public Properties getActionContextProperties(KnowWEParameterMap map) {
+		Properties parameters = new Properties();
+		for (String key : map.keySet()) {
+			String value = map.get(key);
+			parameters.put(key, value);
+		}
+		return parameters;
 	}
 
 	
 	/**
 	 * Checks the rights of the user prior to performing the action.
+	 * @throws IOException 
 	 * 
 	 */
-	private String performAdminAction(KnowWEAction action,
-			KnowWEParameterMap parameterMap) {
+	private void performAdminAction(Action action,
+			ActionContext context) throws IOException {
 		
 		ResourceBundle bundle = ResourceBundle.getBundle("KnowWE_config");
 
 		if (bundle.getString("knowwewiki.parseAllFunction").equals("true")) {
 
-			if (parameterMap.getWikiContext().userIsAdmin()) {
-				return action.perform(parameterMap);
+			if (context.getKnowWEParameterMap().getWikiContext().userIsAdmin()) {
+				action.execute(context);
 			}
 
-			return "<p class=\"info box\">"
-					+ KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest()).getString("KnowWE.login.error.admin")
-					+ "</p>";
+			context.getWriter().write("<p class=\"info box\">"
+					+ KnowWEEnvironment.getInstance().getKwikiBundle(context.getKnowWEParameterMap().getWikiContext()).getString("KnowWE.login.error.admin")
+					+ "</p>");
+		} else {
+			action.execute(context);
 		}
 		
-		
-		return action.perform(parameterMap);
 	}
 
 	/**
@@ -150,14 +180,14 @@ public class KnowWEFacade {
 	 * @throws various exceptions depending on the exact error 
 	 * 
 	 */
-	public KnowWEAction tryLoadingAction(String actionName) {
-		// check is action is fully qualified class name
+	public Action tryLoadingAction(String actionName) {
+		// check if action is fully qualified class name
 		if (!actionName.contains(".")) {
 			// if not, use d3web default package
 			actionName = "de.d3web.we.action." + actionName;
 		}
-		List<KnowWEAction> knowWEActions = Plugins.getKnowWEAction();
-		for (KnowWEAction action: knowWEActions) {
+		List<Action> actions = Plugins.getKnowWEAction();
+		for (Action action: actions) {
 			if (action.getClass().getName().equals(actionName)) {
 				return action;
 			}
@@ -165,8 +195,8 @@ public class KnowWEFacade {
 		throw new IllegalArgumentException("No action "+actionName+" available");
 	}
 
-	public String performAction(KnowWEParameterMap parameterMap) {
-		return this.performAction(null, parameterMap);
+	public void performAction(KnowWEParameterMap parameterMap) throws IOException {
+		performAction(null, parameterMap);
 	}
 
 	public String getNodeData(String web, String topic, String nodeID) {

@@ -28,14 +28,14 @@
 		<url-pattern>/KnowWEUpload</url-pattern>
 	</filter-mapping>
 	
-	<!-- TestSuite Visualization Download Creation Servlet -->
+	<!-- Action Servlet -->
 	<servlet>
- 		<servlet-name>TestSuiteDownload</servlet-name>
- 		<servlet-class>de.d3web.we.testsuite.TestSuiteServlet</servlet-class>
+ 		<servlet-name>ActionServlet</servlet-name>
+ 		<servlet-class>de.d3web.we.action.ActionServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
- 		<servlet-name>TestSuiteDownload</servlet-name>
- 		<url-pattern>/testsuitedownload</url-pattern>
+ 		<servlet-name>ActionServlet</servlet-name>
+ 		<url-pattern>/action/*</url-pattern>
 	</servlet-mapping>
 	
 

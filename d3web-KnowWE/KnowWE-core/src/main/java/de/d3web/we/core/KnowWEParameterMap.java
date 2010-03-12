@@ -27,6 +27,7 @@ import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -36,27 +37,30 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 	private HttpSession session;
 	private ServletContext context;
 	private HttpServletRequest request;
+	private HttpServletResponse response;
 	private KnowWEUserContext wikiContext;
 
 	public KnowWEParameterMap(KnowWEUserContext wikiContext,
-			HttpServletRequest r, ServletContext c, KnowWEEnvironment e) {
-		if (r != null) {
-			this.session = r.getSession();
+			HttpServletRequest rq, HttpServletResponse rp, 
+			ServletContext c, KnowWEEnvironment e) {
+		if (rq != null) {
+			this.session = rq.getSession();
 		}
 		this.wikiContext = wikiContext;
-		this.request = r;
+		this.request = rq;
+		this.response = rp;
 		this.context = c;
 
-		Enumeration<String> paramNames = r.getParameterNames();
+		Enumeration<String> paramNames = rq.getParameterNames();
 		if ((paramNames != null)) {
 			while ((paramNames.hasMoreElements())) {
 				String name = paramNames.nextElement();
 				
 				String value = "";
 				try {
-					value = URLDecoder.decode( r.getParameter(name) ,"UTF-8");
+					value = URLDecoder.decode( rq.getParameter(name) ,"UTF-8");
 				} catch (UnsupportedEncodingException e1) {
-					value = r.getParameter(name);
+					value = rq.getParameter(name);
 				}
 				this.put(name, value);
 			}
@@ -94,6 +98,10 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 
 	public HttpServletRequest getRequest() {
 		return request;
+	}
+	
+	public HttpServletResponse getResponse() {
+		return response;
 	}
 
 	public KnowWEUserContext getWikiContext() {

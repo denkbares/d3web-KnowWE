@@ -20,12 +20,12 @@
 
 package de.d3web.we.action;
 
+import java.io.IOException;
+
 import de.d3web.we.core.KnowWEParameterMap;
 
 public abstract class KnowWEActionDispatcher {
 	
-	public abstract String performAction(KnowWEParameterMap parameterMap);
+	public abstract void performAction(KnowWEParameterMap parameterMap) throws IOException;
 	
-	//public abstract void setEnv(KnowWEFacade e);
-
 }

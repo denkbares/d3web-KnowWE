@@ -20,12 +20,12 @@
 
 package de.d3web.we.action;
 
-import de.d3web.we.core.KnowWEParameterMap;
+import java.io.IOException;
 
-public interface KnowWEAction {
-	   
-	public String perform(KnowWEParameterMap parameterMap);
+public interface Action {
+	
+	void execute(ActionContext context) throws IOException;
 	
 	boolean isAdminAction();
-
+	
 }

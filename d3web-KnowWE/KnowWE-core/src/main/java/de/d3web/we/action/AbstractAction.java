@@ -19,23 +19,32 @@
  */
 package de.d3web.we.action;
 
-import de.d3web.we.core.KnowWEParameterMap;
+import java.io.IOException;
 
 /**
- * Abstract superclass for KnowWEActions with standard implementations
- * for most methods.
+ * Abstract superclass for Actions (KnowWEActions or Servlets)
+ * with standard implementations for most methods.
  * 
- * @author Reinhard Hatko
- * Created on: 12.11.2009
+ * The ActionContext of the execute method provides you everything
+ * you need for your Actions. If you want to have some textual
+ * output just use context.getWriter().write(...). In case you
+ * are developing a KnowWEAction your output will be written to
+ * KnowWE.jsp where it is applicable for further processing 
+ * (via JavaScript etc.).
+ * 
+ * Additionally you have the possibility to stream almost any kind
+ * of content via the OutputStream of the response. Simply use
+ * context.getOutputStream().
+ * 
+ * @author Sebastian Furth
  */
-public abstract class AbstractKnowWEAction implements KnowWEAction {
+public abstract class AbstractAction implements Action {
 
 	@Override
 	public boolean isAdminAction() {
 		return false;
 	}
 
-	@Override
-	public abstract String perform(KnowWEParameterMap parameterMap);
-
+	public abstract void execute(ActionContext context) throws IOException;
+	
 }
