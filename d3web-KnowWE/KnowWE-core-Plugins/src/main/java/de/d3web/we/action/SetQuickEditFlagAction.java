@@ -32,6 +32,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.user.UserSettingsManager;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
@@ -107,7 +108,7 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 				DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
 			}
 			String result = b.toString();
-			return result;
+			return KnowWEUtils.unmaskHTML((result));
 		}
 		return "<p class=\"error box\"> " + rb.getString("KnowWE.qedit.nokdomidfound") + "</p>";
 	}
