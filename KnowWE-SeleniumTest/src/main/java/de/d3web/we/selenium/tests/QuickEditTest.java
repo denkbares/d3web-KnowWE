@@ -20,8 +20,6 @@
 
 package de.d3web.we.selenium.tests;
 
-import java.util.ResourceBundle;
-
 
 public class QuickEditTest extends KnowWETestCase{
 	
@@ -33,43 +31,50 @@ public class QuickEditTest extends KnowWETestCase{
 		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Quick-Edit-Test");
 		assertTrue(selenium.getTitle().contains("KnowWE: Quick-Edit-Test"));
 		
-		//If another session opened Quick-Edit-Mode close it (takes two times 
+		//If another session opened Quick-Edit-Mode close it
 		if (selenium.isElementPresent(divID + "_cancel")) {
-			clickAndWait(divID + "_cancel");
+			doSelActionAndWait(divID + "_cancel", "click");
 		}
+		
+		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
+		final String oldPageContent = selenium.getText("//textarea[@id='editorarea']");
+		loadAndWait("//input[@name='ok']");
 
-		final String oldPageContent = selenium.getText("//div[@id='page']");
+		
 		final String oldCellValue = selenium.getText(divLocator + "//table/tbody/tr[4]/td[2]");
 		
-		clickAndWait(divID +  "_pencil");
+		doSelActionAndWait(divID +  "_pencil", "click");
 		verifyFalse(selenium.isElementPresent(divID + "_pencil"));
-		clickAndWait(divID +  "_cancel");
+		doSelActionAndWait(divID +  "_cancel", "click");
 		
 		//Test: Eingabe -> speichern
-		clickAndWait(divID +  "_pencil");
-		selenium.select(divLocator + "/table/tbody/tr[4]/td[2]/select", "label=+");
-		clickAndWait(divID +  "_accept");
+		doSelActionAndWait(divID +  "_pencil", "click");
+		doSelActionAndWait(divLocator + "/table/tbody/tr[4]/td[2]/select", "select", "label=+");
+		doSelActionAndWait(divID +  "_accept", "click");
 		
 		refreshAndWait();
 		assertEquals("Eingabe wurde nicht/nicht richtig uebernommen", "+", selenium.getText(divLocator + "//table/tbody/tr[4]/td[2]"));
 		
 		//Test: Eingabe -> nicht speichern
-		clickAndWait(divID +  "_pencil");
-		selenium.select(divLocator + "//table/tbody/tr[2]/td[4]/select", "label=+");
-		clickAndWait(divID +  "_cancel");
+		doSelActionAndWait(divID +  "_pencil", "click");
+		doSelActionAndWait(divLocator + "//table/tbody/tr[2]/td[4]/select", "select", "label=+");
+		doSelActionAndWait(divID +  "_cancel", "click");
 		
 		refreshAndWait();
 		assertEquals("Eingabe wurde uebernommen obwohl abgebrochen wurde", "hm", selenium.getText(divLocator + "//table/tbody/tr[2]/td[4]"));
 		
 		//Geaenderten Wert zuruecksetzen -> Seiteninhalt sollte der gleiche wie Anfangs sein
-		clickAndWait(divID +  "_pencil");
-		selenium.select(divLocator + "//table/tbody/tr[4]/td[2]/select", "label=" + oldCellValue);
-		clickAndWait(divID +  "_accept");
+		doSelActionAndWait(divID +  "_pencil", "click");
+		doSelActionAndWait(divLocator + "//table/tbody/tr[4]/td[2]/select", "select", "label=" + oldCellValue);
+		doSelActionAndWait(divID +  "_accept", "click");
 		
-		// refreshAndWait(); causes bigger whitespace between pencil and table
-		// Border kommt bei speichern neuer Werte hinzu -> fail
-		// assertEquals("Es sind unerwuenschte Aenderungen im Inhalt aufgetreten",
-		// oldPageContent, selenium.getText("//div[@id='page']"));
+		refreshAndWait();
+
+		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
+		final String newPageContent = selenium.getText("//textarea[@id='editorarea']");
+		loadAndWait("//input[@name='ok']");
+		assertEquals("Es sind unerwuenschte Aenderungen im Inhalt aufgetreten",
+				oldPageContent, newPageContent);
 		
 	}
 	

@@ -29,7 +29,7 @@ public class CommentTest extends KnowWETestCase{
 		assertTrue(selenium.getTitle().contains("KnowWE: Selenium-Comment"));
 		verifyTrue(selenium.isTextPresent("<< back"));
 		type("text", "Das ist ein Selenium-Test");
-		clickAndWait("//div[@onclick='saveForumBox()']");
+		doSelActionAndWait("//div[@onclick='saveForumBox()']", "click");
 		
 		loadAndWait("link=<< back");
 		verifyEquals("KnowWE: Selenium-Test", selenium.getTitle());

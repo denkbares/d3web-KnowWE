@@ -20,6 +20,7 @@
 
 package de.d3web.we.selenium.tests;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -40,7 +41,6 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	private Long sleepTime = Long.parseLong(rb.getString("KnowWE.SeleniumTest.SleepTime"));
 	
 	private String pageLoadTime = rb.getString("KnowWE.SeleniumTest.PageLoadTime");
-
 	
 	
 	/**
@@ -64,7 +64,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * quit by error.
 	 * @param linkName This is the string/locator Selenium uses to search for the link.
 	 */
-	public void loadAndWait(String locator) {
+	protected void loadAndWait(String locator) {
 		boolean isNewTab = false;
 		try {
 			String aParent = getAncestor(locator, "a");
@@ -79,7 +79,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			// no need of using openWindowBlank
 		}
 		if (!isNewTab) {
-			clickAndWait(locator);
+			doSelActionAndWait(locator, "click");
 			selenium.waitForPageToLoad(pageLoadTime);
 		}
 	}
@@ -129,13 +129,21 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		selenium.waitForPageToLoad(pageLoadTime);
 	}
 	
+	protected void doSelActionAndWait(String locator, String selActionName) {
+		doSelActionAndWait(locator, selActionName, "");
+	}
+	
 	/**
-	 * Clicks on a certain element and stops for a fixed time.
-	 * If the element is not present yet, this method waits on its
-	 * arrival until "RetryTime" expires.
-	 * @param locator Locator to find the element to click on
+	 * Executes a Selenium Command on a certain element and stops for
+	 * a fixed time. If the element is not present yet, this method waits
+	 * on its arrival until "RetryTime" expires.
+	 * @param locator Locator to find the element
+	 * @param selMethodName The name of the Selenium method to be run
+	 * (only limited number of Selenium Commands available; they have to
+	 * be added manually to this method)
+	 * @param option Some additional parameter if being used (e.g. select: optionLocator) 
 	 */
-	protected void clickAndWait(String locator) {
+	protected void doSelActionAndWait(String locator, String selMethodName, String option) {
 		Long startTime = System.currentTimeMillis();
 		while (!selenium.isElementPresent(locator) 
 				&& System.currentTimeMillis() - startTime < 
@@ -143,11 +151,18 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			//wait until Element appears
 			refreshAndWait();
 		}
-		selenium.click(locator);
+		try {
+			if (selMethodName.equals("click")) selenium.click(locator);
+			else if (selMethodName.equals("select")) selenium.select(locator, option);
+			else throw new IllegalSelMethodException( selMethodName + " is not an accepted Selenium method (in case it exists in Selenese you can add it");
+		} catch(IllegalSelMethodException isae) {
+			isae.printStackTrace();
+		}
+		
 		threadSleep(sleepTime);
 	}
 	
-	public boolean checkSolutions(String[] solutions, Map<String, Integer[]> input, boolean isDialog) {
+	protected boolean checkSolutions(String[] solutions, Map<String, Integer[]> input, boolean isDialog) {
 		return checkAndUncheckSolutions(solutions, new String[] {}, input, isDialog);
 	}
 	
@@ -164,17 +179,17 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * @return true if with the input parameters all expected Solutions 
 	 * are shown at solutionsstates and all not expected not; else false.
 	 */
-	public boolean checkAndUncheckSolutions(String[] expSolutions, String[] notExpSolutions,
+	protected boolean checkAndUncheckSolutions(String[] expSolutions, String[] notExpSolutions,
 			Map<String, Integer[]> input, boolean isDialog) {
 		if (isDialog) {
 			String startPage = selenium.getTitle();
-			clickAndWait("sstate-clear");
+			doSelActionAndWait("sstate-clear", "click");
 			loadAndWait("//img[@title='Fall']");
 			assertEquals("d3web Dialog", selenium.getTitle());
 			
 			//Try all observations on the left (Frageboegen)
 			for (int i = 1; selenium.isElementPresent("//div[@id='qasettree']//table[" + i + "]//span"); i++) {
-				clickAndWait("//div[@id='qasettree']//table[" + i + "]//span");
+				doSelActionAndWait("//div[@id='qasettree']//table[" + i + "]//span", "click");
 				refreshAndWait();
 				//Try all categories of input
 				for (String elem : input.keySet()) {
@@ -186,8 +201,8 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 									selenium.getText("//table[@id='qPage']//td[@id='qTableCell_Q" + j + "']").contains(elem.trim())){
 								//Choose all answers given in the int array of input
 								for (int k = 0; k < input.get(elem).length; k++) {
-									clickAndWait("//td[@id='qTableCell_Q" + j + "']//input[@id='Q" + j + "a" + input.get(elem)[k] + "']");
-									clickAndWait("//td[@id='qTableCell_Q" + j + "']//input[@id='dialogForm:questions:q_ok']");									
+									doSelActionAndWait("//td[@id='qTableCell_Q" + j + "']//input[@id='Q" + j + "a" + input.get(elem)[k] + "']", "click");
+									doSelActionAndWait("//td[@id='qTableCell_Q" + j + "']//input[@id='dialogForm:questions:q_ok']", "click");									
 								}
 								elemFound = true;
 								
@@ -205,7 +220,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 					}
 				}
 			}
-			clickAndWait("link=Ergebnisseite");
+			doSelActionAndWait("link=Ergebnisseite", "click");
 			selenium.close();
 			selenium.selectWindow(null);
 			selenium.windowFocus();
@@ -216,7 +231,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			for (int j = 0; j < elem.length; j++) {
 				Integer[] actCategoryInput = input.get(elem[j]);
 				
-				clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");
+				doSelActionAndWait("//span[text()='" + elem[j].toString().trim()+ "']", "click");
 				//It's recommended to wait until the dialog pops up
 				threadSleep(sleepTime);
 				
@@ -225,9 +240,9 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 				for (int i = 0; i < actCategoryInput.length; i++) {
 					actInputLocator = "//form[@name='semanooc']/input[" + actCategoryInput[i] + "]";
 					if (selenium.isElementPresent(actInputLocator)) {
-						clickAndWait(actInputLocator);
+						doSelActionAndWait(actInputLocator, "click");
 						
-						clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");						
+						doSelActionAndWait("//span[text()='" + elem[j].toString().trim()+ "']", "click");						
 						//It's recommended to wait until the dialog pops up
 						threadSleep(sleepTime);
 						
@@ -241,11 +256,11 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 					}
 					actInputLocator = "//form[@name='semanomc']/input[" + actCategoryInput[i] + "]";
 					if(selenium.isElementPresent(actInputLocator)){
-						clickAndWait(actInputLocator);
+						doSelActionAndWait(actInputLocator, "click");
 						//CheckBoxes need some special treatment
 						threadSleep(sleepTime);
 						
-						clickAndWait("//span[text()='" + elem[j].toString().trim()+ "']");						
+						doSelActionAndWait("//span[text()='" + elem[j].toString().trim()+ "']", "click");						
 						//It's recommended to wait until the dialog pops up
 						threadSleep(sleepTime);
 						if (!selenium.isElementPresent(actInputLocator)
@@ -264,7 +279,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 				}
 				//Close pop-up window if not done yet
 				if (selenium.isElementPresent("o-lay-close")) {
-					clickAndWait("o-lay-close");				
+					doSelActionAndWait("o-lay-close", "click");				
 				}						
 				threadSleep(sleepTime);
 			}			
@@ -285,7 +300,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	private boolean verifySolutions(String[] expSolutions, String[] notExpSolutions, long startTime) {
 		String actSolutions = "";
 		comment = "";
-		clickAndWait("sstate-update");
+		doSelActionAndWait("sstate-update", "click");
 		assertEquals("No solutions displayed", true, selenium.isElementPresent("//div[@id='sstate-result']"));
 		if (selenium.isElementPresent("//div[@id='sstate-result']/div/ul/")) {
 			actSolutions = selenium.getText("//div[@id='sstate-result']/div/ul/");			
@@ -309,7 +324,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			}
 			result = result && hasntNotExpSol;
 		}
-		clickAndWait("sstate-clear");
+		doSelActionAndWait("sstate-clear", "click");
 		//Retry the check if result is false and time isn't expired
 		if (System.currentTimeMillis() - startTime < 
 				Long.parseLong(rb.getString("KnowWE.SeleniumTest.RetryTime")) && !result) {
@@ -336,7 +351,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * loading.
 	 * @param url Address of the new page
 	 */
-	public void open(String url) {
+	protected void open(String url) {
 		selenium.open(url);
 		selenium.waitForPageToLoad(pageLoadTime);
 	}
@@ -381,4 +396,14 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		}
 		return "Not Found";
 	}
+	
+	private class IllegalSelMethodException extends Exception {
+
+		private static final long serialVersionUID = 1L;
+
+		private IllegalSelMethodException(String errorMessage) {
+	        super(errorMessage);
+	    }
+	}
 }
+
