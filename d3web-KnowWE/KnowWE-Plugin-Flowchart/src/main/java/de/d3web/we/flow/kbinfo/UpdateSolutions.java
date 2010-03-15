@@ -20,9 +20,12 @@
 
 package de.d3web.we.flow.kbinfo;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.we.action.AbstractAction;
+import de.d3web.we.action.ActionContext;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
@@ -34,17 +37,42 @@ import de.d3web.we.kdom.Section;
 /**
  * @author Florian Ziegler
  */
-public class UpdateSolutions extends DeprecatedAbstractKnowWEAction {
+public class UpdateSolutions extends AbstractAction {
 	
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
+	
+	private String addSolution(String solutionsSection, String solutionText) { 
+
+//		if (!solutionsSection.contains(solutionText)) {
+		//"Contains" is too weak: tried to add Solution "Bogen Vergiftung" when "Bogen Vergiftung Kind"
+		//was already a Solution -> didnt do anything
+		//Solution must be in its own line
 		
+		
+		Matcher matcher = Pattern.compile("^" + solutionText + "$", Pattern.MULTILINE).matcher(solutionsSection);
+		
+		if (!matcher.lookingAt())
+			return solutionsSection + solutionText + LINE_SEPARATOR;
+		else 
+			return solutionsSection;
+	}
+	
+
+
+
+	@Override
+	public boolean isAdminAction() {
+		return false;
+	}
+
+
+	@Override
+	public void execute(ActionContext context) throws IOException {
 		// get everything important from the parameter map
-		String web = parameterMap.getWeb();
-		String solutionText = parameterMap.get("text");
-		String pageName = parameterMap.get("pageName");
+		String web = context.getParameter(KnowWEAttributes.WEB);
+		String solutionText = context.getParameter("text");
+		String pageName = context.getParameter("pageName");
 
 
 		// get everything to update the article
@@ -94,33 +122,8 @@ public class UpdateSolutions extends DeprecatedAbstractKnowWEAction {
 		String newText = firstPart + newSolutionsSection + lastPart;
 		instance.saveArticle(sec.getWeb(), sec.getTitle(), newText, map);
 
-		return "success";
-	}
-	
-	
-	private String addSolution(String solutionsSection, String solutionText) { 
-
-//		if (!solutionsSection.contains(solutionText)) {
-		//"Contains" is too weak: tried to add Solution "Bogen Vergiftung" when "Bogen Vergiftung Kind"
-		//was already a Solution -> didnt do anything
-		//Solution must be in its own line
+		context.getWriter().write("success");
 		
-		
-		Matcher matcher = Pattern.compile("^" + solutionText + "$", Pattern.MULTILINE).matcher(solutionsSection);
-		
-		if (!matcher.lookingAt())
-			return solutionsSection + solutionText + LINE_SEPARATOR;
-		else 
-			return solutionsSection;
-	}
-	
-
-
-
-	@Override
-	public boolean isAdminAction() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

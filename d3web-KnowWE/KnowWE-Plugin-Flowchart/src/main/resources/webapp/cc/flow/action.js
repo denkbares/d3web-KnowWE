@@ -504,7 +504,7 @@ ActionEditor.updateQuestions = function(addedQuestionText, addedQuestionType, po
 		var infos = addedQuestionText + addedQuestionType + pageName + answersToLine;
 
 		
-		var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.UpdateQuestions" + infos;
+		var url = "KnowCC.jsp?action=UpdateQuestions" + infos;
 		
 		new Ajax.Request(url, {
 			method: 'get',
@@ -560,7 +560,7 @@ ActionEditor.updateSolutions = function(solutionText) {
 	
 	var infos = solutionText + pageName;
 
-	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.UpdateSolutions" + infos;
+	var url = "KnowCC.jsp?action=UpdateSolutions" + infos;
 	
 	new Ajax.Request(url, {
 		method: 'get',
@@ -618,7 +618,7 @@ ActionEditor.addSubFlow = function(exitNodes) {
 	
 	var infos = pageName + name + nodesToLine;
 
-	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.AddSubFlowchart" + infos;
+	var url = "KnowCC.jsp?action=AddSubFlowchart" + infos;
 	
 	new Ajax.Request(url, {
 		method: 'get',

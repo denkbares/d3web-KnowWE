@@ -1,7 +1,12 @@
 package de.d3web.we.flow.kbinfo;
 
+import java.io.IOException;
+
+import de.d3web.we.action.AbstractAction;
+import de.d3web.we.action.ActionContext;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
+import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -11,7 +16,7 @@ import de.d3web.we.logging.Logging;
 /**
  * @author Florian Ziegler
  */
-public class AddSubFlowchart extends DeprecatedAbstractKnowWEAction {
+public class AddSubFlowchart extends AbstractAction {
 
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -20,17 +25,62 @@ public class AddSubFlowchart extends DeprecatedAbstractKnowWEAction {
 		return false;
 	}
 
-	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
+	private String createID(String text) {
 		
+		if (text.contains("<flowchart")) {
+			String[] flowcharts = text.split("<flowchart fcid=\"");
+			
+			String tempid = flowcharts[flowcharts.length - 1].substring(2, flowcharts[flowcharts.length - 1].indexOf("\""));
+			int number = Integer.valueOf(tempid) + 1;
+			
+			String leadingZeros = "";
+			for (char c : tempid.toCharArray()) {
+				if (c == '0') {
+					leadingZeros += "0";
+				} else {
+					break;
+				}
+			}	
+
+			return "sh" + leadingZeros + number;
+			
+		} else {
+			return "sh001";
+		}
+	}
+	
+	private String[] getSurrounding (String text) {
+		String before = "";
+		String after = "";
+		String[] surrounding = new String[2];
+		if (text.contains("<Kopic>")) {
+			before = text.substring(0, text.indexOf("<Kopic>"));
+			after = text.substring(text.indexOf("<Kopic>"));
+		} else if (text.contains("<Questions-section>")){
+			before = text.substring(0, text.indexOf("<Questions-section>"));
+			after = text.substring(text.indexOf("<Questions-section>"));
+		} else if (text.contains("<Solutions-section>")) {
+			before = text.substring(0, text.indexOf("<Solutions-section>"));
+			after = text.substring(text.indexOf("<Solutions-section>"));
+		} else {
+			before = text;
+		}
+		surrounding[0] = before;
+		surrounding[1] = after;
+		
+		return surrounding;
+	}
+
+	@Override
+	public void execute(ActionContext context) throws IOException {
 		Logging.getInstance().addHandlerToLogger(Logging.getInstance().getLogger(), "AddSub.txt");
 		// get everything important from the parameter map
-		String web = parameterMap.getWeb();
+		String web = context.getParameter(KnowWEAttributes.WEB);
 
 		
-		String pageName = parameterMap.get("pageName");
-		String name = parameterMap.get("name");
-		String nodesToLine = parameterMap.get("nodes");
+		String pageName = context.getParameter("pageName");
+		String name = context.getParameter("name");
+		String nodesToLine = context.getParameter("nodes");
 		String[] exits = nodesToLine.split("::");
 		
 
@@ -115,55 +165,12 @@ public class AddSubFlowchart extends DeprecatedAbstractKnowWEAction {
 		String text = getSurrounding(oldText)[0] + flowchart
 				+ getSurrounding(oldText)[1];
 		
-		instance.saveArticle(sec.getWeb(), sec.getTitle(), text, parameterMap);
-
-		return "success";
-	}
-	
-	private String createID(String text) {
+		KnowWEParameterMap map =  new KnowWEParameterMap(KnowWEAttributes.WEB, sec.getWeb());
 		
-		if (text.contains("<flowchart")) {
-			String[] flowcharts = text.split("<flowchart fcid=\"");
-			
-			String tempid = flowcharts[flowcharts.length - 1].substring(2, flowcharts[flowcharts.length - 1].indexOf("\""));
-			int number = Integer.valueOf(tempid) + 1;
-			
-			String leadingZeros = "";
-			for (char c : tempid.toCharArray()) {
-				if (c == '0') {
-					leadingZeros += "0";
-				} else {
-					break;
-				}
-			}	
+		instance.saveArticle(sec.getWeb(), sec.getTitle(), text, map);
 
-			return "sh" + leadingZeros + number;
-			
-		} else {
-			return "sh001";
-		}
-	}
-	
-	private String[] getSurrounding (String text) {
-		String before = "";
-		String after = "";
-		String[] surrounding = new String[2];
-		if (text.contains("<Kopic>")) {
-			before = text.substring(0, text.indexOf("<Kopic>"));
-			after = text.substring(text.indexOf("<Kopic>"));
-		} else if (text.contains("<Questions-section>")){
-			before = text.substring(0, text.indexOf("<Questions-section>"));
-			after = text.substring(text.indexOf("<Questions-section>"));
-		} else if (text.contains("<Solutions-section>")) {
-			before = text.substring(0, text.indexOf("<Solutions-section>"));
-			after = text.substring(text.indexOf("<Solutions-section>"));
-		} else {
-			before = text;
-		}
-		surrounding[0] = before;
-		surrounding[1] = after;
+		context.getWriter().write("success");
 		
-		return surrounding;
 	}
 
 }

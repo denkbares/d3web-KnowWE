@@ -20,7 +20,10 @@
 
 package de.d3web.we.flow.kbinfo;
 
-import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
+import java.io.IOException;
+
+import de.d3web.we.action.AbstractAction;
+import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -32,20 +35,58 @@ import de.d3web.we.kdom.Section;
 /**
  * @author Florian Ziegler
  */
-public class UpdateQuestions extends DeprecatedAbstractKnowWEAction {
+public class UpdateQuestions extends AbstractAction {
 	
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
+	
+	private String addQuestion(String questionsSection, String questionText, String questionType, String[] answers) { 
+		String newQuestionsSection = questionsSection;
+		StringBuffer buffy = new StringBuffer();
 		
+		if (!questionsSection.contains("added Questions")) {
+			buffy.append(LINE_SEPARATOR + "added Questions" + LINE_SEPARATOR);
+			buffy.append("- " + questionText + " [" + questionType + "]" + LINE_SEPARATOR);
+			if (!questionType.equals("num")) {
+				for (String s : answers) {
+					buffy.append("-- " + s + LINE_SEPARATOR);
+				}
+			}
+			
+		} else {
+			buffy.append("- " + questionText + " [" + questionType + "]" + LINE_SEPARATOR);
+			if (!questionType.equals("num")) {
+				for (String s : answers) {
+					buffy.append("-- " + s + LINE_SEPARATOR);
+				}
+			}
+		}
+		newQuestionsSection += buffy.toString();
+		return newQuestionsSection;
+	}
+
+
+	@Override
+	public boolean isAdminAction() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public void execute(ActionContext context) throws IOException {
 		// get everything important from the parameter map
-		String web = parameterMap.getWeb();
-		String questionText = parameterMap.get("text");
-		String questionType = parameterMap.get("type");
-		String pageName = parameterMap.get("pageName");
-		String answersToLine = parameterMap.get("answers");
+		String web = context.getParameter(KnowWEAttributes.WEB);
+		String questionText = context.getParameter("text");
+		String questionType = context.getParameter("type");
+		String pageName = context.getParameter("pageName");
+		String answersToLine = context.getParameter("answers");
 		String[] answers = answersToLine.split("::");
+		
+		System.out.println(questionText);
+		System.out.println(questionType);
+		System.out.println(pageName);
+		System.out.println(answersToLine);
 		
 		
 		// get everything to update the article
@@ -96,41 +137,9 @@ public class UpdateQuestions extends DeprecatedAbstractKnowWEAction {
 		String newText = firstPart + newQuestionsSection + lastPart;
 		instance.saveArticle(sec.getWeb(), sec.getTitle(), newText, map);
 
-		return "questionText: " + questionText + " questionType: "
-		+ questionType + " pageName: " + pageName;
-	}
-	
-	
-	private String addQuestion(String questionsSection, String questionText, String questionType, String[] answers) { 
-		String newQuestionsSection = questionsSection;
-		StringBuffer buffy = new StringBuffer();
+		context.getWriter().write("questionText: " + questionText + " questionType: "
+		+ questionType + " pageName: " + pageName);
 		
-		if (!questionsSection.contains("added Questions")) {
-			buffy.append(LINE_SEPARATOR + "added Questions" + LINE_SEPARATOR);
-			buffy.append("- " + questionText + " [" + questionType + "]" + LINE_SEPARATOR);
-			if (!questionType.equals("num")) {
-				for (String s : answers) {
-					buffy.append("-- " + s + LINE_SEPARATOR);
-				}
-			}
-			
-		} else {
-			buffy.append("- " + questionText + " [" + questionType + "]" + LINE_SEPARATOR);
-			if (!questionType.equals("num")) {
-				for (String s : answers) {
-					buffy.append("-- " + s + LINE_SEPARATOR);
-				}
-			}
-		}
-		newQuestionsSection += buffy.toString();
-		return newQuestionsSection;
-	}
-
-
-	@Override
-	public boolean isAdminAction() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }
