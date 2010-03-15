@@ -21,12 +21,13 @@
 package de.d3web.kernel.psMethods.delegate;
 
 import java.util.Collection;
-import java.util.List;
 
 import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.MethodKind;
 import de.d3web.core.inference.PSMethodAdapter;
 import de.d3web.core.inference.PropagationEntry;
 import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.Facts;
@@ -44,13 +45,13 @@ public class PSMethodDelegate extends PSMethodAdapter {
 		
 		for (PropagationEntry propagationEntry : changes) {
 			
-			List<? extends KnowledgeSlice> slices = propagationEntry.getObject().getKnowledge(this.getClass());
+			KnowledgeSlice slices = propagationEntry.getObject().getKnowledge(this.getClass(), MethodKind.FORWARD);
 			
 			if(slices == null) 
 				return;
-			
-			for (KnowledgeSlice slice : slices) {
-				((Rule) slice).check(theCase);
+			RuleSet rs = (RuleSet) slices;
+			for (Rule slice: rs.getRules()) {
+				slice.check(theCase);
 			}
 		}
 	}

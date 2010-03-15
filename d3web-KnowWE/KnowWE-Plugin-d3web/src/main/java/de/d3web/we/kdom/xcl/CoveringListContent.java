@@ -333,8 +333,8 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 						.getTitle(), xcl.getId(), CoveringListContent.KBID_KEY));
 			}
 			// delete the xcls from the KnowledgeBase
-			Collection<KnowledgeSlice> slices = kbm.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
-			for (KnowledgeSlice slice:slices) {
+			Collection<KnowledgeSlice> slices = kbm.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class, XCLModel.XCLMODEL);
+			for (KnowledgeSlice slice: new ArrayList<KnowledgeSlice>(slices)) {
 				XCLModel model = (XCLModel) slice;
 				for (de.d3web.xcl.XCLRelation rel: model.getAllRelations()) {
 					if (!kbIDs.contains(rel.getId())) {

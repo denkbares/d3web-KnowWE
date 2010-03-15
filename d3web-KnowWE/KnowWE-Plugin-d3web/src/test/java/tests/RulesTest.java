@@ -31,6 +31,7 @@ import de.d3web.abstraction.inference.PSMethodQuestionSetter;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.indication.ActionIndication;
 import de.d3web.indication.ActionRefine;
@@ -303,10 +304,10 @@ public class RulesTest extends TestCase {
 		Iterator<KnowledgeSlice> iter = kb.getAllKnowledgeSlicesFor(PSMethod).iterator();
 		
 		while (iter.hasNext()) {
-
-			Rule rule = (Rule) iter.next();
-			rules.put(rule.getId(), rule);
-
+			RuleSet rs = (RuleSet) iter.next();
+			for (Rule rule: rs.getRules()) {
+				rules.put(rule.getId(), rule);
+			}
 		}
 		
 		return rules;

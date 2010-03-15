@@ -137,8 +137,8 @@ public class ExplanationRenderer2 extends DeprecatedAbstractKnowWEAction {
 			D3webKnowledgeService d3 = (D3webKnowledgeService) ks;
 			Diagnosis diag = d3.getBase().searchDiagnosis(id);
 			if(diag != null) {
-				List<? extends KnowledgeSlice> heu = diag.getKnowledge(PSMethodHeuristic.class, MethodKind.BACKWARD);
-				if(heu != null && !heu.isEmpty()) {
+				KnowledgeSlice heu = diag.getKnowledge(PSMethodHeuristic.class, MethodKind.BACKWARD);
+				if(heu != null) {
 					result.add(ProblemSolverType.heuristic);
 				}
 			}

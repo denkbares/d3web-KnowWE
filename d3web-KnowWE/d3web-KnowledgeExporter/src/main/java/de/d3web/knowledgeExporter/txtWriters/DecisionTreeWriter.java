@@ -31,9 +31,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.MethodKind;
+import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.AbstractCondition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondNum;
@@ -144,7 +147,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 
 	private void processSubQASets(QASet qaset, StringBuffer s) {
 		boolean qasetIsWritten = false;
-		List children = qaset.getChildren();
+		List<? extends NamedObject> children = qaset.getChildren();
 		List<QContainer> remainingQContainers = new LinkedList<QContainer>();
 		for (Object element: children) {
 			if (element instanceof Question) {
@@ -214,13 +217,12 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		level--;
 	}
 
-	private void addChildren(NamedObject nob, Class psMethod, Map<AbstractCondition, List<Rule>> mergedRules) {
-		Collection slices = (Collection) nob.getKnowledge(
+	private void addChildren(NamedObject nob, Class<? extends PSMethod> psMethod, Map<AbstractCondition, List<Rule>> mergedRules) {
+		KnowledgeSlice slices = nob.getKnowledge(
 				psMethod, MethodKind.FORWARD);
 		if (slices != null) {
-			for (Object element: slices) {
-				if (element instanceof Rule) {
-					Rule rule = (Rule) element;
+			if (slices instanceof RuleSet) {
+				for (Rule rule: ((RuleSet) slices).getRules()) {
 					AbstractCondition condition = rule.getCondition();
 					if(mergedRules.containsKey(condition)) {
 						List<Rule> rules = mergedRules.get(condition);

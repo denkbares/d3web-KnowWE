@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
 import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.AbstractCondition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Diagnosis;
@@ -114,50 +115,52 @@ public class KBRenderer extends AbstractTagHandler {
 			boolean appendedRulesHeadline = false;
 			Map<String, String> idMap = new HashMap<String, String>();
 			for (KnowledgeSlice knowledgeSlice : rules) {
-				if (knowledgeSlice instanceof Rule) {
-					if (!appendedRulesHeadline) {
-						if (appendedSolutionsHeadline) {
-							text.append("<br/>");
+				if (knowledgeSlice instanceof RuleSet) {
+					RuleSet rs = (RuleSet) knowledgeSlice;
+					for (de.d3web.core.inference.Rule r: rs.getRules()) {
+						if (!appendedRulesHeadline) {
+							if (appendedSolutionsHeadline) {
+								text.append("<br/>");
+							}
+							text.append("<strong>" + rb.getString("KnowWE.KBRenderer.rules") + ":</strong><p/>");
+							appendedRulesHeadline = true;
+							List<Section<Rule>> allRules = new ArrayList<Section<de.d3web.we.kdom.rules.Rule>>();
+							List<Section<BulletContentType>> allBulletContentTypes = new ArrayList<Section<BulletContentType>>();
+							
+							KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
+									.getSection().findSuccessorsOfType(BulletContentType.class, allBulletContentTypes);
+							KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
+							.getSection().findSuccessorsOfType(Rule.class, allRules);
+							for (Section<Rule> rule:allRules) {
+								String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), topic, 
+										rule.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
+								idMap.put(kbRuleId, rule.getId());
+							}
+							
+							for (Section<BulletContentType> bullet:allBulletContentTypes) {
+								String kbRuleId = (String) KnowWEUtils.getStoredObject(bullet.getWeb(), topic, 
+										bullet.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
+								idMap.put(kbRuleId, bullet.getId());
+							}
 						}
-						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.rules") + ":</strong><p/>");
-						appendedRulesHeadline = true;
-						List<Section<Rule>> allRules = new ArrayList<Section<de.d3web.we.kdom.rules.Rule>>();
-						List<Section<BulletContentType>> allBulletContentTypes = new ArrayList<Section<BulletContentType>>();
+							
+						String kdomid = idMap.get(r.getId());
+			
+						if(kdomid != null) {
+							String button = ("<img src=KnowWEExtension/images/page_white_find.png " 
+									+ "class=\"highlight-rule\" " 
+									+ "rel=\"{kdomid: '"+kdomid+"', topic: '"+topic+"', depth: 0, breadth: 0}\""
+									+ "/></img>");
+							text.append(button);
+						}
 						
-						KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
-								.getSection().findSuccessorsOfType(BulletContentType.class, allBulletContentTypes);
-						KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
-						.getSection().findSuccessorsOfType(Rule.class, allRules);
-						for (Section<Rule> rule:allRules) {
-							String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), topic, 
-									rule.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
-							idMap.put(kbRuleId, rule.getId());
-						}
-						
-						for (Section<BulletContentType> bullet:allBulletContentTypes) {
-							String kbRuleId = (String) KnowWEUtils.getStoredObject(bullet.getWeb(), topic, 
-									bullet.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
-							idMap.put(kbRuleId, bullet.getId());
-						}
+						text.append("Rule: " +VerbalizationManager.getInstance().verbalize(
+								r.getCondition(), RenderingFormat.PLAIN_TEXT));
+						text.append(" --> ");
+						text.append(VerbalizationManager.getInstance().verbalize(
+								r.getAction(), RenderingFormat.HTML,parameterMap));
+						text.append("\n <br />"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 					}
-					de.d3web.core.inference.Rule rule = ((de.d3web.core.inference.Rule) knowledgeSlice);
-						
-					String kdomid = idMap.get(rule.getId());
-		
-					if(kdomid != null) {
-						String button = ("<img src=KnowWEExtension/images/page_white_find.png " 
-								+ "class=\"highlight-rule\" " 
-								+ "rel=\"{kdomid: '"+kdomid+"', topic: '"+topic+"', depth: 0, breadth: 0}\""
-								+ "/></img>");
-						text.append(button);
-					}
-					
-					text.append("Rule: " +VerbalizationManager.getInstance().verbalize(
-							rule.getCondition(), RenderingFormat.PLAIN_TEXT));
-					text.append(" --> ");
-					text.append(VerbalizationManager.getInstance().verbalize(
-							rule.getAction(), RenderingFormat.HTML,parameterMap));
-					text.append("\n <br />"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 				}
 			}
 			

@@ -32,6 +32,7 @@ import java.util.Set;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.AbstractCondition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondQuestion;
@@ -99,10 +100,11 @@ public class KnowledgeManager {
 
 		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
 			KnowledgeSlice element = iter.next();
-			if (element instanceof Rule) {
-				if (matchesFilter((Rule) element) || !filterOn) {
-
-					this.allRules.add((Rule) element);
+			if (element instanceof RuleSet) {
+				for (Rule r: ((RuleSet) element).getRules() ) {
+					if (matchesFilter(r) || !filterOn) {
+						this.allRules.add(r);
+					}
 				}
 			}
 		}
@@ -128,8 +130,8 @@ public class KnowledgeManager {
 		Collection<KnowledgeSlice> knowledge = kb.getAllKnowledgeSlices();
 		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
 			KnowledgeSlice element = iter.next();
-			if (element instanceof Rule) {
-				this.allRules.add((Rule) element);
+			if (element instanceof RuleSet) {
+				this.allRules.addAll(((RuleSet) element).getRules());
 			}
 		}
 	}
@@ -155,10 +157,14 @@ public class KnowledgeManager {
 		this.allRules = new HashSet<Rule>();
 		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
 			KnowledgeSlice element =  iter.next();
-			if (element instanceof Rule) {
-				if (matchesFilter((Rule) element)) {
-					this.allRules.add((Rule) element);
+			if (element instanceof RuleSet) {
+				RuleSet rs = (RuleSet) element;
+				for (Rule r: rs.getRules()) {
+					if (matchesFilter(r)) {
+						this.allRules.add(r);
+					}
 				}
+				
 			}
 		}
 		if (filterOn) {
@@ -381,13 +387,13 @@ public class KnowledgeManager {
 	}
 
 	private void addPathToList(Diagnosis d, List<Diagnosis> l) {
-		List<Diagnosis> parents = (List<Diagnosis>) d.getParents();
+		List<? extends NamedObject> parents = d.getParents();
 		if (!l.contains(d)) {
 			l.add(d);
 		} else {
 			return;
 		}
-		for (Iterator<Diagnosis> iter = parents.iterator(); iter.hasNext();) {
+		for (Iterator<? extends NamedObject> iter = parents.iterator(); iter.hasNext();) {
 			Diagnosis element = (Diagnosis) iter.next();
 			if (!l.contains(element)) {
 				l.add(element);

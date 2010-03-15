@@ -67,8 +67,8 @@ public class XCLTest extends TestCase {
 		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 		
-		Collection<KnowledgeSlice> loadedXCLModels = loadedKB.getAllKnowledgeSlicesFor(PSMethodXCL.class);
-		Collection<KnowledgeSlice> createdXCLModels = createdKB.getAllKnowledgeSlicesFor(PSMethodXCL.class);
+		Collection<KnowledgeSlice> loadedXCLModels = loadedKB.getAllKnowledgeSlicesFor(PSMethodXCL.class, XCLModel.XCLMODEL);
+		Collection<KnowledgeSlice> createdXCLModels = createdKB.getAllKnowledgeSlicesFor(PSMethodXCL.class, XCLModel.XCLMODEL);
 		
 		XCLModel loadedXCLModel = (XCLModel) loadedXCLModels.toArray()[0];
 		XCLModel createdXCLModel = (XCLModel) createdXCLModels.toArray()[0];

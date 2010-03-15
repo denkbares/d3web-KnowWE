@@ -25,6 +25,7 @@ import java.util.List;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.core.session.XPSCase;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -125,10 +126,16 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 					.getAllKnowledgeSlices();
 			for (KnowledgeSlice slice : slices) {
 				if (slice != null) {
-					String id = slice.getId();
-					if (id != null && id.equals(kbRuleId)) {
-						rule = (Rule) slice;
+					if (slice instanceof RuleSet) {
+						RuleSet rs = (RuleSet) slice;
+						for (Rule r: rs.getRules()) {
+							String id = r.getId();
+							if (id != null && id.equals(kbRuleId)) {
+								rule = r;
+							}
+						}
 					}
+					
 				}
 			}
 		}

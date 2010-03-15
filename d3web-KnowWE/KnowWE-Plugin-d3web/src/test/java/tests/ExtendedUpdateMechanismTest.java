@@ -30,6 +30,7 @@ import java.util.Set;
 import junit.framework.TestCase;
 import utils.Utils;
 import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -144,6 +145,12 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		List<Section<? extends KnowWEObjectType>> sections2 = article2.getAllNodesPreOrder();		
 		KnowledgeBase kb2 = d3Handler.getKBM(article2, article2.getSection()).getKnowledgeBase();		
 		Collection<KnowledgeSlice> slices2 = kb2.getAllKnowledgeSlices();
+		Set<de.d3web.core.inference.Rule> rules2 = new HashSet<de.d3web.core.inference.Rule>();
+		for (KnowledgeSlice slice:slices2) {
+			if (slice instanceof RuleSet) {
+				rules2.addAll(((RuleSet) slice).getRules());
+			}
+		}	
 		
 		assertEquals("Articles dont have the same amount of sections:", sections1.size(), sections2.size());
 		
@@ -191,8 +198,14 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		assertSame("The KnowledgeBases of the different articles should be the same:", kb2, kb3);
 		
 		int count = 0;
-		for (KnowledgeSlice slice:slices2) {
-			if (slices3.contains(slice)) {
+		Set<de.d3web.core.inference.Rule> rules3 = new HashSet<de.d3web.core.inference.Rule>();
+		for (KnowledgeSlice slice:slices3) {
+			if (slice instanceof RuleSet) {
+				rules3.addAll(((RuleSet) slice).getRules());
+			}
+		}
+		for (de.d3web.core.inference.Rule rule: rules2) {
+			if (rules3.contains(rule)) {
 				count++;
 			}
 		}

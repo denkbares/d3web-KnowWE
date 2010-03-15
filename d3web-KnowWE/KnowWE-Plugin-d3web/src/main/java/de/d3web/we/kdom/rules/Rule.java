@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.rule.D3ruleBuilder;
 import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
@@ -91,9 +92,16 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 			// delete the rules from the KnowledgeBase
 			Collection<KnowledgeSlice> ruleComplexes = kbm.getKnowledgeBase().getAllKnowledgeSlices();
 			for (KnowledgeSlice rc:ruleComplexes) {
-				if (rc != null && !kbIDs.contains(rc.getId())) {
-					rc.remove();
-					//System.out.println("Deleted Rule: " + rc.getId());
+				if (rc instanceof RuleSet) {
+					RuleSet rs = (RuleSet) rc;
+					for (de.d3web.core.inference.Rule r: new ArrayList<de.d3web.core.inference.Rule>(rs.getRules())) {
+						if (!kbIDs.contains(r.getId())) {
+							rs.removeRule(r);
+						}
+					}
+					if (rs.isEmpty()) {
+						kbm.getKnowledgeBase().remove(rs);
+					}
 				}
 			}
 			

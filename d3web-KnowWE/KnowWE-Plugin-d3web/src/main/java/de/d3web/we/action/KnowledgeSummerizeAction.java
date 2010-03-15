@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.RuleSet;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -119,8 +120,8 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 				Collection<KnowledgeSlice> all = kb.getAllKnowledgeSlices();
 				int xclCount = 0;
 				int ruleCount = 0;
-				for (Iterator iter = all.iterator(); iter.hasNext();) {
-					KnowledgeSlice element = (KnowledgeSlice) iter.next();
+				for (Iterator<KnowledgeSlice> iter = all.iterator(); iter.hasNext();) {
+					KnowledgeSlice element = iter.next();
 					if(element instanceof de.d3web.xcl.XCLModel) {
 						Map<XCLRelationType,Collection<XCLRelation>> map = ((XCLModel)element).getTypedRelations();
 						for(java.util.Map.Entry<XCLRelationType,Collection<XCLRelation>> entry : map.entrySet()) {
@@ -128,8 +129,9 @@ public class KnowledgeSummerizeAction extends DeprecatedAbstractKnowWEAction {
 						}
 						
 					}
-					if(element instanceof Rule) {
-						ruleCount++;
+					if(element instanceof RuleSet) {
+						RuleSet rs = (RuleSet) element;
+						ruleCount += rs.getRules().size();
 					}
 					
 				}
