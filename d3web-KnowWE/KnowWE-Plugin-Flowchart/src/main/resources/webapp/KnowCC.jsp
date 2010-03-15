@@ -27,13 +27,16 @@ String findParam( PageContext ctx, String key )
 		KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wiki));
 	}
 	KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-	KnowWEParameterMap map = new KnowWEParameterMap(new KnowWEUserContextImpl(wikiContext.getWikiSession().getUserPrincipal().getName(),wikiContext.getHttpRequest().getParameterMap()),request,wiki.getServletContext(),env);
+	KnowWEUserContextImpl userContext =  new KnowWEUserContextImpl(wikiContext.getWikiSession().getUserPrincipal().getName(), wikiContext.getHttpRequest().getParameterMap());
+	KnowWEParameterMap map = new KnowWEParameterMap(userContext, request, response, wiki.getServletContext(), env);
 	
 	map.put("KWikiUser",wikiContext.getWikiSession().getUserPrincipal().getName());
 	if(!map.containsKey("KWiki_Topic")) {
 		//map.put("KWiki_Topic", wikiContext.getPage().getName());
 	}
-	String result = env.getDispatcher().performAction(map);
+	
+	env.getDispatcher().performAction(map);
+	
 	response.setHeader("Content-Type", "text/xml");
 
-%><%=result%><wiki:Include page="<%=\"\"%>" />
+%><!--%=result%--><wiki:Include page="<%=\"\"%>" />

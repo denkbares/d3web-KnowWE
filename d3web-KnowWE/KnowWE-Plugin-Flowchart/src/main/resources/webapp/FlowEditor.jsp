@@ -20,7 +20,8 @@
 		KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wiki));
 	}
 	KnowWEEnvironment env = KnowWEEnvironment.getInstance();
-	KnowWEParameterMap map = new KnowWEParameterMap(new KnowWEUserContextImpl(wikiContext.getWikiSession().getUserPrincipal().getName(),wikiContext.getHttpRequest().getParameterMap()),request,wiki.getServletContext(),env);
+	KnowWEUserContextImpl userContext =  new KnowWEUserContextImpl(wikiContext.getWikiSession().getUserPrincipal().getName(), wikiContext.getHttpRequest().getParameterMap());
+	KnowWEParameterMap map = new KnowWEParameterMap(userContext, request, response, wiki.getServletContext(), env);
 	
 	map.put("KWikiUser",wikiContext.getWikiSession().getUserPrincipal().getName());
 	if(!map.containsKey("KWiki_Topic")) {
