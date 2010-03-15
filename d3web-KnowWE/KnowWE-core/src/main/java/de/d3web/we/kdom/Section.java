@@ -547,6 +547,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param text
 	 * @return
 	 */
+	@Deprecated
 	public boolean hasRightSonOfType(Class<? extends KnowWEObjectType> class1, String text) {
 		if(this.getObjectType() instanceof EmbracedType) {
 			if(this.getFather().hasRightSonOfType(class1, text)) {
@@ -572,6 +573,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param text
 	 * @return
 	 */
+	@Deprecated
 	public boolean hasLeftSonOfType(Class<? extends KnowWEObjectType> class1, String text) {
 		if(this.getObjectType() instanceof EmbracedType) {
 			if(this.getFather().hasLeftSonOfType(class1, text)) {
