@@ -97,7 +97,7 @@ public class d3webSectionFinderTest extends TestCase {
 		KnowWEEnvironment.getInstance().getArticle("default_web", "Test_Article");
 		
 		String test = "blablub {{the currently measured mileage"
-			+ " <=> asks:: Real mileage  /100km}}bla blub";
+			+ "<=> asks::Real mileage  /100km}}bla blub";
 		
 		Annotation type = new de.d3web.we.kdom.Annotation.Annotation();
 		KnowWEArticle article = new KnowWEArticle(test, "Test_Article2", type, "default_web");
