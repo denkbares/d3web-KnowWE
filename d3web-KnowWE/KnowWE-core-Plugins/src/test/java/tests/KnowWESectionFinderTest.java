@@ -177,15 +177,6 @@ public class KnowWESectionFinderTest extends TestCase {
 //		assertEquals(WRONG_THIRD_END, 99, results.get(2).getEnd());
 	}
 	
-	public void testSimpleAnnotationFinder() {
-		String text = " Hali Halo hier ist der Weihnachtsmann";
-		SimpleAnnotation.SimpleAnnotationSectionFinder f =
-			new SimpleAnnotation.SimpleAnnotationSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
-		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
-		assertEquals(WRONG_FIRST_END, 38, results.get(0).getEnd());
-	}
 	
 //	public void testStateRatingFinder() {
 //		

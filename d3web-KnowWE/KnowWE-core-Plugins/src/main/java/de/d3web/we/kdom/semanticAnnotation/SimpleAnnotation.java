@@ -31,6 +31,8 @@ import org.openrdf.model.URI;
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.module.semantic.OwlGenerator;
@@ -43,23 +45,10 @@ import de.d3web.we.module.semantic.owl.UpperOntology;
  */
 public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
 
-	public static class SimpleAnnotationSectionFinder extends SectionFinder {
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
-		
-			ArrayList<SectionFinderResult> result =
-						new ArrayList<SectionFinderResult>();
-			if (text.trim().length() > 0) {
-				result.add(new SectionFinderResult(0, text.length()));
-			}
-			return result;
-		}
-	}
 
 	@Override
 	public void init() {
-		this.sectionFinder = new SimpleAnnotationSectionFinder();
+		this.sectionFinder = new AllTextFinderTrimmed();
 	}
 
 	

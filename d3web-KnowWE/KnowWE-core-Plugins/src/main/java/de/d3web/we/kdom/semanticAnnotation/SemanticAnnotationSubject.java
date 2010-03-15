@@ -28,8 +28,11 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.constraint.AtMostOneFindingConstraint;
+import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -39,32 +42,6 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  */
 public class SemanticAnnotationSubject extends DefaultAbstractKnowWEObjectType {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.d3web.we.dom.AbstractKnowWEObjectType#init()
-     */
-    @Override
-    protected void init() {
-    	this.sectionFinder = new AnnotationSubjectSectionFinder();
-    }
 
-    public static class AnnotationSubjectSectionFinder extends SectionFinder {
-
-    	@Override
-		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
-			if (father.hasRightSonOfType(SemanticAnnotationProperty.class, text)) {
-				ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-				if (text.trim().length() == 0)
-					return null;
-				DefaultSubjectContext sol = new DefaultSubjectContext();
-				sol.setSubject(text.trim());
-				ContextManager.getInstance().attachContext(father, sol);
-				result.add(new SectionFinderResult(0, text.length()));
-				return result;
-			}
-			return null;
-		}
-    }
+   
 }

@@ -35,6 +35,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
+import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.module.semantic.OwlGenerator;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
@@ -50,8 +51,11 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 
 	@Override
 	public void init() {
-		this.childrenTypes.add(new SemanticAnnotationProperty());
-		this.childrenTypes.add(new SemanticAnnotationSubject());
+		SemanticAnnotationProperty propType = new SemanticAnnotationProperty();
+		SemanticAnnotationSubject subject = new SemanticAnnotationSubject();
+		subject.setSectionFinder(new AllBeforeTypeSectionFinder(propType));
+		this.childrenTypes.add(propType);
+		this.childrenTypes.add(subject);
 		this.childrenTypes.add(new SimpleAnnotation());
 		this.sectionFinder = new AllTextSectionFinder();
 	}
