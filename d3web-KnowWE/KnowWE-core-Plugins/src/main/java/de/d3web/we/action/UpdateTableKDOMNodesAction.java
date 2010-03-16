@@ -70,7 +70,6 @@ public class UpdateTableKDOMNodesAction extends DeprecatedAbstractKnowWEAction {
 				    newSourceText = mgr.replaceKDOMNodeWithoutSave(parameterMap, name, node[0], node[1]);
 				}
 			}
-			newSourceText = KnowWEEnvironment.getInstance().getArticle(web, name).collectTextsFromLeaves();
 			KnowWEEnvironment.getInstance().saveArticle(web, name, newSourceText, parameterMap);
 		}
 		

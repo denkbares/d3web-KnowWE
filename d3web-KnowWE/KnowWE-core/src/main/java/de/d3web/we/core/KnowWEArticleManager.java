@@ -198,7 +198,6 @@ public class KnowWEArticleManager {
 	private void appendTextReplaceNode(Section sec, String nodeID, String text,
 			StringBuffer newText) {
 		if (sec.getId().equals(nodeID)) {
-			sec.setOriginalText(text);
 			newText.append(text);
 			return;
 		}
