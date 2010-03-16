@@ -20,15 +20,49 @@
 
 package de.d3web.we.kdom.table;
 
-import java.util.Map;
-
 import de.d3web.we.kdom.Section;
 
+/**
+ * For the customized quick-edit functionality of a specialized table additional
+ * parameters have to be specified. They are called by the edit-renderer to renderer 
+ * the edit component of the cells (textfield, dropdown-options...)
+ * 
+ * The methods MAY return null; for this case defaults for editing are used.
+ * 
+ * @author Jochen/smark
+ *
+ */
 public interface TableAttributesProvider {
 	
+	/**
+	 * width style of the generated input-element in quick-edit
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public String getWidthAttribute(Section<Table> s);
+	/**
+	 * 	 * comma separated list of row numbers, which should be NOT editable
+	 * (for header-rows) in quick-edit
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public String getNoEditColumnAttribute(Section<Table> s);
+	/**
+	 * comma separated list of column numbers, which should be NOT editable
+	 * (for header-columns) in quick-edit
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public String getNoEditRowAttribute(Section<Table> s);
+	/**
+	 * comma separated lists of options for a dropdown-menu
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public String getAttributeValues(Section<Table> s);
 	
 
