@@ -1,5 +1,7 @@
 package de.d3web.we.refactoring.dialog;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +28,7 @@ import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.CommentLineType;
+import de.d3web.we.kdom.condition.Conjunct;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.SubTree;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
@@ -42,6 +45,7 @@ import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 import de.d3web.we.kdom.objects.QuestionnaireID;
 import de.d3web.we.kdom.questionTreeNew.QuestionTreeRootType;
 import de.d3web.we.kdom.questionTreeNew.SetValueLine;
+import de.d3web.we.kdom.rules.RuleCondition;
 import de.d3web.we.kdom.rules.RulesSection;
 import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.table.attributes.AttributeTableSection;
@@ -143,7 +147,7 @@ public abstract class RefactoringScript {
 	}
 
 	public <T extends KnowWEObjectType> String findObjectID(final Class<T> clazz) {
-		//TODO mehrfache Einträge für ein Element sollten vermieden werden
+		//FIXME mehrfache Einträge für ein Element sollten vermieden werden
 		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
@@ -176,8 +180,9 @@ public abstract class RefactoringScript {
 		return objectID;
 	}
 
+	// FIXME ist ziemlich redundant zu findObjectID
 	public <T extends KnowWEObjectType> String[] findObjectIDs(final Class<T> clazz) {
-		//TODO mehrfache Einträge für ein Element sollten vermieden werden
+		//FIXME mehrfache Einträge für ein Element sollten vermieden werden
 		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
 			public String perform(KnowWEParameterMap parameters) {
@@ -279,8 +284,7 @@ public abstract class RefactoringScript {
 		
 		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(RulesSectionContent.class);
 		if (rulesSectionContent == null) {
-			// TODO ancestoroftype
-			Section<? extends KnowWEObjectType> anc = knowledgeSection.findAncestor(KNOWLEDGE_MAIN_SECTIONS);
+			Section<? extends KnowWEObjectType> anc = knowledgeSection.findAncestorOfExactType(KNOWLEDGE_MAIN_SECTIONS);
 			if (anc == null) {
 				anc = article.getSection();
 			} else {
@@ -300,13 +304,13 @@ public abstract class RefactoringScript {
 	}
 
 	public Section<CoveringListContent> findCoveringListContent(Section<?> knowledgeSection) {
-		// FIXME temporärer hack reloaded		
-		KnowWEArticle article = refManager().getArticle(knowledgeSection.getArticle().getTitle());
+		// FIXME temporärer hack reloaded
+		//FIXME getCached statt get
+		KnowWEArticle article = refManager().getCachedArticle(knowledgeSection.getArticle().getTitle());
 		
 		Section<CoveringListContent> coveringListContent = article.getSection().findSuccessor(CoveringListContent.class);
 		if (coveringListContent == null) {
-			// TODO ancestoroftype
-			Section<? extends KnowWEObjectType> anc = knowledgeSection.findAncestor(KNOWLEDGE_MAIN_SECTIONS);
+			Section<? extends KnowWEObjectType> anc = knowledgeSection.findAncestorOfExactType(KNOWLEDGE_MAIN_SECTIONS);
 			if (anc == null) {
 				anc = article.getSection();
 			} else {
@@ -364,9 +368,10 @@ public abstract class RefactoringScript {
 		return clazz;
 	}
 
+	//FIXME NullpointerException
 	protected <T extends KnowWEObjectType> Section<T> findDashTreeFather(Section<?> section, Class<T> clazz) {
 		return section
-			.findAncestor(SubTree.class).findAncestor(SubTree.class)
+			.findAncestorOfExactType(SubTree.class).findAncestorOfExactType(SubTree.class)
 			.findChildOfType(DashTreeElement.class).findSuccessor(clazz);
 	}
 
@@ -390,8 +395,7 @@ public abstract class RefactoringScript {
 						fullList.add(answer);
 				}
 				if (questionSection.get().getClass() == QuestionID.class) {
-					List<Section<QuestionTreeAnswerID>> answers = new LinkedList<Section<QuestionTreeAnswerID>>();
-					questionSection.findAncestor(SubTree.class).findSuccessorsOfType(QuestionTreeAnswerID.class, 5 , answers);
+					List<Section<QuestionTreeAnswerID>> answers = getAnswersForQuestion(questionSection);
 					fullList.addAll(answers);
 					
 					if(questionSection.getFather().get().getClass() == SetValueLine.class) {
@@ -445,7 +449,7 @@ public abstract class RefactoringScript {
 	}
 
 	public <T extends KnowWEObjectType> void renameElement(Section<? extends KnowWEObjectType> section, String newName, Class<T> clazz) {
-			// TODO Report und Undo von umbenannten Wiki-Seiten ermöglichen
+			// FIXME Report und Undo von umbenannten Wiki-Seiten ermöglichen
 			if (clazz == KnowWEArticle.class) {
 				PageRenamer pr = new PageRenamer();
 				try {
@@ -528,8 +532,41 @@ public abstract class RefactoringScript {
 		List<Section<QuestionID>> list = new LinkedList<Section<QuestionID>>();
 		article.getSection().findSuccessorsOfType(QuestionID.class, list);
 		for(Section<QuestionID> sqid: list) {
-			if (sqid.getOriginalText().equals(solution.getOriginalText())) {
-				replaceSection(sqid.findAncestor(SubTree.class).findChildOfType(DashTreeElement.class), "");
+			if (textContentEquals(sqid.getOriginalText(),solution.getOriginalText())) {
+				replaceSection(sqid.findAncestorOfExactType(SubTree.class).findChildOfType(DashTreeElement.class), "");
+			}
+		}
+	}
+	
+	private boolean textContentEquals(String t1, String t2) {
+		while(t1.startsWith("\"") && t1.endsWith("\"")) {
+			t1 = t1.substring(1, t1.length()-1);
+		}
+		while(t2.startsWith("\"") && t2.endsWith("\"")) {
+			t2 = t2.substring(1, t2.length()-1);
+		}
+		return t1.equals(t2);
+	}
+	
+	public void saveArticles(String[] objectIDs) {
+		for(String id: objectIDs) {
+			refManager().saveUpdatedArticle(refManager().getCachedArticle(id));
+		}
+	}
+	
+	// löscht die Solutions von allen Seiten, nicht nur von der, auf der die Solution gefunden wurde
+	public void deleteSolutionOccurrences(Section<QuestionID> solution, String[] objectIDs) {
+//		// FIXME temporärer hack reloaded
+//		KnowWEArticle article = refManager().getArticle(solution.getArticle().getTitle());
+		for(String objectID: objectIDs) {
+			//FIXME hier wurde getCachedArticle nötig statt getArticle!
+			KnowWEArticle article = refManager().getCachedArticle(objectID);
+			List<Section<QuestionID>> list = new LinkedList<Section<QuestionID>>();
+			article.getSection().findSuccessorsOfType(QuestionID.class, list);
+			for(Section<QuestionID> sqid: list) {
+				if (sqid.getOriginalText().equals(solution.getOriginalText())) {
+					replaceSection(sqid.findAncestorOfExactType(SubTree.class).findChildOfType(DashTreeElement.class), "");
+				}
 			}
 		}
 	}
@@ -562,7 +599,229 @@ public abstract class RefactoringScript {
 		String topic = article.getTitle();
 		refManager().replaceKDOMNodeWithoutSave(topic, section.getId(), newText);
 	}
+	
+	//TODO Demo, wie man statt mit Policy Dateien Rechte von Groovy-Skripten einschränken kann.
+	//FIXME: vor der Abgabe der Diplomarbeit sollten alle Methoden darauf umgestellt werden.
+	public String systemGetPropertyName() {
+		return AccessController.doPrivileged(new PrivilegedAction<String>() {
+			public String run() {
+				return System.getProperty("user.name");
+			}
+		});
+	}
 
-
-
+	public Section<?> findQuestion() {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+				StringBuffer html = new StringBuffer();
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Wählen Sie die Frage aus, deren Antwortbereich verkleinert werden soll:</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>QuestionID</label>"
+						+ "<select name='selectQuestionID' class='refactoring'>");
+				for(Iterator<KnowWEArticle> it = refManager().getArticleIterator(); it.hasNext();) {
+					KnowWEArticle article = refManager().getArticle(it.next().getTitle());
+					Section<?> articleSection = article.getSection();
+					List<Section<QuestionID>> questions = new ArrayList<Section<QuestionID>>();
+					articleSection.findSuccessorsOfType(QuestionID.class, questions);
+					for (Section<?> question : questions) {
+						html.append("<option value='" + question.getId() + "'>Seite: " + article.getTitle() + " - Question: " 
+								+ question.findSuccessor(QuestionID.class).getOriginalText() + "</option>");
+					}
+				}
+				html.append("</select></div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		Section<?> knowledge = refManager().
+					findNode(gsonFormMap().
+					get("selectQuestionID")[0]);
+		return knowledge;
+	}
+	
+	public List<Section<QuestionTreeAnswerID>> findAnswers(Section<? extends KnowWEObjectType> question) {
+		// FIXME temporärer hack reloaded
+//		KnowWEArticle article = refManager().getArticle(question.getArticle().getTitle());
+		
+		List<Section<QuestionTreeAnswerID>> answers = getAnswersForQuestion(question);
+		
+		return answers;
+	}
+	private List<Section<QuestionTreeAnswerID>> getAnswersForQuestion(Section<? extends KnowWEObjectType> questionSection) {
+		List<Section<QuestionTreeAnswerID>> answers = new LinkedList<Section<QuestionTreeAnswerID>>();
+		questionSection.findAncestorOfExactType(SubTree.class).findSuccessorsOfType(QuestionTreeAnswerID.class, 5 , answers);
+		return answers;
+	}
+	
+	public List<Section<? extends KnowWEObjectType>> selectAnswersToMerge(final List<Section<? extends KnowWEObjectType>> answers) {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+				StringBuffer html = new StringBuffer();
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Wählen Sie die Antworten aus, die zusammengeführt werden sollen:</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Answers</label>");
+				for(Section<? extends KnowWEObjectType> answer: answers) {
+						html.append("<p><input type='checkbox' value='" + answer.getId() + "' name='selectAnswersToMerge' class='refactoring'>"
+								+ answer.getOriginalText() +"</p>");
+				}
+				html.append("</div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		List<Section<?>> answersToMerge = new ArrayList<Section<?>>();
+		for(String s: gsonFormMap().get("selectAnswersToMerge")) {
+			Section<? extends KnowWEObjectType> knowledge = refManager().
+						findNode(s);
+			answersToMerge.add(knowledge);
+		}
+		return answersToMerge;
+	}
+	
+	public Section<? extends KnowWEObjectType> selectReplacingAnswer(final List<Section<? extends KnowWEObjectType>> answers) {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+				StringBuffer html = new StringBuffer();
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Wählen Sie die Antwort aus, welche die anderen ersetzen soll:</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Answers</label>");
+				for(Section<? extends KnowWEObjectType> answer: answers) {
+						html.append("<p><input type='radio' value='" + answer.getId() + "' name='selectReplacingAnswer' class='refactoring'>"
+								+ answer.getOriginalText() +"</p>");
+				}
+				html.append("</div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		return refManager().findNode(gsonFormMap().get("selectReplacingAnswer")[0]);
+	}
+	
+//	public void replaceAnswer(Section<? extends KnowWEObjectType> answer, Section<? extends KnowWEObjectType> replacement) {
+//		{
+//			//FIXME hack answer -> getQuestion -> getID -> refManager.getQuestionByID -> findAnswer
+//			Section<? extends KnowWEObjectType> question = refManager().findCachedQuestionToAnswer(answer);
+//			for(Section<QuestionTreeAnswerID> tempAnswer :findAnswers(question)){
+//				if(tempAnswer.getOriginalText().equals(answer.getOriginalText())) {
+//					answer = tempAnswer;
+//					break;
+//				}
+//			}
+//			//FIXME hack answer -> getQuestion -> getID -> refManager.getQuestionByID -> findAnswer
+//			Section<? extends KnowWEObjectType> question2 = refManager().findCachedQuestionToAnswer(replacement);
+//			for(Section<QuestionTreeAnswerID> tempReplacement :findAnswers(question2)){
+//				if(tempReplacement.getOriginalText().equals(replacement.getOriginalText())) {
+//					replacement = tempReplacement;
+//					break;
+//				}
+//			}
+//		}
+//		
+//		List<Section<? extends KnowWEObjectType>> renamingList = findRenamingList(QuestionTreeAnswerID.class, answer.getId());
+//		
+//		for(Section<? extends KnowWEObjectType> element: renamingList) {
+//			
+//			{
+//				//FIXME hack answer -> getQuestion -> getID -> refManager.getQuestionByID -> findAnswer
+//				Section<? extends KnowWEObjectType> question = refManager().findCachedQuestionToAnswer(answer);
+//				for(Section<QuestionTreeAnswerID> tempAnswer :findAnswers(question)){
+//					if(tempAnswer.getOriginalText().equals(answer.getOriginalText())) {
+//						answer = tempAnswer;
+//						break;
+//					}
+//				}
+//				//FIXME hack answer -> getQuestion -> getID -> refManager.getQuestionByID -> findAnswer
+//				Section<? extends KnowWEObjectType> question2 = refManager().findCachedQuestionToAnswer(replacement);
+//				for(Section<QuestionTreeAnswerID> tempReplacement :findAnswers(question2)){
+//					if(tempReplacement.getOriginalText().equals(replacement.getOriginalText())) {
+//						replacement = tempReplacement;
+//						break;
+//					}
+//				}
+//			}
+//			
+//			if (element.get().getClass() == FindingAnswer.class) {
+//				renameElement(element, replacement.getOriginalText(), QuestionTreeAnswerID.class);
+//				
+//				//FIXME temporärer hack reloaded
+//				refManager().saveUpdatedArticle(element.getArticle());
+//				element = refManager().findNode(element.getId());
+//				
+//				Section<? extends KnowWEObjectType> ruleCond = element.findAncestor(RuleCondition.class);
+//				List<Section<FindingAnswer>> findingAnswers = new ArrayList<Section<FindingAnswer>>(); 
+//				ruleCond.findSuccessorsOfType(FindingAnswer.class, findingAnswers);
+//				for(Section<FindingAnswer> fa: findingAnswers) {
+//					if (fa != element && fa.getOriginalText().equals(element.getOriginalText())) {
+//						String ruleCondRevisited = askUser(ruleCond.getOriginalText());
+//						if (!ruleCond.getOriginalText().equals(ruleCondRevisited)) {
+//							renameElement(ruleCond, ruleCondRevisited, RuleCondition.class);
+//							refManager().saveUpdatedArticle(ruleCond.getArticle());
+//						}
+//					}
+//				}
+//				
+//			} else
+//			if (element.get().getClass() == QuestionTreeAnswerID.class && !answer.getOriginalText().equals(replacement.getOriginalText())){
+//				// hole von answer den unterbaum und verschiebe ihn zu dem unterbaum von replacement
+//				// lösche answer samt subtree
+//				Section<? extends KnowWEObjectType> answerParentSubTree = answer.findAncestor(SubTree.class);
+//				String subTreeToShift = answerParentSubTree.findChildOfType(SubTree.class).getOriginalText();
+//				Section<? extends KnowWEObjectType> replacementParentSubTree = replacement.findAncestor(SubTree.class);
+//				replaceSection(replacementParentSubTree, replacementParentSubTree.getOriginalText() + subTreeToShift);
+//				replaceSection(answerParentSubTree, "");
+//				refManager().saveUpdatedArticle(replacementParentSubTree.getArticle());  
+//			} 
+//		}
+//	}
+	
+	public void replaceAnswers(List<Section<? extends KnowWEObjectType>> answers, Section<? extends KnowWEObjectType> replacement) {
+		answers.remove(replacement);
+		for (Section<? extends KnowWEObjectType> answer: answers) {
+			
+			List<Section<? extends KnowWEObjectType>> renamingList = findRenamingList(QuestionTreeAnswerID.class, answer.getId());
+			for (Section<? extends KnowWEObjectType> element : renamingList) {
+				if (element.get().getClass() == QuestionTreeAnswerID.class) {
+					// hole von answer den unterbaum und verschiebe ihn zu dem
+					// unterbaum von replacement
+					// lösche answer samt subtree
+					Section<? extends KnowWEObjectType> answerParentSubTree = answer.findAncestorOfExactType(SubTree.class);
+					StringBuffer subTreesToShift = new StringBuffer("");
+					for(Section<SubTree> sec: answerParentSubTree.findChildrenOfType(SubTree.class)){
+						subTreesToShift.append(sec.getOriginalText());
+					}
+					Section<? extends KnowWEObjectType> replacementParentSubTree = replacement.findAncestorOfExactType(SubTree.class);
+					String rep = replacementParentSubTree.getOriginalText() + subTreesToShift;
+					//FIXME dieses ersetzen impliziert ein cachen des Artikels
+					replacementParentSubTree = refManager().findNode(replacementParentSubTree.getId());
+					replaceSection(replacementParentSubTree, rep);
+					replaceSection(answerParentSubTree, "");
+				}
+			}
+		}
+		//refManager().saveUpdatedArticle(replacementParentSubTree.getArticle());
+	}
+	
+	private String askUser(final String originalText) {
+		performNextAction(new DeprecatedAbstractKnowWEAction() {
+			@Override
+			public String perform(KnowWEParameterMap parameters) {
+				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+				StringBuffer html = new StringBuffer();
+				html.append("<fieldset><div class='left'>"
+						+ "<p>Passen Sie den Text in der Regelkondition an:</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Kondition</label>");
+				html.append("<textarea name='ruleCondition' class='refactoring'>" + originalText + "</textarea>");
+				html.append("</div><div>"
+						+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
+				return html.toString();
+			}
+		});
+		return gsonFormMap().get("ruleCondition")[0];
+	}
 }

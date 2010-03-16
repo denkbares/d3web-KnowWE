@@ -44,6 +44,7 @@ import de.d3web.we.refactoring.script.MergeXCLs;
 import de.d3web.we.refactoring.script.QuestionTreeToQuestionsSection;
 import de.d3web.we.refactoring.script.QuestionsSectionToQuestionTree;
 import de.d3web.we.refactoring.script.Rename;
+import de.d3web.we.refactoring.script.SystemGetProperty;
 import de.d3web.we.refactoring.script.XCLToRules;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -66,6 +67,7 @@ public class RefactoringTagHandler extends AbstractTagHandler {
 		SCRIPTS.put("Rename",									Rename.class);
 		SCRIPTS.put("XCLToRules",								XCLToRules.class);
 		SCRIPTS.put("RefactoringScriptJavaConcrete",			RefactoringScriptJavaConcrete.class);
+		SCRIPTS.put("SystemGetProperty",						SystemGetProperty.class);
 		return Collections.unmodifiableSortedMap(SCRIPTS);
 	}
 

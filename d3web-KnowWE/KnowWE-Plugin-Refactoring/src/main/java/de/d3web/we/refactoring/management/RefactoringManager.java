@@ -8,8 +8,12 @@ import java.util.List;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.dashTree.SubTree;
 import de.d3web.we.kdom.include.Include;
+import de.d3web.we.kdom.objects.QuestionID;
 
 public class RefactoringManager {
 	
@@ -25,8 +29,9 @@ public class RefactoringManager {
 		this.refactoringWebManager.clearArticleMap();
 	}
 
-	public Section<?> findNode(String articleName, String nodeID) {
-		KnowWEArticle art = this.getArticle(articleName);
+	public Section<? extends KnowWEObjectType> findNode(String articleName, String nodeID) {
+		//FIXME hier wurde getArticle zu getCachedArticle geändert um CoarsenValueRange zum laufen zu bekommen.
+		KnowWEArticle art = this.getCachedArticle(articleName);
 		if (art == null) {
 			return null;
 		} else {
@@ -34,7 +39,7 @@ public class RefactoringManager {
 		}
 	}
 	
-	public Section<?> findNode(String nodeID) {
+	public Section<? extends KnowWEObjectType> findNode(String nodeID) {
 		return findNode(getArticleName(nodeID), nodeID);
 	}
 	
@@ -72,7 +77,7 @@ public class RefactoringManager {
 		return (article != null) ? article : defaultWebManager.getArticle(id);
 	}
 	
-	private KnowWEArticle getCachedArticle(String id) {
+	public KnowWEArticle getCachedArticle(String id) {
 		KnowWEArticle article = refactoringWebManager.getArticle(id);
 		if (article != null) {
 			return article;
@@ -140,5 +145,11 @@ public class RefactoringManager {
 			}
 			buffi.append(section.getOriginalText());
 		}
+	}
+
+	public Section<? extends KnowWEObjectType> findCachedQuestionToAnswer(Section<? extends KnowWEObjectType> answer) {
+		return findNode(answer
+		.findAncestorOfExactType(SubTree.class).findAncestorOfExactType(SubTree.class)
+		.findChildOfType(DashTreeElement.class).findSuccessor(QuestionID.class).getId());
 	}
 }

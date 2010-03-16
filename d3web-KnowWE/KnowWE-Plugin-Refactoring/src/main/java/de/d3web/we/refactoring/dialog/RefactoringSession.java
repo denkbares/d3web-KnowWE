@@ -1,7 +1,10 @@
 package de.d3web.we.refactoring.dialog;
 
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
+import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
+import groovy.lang.Script;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,6 +19,7 @@ import name.fraser.neil.plaintext.diff_match_patch.Diff;
 
 import org.apache.log4j.Logger;
 import org.ceryle.xml.XHTML;
+import org.codehaus.groovy.control.CompilerConfiguration;
 
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
@@ -102,6 +106,14 @@ public class RefactoringSession {
 			@Override
 			public String perform(KnowWEParameterMap parameterMap) {
 				StringBuffer html = new StringBuffer();
+				html.append("<fieldset><div class='left'>" + "<p>Möchten Sie die Änderungen rückgängig machen?</p></div>"
+						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Undo</label>"
+						+ "<select name='selectUndo' class='refactoring'>");
+				html.append("<option value='nein'>nein</option>");
+				html.append("<option value='ja'>ja</option>");
+				html
+						.append("</select></div><div>"
+								+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
 
 				for (KnowWEArticle changedArticle : refManager.getChangedArticles()) {
 					String changedArticleID = changedArticle.getTitle();
@@ -119,6 +131,7 @@ public class RefactoringSession {
 					// Zustand gebracht TODO: siehe saveAndFinish() in
 					// RefactoringSessionTestImpl
 					// wenn neuer Artikel angelegt werden soll
+					//FIXME: dies ist wieder so ein Hack :-)
 					refManager.saveUpdatedArticle(changedArticle);
 					KnowWEArticle consinstentChangedArticle = refManager.getArticle(changedArticleID);
 					knowWEManager.replaceKDOMNode(parameters, changedArticleID, changedArticleID, consinstentChangedArticle.getSection()
@@ -142,14 +155,6 @@ public class RefactoringSession {
 				html.append("<br />Refactorings abgeschlossen.<br />");
 
 				KnowWERessourceLoader.getInstance().add("RefactoringPlugin.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-				html.append("<fieldset><div class='left'>" + "<p>Möchten Sie die Änderungen rückgängig machen?</p></div>"
-						+ "<div style='clear:both'></div><form name='refactoringForm'><div class='left'><label for='article'>Undo</label>"
-						+ "<select name='selectUndo' class='refactoring'>");
-				html.append("<option value='nein'>nein</option>");
-				html.append("<option value='ja'>ja</option>");
-				html
-						.append("</select></div><div>"
-								+ "<input type='button' value='Ausführen' name='submit' class='button' onclick='refactoring();'/></div></fieldset>");
 				return html.toString();
 			}
 		});
@@ -305,8 +310,6 @@ public class RefactoringSession {
 	protected RefactoringScript findRefactoringScript() {
 		RefactoringScript rs = null;
 		if (gsonFormMap.get("optgroup")[0].equals("custom")) {
-			// TODO momentan werden nur Refactorings betrachtet, die sich auf dieser
-			// Seite befinden - Integration von built-in Refactorings nötig!
 			ClassLoader parent = getClass().getClassLoader();
 			GroovyClassLoader loader = new GroovyClassLoader(parent);
 			Section<?> section = refManager.getArticle(parameters.getTopic()).getSection();
@@ -316,7 +319,21 @@ public class RefactoringSession {
 					+ "public class RefactoringScriptGroovyFromWiki extends RefactoringScriptGroovy{ @Override public void run() { ");
 			sb.append(refactoring.getOriginalText());
 			sb.append("}}");
-			Class<?> groovyClass = loader.parseClass(sb.toString());
+			GroovyCodeSource gcs = new GroovyCodeSource(sb.toString(), "RefactoringScriptGroovyFromWiki", "/refactoring-plugin-groovy");
+			
+			// FIXME eventuell sollte RefactoringScript die Klasse Script (von Groovy) erweitern.
+			// Vorteil: es muss nicht viel geändert werden (nur die Signatur der run()-Methode,
+			// es ist dann ein richtiges Groovy-Script und man kann das ganze über die GroovyShell steuern
+			// und man spart sich die hässliche String-Zusammensetzung des Wiki-Skripts sowie die eigenen Definitionen von propertyMissingException.
+//			Script sc = null;
+//			GroovyShell shell = null;
+//			shell.parse();
+//			CompilerConfiguration config = new CompilerConfiguration();
+//			config.setScriptBaseClass("Script");
+//			GroovyShell gs = new GroovyShell();
+//			gs.evaluate(gcs);
+			
+			Class<?> groovyClass = loader.parseClass(gcs);
 			rs = null;
 			try {
 				rs = (RefactoringScript) groovyClass.newInstance();

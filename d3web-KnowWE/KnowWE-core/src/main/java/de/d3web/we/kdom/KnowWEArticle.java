@@ -225,7 +225,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * @param id
 	 * @return
 	 */
-	public Section findSection(String id) {
+	public Section<? extends KnowWEObjectType> findSection(String id) {
 		return sec.findChild(id);
 
 	}

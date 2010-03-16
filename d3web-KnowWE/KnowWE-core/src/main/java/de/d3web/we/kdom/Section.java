@@ -738,13 +738,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 		return s;
 	}
-
+	
 	/**
 	 * Searches the ancestor for this section for a given class
 	 * @param <OT>
 	 * @param clazz
 	 * @return
-	 * @author Franz Schwab
 	 */
 	public <OT extends KnowWEObjectType> Section<OT> findAncestor(Class<OT> clazz) {
 		return KnowWEObjectTypeUtils.getAncestorOfType(this, clazz);
@@ -755,7 +754,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param <OT>
 	 * @param clazz
 	 * @return
-	 * @author Franz Schwab
 	 * 
 	 */
 	public Section<? extends KnowWEObjectType> findAncestor(Collection<Class<? extends KnowWEObjectType>> classes) {
@@ -766,6 +764,44 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Searches the ancestor for this section for a given class.
+	 * Note: Here, a section can't be its own ancestor.
+	 * Furthermore, if an ancestor is just a subtype of the given class, it will be ignored.
+	 * For other purposes, use the following method:
+	 * @see #findAncestor(Class)
+	 * @param <OT>
+	 * @param clazz
+	 * @return
+	 * @author Franz Schwab
+	 */
+	public <OT extends KnowWEObjectType> Section<OT> findAncestorOfExactType(Class<OT> clazz) {
+		LinkedList<Class<? extends KnowWEObjectType>> l = new LinkedList<Class<? extends KnowWEObjectType>>();
+		l.add(clazz);
+		@SuppressWarnings("unchecked")
+		Section<OT> returnValue = (Section<OT>) findAncestorOfExactType(l);
+		return returnValue;
+	}
+	
+	/**
+	 * Searches the ancestor for this section for a given collection of classes.
+	 * The ancestor with the lowest distance to this section will be returned.
+	 * @see #findAncestorOfExactType(Class)
+	 * For other purposes, use the following method:
+	 * @see #findAncestor(Collection)
+	 * @param <OT>
+	 * @param clazz
+	 * @return
+	 * @author Franz Schwab
+	 */
+	public Section<? extends KnowWEObjectType> findAncestorOfExactType(Collection<Class<? extends KnowWEObjectType>> classes) {
+		Section<? extends KnowWEObjectType> f = this.getFather();
+		while((f != null) && !(classes.contains(f.getObjectType().getClass()))) {
+			f = f.getFather();
+		}
+		return  f;
 	}
 	
 		

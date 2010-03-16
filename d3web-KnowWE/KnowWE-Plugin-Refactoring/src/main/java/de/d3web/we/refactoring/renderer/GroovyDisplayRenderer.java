@@ -29,12 +29,14 @@ public class GroovyDisplayRenderer extends KnowWEDomRenderer {
 			string.append("{{{");
 		}
 		
+		string.append(KnowWEUtils.maskHTML("<span style=\"font-size:1.3em;\">"));
 		string.append(KnowWEUtils.maskHTML("<script type=\"syntaxhighlighter\" class=\"brush: groovy\"><![CDATA["));
 		
 		//string.append(KnowWEUtils.maskNewline(sec.getOriginalText()));
 		string.append(sec.getOriginalText());
 		
 		string.append(KnowWEUtils.maskHTML("]]></script>"));
+		string.append(KnowWEUtils.maskHTML("</span>"));
 		
 		if(!user.getUrlParameterMap().containsKey("action")) {// is not ajax action add verbatim for jspwiki render pipeline
 			string.append("}}}");

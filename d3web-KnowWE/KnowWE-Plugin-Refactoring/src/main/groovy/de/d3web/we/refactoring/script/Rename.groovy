@@ -1,7 +1,5 @@
 package de.d3web.we.refactoring.script
 
-import groovy.lang.GroovyInterceptable;
-
 public class Rename extends RefactoringScriptGroovy {
 
 	@Override
