@@ -6,11 +6,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.openrdf.model.BNode;
+import org.openrdf.model.Literal;
+import org.openrdf.model.URI;
+import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
+import org.openrdf.repository.RepositoryException;
+
 import de.d3web.report.Message;
+import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.module.semantic.OwlGenerator;
+import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
+import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -74,7 +87,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author Volker Belli
  * 
  */
-public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
+public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType implements OwlGenerator {
 
 	private static final String ERROR_MESSAGE_STORE_KEY = "error-message-list";
 
@@ -136,6 +149,62 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 		return this.markup;
 	}
 
+	@Override
+	public <T extends KnowWEObjectType> IntermediateOwlObject getOwl(Section<T> s) {
+		IntermediateOwlObject io = new IntermediateOwlObject(); 
+		/*
+		 * ich geh jetzt einfach mal davon aus, dass deine Basisklasse f"ur die
+		 * objekttypes DefaultMarkup heisst und im standardknowwenamespace
+		 * liegen soll. instanzen davon sind wiki-spezifische sachen und landen
+		 * daher im lokalen namespace
+		 */
+		OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
+		// spezielle MarkupKlasse die jetzt gebaut werden soll: TestMarkup
+		URI parentMarkup = helper.createlocalURI("DefaultMarkup"); 
+		try {
+			// create new class for this markup
+			URI thisMarkup = helper.createURI(getMarkup().getName());
+			io.addStatement(helper.createStatement(
+					thisMarkup, 
+					RDFS.SUBCLASSOF, 
+					parentMarkup));
+			
+			// um nun eine konkreter instanz von testmarkup zu bauen:
+			// TODO: create node with section-id insread of blank node
+			BNode bnode = SemanticCore.getInstance().getUpper().getVf().createBNode();
+			io.addStatement(helper.createStatement(bnode, RDF.TYPE, thisMarkup));
+
+			// add content block as literal
+			String text = getContent(s);
+			if (text == null) text = "";
+			Literal content = helper.createLiteral(text);
+			io.addStatement(helper.createStatement(
+					bnode, helper.createlocalURI("hasContent"), content));
+			
+			for (Annotation annotation : getMarkup().getAnnotations()) {
+				String name = annotation.getName();
+				text = getAnnotation(s, name);
+				if (text == null) text = "";
+				content = helper.createLiteral(text);
+				io.addStatement(helper.createStatement(
+						bnode, helper.createlocalURI("has"+name), content));
+			}
+		} 
+		catch (RepositoryException e) {
+			// TODO fehlerhandling at your discretion ;)
+			e.printStackTrace();
+		}
+
+		return io;
+
+	}
+	
+	public ArrayList<String> getAllDefaultMarkups(){
+		String query="SELECT ?x WHERE { ?x rdf.type ?y . ?y rdfs:subClassOf ns:DefaultMarkup }";
+		return SemanticCore.getInstance().simpleQueryToList(query, "x");
+	}
+
+	
 	/**
 	 * Returns the contents of the default content block of the specified
 	 * section. If the section is not of type "DefaultMarkup" an
