@@ -68,6 +68,9 @@ public class AnnotationFinder extends SectionFinder {
 			if (end3 != -1 && end3 < end) {
 				end = end3;
 			}
+			
+			// trim end (if it is a single-line markup, trailing spaces are not eliminated)
+			while (end > start && Character.isWhitespace(text.charAt(end-1))) end--;
 			result.add(new SectionFinderResult(start, end));
 			pos = end;
 		}
