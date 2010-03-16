@@ -27,7 +27,7 @@ import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
-import de.d3web.we.kdom.table.TableContent;
+import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -67,8 +67,8 @@ public class CoveringTableHeaderColumnCellContent extends
 			String text = s.getOriginalText().trim();
 			
 			//if it is an already defined QContainer
-			Section<TableContent> tableContentSection = KnowWEObjectTypeUtils.getAncestorOfType(cell,
-			TableContent.class);
+			Section<Table> tableContentSection = KnowWEObjectTypeUtils.getAncestorOfType(cell,
+			Table.class);
 			if(mgn.findQContainer(text) != null) {
 				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
 						TableLine.class);

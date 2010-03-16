@@ -30,7 +30,7 @@ import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellContent;
-import de.d3web.we.kdom.table.TableContent;
+import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableHeaderLine;
 import de.d3web.we.kdom.table.TableUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
@@ -63,8 +63,8 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 			List<Section<TableCell>> cells = new ArrayList<Section<TableCell>>();
 			s.findSuccessorsOfType(TableCell.class, cells);
 
-			Section<TableContent> tableContent = KnowWEObjectTypeUtils.getAncestorOfType(s,
-					TableContent.class);
+			Section<Table> tableContent = KnowWEObjectTypeUtils.getAncestorOfType(s,
+					Table.class);
 
 			for (Section<TableCell> section : cells) {
 				Section<TableCellContent> findChildOfType = section.findSuccessor(TableCellContent.class);

@@ -22,6 +22,7 @@ package de.d3web.we.kdom.table.xcl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -29,13 +30,15 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.kopic.renderer.KopicTableSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.table.ITable;
+import de.d3web.we.kdom.table.TableAttributesProvider;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
+import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableLine;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 
-public class CoveringTableSection extends AbstractKopicSection implements ITable {
+public class CoveringTableSection extends AbstractKopicSection implements TableAttributesProvider {
 
 	public static final String TAG = "SetCoveringTable-section";
 
@@ -50,6 +53,8 @@ public class CoveringTableSection extends AbstractKopicSection implements ITable
 		setCustomRenderer(new KopicTableSectionRenderer());
 		setNotRecyclable(true);
 	}
+	
+	
 
 	private class CoveringTableSubTreeHandler extends D3webReviseSubTreeHandler {
 	
@@ -107,5 +112,43 @@ public class CoveringTableSection extends AbstractKopicSection implements ITable
 			
 			return null;
 		}
+	}
+
+
+
+	@Override
+	public String getAttributeValues(Section<Table> s) {
+		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
+		if(xml != null) {
+			return this.getAttributeMapFor(xml).get(Table.ATT_VALUES);
+		}	
+		return null;
+	}
+
+	@Override
+	public String getNoEditColumnAttribute(Section<Table> s) {
+		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
+		if(xml != null) {
+			return this.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_COLUMN);
+		}	
+		return null;
+	}
+
+	@Override
+	public String getNoEditRowAttribute(Section<Table> s) {
+		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
+		if(xml != null) {
+			return this.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_ROW);
+		}	
+		return null;
+	}
+
+	@Override
+	public String getWidthAttribute(Section<Table> s) {
+		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
+		if(xml != null) {
+			return this.getAttributeMapFor(xml).get(Table.ATT_WIDTH);
+		}	
+		return null;
 	}
 }

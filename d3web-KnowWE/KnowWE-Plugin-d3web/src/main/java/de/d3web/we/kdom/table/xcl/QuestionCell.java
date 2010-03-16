@@ -37,7 +37,7 @@ import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
-import de.d3web.we.kdom.table.TableContent;
+import de.d3web.we.kdom.table.Table;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -127,8 +127,8 @@ class QuestionCellHandler implements ReviseSubTreeHandler {
 			return null;
 		}
 		SingleKBMIDObjectManager mgr = new SingleKBMIDObjectManager(mgn);
-		Section<TableContent> tableContentSection = KnowWEObjectTypeUtils
-				.getAncestorOfType(s, TableContent.class);
+		Section<Table> tableContentSection = KnowWEObjectTypeUtils
+				.getAncestorOfType(s, Table.class);
 		Section questionnaireSection = (Section) KnowWEUtils.getStoredObject(s
 				.getArticle().getWeb(), s.getTitle(), tableContentSection
 				.getId(),

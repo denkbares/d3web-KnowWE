@@ -20,7 +20,8 @@
 
 package de.d3web.we.kdom.table.xcl;
 
-import de.d3web.we.kdom.table.TableContent;
+import de.d3web.we.kdom.table.Table;
+import de.d3web.we.kdom.table.XMLWrappedTable;
 import de.d3web.we.kdom.xml.XMLContent;
 
 public class CoveringTableContent extends XMLContent{
@@ -28,7 +29,7 @@ public class CoveringTableContent extends XMLContent{
 
 	@Override
 	protected void init() {
-		childrenTypes.add( new TableContent() );
+		childrenTypes.add( new XMLWrappedTable() );
 
 		//add blank nodes in cells ?
 	}
