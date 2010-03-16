@@ -20,33 +20,16 @@
 
 package de.d3web.we.kdom.table;
 
+import java.util.Map;
+
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.contexts.StringContext;
 
-public class TableColumnContext extends  StringContext {
+public interface TableAttributesProvider {
 	
-	private Section table;
-	private int column;
-	
-	public TableColumnContext(Section table, int colNumber) {
-		this.table = table;
-		column = colNumber;
-	}
-
-	@Override
-	public String getCID() {
-		return table.getId()+"_col"+column;
-	}
-
-	@Override
-	public boolean isValidForSection(Section s) {
-		if(Table.class.isAssignableFrom(table.getObjectType().getClass())) {
-			int foundCol = TableUtils.getColumn(s);
-			return foundCol == column;
-		}
-		return false;
-	}
-	
+	public String getWidthAttribute(Section<Table> s);
+	public String getNoEditColumnAttribute(Section<Table> s);
+	public String getNoEditRowAttribute(Section<Table> s);
+	public String getAttributeValues(Section<Table> s);
 	
 
 }

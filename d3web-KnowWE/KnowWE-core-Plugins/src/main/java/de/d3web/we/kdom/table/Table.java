@@ -20,12 +20,21 @@
 
 package de.d3web.we.kdom.table;
 
-import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.xml.XMLContent;
 
 /**
- * Table class.
+ * <p>
+ * Represents the body of the <code>Table</code> tag.
+ * </p>
  * 
- * This class is used to extend KnowWE with in-view editable tables. The markup for
+ *  * This class is used to extend KnowWE with in-view editable tables. The markup for
  * this feature is the following:
  * e.g:
  * &lt;table&gt;
@@ -52,12 +61,13 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
  * 
  *  The <code>row</code> and <code>column</code> attribute define which row or column
  *  is not editable.
+ *
  * 
  * @author smark
- * @see AbstractXMLObjectType
+ * @see XMLContent
  */
-public class Table extends AbstractXMLObjectType implements ITable
-{
+public abstract class Table extends DefaultAbstractKnowWEObjectType implements TableAttributesProvider{
+	
 	/**
 	 * Attribute name for the default values of each cell.
 	 */
@@ -73,19 +83,26 @@ public class Table extends AbstractXMLObjectType implements ITable
 	 */
 	public static final String ATT_NOEDIT_COLUMN = "column";
 	public static final String ATT_NOEDIT_ROW    = "row";
-	
-	public Table(String tagName) {
-		super(tagName);
-	}
-	
-	public Table()
-	{
-		super("Table");
-	}
-	
+
 	@Override
-	protected void init() 
-	{
-		childrenTypes.add( new TableContent () );
+	protected void init() {
+		childrenTypes.add(new TableLine());
+		this.sectionFinder =  AllTextSectionFinder.getInstance();
+		this.setCustomRenderer(new TableContentRenderer());
+		this.addReviseSubtreeHandler(new TableSubTreeHandler());
+	}
+
+	private class TableSubTreeHandler implements ReviseSubTreeHandler {
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section sec) {
+			Section<?> s = sec;
+			Section<TableLine> headerLine = s.findSuccessor(TableLine.class);
+			AbstractKnowWEObjectType solutionHeaderType = new TableHeaderLine();
+			if (headerLine != null) {
+				headerLine.setType(solutionHeaderType);
+			}
+			return null;
+		}
 	}
 }

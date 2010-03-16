@@ -80,7 +80,7 @@ public class TableUtils {
 	 */
 	public static int getRow( Section<TableCellContent> section )
 	{
-		Section tableContent = KnowWEObjectTypeUtils.getAncestorOfType( section, TableContent.class );
+		Section tableContent = KnowWEObjectTypeUtils.getAncestorOfType( section, Table.class );
 		
 		List<Section> sections = new ArrayList<Section>();
 		getCertainSections( tableContent, TableLine.class.getName(), sections );

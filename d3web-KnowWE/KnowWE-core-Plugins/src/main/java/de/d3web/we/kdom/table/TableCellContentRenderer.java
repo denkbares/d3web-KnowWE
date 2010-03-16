@@ -88,15 +88,14 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 	protected void generateContent(String sectionText, Section<TableCellContent> sec,
 			KnowWEUserContext user, String sectionID, StringBuilder html) {
 		if( sec.hasQuickEditModeSet( user.getUsername() ) ) {
-			Section father = KnowWEObjectTypeUtils.getAncestorOfType( sec , ITable.class.getName());
+			Section father = KnowWEObjectTypeUtils.getAncestorOfType( sec , TableAttributesProvider.class.getName());
 			String values = null, size = null, rows = null, cols = null;
 
-			if( father != null ) {
-				Map<String, String> map = AbstractXMLObjectType.getAttributeMapFor(father);
-			    values = map.get( Table.ATT_VALUES );
-			    size   = map.get( Table.ATT_WIDTH );
-			    cols   = map.get( Table.ATT_NOEDIT_COLUMN );
-			    rows   = map.get( Table.ATT_NOEDIT_ROW );
+			if (father != null && father.getObjectType() instanceof TableAttributesProvider ) {
+			    values = ((TableAttributesProvider)father.getObjectType()).getAttributeValues(sec.findAncestor(Table.class));
+			    size   = ((TableAttributesProvider)father.getObjectType()).getWidthAttribute(sec.findAncestor(Table.class));
+			    cols   =((TableAttributesProvider)father.getObjectType()).getNoEditColumnAttribute(sec.findAncestor(Table.class));
+			    rows   = ((TableAttributesProvider)father.getObjectType()).getNoEditRowAttribute(sec.findAncestor(Table.class));
 			}
 			
 			if( TableUtils.isEditable( sec, rows, cols ) ) {

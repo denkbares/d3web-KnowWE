@@ -20,6 +20,29 @@
 
 package de.d3web.we.kdom.table;
 
-public interface ITable {
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.kdom.xml.XMLContent;
 
+/**
+ * Table xml wrapper type.
+ * 
+ *
+ * @see AbstractXMLObjectType
+ */
+public class TableXMLType extends AbstractXMLObjectType {
+
+	public TableXMLType(String tagName) {
+		super(tagName);
+	}
+	
+	public TableXMLType()
+	{
+		super("Table");
+	}
+	
+	@Override
+	protected void init() 
+	{
+		childrenTypes.add( new XMLContent(new XMLWrappedTable () ));
+	}
 }
