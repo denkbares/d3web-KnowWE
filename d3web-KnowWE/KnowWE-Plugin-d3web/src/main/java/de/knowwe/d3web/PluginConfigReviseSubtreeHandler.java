@@ -25,10 +25,12 @@ import org.apache.tools.ant.filters.StringInputStream;
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
+import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 
@@ -43,7 +45,8 @@ public class PluginConfigReviseSubtreeHandler implements ReviseSubTreeHandler {
 			new PluginConfigPersistenceHandler().read(kb, new StringInputStream(xmlText), new DummyProgressListener());
 		}
 		catch (IOException e1) {
-			return new SimpleMessageError("Cannot parse input");
+			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, e1.getMessage(), null, -1, null));
+			return null;
 		}
 		
 		return null;
