@@ -27,6 +27,17 @@ import de.d3web.we.kdom.Section;
 
 public class AllTextSectionFinder extends SectionFinder {
 
+	private static AllTextSectionFinder instance = null;
+	
+	public static AllTextSectionFinder getInstance() {
+		if (instance == null) {
+			instance = new AllTextSectionFinder();
+			
+		}
+
+		return instance;
+	}
+	
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();

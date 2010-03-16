@@ -30,7 +30,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
  * to be implemented in every case. 
  *
  */
-public abstract class DefaultAbstractKnowWEObjectType extends AbstractKnowWEObjectType{
+public class DefaultAbstractKnowWEObjectType extends AbstractKnowWEObjectType{
 
 	public DefaultAbstractKnowWEObjectType() {
 		super();

@@ -43,6 +43,7 @@ import de.d3web.we.kdom.include.IncludeAddress;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
 import de.d3web.we.user.UserSettingsManager;
+import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.PairOfInts;
 
 /**
@@ -746,11 +747,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @author Franz Schwab
 	 */
 	public <OT extends KnowWEObjectType> Section<OT> findAncestor(Class<OT> clazz) {
-		LinkedList<Class<? extends KnowWEObjectType>> l = new LinkedList<Class<? extends KnowWEObjectType>>();
-		l.add(clazz);
-		@SuppressWarnings("unchecked")
-		Section<OT> returnValue = (Section<OT>) findAncestor(l);
-		return returnValue;
+		return KnowWEObjectTypeUtils.getAncestorOfType(this, clazz);
 	}
 	
 	/**
@@ -759,13 +756,16 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param clazz
 	 * @return
 	 * @author Franz Schwab
+	 * 
 	 */
 	public Section<? extends KnowWEObjectType> findAncestor(Collection<Class<? extends KnowWEObjectType>> classes) {
-		Section<? extends KnowWEObjectType> f = this.getFather();
-		while((f != null) && !(classes.contains(f.getObjectType().getClass()))) {
-			f = f.getFather();
+		for (Class<? extends KnowWEObjectType> class1 : classes) {
+			Section<? extends KnowWEObjectType> s = KnowWEObjectTypeUtils.getAncestorOfType(this, class1);
+			if(s != null) {
+				return s;
+			}
 		}
-		return  f;
+		return null;
 	}
 	
 		

@@ -20,40 +20,25 @@
 
 package de.d3web.we.kdom.xml;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
-public abstract class XMLContent extends DefaultAbstractKnowWEObjectType {
+public class XMLContent extends DefaultAbstractKnowWEObjectType {
 	
 	public XMLContent() {
-		sectionFinder = new XMLContentSectionFinder();
+		sectionFinder = AllTextSectionFinder.getInstance();
 	}
 	
-	@Override
-	protected abstract void init();
+	public XMLContent(KnowWEObjectType child) {
+		this();
+		this.childrenTypes.add(child);
+	}
+
 	
 	@Override
 	public String getName() {
 		return this.getClass().getSimpleName();
-	}
-	
-	public class XMLContentSectionFinder extends SectionFinder {
-
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
-
-			ArrayList<SectionFinderResult> result =
-						new ArrayList<SectionFinderResult>();
-			result.add(
-					new SectionFinderResult(0, text.length()));
-			return result;
-		}
-		
 	}
 
 }
