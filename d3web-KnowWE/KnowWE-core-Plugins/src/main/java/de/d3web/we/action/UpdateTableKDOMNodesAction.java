@@ -45,7 +45,6 @@ public class UpdateTableKDOMNodesAction extends DeprecatedAbstractKnowWEAction {
 		String nodes = parameterMap.get(KnowWEAttributes.TARGET);
 		String name = parameterMap.getTopic();
 		
-		String newSourceText = "";
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 
 		if( nodes != "" )
@@ -58,7 +57,7 @@ public class UpdateTableKDOMNodesAction extends DeprecatedAbstractKnowWEAction {
 					String[] node = string.split( UPDATE_CELL_SEPERATOR );
 					if( node.length == 2)
 					{
-						newSourceText = mgr.replaceKDOMNodeWithoutSave(parameterMap, name, node[0], node[1]);
+						mgr.getArticle(name).getSection().setOriginalTextSetLeaf(node[0], node[1]);
 					}
 				}
 			}
@@ -67,10 +66,12 @@ public class UpdateTableKDOMNodesAction extends DeprecatedAbstractKnowWEAction {
 				String[] node = nodes.split( UPDATE_CELL_SEPERATOR );
 				if( node.length == 2)
 				{
-				    newSourceText = mgr.replaceKDOMNodeWithoutSave(parameterMap, name, node[0], node[1]);
+					mgr.getArticle(name).getSection().setOriginalTextSetLeaf(node[0], node[1]);
 				}
 			}
-			KnowWEEnvironment.getInstance().saveArticle(web, name, newSourceText, parameterMap);
+			StringBuilder buddy = new StringBuilder();
+			mgr.getArticle(name).getSection().collectTextsFromLeaves(buddy, false);
+			KnowWEEnvironment.getInstance().saveArticle(web, name, buddy.toString(), parameterMap);
 		}
 		
 		return "done";
