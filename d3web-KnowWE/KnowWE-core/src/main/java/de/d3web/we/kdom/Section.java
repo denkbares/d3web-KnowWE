@@ -330,6 +330,36 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.originalText = newText;
 		this.article.setDirty(true);
 	}
+	
+	/**
+	 * Searches the successor-node with nodeID in the successors of this node,
+	 * sets the text of the successor-node and makes it a leaf by deleting all its children.
+	 * This IS an article source edit operation!
+	 * TODO: Important - propagate changes through the whole tree OR ReIinit
+	 * tree!
+	 * @author Franz Schwab
+	 * @param nodeID
+	 * @param replacingText
+	 */
+	public void setOriginalTextSetLeaf(String nodeID, String replacingText) {
+		if (this.getId().equals(nodeID)) {
+			this.setOriginalText(replacingText);
+			this.removeAllChildren();
+			return;
+		}
+		List<Section<?>> children = this.getChildren();
+		if (children == null || children.isEmpty() || this.getObjectType().getClass() == Include.class) {
+			return;
+		}
+		for (Section<?> section : children) {
+			section.setOriginalTextSetLeaf(nodeID, replacingText);
+		}
+	}
+	
+	private void removeAllChildren() {
+		this.children = new LinkedList<Section<? extends KnowWEObjectType>>();
+		//this.childrenParsingOrder = new LinkedList<Section<? extends KnowWEObjectType>>();
+	}
 
 	/**
 	 * @return the list of child nodes
@@ -684,11 +714,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public void removeChild(Section<? extends KnowWEObjectType> s) {
 		this.children.remove(s);
 
-	}
-	
-	public void removeAllChildren() {
-		this.children = new LinkedList<Section<? extends KnowWEObjectType>>();
-		//this.childrenParsingOrder = new LinkedList<Section<? extends KnowWEObjectType>>();
 	}
 
 	/**
@@ -1108,14 +1133,26 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	public void collectTextsFromLeaves(StringBuilder buffi) {
-		if (this.getChildren() != null && this.getChildren().size() > 0) {
-			for (Section s : getChildren()) {
-				s.collectTextsFromLeaves(buffi);
+		collectTextsFromLeaves(buffi, true);
+	}
+	
+	/**
+	 * @param buffi
+	 * @param followIncludes if false, the text from includes will not be included. this is necessary if you want just
+	 * the text of a wikipage having generated.
+	 */
+	public void collectTextsFromLeaves(StringBuilder buffi, boolean followIncludes) {
+		if (this.getChildren() != null && this.getChildren().size() > 0
+				&& (followIncludes || !(this.getObjectType().getClass() == Include.class))) {
+			for (Section<?> s : this.getChildren()) {
+				s.collectTextsFromLeaves(buffi, followIncludes);
 			}
 		} else {
+			if (this.getObjectType().getClass() == Include.class) {
+				// System.out.println( "include tag complete text: " + section.getOriginalText());
+			}
 			buffi.append(this.originalText);
 		}
-
 	}
 
 	public boolean hasQuickEditModeSet(String user) {
