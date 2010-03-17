@@ -120,8 +120,7 @@ public class RefactoringManager {
 	
 	private void replaceNodeTextSetLeaf(Section<?> sec, String nodeID, String replacingText) {
 		if (sec.getId().equals(nodeID)) {
-			sec.setOriginalText(replacingText);
-			sec.removeAllChildren();
+			sec.getFather().setOriginalTextSetLeaf(nodeID, replacingText);			
 			return;
 		}
 		List<Section<?>> children = sec.getChildren();
