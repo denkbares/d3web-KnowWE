@@ -59,37 +59,46 @@ import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEventListener {
+public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
+		WikiEventListener {
 
 	private String topicName = "";
-	
-    /**
-	 * To initialize KnowWE.
-	 * @see KnowWE_config.properties
-     */
-    public void initialize( WikiEngine engine, Properties properties ) throws FilterException {
-    	
-    	super.initialize(engine, properties);
-        m_engine = engine;
-        initKnowWEEnvironmentIfNeeded(engine);
-        
-        ResourceBundle knowweconfig = ResourceBundle.getBundle("KnowWE_config");
-        if (knowweconfig.getString("knowweplugin.jspwikiconnector.copycorepages").equals("false")) {
-    		WikiEventUtils.addWikiEventListener(engine.getPageManager(), WikiPageEvent.PAGE_DELETE_REQUEST, this);
-        	return;
-        }
-        File f = new File(KnowWEEnvironment.getInstance().getKnowWEExtensionPath());
-        f = f.getParentFile();
 
-        try {
-            for (File s : f.listFiles()) {
-            	if (s.getName().equals("WEB-INF")) {        		
-					BufferedReader in = new BufferedReader(new FileReader(s.getPath()
+	/**
+	 * To initialize KnowWE.
+	 * 
+	 * @see KnowWE_config.properties
+	 */
+	public void initialize(WikiEngine engine, Properties properties)
+			throws FilterException {
+
+		super.initialize(engine, properties);
+		m_engine = engine;
+		initKnowWEEnvironmentIfNeeded(engine);
+
+		ResourceBundle knowweconfig = ResourceBundle.getBundle("KnowWE_config");
+		if (knowweconfig.getString(
+				"knowweplugin.jspwikiconnector.copycorepages").equals("false")) {
+			WikiEventUtils.addWikiEventListener(engine.getPageManager(),
+					WikiPageEvent.PAGE_DELETE_REQUEST, this);
+			return;
+		}
+		File f = new File(KnowWEEnvironment.getInstance()
+				.getKnowWEExtensionPath());
+		f = f.getParentFile();
+
+		try {
+			for (File s : f.listFiles()) {
+				if (s.getName().equals("WEB-INF")) {
+					BufferedReader in = new BufferedReader(new FileReader(s
+							.getPath()
 							+ "/jspwiki.properties"));
 					String zeile = null;
 					File pagedir = null;
 					while ((zeile = in.readLine()) != null) {
-						if (!zeile.contains("#") && zeile.contains("jspwiki.fileSystemProvider.pageDir")) {
+						if (!zeile.contains("#")
+								&& zeile
+										.contains("jspwiki.fileSystemProvider.pageDir")) {
 							zeile = zeile.trim();
 							zeile = zeile.substring(zeile.lastIndexOf(" ") + 1);
 							pagedir = new File(zeile);
@@ -97,32 +106,38 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 							break;
 						}
 					}
-					
+
 					if (pagedir.exists()) {
-						File [] files = pagedir.listFiles();						
-						File coreDir = new File(s.getPath() + "/resources/core-pages");
+						File[] files = pagedir.listFiles();
+						File coreDir = new File(s.getPath()
+								+ "/resources/core-pages");
 						File[] cores = coreDir.listFiles();
 						for (File cP : coreDir.listFiles()) {
-							if (!cP.getName().endsWith(".txt")) continue;
-							File newFile = new File(pagedir.getPath()+ "/" + cP.getName());
+							if (!cP.getName().endsWith(".txt"))
+								continue;
+							File newFile = new File(pagedir.getPath() + "/"
+									+ cP.getName());
 							if (!newFile.exists())
 								FileUtils.copyFile(cP, newFile);
-							}
 						}
-            	}
-            }
-        } catch (Exception e) {
-        	// Nothing to do. Start wiki without pages.
-        }
-        
-		WikiEventUtils.addWikiEventListener(engine.getPageManager(), WikiPageEvent.PAGE_DELETE_REQUEST, this);
-		WikiEventUtils.addWikiEventListener(engine.getPageManager(), WikiPageRenameEvent.PAGE_RENAMED, this);
-    }
-	
+					}
+				}
+			}
+		} catch (Exception e) {
+			// Nothing to do. Start wiki without pages.
+		}
+
+		WikiEventUtils.addWikiEventListener(engine.getPageManager(),
+				WikiPageEvent.PAGE_DELETE_REQUEST, this);
+		WikiEventUtils.addWikiEventListener(engine.getPageManager(),
+				WikiPageRenameEvent.PAGE_RENAMED, this);
+	}
+
 	private void initKnowWEEnvironmentIfNeeded(WikiEngine wEngine) {
 		if (!KnowWEEnvironment.isInitialized()) {
 			KnowWEEnvironment.initKnowWE(new JSPWikiKnowWEConnector(wEngine));
-			MultiSearchEngine.getInstance().addProvider(new JSPWikiSearchConnector());
+			MultiSearchEngine.getInstance().addProvider(
+					new JSPWikiSearchConnector());
 		}
 	}
 
@@ -141,13 +156,17 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 				// There are sometimes non-String-values in the params map.
 				// Therefore we remove them before hand it over
 				Map<String, String> cleanParams = new HashMap<String, String>();
-				for (Map.Entry<?,?> entry : (Set<Map.Entry<?,?>>) params.entrySet()) {
-					if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
-						cleanParams.put((String) entry.getKey(), (String) entry.getValue());
+				for (Map.Entry<?, ?> entry : (Set<Map.Entry<?, ?>>) params
+						.entrySet()) {
+					if (entry.getKey() instanceof String
+							&& entry.getValue() instanceof String) {
+						cleanParams.put((String) entry.getKey(), (String) entry
+								.getValue());
 					}
 				}
-				result = KnowWEEnvironment.getInstance().renderTags(cleanParams,
-						topic, userContext, KnowWEEnvironment.DEFAULT_WEB);
+				result = KnowWEEnvironment.getInstance().renderTags(
+						cleanParams, topic, userContext,
+						KnowWEEnvironment.DEFAULT_WEB);
 			}
 		} catch (Throwable t) {
 			System.out.println("****Exception EXECUTE***");
@@ -198,12 +217,55 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 	@Override
 	public String preTranslate(WikiContext wikiContext, String content)
 			throws FilterException {
-		// setWikiContextAndEngine(wikiContext);
+		/* creating KnowWEUserContext with username and requestParamteters */
 
 		if (!wikiContext.getCommand().getRequestContext().equals(
 				WikiContext.VIEW)) {
 			return content;
 		}
+
+		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
+				parseRequestVariables(wikiContext));
+	
+		
+		/*
+		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter
+		 * get extra calls: they are handled and rendered from the KDOMs
+		 * in the following
+		 */
+		String moreMenu = "MoreMenu";
+		if (wikiContext.getRealPage().getName().equals(moreMenu)) {
+			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
+					.getArticle(KnowWEEnvironment.DEFAULT_WEB, moreMenu);
+			if (supportArticle != null
+					&& supportArticle.getSection().getOriginalText().equals(
+							content)) {
+
+				return renderKDOM(content, userContext, supportArticle);
+			}
+		}
+		String leftMenu = "LeftMenu";
+		if (wikiContext.getRealPage().getName().equals(leftMenu)) {
+			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
+			.getArticle(KnowWEEnvironment.DEFAULT_WEB, leftMenu);
+			if (supportArticle != null
+					&& supportArticle.getSection().getOriginalText().equals(
+							content)) {
+				return renderKDOM(content, userContext, supportArticle);
+			}
+		}
+		String leftMenuFooter = "LeftMenuFooter";
+		if (wikiContext.getRealPage().getName().equals(leftMenuFooter)) {
+			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
+			.getArticle(KnowWEEnvironment.DEFAULT_WEB, leftMenuFooter);
+			if(supportArticle != null
+				&& supportArticle.getSection().getOriginalText()
+						.equals(content)) {
+			return renderKDOM(content, userContext, supportArticle);
+		}}
+
+		
+		
 		String pagedata = "";
 		WikiEngine engine = wikiContext.getEngine();
 		if (engine != null) {
@@ -213,10 +275,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 				return content;
 		}
 		try {
-
-			/* creating KnowWEUserContext with username and requestParamteters */
-			JSPWikiUserContext userContext = new JSPWikiUserContext(
-					wikiContext, parseRequestVariables(wikiContext));
 
 			topicName = wikiContext.getPage().getName();
 
@@ -229,13 +287,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 			if (article != null) {
 				String originalText = article.getSection().getOriginalText();
 				String parse = userContext.getUrlParameterMap().get("parse");
-				boolean fullParse = parse != null && (parse.equals("full") || parse.equals("true"));
-				if ((fullParse/* && !article.isFullParse()*/) || !originalText.equals(content)) {
+				boolean fullParse = parse != null
+						&& (parse.equals("full") || parse.equals("true"));
+				if ((fullParse/* && !article.isFullParse() */)
+						|| !originalText.equals(content)) {
 					article = new KnowWEArticle(content, topicName,
 							KnowWEEnvironment.getInstance().getRootType(),
 							KnowWEEnvironment.DEFAULT_WEB, fullParse);
-					KnowWEEnvironment.getInstance().getArticleManager("default_web")
-						.saveUpdatedArticle(article);
+					KnowWEEnvironment.getInstance().getArticleManager(
+							"default_web").saveUpdatedArticle(article);
 				}
 			} else {
 				article = new KnowWEArticle(content, topicName,
@@ -254,9 +314,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 
 			// long timeStart = System.currentTimeMillis();
 
-			
 			// Render Pre-PageAppendHandlers
-			List<PageAppendHandler> ap = KnowWEEnvironment.getInstance().getAppendHandlers();
+			List<PageAppendHandler> ap = KnowWEEnvironment.getInstance()
+					.getAppendHandlers();
 			for (PageAppendHandler pageAppendHandler : ap) {
 				if (pageAppendHandler.isPre()) {
 					articleString.append(pageAppendHandler.getDataToAppend(
@@ -264,10 +324,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 							userContext));
 				}
 			}
-			
+
 			// RENDER PAGE
-			article.getRenderer().render(article, article.getSection(), userContext, articleString);
-			
+			article.getRenderer().render(article, article.getSection(),
+					userContext, articleString);
+
 			// Render Post-PageAppendHandlers
 			for (PageAppendHandler pageAppendHandler : ap) {
 				if (!pageAppendHandler.isPre()) {
@@ -276,9 +337,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 							userContext));
 				}
 			}
-		
-		    this.handleIncludes( wikiContext );
 
+			this.handleIncludes(wikiContext);
 
 			// long timeEnde = System.currentTimeMillis();
 
@@ -297,6 +357,17 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	private String renderKDOM(String content, JSPWikiUserContext userContext,
+			KnowWEArticle article) {
+		if (article != null) {
+			StringBuilder articleString = new StringBuilder();
+			article.getRenderer().render(article, article.getSection(),
+					userContext, articleString);
+			return articleString.toString();
+		}
+		return content + "\n(no KDOM)";
 	}
 
 	/**
@@ -329,59 +400,73 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin, WikiEve
 
 		return parameter;
 	}
-	
+
 	/**
 	 * Handles events passed from JSPWiki
 	 */
 	@Override
 	public void actionPerformed(WikiEvent event) {
-		// When deleting a page, remove it from the ArticleManager and invalidate all knowledge
-		if ((event instanceof WikiPageEvent) && (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
+		// When deleting a page, remove it from the ArticleManager and
+		// invalidate all knowledge
+		if ((event instanceof WikiPageEvent)
+				&& (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
 			WikiPageEvent e = (WikiPageEvent) event;
-			
-			KnowWEArticleManager amgr = KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
-			
+
+			KnowWEArticleManager amgr = KnowWEEnvironment.getInstance()
+					.getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
+
 			amgr.deleteArticle(amgr.getArticle(e.getPageName()));
 		} else if (event instanceof WikiPageRenameEvent) {
 			WikiPageRenameEvent e = (WikiPageRenameEvent) event;
-			
-			KnowWEArticleManager amgr = KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
-			
+
+			KnowWEArticleManager amgr = KnowWEEnvironment.getInstance()
+					.getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
+
 			amgr.deleteArticle(amgr.getArticle(e.getOldPageName()));
 		}
 	}
-	
+
 	/**
 	 * Adds the CSS and JS files to the current page.
+	 * 
 	 * @param wikiContext
 	 */
-	private void handleIncludes(WikiContext wikiContext){
+	private void handleIncludes(WikiContext wikiContext) {
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		KnowWERessourceLoader loader = KnowWERessourceLoader.getInstance();
-		
-		
+
 		loader.addFirst("KnowWE.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-		loader.addFirst("KnowWE-helper.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-		
+		loader.addFirst("KnowWE-helper.js",
+				KnowWERessourceLoader.RESOURCE_SCRIPT);
+
 		LinkedList<String> script = loader.getScriptIncludes();
 		for (String resource : script) {
-			if( ctx != null && !ctx.toString().contains( resource )) {
-			    TemplateManager.addResourceRequest(wikiContext, KnowWERessourceLoader.RESOURCE_SCRIPT, KnowWERessourceLoader.defaultScript+resource);
-			} else if( ctx == null ) {
-				TemplateManager.addResourceRequest(wikiContext, KnowWERessourceLoader.RESOURCE_SCRIPT, KnowWERessourceLoader.defaultScript+resource);
+			if (ctx != null && !ctx.toString().contains(resource)) {
+				TemplateManager.addResourceRequest(wikiContext,
+						KnowWERessourceLoader.RESOURCE_SCRIPT,
+						KnowWERessourceLoader.defaultScript + resource);
+			} else if (ctx == null) {
+				TemplateManager.addResourceRequest(wikiContext,
+						KnowWERessourceLoader.RESOURCE_SCRIPT,
+						KnowWERessourceLoader.defaultScript + resource);
 			}
 		}
-		
-		loader.addFirst("general.css", KnowWERessourceLoader.RESOURCE_STYLESHEET);
-		
+
+		loader.addFirst("general.css",
+				KnowWERessourceLoader.RESOURCE_STYLESHEET);
+
 		LinkedList<String> css = loader.getStylesheetIncludes();
 		for (String resource : css) {
-			if( ctx != null && !ctx.toString().contains( resource )) {
-			    TemplateManager.addResourceRequest(wikiContext, KnowWERessourceLoader.RESOURCE_STYLESHEET, KnowWERessourceLoader.defaultStylesheet+resource);
-			} else if( ctx == null ) {
-				TemplateManager.addResourceRequest(wikiContext, KnowWERessourceLoader.RESOURCE_STYLESHEET, KnowWERessourceLoader.defaultStylesheet+resource);
+			if (ctx != null && !ctx.toString().contains(resource)) {
+				TemplateManager.addResourceRequest(wikiContext,
+						KnowWERessourceLoader.RESOURCE_STYLESHEET,
+						KnowWERessourceLoader.defaultStylesheet + resource);
+			} else if (ctx == null) {
+				TemplateManager.addResourceRequest(wikiContext,
+						KnowWERessourceLoader.RESOURCE_STYLESHEET,
+						KnowWERessourceLoader.defaultStylesheet + resource);
 			}
-		}	
+		}
 	}
 
 }
