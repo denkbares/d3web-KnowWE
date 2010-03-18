@@ -79,6 +79,17 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="GroovySparqlRenderer">
+		<parameter id="class"
+			value="de.d3web.we.kdom.sparql.groovy.GroovySparqlRenderer" />
+		<parameter id="name" value="GroovySparqlRenderer" />
+		<parameter id="description" value="KnowWEObjectType GroovySparqlRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="Sparql">
 		<parameter id="class"
 			value="de.d3web.we.kdom.sparql.Sparql" />
