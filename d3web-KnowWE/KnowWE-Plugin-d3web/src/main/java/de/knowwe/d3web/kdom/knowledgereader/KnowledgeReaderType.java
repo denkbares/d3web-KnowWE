@@ -16,22 +16,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.knowwe.d3web;
+package de.knowwe.d3web.kdom.knowledgereader;
 
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-
-public class PluginConfigType extends DefaultMarkupType {
+/**
+ * Type to read knowledge with plugged KnowledgeReaders
+ *
+ * @author Markus Friedrich (denkbares GmbH)
+ */
+public class KnowledgeReaderType extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
 
 	static {
-		MARKUP = new DefaultMarkup("plugin-config");
+		MARKUP = new DefaultMarkup("Parse-Knowledge");
+		MARKUP.addAnnotation("KnowledgeReader", true);
 	}
 	
-	public PluginConfigType() {
+	public KnowledgeReaderType() {
 		super(MARKUP);
-		this.addReviseSubtreeHandler(new PluginConfigReviseSubtreeHandler());
+		this.addReviseSubtreeHandler(new KnowledgeReaderReviseSubtreeHandler());
 	}
+	
+	
 
 }

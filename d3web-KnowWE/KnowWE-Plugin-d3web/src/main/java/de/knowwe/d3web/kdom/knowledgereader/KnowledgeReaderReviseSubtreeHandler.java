@@ -16,15 +16,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.knowwe.d3web;
+package de.knowwe.d3web.kdom.knowledgereader;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tools.ant.filters.StringInputStream;
 
+import de.d3web.core.io.KnowledgeReader;
+import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.plugin.io.PluginConfigPersistenceHandler;
+import de.d3web.plugin.Extension;
+import de.d3web.plugin.PluginManager;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -32,22 +37,41 @@ import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-
-public class PluginConfigReviseSubtreeHandler implements ReviseSubTreeHandler {
+/**
+ * ReviseSubtreehandler for KnowledgeReaderType
+ *
+ * @author Markus Friedrich (denkbares GmbH)
+ */
+public class KnowledgeReaderReviseSubtreeHandler implements ReviseSubTreeHandler {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-		String xmlText = "<settings><plugins /><psmethods>"+s.getOriginalText()+"</psmethods></settings>";
 		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s).getKnowledgeBase();
+		String readerID = DefaultMarkupType.getAnnotation(s, "KnowledgeReader");
+		String toRead = DefaultMarkupType.getContent(s);
+		Extension[] allextensions = PluginManager.getInstance().getExtensions(PersistenceManager.EXTENDED_PLUGIN_ID, PersistenceManager.EXTENDED_POINT_READER);
+		List<Extension> extensions = new ArrayList();
+		for (Extension e: allextensions) {
+			if (e.getID().equals(readerID)) {
+				extensions.add(e);
+			}
+		}
+		if (extensions.size()==0) {
+			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, "KnowledgeReader "+readerID+ " not found.", null, -1, null));
+			return null;
+		} else if (extensions.size()>1) {
+			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, "KnowledgeReaderID "+readerID+ " is not unique.", null, -1, null));
+			return null;
+		}
+		KnowledgeReader reader = (KnowledgeReader) extensions.get(0).getSingleton();
 		try {
-			new PluginConfigPersistenceHandler().read(kb, new StringInputStream(xmlText), new DummyProgressListener());
+			reader.read(kb, new StringInputStream(toRead), new DummyProgressListener());
 		}
 		catch (IOException e1) {
 			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, e1.getMessage(), null, -1, null));
 			return null;
 		}
-		
 		return null;
 	}
 
