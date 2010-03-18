@@ -78,7 +78,6 @@
 		<module>KnowWE-Plugin-Comment</module>
 		<module>KnowWE-Plugin-Calendar</module>
 		<module>KnowWE-Plugin-HermesModule</module>
-		<module>KnowWE-Plugin-SparqlTemplates-jpf-plugin</module>
 		<module>KnowWE-Plugin-Flowchart</module>
 		<module>KnowWE-Plugin-Refactoring</module>
 		<module>KnowWE-ExtensionPoints</module>
