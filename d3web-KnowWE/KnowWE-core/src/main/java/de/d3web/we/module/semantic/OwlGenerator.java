@@ -21,9 +21,10 @@
 package de.d3web.we.module.semantic;
 
 import de.d3web.we.kdom.KnowWEObjectType;
+
 import de.d3web.we.kdom.Section;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-
+@Deprecated
 public interface OwlGenerator {
 
 	public <T extends KnowWEObjectType> IntermediateOwlObject getOwl(Section<T> s);

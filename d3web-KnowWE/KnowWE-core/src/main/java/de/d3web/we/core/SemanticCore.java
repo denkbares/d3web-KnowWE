@@ -55,6 +55,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.visitor.OWLBuilderVisitor;
 import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.module.semantic.owl.PropertyManager;
@@ -253,6 +254,7 @@ public class SemanticCore {
 	 * @param topic
 	 * @param art
 	 */
+	@Deprecated
 	public void update(String topic, KnowWEArticle art) {
 		RepositoryConnection con = uo.getConnection();
 
@@ -297,6 +299,54 @@ public class SemanticCore {
 		}
 
 	}
+	/**
+	 * adds Statements to the repository
+	 * 
+	 * @param inputio the output of the section
+	 * @param sec source section
+ 	 */
+	public void addStatements(IntermediateOwlObject inputio,Section sec) {
+		RepositoryConnection con = uo.getConnection();
+
+		try {			
+			clearContext(sec);
+			con.setAutoCommit(false);
+			List<Statement> allStatements = inputio.getAllStatements();
+			statementcache.put(sec.getId().hashCode()+"", allStatements);
+			Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+					"updating " + sec.getId() + "  " + allStatements.size());
+			for (Statement current : allStatements) {
+				if (current != null) {
+					if (current.getObject() == null) {
+						Logger.getLogger(this.getClass().getName()).log(
+								Level.SEVERE,
+								"invalid object: null at " + current.toString()
+										+ " in section:" + sec.getId());
+					} else if (current.getPredicate() == null) {
+						Logger.getLogger(this.getClass().getName()).log(
+								Level.SEVERE,
+								"invalid predicate: null at "
+										+ current.toString() + " in section:"
+										+ sec.getId());
+					} else if (current.getSubject() == null) {
+						Logger.getLogger(this.getClass().getName()).log(
+								Level.SEVERE,
+								"invalid subject: null at "
+										+ current.toString() + " in section:"
+										+ sec.getId());
+					} else {
+						con.add(current);
+					}
+				}
+			}
+			con.commit();
+		} catch (RepositoryException e) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					e.getMessage());
+		}
+
+	}
+
 
 	public BNode getContext(String name) {
 		BNode context = contextmap.get(name);
@@ -420,7 +470,11 @@ public class SemanticCore {
 			clearContext(filename.toLowerCase());
 		}
 	}
-
+	/**
+	 * removes all statements produced by a specific topic
+	 * @param topic
+	 */
+	@Deprecated
 	public void clearContext(String topic) {
 		if (statementcache.containsKey(topic)) {
 			RepositoryConnection con = uo.getConnection();
@@ -434,6 +488,26 @@ public class SemanticCore {
 			statementcache.remove(topic);
 		}
 	}
+	
+	/**
+	 * removes all statements produced by a specific section
+	 * @param sec
+	 */
+	public void clearContext(Section sec) {
+		String key=sec.getId().hashCode()+"";
+		if (statementcache.containsKey(key)) {
+			RepositoryConnection con = uo.getConnection();
+
+			try {
+				con.remove(statementcache.get(key));
+			} catch (RepositoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			statementcache.remove(key);
+		}
+	}
+
 
 	public String getSparqlNamespaceShorts() {
 		StringBuffer buffy = new StringBuffer();
