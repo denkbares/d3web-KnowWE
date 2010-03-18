@@ -112,8 +112,10 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 	 */
 	private XCLModel findModel(String solution, Collection<KnowledgeSlice> slices) {
 		for (KnowledgeSlice s : slices) {
-			if (((XCLModel)s).getSolution().getText().equals(solution))
-				return (XCLModel)s;
+			if (s instanceof XCLModel) {
+				if (((XCLModel)s).getSolution().getText().equals(solution))
+					return (XCLModel)s;
+			}
 		}
 		return null;
 	}

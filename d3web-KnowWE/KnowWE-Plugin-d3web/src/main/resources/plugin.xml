@@ -537,4 +537,34 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="AdminPanelHandler">
+		<parameter id="class"
+			value="de.d3web.we.taghandler.AdminPanelHandler" />
+		<parameter id="name" value="AdminPanelHandler" />
+		<parameter id="description" value="TagHandler AdminPanelHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="DialogLinkTagHandler">
+		<parameter id="class"
+			value="de.d3web.we.taghandler.DialogLinkTagHandler" />
+		<parameter id="name" value="DialogLinkTagHandler" />
+		<parameter id="description" value="TagHandler DialogLinkTagHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="KnowledgeBasesGeneratorHandler">
+		<parameter id="class"
+			value="de.d3web.we.taghandler.KnowledgeBasesGeneratorHandler" />
+		<parameter id="name" value="KnowledgeBasesGeneratorHandler" />
+		<parameter id="description" value="TagHandler KnowledgeBasesGeneratorHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
 </plugin>

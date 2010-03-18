@@ -20,10 +20,8 @@
 
 package de.d3web.we.core;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -54,15 +52,6 @@ import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
-import de.d3web.we.taghandler.FactSheet;
-import de.d3web.we.taghandler.ImportKnOfficeHandler;
-import de.d3web.we.taghandler.KDOMRenderer;
-import de.d3web.we.taghandler.KnowWEObjectTypeBrowserHandler;
-import de.d3web.we.taghandler.KnowWETypeActivationHandler;
-import de.d3web.we.taghandler.OwlDownloadHandler;
-import de.d3web.we.taghandler.ParseAllButton;
-import de.d3web.we.taghandler.RenamingTagHandler;
-import de.d3web.we.taghandler.StatsHandler;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWEObjectTypeSet;
@@ -359,7 +348,6 @@ public class KnowWEEnvironment {
 			// adding TaggingMangler as SearchProvider to KnowWE-MultiSearch
 			MultiSearchEngine.getInstance().addProvider(TaggingMangler.getInstance());
 
-			initDefaultTagHandlers();
 			// loadData(context);
 			initWikiSolutionsPage();
 			SemanticCore.getInstance(this); /// init lazy instance
@@ -393,100 +381,6 @@ public class KnowWEEnvironment {
 	private void writeNewSolutionsPage() {
 		getWikiConnector().createWikiPage("WikiSolutions",
 				"[{KnowWEPlugin WikiSolutions}]", "engine");
-	}
-
-	/**
-	 * Initializes the default taghandlers. Add your new taghandler in
-	 * taghandler.txt .. they'll get loaded (if they're in the classpath)
-	 */
-	private void initDefaultTagHandlers() {
-		// TagHandler adminHandler = new AdminPanelHandler();
-		// this.knowWEDefaultTagHandlers.put(adminHandler.getTagName(),
-		// adminHandler);
-
-		TagHandler renamingHandler = new RenamingTagHandler();
-		this.tagHandlers.put(renamingHandler.getTagName(), renamingHandler);
-
-		// TagHandler dialogLinkTagHandler = new DialogLinkTagHandler();
-		// this.knowWEDefaultTagHandlers.put(dialogLinkTagHandler.getTagName(),
-		// dialogLinkTagHandler);
-
-		TagHandler renderKDOM = new KDOMRenderer();
-		this.tagHandlers.put(renderKDOM.getTagName(), renderKDOM);
-
-		TagHandler factsheet = new FactSheet();
-		this.tagHandlers.put(factsheet.getTagName(), factsheet);
-
-		TagHandler stats = new StatsHandler();
-		this.tagHandlers.put(stats.getTagName(), stats);
-
-		// TagHandler kbGenerator = new KnowledgeBasesGeneratorHandler();
-		// this.knowWEDefaultTagHandlers
-		// .put(kbGenerator.getTagName(), kbGenerator);
-
-		TagHandler knoffice = new ImportKnOfficeHandler();
-		this.tagHandlers.put(knoffice.getTagName(), knoffice);
-
-		TagHandler knowWeObjectTypeHandler = new KnowWETypeActivationHandler();
-		this.tagHandlers.put(knowWeObjectTypeHandler.getTagName(),
-				knowWeObjectTypeHandler);
-
-		TagHandler knowWEObjectTypeBrowserHandler = new KnowWEObjectTypeBrowserHandler();
-		this.tagHandlers.put(knowWEObjectTypeBrowserHandler.getTagName(),
-				knowWEObjectTypeBrowserHandler);
-
-		TagHandler owlDownloadHandler = new OwlDownloadHandler();
-		this.tagHandlers.put(owlDownloadHandler.getTagName(),
-				owlDownloadHandler);
-
-		TagHandler parseButton = new ParseAllButton();
-		this.tagHandlers.put(parseButton.getTagName(), parseButton);
-
-		// read ModuleNames from taghandler.txt:
-		ArrayList<String> handlerStrings = new ArrayList<String>();
-
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(
-					knowweExtensionPath + File.separator + "taghandler.txt"));
-			String line = null;
-			while ((line = in.readLine()) != null) {
-				// eliminate ending whitespaces
-				line = line.trim();
-				if (!line.isEmpty() && !line.startsWith("//")) {
-					handlerStrings.add(line);
-				}
-			}
-			in.close();
-		}
-		catch (IOException e) {
-			Logger.getLogger(this.getClass().getName()).warning(
-					"Could not find taghandler.txt!");
-			// e.printStackTrace();
-		}
-
-		// each of these String try to find and init the Module
-		for (String handlerName : handlerStrings) {
-			try {
-				ClassLoader classLoader = Thread.currentThread()
-						.getContextClassLoader();
-				TagHandler newhandler = (TagHandler) Class.forName(handlerName,
-						true, classLoader).newInstance();
-				this.tagHandlers.put(newhandler.getTagName(), newhandler);
-			}
-			catch (IllegalAccessException e) {
-				Logger.getLogger(this.getClass().getName()).warning(
-						"Module " + handlerName
-						+ " cannot be instantiated - Illegal Access");
-			}
-			catch (InstantiationException e) {
-				Logger.getLogger(this.getClass().getName()).warning(
-						"Module " + handlerName + " cannot be instantiated");
-			}
-			catch (ClassNotFoundException e) {
-				Logger.getLogger(this.getClass().getName()).warning(
-						"Module Class for " + handlerName + " not found");
-			}
-		}
 	}
 
 	/**

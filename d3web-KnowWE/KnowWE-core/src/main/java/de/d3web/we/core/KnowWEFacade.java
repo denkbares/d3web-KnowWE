@@ -22,17 +22,14 @@ package de.d3web.we.core;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 
 import de.d3web.we.action.Action;
 import de.d3web.we.action.ActionContext;
-import de.d3web.we.upload.UploadManager;
 import de.knowwe.plugin.Plugins;
 
 
@@ -203,11 +200,7 @@ public class KnowWEFacade {
 		return KnowWEEnvironment.getInstance().getNodeData(web, topic, nodeID);
 	}
 
-	public String uploadFiles(Collection<FileItem> fileItems) {
-		return UploadManager.getInstance().manageUpload(fileItems);
-	}
-
-
+	
 	/**
 	 * This returns a dump of the current Ontology
 	 * @return

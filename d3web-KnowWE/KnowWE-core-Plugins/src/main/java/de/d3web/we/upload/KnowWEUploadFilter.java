@@ -22,6 +22,7 @@ package de.d3web.we.upload;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -70,8 +71,7 @@ public class KnowWEUploadFilter implements Filter {
 					e.printStackTrace();
 				}
 
-				KnowWEFacade env = KnowWEFacade.getInstance();
-				String result = env.uploadFiles(items);
+				String result = uploadFiles(items);
 				if(result.startsWith("redirect:")) {
 					String url = result.substring("redirect:".length());
 					if(res instanceof HttpServletResponse) {
@@ -92,6 +92,10 @@ public class KnowWEUploadFilter implements Filter {
 	public void init(FilterConfig arg0) throws ServletException {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public static String uploadFiles(Collection<FileItem> fileItems) {
+		return UploadManager.getInstance().manageUpload(fileItems);
 	}
 
 }
