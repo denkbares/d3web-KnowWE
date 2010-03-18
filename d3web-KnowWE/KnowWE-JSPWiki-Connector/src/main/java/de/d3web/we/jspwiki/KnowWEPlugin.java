@@ -254,15 +254,16 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				return renderKDOM(content, userContext, supportArticle);
 			}
 		}
-		String leftMenuFooter = "LeftMenuFooter";
-		if (wikiContext.getRealPage().getName().equals(leftMenuFooter)) {
-			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
-			.getArticle(KnowWEEnvironment.DEFAULT_WEB, leftMenuFooter);
-			if(supportArticle != null
-				&& supportArticle.getSection().getOriginalText()
-						.equals(content)) {
-			return renderKDOM(content, userContext, supportArticle);
-		}}
+		// temporarily out-commented until tagging issues are fixed
+//		String leftMenuFooter = "LeftMenuFooter";
+//		if (wikiContext.getRealPage().getName().equals(leftMenuFooter)) {
+//			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
+//			.getArticle(KnowWEEnvironment.DEFAULT_WEB, leftMenuFooter);
+//			if(supportArticle != null
+//				&& supportArticle.getSection().getOriginalText()
+//						.equals(content)) {
+//			return renderKDOM(content, userContext, supportArticle);
+//		}}
 
 		
 		
