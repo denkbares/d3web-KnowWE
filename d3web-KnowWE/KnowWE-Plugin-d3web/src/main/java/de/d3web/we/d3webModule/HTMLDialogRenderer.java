@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -264,13 +265,9 @@ public class HTMLDialogRenderer {
 			Question q, String web, String namespace) {
 		String value = "";
 		if (q.hasValue(c)) {
-			List l = q.getValue(c);
-			if (l.size() > 0) {
-				Object o = l.get(0);
-				if (o instanceof AnswerNum) {
-					value = Double.toString((Double) ((AnswerNum) o)
-							.getValue(c));
-				}
+			Answer answer = q.getValue(c);
+			if (answer != null && answer instanceof AnswerNum) {
+				value = Double.toString((Double) ((AnswerNum) answer).getValue(c));
 			}
 		}
 		String id = "numInput_" + q.getId();
@@ -308,7 +305,7 @@ public class HTMLDialogRenderer {
 				    + "qid: '"+q.getId()+"'"
 					+ "}\" ";
 				
-			if (q.getValue(c).contains(answerChoice)) {
+			if (q.getValue(c).equals(answerChoice)) {
 				cssclass = "fieldcell answerTextActive";
 			}
 			String spanid = "span_" + q.getId() + "_" + answerChoice.getId();

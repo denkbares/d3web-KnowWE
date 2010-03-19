@@ -95,14 +95,16 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	private void createXCLRelation(XPSCase c, List<? extends Question> answeredQuestions, StringBuffer newXCL,
 			Diagnosis d){
 		for( Question q : answeredQuestions ){
-			List<?> answers = q.getValue( c );
-			for (Object o : answers) {
-				if( o instanceof Answer ){
-					Answer a = (Answer) o;
-
-					newXCL.append("\"" + q.getText() + "\" = \"" + a.getValue( c ) + "\",\n");
-				}
+			Answer theanswer = q.getValue( c );
+			if (theanswer != null) {
+				newXCL.append("\"" + q.getText() + "\" = \"" + theanswer.getValue( c ) + "\",\n");				
 			}
+//			for (Object o : answers) {
+//				if( o instanceof Answer ){
+//					Answer a = (Answer) o;
+//					newXCL.append("\"" + q.getText() + "\" = \"" + a.getValue( c ) + "\",\n");
+//				}
+//			}
 		}
 	}
 	

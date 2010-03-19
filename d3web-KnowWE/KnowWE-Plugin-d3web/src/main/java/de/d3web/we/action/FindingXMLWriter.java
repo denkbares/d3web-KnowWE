@@ -63,7 +63,7 @@ public class FindingXMLWriter {
 		}
 		if (theQuestion instanceof QuestionNum) {
 			if(theCase != null) {
-				AnswerNum answer = (AnswerNum) theQuestion.getValue(theCase).get(0);
+				AnswerNum answer = (AnswerNum) theQuestion.getValue(theCase);
 				if(answer != null) {
 					appendAnswer(theQuestion, sb, answer, theCase);
 				}
@@ -91,7 +91,7 @@ public class FindingXMLWriter {
 		} else {
 			sb.append(" type='AnswerChoice'");
 		} 
-		if(theCase != null && theQuestion.getValue(theCase).contains(theAnswer)) {
+		if(theCase != null && theQuestion.getValue(theCase).equals(theAnswer)) {
 			sb.append(" active='true'");
 		}
 		sb.append(">\n");

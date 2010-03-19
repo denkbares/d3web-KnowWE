@@ -85,11 +85,11 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 				
 				if(xpsCase != null) {
 					answerstring += " : ";
-					List<?> answers = question.getValue(xpsCase);
-					for (Object object : answers) {
-						answerstring += object.toString()+", ";
-					}
-					answerstring = answerstring.substring(0, answerstring.length()-2);
+					answerstring += question.getValue(xpsCase).toString();
+//					for (Object object : answers) {
+//						answerstring += object.toString()+", ";
+//					}
+//					answerstring = answerstring.substring(0, answerstring.length()-2);
 				}
 				
 				DCMarkup markup = new DCMarkup();

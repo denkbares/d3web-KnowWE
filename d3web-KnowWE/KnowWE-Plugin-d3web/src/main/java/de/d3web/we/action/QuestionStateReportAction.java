@@ -97,18 +97,20 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 			de.d3web.core.session.XPSCase case1 = d3kss.getXpsCase();
 			List<? extends Question> answeredQuestions = case1.getAnsweredQuestions();
 			if(answeredQuestions.contains(q)) {
-				List answers = q.getValue(case1);
+				Answer theanswer = q.getValue(case1);
 				result = "#"+q.getText()+":";
-				for (Object object : answers) {
-					
-					if(object instanceof Answer) {
-						result += ((Answer)object).toString() +";";
-					}else {
-						result += "no answer object";
-					}
-					
-				}
-				 
+				if (theanswer != null)
+					result += theanswer.toString()+";";
+				else
+					result += "no answer object";
+//				for (Object object : answers) {
+//					
+//					if(object instanceof Answer) {
+//						result += ((Answer)object).toString() +";";
+//					}else {
+//						result += "no answer object";
+//					}
+//				}
 			} else {
 				result = "undefined";
 			}

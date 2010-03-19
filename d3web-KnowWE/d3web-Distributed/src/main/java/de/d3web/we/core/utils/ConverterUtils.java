@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.values.AnswerDate;
@@ -51,6 +52,10 @@ public class ConverterUtils {
 		return result;
 	}
 
+	/**
+	 * Use: public static List<Object> toValueList(Answer givenValue, XPSCase theCase) 
+	 */
+	@Deprecated
 	public static List<Object> toValueList(List values, XPSCase theCase) {
 		List<Object> result = new ArrayList<Object>();
 		for (Object idObject : values) {
@@ -74,4 +79,23 @@ public class ConverterUtils {
 		return result;
 	}
 	
+	public static List<Object> toValueList(Answer givenValue, XPSCase theCase) {
+		List<Object> result = new ArrayList<Object>();
+		if (givenValue instanceof AnswerNum) {
+			Double value = (Double) ((AnswerNum) givenValue).getValue(theCase);
+			if (value != null) {
+				result.add(value);
+			}
+		} else if (givenValue instanceof AnswerDate) {
+			EvaluatableAnswerDateValue dateEval = (EvaluatableAnswerDateValue) ((AnswerDate) givenValue)
+					.getValue(theCase);
+			Date value = dateEval.eval(theCase);
+			if (value != null) {
+				result.add(value);
+			}
+		} else if (givenValue instanceof IDObject) {
+			result.add(((IDObject) givenValue).getId());
+		}
+		return result;
+	}
 }

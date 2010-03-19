@@ -266,17 +266,20 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 				}
 			}
 			cont.append("</td><td>");
-			List answers = cq.getValue(this.currentCase);
-			ListIterator iterator = answers.listIterator();
-			count = 0;
-			while(iterator.hasNext()){
-				if(count > 0){
-					cont.append("<br>");
-				}
-				Answer a = (Answer) iterator.next();
-				cont.append(a.getValue(this.currentCase));
-				count = count+1;
-			}
+			Answer theanswer = cq.getValue(this.currentCase);
+			cont.append(theanswer.getValue(this.currentCase));
+			
+//			ListIterator iterator = answers.listIterator();
+//			count = 0;
+//			while(iterator.hasNext()){
+//				if(count > 0){
+//					cont.append("<br>");
+//				}
+//				Answer a = (Answer) iterator.next();
+//				cont.append(a.getValue(this.currentCase));
+//				count = count+1;
+//			}
+			
 			cont.append("</td>");
 		
 			cont.append("<td class=emphasized>"

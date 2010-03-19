@@ -85,7 +85,7 @@ public class FindingHTMLWriter {
 						+ "}\" ");				
 
 				if (theCase != null
-						&& theQuestion.getValue(theCase).contains(theAnswer)) {		
+						&& theQuestion.getValue(theCase).equals(theAnswer)) {		
 					buffy.append(" checked=\"checked\" ");
 				}
 				buffy.append("class='semano_oc'");
@@ -102,7 +102,7 @@ public class FindingHTMLWriter {
 					+ "}\" ");
 
 			if (theCase != null
-					&& theQuestion.getValue(theCase).contains(theQuestion.getUnknownAlternative())) {		
+					&& theQuestion.getValue(theCase).equals(theQuestion.getUnknownAlternative())) {		
 				buffy.append(" checked=\"checked\" ");
 			}
 			buffy.append("class='semano_oc'");
@@ -127,8 +127,8 @@ public class FindingHTMLWriter {
 			+ KnowWEAttributes.WEB + ": '" + webname + "'," 
 			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";		
 		
-		if (theCase != null && theQuestion.getValue(theCase).size() > 0) {
-			AnswerNum answer = (AnswerNum) theQuestion.getValue(theCase).get(0);			
+		if (theCase != null && theQuestion.getValue(theCase) != null) {
+			AnswerNum answer = (AnswerNum) theQuestion.getValue(theCase);			
 			if (answer != null) {
 				String answerText = answer.verbalizeValue(theCase);
 						
@@ -202,7 +202,7 @@ public class FindingHTMLWriter {
 							+ "ValueIDS : '" + theAnswer.getId() + "'"
 							+ "}\" ");
 
-					if (theCase != null && theQuestion.getValue(theCase).contains(theAnswer)) {		
+					if (theCase != null && theQuestion.getValue(theCase).equals(theAnswer)) {		
 						buffy.append(" checked=\"checked\" ");
 					}
 					buffy.append(">");
