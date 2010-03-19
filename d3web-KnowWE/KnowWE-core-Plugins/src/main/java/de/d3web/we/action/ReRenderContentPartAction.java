@@ -29,6 +29,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction  {
@@ -64,7 +65,7 @@ public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction  {
 			} else {
 				DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
 			}
-			return b.toString();
+			return KnowWEUtils.unmaskHTML(b.toString());
 		}
 		return null;
 	}
