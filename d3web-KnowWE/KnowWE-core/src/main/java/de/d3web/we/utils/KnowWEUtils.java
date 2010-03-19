@@ -34,52 +34,91 @@ import de.d3web.we.kdom.store.SectionStore;
 
 public class KnowWEUtils {
 
-//	public static URL getKbUrl(String web,String id) {
-//		String varPath = getWebEnvironmentPath(web);
-//		varPath = varPath + id + ".jar";
-//		URL url = null;
-//		try {
-//			url = new File(varPath).toURI().toURL();
-//		} catch (MalformedURLException e) {
-//			Logger.getLogger(KnowWEUtils.class.getName()).warning("Cannot identify url for knowledgebase : " + e.getMessage());
-//		}
-//		return url;
-//	}
-	
-	public static void storeSectionInfo(String web, String article, String kdomid, String key, Object o) {
-		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().storeObject(article, kdomid, key, o);
+	// public static URL getKbUrl(String web,String id) {
+	// String varPath = getWebEnvironmentPath(web);
+	// varPath = varPath + id + ".jar";
+	// URL url = null;
+	// try {
+	// url = new File(varPath).toURI().toURL();
+	// } catch (MalformedURLException e) {
+	// Logger.getLogger(KnowWEUtils.class.getName()).warning("Cannot identify url for knowledgebase : "
+	// + e.getMessage());
+	// }
+	// return url;
+	// }
+
+	/**
+	 * Creates a wiki-markup-styled to the section. The created link navigates
+	 * the user to the article of the section. If the section is rendered with
+	 * an anchor (see method {@link #getAnchor(Section)}) the page is also
+	 * scrolled to the section.
+	 * <p>
+	 * Please not that the link will only work if it is put into "[" ... "]"
+	 * brackets and rendered through the wiki rendering pipeline.
+	 * 
+	 * @param section
+	 *            the section to create the link for
+	 * @return the created link
+	 */
+	public static String getLink(Section<?> section) {
+		return section.getTitle() + "#" + Math.abs(section.getId().hashCode());
 	}
-	
-	public static void storeSectionInfo(Section sec, String key, Object o) {
+
+	/**
+	 * Creates a unique anchor name for the section to link to. See method
+	 * {@link #getLink(Section)} for more details on how to use this method.
+	 * 
+	 * @param section
+	 *            the section to create the anchor for.
+	 * @return the unique anchor name
+	 */
+	public static String getAnchor(Section<?> section) {
+		// TODO: figure out how JSPWiki builds section anchor names
+		return "section-"
+				+ section.getArticle().getTitle().replace(' ', '+') + "-"
+				+ Math.abs(section.getId().hashCode());
+	}
+
+	public static void storeSectionInfo(String web, String article, String kdomid, String key, Object o) {
+		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().storeObject(
+				article, kdomid, key, o);
+	}
+
+	public static void storeSectionInfo(Section<?> sec, String key, Object o) {
 		storeSectionInfo(sec.getWeb(), sec.getTitle(), sec.getId(), key, o);
 	}
-	
+
 	public static void putSectionStore(String web, String article, String kdomid, SectionStore store) {
-		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().putSectionStore(article, kdomid, store);
+		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().putSectionStore(
+				article, kdomid, store);
 	}
-	
+
 	public static Object getStoredObject(String web, String article, String kdomid, String key) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObject(article, kdomid, key);
+		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObject(
+				article, kdomid, key);
 	}
-	
-	public static Object getStoredObject(Section s , String key) {
+
+	public static Object getStoredObject(Section<?> s, String key) {
 		return getStoredObject(s.getWeb(), s.getTitle(), s.getId(), key);
 	}
-	
+
 	public static Object getLastStoredObject(String web, String article, String kdomid, String key) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getLastStoredObject(article, kdomid, key);
+		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getLastStoredObject(
+				article, kdomid, key);
 	}
-	
+
 	public static SectionStore getSectionStore(String web, String article, String kdomid) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObjects(article, kdomid);
+		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObjects(
+				article, kdomid);
 	}
-	
+
 	public static SectionStore getLastSectionStore(String web, String article, String kdomid) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getLastStoredObjects(article, kdomid);
+		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getLastStoredObjects(
+				article, kdomid);
 	}
-	
+
 	public static String convertUmlaut(String text) {
-		if(text == null) return null;
+		if (text == null) return null;
 		String result = text;
 		result = result.replaceAll("Ä", "&Auml;");
 		result = result.replaceAll("Ö", "&Ouml;");
@@ -90,7 +129,7 @@ public class KnowWEUtils {
 		result = result.replaceAll("ß", "&szlig;");
 		return result;
 	}
-	
+
 	/**
 	 * returns whether a text contains nothing except spaces and newlines
 	 * 
@@ -98,43 +137,41 @@ public class KnowWEUtils {
 	 * @return
 	 */
 	public static boolean isEmpty(String text) {
-		if(text == null) return true;
-		if(text.length() == 0) return true;
+		if (text == null) return true;
+		if (text.length() == 0) return true;
 		text = text.replaceAll("\r", "");
 		text = text.replaceAll("\n", "");
 		text = text.replaceAll(" ", "");
-		
-		if(text.length() == 0) return true;
-		
-		return false;
-		
-	}
-	
-//	public static String getVariablePath(ServletContext context, String realPath) {
-//		String varPath = context.getRealPath("");
-//		varPath = varPath.replace('\\', '/');
-//		realPath = realPath.replaceAll(varPath, "\\$webapp_path\\$");
-//		return realPath;
-//	}
 
-	
-	
-	
-//public static String repairUmlauts(String s) {
-//		// then replace special characters
-//		s = s.replaceAll("&szlig;","ß");
-//		s = s.replaceAll("&auml;","ä");
-//		s = s.replaceAll("&uuml;","ü");
-//		s = s.replaceAll("&ouml;","ö");
-//		s = s.replaceAll("&Auml;","Ä");
-//		s = s.replaceAll("&Uuml;","Ü");
-//		s = s.replaceAll("&Ouml;","Ö");
-//		s = s.replaceAll("&deg;","°");
-//		s = s.replaceAll("&micro;","µ");
-//		s = s.replaceAll("&apos;", "'");
-//		return(s);
-//	}
-	
+		if (text.length() == 0) return true;
+
+		return false;
+
+	}
+
+	// public static String getVariablePath(ServletContext context, String
+	// realPath) {
+	// String varPath = context.getRealPath("");
+	// varPath = varPath.replace('\\', '/');
+	// realPath = realPath.replaceAll(varPath, "\\$webapp_path\\$");
+	// return realPath;
+	// }
+
+	// public static String repairUmlauts(String s) {
+	// // then replace special characters
+	// s = s.replaceAll("&szlig;","ß");
+	// s = s.replaceAll("&auml;","ä");
+	// s = s.replaceAll("&uuml;","ü");
+	// s = s.replaceAll("&ouml;","ö");
+	// s = s.replaceAll("&Auml;","Ä");
+	// s = s.replaceAll("&Uuml;","Ü");
+	// s = s.replaceAll("&Ouml;","Ö");
+	// s = s.replaceAll("&deg;","°");
+	// s = s.replaceAll("&micro;","µ");
+	// s = s.replaceAll("&apos;", "'");
+	// return(s);
+	// }
+
 	/**
 	 * 
 	 * Unmasks output strings
@@ -164,8 +201,8 @@ public class KnowWEUtils {
 				KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE, "}");
 		return htmlContent;
 	}
-	
-	public static String unmaskNewline (String htmlContent) {
+
+	public static String unmaskNewline(String htmlContent) {
 		htmlContent = htmlContent.replace(KnowWEEnvironment.NEWLINE, "\n");
 		return htmlContent;
 	}
@@ -193,18 +230,18 @@ public class KnowWEUtils {
 				KnowWEEnvironment.HTML_BRACKET_OPEN);
 		htmlContent = htmlContent.replace("]",
 				KnowWEEnvironment.HTML_BRACKET_CLOSE);
-		htmlContent = htmlContent.replace("{", 
+		htmlContent = htmlContent.replace("{",
 				KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN);
-		htmlContent = htmlContent.replace("}", 
+		htmlContent = htmlContent.replace("}",
 				KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE);
 		return htmlContent;
 	}
-	
-	public static String maskNewline (String htmlContent) {
+
+	public static String maskNewline(String htmlContent) {
 		htmlContent = htmlContent.replace("\n", KnowWEEnvironment.NEWLINE);
 		return htmlContent;
 	}
-	
+
 	public static String replaceUmlaut(String text) {
 		String result = text;
 		result = result.replaceAll("Ä", "AE");
@@ -216,26 +253,32 @@ public class KnowWEUtils {
 		result = result.replaceAll("ß", "ss");
 		return result;
 	}
-	
-	//	public static Broker getBroker(Model model) {
-//		int i;
-//		String web = (String)  BasicUtils.getModelAttribute(model, KnowWEAttributes.WEB, String.class, true);
-//		Broker broker = (Broker) BasicUtils.getModelAttribute(model, KnowWEAttributes.getBrokerConstant(web), Broker.class, true);
-//		if(broker == null) {
-//			DPSEnvironment env = KnowWEUtils.getEnvironment(model);
-//			String userID = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.USER, String.class, true);
-//			if(userID == null || userID.equals(DPSEnvironment.defaultUser) || userID.trim().equals("")) {
-//				broker = env.createBroker(userID);
-//				model.setAttribute(KnowWEAttributes.getBrokerConstant(web), broker, model.getWebApp());
-//			} else {
-//				broker = env.getBroker(userID);
-//				model.setAttribute(KnowWEAttributes.getBrokerConstant(web), broker, model.getWebApp());
-//			}
-//		}
-//		return broker;
-//	}
-//	
-	
+
+	// public static Broker getBroker(Model model) {
+	// int i;
+	// String web = (String) BasicUtils.getModelAttribute(model,
+	// KnowWEAttributes.WEB, String.class, true);
+	// Broker broker = (Broker) BasicUtils.getModelAttribute(model,
+	// KnowWEAttributes.getBrokerConstant(web), Broker.class, true);
+	// if(broker == null) {
+	// DPSEnvironment env = KnowWEUtils.getEnvironment(model);
+	// String userID = (String) BasicUtils.getModelAttribute(model,
+	// KnowWEAttributes.USER, String.class, true);
+	// if(userID == null || userID.equals(DPSEnvironment.defaultUser) ||
+	// userID.trim().equals("")) {
+	// broker = env.createBroker(userID);
+	// model.setAttribute(KnowWEAttributes.getBrokerConstant(web), broker,
+	// model.getWebApp());
+	// } else {
+	// broker = env.getBroker(userID);
+	// model.setAttribute(KnowWEAttributes.getBrokerConstant(web), broker,
+	// model.getWebApp());
+	// }
+	// }
+	// return broker;
+	// }
+	//
+
 	public static String getRealPath(ServletContext context, String varPath) {
 		if (varPath.indexOf("$webapp_path$") != -1) {
 			String realPath = context.getRealPath("");
@@ -247,18 +290,19 @@ public class KnowWEUtils {
 		}
 		return varPath;
 	}
-	
-//	public static String getSessionPath(String user, String web) {
-//		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-//		String sessionDir = rb.getString("knowwe.config.path.sessions");
-//		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
-//		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
-//
-//		sessionDir = getRealPath(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), sessionDir);
-//		return sessionDir;
-//	}
-	
-	
+
+	// public static String getSessionPath(String user, String web) {
+	// ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
+	// String sessionDir = rb.getString("knowwe.config.path.sessions");
+	// sessionDir = sessionDir.replaceAll("\\$web\\$", web);
+	// sessionDir = sessionDir.replaceAll("\\$user\\$", user);
+	//
+	// sessionDir =
+	// getRealPath(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(),
+	// sessionDir);
+	// return sessionDir;
+	// }
+
 	public static String getSessionPath(KnowWEParameterMap parameterMap) {
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
@@ -270,19 +314,20 @@ public class KnowWEUtils {
 		sessionDir = getRealPath(parameterMap.getContext(), sessionDir);
 		return sessionDir;
 	}
-	
+
 	public static String getRenderedInput(String questionid, String question,
 			String namespace, String userName, String title, String text,
 			String type) {
 		question = URLEncoder.encode(question);
 		// text=URLEncoder.encode(text);
-		
-		String rendering = "<span class=\"semLink\" " 
-			+ "rel=\"{type: '"+type+"', objectID: '"+questionid+"', termName: '"+text+"', user:'"+userName+"'}\">"
-         	+ text + "</span>";
+
+		String rendering = "<span class=\"semLink\" "
+				+ "rel=\"{type: '" + type + "', objectID: '" + questionid
+				+ "', termName: '" + text + "', user:'" + userName + "'}\">"
+				+ text + "</span>";
 		return rendering;
 	}
-	
+
 	public static String getErrorQ404(String question, String text) {
 		String rendering = "<span class=\"semLink\"><a href=\"#\" title=\""
 				+ "Question not found:"
@@ -293,10 +338,12 @@ public class KnowWEUtils {
 		return rendering;
 
 	}
-	
+
 	/**
 	 * Escapes the given string for safely using user-input in web sites.
-	 * @param text Text to escape
+	 * 
+	 * @param text
+	 *            Text to escape
 	 * @return Sanitized text
 	 */
 	public static String html_escape(String text) {
@@ -304,41 +351,45 @@ public class KnowWEUtils {
 			return null;
 
 		return text.replaceAll("&", "&amp;").
-					replaceAll("\"", "&quot;").
-					replaceAll("<", "&lt;").
-					replaceAll(">", "&gt;");
+				replaceAll("\"", "&quot;").
+				replaceAll("<", "&lt;").
+				replaceAll(">", "&gt;");
 	}
-	
+
 	/**
 	 * Performs URL encoding on the sting
+	 * 
 	 * @param text
 	 * @return URLencoded string
 	 */
 	public static String urlencode(String text) {
 		try {
 			return URLEncoder.encode(text, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 			return URLEncoder.encode(text);
 		}
 	}
-	
-//	public static String getWebEnvironmentPath(String web) {
-//		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
-//		String sessionDir = rb.getString("knowwe.config.path.currentWeb");
-//		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
-//		sessionDir = getRealPath(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), sessionDir);
-//		return sessionDir;
-//	}
 
-//	public static URL getUrl(String path) {
-//		URL u = null;
-//		try {
-//			u = new File(path).toURI().toURL();
-//		} catch (MalformedURLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return u;
-//	}
-	
+	// public static String getWebEnvironmentPath(String web) {
+	// ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
+	// String sessionDir = rb.getString("knowwe.config.path.currentWeb");
+	// sessionDir = sessionDir.replaceAll("\\$web\\$", web);
+	// sessionDir =
+	// getRealPath(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(),
+	// sessionDir);
+	// return sessionDir;
+	// }
+
+	// public static URL getUrl(String path) {
+	// URL u = null;
+	// try {
+	// u = new File(path).toURI().toURL();
+	// } catch (MalformedURLException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// return u;
+	// }
+
 }

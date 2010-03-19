@@ -14,12 +14,22 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class DefaultMarkupRenderer extends KnowWEDomRenderer {
+public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> {
 	@Override
-	public void render(KnowWEArticle article, Section section, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
+
+		// render pre-formatted box
 		string.append("{{{\n");
+
+		// add an anchor to enable direct link to the section
+		String anchorName = KnowWEUtils.getAnchor(section);
+		string.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
+
+		// render messages and content
 		renderMessages(section, string);
 		DelegateRenderer.getInstance().render(article, section, user, string);
+		
+		// and close the box
 		string.append("}}}");
 	}
 

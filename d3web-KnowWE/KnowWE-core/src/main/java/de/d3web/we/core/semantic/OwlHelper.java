@@ -97,10 +97,10 @@ public class OwlHelper {
 		HASNODE = factory.createURI(basens, "hasNode");
 		HASORIGIN = factory.createURI(basens, "hasOrigin");
 	}
-	private HashMap<String, URI> comparatorcache;
+	private final HashMap<String, URI> comparatorcache;
 
 	private String localens;
-	private RepositoryConnection repositoryConn;
+	private final RepositoryConnection repositoryConn;
 
 	public OwlHelper(RepositoryConnection repositoryConn) {
 		this.repositoryConn = repositoryConn;
@@ -195,7 +195,6 @@ public class OwlHelper {
 	}
 
 	public Literal createLiteral(String text) {
-		text = beautify(text);
 		return repositoryConn.getValueFactory().createLiteral(text);
 	}
 

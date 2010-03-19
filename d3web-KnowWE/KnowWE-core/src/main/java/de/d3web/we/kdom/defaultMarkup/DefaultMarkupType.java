@@ -6,26 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.BNode;
-import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.vocabulary.RDFS;
-import org.openrdf.repository.RepositoryException;
-
 import de.d3web.report.Message;
-import de.d3web.we.core.SemanticCore;
-import de.d3web.we.core.semantic.IntermediateOwlObject;
-import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -135,11 +119,11 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 		}
 		this.childrenTypes.add(new UnknownAnnotationType());
 		this.addReviseSubtreeHandler(new DefaultMarkupSubtreeHandler(markup));
-		this.addReviseSubtreeHandler(new DefaultMarkupTypeSubTreeHandler());
+		this.addReviseSubtreeHandler(new DefaultMarkupOwlHandler(this));
 	}
 
 	@Override
-	protected KnowWEDomRenderer getDefaultRenderer() {
+	protected KnowWEDomRenderer<?> getDefaultRenderer() {
 		return new DefaultMarkupRenderer();
 	}
 
@@ -153,68 +137,6 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 		return this.markup;
 	}
 
-	private class DefaultMarkupTypeSubTreeHandler implements ReviseSubTreeHandler{
-
-		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			KDOMReportMessage msg=null;
-			IntermediateOwlObject io = new IntermediateOwlObject(); 
-			/*
-			 * ich geh jetzt einfach mal davon aus, dass deine Basisklasse f"ur die
-			 * objekttypes DefaultMarkup heisst und im standardknowwenamespace
-			 * liegen soll. instanzen davon sind wiki-spezifische sachen und landen
-			 * daher im lokalen namespace
-			 */
-			OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
-			// spezielle MarkupKlasse die jetzt gebaut werden soll: TestMarkup
-			URI parentMarkup = helper.createURI("DefaultMarkup"); 
-			try {
-				// create new class for this markup
-				URI thisMarkup = helper.createlocalURI(getMarkup().getName());
-				io.addStatement(helper.createStatement(
-						thisMarkup, 
-						RDFS.SUBCLASSOF, 
-						parentMarkup));
-				
-				// um nun eine konkreter instanz von testmarkup zu bauen:
-				// TODO: create node with section-id instead of blank node
-				BNode bnode = SemanticCore.getInstance().getUpper().getVf().createBNode();
-				io.addStatement(helper.createStatement(bnode, RDF.TYPE, thisMarkup));
-
-				// add content block as literal
-				String text = getContent(s);
-				if (text == null) text = "";
-				Literal content = helper.createLiteral(text);
-				io.addStatement(helper.createStatement(
-						bnode, helper.createlocalURI("hasContent"), content));
-				
-				for (Annotation annotation : getMarkup().getAnnotations()) {
-					String name = annotation.getName();
-					text = getAnnotation(s, name);
-					if (text == null) text = "";
-					content = helper.createLiteral(text);
-					io.addStatement(helper.createStatement(
-							bnode, helper.createlocalURI("has"+name), content));
-				}
-			} 
-			catch (RepositoryException e) {
-				msg = new SimpleMessageError(e.getMessage());				
-			}
-
-			SemanticCore.getInstance().addStatements(io, s);
-			return msg;
-
-		}
-		
-	}
-
-	
-	public ArrayList<String> getAllDefaultMarkups(){
-		String query="SELECT ?x WHERE { ?x rdf.type ?y . ?y rdfs:subClassOf ns:DefaultMarkup }";
-		return SemanticCore.getInstance().simpleQueryToList(query, "x");
-	}
-
-	
 	/**
 	 * Returns the contents of the default content block of the specified
 	 * section. If the section is not of type "DefaultMarkup" an
