@@ -57,6 +57,7 @@ import org.openrdf.rio.RDFFormat;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.PropertyManager;
 import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
@@ -246,21 +247,22 @@ public class SemanticCore {
 		return uo;
 	}
 
-
 	/**
 	 * adds Statements to the repository
 	 * 
-	 * @param inputio the output of the section
-	 * @param sec source section
- 	 */
-	public void addStatements(IntermediateOwlObject inputio,Section sec) {
-		RepositoryConnection con = uo.getConnection();
+	 * @param inputio
+	 *            the output of the section
+	 * @param sec
+	 *            source section
+	 */
+	public void addStatements(IntermediateOwlObject inputio, Section sec) {
 
-		try {			
+		RepositoryConnection con = uo.getConnection();
+		try {
 			clearContext(sec);
 			con.setAutoCommit(false);
 			List<Statement> allStatements = inputio.getAllStatements();
-			statementcache.put(sec.getId().hashCode()+"", allStatements);
+			statementcache.put(sec.getId().hashCode() + "", allStatements);
 			Logger.getLogger(this.getClass().getName()).log(Level.INFO,
 					"updating " + sec.getId() + "  " + allStatements.size());
 			for (Statement current : allStatements) {
@@ -294,7 +296,6 @@ public class SemanticCore {
 		}
 
 	}
-
 
 	public BNode getContext(String name) {
 		BNode context = contextmap.get(name);
@@ -343,11 +344,35 @@ public class SemanticCore {
 	}
 
 	/**
+	 * collects a list of statements of a specific topic and returns it
+	 * 
 	 * @param topic
 	 * @return
 	 */
 	public List<Statement> getTopicStatements(String topic) {
-		return statementcache.get(topic);
+		Section<? extends KnowWEObjectType> rootsection = KnowWEEnvironment.getInstance().getArticle(
+				KnowWEEnvironment.DEFAULT_WEB, topic).getSection();
+		return getSectionStatements(rootsection);
+	}
+
+	/**
+	 * recursivley collects all statements saved for a section. stops as soon as
+	 * it has found a node with statements
+	 * 
+	 * @return List of statements.
+	 */
+	public List<Statement> getSectionStatements(
+			Section<? extends KnowWEObjectType> s) {
+		List<Statement> allstatements = new ArrayList<Statement>();
+		if (statementcache.containsKey(s.getId().hashCode() + "")) {
+			List<Section<? extends KnowWEObjectType>> l = s.getChildren();
+			for (Section<? extends KnowWEObjectType> current : l) {
+				allstatements.addAll(getSectionStatements(current));
+			}
+			return allstatements;
+		} else {
+			return statementcache.get(s.getId().hashCode() + "");
+		}
 
 	}
 
@@ -389,8 +414,9 @@ public class SemanticCore {
 	 * @return
 	 */
 	public File[] getImportList() {
-		String p=knowWEEnvironment.getWikiConnector().getSavePath();
-		String inpath = (p!=null)?p:(knowWEEnvironment.getKnowWEExtensionPath()
+		String p = knowWEEnvironment.getWikiConnector().getSavePath();
+		String inpath = (p != null) ? p : (knowWEEnvironment
+				.getKnowWEExtensionPath()
 				+ File.separatorChar + "owlincludes");
 		File includes = new File(inpath);
 		if (includes.exists()) {
@@ -408,8 +434,9 @@ public class SemanticCore {
 	 * @param filename
 	 */
 	public void removeFile(String filename) {
-		String p=knowWEEnvironment.getWikiConnector().getSavePath();
-		String inpath = (p!=null)?p:(knowWEEnvironment.getKnowWEExtensionPath()
+		String p = knowWEEnvironment.getWikiConnector().getSavePath();
+		String inpath = (p != null) ? p : (knowWEEnvironment
+				.getKnowWEExtensionPath()
 				+ File.separatorChar + "owlincludes");
 		File includes = new File(inpath);
 		File file = new File(includes, filename);
@@ -418,8 +445,10 @@ public class SemanticCore {
 			clearContext(filename.toLowerCase());
 		}
 	}
+
 	/**
 	 * removes all statements produced by a specific topic
+	 * 
 	 * @param topic
 	 */
 	@Deprecated
@@ -436,13 +465,14 @@ public class SemanticCore {
 			statementcache.remove(topic);
 		}
 	}
-	
+
 	/**
 	 * removes all statements produced by a specific section
+	 * 
 	 * @param sec
 	 */
 	public void clearContext(Section sec) {
-		String key=sec.getId().hashCode()+"";
+		String key = sec.getId().hashCode() + "";
 		if (statementcache.containsKey(key)) {
 			RepositoryConnection con = uo.getConnection();
 
@@ -455,7 +485,6 @@ public class SemanticCore {
 			statementcache.remove(key);
 		}
 	}
-
 
 	public String getSparqlNamespaceShorts() {
 		StringBuffer buffy = new StringBuffer();
@@ -554,26 +583,27 @@ public class SemanticCore {
 	}
 
 	public String expandNamespace(String ns) {
-		for(Entry<String,String> cur:namespaces.entrySet()){
-			if (ns.equals(cur.getKey())){
-				ns=cur.getValue();
+		for (Entry<String, String> cur : namespaces.entrySet()) {
+			if (ns.equals(cur.getKey())) {
+				ns = cur.getValue();
 				break;
 			}
 		}
 		return ns;
 	}
-	
+
 	/**
 	 * reduces any namespace to its shortcut
+	 * 
 	 * @param s
 	 * @return
 	 */
 	public String reduceNamespace(String s) {
-		for(Entry<String,String> cur:namespaces.entrySet()){
-			s=s.replaceAll(cur.getValue(),cur.getKey()+":");
+		for (Entry<String, String> cur : namespaces.entrySet()) {
+			s = s.replaceAll(cur.getValue(), cur.getKey() + ":");
 		}
-		for(Entry<String,String> cur:defaultnamespaces.entrySet()){
-			s=s.replaceAll(cur.getValue(),cur.getKey()+":");
+		for (Entry<String, String> cur : defaultnamespaces.entrySet()) {
+			s = s.replaceAll(cur.getValue(), cur.getKey() + ":");
 		}
 
 		return s;
