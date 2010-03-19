@@ -267,7 +267,7 @@ public class SemanticCore {
 			con.setAutoCommit(false);
 			List<Statement> allStatements = inputio.getAllStatements();
 			statementcache.put(sec.getId().hashCode() + "", allStatements);
-			Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+			Logger.getLogger(this.getClass().getName()).log(Level.FINER,
 					"updating " + sec.getId() + "  " + allStatements.size());
 			addStaticStatements(inputio);
 		}
