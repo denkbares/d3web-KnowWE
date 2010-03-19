@@ -318,7 +318,7 @@ public class SemanticCore {
 					}
 				}
 			}
-			con.commit();
+			//con.commit();
 		}
 		catch (RepositoryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,

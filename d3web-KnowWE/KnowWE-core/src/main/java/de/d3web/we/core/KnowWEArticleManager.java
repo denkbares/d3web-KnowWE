@@ -29,6 +29,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openrdf.repository.RepositoryException;
+
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.include.Include;
@@ -222,7 +224,7 @@ public class KnowWEArticleManager {
 	 */
 	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle art) {
 		// store new article
-		articleMap.put(art.getTitle(), art);		
+		articleMap.put(art.getTitle(), art);				
 		long startTime = System.currentTimeMillis();
 		
 		Logger.getLogger(this.getClass().getName())
@@ -240,6 +242,13 @@ public class KnowWEArticleManager {
 			.log(Level.INFO,"<<==== Finished building article '" + art.getTitle() + "' in " + web + " in " 
 				+ (System.currentTimeMillis() - art.getStartTime()) + "ms <<====");
 		
+		//commit all changes to the triplestore the article updating has produced.
+		try {
+			SemanticCore.getInstance().getUpper().getConnection().commit();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return art.getReport();
 	}
 	
