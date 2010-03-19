@@ -1,4 +1,4 @@
-%%QuestionTree 
+%%QuestionTree
 "LS: Andere Schmerzen"
 - "Bereich" [oc]
 -- Kopf
