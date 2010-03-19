@@ -102,7 +102,7 @@ public class RefactoringManager {
 			throw new RuntimeException("RefactoringArticleManager.replaceKDOMNodeWithoutSave: Article " + articleName + " could not be found.");
 		}
 		Section<KnowWEArticle> root = art.getSection();
-		replaceNodeTextSetLeaf(root, nodeID, text);
+		root.setOriginalTextSetLeaf(nodeID, text);
 	}
 	
 	// saves the article to a consistent state
@@ -112,40 +112,12 @@ public class RefactoringManager {
 		
 		KnowWEArticle newArticle = art;
 		if (refactoringWebManager.getArticle(articleName) != null) {
-			collectTextsFromLeaves(refactoringWebManager.getArticle(articleName).getSection(), newArticleText);
+			refactoringWebManager.getArticle(articleName).getSection().collectTextsFromLeaves(newArticleText, false);
 			newArticle = new KnowWEArticle(newArticleText.toString(), articleName, art.getRootType(), REFACTORING_WEB);
 		}
 		refactoringWebManager.saveUpdatedArticle(newArticle);
 	}
 	
-	private void replaceNodeTextSetLeaf(Section<?> sec, String nodeID, String replacingText) {
-		if (sec.getId().equals(nodeID)) {
-			sec.getFather().setOriginalTextSetLeaf(nodeID, replacingText);			
-			return;
-		}
-		List<Section<?>> children = sec.getChildren();
-		if (children == null || children.isEmpty() || sec.getObjectType().getClass() == Include.class) {
-			return;
-		}
-		for (Section<?> section : children) {
-			replaceNodeTextSetLeaf(section, nodeID, replacingText);
-		}
-	}
-	
-	private void collectTextsFromLeaves(Section<?> section, StringBuilder buffi) {
-		if (section.getChildren() != null && section.getChildren().size() > 0
-				&& !(section.getObjectType().getClass() == Include.class)) {
-			for (Section<?> s : section.getChildren()) {
-				collectTextsFromLeaves(s, buffi);
-			}
-		} else {
-			if (section.getObjectType().getClass() == Include.class) {
-				System.out.println( "include tag complete text: " + section.getOriginalText());
-			}
-			buffi.append(section.getOriginalText());
-		}
-	}
-
 	public Section<? extends KnowWEObjectType> findCachedQuestionToAnswer(Section<? extends KnowWEObjectType> answer) {
 		return findNode(answer
 		.findAncestorOfExactType(SubTree.class).findAncestorOfExactType(SubTree.class)

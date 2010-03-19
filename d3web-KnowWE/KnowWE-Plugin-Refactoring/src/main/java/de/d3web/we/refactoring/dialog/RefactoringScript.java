@@ -28,6 +28,7 @@ import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.CommentLineType;
+import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.SubTree;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
@@ -49,7 +50,10 @@ import de.d3web.we.kdom.rules.RulesSectionContent;
 import de.d3web.we.kdom.table.attributes.AttributeTableSection;
 import de.d3web.we.kdom.xcl.CoveringListContent;
 import de.d3web.we.kdom.xcl.CoveringListSection;
+import de.d3web.we.kdom.xcl.XCLBody;
 import de.d3web.we.kdom.xcl.XCList;
+import de.d3web.we.kdom.xcl.XCListBodyEndSymbol;
+import de.d3web.we.kdom.xcl.XCListBodyStartSymbol;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.refactoring.management.RefactoringManager;
 
@@ -65,7 +69,7 @@ public abstract class RefactoringScript {
 	private WikiEngine we(){
 		return refactoringSession.we;
 	}
-	
+
 	public RefactoringScript() {
 		Set<Class<? extends KnowWEObjectType>> kms = new HashSet<Class<? extends KnowWEObjectType>>();
 		kms.add(RulesSection.class);
@@ -77,15 +81,15 @@ public abstract class RefactoringScript {
 		kms.add(QuestionnairesSection.class);
 		KNOWLEDGE_MAIN_SECTIONS = Collections.unmodifiableCollection(kms);
 	}
-	
+
 	public void setSession(RefactoringSession refactoringSession) {
 		this.refactoringSession = refactoringSession;
 	}
-	
+
 	private void performNextAction(DeprecatedAbstractKnowWEAction a) {
 		refactoringSession.performNextAction(a);
 	}
-	
+
 	public abstract void run();
 
 	public Section<?> findXCList() {
@@ -104,7 +108,7 @@ public abstract class RefactoringScript {
 					List<Section<XCList>> xclists = new ArrayList<Section<XCList>>();
 					articleSection.findSuccessorsOfType(XCList.class, xclists);
 					for (Section<?> xclist : xclists) {
-						html.append("<option value='" + xclist.getId() + "'>Seite: " + article.getTitle() + " - XCList: " 
+						html.append("<option value='" + xclist.getId() + "'>Seite: " + article.getTitle() + " - XCList: "
 								+ xclist.findSuccessor(SolutionID.class).getOriginalText() + "</option>");
 					}
 				}
@@ -165,7 +169,7 @@ public abstract class RefactoringScript {
 						String question = (clazz == QuestionTreeAnswerID.class)
 							? " - Frage: " + findDashTreeFather(object, QuestionID.class).getOriginalText()
 							: "";
-						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
+						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: "
 								+ name + "</option>");
 					}
 				}
@@ -200,7 +204,7 @@ public abstract class RefactoringScript {
 						String question = (clazz == QuestionTreeAnswerID.class)
 							? " - Frage: " + findDashTreeFather(object, QuestionID.class).getOriginalText()
 							: "";
-						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: " 
+						html.append("<option value='" + object.getId() + "'>Seite: " + article.getTitle() + question + " - Objekt: "
 								+ name + "</option>");
 					}
 				}
@@ -258,9 +262,25 @@ public abstract class RefactoringScript {
 		return findCoveringListContent(refManager().getArticle(articleID).getSection());
 	}
 
+	public List<Section<CoveringListContent>> findCoveringListContents(String[] articleIDs) {
+		List<Section<CoveringListContent>> list = new LinkedList<Section<CoveringListContent>>();
+		for(String articleID: articleIDs){
+			list.add(findCoveringListContent(articleID));
+		}
+		return list;
+	}
+
 	public List<Section<XCList>> findXCLs(Section<CoveringListContent> content) {
 		List<Section<XCList>> list = new LinkedList<Section<XCList>>();
 		content.findSuccessorsOfType(XCList.class, list);
+		return list;
+	}
+
+	public List<Section<XCList>> findXCLs(List<Section<CoveringListContent>> contents) {
+		List<Section<XCList>> list = new LinkedList<Section<XCList>>();
+		for(Section<CoveringListContent> content: contents) {
+			list.addAll(findXCLs(content));
+		}
 		return list;
 	}
 
@@ -271,15 +291,91 @@ public abstract class RefactoringScript {
 			for(String finding: map.get(s)) {
 				sb.append("\t" + finding + ",\n");
 			}
-			sb.append("}");
+			sb.append("}\n");
 		}
 		replaceSection(section, sb.toString());
 	}
 
+	/*
+	für alle lösungen:
+	    - nimm erste xcl
+	    - hänge den content aller anderen xcls der selben lösung rein
+	    - hinterlasse für jede verschobene xcl einen kommentar in der ursprünglichen setcoveringlist-section
+	      und im neuen xcl
+	alle artikel neu speichern.
+	*/
+	/* nächste Schritte:
+	merge alle equals-findings
+	Refactoring schreiben, welches widersprüchliche Findings verodert
+	*/
+	public void setMergedCoveringListContents(Map<String,List<Section<XCList>>> map) {
+		for(String solution: map.keySet()) {
+			boolean first = true;
+			Section<?> xclBodyTarget = null;
+			Section<?> endSymbol = null;
+			for(Section<XCList> xcl: map.get(solution)) {
+				if (first) {
+					xclBodyTarget = xcl.findChildOfType(XCLBody.class);
+					endSymbol = xclBodyTarget.findChildOfType(XCListBodyEndSymbol.class);
+					xclBodyTarget.removeChild(endSymbol);
+					first = false;
+				} else {
+				    // hänge den content aller anderen xcls der selben lösung rein
+					List<Section<? extends KnowWEObjectType>> content = xcl.findChildOfType(XCLBody.class)
+						.getChildrenExceptExactType(new Class<?>[] {XCListBodyStartSymbol.class, XCListBodyEndSymbol.class});
+					if(xcl.getArticle() != xclBodyTarget.getArticle()) {
+					    // hinterlasse für jene verschobene xcl einen kommentar in der ursprünglichen setcoveringlist-section
+					    // und im neuen xcl, die von einer anderen Wiki-Seite kommen
+						xcl.setOriginalText("\n// moved XCL for Solution " + solution + " into Wikipage " + xclBodyTarget.getArticle().getTitle() + ".\n");
+						String targetComment = "\n// integrated XCL for this solution from Wikipage " + xcl.getArticle().getTitle() + ".\n";
+						Section.createTypedSection(targetComment, new CommentLineType(),
+								xclBodyTarget, 0, xclBodyTarget.getArticle(), null, false, null, null);
+
+					} else {
+						xcl.setOriginalText("");
+					}
+					xcl.removeAllChildren();
+					for(Section<?> move: content) {
+						move.setFather(xclBodyTarget);
+						xclBodyTarget.addChild(move);
+					}
+
+				}
+
+			}
+			xclBodyTarget.addChild(endSymbol);
+
+		}
+	}
+
+	public void integrateMergedFindings(Section<? extends XCList> xcl, Map<String, Set<String>> map) {
+		Section<? extends XCLBody> xclBody = xcl.findChildOfType(XCLBody.class);
+		Section<? extends XCListBodyEndSymbol> endSymbol = xclBody.findChildOfType(XCListBodyEndSymbol.class);
+		xclBody.removeChild(endSymbol);
+
+		for(String question: map.keySet()) {
+			StringBuffer sb = new StringBuffer("");
+			Set<String> answers = map.get(question);
+			Iterator<String> iterator = answers.iterator();
+			while(iterator.hasNext()) {
+				String answer = iterator.next();
+				sb.append(question + " = " + answer);
+				if (iterator.hasNext()) {
+					sb.append("\n\tOR ");
+				}
+			}
+			sb.append(",\n");
+			Section.createTypedSection(sb.toString(), new CommentLineType(),
+					xclBody, 0, xclBody.getArticle(), null, false, null, null);
+		}
+		xclBody.addChild(endSymbol);
+	}
+
+
 	public Section<RulesSectionContent> findRulesSectionContent(Section<?> knowledgeSection) {
 		// FIXME temporärer hack reloaded
 		KnowWEArticle article = refManager().getArticle(knowledgeSection.getArticle().getTitle());
-		
+
 		Section<RulesSectionContent> rulesSectionContent = article.getSection().findSuccessor(RulesSectionContent.class);
 		if (rulesSectionContent == null) {
 			Section<? extends KnowWEObjectType> anc = knowledgeSection.findAncestorOfExactType(KNOWLEDGE_MAIN_SECTIONS);
@@ -291,8 +387,8 @@ public abstract class RefactoringScript {
 			}
 			StringBuilder newArticleText = new StringBuilder(anc.getOriginalText());
 			// Artikel wird gespeichert um an die RulesSection ranzukommen
-			refManager().replaceKDOMNode(anc.getArticle().getTitle(), anc.getId(), newArticleText.append("\r\n<Rules-section>\r\n" + 
-					"\r\n" + 
+			refManager().replaceKDOMNode(anc.getArticle().getTitle(), anc.getId(), newArticleText.append("\r\n<Rules-section>\r\n" +
+					"\r\n" +
 					"</Rules-section>\r\n").toString());
 			Section<RulesSectionContent> rulesSectionContentNew = refManager().getArticle(article.getTitle())
 				.getSection().findSuccessor(RulesSectionContent.class);
@@ -305,7 +401,7 @@ public abstract class RefactoringScript {
 		// FIXME temporärer hack reloaded
 		//FIXME getCached statt get
 		KnowWEArticle article = refManager().getCachedArticle(knowledgeSection.getArticle().getTitle());
-		
+
 		Section<CoveringListContent> coveringListContent = article.getSection().findSuccessor(CoveringListContent.class);
 		if (coveringListContent == null) {
 			Section<? extends KnowWEObjectType> anc = knowledgeSection.findAncestorOfExactType(KNOWLEDGE_MAIN_SECTIONS);
@@ -317,8 +413,8 @@ public abstract class RefactoringScript {
 			}
 			StringBuilder newArticleText = new StringBuilder(anc.getOriginalText());
 			// Artikel wird gespeichert um an die CoveringListSection ranzukommen
-			refManager().replaceKDOMNode(anc.getArticle().getTitle(), anc.getId(), newArticleText.append("\r\n<SetCoveringList-section>\r\n" + 
-					"\r\n" + 
+			refManager().replaceKDOMNode(anc.getArticle().getTitle(), anc.getId(), newArticleText.append("\r\n<SetCoveringList-section>\r\n" +
+					"\r\n" +
 					"</SetCoveringList-section>\r\n").toString());
 			Section<CoveringListContent> coveringListContentNew = refManager().getArticle(article.getTitle())
 				.getSection().findSuccessor(CoveringListContent.class);
@@ -362,6 +458,10 @@ public abstract class RefactoringScript {
 			clazz = QuestionTreeAnswerID.class;
 		} else if(clazzString.equals("SolutionID")) {
 			clazz = SolutionID.class;
+		} else if(clazzString.equals("FindingAnswer")) {
+			clazz = FindingAnswer.class;
+		} else if(clazzString.equals("FindingQuestion")) {
+			clazz = FindingQuestion.class;
 		}
 		return clazz;
 	}
@@ -382,12 +482,12 @@ public abstract class RefactoringScript {
 		List<Section<? extends KnowWEObjectType>> filteredList = new ArrayList<Section<? extends KnowWEObjectType>>();
 		if (clazz == QuestionTreeAnswerID.class) {
 			Section<QuestionID> question = findDashTreeFather(refManager().findNode(objectID), QuestionID.class);
-	
+
 			// TODO: diesen kommentar anpassen :-)/ hole alle FindingQuestion's welche den gleichen getOriginalText() haben wie die Question, zu welcher die QuestionTreeAnswerID
 			// gehört
 			List<Section<? extends KnowWEObjectType>> questions = findRenamingList(QuestionID.class, question.getId());
 			// bestimme dafür die passenden Antworten
-			for (Section<? extends KnowWEObjectType> questionSection : questions){ 
+			for (Section<? extends KnowWEObjectType> questionSection : questions){
 				if (questionSection.get().getClass() == FindingQuestion.class) {
 						Section<? extends KnowWEObjectType> answer = questionSection.getFather().findSuccessor(FindingAnswer.class);
 						fullList.add(answer);
@@ -395,7 +495,7 @@ public abstract class RefactoringScript {
 				if (questionSection.get().getClass() == QuestionID.class) {
 					List<Section<QuestionTreeAnswerID>> answers = getAnswersForQuestion(questionSection);
 					fullList.addAll(answers);
-					
+
 					if(questionSection.getFather().get().getClass() == SetValueLine.class) {
 						fullList.add(questionSection.getFather().findChildOfType(AnonymousType.class));
 					}
@@ -503,13 +603,21 @@ public abstract class RefactoringScript {
 		return returnList;
 	}
 
+	public List<Section<QuestionID>> findSolutions(String value, String[] pageNames) {
+		List<Section<QuestionID>> returnList = new LinkedList<Section<QuestionID>>();
+		for(String pageName: pageNames) {
+			returnList.addAll(findSolutions(value, pageName));
+		}
+		return returnList;
+	}
+
 	public void createXCLFromFindingsTrace(Section<QuestionID> solution) {
 		Section<QuestionTreeAnswerID> answer = findDashTreeFather(solution, QuestionTreeAnswerID.class);
 		Section<QuestionID> question = findDashTreeFather(answer, QuestionID.class);
 		StringBuffer sb = new StringBuffer();
 		sb.append("\n" + solution.getOriginalText() +"{\n");
 		traceFindings(sb, question, answer);
-		sb.append("}");
+		sb.append("}\n");
 		Section<CoveringListContent> covCon = findCoveringListContent(solution);
 		replaceSection(covCon, covCon.getOriginalText() + sb.toString());
 	}
@@ -526,7 +634,7 @@ public abstract class RefactoringScript {
 	public void deleteSolutionOccurrences(Section<QuestionID> solution) {
 		// FIXME temporärer hack reloaded
 		KnowWEArticle article = refManager().getArticle(solution.getArticle().getTitle());
-		
+
 		List<Section<QuestionID>> list = new LinkedList<Section<QuestionID>>();
 		article.getSection().findSuccessorsOfType(QuestionID.class, list);
 		for(Section<QuestionID> sqid: list) {
@@ -535,23 +643,8 @@ public abstract class RefactoringScript {
 			}
 		}
 	}
-	
-	private boolean textContentEquals(String t1, String t2) {
-		while(t1.startsWith("\"") && t1.endsWith("\"")) {
-			t1 = t1.substring(1, t1.length()-1);
-		}
-		while(t2.startsWith("\"") && t2.endsWith("\"")) {
-			t2 = t2.substring(1, t2.length()-1);
-		}
-		return t1.equals(t2);
-	}
-	
-	public void saveArticles(String[] objectIDs) {
-		for(String id: objectIDs) {
-			refManager().saveUpdatedArticle(refManager().getCachedArticle(id));
-		}
-	}
-	
+
+
 	// löscht die Solutions von allen Seiten, nicht nur von der, auf der die Solution gefunden wurde
 	public void deleteSolutionOccurrences(Section<QuestionID> solution, String[] objectIDs) {
 //		// FIXME temporärer hack reloaded
@@ -562,10 +655,27 @@ public abstract class RefactoringScript {
 			List<Section<QuestionID>> list = new LinkedList<Section<QuestionID>>();
 			article.getSection().findSuccessorsOfType(QuestionID.class, list);
 			for(Section<QuestionID> sqid: list) {
-				if (sqid.getOriginalText().equals(solution.getOriginalText())) {
+				if (textContentEquals(sqid.getOriginalText(),solution.getOriginalText())) {
 					replaceSection(sqid.findAncestorOfExactType(SubTree.class).findChildOfType(DashTreeElement.class), "");
 				}
 			}
+		}
+	}
+
+	private boolean textContentEquals(String t1, String t2) {
+		while(t1.startsWith("\"") && t1.endsWith("\"")) {
+			t1 = t1.substring(1, t1.length()-1);
+		}
+		while(t2.startsWith("\"") && t2.endsWith("\"")) {
+			t2 = t2.substring(1, t2.length()-1);
+		}
+		boolean b = t1.equals(t2);
+		return b;
+	}
+
+	public void saveArticles(String[] objectIDs) {
+		for(String id: objectIDs) {
+			refManager().saveUpdatedArticle(refManager().getCachedArticle(id));
 		}
 	}
 
@@ -582,22 +692,22 @@ public abstract class RefactoringScript {
 		Section<?> section = refManager().findNode(objectID);
 		Section<QuestionsSection> qs = section.findSuccessor(QuestionsSection.class);
 		Section<QuestionsSectionContent> qsc = qs.findSuccessor(QuestionsSectionContent.class);
-		replaceSection(qs,"\n%%QuestionTree\n" + qsc.getOriginalText() + "\n%\n"); 
+		replaceSection(qs,"\n%%QuestionTree\n" + qsc.getOriginalText() + "\n%\n");
 	}
 
 	public void transformToQuestionsSection(String objectID) {
 		Section<?> section = refManager().findNode(objectID);
 		Section<QuestionTreeRootType> qtrt = section.findSuccessor(QuestionTreeRootType.class);
 		Section<ContentType> ct = qtrt.findSuccessor(ContentType.class);
-		replaceSection(qtrt,"\n<Questions-section>\n" + ct.getOriginalText() + "\n</Questions-section>\n"); 
+		replaceSection(qtrt,"\n<Questions-section>\n" + ct.getOriginalText() + "\n</Questions-section>\n");
 	}
 
 	private void replaceSection(Section<?> section, String newText) {
-		KnowWEArticle article = section.getArticle(); 
+		KnowWEArticle article = section.getArticle();
 		String topic = article.getTitle();
 		refManager().replaceKDOMNodeWithoutSave(topic, section.getId(), newText);
 	}
-	
+
 	//TODO Demo, wie man statt mit Policy Dateien Rechte von Groovy-Skripten einschränken kann.
 	//FIXME: vor der Abgabe der Diplomarbeit sollten alle Methoden darauf umgestellt werden.
 	public String systemGetPropertyName() {
@@ -624,7 +734,7 @@ public abstract class RefactoringScript {
 					List<Section<QuestionID>> questions = new ArrayList<Section<QuestionID>>();
 					articleSection.findSuccessorsOfType(QuestionID.class, questions);
 					for (Section<?> question : questions) {
-						html.append("<option value='" + question.getId() + "'>Seite: " + article.getTitle() + " - Question: " 
+						html.append("<option value='" + question.getId() + "'>Seite: " + article.getTitle() + " - Question: "
 								+ question.findSuccessor(QuestionID.class).getOriginalText() + "</option>");
 					}
 				}
@@ -638,13 +748,13 @@ public abstract class RefactoringScript {
 					get("selectQuestionID")[0]);
 		return knowledge;
 	}
-	
+
 	public List<Section<QuestionTreeAnswerID>> findAnswers(Section<? extends KnowWEObjectType> question) {
 		// FIXME temporärer hack reloaded
 //		KnowWEArticle article = refManager().getArticle(question.getArticle().getTitle());
-		
+
 		List<Section<QuestionTreeAnswerID>> answers = getAnswersForQuestion(question);
-		
+
 		return answers;
 	}
 	private List<Section<QuestionTreeAnswerID>> getAnswersForQuestion(Section<? extends KnowWEObjectType> questionSection) {
@@ -652,7 +762,7 @@ public abstract class RefactoringScript {
 		questionSection.findAncestorOfExactType(SubTree.class).findSuccessorsOfType(QuestionTreeAnswerID.class, 5 , answers);
 		return answers;
 	}
-	
+
 	public List<Section<? extends KnowWEObjectType>> selectAnswersToMerge(final List<Section<? extends KnowWEObjectType>> answers) {
 		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
@@ -679,7 +789,7 @@ public abstract class RefactoringScript {
 		}
 		return answersToMerge;
 	}
-	
+
 	public Section<? extends KnowWEObjectType> selectReplacingAnswer(final List<Section<? extends KnowWEObjectType>> answers) {
 		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override
@@ -700,7 +810,7 @@ public abstract class RefactoringScript {
 		});
 		return refManager().findNode(gsonFormMap().get("selectReplacingAnswer")[0]);
 	}
-	
+
 //	public void replaceAnswer(Section<? extends KnowWEObjectType> answer, Section<? extends KnowWEObjectType> replacement) {
 //		{
 //			//FIXME hack answer -> getQuestion -> getID -> refManager.getQuestionByID -> findAnswer
@@ -720,11 +830,11 @@ public abstract class RefactoringScript {
 //				}
 //			}
 //		}
-//		
+//
 //		List<Section<? extends KnowWEObjectType>> renamingList = findRenamingList(QuestionTreeAnswerID.class, answer.getId());
-//		
+//
 //		for(Section<? extends KnowWEObjectType> element: renamingList) {
-//			
+//
 //			{
 //				//FIXME hack answer -> getQuestion -> getID -> refManager.getQuestionByID -> findAnswer
 //				Section<? extends KnowWEObjectType> question = refManager().findCachedQuestionToAnswer(answer);
@@ -743,16 +853,16 @@ public abstract class RefactoringScript {
 //					}
 //				}
 //			}
-//			
+//
 //			if (element.get().getClass() == FindingAnswer.class) {
 //				renameElement(element, replacement.getOriginalText(), QuestionTreeAnswerID.class);
-//				
+//
 //				//FIXME temporärer hack reloaded
 //				refManager().saveUpdatedArticle(element.getArticle());
 //				element = refManager().findNode(element.getId());
-//				
+//
 //				Section<? extends KnowWEObjectType> ruleCond = element.findAncestor(RuleCondition.class);
-//				List<Section<FindingAnswer>> findingAnswers = new ArrayList<Section<FindingAnswer>>(); 
+//				List<Section<FindingAnswer>> findingAnswers = new ArrayList<Section<FindingAnswer>>();
 //				ruleCond.findSuccessorsOfType(FindingAnswer.class, findingAnswers);
 //				for(Section<FindingAnswer> fa: findingAnswers) {
 //					if (fa != element && fa.getOriginalText().equals(element.getOriginalText())) {
@@ -763,7 +873,7 @@ public abstract class RefactoringScript {
 //						}
 //					}
 //				}
-//				
+//
 //			} else
 //			if (element.get().getClass() == QuestionTreeAnswerID.class && !answer.getOriginalText().equals(replacement.getOriginalText())){
 //				// hole von answer den unterbaum und verschiebe ihn zu dem unterbaum von replacement
@@ -773,15 +883,15 @@ public abstract class RefactoringScript {
 //				Section<? extends KnowWEObjectType> replacementParentSubTree = replacement.findAncestor(SubTree.class);
 //				replaceSection(replacementParentSubTree, replacementParentSubTree.getOriginalText() + subTreeToShift);
 //				replaceSection(answerParentSubTree, "");
-//				refManager().saveUpdatedArticle(replacementParentSubTree.getArticle());  
-//			} 
+//				refManager().saveUpdatedArticle(replacementParentSubTree.getArticle());
+//			}
 //		}
 //	}
-	
+
 	public void replaceAnswers(List<Section<? extends KnowWEObjectType>> answers, Section<? extends KnowWEObjectType> replacement) {
 		answers.remove(replacement);
 		for (Section<? extends KnowWEObjectType> answer: answers) {
-			
+
 			List<Section<? extends KnowWEObjectType>> renamingList = findRenamingList(QuestionTreeAnswerID.class, answer.getId());
 			for (Section<? extends KnowWEObjectType> element : renamingList) {
 				if (element.get().getClass() == QuestionTreeAnswerID.class) {
@@ -804,7 +914,7 @@ public abstract class RefactoringScript {
 		}
 		//refManager().saveUpdatedArticle(replacementParentSubTree.getArticle());
 	}
-	
+
 	private String askUser(final String originalText) {
 		performNextAction(new DeprecatedAbstractKnowWEAction() {
 			@Override

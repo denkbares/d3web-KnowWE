@@ -36,6 +36,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
+import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.condition.FindingToConditionBuilder;
 import de.d3web.we.kdom.condition.NegatedFinding;
@@ -57,6 +58,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 	@Override
 	protected void init() {
 		this.childrenTypes.add(new XCList());
+		this.childrenTypes.add(new CommentLineType());
 		subtreeHandler.add(new CoveringListContentSubTreeHandler());
 		this.setCustomRenderer(new EditSectionRenderer());
 	}
