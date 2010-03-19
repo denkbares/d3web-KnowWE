@@ -83,7 +83,7 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 				
 				String answerstring = "";
 				
-				if(xpsCase != null) {
+				if(xpsCase != null && question.getValue(xpsCase) != null) {
 					answerstring += " : ";
 					answerstring += question.getValue(xpsCase).toString();
 //					for (Object object : answers) {
