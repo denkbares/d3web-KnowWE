@@ -20,65 +20,136 @@
 
 package de.d3web.we.selenium.tests;
 
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * Selenium Test Class for checking the functionality of QuickEdit
+ * @author Max Diez
+ *
+ */
 public class QuickEditTest extends KnowWETestCase{
 	
+	final String divID = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.TableID");
+	final String divLocator = "//div[@id='" + divID + "']";
+	
 	public void testQuickTableEditing() {
-		
-		final String divID = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.TableID");
-		final String divLocator = "//div[@id='" + divID + "']";
-		
+			
 		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Quick-Edit-Test");
 		assertTrue(selenium.getTitle().contains("KnowWE: Quick-Edit-Test"));
 		
-		//If another session opened Quick-Edit-Mode close it
+		//If another session opened Quick-Edit-Mode -> close it
 		if (selenium.isElementPresent(divID + "_cancel")) {
 			doSelActionAndWait(divID + "_cancel", "click");
 		}
 		
+		//Saves the page-content before the test starts (for comparison)
 		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
 		final String oldPageContent = selenium.getText("//textarea[@id='editorarea']");
 		loadAndWait("//input[@name='ok']");
 
-		
-		final String oldCellValue = selenium.getText(divLocator + "//table/tbody/tr[4]/td[2]");
+		//Saves the changes with the old values to restore them 
+		//Warning! If one cell changed more than once: inconsistence possible
+		Map<String, String> oldCellValues = new HashMap<String, String>();
 		
 		doSelActionAndWait(divID +  "_pencil", "click");
 		verifyFalse(selenium.isElementPresent(divID + "_pencil"));
 		doSelActionAndWait(divID +  "_cancel", "click");
 		
-		//Test: Eingabe -> speichern
-		doSelActionAndWait(divID +  "_pencil", "click");
-		doSelActionAndWait(divLocator + "/table/tbody/tr[4]/td[2]/select", "select", "label=+");
-		doSelActionAndWait(divID +  "_accept", "click");
-		
+		//Test: Input -> saving
+		oldCellValues.putAll(doQuickEditTableChange("/table/tbody/tr[4]/td[2]/select", "+", true));
 		refreshAndWait();
-		assertEquals("Eingabe wurde nicht/nicht richtig uebernommen", "+", selenium.getText(divLocator + "//table/tbody/tr[4]/td[2]"));
+		assertEquals("Input wasn't/wasn't adopted the right way", "+", selenium.getText(divLocator + "//table/tbody/tr[4]/td[2]"));
 		
-		//Test: Eingabe -> nicht speichern
-		doSelActionAndWait(divID +  "_pencil", "click");
-		doSelActionAndWait(divLocator + "//table/tbody/tr[2]/td[4]/select", "select", "label=+");
-		doSelActionAndWait(divID +  "_cancel", "click");
 		
+		//Test: Input -> not saving
+		oldCellValues.putAll(doQuickEditTableChange("//table/tbody/tr[2]/td[4]/select", "+", false));
 		refreshAndWait();
-		assertEquals("Eingabe wurde uebernommen obwohl abgebrochen wurde", "hm", selenium.getText(divLocator + "//table/tbody/tr[2]/td[4]"));
+		assertEquals("Input was adopted although quickedit being canceled", "hm", selenium.getText(divLocator + "//table/tbody/tr[2]/td[4]"));
 		
-		//Geaenderten Wert zuruecksetzen -> Seiteninhalt sollte der gleiche wie Anfangs sein
-		doSelActionAndWait(divID +  "_pencil", "click");
-		doSelActionAndWait(divLocator + "//table/tbody/tr[4]/td[2]/select", "select", "label=" + oldCellValue);
-		doSelActionAndWait(divID +  "_accept", "click");
 		
+		//Test: More changes in one "session" and refresh:
+		Map<String, String> input = new HashMap<String, String>();
+		input.put("//table/tbody/tr[3]/td[2]/select", "0");
+		input.put("//table/tbody/tr[3]/td[3]/select", "0");
+		input.put("//table/tbody/tr[3]/td[4]/select", "0");
+		oldCellValues.putAll(doQuickEditTableChange(input, true, true));
+		for (int i = 2; i <= 4; i++) {
+			assertEquals("Changes at Cell 3," + i + " had no effect",
+					"0", selenium.getText(divLocator + "//table/tbody/tr[3]/td[" + i + "]"));
+		}
+		
+		
+		//Changed values reseted -> page-content should be the same as at the beginning
+		for (String key : oldCellValues.keySet()) {
+			doQuickEditTableChange(key, oldCellValues.get(key), true);
+		}
 		refreshAndWait();
-
 		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
 		final String newPageContent = selenium.getText("//textarea[@id='editorarea']");
 		loadAndWait("//input[@name='ok']");
-		assertEquals("Es sind unerwuenschte Aenderungen im Inhalt aufgetreten",
+		assertEquals("There were unexpected changes in the content of the page",
 				oldPageContent, newPageContent);
 		
 	}
-	
+
 	public void testQuickCoveringTableEditing() {
 		//TODO write test
 	}
+	
+	/**
+	 * This method simulates the using of quickedit: First the quickedit is
+	 * opened, then the select button is changed to a new value and at last
+	 * it is clicked on save or cancel.
+	 * @param tableCellLocator Locator of the select button in row x and
+	 * column y, normally in a form like //table/tbody/tr[x]/td[y]/select
+	 * @param newValue is chosen (has to be in the select's drop down list)
+	 * @param save whether changes should be saved or not
+	 * @return a pair of Strings packed in a map: the tableCellLocator and
+	 * the old value of this cell
+	 */
+	private Map<String, String> doQuickEditTableChange(final String tableCellLocator,
+			final String newValue, final Boolean save) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(tableCellLocator, newValue);
+		return doQuickEditTableChange(map, save, false);
+	}
+	
+	/**
+	 * This method simulates the using of quickedit: First the quickedit is
+	 * opened, eventually the page is refreshed and then all the select 
+	 * buttons are changed to their new value and at last it is clicked 
+	 * on save or cancel.
+	 * @param tableCellLocator Locator of the select button in row x and
+	 * column y, normally in a form like //table/tbody/tr[x]/td[y]/select
+	 * @param newValue is chosen (has to be in the select's drop down list)
+	 * @param save whether changes should be saved or not
+	 * @param refresh whether the page should be refreshed before setting
+	 * the new values
+	 * @return a map of pairs of Strings packed: the tableCellLocator and
+	 * the old value of this cell
+	 */
+	private Map<String, String> doQuickEditTableChange(final Map<String,String> input,
+			final Boolean save, Boolean refresh) {
+		Map<String, String> output = new HashMap<String, String>();
+		doSelActionAndWait(divID +  "_pencil", "click");
+		if (refresh) {
+			refreshAndWait();
+		}
+		for (String key : input.keySet()) {
+			assertTrue(divLocator + key + "does not exists",
+					selenium.isElementPresent(divLocator + key));
+			output.put(key, selenium.getText(divLocator + key + "/option[@selected='selected']"));
+			doSelActionAndWait(divLocator + key, "select", "label=" + input.get(key));			
+		}
+		if (save) {
+			doSelActionAndWait(divID +  "_accept", "click");			
+		} else {
+			doSelActionAndWait(divID +  "_cancel", "click");
+			output.clear();
+		}
+		assertTrue("Accept or cancel button didn't worked", selenium.isElementPresent(divID + "_pencil"));
+		return output;
+	}
+	
 }
