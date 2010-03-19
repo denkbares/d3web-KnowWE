@@ -23,18 +23,21 @@
  */
 package de.d3web.we.kdom.owlextension;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
 
 /**
  * @author kazamatzuri
  *
  */
-public class OwlPropertiesContent extends XMLContent implements OwlGenerator{
+public class OwlPropertiesContent extends XMLContent{
 
    
 
@@ -43,21 +46,24 @@ public class OwlPropertiesContent extends XMLContent implements OwlGenerator{
 	public void init() {	    
 	    this.setCustomRenderer(OwlPropertiesRenderer.getInstance());
 	    this.sectionFinder=new AllTextSectionFinder();
+	    this.addReviseSubtreeHandler(new OwlPropertiesContentOWLSubTreeHandler());
 	}
 	
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.dom.AbstractKnowWEObjectType#getOwl(de.d3web.we.dom.Section)
-	 */
-	
-	public IntermediateOwlObject getOwl(Section s) {
-	    IntermediateOwlObject io=new IntermediateOwlObject();
-	    String text=s.getOriginalText();	    
-	    for (String cur:text.split("\r\n|\r|\n")){
-		if (cur.trim().length()>0)
-		    io.merge(UpperOntology.getInstance().getHelper().createlocalProperty(cur.trim()));		
-	    }
-	    return io;	    
+	private class OwlPropertiesContentOWLSubTreeHandler implements ReviseSubTreeHandler{
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			  IntermediateOwlObject io=new IntermediateOwlObject();
+			    String text=s.getOriginalText();	    
+			    for (String cur:text.split("\r\n|\r|\n")){
+				if (cur.trim().length()>0)
+				    io.merge(UpperOntology.getInstance().getHelper().createlocalProperty(cur.trim()));		
+			    }
+			    SemanticCore.getInstance().addStatements(io, s);
+			    return null;	    
+		}
+		
 	}
 	
 

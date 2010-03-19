@@ -23,61 +23,68 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openrdf.model.URI;
 
 import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author kazamatzuri
  * 
  */
-public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
-
+public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
 		this.sectionFinder = new AllTextFinderTrimmed();
+		this.addReviseSubtreeHandler(new SimpleAnnotationSubTreeHandler());
+	}
+
+	private class SimpleAnnotationSubTreeHandler implements
+			ReviseSubTreeHandler {
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			KDOMReportMessage msg = null;
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			UpperOntology uo = UpperOntology.getInstance();
+			String annos = s.getOriginalText().trim().replaceAll(" ", "_");
+			URI anno = null;
+			if (annos.contains(":")) {
+				String[] list = annos.split(":");
+				String ns = list[0];
+				String ens = SemanticCore.getInstance().expandNamespace(ns);
+				if (ns.equals(ens)) {
+					io.setValidPropFlag(false);
+					io.setBadAttribute(ns + " is no valid namespace");
+				}
+				try {
+					anno = uo.getHelper().createURI(ens, list[1]);
+				} catch (IllegalArgumentException e) {
+					io.setValidPropFlag(false);
+					io.setBadAttribute(ns);
+				}
+			} else {
+				anno = uo.getHelper().createlocalURI(annos);
+			}
+			if (anno != null) {
+				io.addLiteral(anno);
+			}
+			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+			return msg;
+		}
+
 	}
 
 	
-	public IntermediateOwlObject getOwl(Section s) {
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		UpperOntology uo = UpperOntology.getInstance();
-		String annos = s.getOriginalText().trim().replaceAll(" ", "_");
-		URI anno = null;
-		if (annos.contains(":")) {
-			String[] list = annos.split(":");
-			String ns =list[0];
-			String ens=SemanticCore.getInstance().expandNamespace(ns);
-			if (ns.equals(ens)){
-				io.setValidPropFlag(false);
-				io.setBadAttribute(ns+ " is no valid namespace");
-			}
-			try {
-			anno = uo.getHelper().createURI(ens, list[1]);
-			} catch (IllegalArgumentException e){
-				io.setValidPropFlag(false);
-				io.setBadAttribute(ns);
-			}
-		} else {
-			anno = uo.getHelper().createlocalURI(annos);
-		}
-		if (anno != null) {
-			io.addLiteral(anno);
-		}
-		return io;
-	}
 
 }

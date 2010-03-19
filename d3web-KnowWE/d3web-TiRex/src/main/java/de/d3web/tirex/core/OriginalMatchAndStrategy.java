@@ -74,7 +74,7 @@ public class OriginalMatchAndStrategy {
 				.length();
 
 		rating = getStrategy().getRating()
-				* ((Math.pow(normalizedLength, 2)) / (double) idObject
+				* ((Math.pow(normalizedLength, 2)) / idObject
 						.toString().replaceAll("\r", "").length());
 	}
 
@@ -98,6 +98,7 @@ public class OriginalMatchAndStrategy {
 		return rating;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 

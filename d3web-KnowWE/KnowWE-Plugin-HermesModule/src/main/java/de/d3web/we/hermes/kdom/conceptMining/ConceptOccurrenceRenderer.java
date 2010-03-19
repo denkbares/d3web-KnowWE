@@ -11,6 +11,7 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
+import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.hermes.kdom.TimeEventType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -18,8 +19,6 @@ import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.table.TableUtils;
-import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
@@ -32,7 +31,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section arg0, KnowWEUserContext arg1, StringBuilder arg2) {
 
-		Section<PersonOccurrence> personSection = (Section<PersonOccurrence>)arg0;
+		Section<PersonOccurrence> personSection = arg0;
 		
 		//TableUtils.getRow(arg0);
 		

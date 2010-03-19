@@ -222,8 +222,7 @@ public class KnowWEArticleManager {
 	 */
 	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle art) {
 		// store new article
-		articleMap.put(art.getTitle(), art);
-		sc.update(art.getTitle(), art);
+		articleMap.put(art.getTitle(), art);		
 		long startTime = System.currentTimeMillis();
 		
 		Logger.getLogger(this.getClass().getName())

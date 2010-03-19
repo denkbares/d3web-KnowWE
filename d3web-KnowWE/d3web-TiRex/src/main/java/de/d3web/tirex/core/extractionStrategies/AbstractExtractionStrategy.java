@@ -88,10 +88,11 @@ public abstract class AbstractExtractionStrategy implements ExtractionStrategy {
 	 *         set value.
 	 */
 	protected boolean isLengthRatioOK(String s1, String s2) {
-		return ((double) s1.length() / (double) s2.length()) >= ((double) TiRexSettings
+		return ((double) s1.length() / (double) s2.length()) >= (TiRexSettings
 				.getInstance().getMinimumMatchPercentage()) / 100;
 	}
 
+	@Override
 	public String toString() {
 		return getName() + "\n";
 	}

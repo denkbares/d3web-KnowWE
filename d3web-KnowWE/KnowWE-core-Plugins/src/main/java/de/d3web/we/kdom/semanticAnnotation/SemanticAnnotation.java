@@ -32,21 +32,21 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class SemanticAnnotation extends DefaultAbstractKnowWEObjectType {
 
-    private static String ANNOTATIONBEGIN = "\\[";
-    private static String ANNOTATIONEND = "\\]";
+	private static String ANNOTATIONBEGIN = "\\[";
+	private static String ANNOTATIONEND = "\\]";
 
-    public SemanticAnnotation() {
+	public SemanticAnnotation() {
 
-    }
-        
-    @Override
-    public SectionFinder getSectioner() {
-	return new AnnotationSectionFinder();
-    }
+	}
 
-    public static class AnnotationSectionFinder extends SectionFinder {
-    	
-	private String PATTERN = ANNOTATIONBEGIN + "[\\w\\W]*?" + ANNOTATIONEND;
+	@Override
+	public SectionFinder getSectioner() {
+		return new AnnotationSectionFinder();
+	}
+
+	public static class AnnotationSectionFinder extends SectionFinder {
+
+		private String PATTERN = ANNOTATIONBEGIN + "[\\w\\W]*?" + ANNOTATIONEND;
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
@@ -61,19 +61,19 @@ public class SemanticAnnotation extends DefaultAbstractKnowWEObjectType {
 			}
 			return result;
 		}
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.d3web.we.dom.AbstractKnowWEObjectType#init()
-     */
-    @Override
-    protected void init() {
-    	this.setCustomRenderer(new StandardAnnotationRenderer());
-    	this.childrenTypes.add(new SemanticAnnotationStartSymbol("["));
-    	this.childrenTypes.add(new SemanticAnnotationEndSymbol("]"));
-    	this.childrenTypes.add(new SemanticAnnotationContent());
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.d3web.we.dom.AbstractKnowWEObjectType#init()
+	 */
+	@Override
+	protected void init() {
+		this.setCustomRenderer(new StandardAnnotationRenderer());
+		this.childrenTypes.add(new SemanticAnnotationStartSymbol("["));
+		this.childrenTypes.add(new SemanticAnnotationEndSymbol("]"));
+		this.childrenTypes.add(new SemanticAnnotationContent());
+	}
 
 }

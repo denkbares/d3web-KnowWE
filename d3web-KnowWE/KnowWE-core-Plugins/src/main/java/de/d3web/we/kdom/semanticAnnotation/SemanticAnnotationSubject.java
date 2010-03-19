@@ -23,18 +23,7 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.constraint.AtMostOneFindingConstraint;
-import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.contexts.ContextManager;
-import de.d3web.we.kdom.contexts.DefaultSubjectContext;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 /**
  * @author kazamatzuri

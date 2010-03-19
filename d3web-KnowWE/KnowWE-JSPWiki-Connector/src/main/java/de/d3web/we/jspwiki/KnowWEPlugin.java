@@ -69,6 +69,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 * 
 	 * @see KnowWE_config.properties
 	 */
+	@Override
 	public void initialize(WikiEngine engine, Properties properties)
 			throws FilterException {
 
@@ -391,10 +392,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		while (p.hasMoreElements()) {
 			String param = (String) p.nextElement();
 			try {
-				parameter.put(param, URLDecoder.decode((String) req
+				parameter.put(param, URLDecoder.decode(req
 						.getParameter(param), "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				parameter.put(param, URLDecoder.decode((String) req
+				parameter.put(param, URLDecoder.decode(req
 						.getParameter(param)));
 			}
 		}

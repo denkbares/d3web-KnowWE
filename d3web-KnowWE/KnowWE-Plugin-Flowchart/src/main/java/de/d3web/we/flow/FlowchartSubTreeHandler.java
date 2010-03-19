@@ -26,9 +26,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
@@ -61,7 +58,6 @@ import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.indication.ActionIndication;
-import de.d3web.indication.ActionInstantIndication;
 import de.d3web.report.Message;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
@@ -394,7 +390,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		AnswerChoice answer = null;
 		for (AnswerChoice child : question.getAllAlternatives()) {
 			if (child.getText().equals(nodeName))
-				answer = (AnswerChoice) child;
+				answer = child;
 			
 		}
 		
@@ -495,7 +491,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		AnswerChoice answer = null;
 		for (AnswerChoice child : question.getAllAlternatives()) {
 			if (child.getText().equals(name))
-				answer = (AnswerChoice) child;
+				answer = child;
 			
 		}
 		

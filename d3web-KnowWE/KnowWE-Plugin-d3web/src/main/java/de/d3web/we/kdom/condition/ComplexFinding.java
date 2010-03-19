@@ -35,21 +35,28 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.KnOfficeParser.DefaultLexer;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.KnowWEUtils;
 
-public class ComplexFinding extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
+public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 
 	@Override
 	protected void init() {
@@ -57,6 +64,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType implements O
 		this.childrenTypes.add(new OrOperator());
 		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new Disjunct());
+		this.addReviseSubtreeHandler(new ComplexFindingSubtreeHandler());
 	}
 
 	/**
@@ -68,44 +76,44 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType implements O
 	}
 
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.d3web.we.dom.AbstractOWLKnowWEObjectType#getOwl(de.d3web.we.dom.Section
-	 * )
-	 */
-	public IntermediateOwlObject getOwl(Section s) {
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		try {
-			UpperOntology uo = UpperOntology.getInstance();
-			URI complexfinding = uo.getHelper().createChildOf(
-					uo.getHelper().createURI("ComplexFinding"),
-					uo.getHelper().createlocalURI(
-							s.getTitle() + ".." + s.getId()));
-			io.addLiteral(complexfinding);
-			List<Section> children = s.getChildren();
-			for (Section current : children) {
-				if (current.getObjectType() instanceof OwlGenerator) {
-					OwlGenerator handler = (OwlGenerator) current
-							.getObjectType();
-					IntermediateOwlObject iohandler = handler.getOwl(current);
-					for (URI curi : iohandler.getLiterals()) {
-						Statement state = uo.getHelper().createStatement(
-								complexfinding,
-								uo.getHelper().createURI("hasDisjuncts"), curi);
-						io.addStatement(state);
-						iohandler.removeLiteral(curi);
+	private class ComplexFindingSubtreeHandler implements ReviseSubTreeHandler {
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			KDOMReportMessage msg= null;
+			try {
+				UpperOntology uo = UpperOntology.getInstance();
+				URI complexfinding = uo.getHelper().createChildOf(D3WebOWLVokab.COMPLEXFINDING
+						,
+						uo.getHelper().createlocalURI(
+								s.getTitle() + ".." + s.getId()));
+				io.addLiteral(complexfinding);
+				List<Section> children = s.getChildren();
+				for (Section current : children) {
+					if (current.getObjectType() instanceof Disjunct) {
+						IntermediateOwlObject iohandler = (IntermediateOwlObject) KnowWEUtils.getStoredObject(current, OwlHelper.IOO);
+						for (URI curi : iohandler.getLiterals()) {
+							Statement state = uo.getHelper().createStatement(
+									complexfinding,D3WebOWLVokab.HASDISJUNCTS
+									, curi);
+							io.addStatement(state);
+							iohandler.removeLiteral(curi);
+						}
+						io.merge(iohandler);
 					}
-					io.merge(iohandler);
 				}
+			} catch (RepositoryException e) {
+				msg=new SimpleMessageError(e.getMessage());
 			}
-		} catch (RepositoryException e) {
-			// TODO error management?
+			//return io;
+			//SemanticCore.getInstance().addStatements(io, s);
+			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+			return msg;
 		}
-		return io;
+		
 	}
-	
+
 	public class ComplexFindingANTLRSectionFinder extends SectionFinder {
 
 		@Override

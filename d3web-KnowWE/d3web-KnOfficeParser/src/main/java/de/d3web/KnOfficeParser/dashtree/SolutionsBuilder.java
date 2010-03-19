@@ -54,7 +54,7 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 	public static List<Message> parse(Reader reader,
 			KnowledgeBaseManagement kbm, IDObjectManagement idom) {
 		SolutionsBuilder builder = new SolutionsBuilder("", idom);
-		return (List<Message>) builder.addKnowledge(reader, idom, null);
+		return builder.addKnowledge(reader, idom, null);
 	}
 
 	private List<Tripel<String, Object, Message>> descriptionlinks = new ArrayList<Tripel<String, Object, Message>>();

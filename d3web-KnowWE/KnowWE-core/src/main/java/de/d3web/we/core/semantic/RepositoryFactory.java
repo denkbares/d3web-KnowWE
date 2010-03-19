@@ -1,4 +1,4 @@
-package de.d3web.we.module.semantic.owl;
+package de.d3web.we.core.semantic;
 
 import java.io.File;
 import java.io.FileReader;

@@ -70,6 +70,7 @@ public class FlowchartNode {
 		return this.text;
 	}
 	
+	@Override
 	public String toString() {
 		return "{" + this.getID() + ", " + this.getLeft() + ", "
 				+ this.getTop() + ", " + this.getNodeType() + ", "

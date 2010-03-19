@@ -30,7 +30,6 @@ import de.d3web.we.flow.FlowchartTerminologySubTreeHandler;
 import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 
@@ -71,13 +70,13 @@ public class FlowchartType extends AbstractXMLObjectType {
 	}
 	
 	public String getFlowchartName(Section sec) {
-		Map<String, String> mapFor = this.getAttributeMapFor(sec);
+		Map<String, String> mapFor = AbstractXMLObjectType.getAttributeMapFor(sec);
 		return mapFor.get("name");
 	}
 
 
 	public String getFlowchartID(Section sec) {
-		Map<String, String> mapFor = this.getAttributeMapFor(sec);
+		Map<String, String> mapFor = AbstractXMLObjectType.getAttributeMapFor(sec);
 		String id = mapFor.get("id");
 		if (id == null) id = mapFor.get("name");
 		if (id == null) id = "sheet_01";

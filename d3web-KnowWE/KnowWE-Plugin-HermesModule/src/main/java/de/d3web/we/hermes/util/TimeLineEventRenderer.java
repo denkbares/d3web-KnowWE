@@ -1,7 +1,5 @@
 package de.d3web.we.hermes.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 import de.d3web.we.core.KnowWEEnvironment;

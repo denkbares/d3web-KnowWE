@@ -4,9 +4,6 @@ package de.d3web.KnOfficeParser;
 
 
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
 
 public class DefaultLexer extends Lexer {
     public static final int HIDE=38;
@@ -106,7 +103,8 @@ public class DefaultLexer extends Lexer {
         super(input,state);
         gBasicLexer = new DefaultLexer_BasicLexer(input, state, this);
     }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g"; }
+    @Override
+	public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g"; }
 
     // $ANTLR start "BLUB"
     public final void mBLUB() throws RecognitionException {
@@ -126,7 +124,8 @@ public class DefaultLexer extends Lexer {
     }
     // $ANTLR end "BLUB"
 
-    public void mTokens() throws RecognitionException {
+    @Override
+	public void mTokens() throws RecognitionException {
         // D:\\eclipse workspaces\\Uni SVN\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DefaultLexer.g:1:8: ( BLUB | BasicLexer. Tokens )
         int alt1=2;
         int LA1_0 = input.LA(1);

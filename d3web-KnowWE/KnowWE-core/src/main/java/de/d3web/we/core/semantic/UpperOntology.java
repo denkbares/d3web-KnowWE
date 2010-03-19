@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.module.semantic.owl;
+package de.d3web.we.core.semantic;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,6 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.sail.memory.MemoryStore;
 
-import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 
 public class UpperOntology {
 	private static String basens = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";

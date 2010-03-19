@@ -20,7 +20,6 @@
 
 package de.d3web.knowledgeExporter.tests;
 
-import de.d3web.knowledgeExporter.KnowledgeManager;
 import de.d3web.knowledgeExporter.txtWriters.QClassHierarchyWriter;
 
 

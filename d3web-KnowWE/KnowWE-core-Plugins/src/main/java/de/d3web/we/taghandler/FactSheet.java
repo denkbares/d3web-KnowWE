@@ -40,7 +40,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**

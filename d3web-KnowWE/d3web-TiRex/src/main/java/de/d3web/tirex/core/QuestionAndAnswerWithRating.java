@@ -58,6 +58,7 @@ public class QuestionAndAnswerWithRating implements
 		return answer;
 	}
 
+	@Override
 	public String toString() {
 		return "*** QuestionAndAnswer with rating: " + getRating() + " ***\n"
 				+ ((question != null) ? question.toString() : "")

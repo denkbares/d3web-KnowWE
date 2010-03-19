@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.table.attributes;
 
 import de.d3web.we.kdom.kopic.renderer.KopicSectionRenderer;
-import de.d3web.we.kdom.table.TableXMLType;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 public class AttributeTableSection extends AbstractXMLObjectType {

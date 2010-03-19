@@ -28,34 +28,43 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.openrdf.model.URI;
+
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author kazamatzuri
- *
+ * 
  */
-public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
+public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType
+		{
 
-     @Override
-    public void init() {
-    	this.sectionFinder = new AnnotationPropertySectionFinder();
-    	this.childrenTypes.add(new SemanticAnnotationPropertyDelimiter());
-    	this.childrenTypes.add(new SemanticAnnotationPropertyName());
-    }
+	@Override
+	public void init() {
+		this.sectionFinder = new AnnotationPropertySectionFinder();
+		this.childrenTypes.add(new SemanticAnnotationPropertyDelimiter());
+		this.childrenTypes.add(new SemanticAnnotationPropertyName());
+		this.addReviseSubtreeHandler(new SemanticAnnotationPropertySubTreeHandler());
+	}
 
-    
-    public static class AnnotationPropertySectionFinder extends SectionFinder {
+	public static class AnnotationPropertySectionFinder extends SectionFinder {
 
-	private String PATTERN = "[(\\w:)?\\w]*::";
+		private String PATTERN = "[(\\w:)?\\w]*::";
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text,
+				Section father) {
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			Pattern p = Pattern.compile(PATTERN);
 			Matcher m = p.matcher(text);
@@ -67,11 +76,43 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType 
 
 	}
 
+	private class SemanticAnnotationPropertySubTreeHandler implements
+			ReviseSubTreeHandler {
 
-	@Override
-	public <T extends KnowWEObjectType> IntermediateOwlObject getOwl(
-			Section<T> s) {
-		Section name=s.findChildOfType(SemanticAnnotationPropertyName.class);		
-		return ((OwlGenerator)name.get()).getOwl(name);
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			Section name = s
+					.findChildOfType(SemanticAnnotationPropertyName.class);
+			KDOMReportMessage msg = null;
+
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			UpperOntology uo = UpperOntology.getInstance();
+			String prop = name.getOriginalText();
+			URI property = null;
+			if (prop.equals("subClassOf") || prop.equals("subPropertyOf")) {
+				property = uo.getRDFS(prop);
+			} else if (prop.equals("type")) {
+				property = uo.getRDF(prop);
+			} else if (prop.contains(":")) {
+				String ns = SemanticCore.getInstance().getNameSpaces().get(
+						prop.split(":")[0]);
+				if (ns == null || ns.length() == 0) {
+					io.setBadAttribute("no namespace given");
+					io.setValidPropFlag(false);
+				} else if (ns.equals(prop.split(":")[0])) {
+					io.setBadAttribute(ns);
+					io.setValidPropFlag(false);
+				} else {
+					property = uo.getHelper().createURI(ns, prop.split(":")[1]);
+				}
+			} else {
+				property = uo.getHelper().createlocalURI(prop);
+			}
+			io.addLiteral(property);
+			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+			return msg;
+		}
+
 	}
+
 }

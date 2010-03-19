@@ -249,7 +249,7 @@ public class KnowledgeManager {
 	private void checkIndicationRules() {
 
 		for (Iterator<Rule> iter = indicationRules.iterator(); iter.hasNext();) {
-			Rule element = (Rule) iter.next();
+			Rule element = iter.next();
 			AbstractCondition cond = element.getCondition();
 			Set<Question> questions = new HashSet<Question>();
 			addAllAppearingQuestions(cond, questions);
@@ -322,7 +322,7 @@ public class KnowledgeManager {
 	private void calcRelevantQuestions() {
 
 		for (Iterator<Rule> iter = allRules.iterator(); iter.hasNext();) {
-			Rule element = (Rule) iter.next();
+			Rule element = iter.next();
 			questions.addAll(getAllQuestions(element));
 		}
 		Set<QASet> s = new HashSet<QASet>();
@@ -410,7 +410,7 @@ public class KnowledgeManager {
 			return true;
 		}
 		for (Iterator<Diagnosis> iter = l.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+			Object element = iter.next();
 			if (element instanceof Diagnosis) {
 				if (r.getAction() instanceof ActionHeuristicPS) {
 					ActionHeuristicPS action = ((ActionHeuristicPS) r

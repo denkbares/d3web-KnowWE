@@ -165,11 +165,11 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 				&& r.getException() == null 
 				&& r.getContext() == null 
 				&& !(cond instanceof TerminalCondition)
-				&& !hasCondDStateCondition((NonTerminalCondition) cond)
+				&& !hasCondDStateCondition(cond)
 				&& isValidRule(r)) {
 
 			if(cond instanceof CondNot) {
-				AbstractCondition negCond = (AbstractCondition)((CondNot)cond).getTerms().get(0);
+				AbstractCondition negCond = ((CondNot)cond).getTerms().get(0);
 				// Regeln mit Konditionen der Form NICHT(ODER(....))
 				// NICHT(UND(...))dürfen nicht in die Tabelle
 				if(! (negCond instanceof TerminalCondition)) {
@@ -192,7 +192,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 			}
 		} else {
 			for (AbstractCondition element
-					:((List<AbstractCondition>) ((NonTerminalCondition) cond).getTerms())) {
+					:(((NonTerminalCondition) cond).getTerms())) {
 				if(hasCondDStateCondition(element)) {
 					return true;
 				}
@@ -204,7 +204,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 	private boolean isMaxDepth(AbstractCondition cond, int depth) {
 		if (depth == 0) {
 			if (cond instanceof CondNot) {
-				cond = (AbstractCondition) ((CondNot) cond).getTerms().get(0);
+				cond = ((CondNot) cond).getTerms().get(0);
 			}
 			if (cond instanceof TerminalCondition) {
 				return true;
@@ -218,8 +218,8 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 		}
 		boolean isMaxDepth = true;
 		for (AbstractCondition element
-				:((List<AbstractCondition>) ((NonTerminalCondition) cond).getTerms())) {
-			if (!isMaxDepth((AbstractCondition) element, depth - 1)) {
+				:(((NonTerminalCondition) cond).getTerms())) {
+			if (!isMaxDepth(element, depth - 1)) {
 				isMaxDepth = false;
 				break;
 			}

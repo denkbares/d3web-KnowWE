@@ -28,14 +28,13 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -48,11 +47,8 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 	@Override
 	public void renderDefault(Section s, KnowWEUserContext user,
 			StringBuilder string) {
-		
-		
-		Section<?> sec = s;
-		
-
+				
+		Section<?> sec = s;		
 		String object = "no object found";
 		Section<SimpleAnnotation> objectSection = sec.findSuccessor(SimpleAnnotation.class);
 		if (objectSection != null) {
@@ -115,31 +111,24 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 			text = KnowWEUtils.maskHTML("<a href=\"#"+s.getId()+"\"></a>"+"<span title='" + title + "'>"
 					+ text + "</span>");
 		}
-		KnowWEObjectType t=sec.getObjectType();
-		if ((t instanceof OwlGenerator) && !(((OwlGenerator)t).getOwl(sec).getValidPropFlag())) {
-			text = KnowWEUtils
-					.maskHTML("<p class=\"box error\">invalid annotation attribute:"
-							+ ((OwlGenerator)t).getOwl(sec).getBadAttribute()
-							+ "</p>");
-		}
-		IntermediateOwlObject tempio=((OwlGenerator)objectSection.getObjectType()).getOwl(objectSection);
-		if (!tempio.getValidPropFlag()){
-			text = KnowWEUtils
-			.maskHTML("<p class=\"box error\">invalid annotation attribute:"
-					+ tempio.getBadAttribute()
-					+ "</p>");
-			
-		}
-		tempio=((OwlGenerator)propSection.getObjectType()).getOwl(propSection);
-		if (!tempio.getValidPropFlag()){
-			text = KnowWEUtils
-			.maskHTML("<p class=\"box error\">invalid annotation attribute:"
-					+ tempio.getBadAttribute()
-					+ "</p>");
-			
-		}
-		
 
+		IntermediateOwlObject tempio=(IntermediateOwlObject) KnowWEUtils.getStoredObject(objectSection, OwlHelper.IOO);
+			
+		if (!tempio.getValidPropFlag()){
+			text = KnowWEUtils
+			.maskHTML("<p class=\"box error\">invalid annotation attribute:"
+					+ tempio.getBadAttribute()
+					+ "</p>");
+			
+		}
+		tempio=(IntermediateOwlObject) KnowWEUtils.getStoredObject(propSection, OwlHelper.IOO);
+		if (!tempio.getValidPropFlag()){
+			text = KnowWEUtils
+			.maskHTML("<p class=\"box error\">invalid annotation attribute:"
+					+ tempio.getBadAttribute()
+					+ "</p>");
+			
+		}		
 		string.append(text);
 	}
 

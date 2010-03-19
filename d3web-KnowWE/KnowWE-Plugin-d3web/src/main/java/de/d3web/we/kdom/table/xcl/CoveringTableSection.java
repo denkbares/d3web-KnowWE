@@ -22,8 +22,6 @@ package de.d3web.we.kdom.table.xcl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -120,7 +118,7 @@ public class CoveringTableSection extends AbstractKopicSection implements TableA
 	public String getAttributeValues(Section<Table> s) {
 		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
 		if(xml != null) {
-			return this.getAttributeMapFor(xml).get(Table.ATT_VALUES);
+			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_VALUES);
 		}	
 		return null;
 	}
@@ -129,7 +127,7 @@ public class CoveringTableSection extends AbstractKopicSection implements TableA
 	public String getNoEditColumnAttribute(Section<Table> s) {
 		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
 		if(xml != null) {
-			return this.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_COLUMN);
+			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_COLUMN);
 		}	
 		return null;
 	}
@@ -138,7 +136,7 @@ public class CoveringTableSection extends AbstractKopicSection implements TableA
 	public String getNoEditRowAttribute(Section<Table> s) {
 		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
 		if(xml != null) {
-			return this.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_ROW);
+			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_ROW);
 		}	
 		return null;
 	}
@@ -147,7 +145,7 @@ public class CoveringTableSection extends AbstractKopicSection implements TableA
 	public String getWidthAttribute(Section<Table> s) {
 		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
 		if(xml != null) {
-			return this.getAttributeMapFor(xml).get(Table.ATT_WIDTH);
+			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_WIDTH);
 		}	
 		return null;
 	}

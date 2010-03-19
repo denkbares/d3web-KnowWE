@@ -20,7 +20,6 @@
 package de.d3web.we.jspwiki;
 
 import com.ecyrd.jspwiki.SearchResult;
-import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiPage;
 
 public class SearchResultImpl implements SearchResult {

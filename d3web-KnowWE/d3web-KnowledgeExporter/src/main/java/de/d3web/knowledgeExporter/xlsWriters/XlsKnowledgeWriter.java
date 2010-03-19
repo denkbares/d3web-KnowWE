@@ -194,6 +194,7 @@ public abstract class XlsKnowledgeWriter extends KnowledgeWriter {
 		return this.extraAnswerColumn;
 	}
 	
+	@Override
 	public void writeFile(File output) throws IOException {
 		writeXlsFile(output);
 	}

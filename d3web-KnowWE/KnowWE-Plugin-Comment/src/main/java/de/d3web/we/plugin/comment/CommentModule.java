@@ -48,7 +48,7 @@ public class CommentModule implements Instantiation{
 		Iterator<String> it = rb.keySet().iterator();
 		
 		while (it.hasNext()) {
-			String type = (String) it.next();
+			String type = it.next();
 			String path = rb.getString(type);
 			if (path == null || path.length() == 0) {
 				path = rb.getString("DEFAULT");

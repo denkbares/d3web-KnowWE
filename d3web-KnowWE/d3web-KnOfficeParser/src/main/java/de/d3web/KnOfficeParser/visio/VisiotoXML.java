@@ -4,7 +4,7 @@ package de.d3web.KnOfficeParser.visio;
 
 
 import org.antlr.runtime.*;
-import org.antlr.runtime.tree.*;import java.util.Stack;
+import org.antlr.runtime.tree.*;
 import java.util.List;
 import java.util.ArrayList;
 

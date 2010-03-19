@@ -27,15 +27,21 @@ import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.KnowWEUtils;
 
-public class Disjunct extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
+public class Disjunct extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
@@ -43,34 +49,47 @@ public class Disjunct extends DefaultAbstractKnowWEObjectType implements OwlGene
 		this.childrenTypes.add(new RoundBracedType(this));
 		this.childrenTypes.add(new AndOperator());
 		this.childrenTypes.add(new Conjunct());
+		this.addReviseSubtreeHandler(new DisjunctSubTreeHandler());
 	}
-	/* (non-Javadoc)
-	* @see de.d3web.we.dom.AbstractOWLKnowWEObjectType#getOwl(de.d3web.we.dom.Section)
-	*/	
-	public IntermediateOwlObject getOwl(Section s) {
-	    IntermediateOwlObject io=new IntermediateOwlObject();
-	    try {
-	    UpperOntology uo=UpperOntology.getInstance();
-	    
-	    URI compositeexpression=uo.getHelper().createlocalURI(s.getTitle()+".."+s.getId());
-		io.addStatement(uo.getHelper().createStatement(compositeexpression,RDF.TYPE,uo.getHelper().createURI("Disjunction")));
-	    io.addLiteral(compositeexpression);
-	    List<Section> children = s.getChildren();
-	    for (Section current:children){
-		if (current.getObjectType() instanceof OwlGenerator) {
-			OwlGenerator handler=(OwlGenerator) current.getObjectType();
-		    IntermediateOwlObject iohandler = handler.getOwl(current);
-		    for (URI curi:iohandler.getLiterals()){
-			Statement state=uo.getHelper().createStatement(compositeexpression,uo.getHelper().createURI("hasDisjuncts"),curi);
-			io.addStatement(state);
-			iohandler.removeLiteral(curi);
-		    }		    
-		    io.merge(iohandler);
-		}
-	    }} catch (RepositoryException e){
-		//TODO error management?
-	    }
-	    return io;
-	}
-}
 
+	private class DisjunctSubTreeHandler implements ReviseSubTreeHandler {
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			KDOMReportMessage msg = null;
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			try {
+				UpperOntology uo = UpperOntology.getInstance();
+
+				URI compositeexpression = uo.getHelper().createlocalURI(
+						s.getTitle() + ".." + s.getId());
+				io.addStatement(uo.getHelper().createStatement(
+						compositeexpression, RDF.TYPE,
+						D3WebOWLVokab.DISJUNCTION));
+				io.addLiteral(compositeexpression);
+				List<Section> children = s.getChildren();
+				for (Section current : children) {
+					if (current.getObjectType() instanceof Conjunct) {
+						IntermediateOwlObject iohandler = (IntermediateOwlObject) KnowWEUtils
+								.getStoredObject(current, OwlHelper.IOO);
+						for (URI curi : iohandler.getLiterals()) {
+							Statement state = uo.getHelper().createStatement(
+									compositeexpression,
+									D3WebOWLVokab.HASDISJUNCTS, curi);
+							io.addStatement(state);
+							iohandler.removeLiteral(curi);
+						}
+						io.merge(iohandler);
+					}
+				}
+			} catch (RepositoryException e) {
+				msg = new SimpleMessageError(e.getMessage());
+			}
+			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+
+			return msg;
+		}
+
+	}
+
+}

@@ -39,6 +39,7 @@ public class XCLWriter extends TxtKnowledgeWriter {
 		super(manager);
 	}
 	
+	@Override
 	public String writeText() {
 		StringBuffer text = new StringBuffer();
 		

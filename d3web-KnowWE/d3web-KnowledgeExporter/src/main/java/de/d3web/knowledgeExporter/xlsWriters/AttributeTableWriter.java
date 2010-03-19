@@ -184,7 +184,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 					abnorm = true;
 				}
 			}
-			for (Property p:(Set<Property>) q.getProperties().getKeys()) {
+			for (Property p:q.getProperties().getKeys()) {
 				if (p.equals(Property.MMINFO)) {
 					MMInfoStorage storage = (MMInfoStorage) q.getProperties().getProperty(Property.MMINFO);
 					if (storage != null) {
@@ -242,7 +242,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		} else if (o instanceof Answer) {
 			properties = ((Answer) o).getProperties();
 		}
-		for (Property p:(Set<Property>) properties.getKeys()) {
+		for (Property p:properties.getKeys()) {
 			if (p.equals(Property.MMINFO)) {
 				MMInfoStorage storage = (MMInfoStorage) properties.getProperty(Property.MMINFO);
 				if (storage != null) {
@@ -303,7 +303,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 	}
 
 	private void writeQClassesSheet() {
-		WritableSheet qcSheet = wb.createSheet(manager.getResourceBundle().getString("qclasses"), 2);	
+		WritableSheet qcSheet = wb.createSheet(KnowledgeManager.getResourceBundle().getString("qclasses"), 2);	
 	}
 
 	private void writeMMInfos(Object object, WritableSheet sheet, int row) 
@@ -315,7 +315,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		} else if (object instanceof Answer) {
 			props = ((Answer) object).getProperties();
 		}
-		for (Property p:(Set<Property>) props.getKeys()) {
+		for (Property p:props.getKeys()) {
 			if (p.equals(Property.MMINFO)) {
 				MMInfoStorage storage = (MMInfoStorage) props.getProperty(Property.MMINFO);
 				if (storage != null) {

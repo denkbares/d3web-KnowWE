@@ -22,15 +22,19 @@ package de.d3web.we.kdom.Annotation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.QuotedType;
 import de.d3web.we.kdom.condition.NOT;
@@ -38,14 +42,16 @@ import de.d3web.we.kdom.filter.TypeSectionFilter;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.KnowWEUtils;
 
-public class Finding extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
+public class Finding extends DefaultAbstractKnowWEObjectType {
+
+	
 
 	@Override
 	public void init() {
@@ -56,6 +62,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType implements OwlGener
 		this.childrenTypes.add(new QuotedType(new FindingAnswer()));
 		this.childrenTypes.add(new FindingAnswer());
 		this.sectionFinder = new FindingSectionFinder();
+		this.addReviseSubtreeHandler(new FindingSubTreeHandler());
 	}
 
 	@Override
@@ -70,58 +77,68 @@ public class Finding extends DefaultAbstractKnowWEObjectType implements OwlGener
 		return FontColorBackgroundRenderer.getRenderer(
 				FontColorRenderer.COLOR5, color);
 	}
-	
-	
-	public IntermediateOwlObject getOwl(Section section) {
-		UpperOntology uo = UpperOntology.getInstance();
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		try {
-			Section csection = (Section) section.getChildren(
-					new TypeSectionFilter(new FindingComparator().getName()))
-					.get(0);
-			String comparator = ((FindingComparator) csection.getObjectType())
-					.getComparator(csection);
 
-			Section qsection = section.findSuccessor(FindingQuestion.class);
-			String question = ((FindingQuestion) qsection.getObjectType())
-					.getQuestion(qsection);
+	private class FindingSubTreeHandler implements ReviseSubTreeHandler {
 
-			Section asection = section.findSuccessor(FindingAnswer.class);
-			String answer = ((FindingAnswer) asection.getObjectType())
-					.getAnswer(asection);
-
-			URI compuri = uo.getHelper().getComparator(comparator);
-			URI questionuri = uo.getHelper().createlocalURI(question);
-			URI answeruri = uo.getHelper().createlocalURI(answer);
-			URI literalinstance = uo.getHelper().createlocalURI(
-					section.getTitle() + ".." + section.getId() + ".."
-							+ question + comparator + answer);
-
-			ArrayList<Statement> slist = new ArrayList<Statement>();
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article,
+				Section section) {
+			KDOMReportMessage msg = null;
+			UpperOntology uo = UpperOntology.getInstance();
+			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
-				uo.getHelper().attachTextOrigin(literalinstance, section, io,uo.getHelper().createURI("Annotation"));
-				slist.add(uo.getHelper().createStatement(literalinstance,
-						RDF.TYPE, uo.getHelper().createURI("Literal")));
-				slist.add(uo.getHelper().createStatement(literalinstance,
-						uo.getHelper().createURI("hasInput"), questionuri));
-				slist.add(uo.getHelper().createStatement(literalinstance,
-						uo.getHelper().createURI("hasComparator"), compuri));
-				slist.add(uo.getHelper().createStatement(literalinstance,
-						uo.getHelper().createURI("hasValue"), answeruri));
-			} catch (RepositoryException e) {
-				e.printStackTrace();
+				Section csection = (Section) section
+						.getChildren(
+								new TypeSectionFilter(new FindingComparator()
+										.getName())).get(0);
+				String comparator = ((FindingComparator) csection
+						.getObjectType()).getComparator(csection);
+
+				Section qsection = section.findSuccessor(FindingQuestion.class);
+				String question = ((FindingQuestion) qsection.getObjectType())
+						.getQuestion(qsection);
+
+				Section asection = section.findSuccessor(FindingAnswer.class);
+				String answer = ((FindingAnswer) asection.getObjectType())
+						.getAnswer(asection);
+
+				URI compuri = uo.getHelper().getComparator(comparator);
+				URI questionuri = uo.getHelper().createlocalURI(question);
+				URI answeruri = uo.getHelper().createlocalURI(answer);
+				URI literalinstance = uo.getHelper().createlocalURI(
+						section.getTitle() + ".." + section.getId() + ".."
+								+ question + comparator + answer);
+
+				ArrayList<Statement> slist = new ArrayList<Statement>();
+				try {
+					uo.getHelper().attachTextOrigin(literalinstance, section,
+							io, D3WebOWLVokab.ANNOTATION);
+					slist.add(uo.getHelper().createStatement(literalinstance,
+							RDF.TYPE, D3WebOWLVokab.LITERAL));
+					slist.add(uo.getHelper().createStatement(literalinstance,
+							D3WebOWLVokab.HASINPUT, questionuri));
+					slist
+							.add(uo.getHelper().createStatement(
+									literalinstance,D3WebOWLVokab.HASCOMPARATOR
+									,
+									compuri));
+					slist.add(uo.getHelper().createStatement(literalinstance,D3WebOWLVokab.HASVALUE
+							, answeruri));
+				} catch (RepositoryException e) {
+
+					e.printStackTrace();
+				}
+				io.addAllStatements(slist);
+				io.addLiteral(literalinstance);
+			} catch (IndexOutOfBoundsException e) {
+				msg = new SimpleMessageError("Finding without subsections");
+			} catch (NullPointerException e) {
+				msg = new SimpleMessageError("Nullpointer");
 			}
-			io.addAllStatements(slist);
-			io.addLiteral(literalinstance);
-		} catch (IndexOutOfBoundsException e) {
-			Logger.getLogger(this.getName()).log(Level.WARNING,
-					"Finding without subsections");
-		} catch (NullPointerException e) {
-			//TODO: Handle?
-			e.printStackTrace();
+			KnowWEUtils.storeSectionInfo(section, OwlHelper.IOO, io);
+			return msg;
 		}
 
-		return io;
 	}
 
 	public class FindingSectionFinder extends SectionFinder {
@@ -130,9 +147,9 @@ public class Finding extends DefaultAbstractKnowWEObjectType implements OwlGener
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {
 			if (text.contains(">") || text.contains("=") || text.contains("<")) {
-				if (!text.contains("+=")) {  // hack excluding "+="
-					return AllTextFinderTrimmed.getInstance().lookForSections(text,
-							father);
+				if (!text.contains("+=")) { // hack excluding "+="
+					return AllTextFinderTrimmed.getInstance().lookForSections(
+							text, father);
 				}
 			}
 			return null;

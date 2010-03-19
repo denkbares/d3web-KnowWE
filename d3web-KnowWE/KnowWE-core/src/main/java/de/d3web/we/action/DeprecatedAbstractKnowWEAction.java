@@ -37,6 +37,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 @Deprecated
 public abstract class DeprecatedAbstractKnowWEAction extends AbstractAction {
 
+	@Override
 	public boolean isAdminAction() {
 		return false;
 	}

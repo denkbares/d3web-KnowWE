@@ -21,7 +21,7 @@
 /**
  * 
  */
-package de.d3web.we.module.semantic.owl.helpers;
+package de.d3web.we.core.semantic;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -52,9 +52,6 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.PropertyManager;
-import de.d3web.we.module.semantic.owl.UpperOntology;
 
 /**
  * @author kazamatzuri
@@ -64,27 +61,41 @@ public class OwlHelper {
 	private static String basens = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
 	public static URI EQUAL;
 	public static URI EXPLAINS;
-	public static URI FINDING;
 	public static URI GREATER;
 	public static URI GREATEREQUAL;
-	public static URI HASFINDING;
 	public static URI INPUT;
 	public static URI SMALLER;
 	public static URI SMALLEREQUAL;
-
 	public static URI SOLUTION;
+	public static String IOO = "IntermediateOwlObject";
+	public static URI ANNOTATION;
+	public static URI HASTAG;
+	public static URI HASTOPIC;
+	public static URI HASTYPE;
+	public static URI NARYPROPERTY;
+	public static URI TEXTORIGIN;
+	public static URI HASNODE;
+	public static URI HASORIGIN;
+	
+
 	static {
 		ValueFactory factory = ValueFactoryImpl.getInstance();
 		SOLUTION = factory.createURI(basens, "Solution");
-		FINDING = factory.createURI(basens, "Finding");
 		INPUT = factory.createURI(basens, "Input");
 		SMALLER = factory.createURI(basens, "Smaller");
 		GREATER = factory.createURI(basens, "Greater");
 		GREATEREQUAL = factory.createURI(basens, "GreaterEqual");
 		SMALLEREQUAL = factory.createURI(basens, "SmallerEqual");
 		EQUAL = factory.createURI(basens, "Equal");
-		HASFINDING = factory.createURI(basens, "hasFinding");
 		EXPLAINS = factory.createURI(basens, "Explains");
+		ANNOTATION = factory.createURI(basens, "Annotation");
+		HASTAG = factory.createURI(basens, "hasTag");
+		HASTOPIC = factory.createURI(basens, "hasTopic");
+		HASTYPE = factory.createURI(basens, "hasType");
+		NARYPROPERTY = factory.createURI(basens, "NaryProperty");
+		TEXTORIGIN = factory.createURI(basens, "TextOrigin");
+		HASNODE = factory.createURI(basens, "hasNode");
+		HASORIGIN = factory.createURI(basens, "hasOrigin");
 	}
 	private HashMap<String, URI> comparatorcache;
 
@@ -113,15 +124,14 @@ public class OwlHelper {
 	 * @return
 	 */
 	private String beautify(String value) {
-		String temp=value;
+		String temp = value;
 		try {
-			temp=URLDecoder.decode(value,"UTF-8");
-		} catch (UnsupportedEncodingException e1) {					
-		} catch (IllegalArgumentException e){
-			
+			temp = URLDecoder.decode(value, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+		} catch (IllegalArgumentException e) {
+
 		}
-		
-		
+
 		try {
 			return URLEncoder.encode(temp, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -149,7 +159,7 @@ public class OwlHelper {
 		try {
 			UpperOntology uo = UpperOntology.getInstance();
 			BNode to = uo.getVf().createBNode();
-			io.merge(createTextOrigin(source,to));
+			io.merge(createTextOrigin(source, to));
 			io.addStatement(uo.getHelper().createStatement(attachto,
 					RDFS.ISDEFINEDBY, to));
 		} catch (RepositoryException e) {
@@ -159,13 +169,15 @@ public class OwlHelper {
 
 	}
 
-	private IntermediateOwlObject createTextOrigin(Section<KnowWEObjectType> source, Resource to) throws RepositoryException {
+	private IntermediateOwlObject createTextOrigin(
+			Section<KnowWEObjectType> source, Resource to)
+			throws RepositoryException {
 		IntermediateOwlObject io = new IntermediateOwlObject();
-		io.addStatement(createStatement(to, RDF.TYPE, createURI("TextOrigin")));
-		io.addStatement(createStatement(to, createURI("hasNode"),
+		io.addStatement(createStatement(to, RDF.TYPE, TEXTORIGIN));
+		io.addStatement(createStatement(to, HASNODE,
 				createLiteral(source.getId())));
-		io.addStatement(createStatement(to, createURI("hasTopic"),
-				createlocalURI(source.getTitle())));		
+		io.addStatement(createStatement(to, HASTOPIC,
+				createlocalURI(source.getTitle())));
 		return io;
 	}
 
@@ -291,7 +303,7 @@ public class OwlHelper {
 	public IntermediateOwlObject createlocalProperty(String cur) {
 		UpperOntology uo = UpperOntology.getInstance();
 		URI prop = uo.getHelper().createlocalURI(cur);
-		URI naryprop = uo.getHelper().createURI("NaryProperty");
+		URI naryprop = NARYPROPERTY;
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		if (!PropertyManager.getInstance().isValid(prop)) {
 			try {
@@ -312,7 +324,7 @@ public class OwlHelper {
 	public IntermediateOwlObject createProperty(String cur) {
 		UpperOntology uo = UpperOntology.getInstance();
 		URI prop = uo.getHelper().createURI(cur);
-		URI naryprop = uo.getHelper().createURI("NaryProperty");
+		URI naryprop = NARYPROPERTY;
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		if (!PropertyManager.getInstance().isValid(prop)) {
 			try {
@@ -356,9 +368,10 @@ public class OwlHelper {
 					source.getTitle() + ".." + source.getId() + ".."
 							+ suri.getLocalName() + puri.getLocalName()
 							+ ouri.getLocalName());
-			io.merge(helper.createTextOrigin(source ,to));
+			io.merge(helper.createTextOrigin(source, to));
 			io.addStatement(helper.createStatement(nary, RDFS.ISDEFINEDBY, to));
-			io.addStatement(helper.createStatement(nary, RDF.TYPE,RDF.STATEMENT));
+			io.addStatement(helper.createStatement(nary, RDF.TYPE,
+					RDF.STATEMENT));
 			io.addStatement(helper.createStatement(nary, RDF.PREDICATE, puri));
 			io.addStatement(helper.createStatement(nary, RDF.OBJECT, ouri));
 			io.addStatement(helper.createStatement(nary, RDF.SUBJECT, suri));
@@ -371,6 +384,7 @@ public class OwlHelper {
 
 		return io;
 	}
+
 	/**
 	 * @param soluri
 	 * @param prop
@@ -378,8 +392,8 @@ public class OwlHelper {
 	 * @param id
 	 * @return
 	 */
-	public IntermediateOwlObject createAnnotationProperty(URI suri, URI puri, URI ouri,
-			Section source) {
+	public IntermediateOwlObject createAnnotationProperty(URI suri, URI puri,
+			URI ouri, Section source) {
 		UpperOntology uo = UpperOntology.getInstance();
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		try {
@@ -389,15 +403,15 @@ public class OwlHelper {
 					source.getTitle() + ".." + source.getId() + ".."
 							+ suri.getLocalName() + puri.getLocalName()
 							+ ouri.getLocalName());
-			io.merge(helper.createTextOrigin(source ,to));
-			io.addStatement(createStatement(to, createURI("hasType"),
-					createURI("Annotation")));
+			io.merge(helper.createTextOrigin(source, to));
+			io.addStatement(createStatement(to, HASTYPE, ANNOTATION));
 			io.addStatement(helper.createStatement(nary, RDFS.ISDEFINEDBY, to));
-			io.addStatement(helper.createStatement(nary, RDF.TYPE,RDF.STATEMENT));
+			io.addStatement(helper.createStatement(nary, RDF.TYPE,
+					RDF.STATEMENT));
 			io.addStatement(helper.createStatement(nary, RDF.PREDICATE, puri));
 			io.addStatement(helper.createStatement(nary, RDF.OBJECT, ouri));
 			io.addStatement(helper.createStatement(nary, RDF.SUBJECT, suri));
-			
+
 			io.addLiteral(nary);
 
 		} catch (RepositoryException e) {
@@ -407,47 +421,48 @@ public class OwlHelper {
 
 		return io;
 	}
-	
 
-	public void attachTextOrigin(Resource attachto, Section<KnowWEObjectType> source,
-			IntermediateOwlObject io, URI type) {
+	public void attachTextOrigin(Resource attachto,
+			Section<KnowWEObjectType> source, IntermediateOwlObject io, URI type) {
 		try {
 			UpperOntology uo = UpperOntology.getInstance();
 			BNode to = uo.getVf().createBNode();
-			io.merge(createTextOrigin(source,to,type));
+			io.merge(createTextOrigin(source, to, type));
 			io.addStatement(uo.getHelper().createStatement(attachto,
 					RDFS.ISDEFINEDBY, to));
 		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
-	private IntermediateOwlObject createTextOrigin(Section<KnowWEObjectType> source, Resource to,
-			URI type) throws RepositoryException {
+	private IntermediateOwlObject createTextOrigin(
+			Section<KnowWEObjectType> source, Resource to, URI type)
+			throws RepositoryException {
 		IntermediateOwlObject io = new IntermediateOwlObject();
-		io.addStatement(createStatement(to, RDF.TYPE, createURI("TextOrigin")));
-		io.addStatement(createStatement(to, createURI("hasNode"),
+		io.addStatement(createStatement(to, RDF.TYPE, TEXTORIGIN));
+		io.addStatement(createStatement(to, HASNODE,
 				createLiteral(source.getId())));
-		io.addStatement(createStatement(to, createURI("hasTopic"),
+		io.addStatement(createStatement(to, HASTOPIC,
 				createlocalURI(source.getTitle())));
-		io.addStatement(createStatement(to, createURI("hasType"),
-				type));
+		io.addStatement(createStatement(to, HASTYPE, type));
 		return io;
 	}
 
-	public IntermediateOwlObject createStatementSrc(URI soluri, URI prop, URI object,
-			Section s,URI type) {
-		IntermediateOwlObject io=new IntermediateOwlObject();
-		BNode bnode=UpperOntology.getInstance().getConnection().getValueFactory().createBNode();
-		
+	public IntermediateOwlObject createStatementSrc(URI soluri, URI prop,
+			URI object, Section s, URI type) {
+		IntermediateOwlObject io = new IntermediateOwlObject();
+		BNode bnode = UpperOntology.getInstance().getConnection()
+				.getValueFactory().createBNode();
+
 		try {
 			io.addStatement(createStatement(bnode, RDF.SUBJECT, soluri));
 			io.addStatement(createStatement(bnode, RDF.PREDICATE, prop));
 			io.addStatement(createStatement(bnode, RDF.OBJECT, object));
-			io.addStatement(createStatement(bnode,RDF.TYPE,RDF.STATEMENT));
-			BNode to=UpperOntology.getInstance().getConnection().getValueFactory().createBNode();
+			io.addStatement(createStatement(bnode, RDF.TYPE, RDF.STATEMENT));
+			BNode to = UpperOntology.getInstance().getConnection()
+					.getValueFactory().createBNode();
 			io.merge(createTextOrigin(s, to, type));
 			io.addStatement(createStatement(bnode, RDFS.ISDEFINEDBY, to));
 		} catch (RepositoryException e) {

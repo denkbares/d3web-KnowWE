@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.table.xcl;
 
-import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.XMLWrappedTable;
 import de.d3web.we.kdom.xml.XMLContent;
 

@@ -28,20 +28,26 @@ import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.Patterns;
 
-public class XCLRelation extends DefaultAbstractKnowWEObjectType implements
-		OwlGenerator {
+public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
@@ -50,60 +56,58 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType implements
 		this.sectionFinder = new RegexSectionFinder(Patterns.XCRelation,
 				Pattern.MULTILINE, 1);
 		this.setCustomRenderer(XCLRelationKdomIdWrapperRenderer.getInstance());
+		this.addReviseSubtreeHandler(new XCLRelationOWLSubTreeHandler());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.d3web.we.dom.AbstractOWLKnowWEObjectType#getOwl(de.d3web.we.dom.Section
-	 * )
-	 */
-	public IntermediateOwlObject getOwl(Section s) {
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		try {
-			UpperOntology uo = UpperOntology.getInstance();
+	private class XCLRelationOWLSubTreeHandler implements ReviseSubTreeHandler{
 
-			URI explainsdings = uo.getHelper().createlocalURI(
-					s.getTitle() + ".." + s.getId());
-			URI solutionuri = ((DefaultSubjectContext) ContextManager
-					.getInstance().getContext(s, DefaultSubjectContext.CID))
-					.getSolutionURI();
-			io.addStatement(uo.getHelper().createStatement(solutionuri,
-					uo.getHelper().createURI("isRatedBy"), explainsdings));
-			uo.getHelper().attachTextOrigin(explainsdings, s, io);
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			KDOMReportMessage msg =null;
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			try {
+				UpperOntology uo = UpperOntology.getInstance();
 
-			io.addStatement(uo.getHelper().createStatement(explainsdings,
-					RDF.TYPE, uo.getHelper().createURI("Explains")));
-			List<Section> children = s.getChildren();
-			for (Section current : children) {
-				if (current.getObjectType() instanceof ComplexFinding
-						|| current.getObjectType() instanceof Finding) {
-					OwlGenerator handler = (OwlGenerator) current
-							.getObjectType();
-					for (URI curi : handler.getOwl(current).getLiterals()) {
-						Statement state = uo.getHelper().createStatement(
+				URI explainsdings = uo.getHelper().createlocalURI(
+						s.getTitle() + ".." + s.getId());
+				URI solutionuri = ((DefaultSubjectContext) ContextManager
+						.getInstance().getContext(s, DefaultSubjectContext.CID))
+						.getSolutionURI();
+				io.addStatement(uo.getHelper().createStatement(solutionuri,D3WebOWLVokab.ISRATEDBY
+						, explainsdings));
+				uo.getHelper().attachTextOrigin(explainsdings, s, io);
+
+				io.addStatement(uo.getHelper().createStatement(explainsdings,
+						RDF.TYPE, D3WebOWLVokab.EXPLAINS));
+				List<Section> children = s.getChildren();
+				for (Section current : children) {
+					if (current.getObjectType() instanceof ComplexFinding
+							|| current.getObjectType() instanceof Finding) {
+						IntermediateOwlObject tempio= (IntermediateOwlObject) KnowWEUtils.getStoredObject(current, OwlHelper.IOO);
+						for (URI curi : tempio.getLiterals()) {
+							Statement state = uo.getHelper().createStatement(
+									explainsdings,
+									D3WebOWLVokab.HASFINDING, curi);
+							io.addStatement(state);
+							tempio.removeLiteral(curi);
+						}
+						io.merge(tempio);
+					} else if (current.getObjectType() instanceof XCLRelationWeight) {				
+						io.addStatement(uo.getHelper().createStatement(
 								explainsdings,
-								uo.getHelper().createURI("hasFinding"), curi);
-						io.addStatement(state);
-						handler.getOwl(current).removeLiteral(curi);
-					}
-					io.merge(handler.getOwl(current));
-				} else if (current.getObjectType() instanceof XCLRelationWeight) {
-					XCLRelationWeight handler = (XCLRelationWeight) current
-							.getObjectType();
+								D3WebOWLVokab.HASWEIGHT,
+								uo.getHelper().createLiteral(current.getOriginalText())));					
 
-					io.addStatement(uo.getHelper().createStatement(
-							explainsdings,
-							uo.getHelper().createURI("hasWeight"),
-							uo.getHelper().createLiteral(current.getOriginalText())));					
+					}
 
 				}
-
+			} catch (RepositoryException e) {
+				msg = new SimpleMessageError(e.getMessage());
 			}
-		} catch (RepositoryException e) {
-			// TODO error management?
+			SemanticCore.getInstance().addStatements(io, s);
+			return msg;
+
 		}
-		return io;
+		
 	}
 }

@@ -272,7 +272,7 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
  
 	public static List<Message> parse(Reader reader, IDObjectManagement idom) {
 		QuestionnaireBuilder builder = new QuestionnaireBuilder("", idom);
-		return (List<Message>) builder.addKnowledge(reader, idom, null);
+		return builder.addKnowledge(reader, idom, null);
 	}
 
 	@Override

@@ -37,6 +37,7 @@ public class DiagnosisHierarchyWriter extends TxtKnowledgeWriter {
 		super(manager);
 	}
 
+	@Override
 	public String writeText() {
 		StringBuffer text = new StringBuffer();
 		Diagnosis rootDiagnosis = manager.getKB().getRootDiagnosis();

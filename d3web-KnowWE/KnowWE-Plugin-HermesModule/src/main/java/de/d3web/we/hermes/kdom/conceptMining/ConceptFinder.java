@@ -12,7 +12,6 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;

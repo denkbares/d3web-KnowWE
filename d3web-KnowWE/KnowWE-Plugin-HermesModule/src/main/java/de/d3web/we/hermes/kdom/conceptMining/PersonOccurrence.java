@@ -1,7 +1,5 @@
 package de.d3web.we.hermes.kdom.conceptMining;
 
-import org.openrdf.model.URI;
-
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 
 public class PersonOccurrence extends DefaultAbstractKnowWEObjectType {

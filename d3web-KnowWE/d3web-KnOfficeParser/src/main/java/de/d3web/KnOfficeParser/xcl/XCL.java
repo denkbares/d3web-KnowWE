@@ -6,9 +6,6 @@ import de.d3web.KnOfficeParser.ParserErrorHandler;
 
 
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Grammatik fuer XCL Grammatiken
@@ -93,8 +90,10 @@ public class XCL extends Parser {
         }
         
 
-    public String[] getTokenNames() { return XCL.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g"; }
+    @Override
+	public String[] getTokenNames() { return XCL.tokenNames; }
+    @Override
+	public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g"; }
 
 
       private XCLBuilder builder;
@@ -199,7 +198,7 @@ public class XCL extends Parser {
 
             state._fsp--;
 
-            builder.solution(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (name1!=null?name1.value:null));
+            builder.solution((retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (name1!=null?name1.value:null));
             match(input,CBO,FOLLOW_CBO_in_solutiondescription61); 
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g:72:70: ( finding COMMA )+
             int cnt2=0;
@@ -484,7 +483,7 @@ public class XCL extends Parser {
 
             state._fsp--;
 
-            builder.threshold(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (name3!=null?name3.value:null), (d3double4!=null?d3double4.value:null));
+            builder.threshold((retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (name3!=null?name3.value:null), (d3double4!=null?d3double4.value:null));
 
             }
 

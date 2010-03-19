@@ -40,8 +40,6 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-import de.d3web.we.core.KnowWEFacade;
-
 
 
 public class KnowWEUploadFilter implements Filter {

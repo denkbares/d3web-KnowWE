@@ -23,54 +23,20 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
-import org.openrdf.model.URI;
-
-import de.d3web.we.core.SemanticCore;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
 
 /**
  * @author kazamatzuri
  * 
  */
 public class SemanticAnnotationPropertyName extends
-		DefaultAbstractKnowWEObjectType implements OwlGenerator {
+		DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
 		this.sectionFinder = new AllTextSectionFinder();
 	}
-
-	public IntermediateOwlObject getOwl(Section s) {
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		UpperOntology uo = UpperOntology.getInstance();
-		String prop = s.getOriginalText();
-		URI property = null;
-		if (prop.equals("subClassOf") || prop.equals("subPropertyOf")) {
-			property = uo.getRDFS(prop);
-		} else if (prop.equals("type")) {
-			property = uo.getRDF(prop);
-		} else if (prop.contains(":")) {
-			String ns = SemanticCore.getInstance().getNameSpaces().get(
-					prop.split(":")[0]);
-			if (ns==null|| ns.length()==0){
-				io.setBadAttribute("no namespace given");
-				io.setValidPropFlag(false);			
-			} else if (ns.equals(prop.split(":")[0])) {				
-				io.setBadAttribute(ns);
-				io.setValidPropFlag(false);
-			} else {
-				property = uo.getHelper().createURI(ns, prop.split(":")[1]);
-			}
-		} else {
-			property = uo.getHelper().createlocalURI(prop);
-		}
-		io.addLiteral(property);
-		return io;
-	}
+	
 
 }

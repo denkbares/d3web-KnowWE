@@ -19,80 +19,91 @@
  */
 package de.d3web.we.hermes.maps;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType implements OwlGenerator{
-    private static final String START_TAG = "<<ORT:";
-    private static final String END_TAG = ">>";
-
-    @Override
-    protected void init() {
-	sectionFinder = new RegexSectionFinder(START_TAG + "[\\w|\\W]*?"
-		+ END_TAG);
-	this.setCustomRenderer(new EditSectionRenderer(LocationRenderer.getInstance()));
-    }
-
-    
-    public IntermediateOwlObject getOwl(Section s) {
-	IntermediateOwlObject ioo = new IntermediateOwlObject();
-
-	Placemark placem = extractPlacemark(s.getOriginalText());
-	MapType.addPlacemarkToOwlObject(placem, ioo);
-	return ioo;
-    }
-
-    private static Placemark extractPlacemark(String sectionText) {
-	sectionText = sectionText.substring(START_TAG.length(), sectionText
-		.length()
-		- END_TAG.length());
-
-	String locationName = null;
-	double latitude = Double.NaN;
-	double longitude = Double.NaN;
-	String description = null;
-	if (sectionText == null) {
-	    return null;
-	}
-	String[] splittedSecText = sectionText.split(";");
-	if (splittedSecText.length > 2 && splittedSecText.length < 5) {
-	    locationName = splittedSecText[0];
-	    latitude = Double.parseDouble(splittedSecText[1]);
-	    longitude = Double.parseDouble(splittedSecText[2]);
-	    if (splittedSecText.length == 4) {
-		description = splittedSecText[3];
-	    }
-	} else {
-	    return null;
-	}
-
-	return new Placemark(locationName, latitude, longitude, description);
-    }
-
-    public static class LocationRenderer extends KnowWEDomRenderer {
-
-	private static LocationRenderer instance;
-
-	public static LocationRenderer getInstance() {
-	    if (instance == null) {
-		instance = new LocationRenderer();
-	    }
-	    return instance;
-	}
+public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType
+		{
+	private static final String START_TAG = "<<ORT:";
+	private static final String END_TAG = ">>";
 
 	@Override
-	public void render(KnowWEArticle article, Section sec,
-		KnowWEUserContext user, StringBuilder string) {
-	    string.append(extractPlacemark(sec.getOriginalText())
-		    .toHTMLString());
+	protected void init() {
+		sectionFinder = new RegexSectionFinder(START_TAG + "[\\w|\\W]*?"
+				+ END_TAG);
+		this.setCustomRenderer(new EditSectionRenderer(LocationRenderer
+				.getInstance()));
+		this.addReviseSubtreeHandler(new LocationDefinitionTypeOWLSubTreeHandler());
 	}
-    }
+
+	private class LocationDefinitionTypeOWLSubTreeHandler implements
+			ReviseSubTreeHandler {
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			IntermediateOwlObject ioo = new IntermediateOwlObject();
+			Placemark placem = extractPlacemark(s.getOriginalText());
+			MapType.addPlacemarkToOwlObject(placem, ioo);
+			SemanticCore.getInstance().addStatements(ioo, s);
+			return null;
+		}
+
+	}
+
+
+	private static Placemark extractPlacemark(String sectionText) {
+		sectionText = sectionText.substring(START_TAG.length(), sectionText
+				.length()
+				- END_TAG.length());
+
+		String locationName = null;
+		double latitude = Double.NaN;
+		double longitude = Double.NaN;
+		String description = null;
+		if (sectionText == null) {
+			return null;
+		}
+		String[] splittedSecText = sectionText.split(";");
+		if (splittedSecText.length > 2 && splittedSecText.length < 5) {
+			locationName = splittedSecText[0];
+			latitude = Double.parseDouble(splittedSecText[1]);
+			longitude = Double.parseDouble(splittedSecText[2]);
+			if (splittedSecText.length == 4) {
+				description = splittedSecText[3];
+			}
+		} else {
+			return null;
+		}
+
+		return new Placemark(locationName, latitude, longitude, description);
+	}
+
+	public static class LocationRenderer extends KnowWEDomRenderer {
+
+		private static LocationRenderer instance;
+
+		public static LocationRenderer getInstance() {
+			if (instance == null) {
+				instance = new LocationRenderer();
+			}
+			return instance;
+		}
+
+		@Override
+		public void render(KnowWEArticle article, Section sec,
+				KnowWEUserContext user, StringBuilder string) {
+			string.append(extractPlacemark(sec.getOriginalText())
+					.toHTMLString());
+		}
+	}
 
 }

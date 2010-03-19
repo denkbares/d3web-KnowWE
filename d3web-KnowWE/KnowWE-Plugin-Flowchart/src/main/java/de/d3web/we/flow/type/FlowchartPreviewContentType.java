@@ -19,7 +19,6 @@
  */
 package de.d3web.we.flow.type;
 
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.xml.XMLContent;
 
 /**

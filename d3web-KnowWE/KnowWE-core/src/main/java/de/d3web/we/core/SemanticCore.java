@@ -54,12 +54,10 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 
-import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.PropertyManager;
+import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.visitor.OWLBuilderVisitor;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.PropertyManager;
-import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class SemanticCore {
@@ -248,57 +246,7 @@ public class SemanticCore {
 		return uo;
 	}
 
-	/**
-	 * updates the knowledge of an artikle into the semanticcore
-	 * 
-	 * @param topic
-	 * @param art
-	 */
-	@Deprecated
-	public void update(String topic, KnowWEArticle art) {
-		RepositoryConnection con = uo.getConnection();
 
-		try {
-			IntermediateOwlObject io = new IntermediateOwlObject();
-			clearContext(topic);
-			con.setAutoCommit(false);
-			OWLBuilderVisitor vis = new OWLBuilderVisitor();
-			io.merge(vis.visit(art.getSection()));
-			List<Statement> allStatements = io.getAllStatements();
-			statementcache.put(topic, allStatements);
-			Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-					"updating " + topic + "  " + allStatements.size());
-			for (Statement current : allStatements) {
-				if (current != null) {
-					if (current.getObject() == null) {
-						Logger.getLogger(this.getClass().getName()).log(
-								Level.SEVERE,
-								"invalid object: null at " + current.toString()
-										+ " in topic:" + topic);
-					} else if (current.getPredicate() == null) {
-						Logger.getLogger(this.getClass().getName()).log(
-								Level.SEVERE,
-								"invalid predicate: null at "
-										+ current.toString() + " in topic:"
-										+ topic);
-					} else if (current.getSubject() == null) {
-						Logger.getLogger(this.getClass().getName()).log(
-								Level.SEVERE,
-								"invalid subject: null at "
-										+ current.toString() + " in topic:"
-										+ topic);
-					} else {
-						con.add(current);
-					}
-				}
-			}
-			con.commit();
-		} catch (RepositoryException e) {
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-					e.getMessage());
-		}
-
-	}
 	/**
 	 * adds Statements to the repository
 	 * 

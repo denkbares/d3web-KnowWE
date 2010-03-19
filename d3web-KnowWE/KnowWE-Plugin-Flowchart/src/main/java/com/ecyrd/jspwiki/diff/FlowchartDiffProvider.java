@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-
 import org.apache.commons.jrcs.diff.AddDelta;
 import org.apache.commons.jrcs.diff.ChangeDelta;
 import org.apache.commons.jrcs.diff.Chunk;

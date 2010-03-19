@@ -26,14 +26,18 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
-import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 
 /**
  * @author Jochen
@@ -44,7 +48,7 @@ import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
  * of the property.
  *
  */
-public class PropertyDashTreeElementContent extends DashTreeElementContent implements OwlGenerator{
+public class PropertyDashTreeElementContent extends DashTreeElementContent{
 
 	@Override
 	protected void init() {
@@ -53,88 +57,92 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent imple
 		e.setSteal(true);
 		this.childrenTypes.add(e);
 		this.childrenTypes.add(new PropertyIDDefinition());
+		this.addReviseSubtreeHandler(new PropertyDashTreeElementContentOWLSubTreeHandler());
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.we.kdom.AbstractKnowWEObjectType#getOwl(de.d3web.we.kdom.Section)
-	 */
-	
-	public IntermediateOwlObject getOwl(Section s) {
-		Section<PropertyDashTreeElementContent> sec = s;
-		if (s.getObjectType() instanceof PropertyDashTreeElementContent) {
-			Section<PropertyIDDefinition> propIDSection = sec.findSuccessor(PropertyIDDefinition.class);
-			if (propIDSection != null) {
-				String propertyName = propIDSection.getOriginalText();
-				String rangeDef = null;
-				String domainDef = null;
-				Section<DomainDefinition> domainDefS = sec.findSuccessor(DomainDefinition.class);
-				if (domainDefS != null) {
-					domainDef = domainDefS.getOriginalText();
-				}
+	private class PropertyDashTreeElementContentOWLSubTreeHandler implements ReviseSubTreeHandler
+	{
 
-				Section<RangeDefinition> rangeDefS = sec.findSuccessor(RangeDefinition.class);
-				if (rangeDefS != null) {
-					rangeDef = rangeDefS.getOriginalText();
-				}
-
-				UpperOntology uo = UpperOntology.getInstance();
-				IntermediateOwlObject io = new IntermediateOwlObject();
-
-				OwlHelper helper = uo.getHelper();
-				URI propURI = helper.createlocalURI(propertyName.trim());
-				try {
-					
-					// creates an Object-Property (in any case)
-					io.addStatement(helper.createStatement(propURI, RDF.TYPE,
-							OWL.OBJECTPROPERTY));
-					
-					
-					// creates a Subproperty relation IF father exists
-					Section<? extends DashTreeElement> fatherElement = DashTreeElement.getDashTreeFather((Section<DashTreeElement>)sec.getFather());
-					if(fatherElement != null) {
-						Section<PropertyIDDefinition> fatherID  = fatherElement.findSuccessor(PropertyIDDefinition.class);
-						if(fatherID != null) {
-							io.addStatement(helper.createStatement(
-									propURI, RDFS.SUBPROPERTYOF, helper
-											.createlocalURI(fatherID.getOriginalText()
-													.trim())));
-						}
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			Section<PropertyDashTreeElementContent> sec = s;
+			if (s.getObjectType() instanceof PropertyDashTreeElementContent) {
+				Section<PropertyIDDefinition> propIDSection = sec.findSuccessor(PropertyIDDefinition.class);
+				if (propIDSection != null) {
+					String propertyName = propIDSection.getOriginalText();
+					String rangeDef = null;
+					String domainDef = null;
+					Section<DomainDefinition> domainDefS = sec.findSuccessor(DomainDefinition.class);
+					if (domainDefS != null) {
+						domainDef = domainDefS.getOriginalText();
 					}
-					
-					//creates Domain restriction if defined
-					if (domainDef != null) {
-						String[] classes = domainDef.split(",");
-						for (String string : classes) {
-							if (string.trim().length() > 0) {
+
+					Section<RangeDefinition> rangeDefS = sec.findSuccessor(RangeDefinition.class);
+					if (rangeDefS != null) {
+						rangeDef = rangeDefS.getOriginalText();
+					}
+
+					UpperOntology uo = UpperOntology.getInstance();
+					IntermediateOwlObject io = new IntermediateOwlObject();
+
+					OwlHelper helper = uo.getHelper();
+					URI propURI = helper.createlocalURI(propertyName.trim());
+					try {
+						
+						// creates an Object-Property (in any case)
+						io.addStatement(helper.createStatement(propURI, RDF.TYPE,
+								OWL.OBJECTPROPERTY));
+						
+						
+						// creates a Subproperty relation IF father exists
+						Section<? extends DashTreeElement> fatherElement = DashTreeElement.getDashTreeFather((Section<DashTreeElement>)sec.getFather());
+						if(fatherElement != null) {
+							Section<PropertyIDDefinition> fatherID  = fatherElement.findSuccessor(PropertyIDDefinition.class);
+							if(fatherID != null) {
 								io.addStatement(helper.createStatement(
-												propURI, RDFS.DOMAIN, helper
-														.createlocalURI(string
-																.trim())));
+										propURI, RDFS.SUBPROPERTYOF, helper
+												.createlocalURI(fatherID.getOriginalText()
+														.trim())));
 							}
 						}
-					}
-
-					//creates Range restriction if defined
-					if (rangeDef != null) {
-						String[] classes = rangeDef.split(",");
-						for (String string : classes) {
-							if (string.trim().length() > 0) {
-								io.addStatement(helper.createStatement(
-												propURI, RDFS.RANGE, helper
-														.createlocalURI(string
-																.trim())));
+						
+						//creates Domain restriction if defined
+						if (domainDef != null) {
+							String[] classes = domainDef.split(",");
+							for (String string : classes) {
+								if (string.trim().length() > 0) {
+									io.addStatement(helper.createStatement(
+													propURI, RDFS.DOMAIN, helper
+															.createlocalURI(string
+																	.trim())));
+								}
 							}
 						}
-					}
-					return io;
-				} catch (RepositoryException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 
+						//creates Range restriction if defined
+						if (rangeDef != null) {
+							String[] classes = rangeDef.split(",");
+							for (String string : classes) {
+								if (string.trim().length() > 0) {
+									io.addStatement(helper.createStatement(
+													propURI, RDFS.RANGE, helper
+															.createlocalURI(string
+																	.trim())));
+								}
+							}
+						}
+						SemanticCore.getInstance().addStatements(io, s);						
+					} catch (RepositoryException e) {						
+						return new SimpleMessageError(e.getMessage());
+					}
+
+				}
 			}
+			return null;
 		}
-		return null;
+		
 	}
+	
+
 
 }

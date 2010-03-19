@@ -64,7 +64,7 @@ public class ActionContext {
 	}
 	
 	public Action getAction() {
-		PluginManager manager = JPFPluginManager.getInstance();
+		PluginManager manager = PluginManager.getInstance();
 		Extension[] extensions = manager.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_ID);
 		for (Extension e : extensions) {
 			if (e.getName().equals(actionName))

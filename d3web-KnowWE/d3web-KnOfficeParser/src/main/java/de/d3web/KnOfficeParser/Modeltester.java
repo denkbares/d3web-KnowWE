@@ -81,7 +81,7 @@ public class Modeltester {
 		file = new File("src\\main\\examples\\models\\XCL.txt");
 		XCLd3webBuilder builder3 = new XCLd3webBuilder(file.toString(),false, false, idom);
 		builder3.setCreateUncompleteFindings(false);
-		errors=(List<Message>) builder3.addKnowledge(new FileReader(file), idom, null);
+		errors=builder3.addKnowledge(new FileReader(file), idom, null);
 		for (Message m: errors) {
 			System.out.println(m);
 		}

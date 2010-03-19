@@ -90,6 +90,7 @@ public class FlowchartEdge {
 		return true;
 	}
 	
+	@Override
 	public String toString() {
 		return "{" + this.getID() + ", " + this.getSource() + ", "
 				+ this.getTarget() + ", " + this.getGuard() + "}";

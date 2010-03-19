@@ -21,7 +21,7 @@
 /**
  * 
  */
-package de.d3web.we.module.semantic.owl;
+package de.d3web.we.core.semantic;
 
 import org.apache.log4j.Logger;
 import org.openrdf.model.URI;

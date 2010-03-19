@@ -6,9 +6,6 @@ import de.d3web.KnOfficeParser.ConditionBuilder;
 
 
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
 
 public class ComplexConditionSOLO extends Parser {
     public static final String[] tokenNames = new String[] {
@@ -88,8 +85,10 @@ public class ComplexConditionSOLO extends Parser {
         }
         
 
-    public String[] getTokenNames() { return ComplexConditionSOLO.tokenNames; }
-    public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g"; }
+    @Override
+	public String[] getTokenNames() { return ComplexConditionSOLO.tokenNames; }
+    @Override
+	public String getGrammarFileName() { return "D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\ComplexConditionSOLO.g"; }
 
 
       private ParserErrorHandler eh;

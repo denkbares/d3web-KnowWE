@@ -2,15 +2,7 @@
 
 package de.d3web.KnOfficeParser.complexcondition;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
-import de.d3web.KnOfficeParser.ConditionBuilder;
-
-
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
     public static final int HIDE=38;
     public static final int RP=16;
@@ -89,8 +81,10 @@ public class ComplexConditionSOLO_ComplexCondition_BasicParser extends Parser {
         }
         
 
-    public String[] getTokenNames() { return ComplexConditionSOLO.tokenNames; }
-    public String getGrammarFileName() { return "BasicParser.g"; }
+    @Override
+	public String[] getTokenNames() { return ComplexConditionSOLO.tokenNames; }
+    @Override
+	public String getGrammarFileName() { return "BasicParser.g"; }
 
 
 

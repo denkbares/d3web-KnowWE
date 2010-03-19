@@ -2,11 +2,7 @@
 
 package de.d3web.KnOfficeParser.visio;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
-import de.d3web.KnOfficeParser.ConditionBuilder;
-
-
 import org.antlr.runtime.*;
-import java.util.Stack;
 import java.util.List;
 import java.util.ArrayList;
 

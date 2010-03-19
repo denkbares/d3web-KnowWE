@@ -85,12 +85,13 @@ public class RuleWriter extends TxtKnowledgeWriter {
 
 	}
 
+	@Override
 	public String writeText() {
 		StringBuffer s = new StringBuffer();
 		Collection rules = manager.getAllRules();
 		
 		for (Iterator iter = rules.iterator(); iter.hasNext();) {
-			Object element = (Object) iter.next();
+			Object element = iter.next();
 			if (element instanceof Rule) {
 				Rule rule = (Rule) element;
 				if (!manager.isDone(rule)) {

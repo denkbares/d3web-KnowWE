@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
-import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;

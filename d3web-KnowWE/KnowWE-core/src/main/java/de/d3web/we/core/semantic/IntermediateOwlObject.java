@@ -21,7 +21,7 @@
 /**
  * 
  */
-package de.d3web.we.module.semantic.owl;
+package de.d3web.we.core.semantic;
 
 import java.util.ArrayList;
 import java.util.HashMap;

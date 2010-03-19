@@ -9,70 +9,101 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.PropertyManager;
+import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.hermes.kdom.TimeEventContext;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
+import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationObject;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationSubject;
 import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.PropertyManager;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.KnowWEUtils;
 
 public class AnnotationObjectInTimeEvent extends SemanticAnnotationObject {
 
 	@Override
-	public IntermediateOwlObject getOwl(Section s) {
-		UpperOntology uo = UpperOntology.getInstance();
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		List<Section> childs = s.getChildren();
-		URI prop = null;
-		URI stringa = null;
-		for (Section cur : childs) {
-			if (cur.getObjectType().getClass().equals(SemanticAnnotationProperty.class)) {
-				prop = ((OwlGenerator)((SemanticAnnotationProperty) cur.getObjectType())).getOwl(cur)
-						.getLiterals().get(0);
-			} else if (cur.getObjectType().getClass().equals(
-					SimpleAnnotation.class)) {
-				stringa = ((SimpleAnnotation) cur.getObjectType()).getOwl(cur)
-						.getLiterals().get(0);
+	public void init() {
+		SemanticAnnotationProperty propType = new SemanticAnnotationProperty();
+		SemanticAnnotationSubject subject = new SemanticAnnotationSubject();
+		subject.setSectionFinder(new AllBeforeTypeSectionFinder(propType));
+		this.childrenTypes.add(propType);
+		this.childrenTypes.add(subject);
+		this.childrenTypes.add(new SimpleAnnotation());
+		this.sectionFinder = new AllTextSectionFinder();
+		this.addReviseSubtreeHandler(new AnnotationObjectInTimeEventSubTreeHandler());
+	}
+	
+	private class AnnotationObjectInTimeEventSubTreeHandler implements
+			ReviseSubTreeHandler {
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			KDOMReportMessage msg = null;
+			UpperOntology uo = UpperOntology.getInstance();
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			List<Section> childs = s.getChildren();
+			URI prop = null;
+			URI stringa = null;
+			for (Section cur : childs) {
+				if (cur.getObjectType().getClass().equals(
+						SemanticAnnotationProperty.class)) {
+					prop = ((IntermediateOwlObject) KnowWEUtils
+							.getStoredObject(cur, OwlHelper.IOO)).getLiterals()
+							.get(0);
+				} else if (cur.getObjectType().getClass().equals(
+						SimpleAnnotation.class)) {
+					stringa = ((IntermediateOwlObject) KnowWEUtils
+							.getStoredObject(cur, OwlHelper.IOO)).getLiterals()
+							.get(0);
+				}
+
 			}
 
-		}
-
-		boolean validprop = false;
-		if (prop != null) {
-			validprop = PropertyManager.getInstance().isValid(prop);
-			io.setBadAttribute(prop.getLocalName());
-		}
-		io.setValidPropFlag(validprop);
-		if (!validprop) {
-			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-					"invalid property: " + prop.getLocalName());
-		}
-
-		if (prop != null && validprop && stringa != null) {
-			TimeEventContext tURI = (TimeEventContext) ContextManager
-					.getInstance().getContext(s, TimeEventContext.CID);
-			URI TEURI = null;
-			if (tURI == null) {
-				return io;
-			} else {
-				TEURI = tURI.getTimeEventURI();
+			boolean validprop = false;
+			if (prop != null) {
+				validprop = PropertyManager.getInstance().isValid(prop);
+				io.setBadAttribute(prop.getLocalName());
+			}
+			io.setValidPropFlag(validprop);
+			if (!validprop) {
+				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+						"invalid property: " + prop.getLocalName());
 			}
 
-			try {
+			if (prop != null && validprop && stringa != null) {
+				TimeEventContext tURI = (TimeEventContext) ContextManager
+						.getInstance().getContext(s, TimeEventContext.CID);
+				URI TEURI = null;
+				if (tURI == null) {
+					KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+					return msg;
+				} else {
+					TEURI = tURI.getTimeEventURI();
+				}
 
-				ArrayList<Statement> slist = new ArrayList<Statement>();
-				slist.add(uo.getHelper().createStatement(TEURI, prop, stringa));
+				try {
 
-				io.addAllStatements(slist);
-			} catch (RepositoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+					ArrayList<Statement> slist = new ArrayList<Statement>();
+					slist.add(uo.getHelper().createStatement(TEURI, prop,
+							stringa));
+
+					io.addAllStatements(slist);
+				} catch (RepositoryException e) {
+					msg = new SimpleMessageError(e.getMessage());
+				}
 			}
+			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+			return msg;
 		}
-		return io;
+
 	}
 }

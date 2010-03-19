@@ -6,7 +6,6 @@ import de.d3web.KnOfficeParser.ConditionBuilder;
 
 
 import org.antlr.runtime.*;
-import java.util.Stack;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -87,8 +86,10 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
         }
         
 
-    public String[] getTokenNames() { return ComplexConditionSOLO.tokenNames; }
-    public String getGrammarFileName() { return "ComplexCondition.g"; }
+    @Override
+	public String[] getTokenNames() { return ComplexConditionSOLO.tokenNames; }
+    @Override
+	public String getGrammarFileName() { return "ComplexCondition.g"; }
 
 
       private ConditionBuilder builder;
@@ -222,7 +223,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
                     } while (true);
 
                     match(input,CBC,FOLLOW_CBC_in_complexcondition78); 
-                    builder.minmax(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), Integer.parseInt((a!=null?a.getText():null)), Integer.parseInt((b!=null?b.getText():null)), i);
+                    builder.minmax((retval.start).getLine(), input.toString(retval.start,input.LT(-1)), Integer.parseInt((a!=null?a.getText():null)), Integer.parseInt((b!=null?b.getText():null)), i);
 
                     }
                     break;
@@ -567,7 +568,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
 
                             state._fsp--;
 
-                            builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod!=null?nod.value:null));
+                            builder.condition( (retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod!=null?nod.value:null));
                             // ComplexCondition.g:74:129: ( ORS nod2= nameOrDouble )*
                             loop7:
                             do {
@@ -589,7 +590,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
 
                             	    state._fsp--;
 
-                            	    builder.condition( ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod2!=null?nod2.value:null)); builder.orcond(input.toString(retval.start,input.LT(-1)));
+                            	    builder.condition( (retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (eq2!=null?input.toString(eq2.start,eq2.stop):null), (nod2!=null?nod2.value:null)); builder.orcond(input.toString(retval.start,input.LT(-1)));
 
                             	    }
                             	    break;
@@ -628,7 +629,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
 
                             state._fsp--;
 
-                            builder.condition(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (intervall3!=null?intervall3.a:null), (intervall3!=null?intervall3.b:null), (in!=null));
+                            builder.condition((retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type1, (intervall3!=null?intervall3.a:null), (intervall3!=null?intervall3.b:null), (in!=null));
 
                             }
                             break;
@@ -704,7 +705,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
                     }
 
                     match(input,SBC,FOLLOW_SBC_in_condition209); 
-                    builder.knowncondition(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type4, c!=null);
+                    builder.knowncondition((retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type4, c!=null);
 
                     }
                     break;
@@ -779,7 +780,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
                     } while (true);
 
                     match(input,CBC,FOLLOW_CBC_in_condition245); 
-                    builder.in(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type5, answers);
+                    builder.in((retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type5, answers);
 
                     }
                     break;
@@ -854,7 +855,7 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
                     } while (true);
 
                     match(input,CBC,FOLLOW_CBC_in_condition281); 
-                    builder.all(((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type6, answers);
+                    builder.all((retval.start).getLine(), input.toString(retval.start,input.LT(-1)), (a!=null?a.value:null), type6, answers);
 
                     }
                     break;
@@ -986,7 +987,8 @@ public class ComplexConditionSOLO_ComplexCondition extends Parser {
             this.special = DFA16_special;
             this.transition = DFA16_transition;
         }
-        public String getDescription() {
+        @Override
+		public String getDescription() {
             return "73:1: condition : (a= name ( type )? ( eq nod= nameOrDouble ( ORS nod2= nameOrDouble )* | (in= IN )? intervall ) | ( KNOWN | c= UNKNOWN ) SBO a= name ( type )? SBC | a= name ( type )? IN CBO b= name ( COMMA d= name )* CBC | a= name ( type )? ALL CBO b= name ( COMMA d= name )* CBC );";
         }
     }

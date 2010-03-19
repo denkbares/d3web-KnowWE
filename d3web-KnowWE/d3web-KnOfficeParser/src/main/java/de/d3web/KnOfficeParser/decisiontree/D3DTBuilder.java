@@ -74,7 +74,6 @@ import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.report.Message;
 import de.d3web.scoring.Score;
-import de.d3web.scoring.inference.PSMethodHeuristic;
 
 /**
  * Builder um Mithilfe des Entscheidungsbaumparsers die geparsten Elemente in
@@ -87,7 +86,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 
 	public static List<Message> parse(Reader reader, IDObjectManagement idom) {
 		D3DTBuilder builder = new D3DTBuilder("", idom);
-		return (List<Message>) builder.addKnowledge(reader, idom, null);
+		return builder.addKnowledge(reader, idom, null);
 	}
 
 	private Question currentQuestion;

@@ -34,29 +34,85 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class ExtensionContent extends XMLContent implements OwlGenerator{
+public class ExtensionContent extends XMLContent{
 
 	@Override
 	protected void init() {
-		this.setCustomRenderer(ExtensionRenderer.getInstance());		
+		this.setCustomRenderer(ExtensionRenderer.getInstance());
+		this.addReviseSubtreeHandler(new ExtensionContentOWLSubTreeHandler());
 	}
 	
-	/* (non-Javadoc)
-	 * @see de.d3web.we.dom.AbstractKnowWEObjectType#getOwl(de.d3web.we.dom.Section)
-	 */	
-	public IntermediateOwlObject getOwl(Section s) {
-		String text=s.getOriginalText();
+	private class ExtensionContentOWLSubTreeHandler implements ReviseSubTreeHandler {
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			String text=s.getOriginalText();
+			
+			IntermediateOwlObject io = extend(text,s);;
+			SemanticCore.getInstance().addStatements(io, s);
+			return null;
+		}
+		private IntermediateOwlObject extend(String value,Section s){
+			IntermediateOwlObject io=new IntermediateOwlObject();
+			//SemanticCore sc=SemanticCore.getInstance();
+			UpperOntology uo = UpperOntology.getInstance();
+			RepositoryConnection con = uo.getConnection();
+			String output="";
+			boolean error=false;
+			try {
+				StringBufferInputStream is =new StringBufferInputStream(inlcudeDefaultNS(value));
+				System.setProperty("org.xml.sax.driver","org.apache.xerces.parsers.SAXParser");
+				RDFParser parser=new RDFXMLParser();
+				RDFHandler handler=new StatementCollector();
+				parser.setRDFHandler(handler);
+				//parser.setParseErrorListener(arg0);
+				parser.setVerifyData(true);			
+				parser.parse(is,"");
+				for (Statement cur:((StatementCollector)handler).getStatements()){
+					io.addStatement(cur);	
+				}
+				
+			} catch (RDFParseException e){
+				output+=e.getMessage();
+				error=true;
+				try {
+					con.rollback();
+				} catch (RepositoryException e1) {
+					Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());				
+				}
+			} catch (IOException e) {
+				error=true;
+				output+=e.getMessage();
+				try {
+					con.rollback();
+				} catch (RepositoryException e1) {
+					Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());
+				}
+			} catch (RDFHandlerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			output+="";
+			if(error){
+				KnowWEUtils.storeSectionInfo(s,Extension.EXTENSION_RESULT_KEY,output);				
+			}else {
+				KnowWEUtils.storeSectionInfo(s,Extension.EXTENSION_RESULT_KEY,"success");
+			}
+			return io;
+		}
 		
-		IntermediateOwlObject io = extend(text,s);;
-		return io;
 	}
+
 	
 	private String inlcudeDefaultNS(String s) {
 		String header = "<rdf:RDF xmlns=\""+UpperOntology.getInstance().getLocaleNS()+"\""
@@ -74,52 +130,5 @@ public class ExtensionContent extends XMLContent implements OwlGenerator{
 		return header+s+footer;
 	}
 	
-	private IntermediateOwlObject extend(String value,Section s){
-		IntermediateOwlObject io=new IntermediateOwlObject();
-		//SemanticCore sc=SemanticCore.getInstance();
-		UpperOntology uo = UpperOntology.getInstance();
-		RepositoryConnection con = uo.getConnection();
-		String output="";
-		boolean error=false;
-		try {
-			StringBufferInputStream is =new StringBufferInputStream(inlcudeDefaultNS(value));
-			System.setProperty("org.xml.sax.driver","org.apache.xerces.parsers.SAXParser");
-			RDFParser parser=new RDFXMLParser();
-			RDFHandler handler=new StatementCollector();
-			parser.setRDFHandler(handler);
-			//parser.setParseErrorListener(arg0);
-			parser.setVerifyData(true);			
-			parser.parse(is,"");
-			for (Statement cur:((StatementCollector)handler).getStatements()){
-				io.addStatement(cur);	
-			}
-			
-		} catch (RDFParseException e){
-			output+=e.getMessage();
-			error=true;
-			try {
-				con.rollback();
-			} catch (RepositoryException e1) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());				
-			}
-		} catch (IOException e) {
-			error=true;
-			output+=e.getMessage();
-			try {
-				con.rollback();
-			} catch (RepositoryException e1) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());
-			}
-		} catch (RDFHandlerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		output+="";
-		if(error){
-			KnowWEUtils.storeSectionInfo(s,Extension.EXTENSION_RESULT_KEY,output);				
-		}else {
-			KnowWEUtils.storeSectionInfo(s,Extension.EXTENSION_RESULT_KEY,"success");
-		}
-		return io;
-	}
+
 }

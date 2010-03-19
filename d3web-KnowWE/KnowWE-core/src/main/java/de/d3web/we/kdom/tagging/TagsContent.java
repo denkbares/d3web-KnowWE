@@ -25,40 +25,52 @@ import java.net.URLEncoder;
 
 import org.openrdf.model.URI;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.NothingRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
 
-public class TagsContent extends XMLContent implements OwlGenerator{
+public class TagsContent extends XMLContent{
 
 	@Override
 	protected void init() {
 		this.setCustomRenderer(NothingRenderer.getInstance());
+		this.addReviseSubtreeHandler(new TagsContentOWLSubTreeHandler());
 	}
 
-	
-	public IntermediateOwlObject getOwl(Section s) {
-		String text = s.getOriginalText();
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		for (String cur : text.split(" |,")) {
-			if (cur.trim().length() > 0) {
-				UpperOntology uo = UpperOntology.getInstance();
-				
-				try {
-					URI suri = uo.getHelper().createlocalURI(URLEncoder.encode(s.getTitle(),"UTF-8"));
-					URI puri = uo.getHelper().createURI("hasTag");
-					URI ouri = uo.getHelper().createlocalURI(cur.trim());				
-					io.merge(uo.getHelper().createProperty(suri, puri, ouri, s));
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+	private class TagsContentOWLSubTreeHandler implements ReviseSubTreeHandler{
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			String text = s.getOriginalText();
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			for (String cur : text.split(" |,")) {
+				if (cur.trim().length() > 0) {
+					UpperOntology uo = UpperOntology.getInstance();
+					
+					try {
+						URI suri = uo.getHelper().createlocalURI(URLEncoder.encode(s.getTitle(),"UTF-8"));
+						URI puri = OwlHelper.HASTAG;
+						URI ouri = uo.getHelper().createlocalURI(cur.trim());				
+						io.merge(uo.getHelper().createProperty(suri, puri, ouri, s));
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
+			SemanticCore.getInstance().addStatements(io, s);			
+			return null;
 		}
-		return io;
+		
 	}
+	
+	
 
 }

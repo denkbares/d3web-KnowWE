@@ -32,7 +32,6 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SentenceSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
-import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
 import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellStart;
 import de.d3web.we.kdom.table.TableLine;

@@ -25,13 +25,13 @@ package de.d3web.we.kdom.semanticFactSheet;
 
 import java.util.Map;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -77,16 +77,14 @@ public class InfoRenderer extends KnowWEDomRenderer {
 			return;
 
 		String text = sec.getOriginalText();
-		if (sec.getObjectType() instanceof OwlGenerator) {
-			IntermediateOwlObject io = ((OwlGenerator)sec.getObjectType()).getOwl(sec);
+		if (sec.getObjectType() instanceof InfoContent) {
+			IntermediateOwlObject io = (IntermediateOwlObject) KnowWEUtils.getStoredObject(sec, OwlHelper.IOO); 
+			
 
 			if (!io.getValidPropFlag()) {
-				text = KnowWEEnvironment
-						.maskHTML("<p class=\"box error\">invalid property:"
+				text = KnowWEUtils.maskHTML("<p class=\"box error\">invalid property:"
 								+ io.getBadAttribute() + "</p>");
 			}
-
-			// SemanticCore sc=SemanticCore.getInstance();
 
 			if (true) {
 				for (String cur : text.split("\r\n|\r|\n")) {

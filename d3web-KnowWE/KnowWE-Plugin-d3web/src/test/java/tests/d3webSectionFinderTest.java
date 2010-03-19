@@ -20,14 +20,12 @@
 
 package tests;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Annotation;
 import de.d3web.we.kdom.Annotation.AnnotationContent;

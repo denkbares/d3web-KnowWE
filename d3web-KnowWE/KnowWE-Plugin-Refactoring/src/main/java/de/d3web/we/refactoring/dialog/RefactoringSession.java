@@ -2,10 +2,7 @@ package de.d3web.we.refactoring.dialog;
 
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
-import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
-import groovy.lang.Script;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedList;
@@ -19,8 +16,7 @@ import name.fraser.neil.plaintext.diff_match_patch.Diff;
 
 import org.apache.log4j.Logger;
 import org.ceryle.xml.XHTML;
-import org.codehaus.groovy.control.CompilerConfiguration;
-
+import org.ceryle.xml.XML;
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
@@ -211,7 +207,7 @@ public class RefactoringSession {
 		final StringBuffer html = new StringBuffer();
 		html.append(XHTML.STag_p_class);
 		html.append("warning");
-		html.append(XHTML.QuotCl);
+		html.append(XML.QuotCl);
 		html.append('\n');
 		html.append(message);
 		html.append(XHTML.ETag_p);
@@ -235,7 +231,7 @@ public class RefactoringSession {
 		html.setLength(0);
 		html.append(XHTML.STag_div_class);
 		html.append("error");
-		html.append(XHTML.QuotCl);
+		html.append(XML.QuotCl);
 		html.append('\n');
 		html.append(XHTML.STag_b);
 		html.append("Groovy Script Failed: "); // I18N

@@ -12,6 +12,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
 import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class LocalTimeEventsHandler extends AbstractTagHandler {
@@ -40,7 +41,7 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
 	TupleQueryResult qResult = TimeEventSPARQLUtils
 		.executeQuery(querystring);
 
-	return KnowWEEnvironment.maskHTML(renderQueryResult(qResult, values));
+	return KnowWEUtils.maskHTML(renderQueryResult(qResult, values));
 
     }
 

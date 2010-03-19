@@ -49,7 +49,7 @@ public class BasicTester {
 		SingleKBMIDObjectManager idom = new SingleKBMIDObjectManager(kbm);
 		XCLd3webBuilder builder = new XCLd3webBuilder(file.toString(),true, true, idom);
 		builder.setCreateUncompleteFindings(false);
-		List<Message> errors=(List<Message>) builder.addKnowledge(new FileReader(file), idom, null);
+		List<Message> errors=builder.addKnowledge(new FileReader(file), idom, null);
 		for (Message m: errors) {
 			System.out.println(m);
 		}

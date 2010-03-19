@@ -85,6 +85,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		qContainerSet = manager.getQClasses();
 	}
 	
+	@Override
 	public String writeText() {
 
 		StringBuffer s = new StringBuffer();

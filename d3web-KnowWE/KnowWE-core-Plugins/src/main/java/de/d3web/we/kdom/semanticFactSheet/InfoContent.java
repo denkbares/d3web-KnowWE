@@ -23,61 +23,69 @@
  */
 package de.d3web.we.kdom.semanticFactSheet;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.PropertyManager;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.PropertyManager;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author kazamatzuri
  * 
  */
-public class InfoContent extends XMLContent implements OwlGenerator{
+public class InfoContent extends XMLContent {
 
+	@Override
+	public void init() {
+		this.setCustomRenderer(InfoRenderer.getInstance());
+		this.addReviseSubtreeHandler(new InfoContentOWLSubTreeHandler());
+	}
 
-    @Override
-    public void init() {
-	this.setCustomRenderer(InfoRenderer.getInstance());
-	
-    }
+	private class InfoContentOWLSubTreeHandler implements ReviseSubTreeHandler {
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			String text = s.getOriginalText();
+			PropertyManager pm = PropertyManager.getInstance();
+			String subjectconcept = ((DefaultSubjectContext) ContextManager
+					.getInstance().getContext(s, DefaultSubjectContext.CID))
+					.getSubject();
+			for (String cur : text.split("\r\n|\r|\n")) {
+				if (cur.trim().length() > 0) {
+					String[] spaces = cur.split(" ");
+					if (spaces.length > 0) {
+						String prop = cur.split(" ")[0].trim();
+						boolean valid = pm.isValid(prop);
+						if (valid) {
+							String value = cur.substring(cur.indexOf(" "),
+									cur.length()).trim();
+							io.merge(UpperOntology.getInstance().getHelper()
+									.createProperty(subjectconcept, prop,
+											value, s));
+						} else {
+							io.setValidPropFlag(valid);
+							io.setBadAttribute(prop.trim());
+							// break at first bad property
+							KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+							return null;
+						}
+					}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * de.d3web.we.dom.AbstractKnowWEObjectType#getOwl(de.d3web.we.dom.Section)
-     */    
-    public IntermediateOwlObject getOwl(Section s) {
-	IntermediateOwlObject io = new IntermediateOwlObject();
-	String text = s.getOriginalText();
-	PropertyManager pm = PropertyManager.getInstance();
-	String subjectconcept = ((DefaultSubjectContext) ContextManager
-		.getInstance().getContext(s, DefaultSubjectContext.CID))
-		.getSubject();
-	for (String cur : text.split("\r\n|\r|\n")) {
-	    if (cur.trim().length() > 0) {
-		String[] spaces = cur.split(" ");
-		if (spaces.length > 0) {
-		    String prop = cur.split(" ")[0].trim();
-		    boolean valid = pm.isValid(prop);
-		    if (valid) {
-			String value=cur.substring(cur.indexOf(" "),cur.length()).trim();			
-			io.merge(UpperOntology.getInstance().getHelper().createProperty(subjectconcept, prop, value, s));			
-		    } else {
-			io.setValidPropFlag(valid);
-			io.setBadAttribute(prop.trim());
-			//break at first bad property
-			return io;
-		    }
+				}
+			}
+			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+			SemanticCore.getInstance().addStatements(io, s);
+			return null;
 		}
 
-	    }
 	}
-	return io;
-    }
 
 }

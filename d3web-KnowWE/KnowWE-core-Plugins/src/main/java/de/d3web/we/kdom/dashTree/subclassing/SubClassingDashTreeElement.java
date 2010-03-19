@@ -23,44 +23,61 @@ import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.UpperOntology;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.kdom.dashTree.DashTreeElementContent;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 
-public class SubClassingDashTreeElement extends DashTreeElement implements OwlGenerator{
+public class SubClassingDashTreeElement extends DashTreeElement {
 
+	@Override
+	protected void init() {
+		super.init();
+		this.addReviseSubtreeHandler(new SubClassingDashTreeElementOWLSubTreeHandler());
+	}
 	
-	public IntermediateOwlObject getOwl(Section s) {   //warning
-		Section<DashTreeElement> element = s;  //warning 
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
-			Section<? extends DashTreeElement> father = DashTreeElement.getDashTreeFather(element);
-			if (father != null) {
-				Section<? extends DashTreeElementContent> fatherElement = father
-						.findChildOfType(DashTreeElementContent.class);
-				Section<? extends DashTreeElementContent> childElement = element.findChildOfType(DashTreeElementContent.getDefaultInstance());
-				createSubClassRelation(childElement,
-						fatherElement, io);
+	private class SubClassingDashTreeElementOWLSubTreeHandler implements
+			ReviseSubTreeHandler {
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			Section<DashTreeElement> element = s; // warning
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
+				Section<? extends DashTreeElement> father = DashTreeElement
+						.getDashTreeFather(element);
+				if (father != null) {
+					Section<? extends DashTreeElementContent> fatherElement = father
+							.findChildOfType(DashTreeElementContent.class);
+					Section<? extends DashTreeElementContent> childElement = element
+							.findChildOfType(DashTreeElementContent
+									.getDefaultInstance());
+					createSubClassRelation(childElement, fatherElement, io);
+				}
 			}
+			SemanticCore.getInstance().addStatements(io, s);
+			return null;
 		}
 
-		return io;
 	}
 
-	private void createSubClassRelation(Section<? extends DashTreeElementContent> child, Section<? extends DashTreeElementContent> fatherElement,
+	private void createSubClassRelation(
+			Section<? extends DashTreeElementContent> child,
+			Section<? extends DashTreeElementContent> fatherElement,
 			IntermediateOwlObject io) {
 		UpperOntology uo = UpperOntology.getInstance();
 		URI localURI = uo.getHelper().createlocalURI(child.getOriginalText());
 		URI fatherURI = uo.getHelper().createlocalURI(
 				fatherElement.getOriginalText());
 		try {
-			io.addStatement(uo.getHelper().createStatement(localURI, RDFS.SUBCLASSOF,
-					fatherURI));
-		} 
-		catch (RepositoryException e) {
+			io.addStatement(uo.getHelper().createStatement(localURI,
+					RDFS.SUBCLASSOF, fatherURI));
+		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -142,7 +142,7 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 					// (seen for KnowWE-ExamplePage but no sense detected in that)
 					List<Section<FlowchartType>> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
 					for (Section<FlowchartType> flowchart : flowcharts) {
-						FlowchartType type = (FlowchartType) flowchart.getObjectType();
+						FlowchartType type = flowchart.getObjectType();
 						if (matches(type.getFlowchartName(flowchart).toLowerCase(), phrases)) {
 							result.add(d3Service.getId() + "/" + type.getFlowchartID(flowchart));
 						}
@@ -208,7 +208,7 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 				buffer.append(c);
 			}
 			else {
-				int code = (int) c;
+				int code = c;
 				buffer.append("&#").append(code).append(";");
 			}
 		}

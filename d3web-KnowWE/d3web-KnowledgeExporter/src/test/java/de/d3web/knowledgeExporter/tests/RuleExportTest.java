@@ -142,8 +142,9 @@ public class RuleExportTest extends KnowledgeExporterTest {
 		assertTrue(out.contains(rules));
 	}
 	
+	@Override
 	protected void setUpWriter() {
-		manager.setLocale(Locale.GERMAN);
+		KnowledgeManager.setLocale(Locale.GERMAN);
 		writer = new RuleWriter(manager);
 	}
 	

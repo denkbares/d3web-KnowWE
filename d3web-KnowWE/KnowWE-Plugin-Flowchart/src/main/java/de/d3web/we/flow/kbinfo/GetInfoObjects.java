@@ -168,7 +168,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 			// TODO: append flowcharts out of knowledge base here
 			List<Section<FlowchartType>> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
 			for (Section<FlowchartType> flowchart : flowcharts) {
-				FlowchartType type = (FlowchartType) flowchart.getObjectType();
+				FlowchartType type = flowchart.getObjectType();
 				buffer.append("\t\t<child>");
 				buffer.append(service.getId() + "/" + type.getFlowchartID(flowchart));
 				buffer.append("</child>\n");
@@ -195,7 +195,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 			// look for a flowchart th the article
 			List<Section<FlowchartType>> flowcharts = ManagerUtils.getFlowcharts(web, service);
 			for (Section<FlowchartType> flowchart : flowcharts) {
-				FlowchartType type = (FlowchartType) flowchart.getObjectType();
+				FlowchartType type = flowchart.getObjectType();
 				String id = type.getFlowchartID(flowchart);
 				if (id.equalsIgnoreCase(objectID)) {
 					appendInfoObject(web, service, flowchart, buffer);
@@ -300,7 +300,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 				buffer.append(c);
 			}
 			else {
-				int code = (int) c;
+				int code = c;
 				buffer.append("&#").append(code).append(";");
 			}
 		}

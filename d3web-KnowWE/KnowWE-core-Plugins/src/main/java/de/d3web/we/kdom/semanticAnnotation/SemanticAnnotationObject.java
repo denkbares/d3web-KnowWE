@@ -31,23 +31,29 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.PropertyManager;
+import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.PropertyManager;
-import de.d3web.we.module.semantic.owl.UpperOntology;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author kazamatzuri
  * 
  */
 public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
-		implements OwlGenerator {
+		{
 
 	@Override
 	public void init() {
@@ -58,6 +64,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 		this.childrenTypes.add(subject);
 		this.childrenTypes.add(new SimpleAnnotation());
 		this.sectionFinder = new AllTextSectionFinder();
+		this.addReviseSubtreeHandler(new SemanticAnnotationObjectSubTreeHandler());
 	}
 
 	@Override
@@ -65,93 +72,103 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 		return this.getClass().getName();
 	}
 
-	public IntermediateOwlObject getOwl(Section s) {
-		UpperOntology uo = UpperOntology.getInstance();
-		IntermediateOwlObject io = new IntermediateOwlObject();
-		List<Section> childs = s.getChildren();
-		URI prop = null;
-		URI stringa = null;
-		boolean erronousproperty = false;
-		String badprop = "";
-		for (Section cur : childs) {
-			if (cur.getObjectType().getClass().equals(
-					SemanticAnnotationProperty.class)) {
-				IntermediateOwlObject tempio = ((SemanticAnnotationProperty) cur
-						.getObjectType()).getOwl(cur);
-				prop = tempio.getLiterals().get(0);
-				erronousproperty = !tempio.getValidPropFlag();
-				if (erronousproperty) {
-					badprop = tempio.getBadAttribute();
+	private class SemanticAnnotationObjectSubTreeHandler implements
+			ReviseSubTreeHandler {
+
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			KDOMReportMessage msg = null;
+			UpperOntology uo = UpperOntology.getInstance();
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			List<Section> childs = s.getChildren();
+			URI prop = null;
+			URI stringa = null;
+			boolean erronousproperty = false;
+			String badprop = "";
+			for (Section cur : childs) {
+				if (cur.getObjectType().getClass().equals(
+						SemanticAnnotationProperty.class)) {
+					IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
+							.getStoredObject(cur, OwlHelper.IOO);
+					prop = tempio.getLiterals().get(0);
+					erronousproperty = !tempio.getValidPropFlag();
+					if (erronousproperty) {
+						badprop = tempio.getBadAttribute();
+					}
+				} else if (cur.getObjectType().getClass().equals(
+						SimpleAnnotation.class)) {
+					IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
+							.getStoredObject(cur, OwlHelper.IOO);
+					if (tempio.getValidPropFlag()) {
+						stringa = tempio.getLiterals().get(0);
+					} else {
+						badprop = tempio.getBadAttribute();
+					}
 				}
-			} else if (cur.getObjectType().getClass().equals(
-					SimpleAnnotation.class)) {
-				IntermediateOwlObject tempio = ((SimpleAnnotation) cur
-						.getObjectType()).getOwl(cur);
-				if (tempio.getValidPropFlag()) {
-					stringa = tempio.getLiterals().get(0);					
-				} else {
-					badprop = tempio.getBadAttribute();
-				}
+
 			}
 
-		}
-
-		boolean validprop = false;
-		if (erronousproperty) {
-			io.setBadAttribute(badprop);
-			io.setValidPropFlag(false);			
-		} else if (prop != null) {
-			validprop = PropertyManager.getInstance().isValid(prop);
-			io.setBadAttribute(prop.getLocalName());
-		}
-
-		io.setValidPropFlag(validprop);
-		if (!validprop) {
-			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
-					"invalid property: " + s.getOriginalText());
-		}
-
-		if (prop != null && validprop && stringa != null) {
-			DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager
-					.getInstance().getContext(s, DefaultSubjectContext.CID);
-			URI soluri = sol.getSolutionURI();
-			Statement stmnt = null;
-			try {
-				if (PropertyManager.getInstance().isRDFS(prop)) {
-					stmnt = uo.getHelper().createStatement(soluri, prop,
-							stringa);
-					io.addStatement(stmnt);
-					io.merge(uo.getHelper().createStatementSrc(soluri, prop,
-							stringa, s.getFather().getFather(),
-							uo.getHelper().createURI("Annotation")));
-				} else if (PropertyManager.getInstance().isRDF(prop)) {
-					stmnt = uo.getHelper().createStatement(soluri, prop,
-							stringa);
-					io.addStatement(stmnt);
-					io.merge(uo.getHelper().createStatementSrc(soluri, prop,
-							stringa, s.getFather().getFather(),
-							uo.getHelper().createURI("Annotation")));
-				} else if (PropertyManager.getInstance().isNary(prop)) {
-					IntermediateOwlObject tempio = UpperOntology.getInstance()
-							.getHelper().createAnnotationProperty(soluri, prop,
-									stringa, s.getFather().getFather());
-					io.merge(tempio);
-
-				} else {
-					stmnt = uo.getHelper().createStatement(soluri, prop,
-							stringa);
-					io.addStatement(stmnt);
-					io.merge(uo.getHelper().createStatementSrc(soluri, prop,
-							stringa, s.getFather().getFather(),
-							uo.getHelper().createURI("Annotation")));
-				}
-
-			} catch (RepositoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			boolean validprop = false;
+			if (erronousproperty) {
+				io.setBadAttribute(badprop);
+				io.setValidPropFlag(false);
+			} else if (prop != null) {
+				validprop = PropertyManager.getInstance().isValid(prop);
+				io.setBadAttribute(prop.getLocalName());
 			}
+
+			io.setValidPropFlag(validprop);
+			if (!validprop) {
+				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
+						"invalid property: " + s.getOriginalText());
+			}
+
+			if (prop != null && validprop && stringa != null) {
+				DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager
+						.getInstance().getContext(s, DefaultSubjectContext.CID);
+				URI soluri = sol.getSolutionURI();
+				Statement stmnt = null;
+				try {
+					if (PropertyManager.getInstance().isRDFS(prop)) {
+						stmnt = uo.getHelper().createStatement(soluri, prop,
+								stringa);
+						io.addStatement(stmnt);
+						io.merge(uo.getHelper().createStatementSrc(soluri,
+								prop, stringa, s.getFather().getFather(),
+								OwlHelper.ANNOTATION));
+					} else if (PropertyManager.getInstance().isRDF(prop)) {
+						stmnt = uo.getHelper().createStatement(soluri, prop,
+								stringa);
+						io.addStatement(stmnt);
+						io.merge(uo.getHelper().createStatementSrc(soluri,
+								prop, stringa, s.getFather().getFather(),
+								OwlHelper.ANNOTATION));
+					} else if (PropertyManager.getInstance().isNary(prop)) {
+						IntermediateOwlObject tempio = UpperOntology
+								.getInstance().getHelper()
+								.createAnnotationProperty(soluri, prop,
+										stringa, s.getFather().getFather());
+						io.merge(tempio);
+
+					} else {
+						stmnt = uo.getHelper().createStatement(soluri, prop,
+								stringa);
+						io.addStatement(stmnt);
+						io.merge(uo.getHelper().createStatementSrc(soluri,
+								prop, stringa, s.getFather().getFather(),
+								OwlHelper.ANNOTATION));
+					}
+
+				} catch (RepositoryException e) {
+					msg = new SimpleMessageError(e.getMessage());
+				}
+			}
+			SemanticCore.getInstance().addStatements(io, s);
+			return msg;
 		}
-		return io;
+
 	}
+
+
 
 }

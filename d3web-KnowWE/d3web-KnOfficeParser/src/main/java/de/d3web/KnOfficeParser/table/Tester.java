@@ -50,7 +50,7 @@ public class Tester {
 		builder.setLazyDiag(true);
 		tb.parse(parser.parse());
 		
-		List<Message> errors=(List<Message>) builder.checkKnowledge();
+		List<Message> errors=builder.checkKnowledge();
 		for (Message m: errors) {
 			System.out.println(m);
 		}

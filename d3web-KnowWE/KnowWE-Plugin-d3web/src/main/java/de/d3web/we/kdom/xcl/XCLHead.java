@@ -31,25 +31,26 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.decisionTree.SolutionID;
 import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.logging.Logging;
-import de.d3web.we.module.semantic.OwlGenerator;
-import de.d3web.we.module.semantic.owl.IntermediateOwlObject;
-import de.d3web.we.module.semantic.owl.UpperOntology;
-import de.d3web.we.module.semantic.owl.helpers.OwlHelper;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.utils.Patterns;
 
-public class XCLHead extends DefaultAbstractKnowWEObjectType implements OwlGenerator {
+public class XCLHead extends DefaultAbstractKnowWEObjectType {
 
 	
 	@Override
@@ -59,7 +60,8 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType implements OwlGener
 		sID.setCustomRenderer(SolutionIDHighlightingRenderer.getInstance());
 		this.childrenTypes.add(sID);
 		this.childrenTypes.add(new LineBreak());
-		addReviseSubtreeHandler(new XCLHeadSubtreeHandler());
+		this.addReviseSubtreeHandler(new XCLHeadSubtreeHandler());
+		this.addReviseSubtreeHandler(new XCLHeadOWLSubTreeHandler());
 		
 	}
 	
@@ -120,26 +122,34 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType implements OwlGener
 		}
 	}
 
-	
-	public IntermediateOwlObject getOwl(Section section) {
-	    IntermediateOwlObject io = new IntermediateOwlObject();
-		DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager.getInstance()
-				.getContext(section, DefaultSubjectContext.CID);
-		String solution = sol != null ? sol.getSubject() : null;
-		if (solution != null) {
-			UpperOntology uo = SemanticCore.getInstance().getUpper();
+	private class XCLHeadOWLSubTreeHandler implements ReviseSubTreeHandler{
 
-			try {
-				URI solutionuri = uo.getHelper().createlocalURI(solution);
-				io.addStatement(uo.getHelper().createStatement(solutionuri,
-						RDF.TYPE, OwlHelper.SOLUTION));
-			} catch (RepositoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section section) {
+			IntermediateOwlObject io = new IntermediateOwlObject();
+			DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager.getInstance()
+					.getContext(section, DefaultSubjectContext.CID);
+			String solution = sol != null ? sol.getSubject() : null;
+			if (solution != null) {
+				UpperOntology uo = SemanticCore.getInstance().getUpper();
+
+				try {
+					URI solutionuri = uo.getHelper().createlocalURI(solution);
+					io.addStatement(uo.getHelper().createStatement(solutionuri,
+							RDF.TYPE, OwlHelper.SOLUTION));
+				} catch (RepositoryException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+			SemanticCore.getInstance().addStatements(io, section);
+			return null;
 		}
-		return io;
+	
+		
 	}
+	
+	
 
 
 

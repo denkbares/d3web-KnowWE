@@ -2,16 +2,7 @@
 
 package de.d3web.KnOfficeParser.visio;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
-import de.d3web.KnOfficeParser.ConditionBuilder;
-
-
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-
 import org.antlr.runtime.tree.*;
 
 public class Visio_BasicParser extends Parser {
@@ -136,8 +127,10 @@ public class Visio_BasicParser extends Parser {
         return adaptor;
     }
 
-    public String[] getTokenNames() { return VisioParser.tokenNames; }
-    public String getGrammarFileName() { return "BasicParser.g"; }
+    @Override
+	public String[] getTokenNames() { return VisioParser.tokenNames; }
+    @Override
+	public String getGrammarFileName() { return "BasicParser.g"; }
 
 
 
@@ -178,7 +171,8 @@ public class Visio_BasicParser extends Parser {
     public static class name_return extends ParserRuleReturnScope {
         public String value;
         Object tree;
-        public Object getTree() { return tree; }
+        @Override
+		public Object getTree() { return tree; }
     };
 
     // $ANTLR start "name"
@@ -235,7 +229,7 @@ public class Visio_BasicParser extends Parser {
                 case 1 :
                     // BasicParser.g:63:3: ( String )* ( ID | INT ) ( ID | INT | String )*
                     {
-                    root_0 = (Object)adaptor.nil();
+                    root_0 = adaptor.nil();
 
                     // BasicParser.g:63:3: ( String )*
                     loop1:
@@ -254,7 +248,7 @@ public class Visio_BasicParser extends Parser {
                     	    {
                     	    String1=(Token)match(input,String,FOLLOW_String_in_name38); if (state.failed) return retval;
                     	    if ( state.backtracking==0 ) {
-                    	    String1_tree = (Object)adaptor.create(String1);
+                    	    String1_tree = adaptor.create(String1);
                     	    adaptor.addChild(root_0, String1_tree);
                     	    }
 
@@ -266,10 +260,10 @@ public class Visio_BasicParser extends Parser {
                         }
                     } while (true);
 
-                    set2=(Token)input.LT(1);
+                    set2=input.LT(1);
                     if ( input.LA(1)==INT||input.LA(1)==ID ) {
                         input.consume();
-                        if ( state.backtracking==0 ) adaptor.addChild(root_0, (Object)adaptor.create(set2));
+                        if ( state.backtracking==0 ) adaptor.addChild(root_0, adaptor.create(set2));
                         state.errorRecovery=false;state.failed=false;
                     }
                     else {
@@ -293,10 +287,10 @@ public class Visio_BasicParser extends Parser {
                     	case 1 :
                     	    // BasicParser.g:
                     	    {
-                    	    set3=(Token)input.LT(1);
+                    	    set3=input.LT(1);
                     	    if ( (input.LA(1)>=String && input.LA(1)<=INT)||input.LA(1)==ID ) {
                     	        input.consume();
-                    	        if ( state.backtracking==0 ) adaptor.addChild(root_0, (Object)adaptor.create(set3));
+                    	        if ( state.backtracking==0 ) adaptor.addChild(root_0, adaptor.create(set3));
                     	        state.errorRecovery=false;state.failed=false;
                     	    }
                     	    else {
@@ -323,11 +317,11 @@ public class Visio_BasicParser extends Parser {
                 case 2 :
                     // BasicParser.g:64:3: String
                     {
-                    root_0 = (Object)adaptor.nil();
+                    root_0 = adaptor.nil();
 
                     String4=(Token)match(input,String,FOLLOW_String_in_name60); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    String4_tree = (Object)adaptor.create(String4);
+                    String4_tree = adaptor.create(String4);
                     adaptor.addChild(root_0, String4_tree);
                     }
                     if ( state.backtracking==0 ) {
@@ -342,14 +336,14 @@ public class Visio_BasicParser extends Parser {
 
             if ( state.backtracking==0 ) {
 
-            retval.tree = (Object)adaptor.rulePostProcessing(root_0);
+            retval.tree = adaptor.rulePostProcessing(root_0);
             adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
             }
         }
         catch (RecognitionException re) {
             reportError(re);
             recover(input,re);
-    	retval.tree = (Object)adaptor.errorNode(input, retval.start, input.LT(-1), re);
+    	retval.tree = adaptor.errorNode(input, retval.start, input.LT(-1), re);
 
         }
         finally {
@@ -361,7 +355,8 @@ public class Visio_BasicParser extends Parser {
     public static class type_return extends ParserRuleReturnScope {
         public String value;
         Object tree;
-        public Object getTree() { return tree; }
+        @Override
+		public Object getTree() { return tree; }
     };
 
     // $ANTLR start "type"
@@ -384,21 +379,21 @@ public class Visio_BasicParser extends Parser {
             // BasicParser.g:67:1: ( SBO ID SBC )
             // BasicParser.g:67:3: SBO ID SBC
             {
-            root_0 = (Object)adaptor.nil();
+            root_0 = adaptor.nil();
 
             SBO5=(Token)match(input,SBO,FOLLOW_SBO_in_type74); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            SBO5_tree = (Object)adaptor.create(SBO5);
+            SBO5_tree = adaptor.create(SBO5);
             adaptor.addChild(root_0, SBO5_tree);
             }
             ID6=(Token)match(input,ID,FOLLOW_ID_in_type76); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            ID6_tree = (Object)adaptor.create(ID6);
+            ID6_tree = adaptor.create(ID6);
             adaptor.addChild(root_0, ID6_tree);
             }
             SBC7=(Token)match(input,SBC,FOLLOW_SBC_in_type78); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            SBC7_tree = (Object)adaptor.create(SBC7);
+            SBC7_tree = adaptor.create(SBC7);
             adaptor.addChild(root_0, SBC7_tree);
             }
             if ( state.backtracking==0 ) {
@@ -411,14 +406,14 @@ public class Visio_BasicParser extends Parser {
 
             if ( state.backtracking==0 ) {
 
-            retval.tree = (Object)adaptor.rulePostProcessing(root_0);
+            retval.tree = adaptor.rulePostProcessing(root_0);
             adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
             }
         }
         catch (RecognitionException re) {
             reportError(re);
             recover(input,re);
-    	retval.tree = (Object)adaptor.errorNode(input, retval.start, input.LT(-1), re);
+    	retval.tree = adaptor.errorNode(input, retval.start, input.LT(-1), re);
 
         }
         finally {
@@ -429,7 +424,8 @@ public class Visio_BasicParser extends Parser {
 
     public static class eq_return extends ParserRuleReturnScope {
         Object tree;
-        public Object getTree() { return tree; }
+        @Override
+		public Object getTree() { return tree; }
     };
 
     // $ANTLR start "eq"
@@ -448,12 +444,12 @@ public class Visio_BasicParser extends Parser {
             // BasicParser.g:69:5: ( EQ | LE | L | GE | G )
             // BasicParser.g:
             {
-            root_0 = (Object)adaptor.nil();
+            root_0 = adaptor.nil();
 
-            set8=(Token)input.LT(1);
+            set8=input.LT(1);
             if ( (input.LA(1)>=LE && input.LA(1)<=EQ) ) {
                 input.consume();
-                if ( state.backtracking==0 ) adaptor.addChild(root_0, (Object)adaptor.create(set8));
+                if ( state.backtracking==0 ) adaptor.addChild(root_0, adaptor.create(set8));
                 state.errorRecovery=false;state.failed=false;
             }
             else {
@@ -469,14 +465,14 @@ public class Visio_BasicParser extends Parser {
 
             if ( state.backtracking==0 ) {
 
-            retval.tree = (Object)adaptor.rulePostProcessing(root_0);
+            retval.tree = adaptor.rulePostProcessing(root_0);
             adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
             }
         }
         catch (RecognitionException re) {
             reportError(re);
             recover(input,re);
-    	retval.tree = (Object)adaptor.errorNode(input, retval.start, input.LT(-1), re);
+    	retval.tree = adaptor.errorNode(input, retval.start, input.LT(-1), re);
 
         }
         finally {
@@ -487,7 +483,8 @@ public class Visio_BasicParser extends Parser {
 
     public static class eqncalc_return extends ParserRuleReturnScope {
         Object tree;
-        public Object getTree() { return tree; }
+        @Override
+		public Object getTree() { return tree; }
     };
 
     // $ANTLR start "eqncalc"
@@ -545,7 +542,7 @@ public class Visio_BasicParser extends Parser {
                 case 1 :
                     // BasicParser.g:70:11: eq
                     {
-                    root_0 = (Object)adaptor.nil();
+                    root_0 = adaptor.nil();
 
                     pushFollow(FOLLOW_eq_in_eqncalc104);
                     eq9=eq();
@@ -559,16 +556,16 @@ public class Visio_BasicParser extends Parser {
                 case 2 :
                     // BasicParser.g:70:14: PLUS EQ
                     {
-                    root_0 = (Object)adaptor.nil();
+                    root_0 = adaptor.nil();
 
                     PLUS10=(Token)match(input,PLUS,FOLLOW_PLUS_in_eqncalc106); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    PLUS10_tree = (Object)adaptor.create(PLUS10);
+                    PLUS10_tree = adaptor.create(PLUS10);
                     adaptor.addChild(root_0, PLUS10_tree);
                     }
                     EQ11=(Token)match(input,EQ,FOLLOW_EQ_in_eqncalc108); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    EQ11_tree = (Object)adaptor.create(EQ11);
+                    EQ11_tree = adaptor.create(EQ11);
                     adaptor.addChild(root_0, EQ11_tree);
                     }
 
@@ -577,16 +574,16 @@ public class Visio_BasicParser extends Parser {
                 case 3 :
                     // BasicParser.g:70:22: MINUS EQ
                     {
-                    root_0 = (Object)adaptor.nil();
+                    root_0 = adaptor.nil();
 
                     MINUS12=(Token)match(input,MINUS,FOLLOW_MINUS_in_eqncalc110); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    MINUS12_tree = (Object)adaptor.create(MINUS12);
+                    MINUS12_tree = adaptor.create(MINUS12);
                     adaptor.addChild(root_0, MINUS12_tree);
                     }
                     EQ13=(Token)match(input,EQ,FOLLOW_EQ_in_eqncalc112); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    EQ13_tree = (Object)adaptor.create(EQ13);
+                    EQ13_tree = adaptor.create(EQ13);
                     adaptor.addChild(root_0, EQ13_tree);
                     }
 
@@ -598,14 +595,14 @@ public class Visio_BasicParser extends Parser {
 
             if ( state.backtracking==0 ) {
 
-            retval.tree = (Object)adaptor.rulePostProcessing(root_0);
+            retval.tree = adaptor.rulePostProcessing(root_0);
             adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
             }
         }
         catch (RecognitionException re) {
             reportError(re);
             recover(input,re);
-    	retval.tree = (Object)adaptor.errorNode(input, retval.start, input.LT(-1), re);
+    	retval.tree = adaptor.errorNode(input, retval.start, input.LT(-1), re);
 
         }
         finally {
@@ -617,7 +614,8 @@ public class Visio_BasicParser extends Parser {
     public static class d3double_return extends ParserRuleReturnScope {
         public Double value;
         Object tree;
-        public Object getTree() { return tree; }
+        @Override
+		public Object getTree() { return tree; }
     };
 
     // $ANTLR start "d3double"
@@ -642,7 +640,7 @@ public class Visio_BasicParser extends Parser {
             // BasicParser.g:73:1: ( ( MINUS )? INT ( ( COMMA | DOT ) INT )? )
             // BasicParser.g:73:3: ( MINUS )? INT ( ( COMMA | DOT ) INT )?
             {
-            root_0 = (Object)adaptor.nil();
+            root_0 = adaptor.nil();
 
             // BasicParser.g:73:3: ( MINUS )?
             int alt5=2;
@@ -657,7 +655,7 @@ public class Visio_BasicParser extends Parser {
                     {
                     MINUS14=(Token)match(input,MINUS,FOLLOW_MINUS_in_d3double124); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    MINUS14_tree = (Object)adaptor.create(MINUS14);
+                    MINUS14_tree = adaptor.create(MINUS14);
                     adaptor.addChild(root_0, MINUS14_tree);
                     }
 
@@ -668,7 +666,7 @@ public class Visio_BasicParser extends Parser {
 
             INT15=(Token)match(input,INT,FOLLOW_INT_in_d3double127); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            INT15_tree = (Object)adaptor.create(INT15);
+            INT15_tree = adaptor.create(INT15);
             adaptor.addChild(root_0, INT15_tree);
             }
             // BasicParser.g:73:14: ( ( COMMA | DOT ) INT )?
@@ -682,10 +680,10 @@ public class Visio_BasicParser extends Parser {
                 case 1 :
                     // BasicParser.g:73:15: ( COMMA | DOT ) INT
                     {
-                    set16=(Token)input.LT(1);
+                    set16=input.LT(1);
                     if ( input.LA(1)==DOT||input.LA(1)==COMMA ) {
                         input.consume();
-                        if ( state.backtracking==0 ) adaptor.addChild(root_0, (Object)adaptor.create(set16));
+                        if ( state.backtracking==0 ) adaptor.addChild(root_0, adaptor.create(set16));
                         state.errorRecovery=false;state.failed=false;
                     }
                     else {
@@ -696,7 +694,7 @@ public class Visio_BasicParser extends Parser {
 
                     INT17=(Token)match(input,INT,FOLLOW_INT_in_d3double136); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    INT17_tree = (Object)adaptor.create(INT17);
+                    INT17_tree = adaptor.create(INT17);
                     adaptor.addChild(root_0, INT17_tree);
                     }
 
@@ -715,14 +713,14 @@ public class Visio_BasicParser extends Parser {
 
             if ( state.backtracking==0 ) {
 
-            retval.tree = (Object)adaptor.rulePostProcessing(root_0);
+            retval.tree = adaptor.rulePostProcessing(root_0);
             adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
             }
         }
         catch (RecognitionException re) {
             reportError(re);
             recover(input,re);
-    	retval.tree = (Object)adaptor.errorNode(input, retval.start, input.LT(-1), re);
+    	retval.tree = adaptor.errorNode(input, retval.start, input.LT(-1), re);
 
         }
         finally {
@@ -734,7 +732,8 @@ public class Visio_BasicParser extends Parser {
     public static class nameOrDouble_return extends ParserRuleReturnScope {
         public String value;
         Object tree;
-        public Object getTree() { return tree; }
+        @Override
+		public Object getTree() { return tree; }
     };
 
     // $ANTLR start "nameOrDouble"
@@ -795,7 +794,7 @@ public class Visio_BasicParser extends Parser {
                 case 1 :
                     // BasicParser.g:76:2: ( MINUS INT | INT DOT | INT COMMA )=> d3double
                     {
-                    root_0 = (Object)adaptor.nil();
+                    root_0 = adaptor.nil();
 
                     pushFollow(FOLLOW_d3double_in_nameOrDouble170);
                     d3double18=d3double();
@@ -812,7 +811,7 @@ public class Visio_BasicParser extends Parser {
                 case 2 :
                     // BasicParser.g:76:85: name
                     {
-                    root_0 = (Object)adaptor.nil();
+                    root_0 = adaptor.nil();
 
                     pushFollow(FOLLOW_name_in_nameOrDouble175);
                     name19=name();
@@ -829,11 +828,11 @@ public class Visio_BasicParser extends Parser {
                 case 3 :
                     // BasicParser.g:76:114: EX
                     {
-                    root_0 = (Object)adaptor.nil();
+                    root_0 = adaptor.nil();
 
                     EX20=(Token)match(input,EX,FOLLOW_EX_in_nameOrDouble181); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
-                    EX20_tree = (Object)adaptor.create(EX20);
+                    EX20_tree = adaptor.create(EX20);
                     adaptor.addChild(root_0, EX20_tree);
                     }
                     if ( state.backtracking==0 ) {
@@ -848,14 +847,14 @@ public class Visio_BasicParser extends Parser {
 
             if ( state.backtracking==0 ) {
 
-            retval.tree = (Object)adaptor.rulePostProcessing(root_0);
+            retval.tree = adaptor.rulePostProcessing(root_0);
             adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
             }
         }
         catch (RecognitionException re) {
             reportError(re);
             recover(input,re);
-    	retval.tree = (Object)adaptor.errorNode(input, retval.start, input.LT(-1), re);
+    	retval.tree = adaptor.errorNode(input, retval.start, input.LT(-1), re);
 
         }
         finally {

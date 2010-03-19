@@ -22,8 +22,8 @@ package de.d3web.we.kdom.contexts;
 
 import org.openrdf.model.URI;
 
+import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.module.semantic.owl.UpperOntology;
 
 public class DefaultSubjectContext extends StringContext {
 

@@ -50,9 +50,9 @@ public class KnowledgeExporterStatus {
 	
 	public String getStatusName() {
 		if (completedJobs == 0 && numberOfJobs != 0) {
-			return this.start;
+			return KnowledgeExporterStatus.start;
 		} else if (completedJobs >= numberOfJobs) {
-			return this.done;
+			return KnowledgeExporterStatus.done;
 		} else {
 			return this.statusName;
 		}

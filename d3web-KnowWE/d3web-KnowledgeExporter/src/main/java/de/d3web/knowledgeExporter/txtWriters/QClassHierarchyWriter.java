@@ -41,6 +41,7 @@ public class QClassHierarchyWriter extends TxtKnowledgeWriter {
 		validQASets = manager.getQClasses();
 	}
 
+	@Override
 	public String writeText() {
 		StringBuffer text = new StringBuffer();
 		QASet set = manager.getKB().getRootQASet();

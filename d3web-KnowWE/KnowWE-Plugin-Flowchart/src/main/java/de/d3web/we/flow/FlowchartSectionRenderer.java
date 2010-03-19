@@ -20,14 +20,10 @@
 
 package de.d3web.we.flow;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.flow.type.FlowchartType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
