@@ -52,6 +52,8 @@ KNOWWE.core.actions = function(){
                         var id = el.parentNode.id;
                         KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.table.init, id, null );
                     });
+                    //Due to problems with refresh, so that table functionality is still guaranteed:
+                    KNOWWE.core.table.init();
                 } else if( els[i]._hasClass( 'default') ) {
                     _KE.add('click', els[i], function(e){
                         var el = _KE.target(e);
