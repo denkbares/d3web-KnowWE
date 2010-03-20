@@ -235,7 +235,7 @@ public class KnowWEIncludeManager {
 	}
 	
 	/**
-	 * Updates Includes to the article with the given <code>title</title>.
+	 * Updates Includes to the given <tt>article</tt>.
 	 * This method needs to get called after an article has changed.
 	 */
 	public void updateIncludesToArticle(KnowWEArticle article) {
@@ -290,7 +290,7 @@ public class KnowWEIncludeManager {
 		} 
 		else {
 			children.add(new IncludeErrorSection("Section " + src.toString() 
-					+ " not registered as an including Section", src, src.getArticle()));
+					+ " is not registered as an including Section", src, src.getArticle()));
 		}
 		return children;
 	}
@@ -319,7 +319,7 @@ public class KnowWEIncludeManager {
 	 * Cleans the maps from Include Sections that are not longer
 	 * in present in the article
 	 */
-	public void removeInactiveIncludesForArticle(String title, Set<Section> activeIncludes) {
+	public void removeInactiveIncludesForArticle(String title, Set<Section<Include>> activeIncludes) {
 		// get all registered Includes (from all articles)
 		List<Section> allIncludes = new ArrayList<Section>(src2target.keySet());
 		// TODO: Make this more efficient 

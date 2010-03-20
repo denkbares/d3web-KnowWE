@@ -37,6 +37,7 @@ import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
+import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.validation.Validator;
@@ -77,7 +78,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	// private Map<String, Section> changedSections = new HashMap<String,
 	// Section>();
 
-	private Set<Section> includeSections = new HashSet<Section>();
+	private Set<Section<Include>> includeSections = new HashSet<Section<Include>>();
 
 	private KnowWEArticle lastVersion;
 
@@ -440,13 +441,16 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return sec.getOriginalText();
 	}
 
-	public Set<Section> getIncludeSections() {
+	public Set<Section<Include>> getIncludeSections() {
 		return this.includeSections;
 	}
 
 	public void reviseArticle() {
 		List<Section<? extends KnowWEObjectType>> nodes = getAllNodesParsingPostOrder();
 		for (Section<? extends KnowWEObjectType> node : nodes) {
+			// set false for the case this is an reused node with the flag still 
+			// set from an previous updating...
+			node.setNotYetRevisedBy(title, false);
 			node.getObjectType().reviseSubtree(this, node);
 		}
 	}

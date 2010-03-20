@@ -69,6 +69,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	private Map<String, Boolean> reusedBy = new HashMap<String, Boolean>();
 
+	private Map<String, Boolean> notYetRevisedBy = new HashMap<String, Boolean>();
+	
 	protected boolean hasReusedSuccessor = false;
 
 	private PairOfInts startPosFromTmp;
@@ -195,7 +197,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 *          is the article this section is hooked in
 	 * @param address
 	 */
-	 private Section(String text, T objectType, Section<? extends KnowWEObjectType> father,
+	private Section(String text, T objectType, Section<? extends KnowWEObjectType> father,
 			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
 			boolean isExpanded, IncludeAddress address) {
 
@@ -275,7 +277,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		Collections.sort(children, new TextOrderComparator());
 
 		if (objectType instanceof Include) {
-			article.getIncludeSections().add(this);
+			article.getIncludeSections().add((Section<Include>) this);
 		}
 	}
 
@@ -1219,6 +1221,18 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		for (Section child:getChildren()) {
 			child.setReusedSuccessorStateRecursively(reused);
 		}
+	}
+	
+	public boolean isNotYetRevisedBy(String title) {
+		Boolean notYetRevised = notYetRevisedBy.get(title);
+		if (notYetRevised == null) {
+			notYetRevised = false;
+		}
+		return notYetRevised;
+	}
+
+	public void setNotYetRevisedBy(String title, boolean notYetRevised) {
+		notYetRevisedBy.put(title, notYetRevised);
 	}
 
 	public boolean equalsOrIsChildrenOf(Section sec) {

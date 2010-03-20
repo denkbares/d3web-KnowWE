@@ -151,6 +151,14 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 			//System.out.println("Got KBM for " + s.getObjectType().getName());
 			return kbms.get(article.getTitle());
 		} else {
+			s.setNotYetRevisedBy(article.getTitle(), true);
+			// TODO: Thats not completely accurate, because actually not the
+			// the sections is 'not yet revised' but the ReviseSubTreeHandler
+			// who calls this method hasn't done (will not do) is job yet (every 
+			// Section can have more than one ReviseSubTreeHandler).
+			// But to differentiate between single SubTreeHandler, an interface
+			// change is necessary... maybe that can be done along with other
+			// big (interface) changes. 
 			return null;
 		}
 	}
@@ -381,7 +389,11 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 		List<Section<? extends KnowWEObjectType>> sectionsToRevise = article.getAllNodesParsingPostOrder();
 		List<Section<? extends KnowWEObjectType>> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));
 		for (Section<? extends KnowWEObjectType> sec:strSub) {
-			sec.getObjectType().reviseSubtree(article, sec);
+			if (sec.isNotYetRevisedBy(article.getTitle())) {
+				// see TODO @ getKBM(...)
+				sec.getObjectType().reviseSubtree(article, sec);
+				sec.setNotYetRevisedBy(article.getTitle(), false);
+			}
 		}
 	}
 
