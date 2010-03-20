@@ -84,7 +84,7 @@ public class FindingHTMLWriter {
 						+ "ValueID : '" + theAnswer.getId() + "'"
 						+ "}\" ");				
 
-				if (theCase != null
+				if (theCase != null && theQuestion.getValue(theCase) != null
 						&& theQuestion.getValue(theCase).equals(theAnswer)) {		
 					buffy.append(" checked=\"checked\" ");
 				}
@@ -101,7 +101,7 @@ public class FindingHTMLWriter {
 					+ "ValueID : '" + theQuestion.getUnknownAlternative().getId() + "'"
 					+ "}\" ");
 
-			if (theCase != null
+			if (theCase != null && theQuestion.getValue(theCase) != null
 					&& theQuestion.getValue(theCase).equals(theQuestion.getUnknownAlternative())) {		
 				buffy.append(" checked=\"checked\" ");
 			}
@@ -202,7 +202,7 @@ public class FindingHTMLWriter {
 							+ "ValueIDS : '" + theAnswer.getId() + "'"
 							+ "}\" ");
 
-					if (theCase != null && theQuestion.getValue(theCase).equals(theAnswer)) {		
+					if (theCase != null && theQuestion.getValue(theCase) != null && theQuestion.getValue(theCase).equals(theAnswer)) {		
 						buffy.append(" checked=\"checked\" ");
 					}
 					buffy.append(">");
