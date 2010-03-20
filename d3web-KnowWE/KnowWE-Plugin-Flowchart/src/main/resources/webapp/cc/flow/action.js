@@ -669,29 +669,27 @@ ActionEditor.prototype.createNewQuestion = function() {
 	var answers = this.getAnswers();
 	var actions;
 	
-	// escape special characters ! / = ( ) { } [ ] * - . : ; > | 
-	// Verbindungs-Fehler: #
-	// heap space ` \ ^
-	// verschwindet: +
-	// bug: < &
-	if ((qText.indexOf('!') > 0) || (qText.indexOf('/') > 0) || (qText.indexOf('=') > 0) 
-			|| (qText.indexOf('(') > 0) || (qText.indexOf(')') > 0 || (qText.indexOf('{') > 0)) 
-			|| (qText.indexOf('}') > 0) || (qText.indexOf('[') > 0) || (qText.indexOf(']') > 0) 
-			|| (qText.indexOf('*') > 0) || (qText.indexOf('+') > 0) || (qText.indexOf('-') > 0) 
-			|| (qText.indexOf('.') > 0) || (qText.indexOf(':') > 0) || (qText.indexOf(';') > 0)
-			|| (qText.indexOf('>') > 0) || (qText.indexOf('|') > 0) || (qText.indexOf(',') > 0)) {
-		qText = '"' + qText + '"';
-	}
+	//// escape special characters
+	//qText = ActionEditor.escapeSpecialCharacter(qText);
+	//for (var i = 0; i < answers.length; i++) {
+	//	answers[i] = ActionEditor.escapeSpecialCharacter(answers[i]);
+	//}
 	
 	// if the object is a question, do the right ajax-request and create the dropdown
 	if (qType != "Solution") {
-		ActionEditor.updateQuestions(qText, qType, answers);
 		actions = ActionEditor.createQuestionDropdown(qText, qType, answers);
+		
+		qText = ActionEditor.escapeSpecialCharacter(qText);
+		for (var i = 0; i < answers.length; i++) {
+			answers[i] = ActionEditor.escapeSpecialCharacter(answers[i]);
+		}
+		
+		ActionEditor.updateQuestions(qText, qType, answers);
 	
 	// else it is a solution, do the right ajax-request and create the dropdown
 	} else {
-		ActionEditor.updateSolutions(qText);
 		actions = ActionEditor.createSolutionDropdown(qText);
+		ActionEditor.updateSolutions(ActionEditor.escapeSpecialCharacter(qText));
 	}
 	
 	this.selectableActions = [];
@@ -750,6 +748,37 @@ ActionEditor.prototype.createNewQuestion = function() {
 	html += '</select>';
 	root.innerHTML = html + '<br \>';
 	this.updateInputField();
+}
+
+
+ActionEditor.escapeSpecialCharacter = function(text) {
+	// escape special characters ! / = ( ) { } [ ] * - . : ; > | 
+	// Verbindungs-Fehler: #
+	// heap space ` \ ^
+	// disappears: +
+	// bug: < &
+	
+	if ((text.indexOf('!') > 0) || (text.indexOf('/') > 0) || (text.indexOf('=') > 0) 
+			|| (text.indexOf('(') > 0) || (text.indexOf(')') > 0 || (text.indexOf('{') > 0)) 
+			|| (text.indexOf('}') > 0) || (text.indexOf('[') > 0) || (text.indexOf(']') > 0) 
+			|| (text.indexOf('*') > 0) || (text.indexOf('+') > 0) || (text.indexOf('-') > 0) 
+			|| (text.indexOf('.') > 0) || (text.indexOf(':') > 0) || (text.indexOf(';') > 0)
+			|| (text.indexOf('>') > 0) || (text.indexOf('|') > 0) || (text.indexOf(',') > 0)
+			|| (text.indexOf('#') > 0) || (text.indexOf('`') > 0) || (text.indexOf('\\') > 0)
+			|| (text.indexOf('^') > 0) || (text.indexOf('<') > 0) || (text.indexOf('&') > 0)) {
+		text = '"' + text + '"';
+	}
+	
+	// escape characters which cause bugs
+	text = text.replace('<', '[FLOWCHART_ST]');
+	text = text.replace('&', '[FlOWCHART_AND]');
+	text = text.replace('+', '[FlOWCHART_PLUS]');
+	text = text.replace('^', '[FlOWCHART_CAP]');
+	text = text.replace('\'', '[FlOWCHART_BACKSLASH]');
+	text = text.replace('`', '[FlOWCHART_AG]');
+	text = text.replace('#', '[FlOWCHART_HASH]');
+	
+	return text;
 }
 
 // add additional answers to a question

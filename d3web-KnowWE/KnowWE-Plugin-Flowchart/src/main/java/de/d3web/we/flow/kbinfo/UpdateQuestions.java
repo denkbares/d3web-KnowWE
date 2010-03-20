@@ -46,18 +46,18 @@ public class UpdateQuestions extends AbstractAction {
 		
 		if (!questionsSection.contains("added Questions")) {
 			buffy.append(LINE_SEPARATOR + "added Questions" + LINE_SEPARATOR);
-			buffy.append("- " + questionText + " [" + questionType + "]" + LINE_SEPARATOR);
+			buffy.append("- " + revertSpecialCharacterEscape(questionText) + " [" + questionType + "]" + LINE_SEPARATOR);
 			if (!questionType.equals("num")) {
 				for (String s : answers) {
-					buffy.append("-- " + s + LINE_SEPARATOR);
+					buffy.append("-- " + revertSpecialCharacterEscape(s) + LINE_SEPARATOR);
 				}
 			}
 			
 		} else {
-			buffy.append("- " + questionText + " [" + questionType + "]" + LINE_SEPARATOR);
+			buffy.append("- " + revertSpecialCharacterEscape(questionText) + " [" + questionType + "]" + LINE_SEPARATOR);
 			if (!questionType.equals("num")) {
 				for (String s : answers) {
-					buffy.append("-- " + s + LINE_SEPARATOR);
+					buffy.append("-- " + revertSpecialCharacterEscape(s) + LINE_SEPARATOR);
 				}
 			}
 		}
@@ -65,7 +65,25 @@ public class UpdateQuestions extends AbstractAction {
 		return newQuestionsSection;
 	}
 
-
+	/**
+	 * some special characters cause bugs, so the have to be
+	 * escaped in javascript. this method turns them back into
+	 * normal special characters.
+	 * @param text
+	 * @return
+	 */
+	public static String revertSpecialCharacterEscape(String text) {
+		text = text.replace("[FLOWCHART_ST]", "<");
+		text = text.replace("[FlOWCHART_AND]", "&");
+		text = text.replace("[FlOWCHART_PLUS]", "+");
+		text = text.replace("[FlOWCHART_CAP]", "^");
+		text = text.replace("[FlOWCHART_BACKSLASH]", "\\");
+		text = text.replace("[FlOWCHART_AG]", "`");
+		text = text.replace("[FlOWCHART_HASH]", "#");
+		System.out.println(text);
+		return text;
+	}
+	
 	@Override
 	public boolean isAdminAction() {
 		// TODO Auto-generated method stub

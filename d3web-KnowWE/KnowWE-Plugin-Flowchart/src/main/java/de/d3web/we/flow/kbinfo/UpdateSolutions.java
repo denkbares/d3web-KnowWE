@@ -43,6 +43,8 @@ public class UpdateSolutions extends AbstractAction {
 	
 	private String addSolution(String solutionsSection, String solutionText) { 
 
+		
+		
 //		if (!solutionsSection.contains(solutionText)) {
 		//"Contains" is too weak: tried to add Solution "Bogen Vergiftung" when "Bogen Vergiftung Kind"
 		//was already a Solution -> didnt do anything
@@ -72,6 +74,9 @@ public class UpdateSolutions extends AbstractAction {
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		String solutionText = context.getParameter("text");
 		String pageName = context.getParameter("pageName");
+		
+		// revert the escaped special characters
+		solutionText = UpdateQuestions.revertSpecialCharacterEscape(solutionText);
 
 
 		// get everything to update the article
