@@ -29,6 +29,7 @@ import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.basic.QuotedType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.SubTree;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesSection;
@@ -352,7 +353,15 @@ public abstract class RefactoringScript {
 		Section<? extends XCLBody> xclBody = xcl.findChildOfType(XCLBody.class);
 		Section<? extends XCListBodyEndSymbol> endSymbol = xclBody.findChildOfType(XCListBodyEndSymbol.class);
 		xclBody.removeChild(endSymbol);
-
+		List<Section<? extends KnowWEObjectType>> removeList = xclBody
+			.getChildrenExceptExactType(new Class<?>[] {XCListBodyStartSymbol.class, CommentLineType.class});
+		xclBody.removeChildren(removeList);
+		
+		replaceSection(refManager().findNode(xclBody.findChildOfType(XCListBodyStartSymbol.class).getId()), "{\n");
+		
+//		Section.createTypedSection("\n", new PlainText(),
+//				xclBody, 0, xclBody.getArticle(), null, false, null, null);
+		
 		for(String question: map.keySet()) {
 			StringBuffer sb = new StringBuffer("");
 			Set<String> answers = map.get(question);
@@ -365,10 +374,13 @@ public abstract class RefactoringScript {
 				}
 			}
 			sb.append(",\n");
-			Section.createTypedSection(sb.toString(), new CommentLineType(),
+			Section.createTypedSection(sb.toString(), new PlainText(),
 					xclBody, 0, xclBody.getArticle(), null, false, null, null);
 		}
 		xclBody.addChild(endSymbol);
+		StringBuilder buffi = new StringBuilder("");
+		xclBody.collectTextsFromLeaves(buffi);
+		System.out.println(buffi);
 	}
 
 
@@ -462,8 +474,15 @@ public abstract class RefactoringScript {
 			clazz = FindingAnswer.class;
 		} else if(clazzString.equals("FindingQuestion")) {
 			clazz = FindingQuestion.class;
+		} else if(clazzString.equals("QuotedType")) {
+			clazz = QuotedType.class;
 		}
 		return clazz;
+	}
+	
+	public String getQuotedTypeString(Section<?> sec) {
+		if (sec.getFather().get().getClass() == QuotedType.class) return "\"" + sec.getOriginalText() + "\"";
+		else return sec.getOriginalText();
 	}
 
 	//FIXME NullpointerException

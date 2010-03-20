@@ -296,12 +296,20 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				+ this.getOriginalText().length()) + " - "
 				+ this.getOriginalText();
 	}
-
+	
 	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 *
 	 */
 	public void addChild(Section<?> s) {
+		this.addChild(this.children.size(), s);
+	}
+
+	/**
+	 * Adds a child to this node. Use for KDOM creation and editing only!
+	 *
+	 */
+	public void addChild(int index, Section<?> s) {
 		if (s.getOffSetFromFatherText() == -1) {
 			// WEAK! TODO: Find other way..
 			if (s.father != null) {
@@ -309,8 +317,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 						s.getOriginalText());
 			}
 		}
-		this.children.add(s);
+		this.children.add(index, s);
 	}
+	
 
 	/**
 	 * @return the text of this Section/Node
@@ -380,7 +389,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public List<Section<? extends KnowWEObjectType>> getChildrenExceptExactType(Class<?>[] classes) {
 		List<Class<?>> classesList = Arrays.asList(classes);
-		List<Section<? extends KnowWEObjectType>> list = getChildren();
+		List<Section<? extends KnowWEObjectType>> list = new LinkedList<Section<? extends KnowWEObjectType>>(this.children);
 		Iterator<Section<? extends KnowWEObjectType>> i = list.iterator();
 		while (i.hasNext()) {
 			Section<? extends KnowWEObjectType> sec = i.next();
@@ -731,6 +740,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public void removeChild(Section<? extends KnowWEObjectType> s) {
 		this.children.remove(s);
 
+	}
+	
+	public void removeChildren(List<Section<? extends KnowWEObjectType>> removeList) {
+		for(Section<? extends KnowWEObjectType> s : removeList) {
+			this.removeChild(s);
+		}
 	}
 
 	/**
