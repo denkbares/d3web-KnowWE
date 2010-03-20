@@ -28,18 +28,22 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class KnowWEUserContextImpl implements KnowWEUserContext {
 
-	
 	private String user;
-	private Map<String,String> params;
-	
-	public KnowWEUserContextImpl(String user, Map<String,String> parameters) {
+	private Map<String, String> params;
+	private String page;
+
+	public KnowWEUserContextImpl(String user, Map<String, String> parameters) {
 		this.user = user;
 		this.params = parameters;
 	}
-	
+
 	@Override
 	public String getUsername() {
 		return user;
+	}
+
+	public String getPage() {
+		return page;
 	}
 
 	@Override
@@ -58,6 +62,5 @@ public class KnowWEUserContextImpl implements KnowWEUserContext {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
 }

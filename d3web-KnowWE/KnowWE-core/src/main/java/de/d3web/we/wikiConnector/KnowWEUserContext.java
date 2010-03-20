@@ -25,13 +25,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 public interface KnowWEUserContext {
-	
+
 	public boolean userIsAdmin();
-	
+
 	public String getUsername();
-	
+
+	public String getPage();
+
 	public HttpServletRequest getHttpRequest();
-	
-	public Map<String,String> getUrlParameterMap();
+
+	public Map<String, String> getUrlParameterMap();
 
 }

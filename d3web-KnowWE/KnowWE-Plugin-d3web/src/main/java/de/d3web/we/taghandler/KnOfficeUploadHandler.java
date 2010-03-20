@@ -27,17 +27,13 @@ import org.apache.commons.fileupload.FileItem;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.SemanticCore;
-import de.d3web.we.taghandler.ImportKnOfficeHandler;
-import de.d3web.we.taghandler.OwlUploadHandler;
 import de.d3web.we.upload.UploadHandler;
 import de.d3web.we.utils.KopicWriter;
 
-public class KnOfficeUploadHandler implements UploadHandler
-{
+public class KnOfficeUploadHandler implements UploadHandler {
 
 	@Override
-	public String handle(Collection<FileItem> items)
-	{
+	public String handle(Collection<FileItem> items) {
 		KopicWriter kopicWriter = new KopicWriter();
 
 		String pagename = "DefaultKnOfficeUploadPage";
@@ -92,9 +88,9 @@ public class KnOfficeUploadHandler implements UploadHandler
 					}
 
 					return "feature under construction";
-//					ExceltoTextParser parser = new ExceltoTextParser(file);
-//					String data = parser.parse();
-//					kopicWriter.appendDecisionTable(data);
+					// ExceltoTextParser parser = new ExceltoTextParser(file);
+					// String data = parser.parse();
+					// kopicWriter.appendDecisionTable(data);
 				}
 			}
 			if (fileItem.getFieldName().equals(ImportKnOfficeHandler.KEY_OWL)) {
@@ -103,8 +99,10 @@ public class KnOfficeUploadHandler implements UploadHandler
 				String path = KnowWEEnvironment.getInstance()
 						.getKnowWEExtensionPath();
 				if (text != null && text.length() > 0) {
-					String p=KnowWEEnvironment.getInstance().getWikiConnector().getSavePath();
-					String inpath = (p!=null)?p:(KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
+					String p = KnowWEEnvironment.getInstance()
+							.getWikiConnector().getSavePath();
+					String inpath = (p != null) ? p : (KnowWEEnvironment
+							.getInstance().getKnowWEExtensionPath()
 							+ File.separatorChar + "owlincludes");
 					File file = new File(inpath, fileItem.getName());
 					File fpath = new File(path, "owlincludes");
@@ -130,12 +128,12 @@ public class KnOfficeUploadHandler implements UploadHandler
 				}
 			}
 
-			if (fileItem.getFieldName().equals(
-					OwlUploadHandler.KEY_DELETE_OWL)) {
+			if (fileItem.getFieldName().equals(OwlUploadHandler.KEY_DELETE_OWL)) {
 				String filename = fileItem.getString();
 				SemanticCore.getInstance().removeFile(filename);
 				return "redirect:Wiki.jsp?page=" + "SemanticSettings";
 			}
+
 			if (fileItem.getFieldName().equals(ImportKnOfficeHandler.KEY_RULES)) {
 				String data = fileItem.getString();
 				kopicWriter.appendRules(data);
@@ -156,9 +154,9 @@ public class KnOfficeUploadHandler implements UploadHandler
 						e.printStackTrace();
 					}
 					return "feature under construction";
-//					ExceltoTextParser parser = new ExceltoTextParser(file);
-//					String data = parser.parse();
-//					kopicWriter.appendScoreTable(data);
+					// ExceltoTextParser parser = new ExceltoTextParser(file);
+					// String data = parser.parse();
+					// kopicWriter.appendScoreTable(data);
 				}
 
 			}
@@ -178,9 +176,9 @@ public class KnOfficeUploadHandler implements UploadHandler
 						e.printStackTrace();
 					}
 					return "feature under construction";
-//					ExceltoTextParser parser = new ExceltoTextParser(file);
-//					String data = parser.parse();
-//					kopicWriter.appendCoveringTable(data);
+					// ExceltoTextParser parser = new ExceltoTextParser(file);
+					// String data = parser.parse();
+					// kopicWriter.appendCoveringTable(data);
 				}
 
 			}

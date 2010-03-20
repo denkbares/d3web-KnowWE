@@ -71,24 +71,25 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * The section representing the root-node of the KDOM-tree
 	 */
 	private Section<KnowWEArticle> sec;
-	
+
 	private Map<String, Integer> idMap = new HashMap<String, Integer>();
-	
-//	private Map<String, Section> changedSections = new HashMap<String, Section>();
-	
+
+	// private Map<String, Section> changedSections = new HashMap<String,
+	// Section>();
+
 	private Set<Section> includeSections = new HashSet<Section>();
-	
+
 	private KnowWEArticle lastVersion;
-	
+
 	private long startTimeOverall;
-	
+
 	private boolean fullParse;
-	
-	
-	public KnowWEArticle(String text, String title, KnowWEObjectType rootType, String web) {
+
+	public KnowWEArticle(String text, String title, KnowWEObjectType rootType,
+			String web) {
 		this(text, title, rootType, web, false);
 	}
-	
+
 	/**
 	 * Constructor: starts recursive parsing by creating new Section object
 	 * 
@@ -96,114 +97,128 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * @param title
 	 * @param allowedObjects
 	 */
-	public KnowWEArticle(String text, String title,
-			KnowWEObjectType rootType, String web, boolean fullParse) {
-		
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"====>> Starting to build article '" + title + "' ====>>");
-		
+	public KnowWEArticle(String text, String title, KnowWEObjectType rootType,
+			String web, boolean fullParse) {
+
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+				"====>> Starting to build article '" + title + "' ====>>");
+
 		long startTime = System.currentTimeMillis();
 		startTimeOverall = System.currentTimeMillis();
-		
+
 		this.fullParse = fullParse;
-		
+
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
-		
+
 		KnowWEArticleManager articleManager = instance.getArticleManager(web);
-		
+
 		instance.getIncludeManager(web).addSectionizingArticle(title);
-		
+
 		this.title = title;
 		this.web = web;
 		report = new KnowWEDomParseReport(this);
-		
+
 		this.childrenTypes.add(rootType);
-		
+
 		lastVersion = articleManager.getArticle(title);
-		
+
 		// run initHooks at TerminologyManager
-		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web).initArticle(this);
+		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web)
+				.initArticle(this);
 
 		// clear KnowWETypeStorage before re-parsing data
 		clearTypeStore(rootType, title);
-		
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<- Initialized article '" + title + "' in " 
-					+ (System.currentTimeMillis() - startTime) + "ms <-");
-	
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.INFO,
+				"<- Initialized article '" + title + "' in "
+						+ (System.currentTimeMillis() - startTime) + "ms <-");
+
 		startTime = System.currentTimeMillis();
-		
+
 		// create new Section, here KDOM is created recursively
-//		sec = new Section(text, this, null, 0, this,
-//				null, false, null);
-		sec = Section.createTypedSection(text, this, null, 0, this,
-				null, false, null, this);
+		// sec = new Section(text, this, null, 0, this,
+		// null, false, null);
+		sec = Section.createTypedSection(text, this, null, 0, this, null,
+				false, null, this);
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
-		
-		instance.getIncludeManager(web).removeInactiveIncludesForArticle(getTitle(), includeSections);
+
+		instance.getIncludeManager(web).removeInactiveIncludesForArticle(
+				getTitle(), includeSections);
 		instance.getIncludeManager(web).getSectionizingArticles().remove(title);
-		
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<- Built KDOM for article '" + title + "' in " 
-				+ (System.currentTimeMillis() - startTime) + "ms <-");
-	
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.INFO,
+				"<- Built KDOM for article '" + title + "' in "
+						+ (System.currentTimeMillis() - startTime) + "ms <-");
+
 		startTime = System.currentTimeMillis();
-		
+
 		// create default solution context as title name
 		if (instance != null) {
 			DefaultSubjectContext con = new DefaultSubjectContext();
 			con.setSubject(title);
 			ContextManager.getInstance().attachContext(sec, con);
 		}
-		
+
 		// call SubTreeHandler for all Sections
 		reviseArticle();
-		
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<- Built Knowledge for article '" + title + "' in " 
-				+ (System.currentTimeMillis() - startTime) + "ms <-");
+
+		// try {
+		// SemanticCore.getInstance().getUpper().getConnection().commit();
+		// } catch (RepositoryException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.INFO,
+				"<- Built Knowledge for article '" + title + "' in "
+						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
 		startTime = System.currentTimeMillis();
 
 		// calls Validator if configured
 		if (Validator.getResourceBundle().getString("validator.active")
 				.contains("true")) {
-			Logger.getLogger(this.getClass().getName())
-					.log(Level.INFO, "-> Starting to validate article '" + title + "' ->");
-			
+			Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+					"-> Starting to validate article '" + title + "' ->");
+
 			Validator.getFileHandlerInstance().validateArticle(this);
-			
-			Logger.getLogger(this.getClass().getName())
-				.log(Level.INFO,"<- Finished validating article '" + title + "' in " 
-					+ (System.currentTimeMillis() - startTime) + "ms <-");
+
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.INFO,
+					"<- Finished validating article '" + title + "' in "
+							+ (System.currentTimeMillis() - startTime)
+							+ "ms <-");
 
 			startTime = System.currentTimeMillis();
 		}
-		
-		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web).finishArticle(this);
 
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<- Registered Knowledge for article '" + title + "' in " 
-					+ (System.currentTimeMillis() - startTime) + "ms <-");
-		
+		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web)
+				.finishArticle(this);
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.INFO,
+				"<- Registered Knowledge for article '" + title + "' in "
+						+ (System.currentTimeMillis() - startTime) + "ms <-");
+
 		// prevent memory leak
 		lastVersion = null;
-	
+
 	}
 
-	private void clearTypeStore(
-			KnowWEObjectType type, String title) {
+	private void clearTypeStore(KnowWEObjectType type, String title) {
 
 		ContextManager.getInstance().detachContexts(title);
 
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
 		KnowWEArticleManager articleManager = null;
 		if (instance != null) {
-			articleManager = instance
-				.getArticleManager(web);
+			articleManager = instance.getArticleManager(web);
 		}
-		
+
 		if (articleManager != null) {
 			KnowWESectionInfoStorage typeStore = articleManager.getTypeStore();
 			typeStore.clearStoreForArticle(title);
@@ -212,8 +227,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		}
 
 		if (type instanceof AbstractKnowWEObjectType) {
-			((AbstractKnowWEObjectType) type)
-					.clearTypeStoreRecursivly(title, new HashSet<KnowWEType>());
+			((AbstractKnowWEObjectType) type).clearTypeStoreRecursivly(title,
+					new HashSet<KnowWEType>());
 		}
 
 	}
@@ -229,7 +244,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return sec.findChild(id);
 
 	}
-	
+
 	protected int checkID(String id) {
 		if (!idMap.containsKey(id)) {
 			idMap.put(id, 1);
@@ -317,19 +332,19 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	public String getWeb() {
 		return web;
 	}
-	
+
 	/**
-	 * The last version is only available during the initialization of the 
+	 * The last version is only available during the initialization of the
 	 * article
 	 */
 	public KnowWEArticle getLastVersionOfArticle() {
 		return lastVersion;
 	}
-	
+
 	public long getStartTime() {
 		return this.startTimeOverall;
 	}
-	
+
 	/**
 	 * Since the article is managed by the wiki there is no need for parsing it
 	 * out article is root node, so no sectioner necessary
@@ -345,8 +360,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return this.getClass().getSimpleName();
 	}
 
-
-
 	public Section<KnowWEArticle> getSection() {
 		return sec;
 	}
@@ -354,23 +367,23 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	public KnowWEDomParseReport getReport() {
 		return report;
 	}
-	
 
 	public Section findSmallestNodeContaining(int start, int end) {
 		return sec.findSmallestNodeContaining(start, end);
 	}
-	
+
 	private Map<String, Map<String, Section>> knownResults = new HashMap<String, Map<String, Section>>();
-	
+
 	/**
-	 * Finds all children of type <tt>class1</tt> in the KDOM at the
-	 * end of the given <tt>path</tt> of ancestors.
-	 * The <tt>path</tt> has to start with the KnowWEArticle and end with the ObjectType
-	 * of the Sections you are looking for.
+	 * Finds all children of type <tt>class1</tt> in the KDOM at the end of the
+	 * given <tt>path</tt> of ancestors. The <tt>path</tt> has to start with the
+	 * KnowWEArticle and end with the ObjectType of the Sections you are looking
+	 * for.
 	 * 
 	 * @return Map of Sections, using their originalText as key.
 	 */
-	public Map<String, Section> findChildrenOfTypeMap(List<Class<? extends KnowWEObjectType>> path) {
+	public Map<String, Section> findChildrenOfTypeMap(
+			List<Class<? extends KnowWEObjectType>> path) {
 		String stringPath = path.toString();
 		Map<String, Section> foundChildren = knownResults.get(stringPath);
 		if (foundChildren == null) {
@@ -380,16 +393,17 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		}
 		return foundChildren;
 	}
-	
+
 	/**
-	 * Finds all children of type <tt>class1</tt> in the KDOM at the
-	 * end of the given path of ancestors.
-	 * The <tt>path</tt> has to start with the KnowWEArticle and end with the ObjectType
-	 * of the Sections you are looking for.
+	 * Finds all children of type <tt>class1</tt> in the KDOM at the end of the
+	 * given path of ancestors. The <tt>path</tt> has to start with the
+	 * KnowWEArticle and end with the ObjectType of the Sections you are looking
+	 * for.
 	 * 
 	 * @return List of Sections
 	 */
-	public List<Section> findChildrenOfTypeList(LinkedList<Class<? extends KnowWEObjectType>> path) {
+	public List<Section> findChildrenOfTypeList(
+			LinkedList<Class<? extends KnowWEObjectType>> path) {
 		List<Section> foundChildren = new ArrayList<Section>();
 		sec.findSuccessorsOfTypeAtTheEndOfPath(path, 0, foundChildren);
 		return foundChildren;
@@ -414,25 +428,25 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		sec.getAllNodesPreOrder(nodes);
 		return nodes;
 	}
-	
+
 	public List<Section<? extends KnowWEObjectType>> getAllNodesParsingPostOrder() {
 		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
 		sec.getAllNodesParsingPostOrder(nodes);
 		return nodes;
 	}
-	
+
 	@Override
 	public String toString() {
 		return sec.getOriginalText();
 	}
-	
+
 	public Set<Section> getIncludeSections() {
 		return this.includeSections;
 	}
 
 	public void reviseArticle() {
 		List<Section<? extends KnowWEObjectType>> nodes = getAllNodesParsingPostOrder();
-		for (Section<? extends KnowWEObjectType> node:nodes) {
+		for (Section<? extends KnowWEObjectType> node : nodes) {
 			node.getObjectType().reviseSubtree(this, node);
 		}
 	}
@@ -440,7 +454,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	public boolean isFullParse() {
 		return this.fullParse;
 	}
-	
+
 	public KnowWEObjectType getRootType() {
 		return getAllowedChildrenTypes().get(0);
 	}

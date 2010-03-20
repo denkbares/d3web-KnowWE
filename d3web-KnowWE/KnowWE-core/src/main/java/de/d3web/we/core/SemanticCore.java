@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +35,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openrdf.OpenRDFException;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Statement;
 import org.openrdf.query.Binding;
@@ -52,7 +50,6 @@ import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFFormat;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.PropertyManager;
@@ -95,8 +92,7 @@ public class SemanticCore {
 		defaultnamespaces = new HashMap<String, String>();
 		try {
 			uo.setLocaleNS(knowWEEnvironment.getWikiConnector().getBaseUrl());
-		}
-		catch (RepositoryException e1) {
+		} catch (RepositoryException e1) {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					e1.getMessage());
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
@@ -137,16 +133,14 @@ public class SemanticCore {
 			}
 			output += "[{KnowWEPlugin OwlImport}]";
 			wiki.createWikiPage("SemanticSettings", output, "semanticcore");
-		}
-		else {
+		} else {
 			for (String piece : settingspage.split(System
 					.getProperty("line.separator"))) {
 				if (piece.contains("=")) {
 					String[] s = piece.split("=");
 					try {
 						settings.put(s[0].trim(), s[1].trim());
-					}
-					catch (IndexOutOfBoundsException e) {
+					} catch (IndexOutOfBoundsException e) {
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.WARNING, e.getMessage());
 					}
@@ -205,8 +199,7 @@ public class SemanticCore {
 				}
 
 				con.commit();
-			}
-			catch (RepositoryException e) {
+			} catch (RepositoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -270,8 +263,8 @@ public class SemanticCore {
 			Logger.getLogger(this.getClass().getName()).log(Level.FINER,
 					"updating " + sec.getId() + "  " + allStatements.size());
 			addStaticStatements(inputio);
-		}
-		catch (RepositoryException e) {
+			con.commit();
+		} catch (RepositoryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
 		}
@@ -297,30 +290,28 @@ public class SemanticCore {
 			for (Statement current : allStatements) {
 				if (current != null) {
 					if (current.getObject() == null) {
-						Logger.getLogger(this.getClass().getName()).log(
-								Level.SEVERE,
-								"invalid object: null at " + current.toString());
-					}
-					else if (current.getPredicate() == null) {
+						Logger.getLogger(this.getClass().getName())
+								.log(
+										Level.SEVERE,
+										"invalid object: null at "
+												+ current.toString());
+					} else if (current.getPredicate() == null) {
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.SEVERE,
 								"invalid predicate: null at "
-								+ current.toString());
-					}
-					else if (current.getSubject() == null) {
+										+ current.toString());
+					} else if (current.getSubject() == null) {
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.SEVERE,
 								"invalid subject: null at "
-								+ current.toString());
-					}
-					else {
+										+ current.toString());
+					} else {
 						con.add(current);
 					}
 				}
 			}
-			//con.commit();
-		}
-		catch (RepositoryException e) {
+			// con.commit();
+		} catch (RepositoryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
 		}
@@ -378,8 +369,9 @@ public class SemanticCore {
 	 * @return
 	 */
 	public List<Statement> getTopicStatements(String topic) {
-		Section<? extends KnowWEObjectType> rootsection = KnowWEEnvironment.getInstance().getArticle(
-				KnowWEEnvironment.DEFAULT_WEB, topic).getSection();
+		Section<? extends KnowWEObjectType> rootsection = KnowWEEnvironment
+				.getInstance().getArticle(KnowWEEnvironment.DEFAULT_WEB, topic)
+				.getSection();
 		return getSectionStatements(rootsection);
 	}
 
@@ -392,7 +384,7 @@ public class SemanticCore {
 	public List<Statement> getSectionStatements(
 			Section<? extends KnowWEObjectType> s) {
 		List<Statement> allstatements = new ArrayList<Statement>();
-		if (statementcache.containsKey(s.getId().hashCode() + "")) {
+		if (!statementcache.containsKey(s.getId().hashCode() + "")) {
 			List<Section<? extends KnowWEObjectType>> l = s.getChildren();
 			for (Section<? extends KnowWEObjectType> current : l) {
 				allstatements.addAll(getSectionStatements(current));
@@ -404,51 +396,13 @@ public class SemanticCore {
 
 	}
 
-	public String includeUrl(String addy) {
-		String output = "";
-		RepositoryConnection con = uo.getConnection();
-		try {
-			try {
-				con.commit();
-				URL url = new URL(addy);
-				con.add(url, url.toString(), RDFFormat.RDFXML);
-			}
-			catch (OpenRDFException e) {
-				output += "error:" + e.getMessage();
-				try {
-					con.rollback();
-				}
-				catch (RepositoryException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-			catch (java.io.IOException e) {
-				output += "error:" + e.getMessage();
-				try {
-					con.rollback();
-				}
-				catch (RepositoryException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		}
-		finally {
-		}
-
-		if (output.length() == 0) {
-			output += "Inclusion of " + addy + "successfull";
-		}
-		return output;
-	}
-
 	/**
 	 * @return
 	 */
 	public File[] getImportList() {
 		String p = knowWEEnvironment.getWikiConnector().getSavePath();
-		String inpath = (p != null) ? p : (knowWEEnvironment.getKnowWEExtensionPath()
+		String inpath = (p != null) ? p : (knowWEEnvironment
+				.getKnowWEExtensionPath()
 				+ File.separatorChar + "owlincludes");
 		File includes = new File(inpath);
 		if (includes.exists()) {
@@ -467,34 +421,25 @@ public class SemanticCore {
 	 */
 	public void removeFile(String filename) {
 		String p = knowWEEnvironment.getWikiConnector().getSavePath();
-		String inpath = (p != null) ? p : (knowWEEnvironment.getKnowWEExtensionPath()
+		String inpath = (p != null) ? p : (knowWEEnvironment
+				.getKnowWEExtensionPath()
 				+ File.separatorChar + "owlincludes");
 		File includes = new File(inpath);
 		File file = new File(includes, filename);
 		if (file.canWrite()) {
 			file.delete();
-			clearContext(filename.toLowerCase());
+			clearStatements(filename.toLowerCase().hashCode() + "");
 		}
 	}
 
-	/**
-	 * removes all statements produced by a specific topic
-	 * 
-	 * @param topic
-	 */
-	@Deprecated
-	public void clearContext(String topic) {
-		if (statementcache.containsKey(topic)) {
-			RepositoryConnection con = uo.getConnection();
-
-			try {
-				con.remove(statementcache.get(topic));
-			}
-			catch (RepositoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			statementcache.remove(topic);
+	private void clearStatements(String key) {
+		RepositoryConnection con = uo.getConnection();
+		try {
+			con.remove(statementcache.get(key));
+			con.commit();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -504,19 +449,15 @@ public class SemanticCore {
 	 * @param sec
 	 */
 	public void clearContext(Section sec) {
-		String key = sec.getId().hashCode() + "";
-		if (statementcache.containsKey(key)) {
-			RepositoryConnection con = uo.getConnection();
-
-			try {
-				con.remove(statementcache.get(key));
-			}
-			catch (RepositoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			statementcache.remove(key);
+		RepositoryConnection con = uo.getConnection();
+		try {
+			con.remove(getSectionStatements(sec));
+			con.commit();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 	}
 
 	public String getSparqlNamespaceShorts() {
@@ -543,12 +484,10 @@ public class SemanticCore {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		}
-		catch (RepositoryException e) {
+		} catch (RepositoryException e) {
 			org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(
 					org.apache.log4j.Level.ERROR, e.getMessage());
-		}
-		catch (MalformedQueryException e) {
+		} catch (MalformedQueryException e) {
 			org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(
 					org.apache.log4j.Level.ERROR, e.getMessage());
 		}
@@ -557,8 +496,7 @@ public class SemanticCore {
 			return resultlist;
 		try {
 			result = ((TupleQuery) query).evaluate();
-		}
-		catch (QueryEvaluationException e) {
+		} catch (QueryEvaluationException e) {
 			e.printStackTrace();
 		}
 
@@ -574,8 +512,7 @@ public class SemanticCore {
 						tag = tag.split("#")[1];
 					try {
 						tag = URLDecoder.decode(tag, "UTF-8");
-					}
-					catch (UnsupportedEncodingException e) {
+					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
 					if (tag.contains("=")) {
@@ -589,15 +526,12 @@ public class SemanticCore {
 					}
 					resultlist.add(tag.trim());
 				}
-			}
-			catch (QueryEvaluationException e) {
+			} catch (QueryEvaluationException e) {
 				return resultlist;
-			}
-			finally {
+			} finally {
 				try {
 					result.close();
-				}
-				catch (QueryEvaluationException e) {
+				} catch (QueryEvaluationException e) {
 
 					e.printStackTrace();
 				}

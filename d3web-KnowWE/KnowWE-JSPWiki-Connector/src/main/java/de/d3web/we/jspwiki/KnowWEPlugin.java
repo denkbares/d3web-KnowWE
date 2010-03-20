@@ -149,7 +149,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		try {
 			JSPWikiUserContext userContext = new JSPWikiUserContext(context,
 					parseRequestVariables(context));
-
 			String topic = context.getPage().getName();
 			if (context.getCommand().getRequestContext().equals(
 					WikiContext.VIEW)) {
@@ -227,12 +226,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
 				parseRequestVariables(wikiContext));
-	
-		
+
 		/*
-		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter
-		 * get extra calls: they are handled and rendered from the KDOMs
-		 * in the following
+		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter get extra
+		 * calls: they are handled and rendered from the KDOMs in the following
 		 */
 		String moreMenu = "MoreMenu";
 		if (wikiContext.getRealPage().getName().equals(moreMenu)) {
@@ -248,7 +245,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		String leftMenu = "LeftMenu";
 		if (wikiContext.getRealPage().getName().equals(leftMenu)) {
 			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
-			.getArticle(KnowWEEnvironment.DEFAULT_WEB, leftMenu);
+					.getArticle(KnowWEEnvironment.DEFAULT_WEB, leftMenu);
 			if (supportArticle != null
 					&& supportArticle.getSection().getOriginalText().equals(
 							content)) {
@@ -256,18 +253,17 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			}
 		}
 		// temporarily out-commented until tagging issues are fixed
-//		String leftMenuFooter = "LeftMenuFooter";
-//		if (wikiContext.getRealPage().getName().equals(leftMenuFooter)) {
-//			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
-//			.getArticle(KnowWEEnvironment.DEFAULT_WEB, leftMenuFooter);
-//			if(supportArticle != null
-//				&& supportArticle.getSection().getOriginalText()
-//						.equals(content)) {
-//			return renderKDOM(content, userContext, supportArticle);
-//		}}
+		String leftMenuFooter = "LeftMenuFooter";
+		if (wikiContext.getRealPage().getName().equals(leftMenuFooter)) {
+			KnowWEArticle supportArticle = KnowWEEnvironment.getInstance()
+					.getArticle(KnowWEEnvironment.DEFAULT_WEB, leftMenuFooter);
+			if (supportArticle != null
+					&& supportArticle.getSection().getOriginalText().equals(
+							content)) {
+				return renderKDOM(content, userContext, supportArticle);
+			}
+		}
 
-		
-		
 		String pagedata = "";
 		WikiEngine engine = wikiContext.getEngine();
 		if (engine != null) {
@@ -392,11 +388,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		while (p.hasMoreElements()) {
 			String param = (String) p.nextElement();
 			try {
-				parameter.put(param, URLDecoder.decode(req
-						.getParameter(param), "UTF-8"));
+				parameter.put(param, URLDecoder.decode(req.getParameter(param),
+						"UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				parameter.put(param, URLDecoder.decode(req
-						.getParameter(param)));
+				parameter
+						.put(param, URLDecoder.decode(req.getParameter(param)));
 			}
 		}
 

@@ -29,8 +29,6 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openrdf.repository.RepositoryException;
-
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.include.Include;
@@ -135,15 +133,16 @@ public class KnowWEArticleManager {
 		String newArticleSourceText = newText.toString();
 		KnowWEEnvironment.getInstance().saveArticle(web, articleName,
 				newArticleSourceText, map);
-//		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
-//				KnowWEEnvironment.getInstance().getRootTypes(), this.web));
+		// saveUpdatedArticle(new KnowWEArticle(newArticleSourceText,
+		// articleName,
+		// KnowWEEnvironment.getInstance().getRootTypes(), this.web));
 		return "done";
 	}
 
 	/**
 	 * Replaces a KDOM-node with the given text
 	 * 
-	 * by now generates new KDOM from changed text 
+	 * by now generates new KDOM from changed text
 	 * 
 	 * @param map
 	 * @param articleName
@@ -161,8 +160,9 @@ public class KnowWEArticleManager {
 		appendTextReplaceNode(root, nodeID, text, newText);
 
 		String newArticleSourceText = newText.toString();
-//		saveUpdatedArticle(new KnowWEArticle(newArticleSourceText, articleName,
-//				KnowWEEnvironment.getInstance().getRootTypes(), this.web));
+		// saveUpdatedArticle(new KnowWEArticle(newArticleSourceText,
+		// articleName,
+		// KnowWEEnvironment.getInstance().getRootTypes(), this.web));
 		return newArticleSourceText;
 	}
 
@@ -180,9 +180,10 @@ public class KnowWEArticleManager {
 			return null;
 		return art.findSection(nodeID);
 	}
-	
+
 	/**
-	 * Looks in KDOM for the Section object with given nodeID The article name is not needed because it is part of the nodeID
+	 * Looks in KDOM for the Section object with given nodeID The article name
+	 * is not needed because it is part of the nodeID
 	 * 
 	 * @param nodeID
 	 * @return null if article or node not found
@@ -204,7 +205,8 @@ public class KnowWEArticleManager {
 			return;
 		}
 		List<Section> children = sec.getChildren();
-		if (children == null || children.isEmpty() || sec.getObjectType() instanceof Include) {
+		if (children == null || children.isEmpty()
+				|| sec.getObjectType() instanceof Include) {
 			newText.append(sec.getOriginalText());
 			return;
 		}
@@ -224,49 +226,62 @@ public class KnowWEArticleManager {
 	 */
 	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle art) {
 		// store new article
-		articleMap.put(art.getTitle(), art);				
+		articleMap.put(art.getTitle(), art);
 		long startTime = System.currentTimeMillis();
-		
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"-> Starting to update Includes to article '" + art.getTitle() + "' ->");
-		
-		KnowWEEnvironment.getInstance().getIncludeManager(web).updateIncludesToArticle(art);
-		
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<- Finished updating Includes to article '" + art.getTitle() + "' in " 
-				+ (System.currentTimeMillis() - startTime) + "ms <-");
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.INFO,
+				"-> Starting to update Includes to article '" + art.getTitle()
+						+ "' ->");
+
+		KnowWEEnvironment.getInstance().getIncludeManager(web)
+				.updateIncludesToArticle(art);
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.INFO,
+				"<- Finished updating Includes to article '" + art.getTitle()
+						+ "' in " + (System.currentTimeMillis() - startTime)
+						+ "ms <-");
 
 		art.getSection().setReusedStateRecursively(art.getTitle(), false);
-		
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"<<==== Finished building article '" + art.getTitle() + "' in " + web + " in " 
-				+ (System.currentTimeMillis() - art.getStartTime()) + "ms <<====");
-		
-		//commit all changes to the triplestore the article updating has produced.
-		try {
-			SemanticCore.getInstance().getUpper().getConnection().commit();
-		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		Logger.getLogger(this.getClass().getName()).log(
+				Level.INFO,
+				"<<==== Finished building article '" + art.getTitle() + "' in "
+						+ web + " in "
+						+ (System.currentTimeMillis() - art.getStartTime())
+						+ "ms <<====");
+
+		// commit all changes to the triplestore the article updating has
+		// produced.
+		// moved back to sectionwise updates due to a heisenbug
+		// try {
+		// SemanticCore.getInstance().getUpper().getConnection().commit();
+		// } catch (RepositoryException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		return art.getReport();
 	}
-	
+
 	public void clearArticleMap() {
 		this.articleMap = new java.util.HashMap<String, KnowWEArticle>();
 	}
-	
+
 	/**
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
-	 * @param art The article to delete
+	 * 
+	 * @param art
+	 *            The article to delete
 	 */
 	public void deleteArticle(KnowWEArticle art) {
-		KnowWEEnvironment.getInstance().processAndUpdateArticle("", "", art.getTitle(), web);
+		KnowWEEnvironment.getInstance().processAndUpdateArticle("", "",
+				art.getTitle(), web);
 		articleMap.remove(art.getTitle());
-		
-		Logger.getLogger(this.getClass().getName())
-			.log(Level.INFO,"-> Deleted article '" + art.getTitle() + "'" + " from " + web);
+
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+				"-> Deleted article '" + art.getTitle() + "'" + " from " + web);
 	}
-	
+
 }

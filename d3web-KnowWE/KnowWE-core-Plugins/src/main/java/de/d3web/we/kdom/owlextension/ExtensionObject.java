@@ -38,85 +38,91 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.Section;
 
 public class ExtensionObject {
-	
+
 	private String errorreport;
 	private BNode context;
 	private boolean error;
 	private Section father;
-	
-	public ExtensionObject (String value, Section father){
+
+	public ExtensionObject(String value, Section father) {
 		this.father = father;
 		setError(false);
 		extend(value);
 	}
-	
+
 	private String inlcudeDefaultNS(String s) {
-		String header = "<rdf:RDF xmlns=\""+UpperOntology.getInstance().getLocaleNS()+"\""
-				+ " xml:base=\""+UpperOntology.getInstance().getLocaleNS()+"\""
+		String header = "<rdf:RDF xmlns=\""
+				+ UpperOntology.getInstance().getLocaleNS() + "\""
+				+ " xml:base=\"" + UpperOntology.getInstance().getLocaleNS()
+				+ "\""
 				+ " xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\""
 				+ " xmlns:owl2xml=\"http://www.w3.org/2006/12/owl2-xml#\""
-				+ " xmlns:knowwe=\""+UpperOntology.getInstance().getBaseNS()+"\""
-				+ " xmlns:owl=\"http://www.w3.org/2002/07/owl#\""
+				+ " xmlns:knowwe=\"" + UpperOntology.getInstance().getBaseNS()
+				+ "\"" + " xmlns:owl=\"http://www.w3.org/2002/07/owl#\""
 				+ " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\""
 				+ " xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""
 				+ " xmlns:owl2=\"http://www.w3.org/2006/12/owl2#\">"
 				+ "<owl:Ontology rdf:about=\"\"/>";
 		String footer = "</rdf:RDF>";
-		return header+s+footer;
+		return header + s + footer;
 	}
 
-	
-	private void extend(String value){	    
-		SemanticCore sc=SemanticCore.getInstance();
+	private void extend(String value) {
+		SemanticCore sc = SemanticCore.getInstance();
 		UpperOntology uo = UpperOntology.getInstance();
 		RepositoryConnection con = uo.getConnection();
-		context=sc.getContext(father.getTitle()+"extension");
-		sc.clearContext(father.getTitle()+"extension");
-		String output="";
+		sc.clearContext(father);
+		String output = "";
 		try {
 			Reader r = new StringReader(inlcudeDefaultNS(value));
 			con.setAutoCommit(false);
-			con.add(r,uo.getLocaleNS(),RDFFormat.RDFXML,context);		
-			output+=value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+			con.add(r, uo.getLocaleNS(), RDFFormat.RDFXML, context);
+			output += value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 			con.commit();
-		} catch (RDFParseException e){
-			output+=e.getMessage();
-			error=true;
+		} catch (RDFParseException e) {
+			output += e.getMessage();
+			error = true;
 			try {
 				con.rollback();
 			} catch (RepositoryException e1) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());				
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+						e1.getMessage());
 			}
-		} catch (RepositoryException e){
-			error=true;
-			output+=e.getMessage();
+		} catch (RepositoryException e) {
+			error = true;
+			output += e.getMessage();
 			try {
 				con.rollback();
 			} catch (RepositoryException e1) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+						e1.getMessage());
 			}
 		} catch (IOException e) {
-			error=true;
-			output+=e.getMessage();
+			error = true;
+			output += e.getMessage();
 			try {
 				con.rollback();
 			} catch (RepositoryException e1) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+						e1.getMessage());
 			}
 		}
-		output+="";
-		errorreport=output;		
+		output += "";
+		errorreport = output;
 	}
-	
+
 	public void setErrorreport(String errorreport) {
 		this.errorreport = errorreport;
 	}
+
 	public String getErrorreport() {
 		return errorreport;
 	}
+
 	public void setContext(BNode context) {
 		this.context = context;
 	}
+
 	public BNode getContext() {
 		return context;
 	}
@@ -133,19 +139,20 @@ public class ExtensionObject {
 	 * 
 	 */
 	public IntermediateOwlObject getIntermediateOwlObject() {
-	    IntermediateOwlObject io = new IntermediateOwlObject();
-	    UpperOntology uo = UpperOntology.getInstance();
+		IntermediateOwlObject io = new IntermediateOwlObject();
+		UpperOntology uo = UpperOntology.getInstance();
 		RepositoryConnection con = uo.getConnection();
 		try {
-		    io.addAllStatements(con.getStatements(null, null, null, false, context).asList());
-		    //SemanticCore sc=SemanticCore.getInstance();		    
+			io.addAllStatements(con.getStatements(null, null, null, false,
+					context).asList());
+			// SemanticCore sc=SemanticCore.getInstance();
 		} catch (RepositoryException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
+
 		return io;
-	    
+
 	}
-	
+
 }

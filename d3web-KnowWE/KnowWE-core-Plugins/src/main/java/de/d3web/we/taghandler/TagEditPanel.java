@@ -23,9 +23,9 @@ package de.d3web.we.taghandler;
 import java.util.ArrayList;
 import java.util.Map;
 
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.TaggingMangler;
 import de.d3web.we.core.KnowWEAttributes;
+import de.d3web.we.core.TaggingMangler;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TagEditPanel extends AbstractTagHandler {
@@ -37,18 +37,19 @@ public class TagEditPanel extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-		TaggingMangler tm = TaggingMangler.getInstance();		
-		ArrayList<String> tags = tm.getPageTags(topic);
+		TaggingMangler tm = TaggingMangler.getInstance();
+		ArrayList<String> tags = tm.getPageTags(user.getPage());
 		String output = "<p>";
 		output += "Tags (<span id=\"tagpanedit\" style='text-decoration:underline;'>edit</span>):";
 		output += "<span id=\"tagspan\">";
 		for (String cur : tags) {
-			//output += cur + " ";
-			output+=" <a href =\"Wiki.jsp?page=TagSearch&query="+cur+"&ok=Find!&start=0&maxitems=20\" >"+cur+"</a>";		
-			
+			// output += cur + " ";
+			output += " <a href =\"Wiki.jsp?page=TagSearch&query=" + cur
+					+ "&ok=Find!&start=0&maxitems=20\" >" + cur + "</a>";
+
 		}
-		if (output.trim().length()==0){
-			output+="none";
+		if (output.trim().length() == 0) {
+			output += "none";
 		}
 		output += "</span>";
 		output += "<script type=\"text/javascript\" src=\"KnowWEExtension/scripts/silveripe.0.2.js\"></script>";
@@ -58,7 +59,7 @@ public class TagEditPanel extends AbstractTagHandler {
 				+ KnowWEAttributes.TOPIC + ":\"" + topic + "\"} });";
 		output += "</script>";
 		output += "</p>";
-		return KnowWEEnvironment.maskHTML(output);
+		return KnowWEUtils.maskHTML(output);
 	}
 
 }

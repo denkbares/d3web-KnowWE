@@ -29,24 +29,29 @@ import com.ecyrd.jspwiki.WikiContext;
 
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class JSPWikiUserContext implements KnowWEUserContext{
-	
+public class JSPWikiUserContext implements KnowWEUserContext {
+
 	private WikiContext context;
-	private Map<String,String> urlParameter;
-	 
-	public JSPWikiUserContext (WikiContext context, Map<String,String> urlParameter) {
+	private Map<String, String> urlParameter;
+
+	public JSPWikiUserContext(WikiContext context,
+			Map<String, String> urlParameter) {
 		this.context = context;
 		this.urlParameter = urlParameter;
 	}
-	
-	public JSPWikiUserContext (WikiContext context) {
+
+	public JSPWikiUserContext(WikiContext context) {
 		this.context = context;
 	}
-	
+
 	public HttpServletRequest getHttpRequest() {
 		return context.getHttpRequest();
 	}
-	
+
+	public String getPage() {
+		return context.getPage().getName();
+	}
+
 	public void setUrlParameter(Map<String, String> urlParameter) {
 		this.urlParameter = urlParameter;
 	}
@@ -60,7 +65,7 @@ public class JSPWikiUserContext implements KnowWEUserContext{
 
 		// returns true if User is in Admin-Group
 		Principal[] princ = context.getWikiSession().getRoles();
-		
+
 		for (Principal p : princ) {
 			if (p.getName().equals("Admin")) {
 				return true;
@@ -74,13 +79,14 @@ public class JSPWikiUserContext implements KnowWEUserContext{
 	public Map<String, String> getUrlParameterMap() {
 		return urlParameter;
 	}
-	
-//	public static JSPWikiUserContext getUserByName( String name ) {
-//		
-//		Map<String, String> urlParam = null; //TODO: get URLParam & wikiContext by name
-//		WikiContext wikiContext = null;
-//		
-//		return new JSPWikiUserContext (wikiContext, urlParam);
-//	}
-	
+
+	// public static JSPWikiUserContext getUserByName( String name ) {
+	//		
+	// Map<String, String> urlParam = null; //TODO: get URLParam & wikiContext
+	// by name
+	// WikiContext wikiContext = null;
+	//		
+	// return new JSPWikiUserContext (wikiContext, urlParam);
+	// }
+
 }
