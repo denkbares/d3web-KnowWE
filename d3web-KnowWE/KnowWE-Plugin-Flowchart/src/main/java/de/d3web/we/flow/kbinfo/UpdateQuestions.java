@@ -74,19 +74,25 @@ public class UpdateQuestions extends AbstractAction {
 	 */
 	public static String revertSpecialCharacterEscape(String text) {
 		text = text.replace("[FLOWCHART_ST]", "<");
-		text = text.replace("[FlOWCHART_AND]", "&");
-		text = text.replace("[FlOWCHART_PLUS]", "+");
-		text = text.replace("[FlOWCHART_CAP]", "^");
-		text = text.replace("[FlOWCHART_BACKSLASH]", "\\");
-		text = text.replace("[FlOWCHART_AG]", "`");
-		text = text.replace("[FlOWCHART_HASH]", "#");
+		text = text.replace("[FLOWCHART_AND]", "&");
+		text = text.replace("[FLOWCHART_PLUS]", "+");
+		text = text.replace("[FLOWCHART_CAP]", "^");
+		text = text.replace("[FLOWCHART_BACKSLASH]", "\\");
+		text = text.replace("[FLOWCHART_AG]", "`");
+		text = text.replace("[FLOWCHART_HASH]", "#");
+		text = text.replace("[FLOWCHART_oe]", "ö");
+		text = text.replace("[FLOWCHART_OE]", "Ö");
+		text = text.replace("[FLOWCHART_ae]", "ä");
+		text = text.replace("[FLOWCHART_AE]", "Ä");
+		text = text.replace("[FLOWCHART_ue]", "ü");
+		text = text.replace("[FLOWCHART_UE]", "Ü");
+		text = text.replace("[FLOWCHART_SS]", "ß");
 		System.out.println(text);
 		return text;
 	}
 	
 	@Override
 	public boolean isAdminAction() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

@@ -78,6 +78,7 @@ public class UpdateSolutions extends AbstractAction {
 		// revert the escaped special characters
 		solutionText = UpdateQuestions.revertSpecialCharacterEscape(solutionText);
 
+		System.out.println(solutionText);
 
 		// get everything to update the article
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);

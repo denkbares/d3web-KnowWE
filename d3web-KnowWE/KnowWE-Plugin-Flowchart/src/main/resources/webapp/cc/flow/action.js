@@ -443,6 +443,18 @@ function getElementsByClassName(class_name)
   return ret_obj;
 }
 
+
+// replaces all occureneces of stringToFind with stringToReplace
+String.prototype.ReplaceAll = function(stringToFind,stringToReplace){
+    var temp = this;
+    var index = temp.indexOf(stringToFind);
+        while(index != -1){
+            temp = temp.replace(stringToFind,stringToReplace);
+            index = temp.indexOf(stringToFind);
+        }
+        return temp;
+    }
+
 //creates the Dropdown Menu, with the answer values
 ActionEditor.createQuestionDropdown = function(addedQuestionText, addedQuestionType, possibleAnswers) {
 	var name = addedQuestionText;	
@@ -649,6 +661,12 @@ ActionEditor.prototype.createNewFlowchart = function() {
 	var root = this.dom.select('.value')[0];
 	var qText = document.choseQuestionText.questionText.value;
 	var exitNodes = this.getAnswers();
+	
+	// escape special characters
+	for (var i = 0; i < exitNodes.length; i++) {
+		exitNodes[i] = ActionEditor.escapeSpecialCharacter(exitNodes[i]);
+	}
+	
 	this.nodeModel = 'CALL[' + qText + '(Start' + qText + ')]';
 	ActionEditor.addSubFlow(exitNodes);
 }
@@ -669,13 +687,8 @@ ActionEditor.prototype.createNewQuestion = function() {
 	var answers = this.getAnswers();
 	var actions;
 	
-	//// escape special characters
-	//qText = ActionEditor.escapeSpecialCharacter(qText);
-	//for (var i = 0; i < answers.length; i++) {
-	//	answers[i] = ActionEditor.escapeSpecialCharacter(answers[i]);
-	//}
-	
 	// if the object is a question, do the right ajax-request and create the dropdown
+	// also escape special characters
 	if (qType != "Solution") {
 		actions = ActionEditor.createQuestionDropdown(qText, qType, answers);
 		
@@ -758,25 +771,32 @@ ActionEditor.escapeSpecialCharacter = function(text) {
 	// disappears: +
 	// bug: < &
 	
-	if ((text.indexOf('!') > 0) || (text.indexOf('/') > 0) || (text.indexOf('=') > 0) 
-			|| (text.indexOf('(') > 0) || (text.indexOf(')') > 0 || (text.indexOf('{') > 0)) 
-			|| (text.indexOf('}') > 0) || (text.indexOf('[') > 0) || (text.indexOf(']') > 0) 
-			|| (text.indexOf('*') > 0) || (text.indexOf('+') > 0) || (text.indexOf('-') > 0) 
-			|| (text.indexOf('.') > 0) || (text.indexOf(':') > 0) || (text.indexOf(';') > 0)
-			|| (text.indexOf('>') > 0) || (text.indexOf('|') > 0) || (text.indexOf(',') > 0)
-			|| (text.indexOf('#') > 0) || (text.indexOf('`') > 0) || (text.indexOf('\\') > 0)
-			|| (text.indexOf('^') > 0) || (text.indexOf('<') > 0) || (text.indexOf('&') > 0)) {
+	if ((text.indexOf('!') > -1) || (text.indexOf('/') > -1) || (text.indexOf('=') > -1) 
+			|| (text.indexOf('(') > -1) || (text.indexOf(')') > -1 || (text.indexOf('{') > -1)) 
+			|| (text.indexOf('}') > -1) || (text.indexOf('[') > -1) || (text.indexOf(']') > -1) 
+			|| (text.indexOf('*') > -1) || (text.indexOf('+') > -1) || (text.indexOf('-') > -1) 
+			|| (text.indexOf('.') > -1) || (text.indexOf(':') > -1) || (text.indexOf(';') > -1)
+			|| (text.indexOf('>') > -1) || (text.indexOf('|') > -1) || (text.indexOf(',') > -1)
+			|| (text.indexOf('#') > -1) || (text.indexOf('`') > -1) || (text.indexOf('\\') > -1)
+			|| (text.indexOf('^') > -1) || (text.indexOf('<') > -1) || (text.indexOf('&') > -1)) {
 		text = '"' + text + '"';
 	}
 	
 	// escape characters which cause bugs
-	text = text.replace('<', '[FLOWCHART_ST]');
-	text = text.replace('&', '[FlOWCHART_AND]');
-	text = text.replace('+', '[FlOWCHART_PLUS]');
-	text = text.replace('^', '[FlOWCHART_CAP]');
-	text = text.replace('\'', '[FlOWCHART_BACKSLASH]');
-	text = text.replace('`', '[FlOWCHART_AG]');
-	text = text.replace('#', '[FlOWCHART_HASH]');
+	text = text.ReplaceAll('<', '[FLOWCHART_ST]');
+	text = text.ReplaceAll('&', '[FLOWCHART_AND]');
+	text = text.ReplaceAll('+', '[FLOWCHART_PLUS]');
+	text = text.ReplaceAll('^', '[FLOWCHART_CAP]');
+	text = text.ReplaceAll('\\', '[FLOWCHART_BACKSLASH]');
+	text = text.ReplaceAll('`', '[FLOWCHART_AG]');
+	text = text.ReplaceAll('#', '[FLOWCHART_HASH]')
+	text = text.ReplaceAll('ö', '[FLOWCHART_oe]')
+	text = text.ReplaceAll('Ö', '[FLOWCHART_OE]')
+	text = text.ReplaceAll('ä', '[FLOWCHART_ae]')
+	text = text.ReplaceAll('Ä', '[FLOWCHART_AE]')
+	text = text.ReplaceAll('ü', '[FLOWCHART_ue]')
+	text = text.ReplaceAll('Ü', '[FLOWCHART_UE]')
+	text = text.ReplaceAll('ß', '[FLOWCHART_SS]')
 	
 	return text;
 }

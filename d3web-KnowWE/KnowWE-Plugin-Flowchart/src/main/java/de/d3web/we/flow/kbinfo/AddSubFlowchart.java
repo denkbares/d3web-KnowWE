@@ -28,7 +28,6 @@ public class AddSubFlowchart extends AbstractAction {
 		
 		if (text.contains("<flowchart")) {
 			String[] flowcharts = text.split("<flowchart fcid=\"");
-			
 			String tempid = flowcharts[flowcharts.length - 1].substring(2, flowcharts[flowcharts.length - 1].indexOf("\""));
 			int number = Integer.valueOf(tempid) + 1;
 			
@@ -80,7 +79,11 @@ public class AddSubFlowchart extends AbstractAction {
 		String pageName = context.getParameter("pageName");
 		String name = context.getParameter("name");
 		String nodesToLine = context.getParameter("nodes");
+		nodesToLine = UpdateQuestions.revertSpecialCharacterEscape(nodesToLine);
 		String[] exits = nodesToLine.split("::");
+		
+		Logging.getInstance().info(nodesToLine);
+		Logging.getInstance().info("" + nodesToLine.length());
 		
 
 		// get everything to update the article
@@ -97,26 +100,26 @@ public class AddSubFlowchart extends AbstractAction {
 		String flowchart = "";
 		
 		
-		String preview = "<preview mimetype=\"text/html\">" + LINE_SEPARATOR
-		+ "<![CDATA[" + LINE_SEPARATOR
-		+ "<DIV class=\"Flowchart\" style=\" width: 751px; height: 501px;\">" + LINE_SEPARATOR 
-		+ "<DIV id=\"#node_0\" class=\"Node\" style=\"left: 340px; top: 45px; width: 72px; height: 20px;\">" + LINE_SEPARATOR 
-		+ "<DIV class=\"start\" style=\"width: 58px; height: 20px;\">" + LINE_SEPARATOR 
-		+ "<DIV class=\"decorator\" style=\"width: 25px; height: 25px;\">" + LINE_SEPARATOR 
-		+ "</DIV>" + LINE_SEPARATOR 
-		+ "<DIV class=\"title\" style=\"width: 60px; height: 16px;\">Start</DIV>"+ LINE_SEPARATOR 
-		+ "</DIV>"+ LINE_SEPARATOR 
+		String preview = "\t<preview mimetype=\"text/html\">" + LINE_SEPARATOR
+		+ "\t\t<![CDATA[" + LINE_SEPARATOR
+		+ "<DIV class=\"Flowchart\" style=\" width: 751px; height: 501px;\">"
+		+ "<DIV id=\"#node_0\" class=\"Node\" style=\"left: 340px; top: 45px; width: 72px; height: 20px;\">"
+		+ "<DIV class=\"start\" style=\"width: 58px; height: 20px;\">"
+		+ "<DIV class=\"decorator\" style=\"width: 25px; height: 25px;\">"
+		+ "</DIV>"
+		+ "<DIV class=\"title\" style=\"width: 60px; height: 16px;\">Start</DIV>"
+		+ "</DIV></DIV>"
 		;
 		
 		// the html representation of the nodes
 		
-		flowchart += "<flowchart id=\"" + id + "\" name=\"" + name + "\" icon=\"sanduhr.gif\" width=\"750\" height=\"500\" idCounter=\"" + numberOfNodes + "\">" + LINE_SEPARATOR + LINE_SEPARATOR;
+		flowchart += "<flowchart fcid=\"" + id + "\" name=\"" + name + "\" icon=\"sanduhr.gif\" width=\"750\" height=\"500\" idCounter=\"" + numberOfNodes + "\">" + LINE_SEPARATOR + LINE_SEPARATOR;
 		
-		String startNode = "<!-- nodes of the flowchart -->" + LINE_SEPARATOR
-				+ "<node id=\"#node_0\">" + LINE_SEPARATOR
-				+ "<position left=\"320\" top=\"45\"></position>"
-				+ LINE_SEPARATOR + "<start>Start</start>" + LINE_SEPARATOR
-				+ "</node>" + LINE_SEPARATOR + LINE_SEPARATOR;
+		String startNode = "\t<!-- nodes of the flowchart -->" + LINE_SEPARATOR
+				+ "\t<node id=\"#node_0\">" + LINE_SEPARATOR
+				+ "\t\t<position left=\"320\" top=\"45\"></position>"
+				+ LINE_SEPARATOR + "\t\t<start>Start</start>" + LINE_SEPARATOR
+				+ "\t</node>" + LINE_SEPARATOR + LINE_SEPARATOR + LINE_SEPARATOR;
 		
 		flowchart += startNode;
 		
@@ -124,6 +127,8 @@ public class AddSubFlowchart extends AbstractAction {
 		int currentNode = 0;
 		int x = 450 / (exits.length + 2);
 		int y = 400; 
+		
+		flowchart += "\t<!-- rules of the flowchart -->" + LINE_SEPARATOR;
 		
 		for (String s : exits) {
 			currentNode++;
@@ -134,32 +139,30 @@ public class AddSubFlowchart extends AbstractAction {
 			int top = y;
 			
 			// html of the exit node
-			String exit = "<node id=\"" + tempid + "\">" + LINE_SEPARATOR
-					+ "<position left=\"" + left + "\" top=\"" + top
-					+ "\"></position>" + LINE_SEPARATOR + "<exit>"+ s + "</exit>"
-					+ LINE_SEPARATOR + "</node>" + LINE_SEPARATOR + LINE_SEPARATOR;
+			String exit = "\t<node id=\"" + tempid + "\">" + LINE_SEPARATOR
+					+ "\t\t<position left=\"" + left + "\" top=\"" + top
+					+ "\"></position>" + LINE_SEPARATOR + "\t\t<exit>"+ s + "</exit>"
+					+ LINE_SEPARATOR + "\t</node>" + LINE_SEPARATOR + LINE_SEPARATOR;
 			
 			flowchart += exit;
 			
 			
-			preview += "<DIV id=\"" + tempid + "\" class=\"Node\" style=\"left: " + left + "px; top: " + top + "px; width: 74px; height: 20px;\">" + LINE_SEPARATOR 
-			+ "<DIV class=\"exit\" style=\"width: 60px; height: 20px;\">" + LINE_SEPARATOR 
-			+ "<DIV class=\"decorator\" style=\"width: 25px; height: 25px;\"> </DIV>" + LINE_SEPARATOR 
-			+ "<DIV class=\"title\" style=\"width: 60px; height: 16px;\">" + s +"</DIV>" + LINE_SEPARATOR 
-			+ "</DIV></DIV>" + LINE_SEPARATOR ;
+			preview += "<DIV id=\"" + tempid + "\" class=\"Node\" style=\"left: " + left + "px; top: " + top + "px; width: 74px; height: 20px;\">"
+			+ "<DIV class=\"exit\" style=\"width: 60px; height: 20px;\">"
+			+ "<DIV class=\"decorator\" style=\"width: 25px; height: 25px;\"> </DIV>"
+			+ "<DIV class=\"title\" style=\"width: 60px; height: 16px;\">" + s +"</DIV>"
+			+ "</DIV></DIV>";
 			
 		}
 
 		// the flowchart div part
 	
 		
-		preview += "</DIV> ]]>" + LINE_SEPARATOR + 
-				"</preview>" + LINE_SEPARATOR;
+		preview += "</DIV>" + LINE_SEPARATOR + "\t\t]]>" + LINE_SEPARATOR +
+				"\t</preview></flowchart>" + LINE_SEPARATOR;
 				
 				
 		flowchart += preview;
-		
-		flowchart += "</flowchart>" + LINE_SEPARATOR;
 
 		String text = getSurrounding(oldText)[0] + flowchart
 				+ getSurrounding(oldText)[1];
