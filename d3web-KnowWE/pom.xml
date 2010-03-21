@@ -82,6 +82,7 @@
 		<module>KnowWE-Plugin-Refactoring</module>
 		<module>KnowWE-ExtensionPoints</module>
 		<module>KnowWE-core-Plugins</module>
+		<module>KnowWE-Plugin-WISEC-jpf-plugin</module>
 	</modules>
 	<repositories>
 		<repository>
