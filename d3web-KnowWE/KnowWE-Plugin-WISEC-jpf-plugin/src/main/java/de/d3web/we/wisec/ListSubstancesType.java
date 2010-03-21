@@ -135,8 +135,8 @@ public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
 			
 			// Remove the trailing dashes
 			StringBuilder bob = new StringBuilder(tableContent);
-			while (tableContent.charAt(tableContent.length() - 1) == '-')
-				bob.delete(tableContent.length() - 1, tableContent.length());
+			while (bob.charAt(bob.length() - 1) == '-')
+				bob.delete(bob.length() - 1, bob.length());
 			tableContent = bob.toString();
 			
 			// Get the lines

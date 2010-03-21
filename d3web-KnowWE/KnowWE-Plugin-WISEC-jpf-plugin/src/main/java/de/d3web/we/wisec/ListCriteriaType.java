@@ -142,15 +142,15 @@ public class ListCriteriaType extends DefaultAbstractKnowWEObjectType {
 			
 			// Remove the trailing dashes
 			StringBuilder bob = new StringBuilder(tableContent);
-			while (tableContent.charAt(tableContent.length() - 1) == '-')
-				bob.delete(tableContent.length() - 1, tableContent.length());
+			while (bob.charAt(bob.length() - 1) == '-')
+				bob.delete(bob.length() - 1, bob.length());
 			tableContent = bob.toString();
 			
 			Pattern cellPattern = Pattern.compile("\\s*\\|+\\s*");
 			String[] cells = cellPattern.split(tableContent);
 			for (int i = 1; i < cells.length - 1; i += 2) {
 				if (!cells[i+1].equals(""))
-					createCharacteristicStatement(ioo, ns, listID, cells[i], cells[i+1]);
+					createCharacteristicStatement(ioo, ns, listID, cells[i].trim(), cells[i+1].trim());
 			}
 		}
 
