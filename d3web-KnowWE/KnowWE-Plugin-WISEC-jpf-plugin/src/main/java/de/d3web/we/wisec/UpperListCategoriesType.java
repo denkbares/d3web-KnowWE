@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.SemanticCore;
@@ -160,7 +161,6 @@ public class UpperListCategoriesType extends DefaultAbstractKnowWEObjectType {
 			try {
 				Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
 				ioo.addStatement(stmt);
-				System.out.println(stmt.toString());
 			} catch (RepositoryException e) {
 				e.printStackTrace();
 			}
@@ -169,12 +169,10 @@ public class UpperListCategoriesType extends DefaultAbstractKnowWEObjectType {
 		private void createListTypeStatement(IntermediateOwlObject ioo,
 				String ns, String listID) {
 			URI source = SemanticCore.getInstance().getUpper().getHelper().createURI(listID);
-			URI prop = SemanticCore.getInstance().getUpper().getRDF("type");
 			URI object = SemanticCore.getInstance().getUpper().getHelper().createURI(ns, "UpperList");
 			try {
-				Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
+				Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, RDF.TYPE, object);
 				ioo.addStatement(stmt);
-				System.out.println(stmt.toString());
 			} catch (RepositoryException e) {
 				e.printStackTrace();
 			}

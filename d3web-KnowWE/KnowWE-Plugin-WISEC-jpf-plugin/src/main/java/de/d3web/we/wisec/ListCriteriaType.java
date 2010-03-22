@@ -162,7 +162,6 @@ public class ListCriteriaType extends DefaultAbstractKnowWEObjectType {
 			try {
 				Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
 				ioo.addStatement(stmt);
-				System.out.println(stmt.toString());
 			} catch (RepositoryException e) {
 				e.printStackTrace();
 			}
@@ -176,7 +175,6 @@ public class ListCriteriaType extends DefaultAbstractKnowWEObjectType {
 			try {
 				Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
 				ioo.addStatement(stmt);
-				System.out.println(stmt.toString());
 			} catch (RepositoryException e) {
 				e.printStackTrace();
 			}

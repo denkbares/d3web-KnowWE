@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.SemanticCore;
@@ -164,12 +165,10 @@ public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
 		private void addTypeStatement(IntermediateOwlObject ioo, String ns,
 				String sgn) {
 			URI source = SemanticCore.getInstance().getUpper().getHelper().createURI(sgn);
-			URI prop = SemanticCore.getInstance().getUpper().getRDF("type");
 			URI object = SemanticCore.getInstance().getUpper().getHelper().createURI(ns, "Substance");
 			try {
-				Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
+				Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, RDF.TYPE, object);
 				ioo.addStatement(stmt);
-				System.out.println(stmt.toString());
 			} catch (RepositoryException e) {
 				e.printStackTrace();
 			}
@@ -183,7 +182,6 @@ public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
 			try {
 				Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
 				ioo.addStatement(stmt);
-				System.out.println(stmt.toString());
 			} catch (RepositoryException e) {
 				e.printStackTrace();
 			}
@@ -197,7 +195,6 @@ public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
 			try {
 				Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
 				ioo.addStatement(stmt);
-				System.out.println(stmt.toString());
 			} catch (RepositoryException e) {
 				e.printStackTrace();
 			}
