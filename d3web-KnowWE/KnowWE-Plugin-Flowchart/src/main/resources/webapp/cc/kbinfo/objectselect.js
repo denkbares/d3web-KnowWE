@@ -74,7 +74,10 @@ ObjectSelect.prototype.handleCacheChange = function(changedInfoObjects) {
 	}
 	else {
 		this.items = this.suggestionFx(this.value);
-		this.handleBlur();
+
+		//TODO disabled: test for disappearing editor when inserting newly created object into cache
+		//sideeffects unclear!!!
+		//this.handleBlur();
 	}
 }
 

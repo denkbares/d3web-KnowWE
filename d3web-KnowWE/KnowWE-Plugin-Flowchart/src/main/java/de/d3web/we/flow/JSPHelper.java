@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.flow;
@@ -29,20 +29,21 @@ import de.d3web.we.flow.kbinfo.GetInfoObjects;
 import de.d3web.we.flow.kbinfo.SearchInfoObjects;
 
 public class JSPHelper {
+
 	private final KnowWEParameterMap parameterMap;
-	
+
 	public JSPHelper(KnowWEParameterMap parameterMap) {
 		this.parameterMap = parameterMap;
 		if (this.parameterMap.getWeb() == null) {
 			this.parameterMap.put(KnowWEAttributes.WEB, KnowWEEnvironment.DEFAULT_WEB);
 		}
 	}
-	
+
 	private List<String> getAllMatches(String className) {
-		return SearchInfoObjects.matches(
-			de.d3web.we.core.KnowWEEnvironment.getInstance(), 
-			this.parameterMap.getWeb(), 
-			null, className, 65535);
+		return SearchInfoObjects.searchObjects(
+				de.d3web.we.core.KnowWEEnvironment.getInstance(),
+				this.parameterMap.getWeb(),
+				null, className, 65535);
 	}
 
 	public String getArticleIDsAsArray() {
@@ -72,10 +73,10 @@ public class JSPHelper {
 		GetInfoObjects getter = new GetInfoObjects();
 		getter.appendHeader(this.parameterMap, buffer);
 		for (String id : matches) {
-			getter.appendInfoObject(this.parameterMap, id, buffer);
+			getter.appendInfoObject(this.parameterMap.getWeb(), id, buffer);
 		}
 		getter.appendFooter(this.parameterMap, buffer);
-		
+
 		// and done
 		return buffer.toString();
 	}
@@ -90,16 +91,17 @@ public class JSPHelper {
 		GetInfoObjects getter = new GetInfoObjects();
 		getter.appendHeader(this.parameterMap, buffer);
 		for (String id : matches) {
-			getter.appendInfoObject(this.parameterMap, id, buffer);
+			getter.appendInfoObject(this.parameterMap.getWeb(), id, buffer);
 		}
 		getter.appendFooter(this.parameterMap, buffer);
-		
+
 		// and done
 		return buffer.toString();
 	}
 
 	public String getKDOMNodeContent(String kdomID) {
 		String articleID = this.parameterMap.getTopic();
-		return KnowWEEnvironment.getInstance().getNodeData(KnowWEEnvironment.DEFAULT_WEB, articleID, kdomID);
+		return KnowWEEnvironment.getInstance().getNodeData(KnowWEEnvironment.DEFAULT_WEB,
+				articleID, kdomID);
 	}
 }

@@ -133,7 +133,7 @@ KBInfo.prepareInfoObject = function(nameOrIDOrArray) {
 		if (i>0) ids += ',';
 		ids += nameOrIDOrArray[i];
 	}
-	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.GetInfoObjects&ids=" + ids;
+	var url = "KnowCC.jsp?action=GetInfoObjects&ids=" + ids;
 	new Ajax.Request(url, {
 		method: 'get',
 		onSuccess: function(transport) {
@@ -144,7 +144,7 @@ KBInfo.prepareInfoObject = function(nameOrIDOrArray) {
 			CCMessage.warn(
 				'AJAX Verbindungs-Fehler', 
 				'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
-				'In sp�teren Aktionen k�nnte auch das Speichern der �nderungen fehlschlagen.');
+				'In spaeteren Aktionen koennte auch das Speichern der Aenderungen fehlschlagen.');
 		},
 		onException: function(transport, exception) {
 			CCMessage.warn(
@@ -166,7 +166,7 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 	}
 	var phraseParam = '&phrase='+RegExp.escape(phrase);
 	var maxCountParam = maxCount ? '&maxcount='+maxCount : '';
-	var url = "KnowCC.jsp?action=de.d3web.we.flow.kbinfo.SearchInfoObjects" 
+	var url = "KnowCC.jsp?action=SearchInfoObjects" 
 			+ classesParam 
 			+ phraseParam
 			+ maxCountParam;

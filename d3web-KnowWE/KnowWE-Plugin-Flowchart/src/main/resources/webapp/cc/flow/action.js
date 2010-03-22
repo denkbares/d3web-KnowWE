@@ -456,7 +456,7 @@ String.prototype.ReplaceAll = function(stringToFind,stringToReplace){
     }
 
 //creates the Dropdown Menu, with the answer values
-ActionEditor.createQuestionDropdown = function(addedQuestionText, addedQuestionType, possibleAnswers) {
+ActionEditor.prototype.createQuestionDropdown = function(addedQuestionText, addedQuestionType, possibleAnswers) {
 	var name = addedQuestionText;	
 	var result = [];
 	
@@ -488,7 +488,7 @@ ActionEditor.createQuestionDropdown = function(addedQuestionText, addedQuestionT
 }
 
 // AJAX-Request for adding questions and their answers to the article
-ActionEditor.updateQuestions = function(addedQuestionText, addedQuestionType, possibleAnswers) {
+ActionEditor.prototype.updateQuestions = function(addedQuestionText, addedQuestionType, possibleAnswers) {
 
 	
 		
@@ -527,7 +527,7 @@ ActionEditor.updateQuestions = function(addedQuestionText, addedQuestionType, po
 				CCMessage.warn(
 					'AJAX Verbindungs-Fehler', 
 					'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
-					'In sp?teren Aktionen k?nnte auch das Speichern der ?nderungen fehlschlagen.');
+					'In spaeteren Aktionen koennte auch das Speichern der Aenderungen fehlschlagen.');
 			},
 			onException: function(transport, exception) {
 				CCMessage.warn(
@@ -539,7 +539,7 @@ ActionEditor.updateQuestions = function(addedQuestionText, addedQuestionType, po
 }
 
 // creates the Dropwdown menu for solutions
-ActionEditor.createSolutionDropdown = function(solutionText) {
+ActionEditor.prototype.createSolutionDropdown = function(solutionText) {
 	var name = solutionText;	
 	var result = [];
 	
@@ -564,7 +564,7 @@ ActionEditor.createSolutionDropdown = function(solutionText) {
 
 
 //AJAX-Request for adding solutions to the article
-ActionEditor.updateSolutions = function(solutionText) {
+ActionEditor.prototype.updateSolutions = function(solutionText) {
 
 	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
 	var pageName = '&pageName=' + window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
@@ -577,7 +577,10 @@ ActionEditor.updateSolutions = function(solutionText) {
 	new Ajax.Request(url, {
 		method: 'get',
 		onSuccess: function(transport) {
-		
+			var parser = new DOMParser();
+			var xml = parser.parseFromString(transport.responseText, "text/xml");
+
+			KBInfo._updateCache(xml);
 		},
 		onFailure: function() {
 			CCMessage.warn(
@@ -613,7 +616,7 @@ ActionEditor.getQuestionType = function () {
 	return qType;
 }
 
-ActionEditor.addSubFlow = function(exitNodes) {
+ActionEditor.prototype.addSubFlow = function(exitNodes) {
 
 	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
 	var pageName = '&pageName=' + window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
@@ -667,8 +670,9 @@ ActionEditor.prototype.createNewFlowchart = function() {
 		exitNodes[i] = ActionEditor.escapeSpecialCharacter(exitNodes[i]);
 	}
 	
-	this.nodeModel = 'CALL[' + qText + '(Start' + qText + ')]';
-	ActionEditor.addSubFlow(exitNodes);
+	
+	this.selectedAction = new Action('KnOffice', 'CALL[' + qText + '(Start)]');
+	this.addSubFlow(exitNodes);
 }
 
 // puts everything together, e.g. the question, the type and the answers
@@ -690,19 +694,19 @@ ActionEditor.prototype.createNewQuestion = function() {
 	// if the object is a question, do the right ajax-request and create the dropdown
 	// also escape special characters
 	if (qType != "Solution") {
-		actions = ActionEditor.createQuestionDropdown(qText, qType, answers);
+		actions = this.createQuestionDropdown(qText, qType, answers);
 		
 		qText = ActionEditor.escapeSpecialCharacter(qText);
 		for (var i = 0; i < answers.length; i++) {
 			answers[i] = ActionEditor.escapeSpecialCharacter(answers[i]);
 		}
 		
-		ActionEditor.updateQuestions(qText, qType, answers);
+		this.updateQuestions(qText, qType, answers);
 	
 	// else it is a solution, do the right ajax-request and create the dropdown
 	} else {
-		actions = ActionEditor.createSolutionDropdown(qText);
-		ActionEditor.updateSolutions(ActionEditor.escapeSpecialCharacter(qText));
+		actions = this.createSolutionDropdown(qText);
+		this.updateSolutions(ActionEditor.escapeSpecialCharacter(qText));
 	}
 	
 	this.selectableActions = [];
@@ -1003,8 +1007,10 @@ ActionPane.prototype.handleCacheChange = function(changedInfoObjects) {
 	if (this.isVisible()) {
 		// due to be registered only to cache events for this object name
 		// no further checks are required
-		this.setVisible(false);
-		this.setVisible(true);
+		
+		//TODO disabled: test for disappearing editor when inserting newly created object into cache
+//		this.setVisible(false);
+//		this.setVisible(true);
 	}
 	if (this.onChange) {
 		this.onChange(this);
