@@ -1,13 +1,21 @@
 package de.d3web.we.flow.kbinfo;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
+import de.d3web.core.inference.KnowledgeSlice;
+import de.d3web.core.inference.RuleSet;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.logging.Logging;
@@ -171,7 +179,23 @@ public class AddSubFlowchart extends AbstractAction {
 		
 		instance.saveArticle(sec.getWeb(), sec.getTitle(), text, map);
 
-		context.getWriter().write("success");
+		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
+				article, sec).getKnowledgeBase();
+		
+		List<Question> questions = kb.getQuestions();
+
+		String flowID = name;
+
+
+
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("<kbinfo>");
+		// TODO hotfix
+		String test = pageName + ".." + pageName + "_KB/" + flowID;
+		GetInfoObjects.appendInfoObject(web, test, buffer);
+		buffer.append("</kbinfo>");
+		context.getWriter().write(buffer.toString());
+
 		
 	}
 

@@ -21,13 +21,18 @@
 package de.d3web.we.flow.kbinfo;
 
 import java.io.IOException;
+import java.util.List;
 
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
@@ -160,9 +165,38 @@ public class UpdateQuestions extends AbstractAction {
 		
 		String newText = firstPart + newQuestionsSection + lastPart;
 		instance.saveArticle(sec.getWeb(), sec.getTitle(), newText, map);
+		
+		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
+				article, sec).getKnowledgeBase();
+		
+		List<Question> questions = kb.getQuestions();
 
-		context.getWriter().write("questionText: " + questionText + " questionType: "
-		+ questionType + " pageName: " + pageName);
+		String questionID = null;
+
+		for (Question question : questions) {
+
+			if (question.getName().equals(questionText)) {
+				questionID = question.getId();
+				break;
+			}
+
+		}
+
+		if (questionID != null) {
+
+			StringBuffer buffer = new StringBuffer();
+			buffer.append("<kbinfo>");
+			// TODO hotfix
+			String test = pageName + ".." + pageName + "_KB/" + questionID;
+
+			GetInfoObjects.appendInfoObject(web, test, buffer);
+			buffer.append("</kbinfo>");
+			context.getWriter().write(buffer.toString());
+			
+		}
+		else {
+			context.getWriter().write("Could not find id for: " + questionText);
+		}
 		
 	}
 

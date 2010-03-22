@@ -521,7 +521,11 @@ ActionEditor.prototype.updateQuestions = function(addedQuestionText, addedQuesti
 		new Ajax.Request(url, {
 			method: 'get',
 			onSuccess: function(transport) {
-			
+
+			var parser = new DOMParser();
+			var xml = parser.parseFromString(transport.responseText, "text/xml");
+
+			KBInfo._updateCache(xml);
 			},
 			onFailure: function() {
 				CCMessage.warn(
@@ -638,6 +642,11 @@ ActionEditor.prototype.addSubFlow = function(exitNodes) {
 	new Ajax.Request(url, {
 		method: 'get',
 		onSuccess: function(transport) {
+			
+		var parser = new DOMParser();
+		var xml = parser.parseFromString(transport.responseText, "text/xml");
+
+		KBInfo._updateCache(xml);
 		
 		},
 		onFailure: function() {
