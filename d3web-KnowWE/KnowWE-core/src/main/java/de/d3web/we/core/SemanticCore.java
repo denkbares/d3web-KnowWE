@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.core;
@@ -59,6 +59,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class SemanticCore {
+
 	private final UpperOntology uo;
 
 	private final KnowWEEnvironment knowWEEnvironment;
@@ -92,7 +93,8 @@ public class SemanticCore {
 		defaultnamespaces = new HashMap<String, String>();
 		try {
 			uo.setLocaleNS(knowWEEnvironment.getWikiConnector().getBaseUrl());
-		} catch (RepositoryException e1) {
+		}
+		catch (RepositoryException e1) {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					e1.getMessage());
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
@@ -114,8 +116,7 @@ public class SemanticCore {
 
 	private void readIncludings() {
 		File[] files = getImportList();
-		if (files == null)
-			return;
+		if (files == null) return;
 		for (File f : files) {
 			uo.loadOwlFile(f);
 		}
@@ -134,14 +135,16 @@ public class SemanticCore {
 			}
 			output += "[{KnowWEPlugin OwlImport}]";
 			wiki.createWikiPage("SemanticSettings", output, "semanticcore");
-		} else {
+		}
+		else {
 			for (String piece : settingspage.split(System
 					.getProperty("line.separator"))) {
 				if (piece.contains("=")) {
 					String[] s = piece.split("=");
 					try {
 						settings.put(s[0].trim(), s[1].trim());
-					} catch (IndexOutOfBoundsException e) {
+					}
+					catch (IndexOutOfBoundsException e) {
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.WARNING, e.getMessage());
 					}
@@ -200,7 +203,8 @@ public class SemanticCore {
 				}
 
 				con.commit();
-			} catch (RepositoryException e) {
+			}
+			catch (RepositoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -248,19 +252,18 @@ public class SemanticCore {
 	/**
 	 * adds Statements to the repository
 	 * 
-	 * @param inputio
-	 *            the output of the section
-	 * @param sec
-	 *            source section
+	 * @param inputio the output of the section
+	 * @param sec source section
 	 */
 	public void addStatements(IntermediateOwlObject inputio, Section sec) {
+		RepositoryConnection con = uo.getConnection();
 
 		clearContext(sec);
 
 		List<Statement> allStatements = inputio.getAllStatements();
 		statementcache.put(sec.getId().hashCode() + "", allStatements);
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-				"updating " + sec.getId() + "  " + allStatements.size());
+		Logger.getLogger(this.getClass().getName()).finer(
+				"semantic core updating " + sec.getId() + "  " + allStatements.size());
 		addStaticStatements(inputio);
 
 	}
@@ -270,8 +273,7 @@ public class SemanticCore {
 	 * statements that are not connected to a specific section and therefore are
 	 * not updated during the wiki lifetime.
 	 * 
-	 * @param inputio
-	 *            the statements to be added
+	 * @param inputio the statements to be added
 	 * @author volker_belli
 	 * @date 19.03.2010
 	 */
@@ -286,28 +288,31 @@ public class SemanticCore {
 					if (current.getObject() == null) {
 						Logger.getLogger(this.getClass().getName())
 								.log(
-										Level.SEVERE,
-										"invalid object: null at "
-												+ current.toString());
-					} else if (current.getPredicate() == null) {
+								Level.SEVERE,
+								"invalid object: null at "
+								+ current.toString());
+					}
+					else if (current.getPredicate() == null) {
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.SEVERE,
 								"invalid predicate: null at "
-										+ current.toString());
-					} else if (current.getSubject() == null) {
+								+ current.toString());
+					}
+					else if (current.getSubject() == null) {
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.SEVERE,
 								"invalid subject: null at "
-										+ current.toString());
-					} else {
+								+ current.toString());
+					}
+					else {
 						con.add(current);
 					}
 				}
 			}
 			con.commit();
-		} catch (RepositoryException e) {
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-					e.getMessage());
+		}
+		catch (RepositoryException e) {
+			org.apache.log4j.Logger.getLogger(this.getClass()).error(e.getMessage());
 		}
 
 	}
@@ -370,23 +375,24 @@ public class SemanticCore {
 	}
 
 	/**
-	 * recursivley collects all statements saved for a section. stops as soon as
-	 * it has found a node with statements
+	 * recursivley collects all statements saved for a section.
 	 * 
 	 * @return List of statements.
 	 */
 	public List<Statement> getSectionStatements(
 			Section<? extends KnowWEObjectType> s) {
 		List<Statement> allstatements = new ArrayList<Statement>();
-		if (!statementcache.containsKey(s.getId().hashCode() + "")) {
-			List<Section<? extends KnowWEObjectType>> l = s.getChildren();
-			for (Section<? extends KnowWEObjectType> current : l) {
-				allstatements.addAll(getSectionStatements(current));
+		// walk all children
+		for (Section<? extends KnowWEObjectType> current : s.getChildren()) {
+			if (statementcache.get(current.getId().hashCode() + "") != null) {
+				// add statements of this section
+				allstatements.addAll(statementcache.get(current.getId().hashCode() + ""));
 			}
-			return allstatements;
-		} else {
-			return statementcache.get(s.getId().hashCode() + "");
+			// add the rest
+			allstatements.addAll(getSectionStatements(current));
 		}
+
+		return allstatements;
 
 	}
 
@@ -401,6 +407,7 @@ public class SemanticCore {
 		File includes = new File(inpath);
 		if (includes.exists()) {
 			File[] files = includes.listFiles(new FilenameFilter() {
+
 				public boolean accept(File f, String s) {
 					return s.endsWith(".owl");
 				}
@@ -431,7 +438,8 @@ public class SemanticCore {
 		try {
 			con.remove(statementcache.get(key));
 			con.commit();
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -445,9 +453,10 @@ public class SemanticCore {
 	public void clearContext(Section sec) {
 		RepositoryConnection con = uo.getConnection();
 		try {
-			con.remove(statementcache.get(sec.getId().hashCode()+""));
+			con.remove(getSectionStatements(sec));
 			con.commit();
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -478,19 +487,21 @@ public class SemanticCore {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(
 					org.apache.log4j.Level.ERROR, e.getMessage());
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(
 					org.apache.log4j.Level.ERROR, e.getMessage());
 		}
 		TupleQueryResult result = null;
-		if (query == null)
-			return resultlist;
+		if (query == null) return resultlist;
 		try {
 			result = ((TupleQuery) query).evaluate();
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			e.printStackTrace();
 		}
 
@@ -499,14 +510,13 @@ public class SemanticCore {
 				while (result.hasNext()) {
 					BindingSet b = result.next();
 					Binding binding = b.getBinding(targetbinding);
-					if (binding == null)
-						continue;
+					if (binding == null) continue;
 					String tag = binding.toString();
-					if (tag.split("#").length == 2)
-						tag = tag.split("#")[1];
+					if (tag.split("#").length == 2) tag = tag.split("#")[1];
 					try {
 						tag = URLDecoder.decode(tag, "UTF-8");
-					} catch (UnsupportedEncodingException e) {
+					}
+					catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
 					if (tag.contains("=")) {
@@ -520,12 +530,15 @@ public class SemanticCore {
 					}
 					resultlist.add(tag.trim());
 				}
-			} catch (QueryEvaluationException e) {
+			}
+			catch (QueryEvaluationException e) {
 				return resultlist;
-			} finally {
+			}
+			finally {
 				try {
 					result.close();
-				} catch (QueryEvaluationException e) {
+				}
+				catch (QueryEvaluationException e) {
 
 					e.printStackTrace();
 				}
@@ -557,12 +570,13 @@ public class SemanticCore {
 				break;
 			}
 		}
-		for (Entry<String, String> cur2 : defaultnamespaces.entrySet()) {
-			if (ns.equals(cur2.getKey())) {
-				ns = cur2.getValue();
+		for (Entry<String, String> cur : defaultnamespaces.entrySet()) {
+			if (ns.equals(cur.getKey())) {
+				ns = cur.getValue();
 				break;
 			}
 		}
+
 		return ns;
 	}
 
