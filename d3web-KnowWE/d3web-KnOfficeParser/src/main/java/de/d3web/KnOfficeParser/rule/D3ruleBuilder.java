@@ -49,7 +49,7 @@ import de.d3web.abstraction.formula.Mult;
 import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.abstraction.formula.Sub;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Diagnosis;
@@ -91,8 +91,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 	private class MyRule {
 		private ruletype type;
 		private Question question;
-		private AbstractCondition ifcond;
-		private AbstractCondition exceptcond;
+		private Condition ifcond;
+		private Condition exceptcond;
 		private AnswerChoice[] answers;
 		private FormulaExpression formula;
 		private ArrayList<QASet> qcons;
@@ -100,7 +100,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		private Diagnosis diag;
 		
 		public MyRule(ruletype type, Question question,
-				AbstractCondition ifcond, AbstractCondition exceptcond,
+				Condition ifcond, Condition exceptcond,
 				AnswerChoice[] answers, FormulaExpression formula,
 				ArrayList<QASet> qcons) {
 			super();
@@ -113,8 +113,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			this.qcons = qcons;
 		}
 
-		public MyRule(Diagnosis diag, Score score, AbstractCondition ifcond,
-				AbstractCondition exceptcond) {
+		public MyRule(Diagnosis diag, Score score, Condition ifcond,
+				Condition exceptcond) {
 			super();
 			this.diag = diag;
 			this.score = score;
@@ -137,7 +137,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		String newRuleID = idom.findNewIDFor(Rule.class);
 		Rule newRule = null;
 		if (rule.type == ruletype.indication) {
-			AbstractCondition cond = rule.ifcond;
+			Condition cond = rule.ifcond;
 			if (cond instanceof CondDState) {
 				CondDState statecond = (CondDState) cond;
 				if (statecond.getStatus() == DiagnosisState.ESTABLISHED) {
@@ -304,8 +304,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			i++;
 		}
 		if (!qcons.isEmpty()) {
-			AbstractCondition ifcond;
-			AbstractCondition exceptcond;
+			Condition ifcond;
+			Condition exceptcond;
 			if (except) {
 				exceptcond = cb.pop();
 				ifcond = cb.pop();
@@ -371,8 +371,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					}
 				}
 				if (!alist.isEmpty()) {
-					AbstractCondition ifcond;
-					AbstractCondition exceptcond;
+					Condition ifcond;
+					Condition exceptcond;
 					if (except) {
 						exceptcond = cb.pop();
 						ifcond = cb.pop();
@@ -424,8 +424,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 						.createWrongOperatorInAbstractionRule(file, line,
 								linetext));
 			}
-			AbstractCondition ifcond;
-			AbstractCondition exceptcond;
+			Condition ifcond;
+			Condition exceptcond;
 			if (except) {
 				exceptcond = cb.pop();
 				ifcond = cb.pop();
@@ -500,8 +500,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 						finishCondstack(except);
 						return;
 					} else {
-						AbstractCondition ifcond;
-						AbstractCondition exceptcond;
+						Condition ifcond;
+						Condition exceptcond;
 						if (except) {
 							exceptcond = cb.pop();
 							ifcond = cb.pop();
@@ -545,8 +545,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					return;
 				}
 			}
-			AbstractCondition ifcond;
-			AbstractCondition exceptcond;
+			Condition ifcond;
+			Condition exceptcond;
 			if (except) {
 				exceptcond = cb.pop();
 				ifcond = cb.pop();

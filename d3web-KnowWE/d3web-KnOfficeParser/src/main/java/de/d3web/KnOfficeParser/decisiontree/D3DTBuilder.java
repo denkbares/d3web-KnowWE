@@ -43,7 +43,7 @@ import de.d3web.KnOfficeParser.util.Scorefinder;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -94,7 +94,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	private Stack<Integer> conddashstack = new Stack<Integer>();
 	private QASet currentQuestionclass;
 	private Stack<TerminalCondition> conditionStack = new Stack<TerminalCondition>();
-	private List<Tripel<String, AbstractCondition, Message>> qcontainertolink = new ArrayList<Tripel<String, AbstractCondition, Message>>();
+	private List<Tripel<String, Condition, Message>> qcontainertolink = new ArrayList<Tripel<String, Condition, Message>>();
 	private List<Tripel<String, Object, Message>> descriptionlinks = new ArrayList<Tripel<String, Object, Message>>();
 	private List<String> allowedNames;
 	private List<Message> errors = new ArrayList<Message>();
@@ -216,13 +216,13 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		// Link
 		else if (dashes == questionStack.peek().first + 2) {
-			AbstractCondition cond = getCondPath(line, linetext);
+			Condition cond = getCondPath(line, linetext);
 			addQcontainerIndication(name, ref, syn, def, line, linetext,
 					idlink, cond);
 			// Frageklasse an Diagnose
 		} else if ((dashes == questionStack.peek().first + 3)) {
 			if (dashes == conddashstack.peek() + 1) {
-				AbstractCondition cond = conditionStack.peek();
+				Condition cond = conditionStack.peek();
 				addQcontainerIndication(name, ref, syn, def, line, linetext,
 						idlink, cond);
 			} else {
@@ -256,14 +256,14 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 
 	private void addQcontainerIndication(String name, String ref,
 			List<String> syn, boolean def, int line, String linetext,
-			String idlink, AbstractCondition cond) {
+			String idlink, Condition cond) {
 		QContainer qcon = idom.findQContainer(name);
 		if (qcon != null) {
 			addQuestionOrQuestionclassIndication(qcon, getCondPath(line,
 					linetext), line, linetext);
 		} else {
 			qcontainertolink
-					.add(new Tripel<String, AbstractCondition, Message>(name,
+					.add(new Tripel<String, Condition, Message>(name,
 							cond, MessageKnOfficeGenerator
 									.createQuestionClassNotFoundException(file,
 											line, linetext, name)));
@@ -280,8 +280,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 	}
 
-	private AbstractCondition getCondPath(int line, String linetext) {
-		AbstractCondition c;
+	private Condition getCondPath(int line, String linetext) {
+		Condition c;
 		if (conditionStack.isEmpty()) {
 			errors.add(MessageKnOfficeGenerator.createNoValidCondsException(
 					file, line, linetext));
@@ -290,7 +290,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		if ((conditionStack.size() <= 1) || (!complexconditions)) {
 			c = conditionStack.peek();
 		} else {
-			c = new CondAnd(new ArrayList<AbstractCondition>(conditionStack));
+			c = new CondAnd(new ArrayList<Condition>(conditionStack));
 		}
 		return c;
 	}
@@ -368,7 +368,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			String linetext, String idlink) {
 		for (String name : diags) {
 			Question q = idom.findQuestion(name);
-			AbstractCondition cond = getCondPath(line, linetext);
+			Condition cond = getCondPath(line, linetext);
 			String newRuleID = idom.findNewIDFor(Rule.class);
 			// Merkmalsherleitung
 			if (q != null) {
@@ -582,7 +582,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		// Wenn die Frage eine Folgefrage auf eine Antwort ist, diese der
 		// Antwort zuordnen
 		if ((dashes != 1) && (dashes == questionStack.peek().first + 2)) {
-			AbstractCondition abscon = getCondPath(line, linetext);
+			Condition abscon = getCondPath(line, linetext);
 			addQuestionOrQuestionclassIndication(currentQuestion, abscon, line,
 					linetext);
 
@@ -590,7 +590,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		// Wenn die Frage eine Folgefrage auf eine Diagnose ist, diese der
 		// Antwort zuordnen
 		if ((dashes != 1) && (dashes == questionStack.peek().first + 3)) {
-			AbstractCondition abscon = getCondPath(line, linetext);
+			Condition abscon = getCondPath(line, linetext);
 			addQuestionOrQuestionclassIndication(currentQuestion, abscon, line,
 					linetext);
 
@@ -632,7 +632,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	}
 
 	private void addQuestionOrQuestionclassIndication(QASet set,
-			AbstractCondition abscon, int line, String linetext) {
+			Condition abscon, int line, String linetext) {
 		String newRuleID = idom.findNewIDFor(Rule.class);
 		if (abscon instanceof CondDState) {
 			CondDState statecond = (CondDState) abscon;
@@ -685,8 +685,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		currentQuestionclass = qs1;
 		// hinzufügen von Regeln vorher eingefügter Links auf diesen QContainer
-		List<Tupel<String, AbstractCondition>> delList = new ArrayList<Tupel<String, AbstractCondition>>();
-		for (Tupel<String, AbstractCondition> t : qcontainertolink) {
+		List<Tupel<String, Condition>> delList = new ArrayList<Tupel<String, Condition>>();
+		for (Tupel<String, Condition> t : qcontainertolink) {
 			if (t.first.equals(name)) {
 				addQuestionOrQuestionclassIndication(qs1, t.second, line,
 						linetext);
@@ -694,7 +694,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			}
 		}
 		// Löschen der gesetzten Links
-		for (Tupel<String, AbstractCondition> t : delList) {
+		for (Tupel<String, Condition> t : delList) {
 			qcontainertolink.remove(t);
 		}
 		if (attributes != null && values != null) {
@@ -763,7 +763,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			// Wenn die Frage eine Folgefrage auf eine Antwort ist, diese der
 			// Antwort zuordnen
 			if (dashes == questionStack.peek().first + 2) {
-				AbstractCondition abs = getCondPath(line, linetext);
+				Condition abs = getCondPath(line, linetext);
 				addQuestionOrQuestionclassIndication(currentQuestion, abs,
 						line, linetext);
 			}
@@ -795,7 +795,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	public List<Message> getErrors() {
 		List<Message> ret = new ArrayList<Message>(errors);
 		// prüfen ob noch nichtgesetzte Links zu Frageklassen vorhanden sind
-		for (Tripel<String, AbstractCondition, Message> t : qcontainertolink) {
+		for (Tripel<String, Condition, Message> t : qcontainertolink) {
 			ret.add(t.third);
 		}
 		// prüfen ob noch nichtgesetzte Links zu Erklärungen vorhanden sind

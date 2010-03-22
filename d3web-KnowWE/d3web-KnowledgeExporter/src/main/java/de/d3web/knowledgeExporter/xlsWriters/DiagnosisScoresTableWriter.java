@@ -22,7 +22,7 @@ package de.d3web.knowledgeExporter.xlsWriters;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleAction;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondQuestion;
 import de.d3web.kernel.verbalizer.ConditionVerbalizer;
 import de.d3web.kernel.verbalizer.TerminalCondVerbalization;
@@ -44,7 +44,7 @@ public class DiagnosisScoresTableWriter extends QDTableWriter {
 	protected void getKnowledge() {
 
 		for (Rule rc:manager.getAllRules()) {
-			AbstractCondition cond = rc.getCondition();
+			Condition cond = rc.getCondition();
 			RuleAction raction =  rc.getAction();
 			if (rc.getException() == null 
 					&& rc.getContext() == null 

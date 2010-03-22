@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Diagnosis;
@@ -70,7 +70,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 
 			}
 
-			AbstractCondition cond = createCondition(qc, kbm.findAnswerChoice(
+			Condition cond = createCondition(qc, kbm.findAnswerChoice(
 					qc, defaultValue));
 
 			Score scoreV = getScore(score);
@@ -145,7 +145,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 		return q;
 	}
 
-	private AbstractCondition createCondition(Question q, Answer a) {
+	private Condition createCondition(Question q, Answer a) {
 		return new CondEqual(q, a);
 	}
 

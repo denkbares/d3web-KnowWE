@@ -37,7 +37,7 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleAction;
 import de.d3web.core.inference.RuleSet;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondNum;
 import de.d3web.core.inference.condition.CondNumIn;
@@ -218,13 +218,13 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		level--;
 	}
 
-	private void addChildren(NamedObject nob, Class<? extends PSMethod> psMethod, Map<AbstractCondition, List<Rule>> mergedRules) {
+	private void addChildren(NamedObject nob, Class<? extends PSMethod> psMethod, Map<Condition, List<Rule>> mergedRules) {
 		KnowledgeSlice slices = nob.getKnowledge(
 				psMethod, MethodKind.FORWARD);
 		if (slices != null) {
 			if (slices instanceof RuleSet) {
 				for (Rule rule: ((RuleSet) slices).getRules()) {
-					AbstractCondition condition = rule.getCondition();
+					Condition condition = rule.getCondition();
 					if(mergedRules.containsKey(condition)) {
 						List<Rule> rules = mergedRules.get(condition);
 						rules.add(rule);
@@ -242,17 +242,17 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 
 
 		level++;
-		Map<AbstractCondition, List<Rule>> mergedRules = new HashMap<AbstractCondition, List<Rule>>();
+		Map<Condition, List<Rule>> mergedRules = new HashMap<Condition, List<Rule>>();
 		addChildren(q, PSMethodNextQASet.class, mergedRules);
 		addChildren(q, PSMethodHeuristic.class, mergedRules);
 		
-		Set<AbstractCondition> conditions = mergedRules.keySet();
-		Map<String, AbstractCondition> answerConds = new HashMap<String, AbstractCondition>();
-		Map<AbstractCondition, CondVerbalization> condCondVerbs = new HashMap<AbstractCondition, 
+		Set<Condition> conditions = mergedRules.keySet();
+		Map<String, Condition> answerConds = new HashMap<String, Condition>();
+		Map<Condition, CondVerbalization> condCondVerbs = new HashMap<Condition, 
 			CondVerbalization>();
-		List<AbstractCondition> sortedConditions = new ArrayList<AbstractCondition>();
+		List<Condition> sortedConditions = new ArrayList<Condition>();
 		
-		for (AbstractCondition cond:conditions) {
+		for (Condition cond:conditions) {
 			if (cond instanceof NonTerminalCondition) {
 				continue;
 			}
@@ -272,14 +272,14 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 				sortedConditions.add(answerConds.remove(ac.toString()));
 			}
 		}
-		List<AbstractCondition> condNums = new ArrayList<AbstractCondition>();
+		List<Condition> condNums = new ArrayList<Condition>();
 		condNums.addAll(answerConds.values());
 		Collections.sort(condNums, new CondNumComparator());
 		sortedConditions.addAll(condNums);
 		
 		String dashes = dashes(level);
 		boolean foundYesNo = false;
-		for (AbstractCondition cond:sortedConditions) {
+		for (Condition cond:sortedConditions) {
 			if (cond instanceof NonTerminalCondition) {
 				continue;
 			}
@@ -349,7 +349,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	}
 	
 	
-	private void processActions(Map<AbstractCondition, List<Rule>> mergedRules, AbstractCondition condition, StringBuffer s) {
+	private void processActions(Map<Condition, List<Rule>> mergedRules, Condition condition, StringBuffer s) {
 		for (Rule rule: mergedRules.get(condition)) {
 			RuleAction action = rule.getAction();
 			if (action instanceof ActionIndication) {
@@ -379,9 +379,9 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	}
 
 	private void processDiagnosis(Diagnosis diagnosis, StringBuffer s) {
-		Map<AbstractCondition, List<Rule>> mergedRules = new HashMap<AbstractCondition, List<Rule>>();
+		Map<Condition, List<Rule>> mergedRules = new HashMap<Condition, List<Rule>>();
 		addChildren(diagnosis, PSMethodNextQASet.class, mergedRules);
-		for (AbstractCondition diagCondition: mergedRules.keySet()) {
+		for (Condition diagCondition: mergedRules.keySet()) {
 			if (diagCondition instanceof CondDState) {
 				for (Rule diagRule: mergedRules.get(diagCondition)) {
 					RuleAction diagRuleAction = diagRule.getAction();
@@ -479,10 +479,10 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	    }
 	}
 	
-	private class CondNumComparator implements Comparator<AbstractCondition> {
+	private class CondNumComparator implements Comparator<Condition> {
 
 		@Override
-		public int compare(AbstractCondition o1, AbstractCondition o2) {
+		public int compare(Condition o1, Condition o2) {
 			if (o1 instanceof CondNum && o2 instanceof CondNum) {
 				CondNum n1 = (CondNum) o1;
 				CondNum n2 = (CondNum) o2;

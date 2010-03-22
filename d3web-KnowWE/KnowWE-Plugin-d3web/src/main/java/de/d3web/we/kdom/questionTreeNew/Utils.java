@@ -3,7 +3,7 @@ package de.d3web.we.kdom.questionTreeNew;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.knowledge.terminology.Answer;
@@ -27,13 +27,13 @@ public class Utils {
 	 * <tt>DashTreeElement.getDashTreeAncestors(Section s)</tt>, if <tt>s</tt>
 	 * is the child Section of an answer in a valid DashTree.
 	 */
-	public static AbstractCondition createCondition(
+	public static Condition createCondition(
 			List<Section<? extends DashTreeElement>> ancestors) {
 
-		List<AbstractCondition> simpleConds = new ArrayList<AbstractCondition>();
+		List<Condition> simpleConds = new ArrayList<Condition>();
 
 		for (int i = 0; i + 2 < ancestors.size(); i += 2) {
-			AbstractCondition simpleCond = createSimpleCondition(ancestors
+			Condition simpleCond = createSimpleCondition(ancestors
 					.get(i), ancestors.get(i + 1));
 			if (simpleCond != null) {
 				simpleConds.add(simpleCond);
@@ -55,7 +55,7 @@ public class Utils {
 	 * Father is supposed to contain a QuestionTreeAnswerID, the grandfather a
 	 * QuestionID. If thats not the case, <tt>null</tt> will be returned.
 	 */
-	public static AbstractCondition createSimpleCondition(
+	public static Condition createSimpleCondition(
 			Section<? extends DashTreeElement> father,
 			Section<? extends DashTreeElement> grandFather) {
 
@@ -79,7 +79,7 @@ public class Utils {
 		if (numCondSec != null && q instanceof QuestionNum) {
 			Double d = NumericCondLine.getValue(numCondSec);
 			String comp = NumericCondLine.getComparator(numCondSec);
-			AbstractCondition condNum = FindingToConditionBuilder
+			Condition condNum = FindingToConditionBuilder
 					.createCondNum(father.getArticle(), numCondSec, comp, d,
 							(QuestionNum) q);
 			return condNum;

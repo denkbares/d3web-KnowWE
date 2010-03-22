@@ -44,7 +44,7 @@ import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.manage.IDObjectManagement;
 /**
@@ -182,7 +182,7 @@ public class XCLd3webBuilder implements KnOfficeParser, XCLBuilder {
 				return;
 			}
 		}
-		AbstractCondition cond = cb.pop();
+		Condition cond = cb.pop();
 		if (cond==null) return;
 		if (weight==null||weight.equals("")) {
 			weight="[1.0]";

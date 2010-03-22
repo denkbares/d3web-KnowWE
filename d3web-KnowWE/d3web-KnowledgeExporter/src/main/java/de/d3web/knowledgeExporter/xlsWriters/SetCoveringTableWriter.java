@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.kernel.verbalizer.TerminalCondVerbalization;
 import de.d3web.knowledgeExporter.KnowledgeManager;
@@ -77,7 +77,7 @@ public class SetCoveringTableWriter extends QDTableWriter {
                     	weight = "++";
                     }
                     
-                    AbstractCondition cond = rel.getConditionedFinding();
+                    Condition cond = rel.getConditionedFinding();
                     
                     if (cond instanceof TerminalCondition) {
                     	TerminalCondVerbalization tCondVerb = (TerminalCondVerbalization) 

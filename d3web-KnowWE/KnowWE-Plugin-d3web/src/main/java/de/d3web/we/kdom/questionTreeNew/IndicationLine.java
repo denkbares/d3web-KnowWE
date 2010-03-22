@@ -1,7 +1,7 @@
 package de.d3web.we.kdom.questionTreeNew;
 
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
@@ -54,7 +54,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 
 			if (qc != null) {
 				String newRuleID = mgn.findNewIDFor(Rule.class);
-				AbstractCondition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
+				Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 				if (cond != null) {
 					Rule r = RuleFactory.createIndicationRule(newRuleID, qc,
 							cond);

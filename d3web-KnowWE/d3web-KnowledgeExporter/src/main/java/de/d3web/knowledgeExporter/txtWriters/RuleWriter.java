@@ -30,7 +30,7 @@ import de.d3web.abstraction.ActionSetValue;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleAction;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Diagnosis;
@@ -112,7 +112,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 	private void appendRule(Rule r, StringBuffer s) {
 		StringBuffer ruleBuffer = new StringBuffer();
 		ruleBuffer.append("\n" + string_if + " ");
-		AbstractCondition cond = r.getCondition();
+		Condition cond = r.getCondition();
 		ruleBuffer.append((cond instanceof TerminalCondition ? "" : "(") 
 				+ verbalizer.verbalize(cond, RenderingFormat.PLAIN_TEXT, null) 
 				+ (cond instanceof TerminalCondition ? "" : ")"));
@@ -128,7 +128,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 	}
 	
 	private void appendException(Rule r, StringBuffer buffy) {
-		AbstractCondition cond = r.getException();
+		Condition cond = r.getException();
 		if(cond != null) {
 			
 			buffy.append(" "+string_except+" ");
@@ -138,7 +138,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 	}
 	
 	private void appendKontext(Rule r, StringBuffer buffy) {
-		AbstractCondition cond = r.getContext();
+		Condition cond = r.getContext();
 		if(cond != null) {
 			
 			buffy.append(" "+string_kontext+" ");

@@ -33,7 +33,7 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleAction;
 import de.d3web.core.inference.RuleSet;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondQuestion;
 import de.d3web.core.inference.condition.NonTerminalCondition;
@@ -250,7 +250,7 @@ public class KnowledgeManager {
 
 		for (Iterator<Rule> iter = indicationRules.iterator(); iter.hasNext();) {
 			Rule element = iter.next();
-			AbstractCondition cond = element.getCondition();
+			Condition cond = element.getCondition();
 			Set<Question> questions = new HashSet<Question>();
 			addAllAppearingQuestions(cond, questions);
 			ActionIndication ai = (ActionIndication) element.getAction();
@@ -345,7 +345,7 @@ public class KnowledgeManager {
 		Set<Question> result = new HashSet<Question>();
 		RuleAction a = r.getAction();
 		if (a instanceof ActionHeuristicPS) {
-			AbstractCondition cond = r.getCondition();
+			Condition cond = r.getCondition();
 			addAllAppearingQuestions(cond, result);
 
 		} else if (a instanceof ActionIndication) {
@@ -361,15 +361,15 @@ public class KnowledgeManager {
 		return result;
 	}
 
-	private void addAllAppearingQuestions(AbstractCondition cond, Set<Question> s) {
+	private void addAllAppearingQuestions(Condition cond, Set<Question> s) {
 		if (cond instanceof TerminalCondition) {
 			if (cond instanceof CondQuestion) {
 				s.add(((CondQuestion) cond).getQuestion());
 			}
 		} else {
-			List<AbstractCondition> terms = ((NonTerminalCondition) cond).getTerms();
-			for (Iterator<AbstractCondition> iter = terms.iterator(); iter.hasNext();) {
-				AbstractCondition element = iter.next();
+			List<Condition> terms = ((NonTerminalCondition) cond).getTerms();
+			for (Iterator<Condition> iter = terms.iterator(); iter.hasNext();) {
+				Condition element = iter.next();
 				addAllAppearingQuestions(element, s);
 
 			}

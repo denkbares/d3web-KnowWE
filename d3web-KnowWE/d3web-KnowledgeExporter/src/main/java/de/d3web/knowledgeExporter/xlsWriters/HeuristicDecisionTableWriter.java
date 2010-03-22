@@ -28,7 +28,7 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WriteException;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondNot;
@@ -65,7 +65,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 	protected void getKnowledge() {
 
 		for (Rule r:manager.getAllRules()) {
-			AbstractCondition cond = r.getCondition();
+			Condition cond = r.getCondition();
 			if (!manager.isDone(r)
 					&& isRuleForDecisionTable(r)
 					&& r.getAction() instanceof ActionHeuristicPS 
@@ -159,7 +159,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 	}
 	
 	private boolean isRuleForDecisionTable (Rule r) {
-		AbstractCondition cond = r.getCondition();
+		Condition cond = r.getCondition();
 		if (r.getAction() instanceof ActionHeuristicPS
 				&& isMaxDepth(cond, 2) 
 				&& r.getException() == null 
@@ -169,7 +169,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 				&& isValidRule(r)) {
 
 			if(cond instanceof CondNot) {
-				AbstractCondition negCond = ((CondNot)cond).getTerms().get(0);
+				Condition negCond = ((CondNot)cond).getTerms().get(0);
 				// Regeln mit Konditionen der Form NICHT(ODER(....))
 				// NICHT(UND(...))dürfen nicht in die Tabelle
 				if(! (negCond instanceof TerminalCondition)) {
@@ -183,7 +183,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 		}
 	}
 	
-	private boolean hasCondDStateCondition(AbstractCondition cond) {
+	private boolean hasCondDStateCondition(Condition cond) {
 		if(cond instanceof TerminalCondition) {
 			if(cond instanceof CondDState) {
 				return true;
@@ -191,7 +191,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 				return false;
 			}
 		} else {
-			for (AbstractCondition element
+			for (Condition element
 					:(((NonTerminalCondition) cond).getTerms())) {
 				if(hasCondDStateCondition(element)) {
 					return true;
@@ -201,7 +201,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 		}		
 	}
 	
-	private boolean isMaxDepth(AbstractCondition cond, int depth) {
+	private boolean isMaxDepth(Condition cond, int depth) {
 		if (depth == 0) {
 			if (cond instanceof CondNot) {
 				cond = ((CondNot) cond).getTerms().get(0);
@@ -217,7 +217,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 			return true;
 		}
 		boolean isMaxDepth = true;
-		for (AbstractCondition element
+		for (Condition element
 				:(((NonTerminalCondition) cond).getTerms())) {
 			if (!isMaxDepth(element, depth - 1)) {
 				isMaxDepth = false;

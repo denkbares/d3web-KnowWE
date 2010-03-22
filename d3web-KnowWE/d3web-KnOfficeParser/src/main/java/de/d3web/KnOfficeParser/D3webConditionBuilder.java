@@ -29,7 +29,7 @@ import java.util.Stack;
 import de.d3web.KnOfficeParser.util.ConditionGenerator;
 import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -66,7 +66,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		this.file = file;
 	}
 
-	private Stack<AbstractCondition> condstack = new Stack<AbstractCondition>();
+	private Stack<Condition> condstack = new Stack<Condition>();
 	private List<Message> errors = new ArrayList<Message>();
 	private boolean lazy = false;
 	private IDObjectManagement idom;
@@ -105,7 +105,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		this.idom = idom;
 	}
 
-	public AbstractCondition pop() {
+	public Condition pop() {
 		if (!condstack.isEmpty()) {
 			return condstack.pop();
 		} else {
@@ -338,7 +338,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	@Override
 	public void notcond(String text) {
 		if (!condstack.isEmpty()) {
-			AbstractCondition cond = condstack.pop();
+			Condition cond = condstack.pop();
 			if (cond != null) {
 				condstack.push(new CondNot(cond));
 			} else {
@@ -350,9 +350,9 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	@Override
 	public void andcond(String text) {
 		if (condstack.size() > 1) {
-			List<AbstractCondition> clist = new ArrayList<AbstractCondition>();
-			AbstractCondition cond = condstack.pop();
-			AbstractCondition cond2 = condstack.pop();
+			List<Condition> clist = new ArrayList<Condition>();
+			Condition cond = condstack.pop();
+			Condition cond2 = condstack.pop();
 			if (cond != null && cond2 != null) {
 				clist.add(cond);
 				clist.add(cond2);
@@ -366,9 +366,9 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	@Override
 	public void orcond(String text) {
 		if (condstack.size() > 1) {
-			List<AbstractCondition> clist = new ArrayList<AbstractCondition>();
-			AbstractCondition cond = condstack.pop();
-			AbstractCondition cond2 = condstack.pop();
+			List<Condition> clist = new ArrayList<Condition>();
+			Condition cond = condstack.pop();
+			Condition cond2 = condstack.pop();
 			if (cond != null && cond2 != null) {
 				clist.add(cond);
 				clist.add(cond2);
@@ -382,10 +382,10 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	@Override
 	public void minmax(int line, String linetext, int min, int max,
 			int anzahlcond) {
-		List<AbstractCondition> condlist = new ArrayList<AbstractCondition>();
+		List<Condition> condlist = new ArrayList<Condition>();
 		boolean failure = false;
 		for (int i = 0; i < anzahlcond; i++) {
-			AbstractCondition cond = condstack.pop();
+			Condition cond = condstack.pop();
 			condlist.add(cond);
 			if (cond == null) {
 				failure = true;
@@ -407,7 +407,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	@Override
 	public void in(int line, String linetext, String question, String type,
 			List<String> answers) {
-		List<AbstractCondition> conds = condList(line, linetext, question,
+		List<Condition> conds = condList(line, linetext, question,
 				type, answers);
 		if (conds.contains(null)) {
 			condstack.push(null);
@@ -419,7 +419,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	@Override
 	public void all(int line, String linetext, String question, String type,
 			List<String> answers) {
-		List<AbstractCondition> conds = condList(line, linetext, question,
+		List<Condition> conds = condList(line, linetext, question,
 				type, answers);
 		if (conds.contains(null)) {
 			condstack.push(null);
@@ -428,9 +428,9 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		}
 	}
 
-	private List<AbstractCondition> condList(int line, String linetext,
+	private List<Condition> condList(int line, String linetext,
 			String question, String type, List<String> answers) {
-		List<AbstractCondition> conds = new ArrayList<AbstractCondition>();
+		List<Condition> conds = new ArrayList<Condition>();
 		for (String s : answers) {
 			condition(line, linetext, question, type, "=", s);
 			conds.add(condstack.pop());

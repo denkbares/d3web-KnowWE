@@ -3,7 +3,7 @@ package de.d3web.we.kdom.questionTreeNew;
 import java.util.List;
 
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
@@ -104,7 +104,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 				String newRuleID = mgn.findNewIDFor(Rule.class);
 
-				AbstractCondition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
+				Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 
 				Rule r = RuleFactory.createIndicationRule(newRuleID, qidSection
 						.get().getObject(qidSection), cond);

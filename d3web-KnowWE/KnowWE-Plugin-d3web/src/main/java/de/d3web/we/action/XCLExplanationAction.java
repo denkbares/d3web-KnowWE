@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.knowledge.terminology.Question;
@@ -224,7 +224,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 		StringBuffer cont = new StringBuffer();
 		
 		for (XCLRelation rel : content) {
-			AbstractCondition cond = rel.getConditionedFinding();	
+			Condition cond = rel.getConditionedFinding();	
 			cont.append("<tr><td>"
 					+ VerbalizationManager.getInstance().verbalize(cond,
 							RenderingFormat.HTML, parameterMap) + "</td></tr>");
@@ -248,7 +248,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 		cont.append("<td class=emphasized>"+ this.labels.getString(EXPECTEDANSWER)+"</td></tr>");
 		for (XCLRelation rel : content) {
 			cont.append("<tr><td>");
-			AbstractCondition cond = rel.getConditionedFinding();	
+			Condition cond = rel.getConditionedFinding();	
 			List questions = cond.getTerminalObjects();
 			ListIterator condIt = questions.listIterator();
 			List<Question> askedQuestions = new ArrayList<Question>();

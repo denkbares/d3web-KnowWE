@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -135,7 +135,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 					if(a != null) {
 						String newRuleID = mgn.findNewIDFor(Rule.class);
 
-						AbstractCondition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
+						Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 						
 						Rule r = RuleFactory.createSetValueRule(newRuleID, qc, new Object[]{a}, cond, null);
 						if (r != null) {
@@ -155,7 +155,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 					
 					if(d != null) {
 						String newRuleID = mgn.findNewIDFor(Rule.class);
-						AbstractCondition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
+						Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 						Rule r  = RuleFactory.createAddValueRule(newRuleID, q, new Object[]{d},cond);
 						if (r != null) {
 							return new ObjectCreatedMessage(r.getClass() + " : "
@@ -180,7 +180,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 				if(score != null) {
 					String newRuleID = mgn.findNewIDFor(Rule.class);
 
-					AbstractCondition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
+					Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 					
 					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, d, score, cond);
 					if (r != null) {

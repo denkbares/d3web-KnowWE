@@ -32,7 +32,7 @@ import de.d3web.abstraction.formula.Mult;
 import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.abstraction.formula.Sub;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -522,7 +522,7 @@ public class KBCreationTestUtil {
 		
 		// Create AND Condition:
 		// "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
-		List<AbstractCondition> conditions = new LinkedList<AbstractCondition>();
+		List<Condition> conditions = new LinkedList<Condition>();
 		conditions.add(c11);
 		conditions.add(c12);
 		CondAnd c1 = new CondAnd(conditions);
@@ -625,7 +625,7 @@ public class KBCreationTestUtil {
 		CondEqual conditionIf3 = new CondEqual(questionIf3, answerIf3);
 		CondNot condNot2 = new CondNot(conditionIf3);
 		
-		List<AbstractCondition> conditions = new LinkedList<AbstractCondition>();
+		List<Condition> conditions = new LinkedList<Condition>();
 		conditions.add(condNot2);
 		conditions.add(condNot1);
 		CondOr condOr = new CondOr(conditions);

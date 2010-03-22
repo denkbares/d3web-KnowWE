@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.CondNot;
@@ -69,7 +69,7 @@ public class FindingToConditionBuilder {
 	 * @param answer
 	 * @return
 	 */
-	private static AbstractCondition createCondition(KnowWEArticle article, Question kbQuest, Answer kbAns, Section comp, Section question, Section answer) {
+	private static Condition createCondition(KnowWEArticle article, Question kbQuest, Answer kbAns, Section comp, Section question, Section answer) {
 		// CondEqual(Yes/No), CondNumEqual, CondNumGreater, CondNumGreaterEqual,
 		// CondNumLess, CondNumLessEqual
 		// Unhandled Conditions: CondKnown, CondNumIn, CondTextContains, CondTextEqual, CondUnknown
@@ -103,7 +103,7 @@ public class FindingToConditionBuilder {
 		
 	}
 
-	public static AbstractCondition createCondNum(KnowWEArticle article,
+	public static Condition createCondNum(KnowWEArticle article,
 			Section comp, String comparator, Double valueOf,
 			QuestionNum questionNum) {
 		if (comparator.equals("="))
@@ -140,7 +140,7 @@ public class FindingToConditionBuilder {
 	 * @param kbm
 	 * @return
 	 */
-	public static AbstractCondition analyseAnyRelation(KnowWEArticle article, Section f, KnowledgeBaseManagement kbm) {
+	public static Condition analyseAnyRelation(KnowWEArticle article, Section f, KnowledgeBaseManagement kbm) {
 
 		Section child = f.findChildOfType(ComplexFinding.class);
 		if (child != null) {
@@ -157,7 +157,7 @@ public class FindingToConditionBuilder {
 	 * @param f
 	 * @return s null if the question was not found by KBM, a condition otherwise.
 	 */
-	private static AbstractCondition analyseFinding(KnowWEArticle article, Section f, KnowledgeBaseManagement kbm) {
+	private static Condition analyseFinding(KnowWEArticle article, Section f, KnowledgeBaseManagement kbm) {
 	
 		if (!f.getObjectType().getClass().equals(Finding.class))
 			return null;
@@ -195,7 +195,7 @@ public class FindingToConditionBuilder {
 				return null;
 			}
 			
-			AbstractCondition condition = createCondition(article, kbQuest, kbAns, comp, question, answer);
+			Condition condition = createCondition(article, kbQuest, kbAns, comp, question, answer);
 			return negated ? new CondNot(condition) : condition;
 		} else {
 			storeMessage(article, "Question '" + question.getOriginalText() +"' not found.", question);
@@ -228,7 +228,7 @@ public class FindingToConditionBuilder {
 	 * @param kbm 
 	 * @return s the according Condition or null if neither side could be parsed
 	 */
-	private static AbstractCondition analyseComplexFinding(KnowWEArticle article, Section cf, KnowledgeBaseManagement kbm) {
+	private static Condition analyseComplexFinding(KnowWEArticle article, Section cf, KnowledgeBaseManagement kbm) {
 			
 		
 		TypeSectionFilter filter = new TypeSectionFilter("Disjunct");
@@ -237,14 +237,14 @@ public class FindingToConditionBuilder {
 	}
 	
 	
-	private static AbstractCondition analyseDisjunction(KnowWEArticle article, List<Section> disjunction, KnowledgeBaseManagement kbm) {
+	private static Condition analyseDisjunction(KnowWEArticle article, List<Section> disjunction, KnowledgeBaseManagement kbm) {
 		
-		List<AbstractCondition> disjuncts = new ArrayList<AbstractCondition>();
+		List<Condition> disjuncts = new ArrayList<Condition>();
 		TypeSectionFilter filter = new TypeSectionFilter("Conjunct");
 		
 
 		for (Section child : disjunction) {
-			AbstractCondition conjunction = analyzeConjunction(article, child.getChildren(filter), kbm);
+			Condition conjunction = analyzeConjunction(article, child.getChildren(filter), kbm);
 			if (conjunction != null)
 				disjuncts.add(conjunction);
 		}
@@ -259,13 +259,13 @@ public class FindingToConditionBuilder {
 	}
 	
 
-	private static AbstractCondition analyzeConjunction(KnowWEArticle article, List<Section> conjunction,
+	private static Condition analyzeConjunction(KnowWEArticle article, List<Section> conjunction,
 			KnowledgeBaseManagement kbm) {
 		
-		List<AbstractCondition> conjuncts = new ArrayList<AbstractCondition>();
+		List<Condition> conjuncts = new ArrayList<Condition>();
 		
 		for (Section section : conjunction) {
-			AbstractCondition condition = analyseFinding(article, (Section) section.getChildren().get(0), kbm);
+			Condition condition = analyseFinding(article, (Section) section.getChildren().get(0), kbm);
 			if (condition != null)
 				conjuncts.add(condition);
 		}

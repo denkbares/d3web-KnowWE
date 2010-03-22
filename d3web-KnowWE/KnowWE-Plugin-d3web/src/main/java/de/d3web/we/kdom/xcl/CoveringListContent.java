@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -186,7 +186,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				double weight = this.getWeight(rel);
 				XCLRelationType relationType = this.getRelationType(rel);
 				// Get the Conditions
-				AbstractCondition cond = FindingToConditionBuilder.analyseAnyRelation(article, rel, kbm);
+				Condition cond = FindingToConditionBuilder.analyseAnyRelation(article, rel, kbm);
 				
 				if (cond == null)
 					continue;

@@ -23,7 +23,7 @@ package de.d3web.kernel.domainModel;
 import java.util.List;
 
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.kernel.psMethods.delegate.ActionDelegate;
@@ -34,7 +34,7 @@ public class DelegateRuleFactory {
 	public static Rule createDelegateRule(
 		String theId,
 		List<NamedObject> theAction,
-		String ns, AbstractCondition theCondition) {
+		String ns, Condition theCondition) {
 
 		Rule rule = RuleFactory.createRule(theId);
 
@@ -49,7 +49,7 @@ public class DelegateRuleFactory {
 	public static Rule createInstantDelegateRule(
 			String theId,
 			List<NamedObject> theAction,
-			String ns, AbstractCondition theCondition) {
+			String ns, Condition theCondition) {
 
 			Rule rule = RuleFactory.createRule(theId);
 

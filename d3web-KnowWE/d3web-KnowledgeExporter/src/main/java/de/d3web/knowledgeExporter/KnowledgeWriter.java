@@ -26,7 +26,7 @@ import java.io.IOException;
 import de.d3web.abstraction.ActionQuestionSetter;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleAction;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondQuestion;
 import de.d3web.core.inference.condition.TerminalCondition;
@@ -87,7 +87,7 @@ public abstract class KnowledgeWriter {
 			}
 		}
 
-		AbstractCondition cond = r.getCondition();
+		Condition cond = r.getCondition();
 		if (cond == null) {
 			return false;
 		}

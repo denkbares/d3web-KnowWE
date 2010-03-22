@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.RuleSet;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
@@ -198,7 +198,7 @@ public class KBRenderer extends AbstractTagHandler {
 						XCLRelationType type = entry.getKey();
 						Collection<XCLRelation> relations = entry.getValue();
 						for (XCLRelation rel : relations) {
-							AbstractCondition cond = rel
+							Condition cond = rel
 									.getConditionedFinding();
 							String weight = "";
 							String kdomid = rel.getKdmomID();

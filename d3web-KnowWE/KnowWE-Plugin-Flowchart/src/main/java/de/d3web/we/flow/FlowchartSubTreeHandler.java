@@ -38,7 +38,7 @@ import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
 import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleAction;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Diagnosis;
@@ -202,7 +202,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			
 			
 			
-			AbstractCondition condition;
+			Condition condition;
 			
 			
 			Section guardSection = content.findChildOfType(GuardType.class);
@@ -230,7 +230,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return result;
 	}
 
-	private AbstractCondition buildCondition(KnowWEArticle article, Section s, List<Message> errors) {
+	private Condition buildCondition(KnowWEArticle article, Section s, List<Message> errors) {
 		
 		String originalText = getXMLContentText(s);
 		
@@ -261,7 +261,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		} catch (RecognitionException e) {
 			e.printStackTrace();
 		}
-		AbstractCondition condition = builder.pop();
+		Condition condition = builder.pop();
 		
 		return condition;
 	}

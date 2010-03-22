@@ -21,7 +21,7 @@
 package de.d3web.KnOfficeParser.table;
 
 import de.d3web.report.Message;
-import de.d3web.core.inference.condition.AbstractCondition;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.manage.IDObjectManagement;
 /**
@@ -30,5 +30,5 @@ import de.d3web.core.manage.IDObjectManagement;
  *
  */
 public interface CellKnowledgeBuilder {
-	Message add(IDObjectManagement idom, int line, int column, String file, AbstractCondition cond, String text, Diagnosis diag, boolean errorOccured);
+	Message add(IDObjectManagement idom, int line, int column, String file, Condition cond, String text, Diagnosis diag, boolean errorOccured);
 }
