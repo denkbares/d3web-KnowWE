@@ -79,7 +79,7 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 				
 				List<Question> questionList = ((D3webKnowledgeService)service).getBase().getQuestions();
 				for (Question question : questionList) {
-					if(question.getText().equals(questionName)) {
+					if(question.getName().equals(questionName)) {
 						
 						q = question;
 					}
@@ -98,7 +98,7 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 			List<? extends Question> answeredQuestions = case1.getAnsweredQuestions();
 			if(answeredQuestions.contains(q)) {
 				Answer theanswer = q.getValue(case1);
-				result = "#"+q.getText()+":";
+				result = "#"+q.getName()+":";
 				if (theanswer != null)
 					result += theanswer.toString()+";";
 				else

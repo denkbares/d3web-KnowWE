@@ -97,7 +97,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 		for( Question q : answeredQuestions ){
 			Answer theanswer = q.getValue( c );
 			if (theanswer != null) {
-				newXCL.append("\"" + q.getText() + "\" = \"" + theanswer.getValue( c ) + "\",\n");				
+				newXCL.append("\"" + q.getName() + "\" = \"" + theanswer.getValue( c ) + "\",\n");				
 			}
 //			for (Object o : answers) {
 //				if( o instanceof Answer ){

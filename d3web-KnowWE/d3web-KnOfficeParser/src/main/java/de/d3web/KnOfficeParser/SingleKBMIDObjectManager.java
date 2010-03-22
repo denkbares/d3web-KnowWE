@@ -40,14 +40,13 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.values.AnswerChoice;
 
 /**
- * default implementation for the IDObjectManagement, searches and creates objects in a single kbm
+ * Default implementation for the IDObjectManagement, searches and creates objects in a single kbm
  * 
  * @author Markus Friedrich (denkbares GmbH)
  */
 public class SingleKBMIDObjectManager implements IDObjectManagement {
 
-	private KnowledgeBaseManagement kbm;
-	
+	protected KnowledgeBaseManagement kbm;
 	
 	public SingleKBMIDObjectManager(KnowledgeBaseManagement kbm) {
 		super();
@@ -62,65 +61,41 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 		this.kbm = kbm;
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.KnOfficeParser.IDObjectManagement#createDiagnosis(java.lang.String)
-	 */
 	@Override
 	public Diagnosis createDiagnosis(String name, Diagnosis parent) {
 		return kbm.createDiagnosis(name, parent);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.KnOfficeParser.IDObjectManagement#createQContainer(java.lang.String)
-	 */
 	@Override
 	public QContainer createQContainer(String name, QASet parent) {
 		return kbm.createQContainer(name, parent);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.KnOfficeParser.IDObjectManagement#createQuestion(java.lang.String)
-	 */
 	@Override
 	public QuestionDate createQuestionDate(String name, QASet parent) {
 		return kbm.createQuestionDate(name, parent);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.KnOfficeParser.IDObjectManagement#findAnswer(de.d3web.kernel.domainModel.qasets.Question, java.lang.String)
-	 */
 	@Override
 	public Answer findAnswer(Question q, String name) {
 		return kbm.findAnswer(q, name);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.KnOfficeParser.IDObjectManagement#findAnswerChoice(de.d3web.kernel.domainModel.qasets.QuestionChoice, java.lang.String)
-	 */
 	@Override
 	public AnswerChoice findAnswerChoice(QuestionChoice qc, String name) {
 		return kbm.findAnswerChoice(qc, name);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.KnOfficeParser.IDObjectManagement#findDiagnosis(java.lang.String)
-	 */
 	@Override
 	public Diagnosis findDiagnosis(String name) {
 		return kbm.findDiagnosis(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.KnOfficeParser.IDObjectManagement#findQContainer(java.lang.String)
-	 */
 	@Override
 	public QContainer findQContainer(String name) {
 		return kbm.findQContainer(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see de.d3web.KnOfficeParser.IDObjectManagement#findQuestion(java.lang.String)
-	 */
 	@Override
 	public Question findQuestion(String name) {
 		return kbm.findQuestion(name);
@@ -187,11 +162,6 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	}
 
 	@Override
-	public boolean changeID(IDObject object, String ref) {
-		return kbm.changeID(object, ref);
-	}
-
-	@Override
 	public String findNewIDFor(Class<? extends IDObject> object) {
 		return kbm.findNewIDFor(object);
 	}
@@ -201,4 +171,74 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 		return kbm.findNewIDForAnswerChoice(currentQuestion);
 	}
 
+	@Override
+	public QContainer createQContainer(String id, String name, QASet parent) {
+		return kbm.createQContainer(id, name, parent);
+	}
+
+
+	@Override
+	public QuestionDate createQuestionDate(String id, String name, QASet parent) {
+		return kbm.createQuestionDate(id, name, parent);
+	}
+
+
+	@Override
+	public QuestionMC createQuestionMC(String id, String name, QASet parent, AnswerChoice[] answers) {
+		return kbm.createQuestionMC(id, name, parent, answers);
+	}
+
+
+	@Override
+	public QuestionMC createQuestionMC(String id, String name, QASet parent, String[] answers) {
+		return kbm.createQuestionMC(id, name, parent, answers);
+	}
+
+
+	@Override
+	public QuestionNum createQuestionNum(String id, String name, QASet parent) {
+		return kbm.createQuestionNum(id, name, parent);
+	}
+
+
+	@Override
+	public QuestionOC createQuestionOC(String id, String name, QASet parent, AnswerChoice[] answers) {
+		return kbm.createQuestionOC(id, name, parent, answers);
+	}
+
+
+	@Override
+	public QuestionOC createQuestionOC(String id, String name, QASet parent, String[] answers) {
+		return kbm.createQuestionOC(name, parent, answers);
+	}
+
+
+	@Override
+	public QuestionText createQuestionText(String id, String name, QASet parent) {
+		return kbm.createQuestionText(id, name, parent);
+	}
+
+
+	@Override
+	public QuestionYN createQuestionYN(String id, String name, QASet parent) {
+		return kbm.createQuestionYN(id, name, parent);
+	}
+
+
+	@Override
+	public QuestionYN createQuestionYN(String id, String name, String yesAlternativeText, String noAlternativeText, QASet parent) {
+		return kbm.createQuestionYN(id, name, yesAlternativeText, noAlternativeText, parent);
+	}
+
+
+	@Override
+	public QuestionZC createQuestionZC(String id, String name, QASet parent) {
+		return kbm.createQuestionZC(id, name, parent);
+	}
+
+	@Override
+	public Diagnosis createDiagnosis(String id, String name, Diagnosis parent) {
+		return kbm.createDiagnosis(id, name, parent);
+	}
+	
 }

@@ -101,7 +101,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			if (kss instanceof D3webKnowledgeServiceSession) {
 				Question q = ((D3webKnowledgeServiceSession)kss).getBaseManagement().getKnowledgeBase().searchQuestion(objectid);
 				if(q != null) {
-					termName = q.getText();
+					termName = q.getName();
 					term = SemanticAnnotationAction.getTerm(env, termName);
 				}
 			}

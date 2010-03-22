@@ -70,7 +70,7 @@ public class HTMLDialogRenderer {
 		for (de.d3web.core.knowledge.terminology.QContainer container : containers) {
 			
 			// skipt the rootiest root element "Q000"
-			if (container.getText().endsWith("Q000"))
+			if (container.getName().endsWith("Q000"))
 				continue;
 
 			// the first element of the dialog should be extended so the user sees where
@@ -78,14 +78,14 @@ public class HTMLDialogRenderer {
 			if(first){
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
 				buffi.append("<h4 class='qcontainerName pointer extend-htmlpanel-down'>");
-				buffi.append("  " + container.getText() + ": ");
+				buffi.append("  " + container.getName() + ": ");
 				buffi.append("</h4>");
 				buffi.append("<table id='tbl" + container.getId() + "' class='visible'><tbody>");
 				first = false;
 			} else {
 				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
 				buffi.append("<h4 class='qcontainerName pointer extend-htmlpanel-right'>");
-				buffi.append("  " + container.getText() + ": ");
+				buffi.append("  " + container.getName() + ": ");
 				buffi.append("</h4>");
 				buffi.append("<table id='tbl" + container.getId() + "' class='hidden'><tbody>");
 			}
@@ -212,9 +212,9 @@ public class HTMLDialogRenderer {
 		StringBuffer html = new StringBuffer();
 
 		if (even) {
-			html.append("<td class='labelcellEven'>" + q.getText() + "</td>");
+			html.append("<td class='labelcellEven'>" + q.getName() + "</td>");
 		} else {
-			html.append("<td class='labelcellOdd'>" + q.getText() + "</td>");
+			html.append("<td class='labelcellOdd'>" + q.getName() + "</td>");
 		}
 
 		html.append("<td class='fieldcell'><div id='" + q.getId() + "'>");
@@ -240,7 +240,7 @@ public class HTMLDialogRenderer {
 		StringBuffer html = new StringBuffer();
 			
 			html.append("<td class='labelcellFollow' style='margin: 0px 0px 0px " + indent+"px;'>" 
-					+ q.getText() + " </td>");
+					+ q.getName() + " </td>");
 			html.append("<td class='fieldcellFollow'><div id='" + q.getId() + "'>");
 			
 			if (q instanceof QuestionChoice) {
@@ -274,7 +274,7 @@ public class HTMLDialogRenderer {
 		String jscall = " rel=\"{oid: '"+q.getId()+"'," 
 			    + "web: '"+web+"',"
 			    + "ns: '"+namespace+"',"
-			    + "qtext: '"+URLEncoder.encode(q.getText())+"',"
+			    + "qtext: '"+URLEncoder.encode(q.getName())+"',"
 			    + "inputid: '"+id+"'"
 				+ "}\" ";
 		buffi.append("<input id='" + id + "' type='text' " 

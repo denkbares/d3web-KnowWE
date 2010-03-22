@@ -120,7 +120,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 			question=question.substring(0, question.lastIndexOf('[')).trim();
 			typedef=true;
 		}
-		if (currentquestion==null||!currentquestion.getText().equals(question)) {
+		if (currentquestion==null||!currentquestion.getName().equals(question)) {
 			currentquestion = idom.findQuestion(question);
 			if (currentquestion==null) {
 				if (lazy) {
@@ -128,7 +128,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 						currentqclass=(QContainer) idom.getKnowledgeBase().getRootQASet();
 					}
 					if (typedef) {
-						currentquestion=D3webQuestionFactory.createQuestion(idom, currentqclass, question, type);
+						currentquestion=D3webQuestionFactory.createQuestion(idom, currentqclass, question, null, type);
 					} else if (answer==null) {
 						currentquestion=idom.createQuestionYN(question, currentqclass);
 					} else if (answer.startsWith("<")||answer.startsWith("[")||answer.startsWith(">")||answer.startsWith("=")) {
@@ -142,7 +142,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 				}
 			} else {
 				if (!D3webQuestionFactory.checkType(currentquestion, type)) {
-					errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file, line, column, "", currentquestion.getText(), type));
+					errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file, line, column, "", currentquestion.getName(), type));
 				}
 			}
 		}

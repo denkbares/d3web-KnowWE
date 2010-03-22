@@ -116,7 +116,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		int row = 1;
 		for (Question q:questions) {
 			qSheet.addCell(new Label(getColumn(Question.class.getSimpleName(), qSheet), 
-					row, q.getText(), getCellFormatBold()));
+					row, q.getName(), getCellFormatBold()));
 			
 			//WEIGHT UND ABNORMALITY DIESER FRAGE RAUSSCHREIBEN
 			Collection<KnowledgeSlice> kSlices = q.getAllKnowledge();
@@ -275,7 +275,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		int row = 1;
 		for (Diagnosis d:diagnoses) {
 			dSheet.addCell(new Label (getColumn(Diagnosis.class.getSimpleName(), dSheet), 
-					row, d.getText(), getCellFormatBold()));
+					row, d.getName(), getCellFormatBold()));
 			writeMMInfos(d, dSheet, row);
 			row++;
 		}

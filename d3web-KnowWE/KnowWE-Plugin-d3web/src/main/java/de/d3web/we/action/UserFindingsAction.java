@@ -152,7 +152,7 @@ public class UserFindingsAction extends DeprecatedAbstractKnowWEAction {
 		Object ido = terminology.getObject(iio.getObjectId(), null);
 		
 		if(ido instanceof NamedObject) {
-			result.append(((NamedObject)ido).getText());
+			result.append(((NamedObject)ido).getName());
 		}
 		return result.toString();
 	}

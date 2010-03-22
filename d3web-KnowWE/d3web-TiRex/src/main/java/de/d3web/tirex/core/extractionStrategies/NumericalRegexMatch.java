@@ -79,7 +79,7 @@ public class NumericalRegexMatch extends AbstractExtractionStrategy {
 
 			if (m.find()) {
 				if (toMatch == null) {
-					toMatch = new AnswerChoice();
+					toMatch = new AnswerChoice(null);
 					((AnswerChoice) toMatch).setText(m.group());
 				}
 				return new OriginalMatchAndStrategy(knowledge, toMatch, m

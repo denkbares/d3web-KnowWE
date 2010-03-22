@@ -58,7 +58,7 @@ public class DiagnosisHierarchyWriter extends TxtKnowledgeWriter {
                     text.append(" ");
                 }
 			}
-			String toAppend = d.getText();
+			String toAppend = d.getName();
 			toAppend = VerbalizationManager.quoteIfNecessary(toAppend);
 			text.append(toAppend);
 			// Einfügen der ID

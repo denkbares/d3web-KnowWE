@@ -23,22 +23,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Diagnosis;
-import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.knowledge.terminology.QuestionDate;
-import de.d3web.core.knowledge.terminology.QuestionMC;
-import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.QuestionOC;
-import de.d3web.core.knowledge.terminology.QuestionText;
-import de.d3web.core.knowledge.terminology.QuestionYN;
-import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -47,7 +38,6 @@ import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.Properties;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.AnswerFactory;
-import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.values.AnswerChoice;
 
@@ -57,33 +47,18 @@ import de.d3web.core.session.values.AnswerChoice;
  * questions with the same text.
  * @author Markus Friedrich (denkbares GmbH)
  */
-public class RestrictedIDObjectManager implements IDObjectManagement {
+public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 
-	private KnowledgeBaseManagement kbm;
 	private QContainer currentQContainer;
 	private boolean lazyQuestions=false;
 	private boolean lazyDiags=false;
 	private boolean lazyAnswers=false;
 	
 	public RestrictedIDObjectManager(KnowledgeBaseManagement kbm) {
-		super();
-		this.kbm = kbm;
+		super(kbm);
 	}
 	
 	
-	public KnowledgeBaseManagement getKbm() {
-		return kbm;
-	}
-
-
-
-	public void setKbm(KnowledgeBaseManagement kbm) {
-		this.kbm = kbm;
-	}
-
-	
-
-
 	boolean isLazyQuestions() {
 		return lazyQuestions;
 	}
@@ -161,11 +136,6 @@ public class RestrictedIDObjectManager implements IDObjectManagement {
 	}
 
 	@Override
-	public QContainer findQContainer(String name) {
-		return kbm.findQContainer(name);
-	}
-
-	@Override
 	public Question findQuestion(String name) {
 		if (currentQContainer==null) {
 			Question q = kbm.findQuestion(name);
@@ -195,7 +165,7 @@ public class RestrictedIDObjectManager implements IDObjectManagement {
 			for (NamedObject no: questions) {
 				if (no instanceof Question) {
 					Question q = (Question) no;
-					if (q.getText().equals(name)) {
+					if (q.getName().equals(name)) {
 						return q;
 					}
 				}
@@ -210,11 +180,11 @@ public class RestrictedIDObjectManager implements IDObjectManagement {
 
 
 	@Override
-	public Diagnosis createDiagnosis(String name, Diagnosis parent) {
+	public Diagnosis createDiagnosis(String id, String name, Diagnosis parent) {
 		if (parent==null) {
 			parent=kbm.getKnowledgeBase().getRootDiagnosis();
 		}
-		return kbm.createDiagnosis(name, parent);
+		return kbm.createDiagnosis(id, name, parent);
 	}
 
 
@@ -227,100 +197,6 @@ public class RestrictedIDObjectManager implements IDObjectManagement {
 	}
 
 
-	@Override
-	public QuestionDate createQuestionDate(String name, QASet parent) {
-		return kbm.createQuestionDate(name, parent);
-	}
-
-
-	@Override
-	public QuestionMC createQuestionMC(String name, QASet parent,
-			AnswerChoice[] answers) {
-		return kbm.createQuestionMC(name, parent, answers);
-	}
-
-
-	@Override
-	public QuestionMC createQuestionMC(String name, QASet parent,
-			String[] answers) {
-		return kbm.createQuestionMC(name, parent, answers);
-	}
-
-
-	@Override
-	public QuestionNum createQuestionNum(String name, QASet parent) {
-		return kbm.createQuestionNum(name, parent);
-	}
-
-
-	@Override
-	public QuestionOC createQuestionOC(String name, QASet parent,
-			AnswerChoice[] answers) {
-		return kbm.createQuestionOC(name, parent, answers);
-	}
-
-
-	@Override
-	public QuestionOC createQuestionOC(String name, QASet parent,
-			String[] answers) {
-		return kbm.createQuestionOC(name, parent, answers);
-	}
-
-
-	@Override
-	public QuestionText createQuestionText(String name, QASet parent) {
-		return kbm.createQuestionText(name, parent);
-	}
-
-
-	@Override
-	public QuestionYN createQuestionYN(String name, QASet parent) {
-		return kbm.createQuestionYN(name, parent);
-	}
-
-
-	@Override
-	public QuestionYN createQuestionYN(String name, String yesAlternativeText,
-			String noAlternativeText, QASet parent) {
-		return kbm.createQuestionYN(name, yesAlternativeText, noAlternativeText, parent);
-	}
-
-
-	@Override
-	public QuestionZC createQuestionZC(String name, QASet parent) {
-		return kbm.createQuestionZC(name, parent);
-	}
-
-
-	@Override
-	public Answer addChoiceAnswer(QuestionChoice qc, String value) {
-		return kbm.addChoiceAnswer(qc, value);
-	}
-
-
-	@Override
-	public boolean changeID(IDObject object, String ref) {
-		return kbm.changeID(object, ref);
-	}
-
-
-	@Override
-	public String findNewIDFor(Class<? extends IDObject> object) {
-		return kbm.findNewIDFor(object);
-	}
-
-
-	@Override
-	public String findNewIDForAnswerChoice(QuestionChoice currentQuestion) {
-		return kbm.findNewIDForAnswerChoice(currentQuestion);
-	}
-
-
-	@Override
-	public KnowledgeBase getKnowledgeBase() {
-		return kbm.getKnowledgeBase();
-	}
-	
 	private void collectQuestions(NamedObject namedObject, List<Question> result) {
 		if (namedObject instanceof Question && !result.contains(namedObject)) {
 			result.add((Question) namedObject);

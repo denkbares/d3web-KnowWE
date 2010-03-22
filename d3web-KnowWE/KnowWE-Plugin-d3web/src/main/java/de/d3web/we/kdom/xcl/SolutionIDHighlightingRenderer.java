@@ -68,7 +68,7 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 
 			for (Diagnosis d : diags) {
 
-				if (d.getText().equals(solution)) {
+				if (d.getName().equals(solution)) {
 					DiagnosisState state; 
 					XCLModel diagModel = this.findModel(solution, slices);
 					
@@ -113,7 +113,7 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 	private XCLModel findModel(String solution, Collection<KnowledgeSlice> slices) {
 		for (KnowledgeSlice s : slices) {
 			if (s instanceof XCLModel) {
-				if (((XCLModel)s).getSolution().getText().equals(solution))
+				if (((XCLModel)s).getSolution().getName().equals(solution))
 					return (XCLModel)s;
 			}
 		}

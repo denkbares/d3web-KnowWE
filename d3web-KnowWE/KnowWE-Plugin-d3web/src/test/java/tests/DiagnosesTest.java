@@ -66,15 +66,15 @@ public class DiagnosesTest extends TestCase {
 				Diagnosis actual = loadedKB.getDiagnoses().get(i);
 				
 				// Test ID & Name
-				assertEquals("Diagnosis " + expected.getText() + " has wrong ID.", expected.getId(), actual.getId());
-				assertEquals("Diagnosis " + expected.getText() + " has wrong name.", expected.getText(), actual.getText());
+				assertEquals("Diagnosis " + expected.getName() + " has wrong ID.", expected.getId(), actual.getId());
+				assertEquals("Diagnosis " + expected.getName() + " has wrong name.", expected.getName(), actual.getName());
 				
 				// Test Hierarchy
-				assertEquals("Diagnosis " + expected.getText() + " has wrong parents.", expected.getParents(), actual.getParents());
-				assertEquals("Diagnosis " + expected.getText() + " has wrong children.", expected.getChildren(), actual.getChildren());
+				assertEquals("Diagnosis " + expected.getName() + " has wrong parents.", expected.getParents(), actual.getParents());
+				assertEquals("Diagnosis " + expected.getName() + " has wrong children.", expected.getChildren(), actual.getChildren());
 				
 				// Test Explanation
-				assertEquals("Diagnosis " + expected.getText() + " has wrong explanation.", expected.getProperties().getProperty(Property.EXPLANATION), actual.getProperties().getProperty(Property.EXPLANATION));
+				assertEquals("Diagnosis " + expected.getName() + " has wrong explanation.", expected.getProperties().getProperty(Property.EXPLANATION), actual.getProperties().getProperty(Property.EXPLANATION));
 			}
 		} else {
 			Logging.getInstance().getLogger().warning("DiagnosesTest: Diagnoses have not been tested!");

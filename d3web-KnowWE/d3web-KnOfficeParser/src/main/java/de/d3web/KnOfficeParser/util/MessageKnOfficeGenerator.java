@@ -436,4 +436,8 @@ public class MessageKnOfficeGenerator {
 			String lineText, int parsedAttributes) {
 		return mg.createNoteMSG(string, file, line, lineText, parsedAttributes);
 	}
+
+	public static Message createCannotChangeIDError(String file, int line, String linetext, String name) {
+		return mg.createErrorMSG("cannotChangeID", file, line, linetext, name);
+	}
 }

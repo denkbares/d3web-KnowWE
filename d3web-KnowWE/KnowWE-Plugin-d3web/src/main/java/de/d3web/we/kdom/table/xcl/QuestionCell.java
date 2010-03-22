@@ -151,9 +151,9 @@ class QuestionCellHandler implements ReviseSubTreeHandler {
 			// create question
 			Question q2 = null;
 			if (parent == null) {
-				q2 = D3webQuestionFactory.createQuestion(name, type, mgr);
+				q2 = D3webQuestionFactory.createQuestion(name, null, type, mgr);
 			} else {
-				q2 = D3webQuestionFactory.createQuestion(mgr, parent, name, type);
+				q2 = D3webQuestionFactory.createQuestion(mgr, parent, name, null, type);
 			}
 
 			if (q2 != null) {

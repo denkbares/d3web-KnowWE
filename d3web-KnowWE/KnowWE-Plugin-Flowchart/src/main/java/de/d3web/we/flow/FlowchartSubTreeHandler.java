@@ -374,7 +374,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		for (NamedObject child : container.getChildren()) {
 			
-			if (child.getText().equals(flowName + "_" + FlowchartTerminologySubTreeHandler.STARTNODES_QUESTION_NAME))
+			if (child.getName().equals(flowName + "_" + FlowchartTerminologySubTreeHandler.STARTNODES_QUESTION_NAME))
 				question = (QuestionMC) child;
 		}
 		

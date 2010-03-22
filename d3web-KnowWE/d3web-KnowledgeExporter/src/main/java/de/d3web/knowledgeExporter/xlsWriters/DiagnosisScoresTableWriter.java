@@ -56,7 +56,7 @@ public class DiagnosisScoresTableWriter extends QDTableWriter {
 				ActionHeuristicPS action = (ActionHeuristicPS) raction;
 				TerminalCondVerbalization tCondVerb = (TerminalCondVerbalization) 
 					verbalizer.createConditionVerbalization(cond);
-				String d = getDiagnosis(rc).getText();
+				String d = getDiagnosis(rc).getName();
 				String a = tCondVerb.getAnswer();
 				String q = tCondVerb.getQuestion();
 				String s = action.getScore().toString();

@@ -92,7 +92,7 @@ public class KnowledgeUtils {
 		} else {
 			if (!D3webQuestionFactory.checkType(currentquestion, type)) {
 				errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(
-						kdomid, line, column, "", currentquestion.getText(),
+						kdomid, line, column, "", currentquestion.getName(),
 						type));
 			}
 		}

@@ -77,7 +77,7 @@ public class KBRenderer extends AbstractTagHandler {
 			
 			boolean appendedSolutionsHeadline = false;
 			for (Diagnosis diagnosis2 : diagnosis) {
-				if (!diagnosis2.getText().equals("P000")) {
+				if (!diagnosis2.getName().equals("P000")) {
 					if (!appendedSolutionsHeadline) {
 						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.solutions") + ":</strong><p/>");
 						appendedSolutionsHeadline = true;
@@ -188,7 +188,7 @@ public class KBRenderer extends AbstractTagHandler {
 					}
 						
 					
-					text.append("<p /> " + model.getSolution().getText() + thresholds
+					text.append("<p /> " + model.getSolution().getName() + thresholds
 							+ ": <br />");
 
 					Map<XCLRelationType, Collection<XCLRelation>> relationMap = model

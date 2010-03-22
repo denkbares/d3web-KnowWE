@@ -128,7 +128,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 						if (trace == null) {
 							return rb.getString("xclrenderer.notrace");
 						}
-						return verbalizeTrace(trace, solution.getText());
+						return verbalizeTrace(trace, solution.getName());
 					}
 				}
 			}
@@ -260,7 +260,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 				}
 				cq =(Question) condIt.next();
 				if (!askedQuestions.contains(cq)) {
-					cont.append(cq.getText());
+					cont.append(cq.getName());
 					count = count +1;
 					askedQuestions.add(cq);
 				}

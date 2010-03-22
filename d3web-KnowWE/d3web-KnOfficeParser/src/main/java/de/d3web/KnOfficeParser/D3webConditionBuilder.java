@@ -158,7 +158,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		if (question == null) {
 			if (lazy) {
 				if (type != null) {
-					question = D3webQuestionFactory.createQuestion(qname, type,
+					question = D3webQuestionFactory.createQuestion(qname, type, null,
 							idom);
 					if (question == null) {
 						errors.add(MessageKnOfficeGenerator
@@ -212,7 +212,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 					answer = qyn.no;
 				} else {
 					errors.add(MessageKnOfficeGenerator.createWrongYNAnswer(
-							file, line, linetext, qyn.getText()));
+							file, line, linetext, qyn.getName()));
 				}
 			} else {
 				answer = idom.findAnswerChoice(qc, value);
@@ -224,7 +224,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				} else {
 					errors.add(MessageKnOfficeGenerator
 							.createAnswerNotFoundException(file, line,
-									linetext, value, qc.getText()));
+									linetext, value, qc.getName()));
 					c = null;
 				}
 			} else {
@@ -253,7 +253,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		if (question == null) {
 			if (lazy) {
 				if (type != null) {
-					question = D3webQuestionFactory.createQuestion(qname, type,
+					question = D3webQuestionFactory.createQuestion(qname, type, null,
 							idom);
 					if (question == null) {
 						errors.add(MessageKnOfficeGenerator
@@ -299,7 +299,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		// create q if not exists and lazy enabled
 		if (q == null && lazy) {
 			if (type != null) {
-				q = D3webQuestionFactory.createQuestion(name, type, idom);
+				q = D3webQuestionFactory.createQuestion(name, type, null, idom);
 				if (q == null) {
 					errors.add(MessageKnOfficeGenerator
 							.createTypeRecognitionError(file, line,

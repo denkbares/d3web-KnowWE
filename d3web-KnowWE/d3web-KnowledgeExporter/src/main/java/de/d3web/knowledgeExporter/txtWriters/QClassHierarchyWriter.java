@@ -66,7 +66,7 @@ public class QClassHierarchyWriter extends TxtKnowledgeWriter {
                 }
 			}
 
-			String toAppend = qaSet.getText();
+			String toAppend = qaSet.getName();
 			VerbalizationManager.quoteIfNecessary(toAppend);
 			text.append(toAppend);
 			

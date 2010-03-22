@@ -209,7 +209,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 	private void appendInfoObject(String web, D3webKnowledgeService service, Diagnosis object, StringBuffer buffer) {
 		buffer.append("\t<solution");
 		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append("'");
-		buffer.append(" name='").append(encodeXML(object.getText())).append("'");
+		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
 		buffer.append(">\n");
 		appendChilds(web, service, object, buffer);
 		buffer.append("\t</solution>\n");
@@ -218,7 +218,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 	private void appendInfoObject(String web, D3webKnowledgeService service, Question object, StringBuffer buffer) {
 		buffer.append("\t<question");
 		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append("'");
-		buffer.append(" name='").append(encodeXML(object.getText())).append("'");
+		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
 		if (object.getDerivationType() == DerivationType.DERIVED) {
 			buffer.append(" abstract='true'");
 		}
@@ -253,7 +253,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 	private void appendInfoObject(String web, D3webKnowledgeService service, QContainer object, StringBuffer buffer) {
 		buffer.append("\t<qset");
 		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append("'");
-		buffer.append(" name='").append(encodeXML(object.getText())).append("'");
+		buffer.append(" name='").append(encodeXML(object.getName())).append("'");
 		buffer.append(">\n");
 		appendChilds(web, service, object, buffer);
 		buffer.append("\t</qset>\n");

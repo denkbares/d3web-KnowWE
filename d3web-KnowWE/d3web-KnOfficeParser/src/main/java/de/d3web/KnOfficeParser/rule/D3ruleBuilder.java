@@ -272,7 +272,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					if (lazy) {
 						if (type != null) {
 							qcon = D3webQuestionFactory.createQuestion(s,
-									type, idom);
+									type, null, idom);
 							if (qcon != null) {
 								qcons.add(qcon);
 							} else {
@@ -345,7 +345,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		if (q == null) {
 			if (lazy) {
 				if (type != null) {
-					q = D3webQuestionFactory.createQuestion(qname, type, idom);
+					q = D3webQuestionFactory.createQuestion(qname, type, null, idom);
 				} else {
 					q = idom.createQuestionOC(qname, idom.getKnowledgeBase()
 							.getRootQASet(), new AnswerChoice[0]);
@@ -367,7 +367,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					} else {
 						errors.add(MessageKnOfficeGenerator
 								.createAnswerNotFoundException(file, line,
-										linetext, s, qc.getText()));
+										linetext, s, qc.getName()));
 					}
 				}
 				if (!alist.isEmpty()) {
@@ -452,10 +452,10 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				if (lazy) {
 					if (type != null) {
 						currentquestion = D3webQuestionFactory.createQuestion(
-								s, type, idom);
+								s, type, null, idom);
 					} else {
 						currentquestion = D3webQuestionFactory.createQuestion(
-								s, "oc", idom);
+								s, "oc", null, idom);
 					}
 				} else {
 					errors.add(MessageKnOfficeGenerator
@@ -540,7 +540,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				} else {
 					errors.add(MessageKnOfficeGenerator
 							.createAnswerNotFoundException(file, line,
-									linetext, value, qc.getText()));
+									linetext, value, qc.getName()));
 					finishCondstack(except);
 					return;
 				}

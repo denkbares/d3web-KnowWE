@@ -51,7 +51,7 @@ public class SetCoveringTableWriter extends QDTableWriter {
         for (KnowledgeSlice slice:xclRels) {
         	if (slice instanceof XCLModel) {
         		xclModels.add((XCLModel)slice);
-        		diagnosisList.add(((XCLModel)slice).getSolution().getText());
+        		diagnosisList.add(((XCLModel)slice).getSolution().getName());
         	}
         }
         
@@ -84,7 +84,7 @@ public class SetCoveringTableWriter extends QDTableWriter {
         					verbalizer.createConditionVerbalization(cond);
                     	String a = tCondVerb.getAnswer();
         				String q = tCondVerb.getQuestion();
-                    	addEntry(model.getSolution().getText(), q, a, weight);
+                    	addEntry(model.getSolution().getName(), q, a, weight);
                     }
                 }
             }

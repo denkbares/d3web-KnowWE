@@ -71,38 +71,38 @@ public class QuestionTreeTest extends TestCase {
 				Question actual = loadedKB.getQuestions().get(i);
 				
 				// Test Name & ID
-				assertEquals("Question " + expected.getText() + " has wrong ID.",
+				assertEquals("Question " + expected.getName() + " has wrong ID.",
 						expected.getId(), actual.getId());
-				assertEquals("Question " + expected.getText() + " has wrong name.",
-						expected.getText(), actual.getText());
+				assertEquals("Question " + expected.getName() + " has wrong name.",
+						expected.getName(), actual.getName());
 				
 				// Test Hierarchy
-				assertEquals("Question " + expected.getText() + " has wrong parents.",
+				assertEquals("Question " + expected.getName() + " has wrong parents.",
 						expected.getParents(), actual.getParents());
-				assertEquals("Question " + expected.getText() + " has wrong children.",
+				assertEquals("Question " + expected.getName() + " has wrong children.",
 						expected.getChildren(), actual.getChildren());
 				
 				// Test Properties (Abstraction, MMINFO)
-				assertEquals("Question " + expected.getText() + " should be abstract.",
+				assertEquals("Question " + expected.getName() + " should be abstract.",
 						expected.getProperties().getProperty(Property.ABSTRACTION_QUESTION),
 						actual.getProperties().getProperty(Property.ABSTRACTION_QUESTION));
 				
 				// Test Question Type
-				assertEquals("Question " + expected.getText() + " has wrong type.",
+				assertEquals("Question " + expected.getName() + " has wrong type.",
 						expected.getClass(), actual.getClass());
 				
 				// Question Type specific tests
 				if (expected instanceof QuestionChoice) {
-					assertEquals("Question " + expected.getText() + " has different answer alternatives.", 
+					assertEquals("Question " + expected.getName() + " has different answer alternatives.", 
 							((QuestionChoice)expected).getAllAlternatives(), 
 							((QuestionChoice)actual).getAllAlternatives());
 				}
 				
 				if (expected instanceof QuestionNum) {
-					assertEquals("Question " + expected.getText() + " has wrong unit.", 
+					assertEquals("Question " + expected.getName() + " has wrong unit.", 
 							expected.getProperties().getProperty(Property.UNIT), 
 							actual.getProperties().getProperty(Property.UNIT));
-					assertEquals("Question " + expected.getText() + " has wrong range.", 
+					assertEquals("Question " + expected.getName() + " has wrong range.", 
 							expected.getProperties().getProperty(Property.QUESTION_NUM_RANGE), 
 							actual.getProperties().getProperty(Property.QUESTION_NUM_RANGE));
 				}
@@ -125,8 +125,8 @@ public class QuestionTreeTest extends TestCase {
 		// Get MMInfoStorage of question
 		MMInfoStorage loadedStorage = (MMInfoStorage) loadedQuestion.getProperties().getProperty(Property.MMINFO);
 		MMInfoStorage createdStorage = (MMInfoStorage) createdQuestion.getProperties().getProperty(Property.MMINFO); 
-		assertNotNull("Question " + loadedQuestion.getText() + " has no MMInfoStorage.", loadedStorage);
-		assertNotNull("Question " + createdQuestion.getText() + " has no MMInfoStorage.", createdStorage);
+		assertNotNull("Question " + loadedQuestion.getName() + " has no MMInfoStorage.", loadedStorage);
+		assertNotNull("Question " + createdQuestion.getName() + " has no MMInfoStorage.", createdStorage);
 		
 		// Create DCMarkup
 		DCMarkup markup = new DCMarkup();
@@ -137,11 +137,11 @@ public class QuestionTreeTest extends TestCase {
 		// Get MMInfoObject for created DCMarkup
 		MMInfoObject loadedMMInfo = (MMInfoObject) loadedStorage.getMMInfo(markup).toArray()[0];
 		MMInfoObject createdMMInfo = (MMInfoObject) createdStorage.getMMInfo(markup).toArray()[0];
-		assertNotNull("Question " + loadedQuestion.getText() + " has no MMInfo.", loadedMMInfo);
-		assertNotNull("Question " + createdQuestion.getText() + " has no MMInfo.", createdMMInfo);
+		assertNotNull("Question " + loadedQuestion.getName() + " has no MMInfo.", loadedMMInfo);
+		assertNotNull("Question " + createdQuestion.getName() + " has no MMInfo.", createdMMInfo);
 		
 		// Compare content of MMInfoObject
-		assertEquals("Content of MMInfoObject of Diagnosis " + createdQuestion.getText() + " differs.", 
+		assertEquals("Content of MMInfoObject of Diagnosis " + createdQuestion.getName() + " differs.", 
 					  createdMMInfo.getContent(), loadedMMInfo.getContent());
 		
 	}

@@ -97,7 +97,7 @@ public class SCListEditorRenderer extends DeprecatedAbstractKnowWEAction {
 		}
 		if (qaset instanceof QASet && (!(qaset instanceof Question))) {
 
-			sb.append(qaset.getText() + "<br>");
+			sb.append(qaset.getName() + "<br>");
 			for (Object q : qaset.getChildren()) {
 				renderQASet((QASet) q, sb, ++cnt, level);
 
@@ -120,7 +120,7 @@ public class SCListEditorRenderer extends DeprecatedAbstractKnowWEAction {
 					.append("&lt;input type=\\'button\\' name=\\'submit\\' value=\\'ok\\' onclick=\\'javascript:readformSCLEdit(&quot;KnowWE.jsp?KWikiWeb=Sportberatung&action=SetFindingAction&namespace=Schwimmen%2E%2ESchwimmen%20%28im%20Verein%29&ObjectID=Q1&quot;,&quot;mc"
 							+ qaset.getId()
 							+ "&quot;,&quot;0&quot;)\\' &gt;&lt;/div&gt;&lt;/form &gt;&lt;/div &gt;',STICKY,MOUSEOFF,NOCLOSE,TEXTCOLOR, '#111111',FGCOLOR, '#fbf7e8',BGCOLOR, '#AA3311',CAPTION,'Medium',CAPCOLOR,'#FFFFFF');\" href=\"javascript:void(0);\">"
-							+ replaceHTML(qaset.getText())
+							+ replaceHTML(qaset.getName())
 							+ "</a><div id=\"scledit"
 							+ qaset.getId()
 							+ "\"></div>");

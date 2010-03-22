@@ -208,7 +208,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 		} else if (a instanceof ActionSuppressAnswer) {
 			ActionSuppressAnswer asa = (ActionSuppressAnswer)a;
 			s.append(string_hide);
-			s.append(" " + "\"" + asa.getQuestion().getText() + "\"");
+			s.append(" " + "\"" + asa.getQuestion().getName() + "\"");
 			s.append(" =");
 			s.append(" [");
 			boolean first = true;

@@ -215,28 +215,28 @@ public class KBCreationTestUtil {
 	private void createDiagnoses() {
 		
 		Diagnosis p0 = new Diagnosis("P000");
-			p0.setText("P000");
+			p0.setName("P000");
 			createdKB.add(p0);
 		
 		Diagnosis p1 = new Diagnosis("P1");
-			p1.setText("Mechanical problem");
+			p1.setName("Mechanical problem");
 			createdKB.getRootDiagnosis().addChild(p1);
 			createdKB.add(p1);
 		
 		Diagnosis p2 = new Diagnosis("P2");
-			p2.setText("Damaged idle speed system");
+			p2.setName("Damaged idle speed system");
 			p1.addChild(p2);
 			createdKB.add(p2);
 		
 		Diagnosis p3 = new Diagnosis("P3");
-			p3.setText("Leaking air intake system");
+			p3.setName("Leaking air intake system");
 			p3.getProperties().setProperty(Property.EXPLANATION, 
 					"The air intake system is leaking.");
 			p1.addChild(p3);
 			createdKB.add(p3);
 		
 		Diagnosis p4 = new Diagnosis("P4");
-			p4.setText("Other problem");
+			p4.setName("Other problem");
 			createdKB.getRootDiagnosis().addChild(p4);
 			createdKB.add(p4);
 						
@@ -249,33 +249,33 @@ public class KBCreationTestUtil {
 	private void createQuestionnaires() {
 		
 		QContainer qc0 = new QContainer("Q000");
-			qc0.setText("Q000");
+			qc0.setName("Q000");
 			createdKB.add(qc0);		
 		
 		QContainer qc1 = new QContainer("QC1");
-			qc1.setText("Observations");
+			qc1.setName("Observations");
 			createdKB.getRootQASet().addChild(qc1);
 			createdKB.add(qc1);
 		
 		QContainer qc2 = new QContainer("QC2");
-			qc2.setText("Idle speed system");
+			qc2.setName("Idle speed system");
 			qc1.addChild(qc2);
 			createdKB.add(qc2);
 		
 		QContainer qc3 = new QContainer("QC3");
-			qc3.setText("Air filter");
+			qc3.setName("Air filter");
 			qc3.getProperties().setProperty(Property.EXPLANATION, 
 					"Here you can enter your observations concerning the air filter.");
 			qc1.addChild(qc3);
 			createdKB.add(qc3);
 		
 		QContainer qc4 = new QContainer("QC4");
-			qc4.setText("Ignition timing");
+			qc4.setName("Ignition timing");
 			qc1.addChild(qc4);
 			createdKB.add(qc4);
 		
 		QContainer qc5 = new QContainer("QC5");
-			qc5.setText("Technical Examinations");
+			qc5.setName("Technical Examinations");
 			createdKB.getRootQASet().addChild(qc5);
 			createdKB.add(qc5);
 		
@@ -316,7 +316,7 @@ public class KBCreationTestUtil {
 		// Add question:
 		// - "Average mileage /100km" [num] {liter} (0 30) #Q1337
 		Question q1 = new QuestionNum("Q1337");
-			q1.setText("Average mileage /100km");
+			q1.setName("Average mileage /100km");
 			q1.getProperties().setProperty(Property.UNIT, "liter");
 			q1.getProperties().setProperty(Property.QUESTION_NUM_RANGE, 
 					new NumericalInterval(0, 30));

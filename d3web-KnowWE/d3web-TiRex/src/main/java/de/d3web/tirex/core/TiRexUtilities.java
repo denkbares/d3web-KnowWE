@@ -90,13 +90,13 @@ public class TiRexUtilities {
 
 		List<Diagnosis> diagnoses = knowledge.getDiagnoses();
 		for (Diagnosis diagnosis : diagnoses) {
-			buffer.append(" Diagnose: " + diagnosis.getText() + "(Typ: "
+			buffer.append(" Diagnose: " + diagnosis.getName() + "(Typ: "
 					+ diagnosis.getClass() + " ID: " + diagnosis.getId() + ")\n");
 		}
 
 		List<Question> questions = knowledge.getQuestions();
 		for (Question question : questions) {
-			buffer.append("  Frage: " + question.getText() + " (Typ: "
+			buffer.append("  Frage: " + question.getName() + " (Typ: "
 					+ question.getClass() + " ID: " + question.getId() + ")\n");
 
 			if (getAnswers) {

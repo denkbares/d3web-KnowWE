@@ -119,7 +119,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 		flowQC = kbm.findQContainer(name);
 		
 		if (flowQC == null)
-			flowQC = kbm.createQContainer(name, null);
+			flowQC = kbm.createQContainer(name);
 		else
 			System.out.println("QContainer found:" + name);
 

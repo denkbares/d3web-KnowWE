@@ -368,7 +368,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 			} else if (action instanceof ActionHeuristicPS && !manager.isDone(rule)) {
 				ActionHeuristicPS ah = (ActionHeuristicPS) action;
 				Diagnosis diagnosis = ah.getDiagnosis();
-				String dt = diagnosis.getText();
+				String dt = diagnosis.getName();
 				Score score = ah.getScore();
 				s.append(dashes(level + 1) + quote(dt) + " ("
 						+ score.getSymbol() + ")\n");
@@ -392,7 +392,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 								processQuestion((Question) next, s);
 							} else if (next instanceof QContainer) {
 								String suff = dashes(level + 1)
-								+ quote(next.getText())
+								+ quote(next.getName())
 								+ "\n";
 								if (!s.toString().endsWith(suff))
 								s.append(suff);

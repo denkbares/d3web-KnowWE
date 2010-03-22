@@ -111,7 +111,7 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 						XCLRelation rel = ((XCLModel) knowledgeSlice)
 								.findRelation(kbrelId);
 
-						title = ((XCLModel) knowledgeSlice).getSolution().getText()+": "+ new ConditionVerbalizer().verbalize( rel.getConditionedFinding(),RenderingFormat.PLAIN_TEXT,null);
+						title = ((XCLModel) knowledgeSlice).getSolution().getName()+": "+ new ConditionVerbalizer().verbalize( rel.getConditionedFinding(),RenderingFormat.PLAIN_TEXT,null);
 						break;
 						// // eval the Relation to find the right Rendering
 						// try {

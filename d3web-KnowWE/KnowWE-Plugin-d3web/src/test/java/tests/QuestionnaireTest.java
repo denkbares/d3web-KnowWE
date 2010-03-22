@@ -63,15 +63,15 @@ public class QuestionnaireTest extends TestCase {
 				QContainer actual = loadedKB.getQContainers().get(i);
 				
 				// Test Name & ID
-				assertEquals("QContainer " + expected.getText() + " has wrong ID.", expected.getId(), actual.getId());
-				assertEquals("QContainer " + expected.getText() + " has wrong name.", expected.getText(), actual.getText());
+				assertEquals("QContainer " + expected.getName() + " has wrong ID.", expected.getId(), actual.getId());
+				assertEquals("QContainer " + expected.getName() + " has wrong name.", expected.getName(), actual.getName());
 				
 				// Test Hierarchy
-				assertEquals("QContainer " + expected.getText() + " has wrong parents.", expected.getParents(), actual.getParents());
-				assertEquals("QContainer " + expected.getText() + " has wrong children.", expected.getChildren(), actual.getChildren());
+				assertEquals("QContainer " + expected.getName() + " has wrong parents.", expected.getParents(), actual.getParents());
+				assertEquals("QContainer " + expected.getName() + " has wrong children.", expected.getChildren(), actual.getChildren());
 				
 				// Test Explanation
-				assertEquals("QContainer " + expected.getText() + " has wrong explanation.", expected.getProperties().getProperty(Property.EXPLANATION), actual.getProperties().getProperty(Property.EXPLANATION));
+				assertEquals("QContainer " + expected.getName() + " has wrong explanation.", expected.getProperties().getProperty(Property.EXPLANATION), actual.getProperties().getProperty(Property.EXPLANATION));
 			}
 		} else {
 			Logging.getInstance().getLogger().warning("QuestionnaireTest: Questionnaires have not been tested!");

@@ -51,10 +51,10 @@ public class D3webTermFactory implements TermFactory<NamedObject, NamedObject> {
 	public static final String DEFAULT_QUESTIONNAIRE_NAME ="Standardfragebogen";
 	
 	public Term getTerm(NamedObject object, TerminologyType type, GlobalTerminology gt) {
-		Term term = gt.getTerm(object.getText(), null);
+		Term term = gt.getTerm(object.getName(), null);
 		if(term == null) {
 			term = new Term(gt.getType());
-			term.setInfo(TermInfoType.TERM_NAME, object.getText());
+			term.setInfo(TermInfoType.TERM_NAME, object.getName());
 			gt.addTerm(term);
 		} 
 		return term;
@@ -90,7 +90,7 @@ public class D3webTermFactory implements TermFactory<NamedObject, NamedObject> {
 		List<GlobalAlignment> alignments = getAlignableTerms(no, idString, globalTerminology);
 		Term parentTerm = null;
 		if(alignments.isEmpty()) {
-			if((!no.getText().equals("P000")) && (!no.getText().equals("Q000"))&& (!no.getText().equals(DEFAULT_QUESTIONNAIRE_NAME))) {
+			if((!no.getName().equals("P000")) && (!no.getName().equals("Q000"))&& (!no.getName().equals(DEFAULT_QUESTIONNAIRE_NAME))) {
 				if((no instanceof QContainer || no instanceof Diagnosis)) {
 					// new Root -> complete subtree
 					parentTerm = getTerm(no, globalTerminology.getType(), globalTerminology);

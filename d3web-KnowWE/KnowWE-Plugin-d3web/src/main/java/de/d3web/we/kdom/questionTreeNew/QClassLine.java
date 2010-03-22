@@ -101,7 +101,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 				if (qc != null) {
 					qcSec.get().storeObject(qcSec, qc);
 					return new NewObjectCreated(qc.getClass().getSimpleName()
-							+ " " + qc.getText());
+							+ " " + qc.getName());
 				} else {
 					return new ObjectCreationError(name, this.getClass());
 				}

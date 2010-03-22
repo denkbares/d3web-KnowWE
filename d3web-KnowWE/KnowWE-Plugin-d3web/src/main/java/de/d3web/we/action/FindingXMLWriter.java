@@ -119,7 +119,7 @@ public class FindingXMLWriter {
 		sb.append( ">\n");
 		String text = "";
 		try {
-			text = URLEncoder.encode(theQuestion.getText(), "ISO-8859-1");
+			text = URLEncoder.encode(theQuestion.getName(), "ISO-8859-1");
 		} catch (UnsupportedEncodingException e) {
 		}
 		sb.append("<Text><![CDATA["	+ text + "]]></Text>\n");

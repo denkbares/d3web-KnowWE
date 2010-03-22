@@ -171,7 +171,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					answer = cq.no;
 				} else {
 					errors.add(MessageKnOfficeGenerator.createWrongYNAnswer(
-							file, line, linetext, cq.getText()));
+							file, line, linetext, cq.getName()));
 					return;
 				}
 			} else if (currentQuestion instanceof QuestionOC) {
@@ -536,9 +536,12 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 						.createNoParentQuestionError(file, line, linetext));
 				return;
 			}
+			if (ref!=null && !ref.equals(currentQuestion.getId())) {
+				errors.add(MessageKnOfficeGenerator.createCannotChangeIDError(file, line, linetext, name));
+			}
 		} else {
 			currentQuestion = D3webQuestionFactory.createQuestion(idom, parent,
-					name, type);
+					name, ref, type);
 		}
 
 		if (currentQuestion == null) {
@@ -575,33 +578,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			addMMInfo(currentQuestion, "LT", MMInfoSubject.PROMPT.getName(),
 					longname, null);
 		}
-		// Setzen der manuellen ID, falls vorhanden
-		if (ref != null) {
-			boolean idSet = this.idom.changeID(currentQuestion, ref);
-			if (!idSet) {
-				errors.add(MessageKnOfficeGenerator.createWarningMSG(
-						"setting custom ID '" + ref + "' for object "
-								+ currentQuestion.getText() + " failed",
-						idlink, line, linetext, new Object[] {}));
-			}
-			// currentQuestion.setId(ref);
-
-			// THIS IS A HOTFIX
-			// since the objects are held in a SORTED List (by ID)
-			// one may not change the ID afterwards
-			// this hotfix creates and removes a dummy object
-			// to force a sort
-			// Question dummy = idom.createQuestionText("dummy", parent);
-			// try {
-			// idom.getKnowledgeBase().remove(dummy);
-			// parent.removeChild(dummy);
-			// } catch (IllegalAccessException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// END HOTFIX
-		}
-
+		
 		// Wenn die Frage eine Folgefrage auf eine Antwort ist, diese der
 		// Antwort zuordnen
 		if ((dashes != 1) && (dashes == questionStack.peek().first + 2)) {

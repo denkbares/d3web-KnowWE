@@ -95,7 +95,7 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 				DCMarkup markup = new DCMarkup();
 		        markup.setContent(DCElement.SOURCE, question.getId());
 		        markup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT.getName());      
-		        String rendered = KnowWEUtils.getRenderedInput(question.getId(), question.getText(), service.getId(), user.getUsername(), "Question", question.getText(),"");
+		        String rendered = KnowWEUtils.getRenderedInput(question.getId(), question.getName(), service.getId(), user.getUsername(), "Question", question.getName(),"");
 				html.append("<li class=\"pointer\"><img src=\"KnowWEExtension/images/arrow_right.png\" border=\"0\"/>" +" "+ rendered + answerstring+"</li>\n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 			}
 			html.append("</ul>");

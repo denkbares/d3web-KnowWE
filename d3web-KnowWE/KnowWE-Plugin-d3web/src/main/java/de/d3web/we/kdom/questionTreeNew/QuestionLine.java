@@ -169,7 +169,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				if (q != null) {
 					qidSection.get().storeObject(qidSection, q);
 					return new NewObjectCreated(q.getClass().getSimpleName()
-							+ " " + q.getText());
+							+ " " + q.getName());
 				} else {
 					return new ObjectCreationError(name, this.getClass());
 				}

@@ -244,7 +244,7 @@ public class FindingHTMLWriter {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"null is no Question");	
 		} else {
-			retVal= "<h3>" + KnowWEUtils.convertUmlaut(question.getText()) + "</h3>";
+			retVal= "<h3>" + KnowWEUtils.convertUmlaut(question.getName()) + "</h3>";
 			if (question instanceof QuestionYN) {
 				retVal += getHTMLString((QuestionChoice) question, "YN",
 						theCase, namespace, webname,topic, targetUrlPrefix);

@@ -60,8 +60,8 @@ public class AttributeTableTest extends TestCase {
 		// Get MMInfoStorage of diagnoses
 		MMInfoStorage loadedStorage = (MMInfoStorage) loadedDiag.getProperties().getProperty(Property.MMINFO);
 		MMInfoStorage createdStorage = (MMInfoStorage) createdDiag.getProperties().getProperty(Property.MMINFO);
-		assertNotNull("Diagnosis " + loadedDiag.getText() + " has no MMInfoStorage.", loadedStorage);
-		assertNotNull("Diagnosis " + createdDiag.getText() + " has no MMInfoStorage.", createdStorage);
+		assertNotNull("Diagnosis " + loadedDiag.getName() + " has no MMInfoStorage.", loadedStorage);
+		assertNotNull("Diagnosis " + createdDiag.getName() + " has no MMInfoStorage.", createdStorage);
 		
 		// Create DCMarkup
 		DCMarkup markup = new DCMarkup();
@@ -72,11 +72,11 @@ public class AttributeTableTest extends TestCase {
 		// Get MMInfoObject for created DCMarkup
 		MMInfoObject loadedMMInfo = (MMInfoObject) loadedStorage.getMMInfo(markup).toArray()[0];
 		MMInfoObject createdMMInfo = (MMInfoObject) createdStorage.getMMInfo(markup).toArray()[0];
-		assertNotNull("Diagnosis " + loadedDiag.getText() + " has no MMInfo.", loadedMMInfo);
-		assertNotNull("Diagnosis " + createdDiag.getText() + " has no MMInfo.", createdMMInfo);
+		assertNotNull("Diagnosis " + loadedDiag.getName() + " has no MMInfo.", loadedMMInfo);
+		assertNotNull("Diagnosis " + createdDiag.getName() + " has no MMInfo.", createdMMInfo);
 				
 		// Compare content of MMInfoObject
-		assertEquals("Content of MMInfoObject of Diagnosis " + createdDiag.getText() + " differs.", 
+		assertEquals("Content of MMInfoObject of Diagnosis " + createdDiag.getName() + " differs.", 
 					  createdMMInfo.getContent(), loadedMMInfo.getContent());
 		
 	}

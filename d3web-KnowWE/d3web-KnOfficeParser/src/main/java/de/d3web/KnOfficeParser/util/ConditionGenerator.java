@@ -43,27 +43,27 @@ public class ConditionGenerator {
 		if (op.equals("<")) {
 			c = new CondNumLess(qnum, d);
 			if (range!=null && d <= range.getLeft()) {
-				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getText(), op, range));
+				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getName(), op, range));
 			}
 		} else if (op.equals("<=")) {
 			c = new CondNumLessEqual(qnum, d);
 			if (range!=null && d < range.getLeft()) {
-				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getText(), op, range));
+				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getName(), op, range));
 			}
 		} else if (op.equals("=")) {
 			c = new CondNumEqual(qnum, d);
 			if (range!=null && (d < range.getLeft()||(d > range.getRight()))) {
-				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getText(), op, range));
+				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getName(), op, range));
 			}
 		} else if (op.equals(">")) {
 			c = new CondNumGreater(qnum, d);
 			if (range!=null && d >= range.getRight()) {
-				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getText(), op, range));
+				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getName(), op, range));
 			}
 		} else if (op.equals(">=")) {
 			c = new CondNumGreaterEqual(qnum, d);
 			if (range!=null && d > range.getRight()) {
-				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getText(), op, range));
+				errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, d, qnum.getName(), op, range));
 			}
 		} else {
 			errors.add(MessageKnOfficeGenerator.createUnknownOpException(file, line, linetext, op));
@@ -80,7 +80,7 @@ public class ConditionGenerator {
 		}
 		if ((range != null)
 				&& ((range.getRight() <= a) || (range.getLeft() >= b))) {
-			errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, a, b, qnum.getText(), range));
+			errors.add(MessageKnOfficeGenerator.createIntervallOutOfBoundsWarning(file, line, linetext, a, b, qnum.getName(), range));
 		}
 		return new CondNumIn(qnum, a, b);
 	}

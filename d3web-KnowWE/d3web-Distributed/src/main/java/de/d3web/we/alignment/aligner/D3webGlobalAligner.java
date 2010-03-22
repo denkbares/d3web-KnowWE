@@ -54,7 +54,7 @@ public class D3webGlobalAligner implements GlobalAligner<NamedObject> {
 //		if(privat != null && privat) return result;
 		Collection<AlignMethod> methods = AlignmentUtilRepository.getInstance().getMethods(String.class);
 		for (AlignMethod method : methods) {
-			AbstractAlignType type = method.align(term.getInfo(TermInfoType.TERM_NAME), object.getText());
+			AbstractAlignType type = method.align(term.getInfo(TermInfoType.TERM_NAME), object.getName());
 			if(!(type instanceof NoAlignType)) {
 				GlobalAlignment globalAlignment = new GlobalAlignment(term, new IdentifiableInstance(idString, object.getId(), null), type);
 				Object obj = object.getProperties().getProperty(Property.FOREIGN);

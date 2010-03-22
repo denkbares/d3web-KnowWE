@@ -109,10 +109,10 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 	public void and(int line, String text, List<String> names, String weight,
 			boolean or) {
 		if (currentquestion!=null) {
-			cb.condition(line, text, currentquestion.getText(), "", "=",
+			cb.condition(line, text, currentquestion.getName(), "", "=",
 					names.get(0));
 			for (int i=1; i<names.size(); i++) {
-				cb.condition(line, text, currentquestion.getText(), "", "=",
+				cb.condition(line, text, currentquestion.getName(), "", "=",
 						names.get(i));
 				if (or) {
 					cb.orcond(null);
@@ -127,7 +127,7 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 	@Override
 	public void answer(int line, String text, String name, String weight, String operator) {
 		if (currentquestion!=null) {
-			cb.condition(line, text, currentquestion.getText(), "", operator,
+			cb.condition(line, text, currentquestion.getName(), "", operator,
 					name);
 			finding(weight);
 		}
@@ -184,7 +184,7 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 	@Override
 	public void not(int line, String text, String name, String weight) {
 		if (currentquestion!=null) {
-			cb.condition(line, text, currentquestion.getText(), "", "=",
+			cb.condition(line, text, currentquestion.getName(), "", "=",
 					name);
 			cb.notcond(null);
 			finding(weight);

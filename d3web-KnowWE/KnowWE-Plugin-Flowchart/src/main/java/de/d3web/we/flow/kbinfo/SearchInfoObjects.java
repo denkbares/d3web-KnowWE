@@ -172,7 +172,7 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 				}
 				// search all objects
 				for (NamedObject object : allKBObjects) {
-					String name = object.getText().toLowerCase();
+					String name = object.getName().toLowerCase();
 					if (!foundNames.contains(name) && matches(name, phrases)) {
 						foundNames.add(name);
 						result.add(createResultEntry(service, base, object));
