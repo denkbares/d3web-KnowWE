@@ -26,6 +26,8 @@ import java.util.List;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
+import de.d3web.core.inference.condition.NoAnswerException;
+import de.d3web.core.inference.condition.UnknownAnswerException;
 import de.d3web.core.session.XPSCase;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -128,21 +130,20 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 				if (slice != null) {
 					if (slice instanceof RuleSet) {
 						RuleSet rs = (RuleSet) slice;
-						for (Rule r: rs.getRules()) {
+						for (Rule r : rs.getRules()) {
 							String id = r.getId();
 							if (id != null && id.equals(kbRuleId)) {
 								rule = r;
 							}
 						}
 					}
-					
+
 				}
 			}
 		}
-		if (rule != null)
-			this.renderConditionLine(article, sec, rule, xpsCase, user, result);
-		else
-			result.append(sec.getOriginalText());
+		if (rule != null) this.renderConditionLine(article, sec, rule, xpsCase, user,
+				result);
+		else result.append(sec.getOriginalText());
 	}
 
 	/**
@@ -187,9 +188,9 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 			type = child.getObjectType();
 			if (type instanceof Finding || type instanceof ComplexFinding
 					|| type instanceof ComplexFindingBraced
-					|| type instanceof Conjunct || type instanceof Disjunct)
-				buffi.append(this.highlightCondition(article, child, rc,
-						xpsCase, user));
+					|| type instanceof Conjunct || type instanceof Disjunct) buffi.append(this.highlightCondition(
+					article, child, rc,
+					xpsCase, user));
 			else {
 				StringBuilder b = new StringBuilder();
 				DelegateRenderer.getInstance().render(article, child, user, b);
@@ -218,15 +219,18 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 		}
 
 		try {
-			if (rc.getCondition().eval(xpsCase))
-				FontColorBackgroundRenderer.getRenderer(
-						FontColorRenderer.COLOR5, "#33FF33").render(article,
-						sec, user, buffi);
-			else
-				FontColorBackgroundRenderer.getRenderer(
-						FontColorRenderer.COLOR5, "#FF9900").render(article,
-						sec, user, buffi);
-		} catch (Exception e) {
+			if (rc.getCondition().eval(xpsCase)) FontColorBackgroundRenderer.getRenderer(
+					FontColorRenderer.COLOR5, "#33FF33").render(article,
+					sec, user, buffi);
+			else FontColorBackgroundRenderer.getRenderer(
+					FontColorRenderer.COLOR5, "#FF9900").render(article,
+					sec, user, buffi);
+		}
+		catch (NoAnswerException e) {
+			FontColorBackgroundRenderer.getRenderer(FontColorRenderer.COLOR5,
+					null).render(article, sec, user, buffi);
+		}
+		catch (UnknownAnswerException e) {
 			FontColorBackgroundRenderer.getRenderer(FontColorRenderer.COLOR5,
 					null).render(article, sec, user, buffi);
 		}

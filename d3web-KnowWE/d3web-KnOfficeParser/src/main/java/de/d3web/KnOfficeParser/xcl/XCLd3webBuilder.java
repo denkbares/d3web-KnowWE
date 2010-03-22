@@ -25,6 +25,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.antlr.runtime.ANTLRInputStream;
@@ -172,10 +173,16 @@ public class XCLd3webBuilder implements KnOfficeParser, XCLBuilder {
 			if (bundle.getString("knowwewiki.activateANTLRforXCL").equals("false")){
 				return;
 			}
-		} catch (Exception e1) {
+		}
+		catch (NullPointerException e1) {
 			// TODO fixme
 		}
-		
+		catch (MissingResourceException e1) {
+			// TODO fixme
+		}
+		catch (ClassCastException e1) {
+			// TODO fixme
+		}
 		if (!createUncompleteFindings) {
 			if (errorCountSave!=errors.size()) {
 				errorCountSave=errors.size();

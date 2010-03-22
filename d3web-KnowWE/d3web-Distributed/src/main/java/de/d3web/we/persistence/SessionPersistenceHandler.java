@@ -22,8 +22,10 @@ package de.d3web.we.persistence;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +35,7 @@ import java.util.logging.Logger;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -124,7 +127,7 @@ public class SessionPersistenceHandler {
 		return null;
 	}
 
-	public void saveSession(Broker broker, URL target) throws Exception {
+	public void saveSession(Broker broker, URL target) throws IOException, URISyntaxException, XMLStreamException {
 		OutputStream out = new FileOutputStream(new File(target.toURI()));
 		XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		XMLStreamWriter writer = factory.createXMLStreamWriter(out, "ISO-8859-1");

@@ -20,6 +20,7 @@
 
 package de.d3web.KnOfficeParser.table;
 
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import de.d3web.report.Message;
@@ -67,9 +68,17 @@ public class XCLRelationBuilder implements CellKnowledgeBuilder {
 			}
 		}
 		String s;
-		try {
-			s = properties.getString(text);
-		} catch (Exception e1) {
+		if (text!=null) {
+			try {
+				s = properties.getString(text);
+			}
+			catch (MissingResourceException e) {
+				s = text;
+			}
+			catch (ClassCastException e) {
+				s = text;
+			}
+		} else {
 			s = text;
 		}
 		String relationID;

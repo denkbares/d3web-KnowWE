@@ -145,7 +145,7 @@ public class KBLoaderTT implements TerminologyTester{
 		if (q != null && q instanceof QuestionNum) {
 			try {
 				Double.parseDouble(answer.trim());
-			} catch (Exception e) {
+			} catch (NumberFormatException e) {
 				return false;
 			}
 			return true;

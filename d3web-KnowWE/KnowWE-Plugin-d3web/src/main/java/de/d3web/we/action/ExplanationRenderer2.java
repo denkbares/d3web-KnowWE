@@ -38,107 +38,84 @@ import de.d3web.we.d3webModule.ProblemSolverType;
 
 public class ExplanationRenderer2 extends DeprecatedAbstractKnowWEAction {
 
-
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
-		
+
 		String toExplain = parameterMap.get(KnowWEAttributes.EXPLAIN);
-//		String kbid = parameterMap.get(KnowWEAttributes.NAMESPACE);
+		// String kbid = parameterMap.get(KnowWEAttributes.NAMESPACE);
 		String typeString = parameterMap.get(KnowWEAttributes.PROBLEM_SOLVER_TYPE);
-	
+
 		ProblemSolverType type = null;
-		if(typeString == null) {
+		if (typeString == null) {
 			List<ProblemSolverType> types = getProblemSolverTypes(parameterMap, toExplain);
-			if(types != null && !types.isEmpty()) {
+			if (types != null && !types.isEmpty()) {
 				type = types.get(0);
 			}
-		} else {
+		}
+		else {
 			type = ProblemSolverType.getType(typeString);
-			
+
 		}
-		if(type == null) type = ProblemSolverType.heuristic;
-		try { 
-		if(type.equals(ProblemSolverType.heuristic)) {
-			String rendered = renderHeuristic(parameterMap,toExplain);
+		if (type == null) type = ProblemSolverType.heuristic;
+		if (type.equals(ProblemSolverType.heuristic)) {
+			String rendered = renderHeuristic(parameterMap, toExplain);
 			return rendered;
-		} 
-		else if(type.equals(ProblemSolverType.setcovering)){
-			String rendered = renderSCM(parameterMap,toExplain);
+		}
+		else if (type.equals(ProblemSolverType.setcovering)) {
+			String rendered = renderSCM(parameterMap, toExplain);
 			return rendered;
-		} 
-		else if(type.equals(ProblemSolverType.casebased)){
+		}
+		else if (type.equals(ProblemSolverType.casebased)) {
 			return "cbs explanation not ready";
-//			model.setAttribute("kbid", kbid, model.getWebApp());
-//			model.setAttribute("comparisontype", "simple", model.getWebApp());
-//			model.setAttribute("cmode", "4", model.getWebApp());
-//			model.setAttribute("diagId", toExplain, model.getWebApp());
-//			List cases = new ArrayList(((D3webKnowledgeService)KnowWEUtils.getEnvironment(model).getService(kbid)).getBase().getCaseRepository("train"));
-//			model.setAttribute("cases", cases, model.getWebApp());
-//			model.getWebApp().getAction("comparecase").perform(model);
-//			model.getWebApp().getRenderer("comparecase").render(model);
-			//model.removeAttribute("cases", model.getWebApp());
-		}
-		} catch (Exception e){
-			return e.getMessage();
 		}
 		return "error in ExplanationRenderer2";
 	}
 
-	
-	
-	public String renderHeuristic(KnowWEParameterMap map , String toExplain) throws Exception {
-		
+	public String renderHeuristic(KnowWEParameterMap map, String toExplain) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"de\">");
 		sb.append("<head>");
 		sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\" />");
-		sb.append("<meta http-equiv=\"REFRESH\" content=\"0; url=faces/Controller;jsessionid=" + map.getSession().getId() + "?knowweexplanation=true&toexplain=" + toExplain + "&id="+map.getSession().getId()+"\">");
+		sb.append("<meta http-equiv=\"REFRESH\" content=\"0; url=faces/Controller;jsessionid="
+				+ map.getSession().getId()
+				+ "?knowweexplanation=true&toexplain="
+				+ toExplain + "&id=" + map.getSession().getId() + "\">");
 		sb.append("</head>");
 		sb.append("<body>");
 		sb.append("</body>");
 		sb.append("</html>");
 		return sb.toString();
-//		try {
-//			java.io.PrintWriter out = getHtmlPrintWriter(model);
-//			out.print(sb.toString());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 	}
-	
-	
-	public String renderSCM(KnowWEParameterMap parameterMap, String toExplain) throws Exception {
+
+	public String renderSCM(KnowWEParameterMap parameterMap, String toExplain) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"de\">");
 		sb.append("<head>");
 		sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\" />");
-		sb.append("<meta http-equiv=\"REFRESH\" content=\"0; url=faces/Controller;jsessionid=" + parameterMap.getSession().getId() + "?knowwescm=true&toexplain=" + toExplain + "&id="+parameterMap.getSession().getId()+"\">");
+		sb.append("<meta http-equiv=\"REFRESH\" content=\"0; url=faces/Controller;jsessionid="
+				+ parameterMap.getSession().getId()
+				+ "?knowwescm=true&toexplain="
+				+ toExplain + "&id=" + parameterMap.getSession().getId() + "\">");
 		sb.append("</head>");
 		sb.append("<body>");
 		sb.append("</body>");
 		sb.append("</html>");
 		return sb.toString();
-//		try {
-//			java.io.PrintWriter out = getHtmlPrintWriter(model);
-//			out.print(sb.toString());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 	}
-	
-	private List<ProblemSolverType> getProblemSolverTypes(Map<String,String> map, String id) {
+
+	private List<ProblemSolverType> getProblemSolverTypes(Map<String, String> map, String id) {
 		List<ProblemSolverType> result = new ArrayList<ProblemSolverType>();
 		String namespace = map.get(KnowWEAttributes.NAMESPACE);
 		DPSEnvironment dpse = D3webModule.getDPSE(map);
-		
-	
+
 		KnowledgeService ks = dpse.getService(namespace);
-		if(ks instanceof D3webKnowledgeService) {
+		if (ks instanceof D3webKnowledgeService) {
 			D3webKnowledgeService d3 = (D3webKnowledgeService) ks;
 			Diagnosis diag = d3.getBase().searchDiagnosis(id);
-			if(diag != null) {
-				KnowledgeSlice heu = diag.getKnowledge(PSMethodHeuristic.class, MethodKind.BACKWARD);
-				if(heu != null) {
+			if (diag != null) {
+				KnowledgeSlice heu = diag.getKnowledge(PSMethodHeuristic.class,
+						MethodKind.BACKWARD);
+				if (heu != null) {
 					result.add(ProblemSolverType.heuristic);
 				}
 			}

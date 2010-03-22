@@ -21,9 +21,13 @@
 package de.d3web.we.action;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.xml.stream.XMLStreamException;
 
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -58,7 +62,23 @@ public class SaveSessionAction extends DeprecatedAbstractKnowWEAction {
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

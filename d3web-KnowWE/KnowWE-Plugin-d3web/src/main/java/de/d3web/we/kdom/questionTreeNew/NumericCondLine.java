@@ -32,8 +32,8 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 			Double d = null;
 			try {
 			d = Double.parseDouble(value);
-			} catch (Exception e) {
-				
+			} catch (NumberFormatException e) {
+				//FIXME
 			}
 			return d;
 	}

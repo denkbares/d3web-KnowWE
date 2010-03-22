@@ -63,8 +63,8 @@ public class MessageGenerator {
 		String result = rb.getString("unknownError") + ": " + key;
 		try {
 			result = MessageFormat.format(rb.getString(key), adds);
-		} catch (Exception e) {
-			
+		} catch (IllegalArgumentException e) {
+			//nothing to do, an unknown error will be generated
 		}
 		return result;
 	}

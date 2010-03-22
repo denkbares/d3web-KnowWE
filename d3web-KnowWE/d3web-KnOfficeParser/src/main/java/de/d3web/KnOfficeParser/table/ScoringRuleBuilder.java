@@ -20,6 +20,7 @@
 
 package de.d3web.KnOfficeParser.table;
 
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import de.d3web.report.Message;
@@ -53,7 +54,14 @@ public class ScoringRuleBuilder implements CellKnowledgeBuilder {
 			try {
 				s = properties.getString(text);
 				score = Scorefinder.getScore(s);
-			} catch (Exception e) {
+			}
+			catch (NullPointerException e) {
+				return MessageKnOfficeGenerator.createScoreDoesntExistError(file, line, column, "", text);
+			}
+			catch (MissingResourceException e) {
+				return MessageKnOfficeGenerator.createScoreDoesntExistError(file, line, column, "", text);
+			}
+			catch (ClassCastException e) {
 				return MessageKnOfficeGenerator.createScoreDoesntExistError(file, line, column, "", text);
 			}
 		}

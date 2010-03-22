@@ -21,7 +21,10 @@
 package de.d3web.KnOfficeParser.table;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import jxl.JXLException;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.report.Message;
@@ -35,8 +38,10 @@ public class Tester {
 
 	/**
 	 * @param args
+	 * @throws IOException 
+	 * @throws JXLException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws JXLException, IOException {
 		File file = new File("examples\\Muster2.xls");
 		ExceltoTextParser parser = new ExceltoTextParser(file, 22);
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();

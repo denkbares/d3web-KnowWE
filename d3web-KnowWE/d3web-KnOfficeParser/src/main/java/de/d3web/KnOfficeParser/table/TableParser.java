@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 import jxl.Cell;
+import jxl.JXLException;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
@@ -62,21 +63,20 @@ public class TableParser {
 	public void parse(File file) {
 		try {
 			workbook = Workbook.getWorkbook(file);
-		} catch (Exception e) {
+		} catch (JXLException e) {
+			builder.addXlsError();
+			return;
+		}
+		catch (IOException e) {
 			builder.addXlsError();
 			return;
 		}
 		parse(workbook);
 	}
 	
-	public void parse(String text) {
+	public void parse(String text) throws JXLException, IOException {
 		Workbook wb=null;
-		try {
-			wb = transformToWorkbook(text);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		wb = transformToWorkbook(text);
 		if(wb != null) {
 			parse(wb);
 		}

@@ -186,26 +186,6 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 		iconURL = path + rb.getString("knowwe.config.path.images") + "tree/";
 	}
 
-	// public void render(Model model) throws Exception {
-	//		
-	//		
-	// String web = (String) BasicUtils.getModelAttribute(model,
-	// KnowWEAttributes.WEB, String.class, true);
-	// String user = (String) BasicUtils.getModelAttribute(model,
-	// KnowWEAttributes.USER, String.class, true);
-	// Map<String,String> par = new HashMap<String,String>();
-	// par.put(KnowWEAttributes.WEB, web);
-	// par.put(KnowWEAttributes.USER, user);
-	// String sb = perform(par);
-	//		
-	// try {
-	// java.io.PrintWriter out = getHtmlPrintWriter(model);
-	// out.print(KnowWEUtils.convertUmlaut(sb));
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-
 	private StringBuffer getSolutionLinkList(String user, String web, Broker b,
 			List<Term> list, ISetMap<Term, Information> assumptionMap) {
 		StringBuffer sb = new StringBuffer();

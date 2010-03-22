@@ -59,7 +59,7 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 	}
 	
 	
-	boolean isLazyQuestions() {
+	public boolean isLazyQuestions() {
 		return lazyQuestions;
 	}
 
@@ -69,7 +69,7 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 	}
 
 
-	boolean isLazyAnswers() {
+	public boolean isLazyAnswers() {
 		return lazyAnswers;
 	}
 
