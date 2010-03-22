@@ -102,6 +102,7 @@ public class SemanticCore {
 		defaultnamespaces.put("lns", uo.getLocaleNS());
 		defaultnamespaces.put("rdf",
 				"http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		defaultnamespaces.put("w", "http://www.umweltbundesamt.de/wisec#");
 		defaultnamespaces.put("owl", "http://www.w3.org/2002/07/owl#");
 		defaultnamespaces.put("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 		defaultnamespaces.put("xsd", "http://www.w3.org/2001/XMLSchema#");
@@ -253,21 +254,14 @@ public class SemanticCore {
 	 *            source section
 	 */
 	public void addStatements(IntermediateOwlObject inputio, Section sec) {
-		RepositoryConnection con = uo.getConnection();
 
-		try {
-			clearContext(sec);
-			con.setAutoCommit(false);
-			List<Statement> allStatements = inputio.getAllStatements();
-			statementcache.put(sec.getId().hashCode() + "", allStatements);
-			Logger.getLogger(this.getClass().getName()).log(Level.FINER,
-					"updating " + sec.getId() + "  " + allStatements.size());
-			addStaticStatements(inputio);
-			con.commit();
-		} catch (RepositoryException e) {
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-					e.getMessage());
-		}
+		clearContext(sec);
+
+		List<Statement> allStatements = inputio.getAllStatements();
+		statementcache.put(sec.getId().hashCode() + "", allStatements);
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+				"updating " + sec.getId() + "  " + allStatements.size());
+		addStaticStatements(inputio);
 
 	}
 
@@ -310,7 +304,7 @@ public class SemanticCore {
 					}
 				}
 			}
-			// con.commit();
+			con.commit();
 		} catch (RepositoryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
@@ -451,7 +445,7 @@ public class SemanticCore {
 	public void clearContext(Section sec) {
 		RepositoryConnection con = uo.getConnection();
 		try {
-			con.remove(getSectionStatements(sec));
+			con.remove(statementcache.get(sec.getId().hashCode()+""));
 			con.commit();
 		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
@@ -560,6 +554,12 @@ public class SemanticCore {
 		for (Entry<String, String> cur : namespaces.entrySet()) {
 			if (ns.equals(cur.getKey())) {
 				ns = cur.getValue();
+				break;
+			}
+		}
+		for (Entry<String, String> cur2 : defaultnamespaces.entrySet()) {
+			if (ns.equals(cur2.getKey())) {
+				ns = cur2.getValue();
 				break;
 			}
 		}
