@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 /**
@@ -47,6 +47,7 @@ import dummies.KnowWETestWikiConnector;
  * 
  */
 public class TaggingManglerTest extends TestCase {
+
 	private KnowWEArticleManager am;
 	private TaggingMangler tm;
 	private KnowWEParameterMap params;
@@ -90,7 +91,8 @@ public class TaggingManglerTest extends TestCase {
 		boolean thrown = false;
 		try {
 			tm.clone();
-		} catch (CloneNotSupportedException e) {
+		}
+		catch (CloneNotSupportedException e) {
 			thrown = true;
 
 		}
@@ -116,6 +118,44 @@ public class TaggingManglerTest extends TestCase {
 		assertEquals("<tags></tags>", am.getArticle("AddTag").getSection()
 				.getOriginalText());
 		sc.clearContext(article1);
+	}
+
+	/**
+	 * Test method for
+	 * {@link de.d3web.we.core.TaggingMangler#addTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
+	 * . Test method for
+	 * 
+	 * .
+	 */
+	@Test
+	public void testAddTag() {
+		KnowWEArticle article1 = new KnowWEArticle("", "AddTag", type,
+				KnowWEEnvironment.DEFAULT_WEB);
+		am.saveUpdatedArticle(article1);
+		tm.addTag("AddTag", "tagtest", params);
+		assertEquals("<tags>tagtest</tags>", am.getArticle("AddTag")
+				.getSection().getOriginalText());
+		ArrayList<String> tags = tm.getPageTags("AddTag");
+		assertEquals(1, tags.size());
+		assertEquals("tagtest", tags.get(0));
+		// remove statements from triplestore
+		sc.clearContext(article1);
+		tags = tm.getPageTags("AddTag");
+		// make sure it is gone
+		assertEquals(0, tags.size());
+
+		// now add another tag
+		tm.addTag("AddTag", "stein", params);
+		tags = tm.getPageTags("AddTag");
+		assertEquals(2, tags.size());
+
+		// now test with another article in the triplestore
+		KnowWEArticle article2 = new KnowWEArticle("", "Tag1", type,
+				KnowWEEnvironment.DEFAULT_WEB);
+		am.saveUpdatedArticle(article2);
+		// add the same tag to the second article to check for interferences
+		tm.addTag("Tag1", "stein", params);
+		assertEquals(2, tags.size());
 
 	}
 
@@ -126,13 +166,13 @@ public class TaggingManglerTest extends TestCase {
 	@Test
 	public void testGetPages() {
 		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
-				"default_web");
+				KnowWEEnvironment.DEFAULT_WEB);
 		KnowWEArticle article2 = new KnowWEArticle("", "Tag2", type,
-				"default_web");
+				KnowWEEnvironment.DEFAULT_WEB);
 		KnowWEArticle article3 = new KnowWEArticle("", "Tag3", type,
-				"default_web");
+				KnowWEEnvironment.DEFAULT_WEB);
 		KnowWEArticle article4 = new KnowWEArticle("", "Tag4", type,
-				"default_web");
+				KnowWEEnvironment.DEFAULT_WEB);
 		am.saveUpdatedArticle(article1);
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);
@@ -143,7 +183,7 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag4", "tag", params);
 		ArrayList<String> pages = tm.getPages("tag");
 		assertNotNull(pages);
-		assertEquals(4, pages.size());
+		assertEquals(3, pages.size());
 		assertTrue("not found page Tag1", pages.contains("Tag1"));
 		assertTrue("not found page Tag2", pages.contains("Tag2"));
 		assertTrue("not found page Tag4", pages.contains("Tag4"));
