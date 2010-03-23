@@ -419,6 +419,32 @@ ActionEditor.prototype.render = function() {
 	return dom;
 }
 
+CCEvents.addClassListener('keydown', 'ActionEditor',
+	function(event) {
+		this.__ActionEditor.handleKeyEvent(event);
+	}
+);
+
+ActionEditor.prototype.handleKeyEvent = function(e) {
+	switch(e.keyCode){
+		case Event.KEY_ESC: 
+			this.handleCancel();
+			return;
+		case Event.KEY_RETURN:
+			if ($('choseQuestionText')) {
+				this.askQuestionType();
+			} else if ($('choseQuestionType')) {
+				this.addAnswer();
+			} else if ($('addAnswer')) {
+				this.answerValue();
+			} 
+			return;
+	}
+	//default handling for cursor events
+	e.defaultHandler();
+}
+
+
 // Helper
 function getElementsByClassName(class_name)
 {
@@ -838,6 +864,7 @@ ActionEditor.prototype.addAnswer = function() {
 		var buttonOK = '<input type="button" value="Hinzufügen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.answerValue()"';
 		root.innerHTML = '<i>Lösungsvorschläge für</i><br\>' + questionText + ' [' + questionType + ']<br\><i>hinzufügen</i><br\><form name="addAnswer" id="addAnswer" method="get">' + newAnswer + buttonOK + buttonWeiter + '</form><i>bisherige Vorschläge:</i>';
 	}
+	document.addAnswer.answer.focus();
 }
 
 
@@ -852,6 +879,8 @@ ActionEditor.prototype.answerValue = function() {
 		var count = this.answers.length -1;
 		root.innerHTML += '<br \>' + answer + '&nbsp;&nbsp;<input type="image" src="cc/image/kbinfo/no-object.gif" style="width:20px;height:20px" onclick="return this.parentNode.parentNode.__ActionEditor.removeAnswer(' + count + ')">'; 
 	}
+	
+	document.addAnswer.answer.focus();
 	return;
 }
 
