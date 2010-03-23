@@ -179,11 +179,8 @@ public class AddSubFlowchart extends AbstractAction {
 		
 		instance.saveArticle(sec.getWeb(), sec.getTitle(), text, map);
 
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
-				article, sec).getKnowledgeBase();
 		
-		List<Question> questions = kb.getQuestions();
-
+		
 		String flowID = name;
 
 

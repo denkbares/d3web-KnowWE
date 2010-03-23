@@ -172,10 +172,24 @@ public class UpdateQuestions extends AbstractAction {
 		List<Question> questions = kb.getQuestions();
 
 		String questionID = null;
+		
+
+		
+		// renove leading and ending "
+		while (questionText.startsWith("\"")) {
+			questionText = questionText.substring(1);
+		}
+		
+		while (questionText.endsWith("\"")) {
+			questionText = questionText.substring(0, questionText.length() -1);
+		}
+		
+
+		
 
 		for (Question question : questions) {
 
-			if (question.getName().equals(questionText)) {
+			if (question.getName().equals(revertSpecialCharacterEscape(questionText))) {
 				questionID = question.getId();
 				break;
 			}

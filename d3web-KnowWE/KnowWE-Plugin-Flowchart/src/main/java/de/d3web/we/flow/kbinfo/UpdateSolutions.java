@@ -129,10 +129,23 @@ public class UpdateSolutions extends AbstractAction {
 				article, sec).getKnowledgeBase();
 
 		List<Diagnosis> diagnoses = kb.getDiagnoses();
+		
+		
+		
+		// renove leading and ending "
+		while (solutionText.startsWith("\"")) {
+			solutionText = solutionText.substring(1);
+		}
+		
+		while (solutionText.endsWith("\"")) {
+			solutionText = solutionText.substring(0, solutionText.length() -1);
+		}
+		
 
 		String diagnosisID = null;
 		for (Diagnosis diagnosis : diagnoses) {
-			if (diagnosis.getName().equals(solutionText)) {
+			if (diagnosis.getName().equals(
+					UpdateQuestions.revertSpecialCharacterEscape(solutionText))) {
 				diagnosisID = diagnosis.getId();
 				break;
 			}
