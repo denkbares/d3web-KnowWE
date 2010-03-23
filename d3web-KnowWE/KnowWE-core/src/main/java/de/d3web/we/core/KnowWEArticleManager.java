@@ -230,7 +230,7 @@ public class KnowWEArticleManager {
 		long startTime = System.currentTimeMillis();
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINE,
 				"-> Starting to update Includes to article '" + art.getTitle()
 						+ "' ->");
 
@@ -238,7 +238,7 @@ public class KnowWEArticleManager {
 				.updateIncludesToArticle(art);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINE,
 				"<- Finished updating Includes to article '" + art.getTitle()
 						+ "' in " + (System.currentTimeMillis() - startTime)
 						+ "ms <-");

@@ -131,7 +131,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		clearTypeStore(rootType, title);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINE,
 				"<- Initialized article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -150,7 +150,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		instance.getIncludeManager(web).getSectionizingArticles().remove(title);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINE,
 				"<- Built KDOM for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -174,7 +174,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// }
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINE,
 				"<- Built Knowledge for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -183,13 +183,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// calls Validator if configured
 		if (Validator.getResourceBundle().getString("validator.active")
 				.contains("true")) {
-			Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+			Logger.getLogger(this.getClass().getName()).log(Level.FINE,
 					"-> Starting to validate article '" + title + "' ->");
 
 			Validator.getFileHandlerInstance().validateArticle(this);
 
 			Logger.getLogger(this.getClass().getName()).log(
-					Level.INFO,
+					Level.FINE,
 					"<- Finished validating article '" + title + "' in "
 							+ (System.currentTimeMillis() - startTime)
 							+ "ms <-");
@@ -201,7 +201,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				.finishArticle(this);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINE,
 				"<- Registered Knowledge for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
