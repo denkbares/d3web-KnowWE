@@ -36,7 +36,7 @@ import de.d3web.we.kdom.renderer.NothingRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
 
-public class TagsContent extends XMLContent{
+public class TagsContent extends XMLContent {
 
 	@Override
 	protected void init() {
@@ -44,7 +44,7 @@ public class TagsContent extends XMLContent{
 		this.addReviseSubtreeHandler(new TagsContentOWLSubTreeHandler());
 	}
 
-	private class TagsContentOWLSubTreeHandler implements ReviseSubTreeHandler{
+	private class TagsContentOWLSubTreeHandler implements ReviseSubTreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
@@ -53,24 +53,23 @@ public class TagsContent extends XMLContent{
 			for (String cur : text.split(" |,")) {
 				if (cur.trim().length() > 0) {
 					UpperOntology uo = UpperOntology.getInstance();
-					
 					try {
-						URI suri = uo.getHelper().createlocalURI(URLEncoder.encode(s.getTitle(),"UTF-8"));
+						URI suri = uo.getHelper().createlocalURI(
+								URLEncoder.encode(s.getTitle(), "UTF-8"));
 						URI puri = OwlHelper.HASTAG;
-						URI ouri = uo.getHelper().createlocalURI(cur.trim());				
-						io.merge(uo.getHelper().createProperty(suri, puri, ouri, s));
+						URI ouri = uo.getHelper().createlocalURI(cur.trim());
+						io.merge(uo.getHelper().createProperty(suri, puri,
+								ouri, s));
 					} catch (UnsupportedEncodingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 			}
-			SemanticCore.getInstance().addStatements(io, s);			
+			SemanticCore.getInstance().addStatements(io, s);
+
 			return null;
 		}
-		
 	}
-	
-	
 
 }

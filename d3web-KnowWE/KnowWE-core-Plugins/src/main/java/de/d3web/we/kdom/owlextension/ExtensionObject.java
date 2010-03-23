@@ -75,7 +75,7 @@ public class ExtensionObject {
 		String output = "";
 		try {
 			Reader r = new StringReader(inlcudeDefaultNS(value));
-			con.setAutoCommit(false);
+			// con.setAutoCommit(false);
 			con.add(r, uo.getLocaleNS(), RDFFormat.RDFXML, context);
 			output += value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 			con.commit();

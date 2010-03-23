@@ -27,10 +27,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import junit.framework.TestCase;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.TaggingMangler;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -39,213 +44,259 @@ import dummies.KnowWETestWikiConnector;
 
 /**
  * @author kazamatzuri
- *
+ * 
  */
 public class TaggingManglerTest extends TestCase {
 	private KnowWEArticleManager am;
 	private TaggingMangler tm;
 	private KnowWEParameterMap params;
-	private KnowWEObjectType type; 
+	private KnowWEObjectType type;
 	private KnowWEEnvironment ke;
-	/* (non-Javadoc)
+	private SemanticCore sc;
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see junit.framework.TestCase#setUp()
 	 */
-	protected void setUp() throws Exception {
-		super.setUp();
+	@Before
+	public void setUp() throws Exception {
 		InitPluginManager.init();
 		/*
 		 * Initialise KnowWEEnvironment
 		 */
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
-		ke=KnowWEEnvironment.getInstance();
-		am= KnowWEEnvironment.getInstance().getArticleManager("default_web");
-		type=ke.getRootType();
-		
-		
-		
+		ke = KnowWEEnvironment.getInstance();
+		am = KnowWEEnvironment.getInstance().getArticleManager("default_web");
+		type = ke.getRootType();
+
 		/*
 		 * Init first Article
 		 */
-		KnowWEArticle article1 = new KnowWEArticle("", "TagTest",
-				type, "default_web");
-		
-		am.saveUpdatedArticle(article1);	
-		params=new KnowWEParameterMap("", "");
-		tm= TaggingMangler.getInstance();
+		KnowWEArticle article1 = new KnowWEArticle("", "TagTest", type,
+				"default_web");
+
+		am.saveUpdatedArticle(article1);
+		params = new KnowWEParameterMap("", "");
+		tm = TaggingMangler.getInstance();
+		sc = SemanticCore.getInstance();
 	}
 
 	/**
 	 * Test method for {@link de.d3web.we.core.TaggingMangler#clone()}.
 	 */
+	@Test
 	public void testClone() {
-		boolean thrown=false;		
+		boolean thrown = false;
 		try {
 			tm.clone();
 		} catch (CloneNotSupportedException e) {
-			thrown=true;
-			
+			thrown = true;
+
 		}
-		assertTrue("CloneNotSupportedException now thrown",thrown);
+		assertTrue("CloneNotSupportedException now thrown", thrown);
 	}
 
 	/**
-	 * Test method for {@link de.d3web.we.core.TaggingMangler#addTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}.
-	 * Test method for {@link de.d3web.we.core.TaggingMangler#removeTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}.
+	 * Test method for
+	 * {@link de.d3web.we.core.TaggingMangler#addTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
+	 * . Test method for
+	 * {@link de.d3web.we.core.TaggingMangler#removeTag(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
+	 * .
 	 */
+	@Test
 	public void testAddRemoveTag() {
-		KnowWEArticle article1 = new KnowWEArticle("", "AddTag",
-				type, "default_web");
-		am.saveUpdatedArticle(article1);	
+		KnowWEArticle article1 = new KnowWEArticle("", "AddTag", type,
+				"default_web");
+		am.saveUpdatedArticle(article1);
 		tm.addTag("AddTag", "tagtest", params);
-		assertEquals("<tags>tagtest</tags>",am.getArticle("AddTag").getSection().getOriginalText());
+		assertEquals("<tags>tagtest</tags>", am.getArticle("AddTag")
+				.getSection().getOriginalText());
 		tm.removeTag("AddTag", "tagtest", params);
-		assertEquals("<tags></tags>",am.getArticle("AddTag").getSection().getOriginalText());
-		
+		assertEquals("<tags></tags>", am.getArticle("AddTag").getSection()
+				.getOriginalText());
+		sc.clearContext(article1);
+
 	}
 
 	/**
-	 * Test method for {@link de.d3web.we.core.TaggingMangler#getPages(java.lang.String)}.
+	 * Test method for
+	 * {@link de.d3web.we.core.TaggingMangler#getPages(java.lang.String)}.
 	 */
+	@Test
 	public void testGetPages() {
-		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				type, "default_web");
-		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				type, "default_web");
-		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				type, "default_web");
+		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
+				"default_web");
+		KnowWEArticle article2 = new KnowWEArticle("", "Tag2", type,
+				"default_web");
+		KnowWEArticle article3 = new KnowWEArticle("", "Tag3", type,
+				"default_web");
+		KnowWEArticle article4 = new KnowWEArticle("", "Tag4", type,
+				"default_web");
 		am.saveUpdatedArticle(article1);
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);
+		am.saveUpdatedArticle(article4);
 		tm.addTag("Tag1", "tag", params);
-		tm.addTag("Tag2", "tag", params);	
+		tm.addTag("Tag2", "tag", params);
 		tm.addTag("Tag3", "tod", params);
-		ArrayList<String> pages=tm.getPages("tag");
+		tm.addTag("Tag4", "tag", params);
+		ArrayList<String> pages = tm.getPages("tag");
 		assertNotNull(pages);
-		assertTrue("not found page Tag1",pages.contains("Tag1"));
-		assertTrue("not found page Tag2",pages.contains("Tag2"));
-		assertTrue("found page Tag3",!pages.contains("Tag3"));
-		
+		assertEquals(4, pages.size());
+		assertTrue("not found page Tag1", pages.contains("Tag1"));
+		assertTrue("not found page Tag2", pages.contains("Tag2"));
+		assertTrue("not found page Tag4", pages.contains("Tag4"));
+		assertTrue("found page Tag3", !pages.contains("Tag3"));
+		sc.clearContext(article1);
+		sc.clearContext(article2);
+		sc.clearContext(article3);
+		sc.clearContext(article4);
 	}
 
 	/**
-	 * Test method for {@link de.d3web.we.core.TaggingMangler#getPageTags(java.lang.String)}.
+	 * Test method for
+	 * {@link de.d3web.we.core.TaggingMangler#getPageTags(java.lang.String)}.
 	 */
+	@Test
 	public void testGetPageTags() {
-		KnowWEArticle article = new KnowWEArticle("", "Tag",
-				type, "default_web");
+		KnowWEArticle article = new KnowWEArticle("", "Tag", type,
+				"default_web");
 		am.saveUpdatedArticle(article);
 		tm.addTag("Tag", "tick", params);
-		tm.addTag("Tag", "trick", params);	
+		tm.addTag("Tag", "trick", params);
 		tm.addTag("Tag", "track", params);
-		ArrayList<String>tags=tm.getPageTags("Tag");
+		ArrayList<String> tags = tm.getPageTags("Tag");
 		assertTrue(tags.contains("tick"));
 		assertTrue(tags.contains("trick"));
 		assertTrue(tags.contains("track"));
+		sc.clearContext(article);
 	}
 
 	/**
 	 * Test method for {@link de.d3web.we.core.TaggingMangler#getAllTags()}.
 	 */
+	@Test
 	public void testGetAllTags() {
-		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				type, "default_web");
-		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				type, "default_web");
-		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				type, "default_web");
+		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
+				"default_web");
+		KnowWEArticle article2 = new KnowWEArticle("", "Tag2", type,
+				"default_web");
+		KnowWEArticle article3 = new KnowWEArticle("", "Tag3", type,
+				"default_web");
 		am.saveUpdatedArticle(article1);
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);
 		tm.addTag("Tag1", "tag", params);
-		tm.addTag("Tag2", "leben", params);	
+		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
-		ArrayList<String> tags=tm.getAllTags();
+		ArrayList<String> tags = tm.getAllTags();
 		assertNotNull(tags);
 		assertTrue(tags.contains("tag"));
 		assertTrue(tags.contains("leben"));
 		assertTrue(tags.contains("tod"));
+		sc.clearContext(article1);
+		sc.clearContext(article2);
+		sc.clearContext(article3);
 	}
 
 	/**
-	 * Test method for {@link de.d3web.we.core.TaggingMangler#getCloudList(int, int)}.
+	 * Test method for
+	 * {@link de.d3web.we.core.TaggingMangler#getCloudList(int, int)}.
 	 */
+	@Test
 	public void testGetCloudList() {
-		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				type, "default_web");
-		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				type, "default_web");
-		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				type, "default_web");
+		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
+				"default_web");
+		KnowWEArticle article2 = new KnowWEArticle("", "Tag2", type,
+				"default_web");
+		KnowWEArticle article3 = new KnowWEArticle("", "Tag3", type,
+				"default_web");
 		am.saveUpdatedArticle(article1);
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);
 		tm.addTag("Tag1", "tag", params);
-		tm.addTag("Tag2", "leben", params);	
-		tm.addTag("Tag3", "tod", params);
-		tm.addTag("Tag3","leben",params);
-		HashMap<String, Integer>tags=tm.getCloudList(10, 20);
-		assertEquals(Integer.valueOf(20),tags.get("leben"));
-		assertEquals( Integer.valueOf(10),tags.get("tod"));		
-	}
-	
-	/**
-	 * Test method for {@link de.d3web.we.core.TaggingMangler#getCloudList(int, int)}.
-	 */
-	public void testGetCloudList2() {
-		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				type, "default_web");
-		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				type, "default_web");
-		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				type, "default_web");
-		am.saveUpdatedArticle(article1);
-		am.saveUpdatedArticle(article2);
-		am.saveUpdatedArticle(article3);
-		tm.addTag("Tag1", "tag", params);
-		tm.addTag("Tag2", "leben", params);	
-		tm.addTag("Tag3", "tod", params);		
-		HashMap<String, Integer>tags=tm.getCloudList(10, 20);
-		assertEquals(Integer.valueOf(15),tags.get("leben"));
-		assertEquals( Integer.valueOf(15),tags.get("tod"));		
-		assertEquals( Integer.valueOf(15),tags.get("tag"));
-	}
-	
-
-	/**
-	 * Test method for {@link de.d3web.we.core.TaggingMangler#setTags(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}.
-	 */
-	public void testSetTags() {
-		KnowWEArticle article1 = new KnowWEArticle("", "AddTag",
-				type, "default_web");
-		am.saveUpdatedArticle(article1);	
-		tm.setTags("AddTag", "tag1 tag2 tag3", params);
-		assertEquals("<tags>tag1 tag2 tag3</tags>",am.getArticle("AddTag").getSection().getOriginalText());
-	}
-
-	/**
-	 * Test method for {@link de.d3web.we.core.TaggingMangler#searchPages(java.lang.String)}.
-	 */
-	public void testSearchPages() {
-		KnowWEArticle article1 = new KnowWEArticle("", "Tag1",
-				type, "default_web");
-		KnowWEArticle article2 = new KnowWEArticle("", "Tag2",
-				type, "default_web");
-		KnowWEArticle article3 = new KnowWEArticle("", "Tag3",
-				type, "default_web");
-		am.saveUpdatedArticle(article1);
-		am.saveUpdatedArticle(article2);
-		am.saveUpdatedArticle(article3);
-		tm.addTag("Tag1", "tag", params);
-		tm.addTag("Tag2", "leben", params);	
+		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
 		tm.addTag("Tag3", "leben", params);
-		ArrayList<GenericSearchResult> pages=tm.searchPages("leben");		
-		assertEquals(pages.size(), 2);
-		GenericSearchResult a=pages.get(0);
-		GenericSearchResult b=pages.get(1);
-		assertEquals("Tag3", a.getPagename());
-		assertEquals("Tag2", b.getPagename());
+		HashMap<String, Integer> tags = tm.getCloudList(10, 20);
+		assertEquals(Integer.valueOf(20), tags.get("leben"));
+		assertEquals(Integer.valueOf(10), tags.get("tod"));
+		sc.clearContext(article1);
+		sc.clearContext(article2);
+		sc.clearContext(article3);
 	}
 
+	/**
+	 * Test method for
+	 * {@link de.d3web.we.core.TaggingMangler#getCloudList(int, int)}.
+	 */
+	@Test
+	public void testGetCloudList2() {
+		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
+				"default_web");
+		KnowWEArticle article2 = new KnowWEArticle("", "Tag2", type,
+				"default_web");
+		KnowWEArticle article3 = new KnowWEArticle("", "Tag3", type,
+				"default_web");
+		am.saveUpdatedArticle(article1);
+		am.saveUpdatedArticle(article2);
+		am.saveUpdatedArticle(article3);
+		tm.addTag("Tag1", "tag", params);
+		tm.addTag("Tag2", "leben", params);
+		tm.addTag("Tag3", "tod", params);
+		HashMap<String, Integer> tags = tm.getCloudList(10, 20);
+		assertEquals(Integer.valueOf(15), tags.get("leben"));
+		assertEquals(Integer.valueOf(15), tags.get("tod"));
+		assertEquals(Integer.valueOf(15), tags.get("tag"));
+		sc.clearContext(article1);
+		sc.clearContext(article2);
+		sc.clearContext(article3);
+	}
+
+	/**
+	 * Test method for
+	 * {@link de.d3web.we.core.TaggingMangler#setTags(java.lang.String, java.lang.String, de.d3web.we.core.KnowWEParameterMap)}
+	 * .
+	 */
+	@Test
+	public void testSetTags() {
+		KnowWEArticle article1 = new KnowWEArticle("", "AddTag", type,
+				"default_web");
+		am.saveUpdatedArticle(article1);
+		tm.setTags("AddTag", "tag1 tag2 tag3", params);
+		assertEquals("<tags>tag1 tag2 tag3</tags>", am.getArticle("AddTag")
+				.getSection().getOriginalText());
+	}
+
+	/**
+	 * Test method for
+	 * {@link de.d3web.we.core.TaggingMangler#searchPages(java.lang.String)}.
+	 */
+	@Test
+	public void testSearchPages() {
+		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
+				"default_web");
+		KnowWEArticle article2 = new KnowWEArticle("", "Tag2", type,
+				"default_web");
+		KnowWEArticle article3 = new KnowWEArticle("", "Tag3", type,
+				"default_web");
+		am.saveUpdatedArticle(article1);
+		am.saveUpdatedArticle(article2);
+		am.saveUpdatedArticle(article3);
+		tm.addTag("Tag1", "tag", params);
+		tm.addTag("Tag2", "leben", params);
+		tm.addTag("Tag3", "tod", params);
+		tm.addTag("Tag3", "leben", params);
+		ArrayList<GenericSearchResult> pages = tm.searchPages("leben");
+		assertEquals(2, pages.size());
+		GenericSearchResult a = pages.get(0);
+		GenericSearchResult b = pages.get(1);
+		assertEquals("Tag3", a.getPagename());
+		assertEquals("Tag2", b.getPagename());
+		sc.clearContext(article1);
+		sc.clearContext(article2);
+		sc.clearContext(article3);
+	}
 
 }

@@ -95,7 +95,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 			for (String temptag : tags) {
 				output += temptag + " ";
 			}
-			output=output.trim();
+			output = output.trim();
 			Section<TagsContent> keep = tagslist.get(0);
 			if (multiple) {
 				for (int i = 1; i < tagslist.size(); i++) {
@@ -105,7 +105,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
 					.replaceKDOMNode(params, pagename, keep.getId(), output);
 		} else {
-			addNewTagSection(pagename,tag,params);
+			addNewTagSection(pagename, tag, params);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 			if (!temptag.equals(tag))
 				output += temptag.trim() + " ";
 		}
-		output=output.trim();
+		output = output.trim();
 		Section keep = tagslist.get(0);
 		if (multiple) {
 			for (int i = 1; i < tagslist.size(); i++) {
@@ -152,20 +152,20 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @return
 	 */
 	public ArrayList<String> getPages(String tag) {
-		String lns=SemanticCore.getInstance().getUpper().getLocaleNS();
-		String querystring="";
+		String lns = SemanticCore.getInstance().getUpper().getLocaleNS();
+		String querystring = "";
 		try {
-			querystring = "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object <"+lns
-			+ URLEncoder.encode(tag,"UTF-8") + "> .\n" + "?t rdf:predicate ns:hasTag .\n"
-			+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
+			querystring = "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object <"
+					+ lns + URLEncoder.encode(tag, "UTF-8") + "> .\n"
+					+ "?t rdf:predicate ns:hasTag .\n"
+					+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n"
+					+ "}";
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
 	}
-	
-	
 
 	/**
 	 * Creates a list of tags this page is associated with. Always returns a
@@ -185,11 +185,11 @@ public class TaggingMangler implements KnowWESearchProvider {
 
 		String querystring = "SELECT ?q \n" + "WHERE {\n"
 				+ "?t rdf:object ?q .\n" + "?t rdf:predicate ns:hasTag .\n"
-				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic <%lns%" + topicenc
-				+ "> .\n" + "}";
-		String lns=SemanticCore.getInstance().getUpper().getLocaleNS();
-		querystring=querystring.replace("%lns%",lns);
-	
+				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic <%lns%"
+				+ topicenc + "> .\n" + "}";
+		String lns = SemanticCore.getInstance().getUpper().getLocaleNS();
+		querystring = querystring.replace("%lns%", lns);
+
 		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
 	}
 
@@ -215,10 +215,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @return
 	 */
 	public HashMap<String, Integer> getCloudList(int minSize, int maxSize) {
-		if (minSize>maxSize){
-			int t=minSize;
-			minSize=maxSize;
-			maxSize=t;
+		if (minSize > maxSize) {
+			int t = minSize;
+			minSize = maxSize;
+			maxSize = t;
 		}
 		HashMap<String, Integer> result = new HashMap<String, Integer>();
 		HashMap<String, Float> weighted = getAllTagsWithWeight();
@@ -236,30 +236,29 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @return
 	 */
 	public HashMap<String, Float> getAllTagsWithWeight() {
-		ArrayList<String> tags = getAllTagsWithDuplicates();		
+		ArrayList<String> tags = getAllTagsWithDuplicates();
 		HashMap<String, Float> countlist = new HashMap<String, Float>();
 		float max = 0;
 		for (String cur : tags) {
-			float c= 0;
-			if (countlist.get(cur) == null){
+			float c = 0;
+			if (countlist.get(cur) == null) {
 				countlist.put(cur, new Float(1));
-				c=1;
-				}
-			else {
+				c = 1;
+			} else {
 				c = countlist.get(cur) + 1;
 				countlist.put(cur, c);
 			}
 			max = c > max ? c : max;
 		}
-		
-		HashMap<String, Float> weighted = new HashMap<String, Float>();		
-	
+
+		HashMap<String, Float> weighted = new HashMap<String, Float>();
+
 		for (Entry<String, Float> cur : countlist.entrySet()) {
-			weighted.put(cur.getKey(), new Float(max-1==0?0.5:(cur.getValue()-1) / (max-1)));
-		}		
-		
-		
-		
+			weighted.put(cur.getKey(), new Float(max - 1 == 0 ? 0.5 : (cur
+					.getValue() - 1)
+					/ (max - 1)));
+		}
+
 		return weighted;
 	}
 
@@ -299,7 +298,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		boolean multiple = tagslist.size() > 1;
 		String output = "";
 		for (String temptag : tag.split(" |,")) {
-			if (temptag.trim().length()>0){
+			if (temptag.trim().length() > 0) {
 				output += temptag.trim() + " ";
 			}
 		}
@@ -313,8 +312,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 			}
 			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
 					.replaceKDOMNode(params, topic, keep.getId(), output);
-		}else {
-			addNewTagSection(topic,output,params);
+		} else {
+			addNewTagSection(topic, output, params);
 		}
 	}
 
@@ -322,92 +321,96 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * adds a new tags-section - the hardcore way
 	 * 
 	 */
-	public void addNewTagSection(String topic,String content,KnowWEParameterMap params){
+	public void addNewTagSection(String topic, String content,
+			KnowWEParameterMap params) {
 		KnowWEEnvironment ke = KnowWEEnvironment.getInstance();
 		KnowWEArticle article = ke.getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				topic);
-		Section asection=article.getSection();
-		String text=asection.getOriginalText();
+		Section asection = article.getSection();
+		String text = asection.getOriginalText();
 		String output = "";
 		for (String temptag : content.split(" |,")) {
-			if (temptag.trim().length()>0){
+			if (temptag.trim().length() > 0) {
 				output += temptag.trim() + " ";
 			}
 		}
-		text+="<tags>"+output.trim()+"</tags>";
-		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
-		.replaceKDOMNode(params, topic, asection.getId(), text);
+		text += "<tags>" + output.trim() + "</tags>";
+		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNode(
+				params, topic, asection.getId(), text);
 	}
 
-	public ArrayList<GenericSearchResult> searchPages(String querytags) {		
-		
-		String[] tags=querytags.split(" ");
-		ArrayList<GenericSearchResult> result=new ArrayList<GenericSearchResult>();
-		String querystring="";
-		String lns=SemanticCore.getInstance().getUpper().getLocaleNS();
-		int i=0;
-		if (tags.length==1){
-			try {				
-				querystring= "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object <"+lns+
-				 URLEncoder.encode(tags[0],"UTF-8") + "> .\n" + "?t rdf:predicate ns:hasTag .\n"
-				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n" + "}";
+	public ArrayList<GenericSearchResult> searchPages(String querytags) {
+
+		String[] tags = querytags.split(" ");
+		ArrayList<GenericSearchResult> result = new ArrayList<GenericSearchResult>();
+		String querystring = "";
+		String lns = SemanticCore.getInstance().getUpper().getLocaleNS();
+		int i = 0;
+		if (tags.length == 1) {
+			try {
+				querystring = "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object <"
+						+ lns + URLEncoder.encode(tags[0], "UTF-8") + "> .\n"
+						+ "?t rdf:predicate ns:hasTag .\n"
+						+ "?t rdfs:isDefinedBy ?o .\n"
+						+ "?o ns:hasTopic ?q .\n" + "}";
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// should not happen as the encoding is hardcoded
 			}
 		} else {
-			querystring= "SELECT ?q \n" + "WHERE {\n";
-			for (String cur:tags){
+			querystring = "SELECT ?q \n" + "WHERE {\n";
+			for (String cur : tags) {
 				try {
-					
-					querystring+="?t"+i+" rdf:object <"+lns+ URLEncoder.encode(cur,"UTF-8") + "> .\n";
+
+					querystring += "?t" + i + " rdf:object <" + lns
+							+ URLEncoder.encode(cur, "UTF-8") + "> .\n";
 				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}			
-				querystring+= "?t"+i+" rdf:predicate ns:hasTag .\n";
-				querystring+= "?t"+i+" rdfs:isDefinedBy ?o"+i+" .\n ?o"+i+" ns:hasTopic ?q . \n";				
+					// should not happen as the encoding is hardcoded
+				}
+				querystring += "?t" + i + " rdf:predicate ns:hasTag .\n";
+				querystring += "?t" + i + " rdfs:isDefinedBy ?o" + i
+						+ " .\n ?o" + i + " ns:hasTopic ?q . \n";
 				i++;
 			}
-			querystring +="}"; 			
+			querystring += "}";
 		}
-		ArrayList<String> pages=SemanticCore.getInstance().simpleQueryToList(querystring, "q");
-		for (String cur:pages){
-			//TODO better search? better contexts..
+		ArrayList<String> pages = SemanticCore.getInstance().simpleQueryToList(
+				querystring, "q");
+		for (String cur : pages) {
+			// TODO better search? better contexts..
 			result.add(new GenericSearchResult(cur, null, 1));
 		}
 		return result;
 	}
-	
-	public String getResultPanel(String querystring){
-		
+
+	public String getResultPanel(String querystring) {
+
 		if (querystring != null) {
 			ArrayList<GenericSearchResult> pages = TaggingMangler.getInstance()
 					.searchPages(querystring);
 			return renderResults(pages);
-		} else {	
+		} else {
 			return ("no query");
 		}
 	}
 
 	public String renderResults(Collection<GenericSearchResult> pages) {
-		StringBuffer html=new StringBuffer();
+		StringBuffer html = new StringBuffer();
 		for (GenericSearchResult cur : pages) {
-			String link = "<a target='_blank' href=\"Wiki.jsp?page=" + cur.getPagename()
-					+ "\">" + cur.getPagename() + "</a>";
-			
-			//String score = cur.getScore() + "";
+			String link = "<a target='_blank' href=\"Wiki.jsp?page="
+					+ cur.getPagename() + "\">" + cur.getPagename() + "</a>";
+
+			// String score = cur.getScore() + "";
 			html.append("<div class='left'>");
 			html.append("<b>" + link + "</b>");
-					//" (Score:" + score + ")");
+			// " (Score:" + score + ")");
 			html.append("</div><br>");
 
 		}
-		
-		if(pages.size() == 0) {
+
+		if (pages.size() == 0) {
 			return null;
 		}
-		
+
 		return html.toString();
 	}
 
@@ -421,8 +424,6 @@ public class TaggingMangler implements KnowWESearchProvider {
 		// TODO verbalize
 		return "Tags";
 	}
-
-
 
 	@Override
 	public Collection<GenericSearchResult> search(Collection<SearchTerm> words,
@@ -449,10 +450,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public Collection<SearchTerm> expandTermForSearch(SearchTerm t) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-} 
+}

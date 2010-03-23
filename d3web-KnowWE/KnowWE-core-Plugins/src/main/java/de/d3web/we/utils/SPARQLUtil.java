@@ -26,12 +26,12 @@ public class SPARQLUtil {
 	public static Boolean executeBooleanQuery(String q) {
 		SemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (RepositoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		// try {
+		// con.setAutoCommit(false);
+		// } catch (RepositoryException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// }
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
@@ -57,12 +57,12 @@ public class SPARQLUtil {
 	public static TupleQueryResult executeTupleQuery(String q, String topic) {
 		SemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (RepositoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		// try {
+		// con.setAutoCommit(false);
+		// } catch (RepositoryException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// }
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,
@@ -88,12 +88,12 @@ public class SPARQLUtil {
 	public static TupleQueryResult executeTupleQuery(String q) {
 		SemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (RepositoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		// try {
+		// con.setAutoCommit(false);
+		// } catch (RepositoryException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// }
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL,

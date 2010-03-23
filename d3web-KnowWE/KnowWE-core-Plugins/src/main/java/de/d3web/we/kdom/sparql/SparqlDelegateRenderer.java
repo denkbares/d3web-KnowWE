@@ -52,31 +52,33 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 
 	private SparqlDelegateRenderer() {
 		renderers = new HashMap<String, SparqlRenderer>();
-		SparqlRenderer defrenderer=DefaultSparqlRenderer.getInstance(); 
-		renderers.put(defrenderer.getName(),defrenderer );
+		SparqlRenderer defrenderer = DefaultSparqlRenderer.getInstance();
+		renderers.put(defrenderer.getName(), defrenderer);
 	}
-	
+
 	/**
 	 * checks if a renderer with a given id already exists
+	 * 
 	 * @param ID
 	 * @return
 	 */
-	public boolean hasRenderer(int ID){
-		for (Entry<String,SparqlRenderer> cur:renderers.entrySet()){
-			if (cur.getValue().getID()==ID){
+	public boolean hasRenderer(int ID) {
+		for (Entry<String, SparqlRenderer> cur : renderers.entrySet()) {
+			if (cur.getValue().getID() == ID) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * add a new Renderer to the sparqlrenderer
+	 * 
 	 * @param newrenderer
 	 */
-	public void addRenderer(SparqlRenderer newrenderer){
-		//rendere is always overwritten...
-		renderers.put(newrenderer.getName(),newrenderer);
+	public void addRenderer(SparqlRenderer newrenderer) {
+		// rendere is always overwritten...
+		renderers.put(newrenderer.getName(), newrenderer);
 	}
 
 	public static synchronized SparqlDelegateRenderer getInstance() {
@@ -104,14 +106,15 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 
 		String value = sec.getOriginalText();
 		Map<String, String> params = AbstractXMLObjectType
-				.getAttributeMapFor((Section<? extends AbstractXMLObjectType>) sec.getFather());
+				.getAttributeMapFor((Section<? extends AbstractXMLObjectType>) sec
+						.getFather());
 		boolean debug = false;
 
 		if (params != null) {
 			debug = params.containsKey("debug");
 			if (params.containsKey("render")) {
 				renderengine = params.get("render");
-				SparqlRenderer newr=renderers.get(renderengine);
+				SparqlRenderer newr = renderers.get(renderengine);
 				if (newr != null) {
 					currentrenderer = newr;
 				}
@@ -138,8 +141,6 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 		}
 	}
 
-
-
 	public static String addNamespaces(String value) {
 		if (value == null)
 			value = "";
@@ -159,12 +160,12 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 			Map<String, String> params, String querystring) {
 		SemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
-		try {
-			con.setAutoCommit(false);
-		} catch (RepositoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		// try {
+		// con.setAutoCommit(false);
+		// } catch (RepositoryException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// }
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
@@ -176,17 +177,17 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 		try {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
-				String erg="";
+				String erg = "";
 				try {
-					erg= currentrenderer.render(result, params);
-				} catch (Exception e ){
-					
-					erg=e.getMessage();
-					for (StackTraceElement cur:e.getStackTrace()){
-						erg+=cur.getMethodName()+cur.getLineNumber()+"\n";
+					erg = currentrenderer.render(result, params);
+				} catch (Exception e) {
+
+					erg = e.getMessage();
+					for (StackTraceElement cur : e.getStackTrace()) {
+						erg += cur.getMethodName() + cur.getLineNumber() + "\n";
 					}
 				}
-		
+
 				return erg;
 			} else if (query instanceof GraphQuery) {
 				// GraphQueryResult result = ((GraphQuery) query).evaluate();

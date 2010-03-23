@@ -50,13 +50,13 @@ public class RepositoryFactory {
 			HashMap<String, String> settings) {
 		if (type.equals(DEFAULTREPOSITORY)) {
 			return fileRepository(settings);
-		} else 
+		} else
 			return null;
-		
+
 	}
 
 	private Repository fileRepository(HashMap<String, String> settings) {
-		Repository repository=null;
+		Repository repository = null;
 		if (!settings.containsKey("ontfile")
 				|| !settings.containsKey("reppath")
 				|| !settings.containsKey("basens")
@@ -95,7 +95,7 @@ public class RepositoryFactory {
 					repositoryNode, RepositoryConfigSchema.REPOSITORYID);
 			repository = man.getRepository(_id.getLabel());
 			RepositoryConnection repositoryConn = repository.getConnection();
-			repositoryConn.setAutoCommit(false);
+			repositoryConn.setAutoCommit(true);
 			BNode context = repositoryConn.getValueFactory().createBNode(
 					"rootontology");
 			repositoryConn.add(file, basens, RDFFormat.RDFXML, context);

@@ -43,7 +43,6 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.sail.memory.MemoryStore;
 
-
 public class UpperOntology {
 	private static String basens = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
 	private static UpperOntology me;
@@ -96,7 +95,6 @@ public class UpperOntology {
 		// setLocaleNS(path);
 		localens = basens;
 		settings.put("basens", basens);
-        
 
 		// ON JUnit test running no ontology is read
 		try {
@@ -189,6 +187,7 @@ public class UpperOntology {
 				RepositoryFactory.DEFAULTREPOSITORY, settings);
 		try {
 			repositoryConn = myRepository.getConnection();
+			repositoryConn.setAutoCommit(true);
 			loadOwlFile(new File(ontfile));
 		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
@@ -211,7 +210,6 @@ public class UpperOntology {
 		owlhelper.setLocaleNS(localens);
 		con.close();
 	}
-
 
 	public void setPersistenceDir(String path) {
 		persistencedir = new File(path);
@@ -255,6 +253,7 @@ public class UpperOntology {
 		}
 
 	}
+
 	/**
 	 * @param f
 	 */
@@ -265,7 +264,7 @@ public class UpperOntology {
 			BNode filebnode = con.getValueFactory().createBNode(f.getName());
 			con.add(f, null, RDFFormat.RDFXML, filebnode);
 			con.commit();
-			
+
 		} catch (RepositoryException e) {
 			try {
 				con.rollback();
