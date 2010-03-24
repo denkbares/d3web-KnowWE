@@ -46,6 +46,23 @@
 		<parameter id="script" value="silveripe.0.2.js" />
 	</extension>
 	
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="RulesBlock">
+		<parameter id="class"
+			value="de.d3web.we.kdom.rulesNew.RulesBlock" />
+		<parameter id="name" value="RulesBlock" />
+		<parameter id="description" value="KnowWEObjectType RulesBlock" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4.55" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-plugin-d3web.js" />
+		<parameter id="script" value="silveripe.0.2.js" />
+	</extension>
+	
+	
+	
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="Kopic">
 		<parameter id="class"
