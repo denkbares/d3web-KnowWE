@@ -25,12 +25,21 @@ import java.util.List;
 
 public class SplitUtility {
 
+	/**
+	 * Splits the text by the splitSymbol disregarding splitSymbols which are
+	 * quoted
+	 *
+	 * @param text
+	 * @param splitSymbol
+	 * @return
+	 */
 	public static List<String> splitUnquoted(String text, String splitSymbol) {
 		boolean quoted = false;
 		List<String> parts = new ArrayList<String>();
 		StringBuffer actualPart = new StringBuffer();
+		// scanning the text
 		for (int i = 0; i < text.length(); i++) {
-
+			// toggle quote state
 			if (text.charAt(i) == '"') {
 				quoted = !quoted;
 			}
@@ -58,16 +67,28 @@ public class SplitUtility {
 		return splitUnquoted(text+"1", symbol).size() > 1;
 	}
 
+	/**
+	 * scans the 'text' for the (first) occurrence of 'symbol' which is not
+	 * emboded in quotes ('"')
+	 *
+	 * @param text
+	 * @param symbol
+	 * @return
+	 */
 	public static int indexOfUnquoted(String text, String symbol) {
 		boolean quoted = false;
+		// scanning the text
 		for (int i = 0; i < text.length(); i++) {
 
+			// toggle quote state
 			if (text.charAt(i) == '"') {
 				quoted = !quoted;
 			}
+			// ignore quoted symbols
 			if (quoted) {
 				continue;
 			}
+			// when symbol discovered return index
 			if ((i + symbol.length() <= text.length())
 					&& text.subSequence(i, i + symbol.length()).equals(symbol)) {
 				return i;
@@ -77,17 +98,29 @@ public class SplitUtility {
 		return -1;
 	}
 
+	/**
+	 * scans the 'text' for the last occurrence of 'symbol' which is not
+	 * embraced in quotes ('"')
+	 *
+	 * @param text
+	 * @param symbol
+	 * @return
+	 */
 	public static int lastIndexOfUnquoted(String text, String symbol) {
 		boolean quoted = false;
 		int lastIndex = -1;
+		// scanning the text
 		for (int i = 0; i < text.length(); i++) {
 
+			// toggle quote state
 			if (text.charAt(i) == '"') {
 				quoted = !quoted;
 			}
+			// ignore quoted content
 			if (quoted) {
 				continue;
 			}
+			// if symbol found at that location remember index
 			if ((i + symbol.length() <= text.length())
 					&& text.subSequence(i, i + symbol.length()).equals(symbol)) {
 				lastIndex = i;
@@ -97,12 +130,9 @@ public class SplitUtility {
 		return lastIndex;
 	}
 
-
-
 	/**
-	 * For a given pair of opening and closing symbols (usually brackets) it
-	 * finds (char index of) the corresponding closing bracket for a specified
-	 * opening
+	 * For a given index of an opening symbol (usually brackets) it finds (char
+	 * index of) the corresponding closing bracket/symbol
 	 *
 	 * @param text
 	 * @param openBracketIndex
@@ -114,10 +144,11 @@ public class SplitUtility {
 		if (text.charAt(openBracketIndex) == open) {
 			boolean quoted = false;
 			int closedBrackets = -1;
+			// scanning the text
 			for(int i  = openBracketIndex + 1; i < text.length(); i++) {
 				char current = text.charAt(i);
 
-				// toggle quote
+				// toggle quote state
 				if(current == '"') {
 						quoted = !quoted;
 				}
@@ -141,14 +172,27 @@ public class SplitUtility {
 		return -1;
 	}
 
+	/**
+	 * Scans the 'text' for occurrences of 'symbol' which are not embraced by
+	 * (unquoted) brackets (opening bracket 'open' and closing bracket 'close')
+	 * Here the kind of bracket can be passed as char, however it will also work
+	 * with char that are not brackets.. ;-)
+	 *
+	 * @param text
+	 * @param symbol
+	 * @param open
+	 * @param close
+	 * @return
+	 */
 	public static List<Integer> findIndicesOfUnbraced(String text, String symbol, char open, char close) {
 		List<Integer> result = new ArrayList<Integer>();
 		boolean quoted = false;
 		int openBrackets = 0;
+		// scanning the text
 		for (int i = 0; i < text.length(); i++) {
 			char current = text.charAt(i);
 
-			// toggle quote
+			// toggle quote state
 			if (current == '"') {
 				quoted = !quoted;
 			}
