@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SplitUtility {
-	
-	public static List<String> splitUnquoted(String text, String splitSymbol) {	
+
+	public static List<String> splitUnquoted(String text, String splitSymbol) {
 		boolean quoted = false;
 		List<String> parts = new ArrayList<String>();
 		StringBuffer actualPart = new StringBuffer();
@@ -38,7 +38,7 @@ public class SplitUtility {
 				actualPart.append(text.charAt(i));
 				continue;
 			}
-			if ((i + splitSymbol.length() <= text.length()) 
+			if ((i + splitSymbol.length() <= text.length())
 					&& text.subSequence(i, i + splitSymbol.length()).equals(splitSymbol)) {
 				parts.add(actualPart.toString().trim());
 				actualPart = new StringBuffer();
@@ -55,9 +55,9 @@ public class SplitUtility {
 	}
 
 	public static boolean containsUnquoted(String text, String symbol) {
-		return splitUnquoted(text+"1", symbol).size() > 1; 
+		return splitUnquoted(text+"1", symbol).size() > 1;
 	}
-	
+
 	public static int indexOfUnquoted(String text, String symbol) {
 		boolean quoted = false;
 		for (int i = 0; i < text.length(); i++) {
@@ -68,7 +68,7 @@ public class SplitUtility {
 			if (quoted) {
 				continue;
 			}
-			if ((i + symbol.length() <= text.length()) 
+			if ((i + symbol.length() <= text.length())
 					&& text.subSequence(i, i + symbol.length()).equals(symbol)) {
 				return i;
 			}
@@ -76,5 +76,101 @@ public class SplitUtility {
 		}
 		return -1;
 	}
-	
+
+	public static int lastIndexOfUnquoted(String text, String symbol) {
+		boolean quoted = false;
+		int lastIndex = -1;
+		for (int i = 0; i < text.length(); i++) {
+
+			if (text.charAt(i) == '"') {
+				quoted = !quoted;
+			}
+			if (quoted) {
+				continue;
+			}
+			if ((i + symbol.length() <= text.length())
+					&& text.subSequence(i, i + symbol.length()).equals(symbol)) {
+				lastIndex = i;
+			}
+
+		}
+		return lastIndex;
+	}
+
+
+
+	/**
+	 * For a given pair of opening and closing symbols (usually brackets) it
+	 * finds (char index of) the corresponding closing bracket for a specified
+	 * opening
+	 *
+	 * @param text
+	 * @param openBracketIndex
+	 * @param open
+	 * @param close
+	 * @return
+	 */
+	public static int findIndexOfClosingBracket(String text, int openBracketIndex, char open, char close) {
+		if (text.charAt(openBracketIndex) == open) {
+			boolean quoted = false;
+			int closedBrackets = -1;
+			for(int i  = openBracketIndex + 1; i < text.length(); i++) {
+				char current = text.charAt(i);
+
+				// toggle quote
+				if(current == '"') {
+						quoted = !quoted;
+				}
+				// decrement closed brackets when open bracket is found
+				else if (!quoted && current == open) {
+					closedBrackets--;
+				}
+				// increment closed brackets when closed bracket found
+				else if (!quoted && current == close) {
+					closedBrackets++;
+				}
+
+				// we have close the desired bracket
+				if (closedBrackets == 0) {
+					return i;
+				}
+
+			}
+		}
+
+		return -1;
+	}
+
+	public static List<Integer> findIndicesOfUnbraced(String text, String symbol, char open, char close) {
+		List<Integer> result = new ArrayList<Integer>();
+		boolean quoted = false;
+		int openBrackets = 0;
+		for (int i = 0; i < text.length(); i++) {
+			char current = text.charAt(i);
+
+			// toggle quote
+			if (current == '"') {
+				quoted = !quoted;
+			}
+			// decrement closed brackets when open bracket is found
+			else if (!quoted && current == open) {
+				openBrackets--;
+			}
+			// increment closed brackets when closed bracket found
+			else if (!quoted && current == close) {
+				openBrackets++;
+			}
+
+			// we have no bracket open => check for key symbol
+			else if (openBrackets == 0 && !quoted) {
+				if (text.substring(i).startsWith(symbol)) {
+					result.add(i);
+				}
+			}
+
+		}
+		return result;
+
+	}
+
 }
