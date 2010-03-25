@@ -3,7 +3,6 @@ package de.d3web.we.refactoring.management;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -12,17 +11,16 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.SubTree;
-import de.d3web.we.kdom.include.Include;
-import de.d3web.we.kdom.objects.QuestionID;
+import de.d3web.we.kdom.objects.QuestionDef;
 
 public class RefactoringManager {
-	
+
 	private static final String REFACTORING_WEB = "refactoring_web";
 
-	private KnowWEArticleManager defaultWebManager;
-	private KnowWEArticleManager refactoringWebManager;
+	private final KnowWEArticleManager defaultWebManager;
+	private final KnowWEArticleManager refactoringWebManager;
 	//private HashMap<String, KnowWEArticle> changedArticles = new HashMap<String, KnowWEArticle>();
-	
+
 	public RefactoringManager(String web) {
 		this.defaultWebManager = KnowWEEnvironment.getInstance().getArticleManager(web);
 		this.refactoringWebManager = KnowWEEnvironment.getInstance().getArticleManager(REFACTORING_WEB);
@@ -38,11 +36,11 @@ public class RefactoringManager {
 			return art.findSection(nodeID);
 		}
 	}
-	
+
 	public Section<? extends KnowWEObjectType> findNode(String nodeID) {
 		return findNode(getArticleName(nodeID), nodeID);
 	}
-	
+
 	public String getArticleName(String sectionID) {
 		String title;
 		if (sectionID.contains("/")) {
@@ -52,11 +50,11 @@ public class RefactoringManager {
 		}
 		return title;
 	}
-	
+
 	public Iterator<KnowWEArticle> getArticleIterator() {
 		return getArticles().iterator();
 	}
-	
+
 	public Collection<KnowWEArticle> getArticles() {
 		HashMap<String, KnowWEArticle> mixedArticles = new HashMap<String, KnowWEArticle>();
 		for (KnowWEArticle a: defaultWebManager.getArticles()) {
@@ -67,16 +65,16 @@ public class RefactoringManager {
 		}
 		return mixedArticles.values();
 	}
-	
+
 	public Collection<KnowWEArticle> getChangedArticles() {
 		return refactoringWebManager.getArticles();
 	}
-	
+
 	public KnowWEArticle getArticle(String id) {
 		KnowWEArticle article = refactoringWebManager.getArticle(id);
 		return (article != null) ? article : defaultWebManager.getArticle(id);
 	}
-	
+
 	public KnowWEArticle getCachedArticle(String id) {
 		KnowWEArticle article = refactoringWebManager.getArticle(id);
 		if (article != null) {
@@ -89,7 +87,7 @@ public class RefactoringManager {
 			return cachedArticle;
 		}
 	}
-	
+
 	public void replaceKDOMNode(String articleName, String nodeID, String text) {
 		replaceKDOMNodeWithoutSave(articleName, nodeID, text);
 		saveUpdatedArticle(this.getCachedArticle(articleName));
@@ -104,12 +102,12 @@ public class RefactoringManager {
 		Section<KnowWEArticle> root = art.getSection();
 		root.setOriginalTextSetLeaf(nodeID, text);
 	}
-	
+
 	// saves the article to a consistent state
 	public void saveUpdatedArticle(KnowWEArticle art) {
 		String articleName = art.getTitle();
 		StringBuilder newArticleText = new StringBuilder();
-		
+
 		KnowWEArticle newArticle = art;
 		if (refactoringWebManager.getArticle(articleName) != null) {
 			refactoringWebManager.getArticle(articleName).getSection().collectTextsFromLeaves(newArticleText, false);
@@ -117,10 +115,10 @@ public class RefactoringManager {
 		}
 		refactoringWebManager.saveUpdatedArticle(newArticle);
 	}
-	
+
 	public Section<? extends KnowWEObjectType> findCachedQuestionToAnswer(Section<? extends KnowWEObjectType> answer) {
 		return findNode(answer
 		.findAncestorOfExactType(SubTree.class).findAncestorOfExactType(SubTree.class)
-		.findChildOfType(DashTreeElement.class).findSuccessor(QuestionID.class).getId());
+				.findChildOfType(DashTreeElement.class).findSuccessor(QuestionDef.class).getId());
 	}
 }
