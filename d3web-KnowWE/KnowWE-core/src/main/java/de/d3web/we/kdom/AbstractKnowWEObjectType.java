@@ -370,7 +370,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 			}
 			catch (Throwable e) {
 				String text = "unexpected internal error in subtree handler '" + handler + "'";
-				Logger.getLogger(getClass()).error(text, e);
 				Message msg = new Message(text + ": " + e);
 				storeMessages(article, s, Arrays.asList(msg));
 				// TODO: vb: store the error also in the article. (see below for
