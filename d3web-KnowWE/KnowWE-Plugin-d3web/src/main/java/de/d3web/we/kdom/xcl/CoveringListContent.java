@@ -178,7 +178,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		 * @param currentWeb 
 		 * @return
 		 */
-		private void insertRelations(KnowWEArticle article, ArrayList<Section> currentRels, 
+		private void insertRelations(KnowWEArticle article, List<Section> currentRels, 
 				KnowledgeBaseManagement kbm, Diagnosis currentdiag, String currentWeb) {
 
 			

@@ -74,8 +74,8 @@ public class WordBasedRenamingAction extends DeprecatedAbstractKnowWEAction {
 		setCaseSensitive(Boolean.parseBoolean( parameterMap.get(KnowWEAttributes.CASE_SENSITIVE )));
 
 		String queryContext = "";
-		queryContextAfter = (queryContextAfter != "") ? " " + queryContextAfter : "";
-		queryContextPrevious = (queryContextPrevious != "") ? queryContextPrevious + " " : "";
+		queryContextAfter = (!queryContextAfter.equals("")) ? " " + queryContextAfter : "";
+		queryContextPrevious = (!queryContextPrevious.equals("")) ? queryContextPrevious + " " : "";
 
 		queryContext = queryContextPrevious + queryString + queryContextAfter;
 
@@ -134,7 +134,7 @@ public class WordBasedRenamingAction extends DeprecatedAbstractKnowWEAction {
 				if (context == null) {
 					context = WordBasedRenameFinding.getAdditionalContext(
 							pos, direction, curWords-1, query.length(),
-							section.getOriginalText());;
+							section.getOriginalText());
 					curWords = WordBasedRenameFinding.MAX_WORDS + 1;					
 				}
 					
@@ -187,8 +187,7 @@ public class WordBasedRenamingAction extends DeprecatedAbstractKnowWEAction {
 				+ "<input class='check-deselect check' value='' type='button' title='Deselect all checkboxes' rel='{section: undefined}'/>"
 				+ "</td><td></td></tr>"
 				+ "</thead>"
-
-				+ "");
+				);
 
 		for (Entry<KnowWEArticle, Collection<WordBasedRenameFinding>> entry : findings.entrySet()) {
 

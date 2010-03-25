@@ -51,6 +51,9 @@ import de.d3web.we.utils.KopicWriter;
  */
 public class GenerateKBAction extends DeprecatedAbstractKnowWEAction {
 	
+	private final String errorStart = "<p class='error box'>";
+	private final String pEnd = "</p>";
+	
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		
@@ -60,9 +63,9 @@ public class GenerateKBAction extends DeprecatedAbstractKnowWEAction {
 		
 		// If Nothing was Entered for new PageName.
 		if (!parameterMap.containsKey(KnowWEAttributes.NEWKB_NAME)) {
-			return "<p class='error box'>"
+			return this.errorStart
 			    + rb.getString("KnowWE.KnowledgeBasesGenerator.nonameError")
-				+ "</p>";
+				+ this.pEnd;
 		}
 		
 		// If Page already exists, try to append the KB
@@ -71,16 +74,16 @@ public class GenerateKBAction extends DeprecatedAbstractKnowWEAction {
 				if (this.appendKnowledgeBase(KnowWEEnvironment.getInstance(), parameterMap.getWeb(), parameterMap.get(KnowWEAttributes.NEWKB_NAME), kbString, parameterMap.getUser())) {
 					return "<p class='info box'>"
 					+ rb.getString("KnowWE.KnowledgeBasesGenerator.kbAppended")
-					+ "</p>";
+					+ this.pEnd;
 				}
 			} catch (IOException e) {
-				return "<p class='error box'>"
+				return this.errorStart
 				+ rb.getString("KnowWE.KnowledgeBasesGenerator.generatingError")
-				+ "</p>";
+				+ this.pEnd;
 			}
-			return "<p class='error box'>"
+			return this.errorStart
 				+ rb.getString("KnowWE.KnowledgeBasesGenerator.alreadyexistsError")
-				+ "</p>";
+				+ this.pEnd;
 		}
 		
 		String testMap;
@@ -95,13 +98,13 @@ public class GenerateKBAction extends DeprecatedAbstractKnowWEAction {
 					parameterMap.get(KnowWEAttributes.NEWKB_NAME) + "</p>";
 			}
 		} catch (IOException e) {
-			return "<p class='error box'>"
+			return this.errorStart
 			+ rb.getString("KnowWE.KnowledgeBasesGenerator.generatingError")
-			+ "</p>";
+			+ this.pEnd;
 		}
-		return "<p class='error box'>"
+		return this.errorStart
 		+ rb.getString("KnowWE.KnowledgeBasesGenerator.generatingError")
-		+ "</p>";
+		+ this.pEnd;
 
 	}
 	
