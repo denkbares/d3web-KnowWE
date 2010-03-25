@@ -32,25 +32,81 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import de.d3web.plugin.Extension;
-import de.d3web.plugin.JPFPluginManager;
 import de.d3web.plugin.PluginManager;
-import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
+/**
+ * This class offers everything needed to perform Actions.
+ * 
+ * The parameters of the request are accessible via 
+ * getParameter(String parametername). Be sure you know which 
+ * parameters you have in your request. 
+ * 
+ * Additionally it is possible to write content to your pages
+ * via getWriter().write() or to send Data in a response via 
+ * getOutputStream().
+ * 
+ * Please note, that if you use this class with a KnowWEAction 
+ * everything you write via getWriter().write() will be written
+ * to the KnowWE.jsp where it is applicable for further processing
+ * (via JavaScript etc.).
+ * 
+ * @author Sebastian Furth
+ *
+ */
 public class ActionContext {
 
 	public final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
 	public final String EXTENDED_POINT_ID = "Action";
 	
+	/**
+	 * The name of the action
+	 */
 	private final String actionName;
+	
+	/**
+	 * optional parameter for special servlets
+	 */
 	private final String path;
+	
+	/**
+	 * all parameters of the request
+	 */
 	private final Properties parameters;
+	
+	/**
+	 * the request itself
+	 */
 	private final HttpServletRequest request;
+	
+	/**
+	 * the response itself
+	 */
 	private final HttpServletResponse response;
+	
+	/**
+	 * the servlet context, necessary for KnowWEActions
+	 */
 	private final ServletContext servletContext;
+	
+	/**
+	 * KnowWEParameterMap which stores most information
+	 * redundantly, but is absolutely necessary for KnowWEActions
+	 * can be null for Non-KnowWEActions.
+	 */
 	private final KnowWEParameterMap map;
 
+	/**
+	 * Default constructor.
+	 * @param actionName Name of your action, equivalent to the ID specified in your plugin.xml
+	 * @param path optional parameter, only necessary for special servlets
+	 * @param parameters all parameters of the request
+	 * @param request the request itself
+	 * @param response the response you can use for your purposes
+	 * @param servletContext the servlet context
+	 * @param map optional parameter for KnowWEActions
+	 */
 	public ActionContext(String actionName, String path, Properties parameters, 
 			HttpServletRequest request, HttpServletResponse response,
 			  ServletContext servletContext, KnowWEParameterMap map) {
@@ -92,18 +148,6 @@ public class ActionContext {
 	
 	public String getParameter(String key, String defaultValue) {
 		return this.parameters.getProperty(key, defaultValue);
-	}
-	
-	public String getWeb() {
-		return this.getParameter(KnowWEAttributes.WEB);
-	}
-	
-	public String getTopic() {
-		return this.getParameter(KnowWEAttributes.TOPIC);
-	}
-	
-	public String getUser() {
-		return this.getParameter(KnowWEAttributes.USER);
 	}
 	
 	public KnowWEUserContext getWikiContext() {
