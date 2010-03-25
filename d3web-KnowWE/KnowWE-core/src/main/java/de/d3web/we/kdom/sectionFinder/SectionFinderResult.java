@@ -29,31 +29,37 @@ import de.d3web.we.kdom.SectionID;
 
 
 public class SectionFinderResult implements Comparable<SectionFinderResult>{
-	
+
 	protected int start = Integer.MIN_VALUE;
-	
+
 	protected int end = Integer.MIN_VALUE;
-	
+
 	protected SectionID id = null;
-	
+
 	public SectionFinderResult(int start, int end, SectionID id) {
 		this.id = id;
 		this.start = start;
 		this.end = end;
 	}
-	
+
 	public SectionFinderResult(int start, int end) {
 		this.start = start;
 		this.end = end;
 	}
-	
+
 	public static List<SectionFinderResult> createSingleItemList(SectionFinderResult s){
 		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>();
 		resultList.add(s);
 		return resultList;
 	}
-	
-	
+
+	public static List<SectionFinderResult> createSingleItemResultList(int begin, int end) {
+		SectionFinderResult s = new SectionFinderResult(begin, end);
+		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>();
+		resultList.add(s);
+		return resultList;
+	}
+
 
 	public SectionID getId() {
 		return id;
@@ -72,11 +78,11 @@ public class SectionFinderResult implements Comparable<SectionFinderResult>{
 		return Integer.valueOf(this.getStart())
 				.compareTo(Integer.valueOf(o.getStart()));
 	}
-	
+
 	@Override
 	public String toString() {
 		return super.toString() + " [" + getStart() + " - " + getEnd() + "]";
 	}
-	
+
 
 }
