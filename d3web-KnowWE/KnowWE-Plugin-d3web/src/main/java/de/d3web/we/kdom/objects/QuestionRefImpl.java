@@ -10,7 +10,7 @@ public class QuestionRefImpl<Question> extends QuestionRef<Question> {
 
 
 	@Override
-	public boolean objectExisting(Section<? extends ObjectRef<Question>> s) {
+	public boolean objectExisting(Section<?> s) {
 		Section<QuestionRef> qidSection = (Section<QuestionRef>) s;
 
 		String name = qidSection.get().getID(qidSection);

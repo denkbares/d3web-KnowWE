@@ -16,7 +16,7 @@ public class AnswerRefImpl<Answer> extends AnswerRef<Answer> {
 
 
 	@Override
-	public boolean objectExisting(Section<? extends ObjectRef<Answer>> s) {
+	public boolean objectExisting(Section<?> s) {
 		Section<AnswerRef<Answer>> a = (Section<AnswerRef<Answer>>) s;
 
 		Section<? extends QuestionRef> qidSection =

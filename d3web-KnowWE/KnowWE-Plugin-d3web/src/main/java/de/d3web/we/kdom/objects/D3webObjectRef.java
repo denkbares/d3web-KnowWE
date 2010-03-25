@@ -5,8 +5,9 @@ import de.d3web.we.kdom.Section;
 public abstract class D3webObjectRef<T> extends ObjectRef<T> {
 
 
+
 	@Override
-	public String getID(Section<? extends ObjectIDContainer<T>> s) {
+	public String getID(Section s) {
 		String content = s.getOriginalText();
 
 		String trimmed = content.trim();
