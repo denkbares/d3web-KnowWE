@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom;
@@ -26,8 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 import de.d3web.report.Message;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -122,7 +120,9 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 */
 	public AbstractKnowWEObjectType() {
-		//TODO: vb: this is dangerous behavior. Should be replaced. The objects "init" method is called, before it is completely initialized by its own constructor.
+		// TODO: vb: this is dangerous behavior. Should be replaced. The objects
+		// "init" method is called, before it is completely initialized by its
+		// own constructor.
 		init();
 	}
 
@@ -172,8 +172,8 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Returns all the messages stored for this section put doesn't create a new
-	 * empty MessageList in the SectionStore if no MessageList is there yet. Returns
-	 * <tt>null</tt> in this case.
+	 * empty MessageList in the SectionStore if no MessageList is there yet.
+	 * Returns <tt>null</tt> in this case.
 	 * 
 	 * @param s
 	 * @return
@@ -184,11 +184,12 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 				MESSAGES_STORE_KEY);
 		if (o == null) {
 			return null;
-		} else {
+		}
+		else {
 			return toMessages(o, article, s);
 		}
 	}
-	
+
 	/**
 	 * Returns all the messages stored for this section.
 	 * 
@@ -225,7 +226,8 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 			}
 			childrenTypes.set(childrenTypes.indexOf(toReplace), type);
 
-		} else {
+		}
+		else {
 			throw new InvalidKDOMSchemaModificationOperation("class"
 					+ c.toString() + " may not be replaced by: "
 					+ type.getClass().toString()
@@ -237,12 +239,10 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/**
 	 * Stores a list of messages under to message-store-key
 	 * 
-	 * @param article
-	 *            is the article, the message is getting stored for. Be aware,
-	 *            that this is not automatically the article the section is
-	 *            directly linked to (because this Section might be included),
-	 *            but the article that is calling this for example while
-	 *            revising.
+	 * @param article is the article, the message is getting stored for. Be
+	 *        aware, that this is not automatically the article the section is
+	 *        directly linked to (because this Section might be included), but
+	 *        the article that is calling this for example while revising.
 	 * @param s
 	 * @param messages
 	 */
@@ -326,21 +326,18 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	public List<KnowWEObjectType> getAllowedChildrenTypes() {
 		return Collections.unmodifiableList(childrenTypes);
 	}
-	
+
 	public boolean addChildType(KnowWEObjectType t) {
 		return this.childrenTypes.add(t);
 	}
-	
+
 	public boolean removeChildType(KnowWEObjectType t) {
 		return this.childrenTypes.remove(t);
 	}
-	
+
 	public KnowWEObjectType removeChild(int i) {
 		return this.childrenTypes.remove(i);
 	}
-	
-	
-	
 
 	@Override
 	@Deprecated
@@ -360,7 +357,8 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.KnowWErticle, de.d3web.we.kdom.Section)
+	 * de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.KnowWErticle
+	 * , de.d3web.we.kdom.Section)
 	 */
 	@Override
 	public final void reviseSubtree(KnowWEArticle article, Section s) {
@@ -368,29 +366,39 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 			try {
 				KDOMReportMessage message = handler.reviseSubtree(article, s);
 				KDOMReportMessage.storeMessage(s, message);
-				
+
 			}
 			catch (Throwable e) {
 				String text = "unexpected internal error in subtree handler '" + handler + "'";
 				Logger.getLogger(getClass()).error(text, e);
 				Message msg = new Message(text + ": " + e);
 				storeMessages(article, s, Arrays.asList(msg));
-				// TODO: vb: store the error also in the article. (see below for more details)
+				// TODO: vb: store the error also in the article. (see below for
+				// more details)
 				// 
 				// Idea 1:
-				// Any unexpected error (and therefore catched here) of the ReviseSubtreeHandlers
-				// shall be remarked at the "article" object. When rendering the article page,
-				// the error should be placed at the top level. A KnowWEPlugin to list all
-				// erroneous articles as links with its errors shall be introduced. A call to this
+				// Any unexpected error (and therefore catched here) of the
+				// ReviseSubtreeHandlers
+				// shall be remarked at the "article" object. When rendering the
+				// article page,
+				// the error should be placed at the top level. A KnowWEPlugin
+				// to list all
+				// erroneous articles as links with its errors shall be
+				// introduced. A call to this
 				// plugin should be placed in the LeftMenu-page.
 				//
 				// Idea 2:
-				// The errors are not marked at the article, but as a special message
-				// type is added to this section. When rendering the page, the error 
-				// message should be placed right before the section and the content 
-				// of the section as original text in pre-formatted style (no renderer 
+				// The errors are not marked at the article, but as a special
+				// message
+				// type is added to this section. When rendering the page, the
+				// error
+				// message should be placed right before the section and the
+				// content
+				// of the section as original text in pre-formatted style (no
+				// renderer
 				// used!):
-				// {{{ <div class=error>EXCEPTION WITH MESSAGE</div> ORIGINAL TEXT }}}
+				// {{{ <div class=error>EXCEPTION WITH MESSAGE</div> ORIGINAL
+				// TEXT }}}
 			}
 		}
 		s.setReusedBy(article.getTitle(), true);
@@ -403,20 +411,19 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 */
 	@Override
 	public KnowWEDomRenderer getRenderer() {
-		if (customRenderer != null)
-			return customRenderer;
+		if (customRenderer != null) return customRenderer;
 
 		return getDefaultRenderer();
 	}
-	
+
 	public KnowWEDomRenderer getErrorRenderer() {
 		return DefaultErrorRenderer.getInstance();
 	}
-	
+
 	public de.d3web.we.kdom.report.MessageRenderer getNoticeRenderer() {
 		return DefaultNoticeRenderer.getInstance();
 	}
-	
+
 	public de.d3web.we.kdom.report.MessageRenderer getWarningRenderer() {
 		return DefaultWarningRenderer.getInstance();
 	}
@@ -424,8 +431,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	protected KnowWEDomRenderer getDefaultRenderer() {
 		return DelegateRenderer.getInstance();
 	}
-	
-	
 
 	/**
 	 * Allows to set a custom renderer for this type
@@ -435,7 +440,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	public void setCustomRenderer(KnowWEDomRenderer renderer) {
 		this.customRenderer = renderer;
 	}
-
 
 	/*
 	 * (non-Javadoc)

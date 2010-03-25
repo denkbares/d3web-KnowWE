@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.rendering;
@@ -23,8 +23,7 @@ package de.d3web.we.kdom.rendering;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -106,8 +105,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 			KnowWEUserContext user, StringBuilder builder) {
 
 		boolean renderTypes = isRenderTypes(user.getUrlParameterMap());
-		if (renderTypes)
-			renderType(section, true, builder);
+		if (renderTypes) renderType(section, true, builder);
 
 		try {
 			List<Section<?>> subSections = section.getChildren();
@@ -123,25 +121,26 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 				// }
 				renderAnchor(section, builder);
 				builder.append(section.getOriginalText());
-			} else {
+			}
+			else {
 				for (Section<?> subSection : subSections) {
 					renderSubSection(article, subSection, user, builder);
 				}
 			}
-		} catch (Throwable e) {
+		}
+		catch (Throwable e) {
 			// wow, that was evil!
 			// System.out.println(section.getObjectType());
 			// e.printStackTrace();
 			// now we log instead AND report the error to the user
-			Logger.getLogger(getClass()).warn(
-					"internal error while rendering section", e);
+			Logger.getLogger(getClass().getName()).warning(
+					"internal error while rendering section" + e.getMessage());
 			builder.append(KnowWEUtils.maskHTML("<span class='warning'>"));
 			builder.append("internal error while rendering section: " + e);
 			builder.append(KnowWEUtils.maskHTML("</span>"));
 		}
 
-		if (renderTypes)
-			renderType(section, false, builder);
+		if (renderTypes) renderType(section, false, builder);
 	}
 
 	protected void renderSubSection(KnowWEArticle article, Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
@@ -180,15 +179,14 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	}
 
 	private void renderAnchor(Section<?> subSection, StringBuilder builder) {
-//		String anchor = subSection.getId();
-//		builder.append(KnowWEUtils.maskHTML("<a name='kdomID-"+anchor+"'></a>"));
+		// String anchor = subSection.getId();
+		// builder.append(KnowWEUtils.maskHTML("<a name='kdomID-"+anchor+"'></a>"));
 	}
 
 	private void renderType(Section<?> section, boolean openIt,
 			StringBuilder builder) {
 		builder.append(KnowWEUtils.maskHTML("<sub>&lt;"));
-		if (!openIt)
-			builder.append('/');
+		if (!openIt) builder.append('/');
 		builder.append(section.getObjectType().getName());
 		builder.append(KnowWEUtils.maskHTML("&gt;</sub>"));
 	}

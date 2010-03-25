@@ -61,6 +61,15 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.logging.Logging;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
+/**
+ * This class provides an interface for semantic interaction with the
+ * triplestore. SemanticCore manages namespaces, queries and the addition of
+ * statementes. It is a singleton which is initialised at boottime (of KnowWE)
+ * See also: {@link UpperOntology} {@link TaggingMangler}
+ * 
+ * @author FHaupt
+ * @created Mar 25, 2010
+ */
 public class SemanticCore {
 
 	private final UpperOntology uo;
@@ -293,6 +302,15 @@ public class SemanticCore {
 
 	}
 
+	/**
+	 * Gets a contet for a section. Is used for differentiation of statements in
+	 * the triple-store
+	 * 
+	 * @author FHaupt
+	 * @created Mar 25, 2010
+	 * @param sec
+	 * @return
+	 */
 	public Resource getContext(Section sec) {
 		String name = sec.getId().hashCode() + "";
 		Resource context = contextmap.get(name);
@@ -502,12 +520,12 @@ public class SemanticCore {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
 		}
 		catch (RepositoryException e) {
-			org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(
-					org.apache.log4j.Level.ERROR, e.getMessage());
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.SEVERE, e.getMessage());
 		}
 		catch (MalformedQueryException e) {
-			org.apache.log4j.Logger.getLogger(this.getClass().getName()).log(
-					org.apache.log4j.Level.ERROR, e.getMessage());
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.SEVERE, e.getMessage());
 		}
 		TupleQueryResult result = null;
 		if (query == null) return resultlist;

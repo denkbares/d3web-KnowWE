@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 /**
@@ -23,7 +23,8 @@
  */
 package de.d3web.we.core.semantic;
 
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
+
 import org.openrdf.model.URI;
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.MalformedQueryException;
@@ -36,6 +37,8 @@ import org.openrdf.repository.RepositoryException;
 import de.d3web.we.core.SemanticCore;
 
 /**
+ * This class manages semantic properties, n-ary as well as simple ones
+ * 
  * @author kazamatzuri
  * 
  */
@@ -50,8 +53,7 @@ public class PropertyManager {
 	 * @return an instance
 	 */
 	public static synchronized PropertyManager getInstance() {
-		if (instance == null)
-			instance = new PropertyManager();
+		if (instance == null) instance = new PropertyManager();
 		return instance;
 	}
 
@@ -89,8 +91,7 @@ public class PropertyManager {
 		// TODO evil hack, to get going
 		if (property.getLocalName().contains("subClassOf")
 				|| property.getLocalName().contains("type")
-				|| property.getLocalName().contains("subPropertyOf"))
-			return true;
+				|| property.getLocalName().contains("subPropertyOf")) return true;
 		String querystring = SemanticCore.getInstance().getSparqlNamespaceShorts();
 		String objectpropquery = querystring + "ASK WHERE { <"
 				+ property.toString() + "> rdf:type owl:ObjectProperty }";
@@ -102,16 +103,19 @@ public class PropertyManager {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		} catch (RepositoryException e) {
-			Logger.getLogger(this.getClass().getName()).log(
-					org.apache.log4j.Level.ERROR, e.getMessage());
-		} catch (MalformedQueryException e) {
-			Logger.getLogger(this.getClass().getName()).log(
-					org.apache.log4j.Level.ERROR, e.getMessage());
+		}
+		catch (RepositoryException e) {
+			Logger.getLogger(this.getClass().getName()).severe(
+					e.getMessage());
+		}
+		catch (MalformedQueryException e) {
+			Logger.getLogger(this.getClass().getName()).severe(
+					e.getMessage());
 		}
 		try {
 			result = ((BooleanQuery) query).evaluate();
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -119,16 +123,19 @@ public class PropertyManager {
 		if (!result) {
 			try {
 				query = con.prepareQuery(QueryLanguage.SPARQL, objectpropquery);
-			} catch (RepositoryException e) {
-				Logger.getLogger(this.getClass().getName()).log(
-						org.apache.log4j.Level.ERROR, e.getMessage());
-			} catch (MalformedQueryException e) {
-				Logger.getLogger(this.getClass().getName()).log(
-						org.apache.log4j.Level.ERROR, e.getMessage());
+			}
+			catch (RepositoryException e) {
+				Logger.getLogger(this.getClass().getName()).severe(
+						e.getMessage());
+			}
+			catch (MalformedQueryException e) {
+				Logger.getLogger(this.getClass().getName()).severe(
+						e.getMessage());
 			}
 			try {
 				result = ((BooleanQuery) query).evaluate();
-			} catch (QueryEvaluationException e) {
+			}
+			catch (QueryEvaluationException e) {
 				e.printStackTrace();
 			}
 		}
@@ -136,16 +143,19 @@ public class PropertyManager {
 			try {
 				query = con.prepareQuery(QueryLanguage.SPARQL,
 						datatypepropquery);
-			} catch (RepositoryException e) {
-				Logger.getLogger(this.getClass().getName()).log(
-						org.apache.log4j.Level.ERROR, e.getMessage());
-			} catch (MalformedQueryException e) {
-				Logger.getLogger(this.getClass().getName()).log(
-						org.apache.log4j.Level.ERROR, e.getMessage());
+			}
+			catch (RepositoryException e) {
+				Logger.getLogger(this.getClass().getName()).severe(
+						e.getMessage());
+			}
+			catch (MalformedQueryException e) {
+				Logger.getLogger(this.getClass().getName()).severe(
+						e.getMessage());
 			}
 			try {
 				result = ((BooleanQuery) query).evaluate();
-			} catch (QueryEvaluationException e) {
+			}
+			catch (QueryEvaluationException e) {
 				e.printStackTrace();
 			}
 		}
@@ -197,16 +207,19 @@ public class PropertyManager {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		} catch (RepositoryException e) {
-			Logger.getLogger(this.getClass().getName()).log(
-					org.apache.log4j.Level.ERROR, e.getMessage());
-		} catch (MalformedQueryException e) {
-			Logger.getLogger(this.getClass().getName()).log(
-					org.apache.log4j.Level.ERROR, e.getMessage());
+		}
+		catch (RepositoryException e) {
+			Logger.getLogger(this.getClass().getName()).severe(
+					e.getMessage());
+		}
+		catch (MalformedQueryException e) {
+			Logger.getLogger(this.getClass().getName()).severe(
+					e.getMessage());
 		}
 		try {
 			result = ((BooleanQuery) query).evaluate();
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
