@@ -305,7 +305,7 @@ public class HTMLDialogRenderer {
 				    + "qid: '"+q.getId()+"'"
 					+ "}\" ";
 				
-			if (q.getValue(c).equals(answerChoice)) {
+			if (q.getValue(c)!=null && q.getValue(c).equals(answerChoice)) {
 				cssclass = "fieldcell answerTextActive";
 			}
 			String spanid = "span_" + q.getId() + "_" + answerChoice.getId();
