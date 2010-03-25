@@ -6,13 +6,13 @@ import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
 class RenameAnswerT extends Rename {
 	@Override
 	public Class<? extends KnowWEObjectType> findRenamingType() {
-		return QuestionTreeAnswerID.class;
+		return QuestionTreeAnswerDef.class;
 	}
 	
 	@Override
 	public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
 		return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/" +
-		"SubTree/SubTree/SubTree/DashTreeElement/QuestionDashTreeElementContent/AnswerLine/QuestionTreeAnswerID";
+		"SubTree/SubTree/SubTree/DashTreeElement/QuestionDashTreeElementContent/AnswerLine/QuestionTreeAnswerDef";
 	}
 	
 	@Override
