@@ -29,7 +29,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Renders the SearchMask for the KnowWEObjectTypeBrowser.
- * See also KnowWEObjectTypeBrowserRenderer.
+ * @see KnowWEObjectTypeBrowserRenderer.
  * 
  * @author Johannes Dienst
  *

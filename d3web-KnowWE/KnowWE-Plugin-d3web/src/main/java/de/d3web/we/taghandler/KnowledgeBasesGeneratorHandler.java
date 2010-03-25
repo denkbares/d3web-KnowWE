@@ -33,7 +33,7 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 /**
  * Renders the mask for Generating KnowledgeBases
  * from jar-files into the Wiki
- * See also: GenerateKBRenderer
+ * @See GenerateKBRenderer
  * 
  * @author Johannes Dienst
  *

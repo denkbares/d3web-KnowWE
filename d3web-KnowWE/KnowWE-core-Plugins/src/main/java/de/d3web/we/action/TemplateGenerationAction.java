@@ -12,6 +12,17 @@ import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.Template;
 import de.d3web.we.taghandler.TemplateTagHandler;
 
+/**
+ * Creates a new WikiPage out of a Template text:
+ * <code> <Template> text </Template> </code>
+ * 
+ * @see TemplateType
+ * @see TemplateTagHandler
+ * 
+ * 
+ * @author Johannes Dienst
+ *
+ */
 public class TemplateGenerationAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
@@ -60,7 +71,6 @@ public class TemplateGenerationAction extends DeprecatedAbstractKnowWEAction {
 		} catch (Exception e) {
 			Logger.getLogger(this.getClass().getName()).severe(
 					"Problem generating page from template:" + e.getMessage());
-
 		}
 		
 		return "<p class='error box'>"

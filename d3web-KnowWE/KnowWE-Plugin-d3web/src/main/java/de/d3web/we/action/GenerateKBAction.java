@@ -44,7 +44,7 @@ import de.d3web.we.utils.KopicWriter;
 
 /**
  * Creates/Appends KnowledgeBases from jar-files into the Wiki.
- * See also: KnowledgeBasesGeneratorHandler
+ * @see KnowledgeBasesGeneratorHandler
  * 
  * @author Johannes Dienst
  *

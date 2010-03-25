@@ -38,6 +38,14 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.wikiConnector.ConnectorAttachment;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
+/**
+ * Used in the tests. A WikiConnector is needed to initialize
+ * the KnowWEEnvironment.
+ * The methods are empty.
+ * 
+ * @author Johannes Dienst
+ *
+ */
 public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
 	@Override

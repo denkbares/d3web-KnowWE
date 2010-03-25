@@ -37,7 +37,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Johannes Dienst
  *
  * Used to Generate WikiPages out of a TemplateType
- * @See TemplateType
+ * @see TemplateType
+ * @see TemplateGenerationAction
  */
 public class TemplateTagHandler extends AbstractTagHandler{
 
@@ -113,6 +114,12 @@ public class TemplateTagHandler extends AbstractTagHandler{
 		return html.toString();
 	}
 
+	/**
+	 * Finds all TemplateKnowWEObjectTypes in an article.
+	 * 
+	 * @param article
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static List<Section<Template>> getTemplateTypes(KnowWEArticle article) {
 		ArrayList<Section<? extends KnowWEObjectType>> found =

@@ -8,6 +8,15 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
+/**
+ * Template Type used to generate WikiPages out of templates.
+ * 
+ * @see TemplateTagHandler
+ * @see TemplateGenerationAction
+ * 
+ * @author Johannes Dienst
+ *
+ */
 public class Template extends AbstractXMLObjectType {
 
 	private static Template instance;

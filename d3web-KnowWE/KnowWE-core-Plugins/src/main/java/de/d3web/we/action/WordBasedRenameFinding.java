@@ -22,6 +22,16 @@ package de.d3web.we.action;
 
 import de.d3web.we.kdom.Section;
 
+/**
+ * Renaming Tool and some other classes use this class to display
+ * their results and get the context-text of the finding.
+ * 
+ * @see WordBasedRenamingAction
+ * @see TypeBrowserAction
+ * 
+ * @author Johannes Dienst
+ *
+ */
 public class WordBasedRenameFinding implements Comparable {
 
 	private Section sec;
