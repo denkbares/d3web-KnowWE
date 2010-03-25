@@ -18,14 +18,14 @@
  */
 package de.d3web.we.kdom.objects;
 
-import de.d3web.we.kdom.objects.D3webID;
+import de.d3web.we.kdom.objects.D3webObjectDef;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 /**
  * KnowWEObjectType representing text containing information
  *
  * @author Markus Friedrich (denkbares GmbH)
  */
-public class InfoLine extends D3webID<String> {
+public class InfoLine extends D3webObjectDef<String> {
 
 	public InfoLine() {
 		super("info");

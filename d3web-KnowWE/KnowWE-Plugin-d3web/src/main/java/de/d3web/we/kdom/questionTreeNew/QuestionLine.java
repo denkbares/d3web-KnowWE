@@ -17,9 +17,9 @@ import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.report.SimpleMessageError;
-import de.d3web.we.kdom.objects.QuestionID;
-import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
-import de.d3web.we.kdom.objects.QuestionnaireID;
+import de.d3web.we.kdom.objects.QuestionDef;
+import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
+import de.d3web.we.kdom.objects.QuestionnaireDef;
 import de.d3web.we.kdom.questionTreeNew.QuestionLine.QuestionTypeDeclaration.QuestionType;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -62,7 +62,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	private KnowWEObjectType createQuestionDefTypeBefore(
 			KnowWEObjectType typeAfter) {
-		QuestionID qid = new QuestionID();
+		QuestionDef qid = new QuestionDef();
 		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
 		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
 		qid.addReviseSubtreeHandler(new CreateQuestionHandler());
@@ -80,7 +80,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			//Section<QuestionID> qidSection = ((Section<QuestionID>) s);
 			
-			Section<QuestionID> qidSection = badCast(new QuestionID(), s);
+			Section<QuestionDef> qidSection = badCast(new QuestionDef(), s);
 
 			String name = qidSection.get().getID(qidSection);
 
@@ -91,8 +91,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
 					.getDashTreeFather(element);
 
-			Section<QuestionTreeAnswerID> answerSec = dashTreeFather
-					.findSuccessor(QuestionTreeAnswerID.class);
+			Section<QuestionTreeAnswerDef> answerSec = dashTreeFather
+					.findSuccessor(QuestionTreeAnswerDef.class);
 			Section<NumericCondLine> numCondSec = dashTreeFather
 			.findSuccessor(NumericCondLine.class);
 
@@ -128,7 +128,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article,
 				Section sec) {
 
-			Section<QuestionID> qidSection = (sec);
+			Section<QuestionDef> qidSection = (sec);
 
 			String name = qidSection.get().getID(qidSection);
 
@@ -210,15 +210,15 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				Section<? extends DashTreeElement> dashTreeElement,
 				KnowledgeBaseManagement mgn) {
 
-			if (dashTreeElement.findSuccessor(QuestionnaireID.class) != null) {
-				String qClassName = dashTreeElement.findSuccessor(QuestionnaireID.class).getOriginalText();
+			if (dashTreeElement.findSuccessor(QuestionnaireDef.class) != null) {
+				String qClassName = dashTreeElement.findSuccessor(QuestionnaireDef.class).getOriginalText();
 				QASet parent = mgn.findQContainer(qClassName);
 				if (parent != null)
 					return parent;
 			}
 
-			if (dashTreeElement.findSuccessor(QuestionID.class) != null) {
-				String qName = dashTreeElement.findSuccessor(QuestionID.class)
+			if (dashTreeElement.findSuccessor(QuestionDef.class) != null) {
+				String qName = dashTreeElement.findSuccessor(QuestionDef.class)
 						.getOriginalText();
 				QASet parent = mgn.findQuestion(qName);
 				if (parent != null)

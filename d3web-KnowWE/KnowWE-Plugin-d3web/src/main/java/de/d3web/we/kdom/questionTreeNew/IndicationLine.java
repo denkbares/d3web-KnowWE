@@ -13,7 +13,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.NoSuchObjectError;
-import de.d3web.we.kdom.objects.QuestionnaireID;
+import de.d3web.we.kdom.objects.QuestionnaireDef;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.CreateRelationFailed;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -27,7 +27,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 		this.sectionFinder = AllTextFinderTrimmed.getInstance();
 
-		QuestionnaireID qc = new QuestionnaireID();
+		QuestionnaireDef qc = new QuestionnaireDef();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 		qc.setSectionFinder(AllTextFinderTrimmed.getInstance());
 		qc.addReviseSubtreeHandler(new CreateIndication());
@@ -42,7 +42,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, s);
 
-			Section<QuestionnaireID> indicationSec = (s);
+			Section<QuestionnaireDef> indicationSec = (s);
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils

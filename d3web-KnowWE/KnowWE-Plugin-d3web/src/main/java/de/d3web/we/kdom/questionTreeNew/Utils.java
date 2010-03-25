@@ -13,8 +13,8 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.FindingToConditionBuilder;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionID;
-import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
+import de.d3web.we.kdom.objects.QuestionDef;
+import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
 
 public class Utils {
 
@@ -59,9 +59,9 @@ public class Utils {
 			Section<? extends DashTreeElement> father,
 			Section<? extends DashTreeElement> grandFather) {
 
-		Section<QuestionTreeAnswerID> answerSec = father
-				.findSuccessor(QuestionTreeAnswerID.class);
-		Section<QuestionID> qSec = grandFather.findSuccessor(QuestionID.class);
+		Section<QuestionTreeAnswerDef> answerSec = father
+				.findSuccessor(QuestionTreeAnswerDef.class);
+		Section<QuestionDef> qSec = grandFather.findSuccessor(QuestionDef.class);
 
 		Question q = qSec.get().getObject(qSec);
 

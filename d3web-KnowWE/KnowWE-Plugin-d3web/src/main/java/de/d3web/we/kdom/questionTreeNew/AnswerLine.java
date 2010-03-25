@@ -10,8 +10,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionID;
-import de.d3web.we.kdom.objects.QuestionTreeAnswerID;
+import de.d3web.we.kdom.objects.QuestionDef;
+import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.NewObjectCreated;
@@ -42,7 +42,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 			}
 		};
 
-		QuestionTreeAnswerID aid = new QuestionTreeAnswerID();
+		QuestionTreeAnswerDef aid = new QuestionTreeAnswerDef();
 		aid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR6));
 		aid.setSectionFinder(AllTextFinderTrimmed.getInstance());
 		aid.addReviseSubtreeHandler(new createAnswerHandler());
@@ -54,23 +54,24 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 		@SuppressWarnings("unchecked")
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			
-			
-			
-			if(s.getObjectType() instanceof QuestionTreeAnswerID) {
+
+
+
+			if(s.getObjectType() instanceof QuestionTreeAnswerDef) {
 				//"safe unsafe cast"
-				Section<QuestionTreeAnswerID> answer = s;
+				Section<QuestionTreeAnswerDef> answer = s;
 				String name = answer.get().getID(answer);
-				Section<? extends QuestionID> questionID = answer.get().getQuestionSection(answer);
-				
+				Section<? extends QuestionDef> questionID = answer.get().getQuestionSection(
+						answer);
+
 				//Section<QuestionID> questionID = ((QuestionTreeAnswerID)answer.getObjectType()).getQuestionSection(answer);
 				Question q = questionID.get().getObject(questionID);
-				
-				
+
+
 				KnowledgeBaseManagement mgn = D3webModule
 				.getKnowledgeRepresentationHandler(article.getWeb())
 				.getKBM(article, s);
-				
+
 				if(q instanceof QuestionChoice) {
 					Answer a = mgn.addChoiceAnswer((QuestionChoice)q, name);
 					answer.get().storeObject(answer, a);

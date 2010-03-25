@@ -29,7 +29,8 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.constraint.ExclusiveType;
 import de.d3web.we.kdom.dashTree.LineEndComment;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -57,56 +58,45 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new AllTextFinderTrimmed();
 		this.setCustomRenderer(new de.d3web.we.kdom.renderer.KDOMDepthFontSizeRenderer());
 
-
 		// a composite condition may either be a BracedCondition,...
 		BracedCondition braced = new BracedCondition(); // contains the brackets
-														// and the
-														// endline-comments
+		// and the
+		// endline-comments
 		this.childrenTypes.add(braced);
 		BracedConditionContent bracedContent = new BracedConditionContent(); // without
-																				// brackets
-																				// and
-																				// comments
+		// brackets
+		// and
+		// comments
 		braced.addChildType(bracedContent);
 		braced.addChildType(new LineEndComment()); // explicit nodes for the
-													// endline-comments
+		// endline-comments
 		bracedContent.addChildType(this);
-
 
 		// ... a negated expression,...
 		NegatedExpression negatedExpression = new NegatedExpression();
 		this.childrenTypes.add(negatedExpression);
 		negatedExpression.addChildType(this); // a NegatedExpression again
-												// allows for a
-												// CompositeCondition
-
+		// allows for a
+		// CompositeCondition
 
 		// ...a conjuctive expression,...
 		Conjunct conj = new Conjunct();
 		this.addChildType(conj);
 		conj.addChildType(this); // Conjuncts again allow for a
-									// CompositeCondition
-
+		// CompositeCondition
 
 		// ... a disjuctive expression,...
 		Disjunct disj = new Disjunct();
 		this.addChildType(disj);
 		disj.addChildType(this); // Disjuncts again allow for a
-									// CompositeCondition
-
+		// CompositeCondition
 
 		// ... or finally a TerminalCondition which stops the recursive descent
 		this.addChildType(new TerminalCondition());
 	}
 }
 
-class TerminalCondition extends DefaultAbstractKnowWEObjectType {
-	@Override
-	protected void init() {
-		this.sectionFinder = AllTextFinderTrimmed.getInstance();
-		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR6));
-	}
-}
+
 
 class Disjunct extends DefaultAbstractKnowWEObjectType {
 	@Override
@@ -243,31 +233,47 @@ class BracedCondition extends DefaultAbstractKnowWEObjectType {
 			String trimmed = text.trim();
 			int leadingSpaces = text.indexOf(trimmed);
 			int followingSpaces = text.length() - trimmed.length() - leadingSpaces;
+			boolean startsWithOpen = trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN));
 			int closingBracket = SplitUtility.findIndexOfClosingBracket(trimmed, 0,
 					CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 
+			// if it doesnt start with an opening bracket
+			if (!startsWithOpen) {
+				// its not an embraced expression for sure => return null
+				return null;
+			}
+
+			// throw error if no corresponding closing bracket can be found
+			if (closingBracket == -1) {
+				KDOMReportMessage.storeMessage(father, new SyntaxError("missing \")\""));
+				return null;
+			}
+
 			// an embracedExpression needs to to start and end with '(' and ')'
-			if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))
+			if (startsWithOpen
 					&& trimmed.endsWith(Character.toString(CompositeCondition.BRACE_CLOSED))) {
-				// and the ending ')' needs to clse the opening
+				// and the ending ')' needs to close the opening
 				if (closingBracket == trimmed.length() - 1) {
 					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
 							leadingSpaces, text.length() - followingSpaces));
 				}
+
 			}
 
 			// OR an embracedExpression can be concluded with a lineEnd-comment
 			int lastEndLineCommentSymbol = SplitUtility.lastIndexOfUnquoted(text, "//");
 			// so has to start with '(' and have a lineend-comment-sign after
 			// the closing bracket but nothing in between!
-			if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))
-					&& lastEndLineCommentSymbol > -1) {
-				// TODO fix: < 3 is inaccurate
-				// better check that there is no other expression in between
-				if (lastEndLineCommentSymbol - closingBracket < 3) {
-					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
-							leadingSpaces, text.length()));
+			if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {
+				if (lastEndLineCommentSymbol > -1) {
+					// TODO fix: < 3 is inaccurate
+					// better check that there is no other expression in between
+					if (lastEndLineCommentSymbol - closingBracket < 3) {
+						return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+								leadingSpaces, text.length()));
+					}
 				}
+
 			}
 
 			return null;

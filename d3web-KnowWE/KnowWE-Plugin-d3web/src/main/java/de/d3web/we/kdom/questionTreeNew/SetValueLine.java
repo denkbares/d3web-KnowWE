@@ -21,7 +21,7 @@ import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionID;
+import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.CreateRelationFailed;
@@ -60,7 +60,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	private KnowWEObjectType createObjectRefTypeBefore(
 			KnowWEObjectType typeAfter) {
-		QuestionID qid = new QuestionID();
+		QuestionDef qid = new QuestionDef();
 		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
 		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
 		qid.addReviseSubtreeHandler(new CreateSetValueRuleHandler());

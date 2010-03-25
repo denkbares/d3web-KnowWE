@@ -10,7 +10,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionnaireID;
+import de.d3web.we.kdom.objects.QuestionnaireDef;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.NewObjectCreated;
@@ -27,7 +27,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 
 		initSectionFinder();
 
-		QuestionnaireID qc = new QuestionnaireID();
+		QuestionnaireDef qc = new QuestionnaireDef();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR5));
 		qc.setSectionFinder(AllTextFinderTrimmed.getInstance());
 		qc.addReviseSubtreeHandler(new CreateQuestionnaireHandler());
@@ -65,7 +65,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			
-			Section<QuestionnaireID> qcSec = (s);
+			Section<QuestionnaireDef> qcSec = (s);
 			
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())

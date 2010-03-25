@@ -52,29 +52,29 @@ import de.d3web.xcl.inference.PSMethodXCL;
 public class KBRenderer extends AbstractTagHandler {
 
 	public KBRenderer() {
-		super("renderKnowledge");		
+		super("renderKnowledge");
 	}
-	
+
 	@Override
 	public String getDescription(KnowWEUserContext user) {
 		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.KBRenderer.description");
 	}
-	
+
 	@Override
 	public String render(String topic, KnowWEUserContext user,Map<String,String> values, String web) {
 		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
-		
+
 		StringBuilder text = new StringBuilder("<div id=\"knowledge-panel\" class=\"panel\"><h3>" + rb.getString("KnowWE.KBRenderer.header") + "</h3>");
 		text.append("<div>");
 		text.append("<p>");
 		if (service != null) {
 //			text.append("<h4>Knowledge of article:</h4>";
 			KnowledgeBase kb = service.getBase();
-			
+
 			List<Diagnosis> diagnosis = kb.getDiagnoses();
-			
+
 			boolean appendedSolutionsHeadline = false;
 			for (Diagnosis diagnosis2 : diagnosis) {
 				if (!diagnosis2.getName().equals("P000")) {
@@ -111,7 +111,7 @@ public class KBRenderer extends AbstractTagHandler {
 			parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 			Collection<KnowledgeSlice> rules = kb
 					.getAllKnowledgeSlices();
-			
+
 			boolean appendedRulesHeadline = false;
 			Map<String, String> idMap = new HashMap<String, String>();
 			for (KnowledgeSlice knowledgeSlice : rules) {
@@ -126,34 +126,34 @@ public class KBRenderer extends AbstractTagHandler {
 							appendedRulesHeadline = true;
 							List<Section<Rule>> allRules = new ArrayList<Section<de.d3web.we.kdom.rules.Rule>>();
 							List<Section<BulletContentType>> allBulletContentTypes = new ArrayList<Section<BulletContentType>>();
-							
+
 							KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
 									.getSection().findSuccessorsOfType(BulletContentType.class, allBulletContentTypes);
 							KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
 							.getSection().findSuccessorsOfType(Rule.class, allRules);
 							for (Section<Rule> rule:allRules) {
-								String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), topic, 
+								String kbRuleId = (String) KnowWEUtils.getStoredObject(rule.getWeb(), topic,
 										rule.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
 								idMap.put(kbRuleId, rule.getId());
 							}
-							
+
 							for (Section<BulletContentType> bullet:allBulletContentTypes) {
-								String kbRuleId = (String) KnowWEUtils.getStoredObject(bullet.getWeb(), topic, 
+								String kbRuleId = (String) KnowWEUtils.getStoredObject(bullet.getWeb(), topic,
 										bullet.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
 								idMap.put(kbRuleId, bullet.getId());
 							}
 						}
-							
+
 						String kdomid = idMap.get(r.getId());
-			
+
 						if(kdomid != null) {
-							String button = ("<img src=KnowWEExtension/images/page_white_find.png " 
-									+ "class=\"highlight-rule\" " 
+							String button = ("<img src=KnowWEExtension/images/page_white_find.png "
+									+ "class=\"highlight-rule\" "
 									+ "rel=\"{kdomid: '"+kdomid+"', topic: '"+topic+"', depth: 0, breadth: 0}\""
 									+ "/></img>");
 							text.append(button);
 						}
-						
+
 						text.append("Rule: " +VerbalizationManager.getInstance().verbalize(
 								r.getCondition(), RenderingFormat.PLAIN_TEXT));
 						text.append(" --> ");
@@ -163,7 +163,7 @@ public class KBRenderer extends AbstractTagHandler {
 					}
 				}
 			}
-			
+
 			Collection<KnowledgeSlice> xclRels = kb
 					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
 			boolean appendedXCLHeadline = false;
@@ -177,17 +177,17 @@ public class KBRenderer extends AbstractTagHandler {
 						appendedXCLHeadline = true;
 					}
 					de.d3web.xcl.XCLModel model = ((de.d3web.xcl.XCLModel) slice);
-					
+
 					//adds tresholds if different from default
 					String thresholds = "";
-					if (model.getEstablishedThreshold() != XCLModel.defaultEstablishedThreshold || 
+					if (model.getEstablishedThreshold() != XCLModel.defaultEstablishedThreshold ||
 							model.getSuggestedThreshold() != XCLModel.defaultSuggestedThreshold ||
 							model.getMinSupport() != XCLModel.defaultMinSupport) {
 						thresholds = " [" + model.getSuggestedThreshold() + ", " + model.getEstablishedThreshold() + ", " + model.getMinSupport() + "]";
-						
+
 					}
-						
-					
+
+
 					text.append("<p /> " + model.getSolution().getName() + thresholds
 							+ ": <br />");
 
@@ -205,27 +205,27 @@ public class KBRenderer extends AbstractTagHandler {
 							if(type == XCLRelationType.explains) {
 								weight = "["+rel.getWeight()+"]";
 							}
-							
+
 							if(kdomid != null) {
-								String button = ("<img src=\"KnowWEExtension/images/page_white_find.png\" " 
-										+ "class=\"highlight-xcl-relation\" " 
-										+ "rel=\"{kdomid: '"+kdomid+"', topic: '"+topic+"', depth: 0, breadth: 0}\"" 
+								String button = ("<img src=\"KnowWEExtension/images/page_white_find.png\" "
+										+ "class=\"highlight-xcl-relation\" "
+										+ "rel=\"{kdomid: '"+kdomid+"', topic: '"+topic+"', depth: 0, breadth: 0}\""
 										+ "/></img>");
 								text.append(button);
 							}
-							
+
 							text.append(type.getName()+weight+": ");
 							text.append("&nbsp;&nbsp;&nbsp;"
 									+ VerbalizationManager.getInstance()
 											.verbalize(cond,
 													RenderingFormat.PLAIN_TEXT, parameterMap));
-							
+
 							boolean id = false;
 							if(id) {
 								text.append(" (ID: "+rel.getId()+")");
 							}
-							
-							
+
+
 //							if(kdomid != null) {
 //								String button = ("<input type='button' value='"
 //										+ "XCL-Generieren"
@@ -234,8 +234,8 @@ public class KBRenderer extends AbstractTagHandler {
 //										+ kdomid + "\",\""+topic+"\");'/>");
 //								text += button;
 //							}
-							text.append(" \n <br />"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)						
-							
+							text.append(" \n <br />"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
+
 						}
 					}
 				}
