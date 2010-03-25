@@ -13,15 +13,15 @@ import de.d3web.we.kdom.report.NoSuchObjectError;
  * existing and throws an error if not.
  *
  * This should not be used for types _creating_ objects @link {@link ObjectDef}
- * 
+ *
  *
  * @author Jochen
- * 
+ *
  * @param <T>
  */
 public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType implements ObjectIDContainer<T> {
 
-	public abstract boolean objectExisting(Section<? extends ObjectRef<T>> s);
+	public abstract boolean objectExisting(Section<?> s);
 
 	public ObjectRef() {
 		this.addReviseSubtreeHandler(new ObjectChecker());
