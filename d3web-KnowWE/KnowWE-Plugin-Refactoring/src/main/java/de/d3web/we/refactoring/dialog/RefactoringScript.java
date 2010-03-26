@@ -464,11 +464,14 @@ public abstract class RefactoringScript {
 		Class<? extends KnowWEObjectType> clazz = null;
 		if(clazzString.equals("KnowWEArticle")) {
 			clazz = KnowWEArticle.class;
-		} else if(clazzString.equals("QuestionnaireID")) {
+		}
+		else if (clazzString.equals("QuestionnaireDef")) {
 			clazz = QuestionnaireDef.class;
-		} else if(clazzString.equals("QuestionID")) {
+		}
+		else if (clazzString.equals("QuestionDef")) {
 			clazz = QuestionDef.class;
-		} else if(clazzString.equals("QuestionTreeAnswerID")) {
+		}
+		else if (clazzString.equals("QuestionTreeAnswerDef")) {
 			clazz = QuestionTreeAnswerDef.class;
 		} else if(clazzString.equals("SolutionID")) {
 			clazz = SolutionID.class;
