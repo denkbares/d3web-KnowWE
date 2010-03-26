@@ -953,7 +953,7 @@ KNOWWE.core.template = function(){
             var pageName = eval( "(" + _KE.target(event).getAttribute('rel') + ")").jar;
 
             var params = {
-                action : 'de.d3web.we.action.TemplateGenerationAction',
+                action : 'TemplateGenerationAction',
                 NewPageName : _KS('#' + pageName ).value,
                 TemplateName : pageName
             }

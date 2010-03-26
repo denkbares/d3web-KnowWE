@@ -189,16 +189,6 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="TemplateGenerationAction">
-		<parameter id="class"
-			value="de.d3web.we.action.TemplateGenerationAction" />
-		<parameter id="name" value="TemplateGenerationAction" />
-		<parameter id="description" value="Action TemplateGenerationAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetQuickEditFlagAction">
 		<parameter id="class"
 			value="de.d3web.we.action.SetQuickEditFlagAction" />
@@ -344,6 +334,16 @@
 			value="de.d3web.we.action.SetCurrentWebAction" />
 		<parameter id="name" value="SetCurrentWebAction" />
 		<parameter id="description" value="Action SetCurrentWebAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="TemplateGenerationAction">
+		<parameter id="class"
+			value="de.d3web.we.action.TemplateGenerationAction" />
+		<parameter id="name" value="TemplateGenerationAction" />
+		<parameter id="description" value="Action TemplateGenerationAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
