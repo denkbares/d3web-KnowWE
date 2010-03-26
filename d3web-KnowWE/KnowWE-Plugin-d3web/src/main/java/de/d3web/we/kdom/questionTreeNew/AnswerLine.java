@@ -55,9 +55,12 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 
-
-
 			if(s.getObjectType() instanceof QuestionTreeAnswerDef) {
+				
+				KnowledgeBaseManagement mgn = D3webModule
+					.getKnowledgeRepresentationHandler(article.getWeb())
+					.getKBM(article, s);
+				
 				//"safe unsafe cast"
 				Section<QuestionTreeAnswerDef> answer = s;
 				String name = answer.get().getID(answer);
@@ -66,11 +69,6 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
 				//Section<QuestionID> questionID = ((QuestionTreeAnswerID)answer.getObjectType()).getQuestionSection(answer);
 				Question q = questionID.get().getObject(questionID);
-
-
-				KnowledgeBaseManagement mgn = D3webModule
-				.getKnowledgeRepresentationHandler(article.getWeb())
-				.getKBM(article, s);
 
 				if(q instanceof QuestionChoice) {
 					Answer a = mgn.addChoiceAnswer((QuestionChoice)q, name);
