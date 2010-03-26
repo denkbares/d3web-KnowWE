@@ -12,7 +12,7 @@ class RenameSolutionT extends Rename {
 	@Override
 	public <T extends KnowWEObjectType> String findObjectID(Class<T> clazz) {
 		return "RenameObject/RootType/QuestionTree/QuestionTree@content/QuestionDashTree/" +
-		"SubTree/SubTree/SubTree2/SubTree/DashTreeElement/QuestionDashTreeElementContent/SetValueLine/QuestionID";
+		"SubTree/SubTree/SubTree2/SubTree/DashTreeElement/QuestionDashTreeElementContent/SetValueLine/QuestionDef";
 	}
 	
 	@Override
