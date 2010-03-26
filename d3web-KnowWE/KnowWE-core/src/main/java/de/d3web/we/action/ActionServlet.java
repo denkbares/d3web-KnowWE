@@ -19,7 +19,6 @@
  */
 package de.d3web.we.action;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -179,8 +178,4 @@ public class ActionServlet extends HttpServlet {
 		return parameters;
 	}
 
-	public File getRootDirectory() {
-		String root = (String) this.getServletContext().getAttribute("rootDirectory");
-		return new File( (root != null) ? root : "." );
-	}
 }
