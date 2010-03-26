@@ -1,7 +1,7 @@
 package de.d3web.we.refactoring.script;
 
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.objects.QuestionID;
+import de.d3web.we.kdom.objects.QuestionDef;
 
 class RenameQuestionT extends Rename {
 	@Override
