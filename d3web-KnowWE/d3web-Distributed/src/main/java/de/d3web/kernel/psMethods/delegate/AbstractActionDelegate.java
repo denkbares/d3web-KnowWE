@@ -23,12 +23,14 @@ package de.d3web.kernel.psMethods.delegate;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.PSMethod;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.interviewmanager.QASetManager;
 
-public abstract class AbstractActionDelegate extends RuleAction {
+public abstract class AbstractActionDelegate extends PSAction {
 
 	private static final long serialVersionUID = -3105617138912654581L;
 
@@ -43,28 +45,28 @@ public abstract class AbstractActionDelegate extends RuleAction {
 	}
 
 	@Override
-	public abstract RuleAction copy();
+	public abstract PSAction copy();
 
 	@Override
-	public void doIt(XPSCase theCase) {
+	public void doIt(XPSCase theCase, Rule rule) {
 		QASetManager manager = theCase.getQASetManager();
 		for (NamedObject no : getNamedObjects()) {
-			manager.propagate(no, getCorrespondingRule(), theCase.getPSMethodInstance(getProblemsolverContext()));
+			manager.propagate(no, rule, theCase.getPSMethodInstance(getProblemsolverContext()));
 		}
 	}
 
 	@Override
-	public void undo(XPSCase theCase) {
+	public void undo(XPSCase theCase, Rule rule) {
 		// can not undo this kind of action
 	}
 	
 	@Override
-	public Class getProblemsolverContext() {
+	public Class<? extends PSMethod> getProblemsolverContext() {
 		return PSMethodDelegate.class;
 	}	
 	
 	@Override
-	public List getTerminalObjects() {
+	public List<NamedObject> getTerminalObjects() {
 		return namedObjects;
 	}
 

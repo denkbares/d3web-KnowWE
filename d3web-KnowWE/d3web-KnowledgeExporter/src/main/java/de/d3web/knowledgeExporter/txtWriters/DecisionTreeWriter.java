@@ -35,7 +35,7 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.MethodKind;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
@@ -351,7 +351,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	
 	private void processActions(Map<Condition, List<Rule>> mergedRules, Condition condition, StringBuffer s) {
 		for (Rule rule: mergedRules.get(condition)) {
-			RuleAction action = rule.getAction();
+			PSAction action = rule.getAction();
 			if (action instanceof ActionIndication) {
 				ActionIndication ai = (ActionIndication) action;
 				List<QASet> qasets = ai.getQASets();
@@ -384,7 +384,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		for (Condition diagCondition: mergedRules.keySet()) {
 			if (diagCondition instanceof CondDState) {
 				for (Rule diagRule: mergedRules.get(diagCondition)) {
-					RuleAction diagRuleAction = diagRule.getAction();
+					PSAction diagRuleAction = diagRule.getAction();
 					if (diagRuleAction instanceof ActionNextQASet && !manager.isDone(diagRule)) {
 						List<QASet> nextQASets = ((ActionNextQASet) diagRuleAction).getQASets();
 						for (QASet next : nextQASets) {

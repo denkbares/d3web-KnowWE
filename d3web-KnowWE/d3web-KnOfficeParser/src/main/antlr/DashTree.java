@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g 2010-03-09 12:01:23
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g 2010-03-23 14:24:16
 
 package de.d3web.KnOfficeParser.dashtree;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -1295,11 +1295,11 @@ public class DashTree extends Parser {
     // $ANTLR end synpred1_DashTree
 
     // Delegated rules
+    public DashTree_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
     public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
     public DashTree_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
-    public DashTree_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
-    public DashTree_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
     public void eq() throws RecognitionException { gBasicParser.eq(); }
+    public DashTree_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
 
     public final boolean synpred1_DashTree() {
         state.backtracking++;

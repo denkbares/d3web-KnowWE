@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicLexer.g 2010-03-09 12:01:34
+// $ANTLR 3.1.1 BasicLexer.g 2010-03-23 14:24:26
 
 package de.d3web.we.testsuite;
 import de.d3web.KnOfficeParser.LexerErrorHandler;

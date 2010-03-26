@@ -31,7 +31,7 @@ import java.util.Set;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
@@ -343,7 +343,7 @@ public class KnowledgeManager {
 
 	private Set<Question> getAllQuestions(Rule r) {
 		Set<Question> result = new HashSet<Question>();
-		RuleAction a = r.getAction();
+		PSAction a = r.getAction();
 		if (a instanceof ActionHeuristicPS) {
 			Condition cond = r.getCondition();
 			addAllAppearingQuestions(cond, result);

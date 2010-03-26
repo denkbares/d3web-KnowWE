@@ -139,7 +139,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 			
 			Rule rule = RuleFactory.createRule("FCIndication_" + startQ  + "_" + answer.getText());
 			
-			rule.setAction(new IndicateFlowAction(rule, flow.getName(), answer.getText()));
+			rule.setAction(new IndicateFlowAction(flow.getName(), answer.getText()));
 			rule.setCondition(new CondEqual(startQ, answer));
 			
 		}

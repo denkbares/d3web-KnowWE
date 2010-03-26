@@ -22,7 +22,7 @@ package de.d3web.kernel.psMethods.delegate;
 
 import java.util.ArrayList;
 
-import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.terminology.NamedObject;
 
 public class ActionInstantDelegate extends AbstractActionDelegate {
@@ -30,7 +30,7 @@ public class ActionInstantDelegate extends AbstractActionDelegate {
 	private static final long serialVersionUID = 7810881477953980445L;
 
 	@Override
-	public RuleAction copy() {
+	public PSAction copy() {
 		ActionInstantDelegate result = new ActionInstantDelegate();
 		result.setNamedObjects(new ArrayList<NamedObject>(getNamedObjects()));
 		result.setTargetNamespace(new String(getTargetNamespace()));

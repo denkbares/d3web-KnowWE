@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2010-03-09 12:01:45
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2010-03-23 14:24:36
 
 package de.d3web.KnOfficeParser.visio;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -1865,11 +1865,11 @@ public class VisioParser extends Parser {
     // $ANTLR end "mydouble"
 
     // Delegated rules
-    public Visio_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
-    public Visio_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
-    public Visio_BasicParser.eqncalc_return eqncalc() throws RecognitionException { return gBasicParser.eqncalc(); }
-    public Visio_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
     public Visio_BasicParser.type_return type() throws RecognitionException { return gBasicParser.type(); }
+    public Visio_BasicParser.eqncalc_return eqncalc() throws RecognitionException { return gBasicParser.eqncalc(); }
+    public Visio_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
+    public Visio_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
+    public Visio_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
     public Visio_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
 
 

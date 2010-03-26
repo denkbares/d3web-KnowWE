@@ -39,7 +39,6 @@ public class DelegateRuleFactory {
 		Rule rule = RuleFactory.createRule(theId);
 
 		ActionDelegate ruleAction = new ActionDelegate();
-		ruleAction.setRule(rule);
 		ruleAction.setNamedObjects(theAction);
 		ruleAction.setTargetNamespace(ns);
 		RuleFactory.setRuleParams(rule, ruleAction, theCondition, null);
@@ -54,7 +53,6 @@ public class DelegateRuleFactory {
 			Rule rule = RuleFactory.createRule(theId);
 
 			ActionInstantDelegate ruleAction = new ActionInstantDelegate();
-			ruleAction.setRule(rule);
 			ruleAction.setNamedObjects(theAction);
 			ruleAction.setTargetNamespace(ns);
 			RuleFactory.setRuleParams(rule, ruleAction, theCondition, null);

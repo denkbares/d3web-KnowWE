@@ -25,7 +25,7 @@ import java.io.IOException;
 
 import de.d3web.abstraction.ActionQuestionSetter;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondQuestion;
@@ -70,7 +70,7 @@ public abstract class KnowledgeWriter {
 	 * [TODO] Noch nicht vollständig!
 	 */
 	protected boolean isValidRule(Rule r) {
-		RuleAction a = r.getAction();
+		PSAction a = r.getAction();
 		if (a == null) {
 			return false;
 		}

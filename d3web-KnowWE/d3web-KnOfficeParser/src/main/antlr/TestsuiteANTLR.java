@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g 2010-03-09 12:01:30
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteANTLR.g 2010-03-23 14:24:22
 
 package de.d3web.we.testsuite;
 import de.d3web.we.testsuite.TestsuiteBuilder;
@@ -802,8 +802,8 @@ public class TestsuiteANTLR extends Parser {
     // $ANTLR end "name"
 
     // Delegated rules
-    public TestsuiteANTLR_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
     public void eq() throws RecognitionException { gBasicParser.eq(); }
+    public TestsuiteANTLR_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
     public TestsuiteANTLR_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
     public String type() throws RecognitionException { return gBasicParser.type(); }
     public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }

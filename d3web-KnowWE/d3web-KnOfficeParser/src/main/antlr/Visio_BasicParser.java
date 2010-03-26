@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2010-03-09 12:01:45
+// $ANTLR 3.1.1 BasicParser.g 2010-03-23 14:24:37
 
 package de.d3web.KnOfficeParser.visio;
 import de.d3web.KnOfficeParser.ParserErrorHandler;

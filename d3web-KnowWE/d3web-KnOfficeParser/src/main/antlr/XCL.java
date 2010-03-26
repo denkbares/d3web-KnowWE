@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g 2010-03-09 12:01:52
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\XCL.g 2010-03-23 14:24:43
 
 package de.d3web.KnOfficeParser.xcl;
 import de.d3web.KnOfficeParser.ConditionBuilder;
@@ -502,19 +502,19 @@ public class XCL extends Parser {
     // $ANTLR end "thr"
 
     // Delegated rules
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
-    public XCL_ComplexCondition_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
-    public String type() throws RecognitionException { return gBasicParser.type(); }
-    public XCL_ComplexCondition.conjunct_return conjunct() throws RecognitionException { return gComplexCondition.conjunct(); }
-    public XCL_ComplexCondition.complexcondition_return complexcondition() throws RecognitionException { return gComplexCondition.complexcondition(); }
-    public XCL_ComplexCondition.dnf_return dnf() throws RecognitionException { return gComplexCondition.dnf(); }
-    public XCL_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
+    public XCL_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
     public void startruleComplexCondition() throws RecognitionException { gComplexCondition.startruleComplexCondition(); }
+    public XCL_ComplexCondition.conjunct_return conjunct() throws RecognitionException { return gComplexCondition.conjunct(); }
+    public String type() throws RecognitionException { return gBasicParser.type(); }
     public XCL_ComplexCondition.disjunct_return disjunct() throws RecognitionException { return gComplexCondition.disjunct(); }
     public XCL_ComplexCondition_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
-    public XCL_ComplexCondition.intervall_return intervall() throws RecognitionException { return gComplexCondition.intervall(); }
-    public XCL_ComplexCondition.condition_return condition() throws RecognitionException { return gComplexCondition.condition(); }
     public XCL_ComplexCondition_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
+    public XCL_ComplexCondition_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
+    public XCL_ComplexCondition.complexcondition_return complexcondition() throws RecognitionException { return gComplexCondition.complexcondition(); }
+    public XCL_ComplexCondition.dnf_return dnf() throws RecognitionException { return gComplexCondition.dnf(); }
+    public XCL_ComplexCondition.intervall_return intervall() throws RecognitionException { return gComplexCondition.intervall(); }
+    public XCL_ComplexCondition_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
 
 
  

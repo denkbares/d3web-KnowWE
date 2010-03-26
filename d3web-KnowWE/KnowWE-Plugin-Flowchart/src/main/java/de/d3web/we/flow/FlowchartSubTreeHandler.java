@@ -38,7 +38,7 @@ import de.d3web.KnOfficeParser.RestrictedIDObjectManager;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
 import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.RuleAction;
+import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -298,14 +298,14 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 	private INode createCommentNode(KnowWEArticle article, String id,
 			Section nodeinfo, List<Message> errors) {
 
-		RuleAction action = NoopAction.INSTANCE;
+		PSAction action = NoopAction.INSTANCE;
 
 		return FlowFactory.getInstance().createNode(id, action);
 	}
 
 	private INode createActionNode(KnowWEArticle article, String id, Section section, List<Message> errors) {
 
-		RuleAction action = NoopAction.INSTANCE;
+		PSAction action = NoopAction.INSTANCE;
 		String string = getXMLContentText(section);
 		if (string.startsWith("ERFRAGE")) {
 			action = createQAindicationAction(article, section, string, errors);
@@ -322,7 +322,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 	}
 
-	private RuleAction createCallFlowAction(KnowWEArticle article, Section section, String string, List<Message> errors) {
+	private PSAction createCallFlowAction(KnowWEArticle article, Section section, String string, List<Message> errors) {
 		int nodenameStart = string.indexOf('(');
 		int nodenameEnd = string.indexOf(')');
 
@@ -372,7 +372,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return action;
 	}
 
-	private RuleAction createHeuristicScoreAction(KnowWEArticle article, Section section,
+	private PSAction createHeuristicScoreAction(KnowWEArticle article, Section section,
 			String string, List<Message> errors) {
 
 		String[] split = string.split("=");
@@ -383,7 +383,6 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		Rule rule = new Rule("FlowchartRule" + System.currentTimeMillis());
 
 		ActionHeuristicPS action = new ActionHeuristicPS();
-		action.setRule(rule);
 		rule.setAction(action);
 		rule.setCondition(new CondAnd(new ArrayList()));
 		//
@@ -406,7 +405,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		return action;
 	}
 
-	private RuleAction createQAindicationAction(KnowWEArticle article, Section section, String string, List<Message> errors) {
+	private PSAction createQAindicationAction(KnowWEArticle article, Section section, String string, List<Message> errors) {
 		String name = string.substring(8, string.length() - 1);
 		QASet findQuestion = getKBM(article, section).findQuestion(name);
 
@@ -426,8 +425,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		rule.setProblemsolverContext(FluxSolver.class);
 		rule.setCondition(new CondAnd(new ArrayList()));
 
-		RuleAction action = new ActionIndication();
-		action.setRule(rule);
+		PSAction action = new ActionIndication();
+		rule.setAction(action);
 
 		((ActionIndication) action).setQASets(qasets);
 		// ((RuleAction)action).setCorrespondingRule(rule);
