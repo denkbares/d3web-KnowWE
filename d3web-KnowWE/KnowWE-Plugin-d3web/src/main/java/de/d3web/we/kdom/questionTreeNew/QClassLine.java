@@ -70,9 +70,11 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, s);
-
+			//ReviseSubtreeHandler will be called again with a correct mgn
+			if (mgn == null) return null;
+			
 			String name = s.getOriginalText();
-
+			
 			IDObject o = mgn.findQContainer(name);
 
 			if (o != null) {
