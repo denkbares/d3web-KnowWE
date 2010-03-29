@@ -55,7 +55,10 @@ public class VersionTagHandler extends AbstractTagHandler {
 		} else {
 			String v = values.get("version");
 
-			if (v.equals("chuck")) {
+			if (v.equals("")) {
+				html.append("KnowWE ");
+				html.append(rb.getString("build.time"));
+			} else if (v.equals("chuck")) {
 				try {
 					html.append(rb.getString("build.chuck"));
 				} catch (MissingResourceException e) {
