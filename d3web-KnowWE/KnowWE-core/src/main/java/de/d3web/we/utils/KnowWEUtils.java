@@ -21,6 +21,7 @@
 package de.d3web.we.utils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ResourceBundle;
 
@@ -368,6 +369,21 @@ public class KnowWEUtils {
 		}
 		catch (UnsupportedEncodingException e) {
 			return URLEncoder.encode(text);
+		}
+	}
+	
+	/**
+	 * Performs URL decoding on the sting
+	 * 
+	 * @param text URLencoded string
+	 * @return URLdecoded string
+	 */
+	public static String urldecode(String text) {
+		try {
+			return URLDecoder.decode(text, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			return URLDecoder.decode(text);
 		}
 	}
 
