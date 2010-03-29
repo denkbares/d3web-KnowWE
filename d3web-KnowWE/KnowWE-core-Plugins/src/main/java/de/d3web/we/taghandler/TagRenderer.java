@@ -28,6 +28,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TagRenderer extends KnowWEDomRenderer{
@@ -41,7 +42,7 @@ public class TagRenderer extends KnowWEDomRenderer{
 		
 		if(type instanceof TagHandlerTypeContent) {
 			Map<String,String> attValues = null; //((TagHandlerTypeContent)type).getValuesForSections().get(attrContent);
-			Object storedValues = KnowWEEnvironment.getInstance().getArticleManager(sec.getWeb()).getTypeStore().getStoredObject(sec.getTitle(), sec.getId(), TagHandlerAttributeSectionFinder.ATTRIBUTE_MAP);
+			Object storedValues = KnowWEEnvironment.getInstance().getArticleManager(sec.getWeb()).getTypeStore().getStoredObject(sec.getTitle(), sec.getId(), TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
 			if(storedValues != null) {
 				if(storedValues instanceof Map) {
 					attValues = (Map<String,String>) storedValues;
@@ -52,16 +53,21 @@ public class TagRenderer extends KnowWEDomRenderer{
 				for (String elem: attValues.keySet()) {
 					HashMap<String, TagHandler> defaultTagHandlers = KnowWEEnvironment.getInstance().getDefaultTagHandlers();
 					if (defaultTagHandlers.containsKey(elem.toLowerCase())) {		
-						buffi.append(KnowWEEnvironment.maskHTML("<div id=\""+elem.toLowerCase()+"\">"));
+						buffi.append(KnowWEUtils.maskHTML("<div id=\""+elem.toLowerCase()+"\">"));
 						buffi.append(defaultTagHandlers.get(elem.toLowerCase()).render(sec.getTitle(), user, attValues, sec.getWeb()) + " \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
-						buffi.append(KnowWEEnvironment.maskHTML("</div>"));
+						buffi.append(KnowWEUtils.maskHTML("</div>"));
 					}
 				}
 				if (buffi.length() == 0) {
-					buffi.append("tag not found");
+					buffi.append(KnowWEUtils
+							.maskHTML("<div><p class='info box'>"));
+					buffi.append(KnowWEUtils.maskHTML(KnowWEEnvironment
+							.getInstance().getKwikiBundle(user).getString(
+									"KnowWE.Taghandler.notFoundError")
+							+ "</p></div>"));
 				}
 			}
-			string.append(KnowWEEnvironment.maskHTML(buffi.toString()));
+			string.append(KnowWEUtils.maskHTML(buffi.toString()));
 		}
 	}
 

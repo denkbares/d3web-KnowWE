@@ -23,13 +23,21 @@ package de.d3web.we.taghandler;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
+/**
+ * A taghandler can have attributes specified in this schema:
+ * %%KnowWEPlugin taghandlername, att1=aat, att2=aata,...
+ * The TaghandlerAttributeSectionfinder stores the attributes in
+ * the KnowWESectionStore.
+ * 
+ * @author Johannes Dienst
+ *
+ */
 public class TagHandlerTypeContent extends DefaultAbstractKnowWEObjectType{
-
 
 	@Override
 	protected void init() {
 		this.sectionFinder = new AllTextSectionFinder();
-		this.addReviseSubtreeHandler(new TagHandlerAttributeSectionFinder());
+		this.addReviseSubtreeHandler(new TagHandlerAttributeSubTreeHandler());
 	}
 
 }

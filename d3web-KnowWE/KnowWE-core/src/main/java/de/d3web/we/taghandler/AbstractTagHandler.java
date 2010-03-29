@@ -42,7 +42,7 @@ public abstract class AbstractTagHandler implements TagHandler{
 	}
 	
 	public static Map<String,String> getAttributeMap(Section tagHandlerSection) {
-		Object o = KnowWEUtils.getStoredObject(tagHandlerSection.getWeb(),tagHandlerSection.getTitle(), tagHandlerSection.getFather().getId(), TagHandlerAttributeSectionFinder.ATTRIBUTE_MAP);
+		Object o = KnowWEUtils.getStoredObject(tagHandlerSection.getWeb(),tagHandlerSection.getTitle(), tagHandlerSection.getFather().getId(), TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
 		if(o != null) {
 			return (Map<String,String>)o;
 		}
