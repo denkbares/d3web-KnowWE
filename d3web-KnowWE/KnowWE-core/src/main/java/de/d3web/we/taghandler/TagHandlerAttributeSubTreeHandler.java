@@ -45,6 +45,7 @@ public class TagHandlerAttributeSubTreeHandler implements ReviseSubTreeHandler {
 		String text = sec.getOriginalText();
 		
 		Map<String, String> values = new HashMap<String, String>();
+		values.put("_cmdline", text);
 
 		//attribute parsen und einfügen
 		String[] tmpSecSplit = text.split(",");
