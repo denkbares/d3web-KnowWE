@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import de.d3web.report.Message;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
@@ -18,19 +19,28 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 	@Override
 	public void render(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
 
+        string.append(KnowWEUtils.maskHTML("<div id=\"" + section.getId() + "\">\n"));
 		// render pre-formatted box
 		string.append("{{{\n");
 
 		// add an anchor to enable direct link to the section
 		String anchorName = KnowWEUtils.getAnchor(section);
-		string.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
+		string.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>\n"));
 
 		// render messages and content
 		renderMessages(section, string);
-		DelegateRenderer.getInstance().render(article, section, user, string);
 		
+		for(Section sec : section.getChildren()){ 
+			if( !(sec.getObjectType() instanceof PlainText )){
+				DelegateRenderer.getInstance().render(article, sec, user, string);
+			} else {
+				String escaped = sec.getOriginalText().replace("%", "%25");
+				string.append( escaped );
+			}
+		}		
 		// and close the box
-		string.append("}}}");
+		string.append("}}}\n");
+		string.append(KnowWEUtils.maskHTML("</div>\n"));
 	}
 
 
