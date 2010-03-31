@@ -272,7 +272,9 @@ KNOWWE.core.util = function(){
             if( !params && typeof params != 'object') return baseURL;
                         
             for( keys in params ){
-                tokens.push(keys + "=" + escape(encodeURIComponent( params[keys] )));
+                var value = params[keys] ; 
+                if(typeof value != 'string') value = JSON.stringify( params[keys] ); 
+                tokens.push(keys + "=" + escape(encodeURIComponent( value )));
             }
             
             //parse the url to add special token like debug etc.
@@ -919,8 +921,8 @@ KNOWWE.core.renaming = function(){
  * The KNOWWE template namespace.
  */
 KNOWWE.core.template = function(){
-	return {
-		/**
+    return {
+        /**
          * Function: init
          * The template init function. Enables the
          * templatetaghandler and templatetaghandler
@@ -966,7 +968,7 @@ KNOWWE.core.template = function(){
             }
             new _KA( options ).send();
         }
-	}
+    }
 }();
 
 /**
