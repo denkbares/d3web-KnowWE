@@ -273,4 +273,14 @@ public interface KnowWEWikiConnector {
 	 */
 	boolean storeAttachment(String wikiPage, File attachmentFile);
 
+	/**
+	 * Renders given WIKI mark-up in the pagedata.
+	 * 
+	 * @param pagedata The current data of the page.
+	 * @param map      The parameters of the request.
+	 * @return The masked pagedata.
+	 */
+	public String renderWikiSyntax( String pagedata, KnowWEParameterMap map);
+	
+	
 }

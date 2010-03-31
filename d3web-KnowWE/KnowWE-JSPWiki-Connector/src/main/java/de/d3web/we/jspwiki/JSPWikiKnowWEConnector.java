@@ -80,7 +80,6 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	@Override
 	public KnowWEActionDispatcher getActionDispatcher() {
-		// TODO Auto-generated method stub
 		return new JSPActionDispatcher();
 	}
 
@@ -612,6 +611,14 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	public String getSavePath() {
 		String path = (String)engine.getWikiProperties().get("var.basedir");		
 		return path;
+	}
+
+	@Override
+	public String renderWikiSyntax(String pagedata, KnowWEParameterMap map) {
+		HttpServletRequest req = map.getRequest();
+		WikiContext context = engine.createContext(req, WikiContext.VIEW);
+		pagedata = engine.textToHTML(context, pagedata);
+		return pagedata;
 	}
 
 }

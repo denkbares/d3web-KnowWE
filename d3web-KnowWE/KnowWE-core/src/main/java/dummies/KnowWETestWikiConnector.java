@@ -207,4 +207,9 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		return null;
 	}
 
+	@Override
+	public String renderWikiSyntax(String pagedata, KnowWEParameterMap map) {
+		return null;
+	}
+
 }

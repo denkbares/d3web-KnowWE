@@ -46,13 +46,13 @@ public class RendererManager {
 	
 	private Map<KnowWEObjectType, RendererSet> rendererToTypeMap = new HashMap<KnowWEObjectType, RendererSet>();
 	
-	public KnowWEDomRenderer getRenderer(KnowWEObjectType type, String user, String topic) {
+	public KnowWEDomRenderer<? extends KnowWEObjectType> getRenderer(KnowWEObjectType type, String user, String topic) {
 		
 		RenderingMode renderingType = UserSettingsManager.getInstance().getRenderingType(user, topic);
 		
 		RendererSet set = rendererToTypeMap.get(type);
 		if(set != null) {
-			KnowWEDomRenderer renderer = set.getRenderer(user, topic,renderingType);
+			KnowWEDomRenderer<? extends KnowWEObjectType> renderer = set.getRenderer(user, topic,renderingType);
 			if(renderer != null) {
 				return renderer;
 			}
@@ -60,5 +60,32 @@ public class RendererManager {
 		
 		return null;
 	}
-
+	
+	/**
+	 * Sets a {@link CustomRenderer} for the {@link KnowWEObjectType} type to the {@link RendererManager}.
+	 *  
+	 * @param type            The {@link KnowWEObjectType} the renderer applies to
+	 * @param customRenderer  The custom renderer for the {@link KnowWEObjectType};
+	 */
+	public void setRenderer(KnowWEObjectType type, CustomRenderer customRenderer) {
+		
+		RendererSet set = rendererToTypeMap.get(type);
+		if( set != null ){
+		    set.addCustomRenderer( customRenderer );
+		} else {
+			set = new RendererSet();
+			set.addCustomRenderer( customRenderer );
+			rendererToTypeMap.put(type, set);
+		}
+	}
+	/**
+	 * Removes a {@link CustomRenderer} for the {@link KnowWEObjectType} type from the {@link RendererManager}.
+	 *  
+	 * @param type            The {@link KnowWEObjectType} the renderer applies to
+	 */
+	public void removeRenderer(KnowWEObjectType type) {
+		if( rendererToTypeMap.containsKey( type ) ) {
+		    rendererToTypeMap.remove(type);
+		}
+	}	
 }
