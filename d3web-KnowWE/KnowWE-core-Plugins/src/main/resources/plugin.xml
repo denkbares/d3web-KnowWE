@@ -358,6 +358,16 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="RenderManagerAction">
+        <parameter id="class"
+            value="de.d3web.we.action.RenderManagerAction" />
+        <parameter id="name" value="RenderManagerAction" />
+        <parameter id="description" value="Action RenderManagerAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension>	
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler"
 		id="ValidationPageAppendHandler">
 		<parameter id="class"

@@ -26,36 +26,35 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
+/**
+ * ReRenderContentPartAction.
+ * Renders a given section again. Often used in combination with AJAX request, to
+ * refresh a certain section of an article due to user interaction.
+ * 
+ * @author smark
+ */
 public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction  {
 
 	@Override
-	public String perform(KnowWEParameterMap map) {		
-		return this.refreshKDOMElement(map.getWeb(), map.getTopic(),
-									   map.getWikiContext(), map.get("KdomNodeId"));
-	}
-
-	/**
-	 * Searches the element the user set the QuickEditFlag to and renders it.
-	 * The result is returned for refreshing the view.
-	 * 
-	 * @param web
-	 * @param topic
-	 * @param user
-	 * @param nodeID
-	 * @return
-	 */
-	private String refreshKDOMElement(String web, String topic, KnowWEUserContext user, String nodeID) {
+	public String perform(KnowWEParameterMap map) {
+		
+		String web = map.getWeb();
+		String nodeID = map.get("KdomNodeId");
+		String topic =  map.getTopic();
+		KnowWEUserContext user = map.getWikiContext();
+		
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager( web );
 		KnowWEArticle article = mgr.getArticle( topic );
 		
-		Section root = article.getSection();
-		Section secWithNodeID = getSectionFromCurrentID( nodeID, root );
+		Section<? extends KnowWEObjectType> root = article.getSection();
+		Section<? extends KnowWEObjectType> secWithNodeID = getSectionFromCurrentID( nodeID, root );
 			
 		if( secWithNodeID != null ) {
 			StringBuilder b = new StringBuilder();
@@ -65,11 +64,14 @@ public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction  {
 			} else {
 				DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
 			}
-			return KnowWEUtils.unmaskHTML(b.toString());
+			
+			String pagedata = b.toString();
+			pagedata = KnowWEEnvironment.getInstance().getWikiConnector().renderWikiSyntax(pagedata, map);
+
+			return KnowWEUtils.unmaskHTML( pagedata );
 		}
 		return null;
-	}
-	
+	}	
 	/**
 	 * Searches for a section with the node id from the <code>SetQuickEditFlagAction</code>.
 	 * The resulting section will be re-rendered and updated in the view.
@@ -78,13 +80,13 @@ public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction  {
 	 * @param root
 	 * @param found
 	 */
-	private Section getSectionFromCurrentID( String nodeID, Section root ) {		
+	private Section<? extends KnowWEObjectType> getSectionFromCurrentID( String nodeID, Section<? extends KnowWEObjectType> root ) {		
 	    if( root.getId().equals( nodeID ))
 	    	return root;
 	 
-		Section found = null;
-		List<Section> children = root.getChildren();
-		for (Section section : children) {
+		Section<? extends KnowWEObjectType> found = null;
+		List<Section<? extends KnowWEObjectType>> children = root.getChildren();
+		for (Section<? extends KnowWEObjectType> section : children) {
 			found = getSectionFromCurrentID( nodeID, section );
 			if( found != null) return found;
 		}
