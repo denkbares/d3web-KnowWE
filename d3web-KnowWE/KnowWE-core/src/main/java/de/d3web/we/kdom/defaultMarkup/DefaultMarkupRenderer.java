@@ -29,15 +29,8 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 
 		// render messages and content
 		renderMessages(section, string);
-		
-		for(Section sec : section.getChildren()){ 
-			if( !(sec.getObjectType() instanceof PlainText )){
-				DelegateRenderer.getInstance().render(article, sec, user, string);
-			} else {
-				String escaped = sec.getOriginalText().replace("%", "%25");
-				string.append( escaped );
-			}
-		}		
+		DelegateRenderer.getInstance().render(article, section, user, string);
+	
 		// and close the box
 		string.append("}}}\n");
 		string.append(KnowWEUtils.maskHTML("</div>\n"));
