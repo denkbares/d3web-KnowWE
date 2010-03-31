@@ -32,9 +32,6 @@ import de.d3web.we.utils.KnowWEUtils;
 /**
  * Reads out the attributes of TagHandlerTypeContent and stores
  * them in KnowWESectionStore.
- * 
- * @author unknown
- *
  */
 public class TagHandlerAttributeSubTreeHandler implements ReviseSubTreeHandler {
 
@@ -56,8 +53,6 @@ public class TagHandlerAttributeSubTreeHandler implements ReviseSubTreeHandler {
 				String[] splitted = tmpSecSplit[i].split("=");
 				if(splitted.length == 2) {
 					value = splitted[1];	
-				}else {
-					value = "";
 				}
 			}
 			values.put(tag.trim(), value.trim());
