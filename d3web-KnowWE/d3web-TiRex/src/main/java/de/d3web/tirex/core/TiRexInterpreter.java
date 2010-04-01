@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.tirex.core.extractionStrategies.ExtractionStrategy;
@@ -122,7 +122,7 @@ public class TiRexInterpreter {
 	public OriginalMatchAndStrategy extractDiagnosis(KnowledgeBase kb,
 			String knowledge, Collection<ExtractionStrategy> strategies) {
 		for (ExtractionStrategy strategy : strategies) {
-			for (Diagnosis d : kb.getDiagnoses()) {
+			for (Solution d : kb.getDiagnoses()) {
 				OriginalMatchAndStrategy match = null;
 
 				match = strategy.extract(d, knowledge);

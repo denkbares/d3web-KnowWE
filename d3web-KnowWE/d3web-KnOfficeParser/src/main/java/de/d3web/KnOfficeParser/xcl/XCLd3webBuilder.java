@@ -46,7 +46,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 /**
  * Klasse um mithilfe des XCL Parsers d3web Wissen zu generieren 
@@ -79,7 +79,7 @@ public class XCLd3webBuilder implements KnOfficeParser, XCLBuilder {
 	}
 
 	private boolean lazydiag;
-	private Diagnosis currentdiag;
+	private Solution currentdiag;
 	private IDObjectManagement idom;
 	
 	private void finish() {

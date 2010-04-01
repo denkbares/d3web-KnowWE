@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -68,7 +68,7 @@ public class CompleteGlobalAligner implements GlobalAligner<NamedObject>{
 				}
 				result.add(globalAlignment);
 				// "values":
-				if(object instanceof Diagnosis) {
+				if(object instanceof Solution) {
 					result.add(new GlobalAlignment(term, new IdentifiableInstance(idString, object.getId(), new SolutionIdentity()), SolutionIdentityAlignType.getInstance()));
 					result.add(new GlobalAlignment(term, new IdentifiableInstance(idString, object.getId(), new NumericalIdentity()), NumericalIdentityAlignType.getInstance()));
 				} else if(object instanceof QContainer) {

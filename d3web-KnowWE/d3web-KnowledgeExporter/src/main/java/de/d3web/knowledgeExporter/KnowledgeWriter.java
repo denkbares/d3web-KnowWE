@@ -30,7 +30,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondQuestion;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.kernel.verbalizer.ConditionVerbalizer;
 import de.d3web.scoring.ActionHeuristicPS;
@@ -50,7 +50,7 @@ public abstract class KnowledgeWriter {
 	}
 
 	
-	protected Diagnosis getDiagnosis(Rule r) {
+	protected Solution getDiagnosis(Rule r) {
 		ActionHeuristicPS action = (ActionHeuristicPS) r.getAction();
 		return action.getDiagnosis();
 	}
@@ -75,7 +75,7 @@ public abstract class KnowledgeWriter {
 			return false;
 		}
 		if (a instanceof ActionHeuristicPS) {
-			Diagnosis d = ((ActionHeuristicPS) a).getDiagnosis();
+			Solution d = ((ActionHeuristicPS) a).getDiagnosis();
 			if (d == null) {
 				return false;
 			}
@@ -93,7 +93,7 @@ public abstract class KnowledgeWriter {
 		}
 		if (cond instanceof TerminalCondition) {
 			if (cond instanceof CondDState) {
-				Diagnosis d = ((CondDState) cond).getDiagnosis();
+				Solution d = ((CondDState) cond).getDiagnosis();
 				if (d == null) {
 					return false;
 				}

@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 import utils.KBCreationTestUtil;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.logging.Logging;
@@ -63,8 +63,8 @@ public class DiagnosesTest extends TestCase {
 		if (loadedKB.getDiagnoses().size() == createdKB.getDiagnoses().size()) {
 			for (int i=0; i<loadedKB.getDiagnoses().size(); i++) {
 				
-				Diagnosis expected = createdKB.getDiagnoses().get(i);
-				Diagnosis actual = loadedKB.getDiagnoses().get(i);
+				Solution expected = createdKB.getDiagnoses().get(i);
+				Solution actual = loadedKB.getDiagnoses().get(i);
 				
 				// Test ID & Name
 				assertEquals("Diagnosis " + expected.getName() + " has wrong ID.", expected.getId(), actual.getId());

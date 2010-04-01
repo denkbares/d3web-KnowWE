@@ -32,8 +32,6 @@ import de.d3web.core.session.interviewmanager.QASetManager;
 
 public abstract class AbstractActionDelegate extends PSAction {
 
-	private static final long serialVersionUID = -3105617138912654581L;
-
 	private List<NamedObject> namedObjects;
 	private String targetNamespace;
 	private boolean temporary;

@@ -39,7 +39,7 @@ import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -122,7 +122,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			condstack.push(null);
 			return;
 		}
-		Diagnosis diag = idom.findDiagnosis(qname);
+		Solution diag = idom.findDiagnosis(qname);
 		if (diag != null) {
 			if (value.equalsIgnoreCase("established")
 					|| value.equalsIgnoreCase("etabliert")) {

@@ -21,7 +21,7 @@
 package de.d3web.we.kdom.table.xcl;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -117,10 +117,10 @@ class SolutionCellHandler implements ReviseSubTreeHandler {
 		String name = s.getOriginalText();
 		name = name.replaceAll("__", "").trim();
 
-		Diagnosis d = mgr.findDiagnosis(name);
+		Solution d = mgr.findDiagnosis(name);
 
 		if (d == null) {
-			Diagnosis newD = mgr.createDiagnosis(name, mgr.getKnowledgeBase()
+			Solution newD = mgr.createDiagnosis(name, mgr.getKnowledgeBase()
 					.getRootDiagnosis());
 			if (newD != null) {
 				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(

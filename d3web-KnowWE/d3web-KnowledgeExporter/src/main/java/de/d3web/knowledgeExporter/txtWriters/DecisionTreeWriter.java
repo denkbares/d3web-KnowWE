@@ -44,7 +44,7 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.NonTerminalCondition;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -368,7 +368,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 				}
 			} else if (action instanceof ActionHeuristicPS && !manager.isDone(rule)) {
 				ActionHeuristicPS ah = (ActionHeuristicPS) action;
-				Diagnosis diagnosis = ah.getDiagnosis();
+				Solution diagnosis = ah.getDiagnosis();
 				String dt = diagnosis.getName();
 				Score score = ah.getScore();
 				s.append(dashes(level + 1) + quote(dt) + " ("
@@ -379,7 +379,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		}
 	}
 
-	private void processDiagnosis(Diagnosis diagnosis, StringBuffer s) {
+	private void processDiagnosis(Solution diagnosis, StringBuffer s) {
 		Map<Condition, List<Rule>> mergedRules = new HashMap<Condition, List<Rule>>();
 		addChildren(diagnosis, PSMethodNextQASet.class, mergedRules);
 		for (Condition diagCondition: mergedRules.keySet()) {

@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.alignment.AlignmentUtilRepository;
@@ -63,7 +63,7 @@ public class D3webGlobalAligner implements GlobalAligner<NamedObject> {
 				}
 				result.add(globalAlignment);
 				// "values":
-				if(object instanceof Diagnosis) {
+				if(object instanceof Solution) {
 					GlobalAlignment globalAlignment1 = new GlobalAlignment(term, new IdentifiableInstance(idString, object.getId(), new SolutionIdentity()), SolutionIdentityAlignType.getInstance());
 					GlobalAlignment globalAlignment2 = new GlobalAlignment(term, new IdentifiableInstance(idString, object.getId(), new NumericalIdentity()), NumericalIdentityAlignType.getInstance());
 					result.add(globalAlignment1);

@@ -35,7 +35,7 @@ import com.wcohen.ss.Levenstein;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.session.values.AnswerChoice;
@@ -88,8 +88,8 @@ public class TiRexUtilities {
 			KnowledgeBase knowledge, boolean getAnswers) {
 		StringBuffer buffer = new StringBuffer();
 
-		List<Diagnosis> diagnoses = knowledge.getDiagnoses();
-		for (Diagnosis diagnosis : diagnoses) {
+		List<Solution> diagnoses = knowledge.getDiagnoses();
+		for (Solution diagnosis : diagnoses) {
 			buffer.append(" Diagnose: " + diagnosis.getName() + "(Typ: "
 					+ diagnosis.getClass() + " ID: " + diagnosis.getId() + ")\n");
 		}

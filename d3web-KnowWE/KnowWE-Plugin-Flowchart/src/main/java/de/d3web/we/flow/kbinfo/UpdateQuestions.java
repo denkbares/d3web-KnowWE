@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;

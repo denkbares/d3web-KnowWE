@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.KnOfficeParser.util.Scorefinder;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.report.Message;
@@ -46,7 +46,7 @@ public class ScoringRuleBuilder implements CellKnowledgeBuilder {
 	
 	@Override
 	public Message add(IDObjectManagement idom, int line, int column, String file,
-			Condition cond, String text, Diagnosis diag, boolean errorOccured) {
+			Condition cond, String text, Solution diag, boolean errorOccured) {
 		Score score = Scorefinder.getScore(text);
 		if (score==null) {
 			String s;

@@ -28,7 +28,7 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 
 /**
@@ -58,7 +58,7 @@ public class XCLRelationBuilder implements CellKnowledgeBuilder {
 
 	@Override
 	public Message add(IDObjectManagement idom, int line, int column,
-			String file, Condition cond, String text, Diagnosis diag,
+			String file, Condition cond, String text, Solution diag,
 			boolean errorOccured) {
 		
 		if (!createUncompleteFindings) {

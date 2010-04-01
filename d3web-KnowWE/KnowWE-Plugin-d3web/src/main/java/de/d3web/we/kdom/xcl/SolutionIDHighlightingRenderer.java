@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.session.XPSCase;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -62,11 +62,11 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 		
 		if (xpsCase != null) {
 			
-			List<Diagnosis> diags = xpsCase.getKnowledgeBase().getDiagnoses();
+			List<Solution> diags = xpsCase.getKnowledgeBase().getDiagnoses();
 			Collection <KnowledgeSlice> slices =
 				xpsCase.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
 
-			for (Diagnosis d : diags) {
+			for (Solution d : diags) {
 
 				if (d.getName().equals(solution)) {
 					DiagnosisState state; 

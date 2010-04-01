@@ -37,7 +37,7 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
@@ -146,7 +146,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 				}
 			}
 		}
-		Diagnosis diag = idom.findDiagnosis(solution);
+		Solution diag = idom.findDiagnosis(solution);
 		if (diag==null) {
 			if (lazydiag) {
 				diag=idom.createDiagnosis(solution, idom.getKnowledgeBase().getRootDiagnosis());

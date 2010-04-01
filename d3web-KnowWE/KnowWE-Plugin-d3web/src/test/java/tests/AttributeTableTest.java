@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import utils.KBCreationTestUtil;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -54,8 +54,8 @@ public class AttributeTableTest extends TestCase {
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 		
 		// Get Diagnosis with ID "P1": "Mechanical Problem"
-		Diagnosis loadedDiag = loadedKB.searchDiagnosis("P1");
-		Diagnosis createdDiag = createdKB.searchDiagnosis("P1");
+		Solution loadedDiag = loadedKB.searchDiagnosis("P1");
+		Solution createdDiag = createdKB.searchDiagnosis("P1");
 		
 		// Get MMInfoStorage of diagnoses
 		MMInfoStorage loadedStorage = (MMInfoStorage) loadedDiag.getProperties().getProperty(Property.MMINFO);

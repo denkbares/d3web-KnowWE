@@ -37,7 +37,7 @@ import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
@@ -61,7 +61,7 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 	private List<String> allowedNames;
 	private List<Message> errors = new ArrayList<Message>();
 	private String file;
-	private HashMap< Integer, Diagnosis > diagParents = new HashMap< Integer, Diagnosis >();
+	private HashMap< Integer, Solution > diagParents = new HashMap< Integer, Solution >();
 	private IDObjectManagement idom;
 	
 	/**
@@ -129,8 +129,8 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 	public void addNode(int dashes, String diag, int line,
 			String diagDescription, int order) {
 				
-		Diagnosis parent;
-		Diagnosis newDiag = idom.findDiagnosis(diag);
+		Solution parent;
+		Solution newDiag = idom.findDiagnosis(diag);
 		
 		// this gets the appropriate parent for the new Diagnosis
 		if (dashes == 0) {

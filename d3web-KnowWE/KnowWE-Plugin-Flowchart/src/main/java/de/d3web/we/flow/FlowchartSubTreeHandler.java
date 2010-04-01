@@ -43,7 +43,7 @@ import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -395,7 +395,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		solution = solution.substring(1, solution.length() - 1);
 
 		KnowledgeBaseManagement kbm = getKBM(article, section);
-		Diagnosis diagnosis = kbm.findDiagnosis(solution);
+		Solution diagnosis = kbm.findDiagnosis(solution);
 
 		if (diagnosis == null) {
 			errors.add(new Message("Diagnosis not found: " + solution));

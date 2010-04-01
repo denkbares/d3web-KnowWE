@@ -7,7 +7,7 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -57,7 +57,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 			
 			boolean lazy = isLazy(s);
 			
-			Diagnosis d = kbm.findDiagnosis(solution);
+			Solution d = kbm.findDiagnosis(solution);
 			if (d == null && lazy) {
 				d = createSolution(solution, kbm);
 			}
@@ -106,9 +106,9 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 		return false;
 	}
 
-	private Diagnosis createSolution(String solution,
+	private Solution createSolution(String solution,
 			KnowledgeBaseManagement mgn) {
-		Diagnosis d = mgn.findDiagnosis(solution);
+		Solution d = mgn.findDiagnosis(solution);
 		if (d == null) {
 			d = mgn.createDiagnosis(solution, mgn.getKnowledgeBase()
 					.getRootDiagnosis());

@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -112,7 +112,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				
 				// Insert Solution into KnowledgeBase when Solution doesnt exist
 				Section head = elements.get(0);
-				Diagnosis currentdiag = kbm.findDiagnosis(head.getOriginalText().replaceAll(p.toString(), "").trim());
+				Solution currentdiag = kbm.findDiagnosis(head.getOriginalText().replaceAll(p.toString(), "").trim());
 				if (currentdiag == null) {
 					currentdiag = kbm.createDiagnosis(head.getOriginalText().replaceAll(p.toString(), "").trim(), kbm.getKnowledgeBase().getRootDiagnosis());
 				}
@@ -137,7 +137,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 
 		private void setThresholds(KnowledgeBaseManagement kbm,
-				Diagnosis currentdiag, Section tail) {
+				Solution currentdiag, Section tail) {
 			
 			List knowledge = (List) kbm.getKnowledgeBase().getKnowledge(PSMethodXCL.class, XCLModel.XCLMODEL);
 			
@@ -179,7 +179,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		 * @return
 		 */
 		private void insertRelations(KnowWEArticle article, List<Section> currentRels, 
-				KnowledgeBaseManagement kbm, Diagnosis currentdiag, String currentWeb) {
+				KnowledgeBaseManagement kbm, Solution currentdiag, String currentWeb) {
 
 			
 			for (Section rel : currentRels) {

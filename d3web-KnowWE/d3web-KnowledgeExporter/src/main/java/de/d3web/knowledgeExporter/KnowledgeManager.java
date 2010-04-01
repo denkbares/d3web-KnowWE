@@ -41,7 +41,7 @@ import de.d3web.core.inference.condition.NonTerminalCondition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionIndication;
@@ -70,7 +70,7 @@ public class KnowledgeManager {
 
 	private Set<Rule> allRules = new HashSet<Rule>();
 	private Set<Rule> doneRules = new HashSet<Rule>();
-	private List<Diagnosis> diagnosisList = new LinkedList<Diagnosis>();
+	private List<Solution> diagnosisList = new LinkedList<Solution>();
 	private Set<Question> questions = new HashSet<Question>();
 	private Set<QASet> qClasses = new HashSet<QASet>();
 	private boolean filterOn = false;
@@ -87,12 +87,12 @@ public class KnowledgeManager {
 	 * 	to export.
 	 * @param kb is the used KnowledgeBase
 	 */
-	public KnowledgeManager(KnowledgeBase kb, List<Diagnosis> diagnosesToExport) {
+	public KnowledgeManager(KnowledgeBase kb, List<Solution> diagnosesToExport) {
 		this.kb = kb;
 		Collection<KnowledgeSlice> knowledge = kb.getAllKnowledgeSlices();
 
 		if (diagnosesToExport == null) {
-			diagnosisList = new LinkedList<Diagnosis>();
+			diagnosisList = new LinkedList<Solution>();
 			diagnosisList.addAll(kb.getDiagnoses());
 		} else {
 			filterOn = true;
@@ -125,7 +125,7 @@ public class KnowledgeManager {
 	 */
 	public KnowledgeManager(KnowledgeBase kb) {
 		this.kb = kb;
-		diagnosisList = new LinkedList<Diagnosis>();
+		diagnosisList = new LinkedList<Solution>();
 		diagnosisList.addAll(kb.getDiagnoses());
 		
 		Collection<KnowledgeSlice> knowledge = kb.getAllKnowledgeSlices();
@@ -144,7 +144,7 @@ public class KnowledgeManager {
 	 * @param diagnosesToExport is the List of Diagnoses you want
 	 * 	to export.
 	 */
-	public void setFilter(List<Diagnosis> diagnosesToExport) {
+	public void setFilter(List<Solution> diagnosesToExport) {
 		
 		if (diagnosesToExport != null) {
 			filterOn = true;
@@ -192,7 +192,7 @@ public class KnowledgeManager {
 		return kb;
 	}
 
-	public List<Diagnosis> getDiagnosisList() {
+	public List<Solution> getDiagnosisList() {
 	
 		return diagnosisList;
 	}
@@ -373,17 +373,17 @@ public class KnowledgeManager {
 		}
 	}
 
-	private List<Diagnosis> calcDiagnosisSet(List<Diagnosis> l) {
-		List<Diagnosis> result = new LinkedList<Diagnosis>();
-		for (Iterator<Diagnosis> iter = l.iterator(); iter.hasNext();) {
-			Diagnosis element = iter.next();
+	private List<Solution> calcDiagnosisSet(List<Solution> l) {
+		List<Solution> result = new LinkedList<Solution>();
+		for (Iterator<Solution> iter = l.iterator(); iter.hasNext();) {
+			Solution element = iter.next();
 			addPathToList(element, result);
 		}
 
 		return result;
 	}
 
-	private void addPathToList(Diagnosis d, List<Diagnosis> l) {
+	private void addPathToList(Solution d, List<Solution> l) {
 		List<TerminologyObject> parents = Arrays.asList(d.getParents());
 		if (!l.contains(d)) {
 			l.add(d);
@@ -391,7 +391,7 @@ public class KnowledgeManager {
 			return;
 		}
 		for (Iterator<TerminologyObject> iter = parents.iterator(); iter.hasNext();) {
-			Diagnosis element = (Diagnosis) iter.next();
+			Solution element = (Solution) iter.next();
 			if (!l.contains(element)) {
 				l.add(element);
 				addPathToList(element, l);
@@ -402,20 +402,20 @@ public class KnowledgeManager {
 	}
 	
 	private boolean matchesFilter(Rule r) {
-		List<Diagnosis> l = diagnosisList;
+		List<Solution> l = diagnosisList;
 		if (l == null) {
 			return true;
 		}
-		for (Iterator<Diagnosis> iter = l.iterator(); iter.hasNext();) {
+		for (Iterator<Solution> iter = l.iterator(); iter.hasNext();) {
 			Object element = iter.next();
-			if (element instanceof Diagnosis) {
+			if (element instanceof Solution) {
 				if (r.getAction() instanceof ActionHeuristicPS) {
 					ActionHeuristicPS action = ((ActionHeuristicPS) r
 							.getAction());
 					if (action == null) {
 						return false;
 					}
-					Diagnosis d = action.getDiagnosis();
+					Solution d = action.getDiagnosis();
 					if (d == null) {
 						return false;
 					}

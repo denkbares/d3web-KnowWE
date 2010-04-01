@@ -22,7 +22,7 @@ package de.d3web.KnOfficeParser.table;
 
 import de.d3web.report.Message;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 /**
  * Interface für Builder, die Wissen aus einer Tabellenzelle inklusive derren Kontext generieren
@@ -30,5 +30,5 @@ import de.d3web.core.manage.IDObjectManagement;
  *
  */
 public interface CellKnowledgeBuilder {
-	Message add(IDObjectManagement idom, int line, int column, String file, Condition cond, String text, Diagnosis diag, boolean errorOccured);
+	Message add(IDObjectManagement idom, int line, int column, String file, Condition cond, String text, Solution diag, boolean errorOccured);
 }

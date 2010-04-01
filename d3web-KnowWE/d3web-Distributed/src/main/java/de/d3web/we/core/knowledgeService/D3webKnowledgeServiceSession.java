@@ -32,7 +32,7 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.PSMethodInit;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -299,7 +299,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 							.getValues()));
 		} else if (object instanceof QuestionNum) {
 			values.addAll(getAnswers((QuestionNum) object, info.getValues()));
-		} else if (object instanceof Diagnosis) {
+		} else if (object instanceof Solution) {
 			PropertiesContainer pc = (PropertiesContainer) object;
 			Boolean external = (Boolean) pc.getProperties().getProperty(
 					Property.EXTERNAL);
@@ -326,8 +326,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			}
 		}
 
-		if (vo instanceof Diagnosis) {
-			Diagnosis diag = (Diagnosis) vo;
+		if (vo instanceof Solution) {
+			Solution diag = (Solution) vo;
 			if (!(values.isEmpty())) {
 				toChange.add(diag);
 				if (info.getInformationType().equals(
@@ -357,14 +357,14 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	}
 
 	public void request(List<Information> infos) {
-		List<Diagnosis> requestedDiagnoses = new ArrayList<Diagnosis>();
+		List<Solution> requestedDiagnoses = new ArrayList<Solution>();
 		List<QASet> requestedFindings = new ArrayList<QASet>();
 		for (Information info : infos) {
 			IDObject ido = base.search(info.getObjectID());
 			if (ido instanceof QASet) {
 				requestedFindings.add((QASet) ido);
-			} else if (ido instanceof Diagnosis) {
-				requestedDiagnoses.add((Diagnosis) ido);
+			} else if (ido instanceof Solution) {
+				requestedDiagnoses.add((Solution) ido);
 			}
 		}
 
@@ -470,8 +470,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			} else {
 				// mag ich grad net
 			}
-		} else if (valuedObject instanceof Diagnosis) {
-			Diagnosis diagnosis = (Diagnosis) valuedObject;
+		} else if (valuedObject instanceof Solution) {
+			Solution diagnosis = (Solution) valuedObject;
 			if (instantly) {
 				List solutionList = new ArrayList();
 				solutionList.add(getLocalSolutionState(diagnosis.getState(
@@ -515,7 +515,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 	public TerminologyType getTerminologyType(String id) {
 		IDObject ido = base.search(id);
-		if (ido instanceof Diagnosis) {
+		if (ido instanceof Solution) {
 			return TerminologyType.diagnosis;
 		} else if (ido instanceof QASet) {
 			return TerminologyType.symptom;

@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEArticleManager;
@@ -128,7 +128,7 @@ public class UpdateSolutions extends AbstractAction {
 		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
 				article, sec).getKnowledgeBase();
 
-		List<Diagnosis> diagnoses = kb.getDiagnoses();
+		List<Solution> diagnoses = kb.getDiagnoses();
 		
 		
 		
@@ -143,7 +143,7 @@ public class UpdateSolutions extends AbstractAction {
 		
 
 		String diagnosisID = null;
-		for (Diagnosis diagnosis : diagnoses) {
+		for (Solution diagnosis : diagnoses) {
 			if (diagnosis.getName().equals(
 					UpdateQuestions.revertSpecialCharacterEscape(solutionText))) {
 				diagnosisID = diagnosis.getId();

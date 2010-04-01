@@ -14,8 +14,6 @@ import de.d3web.we.utils.KnowWEUtils;
 
 public class TestSuiteServlet extends AbstractAction {
 	
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	public void execute(ActionContext context) throws IOException {
 		String filename = context.getParameter("filename");;

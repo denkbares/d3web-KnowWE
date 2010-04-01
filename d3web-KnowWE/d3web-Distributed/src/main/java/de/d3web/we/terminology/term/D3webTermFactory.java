@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
@@ -99,7 +99,7 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 		Term parentTerm = null;
 		if(alignments.isEmpty()) {
 			if((!no.getName().equals("P000")) && (!no.getName().equals("Q000"))&& (!no.getName().equals(DEFAULT_QUESTIONNAIRE_NAME))) {
-				if((no instanceof QContainer || no instanceof Diagnosis)) {
+				if((no instanceof QContainer || no instanceof Solution)) {
 					// new Root -> complete subtree
 					parentTerm = getTerm(no, globalTerminology.getType(), globalTerminology);
 					//parentTerm.addAlignments(getAlignments(no, idString, parentTerm));

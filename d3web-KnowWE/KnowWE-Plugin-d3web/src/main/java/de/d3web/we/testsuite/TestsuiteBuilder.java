@@ -37,7 +37,7 @@ import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.manage.IDObjectManagement;
@@ -173,7 +173,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	 */
 	public void addSolution(String name, String rating, int line, String linetext) {
 
-		Diagnosis d = idom.findDiagnosis(name);
+		Solution d = idom.findDiagnosis(name);
 
 		if (d == null) {
 			errors.add(MessageKnOfficeGenerator
@@ -188,7 +188,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	
 	public void addHeuristicSolution(String name, String rating, int line, String linetext) {
 		
-		Diagnosis d = idom.findDiagnosis(name);
+		Solution d = idom.findDiagnosis(name);
 		
 		if (d == null) {
 			errors.add(MessageKnOfficeGenerator
@@ -201,7 +201,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 
 	public void addXCLSolution(String name, String rating, int line, String linetext) {
 		
-		Diagnosis d = idom.findDiagnosis(name);
+		Solution d = idom.findDiagnosis(name);
 		
 		if (d == null) {
 			errors.add(MessageKnOfficeGenerator
@@ -217,7 +217,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	 * @param d Diagnosis
 	 * @param r Rating
 	 */
-	private void addRatedSolution(Diagnosis d, Rating r) {
+	private void addRatedSolution(Solution d, Rating r) {
 		RatedSolution rs = new RatedSolution(d, r);
 		currentRatedTestCase.addExpected(rs);
 	}

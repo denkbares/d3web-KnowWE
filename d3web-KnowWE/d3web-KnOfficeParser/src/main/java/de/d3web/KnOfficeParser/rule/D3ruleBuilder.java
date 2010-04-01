@@ -52,7 +52,7 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
@@ -74,7 +74,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 	private String file;
 	private List<Message> errors = new ArrayList<Message>();
 	private Question currentquestion;
-	private Diagnosis currentdiag;
+	private Solution currentdiag;
 	private Stack<FormulaNumberElement> formulaStack = new Stack<FormulaNumberElement>();
 	private D3webConditionBuilder cb;
 	private boolean lazy = false;
@@ -97,7 +97,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		private FormulaExpression formula;
 		private ArrayList<QASet> qcons;
 		private Score score;
-		private Diagnosis diag;
+		private Solution diag;
 		
 		public MyRule(ruletype type, Question question,
 				Condition ifcond, Condition exceptcond,
@@ -113,7 +113,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			this.qcons = qcons;
 		}
 
-		public MyRule(Diagnosis diag, Score score, Condition ifcond,
+		public MyRule(Solution diag, Score score, Condition ifcond,
 				Condition exceptcond) {
 			super();
 			this.diag = diag;

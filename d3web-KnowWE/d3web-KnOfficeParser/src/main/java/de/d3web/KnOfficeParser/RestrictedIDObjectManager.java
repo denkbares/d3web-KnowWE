@@ -25,7 +25,7 @@ import java.util.Set;
 
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -128,8 +128,8 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 	}
 
 	@Override
-	public Diagnosis findDiagnosis(String name) {
-		Diagnosis diag = kbm.findDiagnosis(name);
+	public Solution findDiagnosis(String name) {
+		Solution diag = kbm.findDiagnosis(name);
 		if (diag==null&&lazyDiags) {
 			diag=createDiagnosis(name, null);
 		}
@@ -181,7 +181,7 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 
 
 	@Override
-	public Diagnosis createDiagnosis(String id, String name, Diagnosis parent) {
+	public Solution createDiagnosis(String id, String name, Solution parent) {
 		if (parent==null) {
 			parent=kbm.getKnowledgeBase().getRootDiagnosis();
 		}

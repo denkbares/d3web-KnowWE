@@ -24,7 +24,7 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.XPSCase;
@@ -62,7 +62,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 			
 			List<? extends Question> answeredQuestions = c.getAnsweredQuestions();
 
-			Diagnosis d = findDiagnosis(web, topic, solution);
+			Solution d = findDiagnosis(web, topic, solution);
 			if( isDiagnosisNew( d )){
 				d = getKBM( c.getKnowledgeBase() ).createDiagnosis(solution, c.getKnowledgeBase().getRootDiagnosis());
 			} else {
@@ -93,7 +93,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param content
 	 */
 	private void createXCLRelation(XPSCase c, List<? extends Question> answeredQuestions, StringBuffer newXCL,
-			Diagnosis d){
+			Solution d){
 		for( Question q : answeredQuestions ){
 			Answer theanswer = q.getValue( c );
 			if (theanswer != null) {
@@ -113,7 +113,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param d
 	 * @return
 	 */
-	private boolean isDiagnosisNew(Diagnosis d){
+	private boolean isDiagnosisNew(Solution d){
 		if(d == null) return true;
 		return false;
 	}
@@ -160,10 +160,10 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param solution
 	 * @return
 	 */
-	private Diagnosis findDiagnosis(String web, String topic, String solution){
+	private Solution findDiagnosis(String web, String topic, String solution){
 		D3webKnowledgeService ks = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		
-		Diagnosis d = getKBM( ks.getBase()).findDiagnosis(solution);
+		Solution d = getKBM( ks.getBase()).findDiagnosis(solution);
 		return d;
 	}
 	

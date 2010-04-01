@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.utilities.ISetMap;
 import de.d3web.utilities.SetMap;
@@ -231,7 +231,7 @@ public class TerminologyBroker {
 		if(aligners == null) return result;
 		Collection<Class> efilters = new ArrayList<Class>();
 		efilters.add(QContainer.class);
-		efilters.add(Diagnosis.class);
+		efilters.add(Solution.class);
 		LocalTerminologyHandler localHandler = terminology.getHandler(
 				new ArrayList(), efilters);
 		for (Object object : localHandler) {

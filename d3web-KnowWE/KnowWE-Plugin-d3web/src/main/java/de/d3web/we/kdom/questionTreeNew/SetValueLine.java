@@ -5,7 +5,7 @@ import java.util.List;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
@@ -166,7 +166,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 				}
 			}
 			
-			Diagnosis d = mgn.findDiagnosis(s.getOriginalText());
+			Solution d = mgn.findDiagnosis(s.getOriginalText());
 			if( d != null) {
 				Score score = null;
 				List<Score> allScores = Score.getAllScores();

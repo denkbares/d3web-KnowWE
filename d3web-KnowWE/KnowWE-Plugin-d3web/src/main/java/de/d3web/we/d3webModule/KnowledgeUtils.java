@@ -34,7 +34,7 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
@@ -96,7 +96,7 @@ public class KnowledgeUtils {
 						type));
 			}
 		}
-		Diagnosis diag = idom.findDiagnosis(solution);
+		Solution diag = idom.findDiagnosis(solution);
 		if (diag == null) {
 			errors.add(MessageKnOfficeGenerator
 					.createDiagnosisNotFoundException(kdomid, line, column, "",

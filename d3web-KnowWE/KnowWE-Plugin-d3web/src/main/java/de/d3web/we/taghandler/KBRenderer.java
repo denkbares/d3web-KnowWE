@@ -32,7 +32,7 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
@@ -73,10 +73,10 @@ public class KBRenderer extends AbstractTagHandler {
 //			text.append("<h4>Knowledge of article:</h4>";
 			KnowledgeBase kb = service.getBase();
 
-			List<Diagnosis> diagnosis = kb.getDiagnoses();
+			List<Solution> diagnosis = kb.getDiagnoses();
 
 			boolean appendedSolutionsHeadline = false;
-			for (Diagnosis diagnosis2 : diagnosis) {
+			for (Solution diagnosis2 : diagnosis) {
 				if (!diagnosis2.getName().equals("P000")) {
 					if (!appendedSolutionsHeadline) {
 						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.solutions") + ":</strong><p/>");

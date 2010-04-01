@@ -27,8 +27,6 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 
 public class ActionInstantDelegate extends AbstractActionDelegate {
 	
-	private static final long serialVersionUID = 7810881477953980445L;
-
 	@Override
 	public PSAction copy() {
 		ActionInstantDelegate result = new ActionInstantDelegate();

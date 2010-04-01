@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 ComplexCondition.g 2010-03-23 14:24:44
+// $ANTLR 3.1.1 ComplexCondition.g 2010-04-01 16:35:09
 
 package de.d3web.KnOfficeParser.xcl;
 import de.d3web.KnOfficeParser.ConditionBuilder;

@@ -32,7 +32,7 @@ import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
@@ -54,7 +54,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 
 	
 	private Set<Question> questions;
-	private List<Diagnosis> diagnoses;
+	private List<Solution> diagnoses;
 	private Set<QASet> qcontainers;
 	
 	public AttributeTableWriter(KnowledgeManager manager) {
@@ -273,8 +273,8 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		
 		
 		int row = 1;
-		for (Diagnosis d:diagnoses) {
-			dSheet.addCell(new Label (getColumn(Diagnosis.class.getSimpleName(), dSheet), 
+		for (Solution d:diagnoses) {
+			dSheet.addCell(new Label (getColumn(Solution.class.getSimpleName(), dSheet), 
 					row, d.getName(), getCellFormatBold()));
 			writeMMInfos(d, dSheet, row);
 			row++;
@@ -287,9 +287,9 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 				("AttributeTableWriter.header.Diagnosis"), getCellFormatBoldCenter()));
 		
 		boolean link = false;
-		Iterator<Diagnosis> diagnosesIt = diagnoses.iterator();
+		Iterator<Solution> diagnosesIt = diagnoses.iterator();
 		while (!link && diagnosesIt.hasNext()) {
-			Diagnosis d = diagnosesIt.next();
+			Solution d = diagnosesIt.next();
 			if (checkProperties(d)[1]) {
 				link = true;
 				

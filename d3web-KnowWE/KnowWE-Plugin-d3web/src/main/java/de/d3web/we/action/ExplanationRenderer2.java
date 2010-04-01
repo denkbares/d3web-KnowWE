@@ -26,7 +26,7 @@ import java.util.Map;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.MethodKind;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
@@ -111,7 +111,7 @@ public class ExplanationRenderer2 extends DeprecatedAbstractKnowWEAction {
 		KnowledgeService ks = dpse.getService(namespace);
 		if (ks instanceof D3webKnowledgeService) {
 			D3webKnowledgeService d3 = (D3webKnowledgeService) ks;
-			Diagnosis diag = d3.getBase().searchDiagnosis(id);
+			Solution diag = d3.getBase().searchDiagnosis(id);
 			if (diag != null) {
 				KnowledgeSlice heu = diag.getKnowledge(PSMethodHeuristic.class,
 						MethodKind.BACKWARD);

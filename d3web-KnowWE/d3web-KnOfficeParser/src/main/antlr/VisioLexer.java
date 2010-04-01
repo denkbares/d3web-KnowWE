@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2010-03-23 14:24:37
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2010-04-01 16:35:00
 
 package de.d3web.KnOfficeParser.visio;
 import de.d3web.KnOfficeParser.LexerErrorHandler;

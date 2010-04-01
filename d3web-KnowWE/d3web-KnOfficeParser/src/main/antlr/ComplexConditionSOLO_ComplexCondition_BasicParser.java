@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2010-03-23 14:24:12
+// $ANTLR 3.1.1 BasicParser.g 2010-04-01 16:34:41
 
 package de.d3web.KnOfficeParser.complexcondition;
 import de.d3web.KnOfficeParser.ParserErrorHandler;

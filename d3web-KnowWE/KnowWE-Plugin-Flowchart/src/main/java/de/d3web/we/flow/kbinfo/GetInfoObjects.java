@@ -26,7 +26,7 @@ import java.util.List;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.DerivationType;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -183,8 +183,8 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		KnowledgeBase base = service.getBase();
 		IDObject object = base.search(objectID);
 
-		if (object instanceof Diagnosis) {
-			appendInfoObject(web, service, (Diagnosis) object, buffer);
+		if (object instanceof Solution) {
+			appendInfoObject(web, service, (Solution) object, buffer);
 		}
 		else if (object instanceof Question) {
 			appendInfoObject(web, service, (Question) object, buffer);
@@ -208,7 +208,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		}
 	}
 
-	private static void appendInfoObject(String web, D3webKnowledgeService service, Diagnosis object, StringBuffer buffer) {
+	private static void appendInfoObject(String web, D3webKnowledgeService service, Solution object, StringBuffer buffer) {
 		buffer.append("\t<solution");
 		buffer.append(" id='").append(service.getId()).append("/").append(object.getId()).append(
 				"'");

@@ -41,7 +41,7 @@ import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -213,28 +213,28 @@ public class KBCreationTestUtil {
 	 */
 	private void createDiagnoses() {
 		
-		Diagnosis p0 = new Diagnosis("P000");
+		Solution p0 = new Solution("P000");
 			p0.setName("P000");
 			createdKB.add(p0);
 		
-		Diagnosis p1 = new Diagnosis("P1");
+		Solution p1 = new Solution("P1");
 			p1.setName("Mechanical problem");
 			createdKB.getRootDiagnosis().addChild(p1);
 			createdKB.add(p1);
 		
-		Diagnosis p2 = new Diagnosis("P2");
+		Solution p2 = new Solution("P2");
 			p2.setName("Damaged idle speed system");
 			p1.addChild(p2);
 			createdKB.add(p2);
 		
-		Diagnosis p3 = new Diagnosis("P3");
+		Solution p3 = new Solution("P3");
 			p3.setName("Leaking air intake system");
 			p3.getProperties().setProperty(Property.EXPLANATION, 
 					"The air intake system is leaking.");
 			p1.addChild(p3);
 			createdKB.add(p3);
 		
-		Diagnosis p4 = new Diagnosis("P4");
+		Solution p4 = new Solution("P4");
 			p4.setName("Other problem");
 			createdKB.getRootDiagnosis().addChild(p4);
 			createdKB.add(p4);
@@ -369,7 +369,7 @@ public class KBCreationTestUtil {
 	private void createAttributeTable() {
 		
 		// Get the Diagnosis which will get the MMInfo
-		Diagnosis d = createdKBM.findDiagnosis("Mechanical problem");
+		Solution d = createdKBM.findDiagnosis("Mechanical problem");
 		
 		// Add MMInfo which is similar to the MMInfo created from the AttributeTable
 		// | Mechanical problem | info | description | some problem description
@@ -478,7 +478,7 @@ public class KBCreationTestUtil {
 		Answer answer = createdKBM.findAnswer(condQuestion, "everything is fine");
 		CondEqual condition = new CondEqual(condQuestion, answer);
 		String ruleID = createdKBM.createRuleID();
-		Diagnosis diag = createdKBM.findDiagnosis("Other problem");
+		Solution diag = createdKBM.findDiagnosis("Other problem");
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, condition);
 		
 	}
@@ -495,7 +495,7 @@ public class KBCreationTestUtil {
 		List<QASet> action = new ArrayList<QASet>();
 		action.add(question);
 		String ruleID = createdKBM.createRuleID();
-		Diagnosis diag = createdKBM.findDiagnosis("Other problem");
+		Solution diag = createdKBM.findDiagnosis("Other problem");
 		CondDState condition = new CondDState(diag, 
 				DiagnosisState.ESTABLISHED);
 		RuleFactory.createRefinementRule(ruleID, action, diag, condition);
@@ -607,7 +607,7 @@ public class KBCreationTestUtil {
 		CondEqual conditionExc = new CondEqual(questionExc, answerExc);
 		
 		String ruleID = createdKBM.createRuleID();
-		Diagnosis diag = createdKBM.findDiagnosis("Mechanical problem");
+		Solution diag = createdKBM.findDiagnosis("Mechanical problem");
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, conditionIf, conditionExc);
 		
 		
@@ -682,7 +682,7 @@ public class KBCreationTestUtil {
 	 */
 	private void createXCLModels() {
 			
-		Diagnosis d = createdKBM.findDiagnosis("Damaged idle speed system");
+		Solution d = createdKBM.findDiagnosis("Damaged idle speed system");
 
 	    // "Idle speed system o.k.?" = Yes [--]
 		Question q1 = createdKBM.findQuestion("Idle speed system o.k.?");
@@ -728,7 +728,7 @@ public class KBCreationTestUtil {
 		Finding f = new Finding(q, a);
 		
 		// Create RatedSolution
-		Diagnosis d = createdKBM.findDiagnosis("Other problem");
+		Solution d = createdKBM.findDiagnosis("Other problem");
 		StateRating sr = new StateRating(DiagnosisState.ESTABLISHED);
 		RatedSolution rs = new RatedSolution(d, sr);
 		

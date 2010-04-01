@@ -38,7 +38,7 @@ import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.IDObjectManagement;
@@ -54,7 +54,7 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 
 	private List<Message> errors = new ArrayList<Message>();
 	private String file;
-	private Diagnosis currentdiag;
+	private Solution currentdiag;
 	private Question currentquestion;
 	private QContainer currentqclass;
 	private D3webConditionBuilder cb;

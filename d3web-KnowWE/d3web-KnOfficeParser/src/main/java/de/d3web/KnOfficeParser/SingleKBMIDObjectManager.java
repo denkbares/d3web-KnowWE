@@ -22,7 +22,7 @@ package de.d3web.KnOfficeParser;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -62,7 +62,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	}
 
 	@Override
-	public Diagnosis createDiagnosis(String name, Diagnosis parent) {
+	public Solution createDiagnosis(String name, Solution parent) {
 		return kbm.createDiagnosis(name, parent);
 	}
 
@@ -87,7 +87,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	}
 
 	@Override
-	public Diagnosis findDiagnosis(String name) {
+	public Solution findDiagnosis(String name) {
 		return kbm.findDiagnosis(name);
 	}
 
@@ -237,7 +237,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	}
 
 	@Override
-	public Diagnosis createDiagnosis(String id, String name, Diagnosis parent) {
+	public Solution createDiagnosis(String id, String name, Solution parent) {
 		return kbm.createDiagnosis(id, name, parent);
 	}
 

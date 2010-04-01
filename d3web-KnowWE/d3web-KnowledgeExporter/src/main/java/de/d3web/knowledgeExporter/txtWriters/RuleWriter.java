@@ -33,7 +33,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionContraIndication;
@@ -150,7 +150,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 	private boolean appendAction(PSAction a, StringBuffer s) {
 		if (a instanceof ActionHeuristicPS) {
 			ActionHeuristicPS action = (ActionHeuristicPS) a;
-			Diagnosis d = action.getDiagnosis();
+			Solution d = action.getDiagnosis();
 			s.append(quote(d.toString()));
 			s.append(" = ");
 			s.append(action.getScore().toString());

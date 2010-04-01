@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.utilities.ISetMap;
 import de.d3web.we.basic.Information;
@@ -262,7 +262,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				D3webKnowledgeService ks = ((D3webKnowledgeService) knowledgeService);
 				KnowledgeBaseManagement mgn = KnowledgeBaseManagement
 						.createInstance(ks.getBase());
-				Diagnosis d = mgn.findDiagnosis(solution);
+				Solution d = mgn.findDiagnosis(solution);
 				if (d != null) {
 					return knowledgeService.getId().substring(0,
 							knowledgeService.getId().indexOf(".."));

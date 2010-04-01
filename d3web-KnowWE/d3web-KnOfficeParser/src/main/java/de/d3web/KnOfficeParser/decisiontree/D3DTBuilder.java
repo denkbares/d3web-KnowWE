@@ -48,7 +48,7 @@ import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Diagnosis;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -412,7 +412,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			}
 			// Diagnoseherleitung
 			else {
-				Diagnosis diag = idom.findDiagnosis(name);
+				Solution diag = idom.findDiagnosis(name);
 				if (diag == null) {
 					errors.add(MessageKnOfficeGenerator
 							.createDiagnosisNotFoundException(file, line,
