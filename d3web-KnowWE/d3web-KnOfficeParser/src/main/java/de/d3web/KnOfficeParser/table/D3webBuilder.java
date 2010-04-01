@@ -211,7 +211,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 			cond = new CondEqual(qyn, ac);
 		} else  if (currentquestion instanceof QuestionChoice){
 			QuestionChoice qc = (QuestionChoice) currentquestion;
-			if (currentanswer==null||!currentanswer.getText().equals(answer)) {
+			if (currentanswer==null||!currentanswer.getName().equals(answer)) {
 				currentanswer = idom.findAnswerChoice(qc, answer);
 				if (currentanswer==null) {
 					if (lazy) {

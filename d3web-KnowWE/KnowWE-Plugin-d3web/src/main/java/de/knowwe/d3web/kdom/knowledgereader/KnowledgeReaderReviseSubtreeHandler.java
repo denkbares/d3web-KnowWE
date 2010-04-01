@@ -28,6 +28,7 @@ import de.d3web.core.io.KnowledgeReader;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.report.Message;
@@ -47,7 +48,9 @@ public class KnowledgeReaderReviseSubtreeHandler implements ReviseSubTreeHandler
 	@SuppressWarnings("unchecked")
 	@Override
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s).getKnowledgeBase();
+		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
+		if (kbm==null) return null;
+		KnowledgeBase kb = kbm.getKnowledgeBase();
 		String readerID = DefaultMarkupType.getAnnotation(s, "KnowledgeReader");
 		String toRead = DefaultMarkupType.getContent(s);
 		Extension[] allextensions = PluginManager.getInstance().getExtensions(PersistenceManager.EXTENDED_PLUGIN_ID, PersistenceManager.EXTENDED_POINT_READER);

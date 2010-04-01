@@ -357,7 +357,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		AnswerChoice answer = null;
 		for (AnswerChoice child : question.getAllAlternatives()) {
-			if (child.getText().equals(nodeName)) answer = child;
+			if (child.getName().equals(nodeName)) answer = child;
 
 		}
 
@@ -446,7 +446,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		AnswerChoice answer = null;
 		for (AnswerChoice child : question.getAllAlternatives()) {
-			if (child.getText().equals(name)) answer = child;
+			if (child.getName().equals(name)) answer = child;
 
 		}
 

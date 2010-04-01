@@ -61,6 +61,8 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, s);
 				
+				if (mgn==null) return null;
+				
 				//"safe unsafe cast"
 				Section<QuestionTreeAnswerDef> answer = s;
 				String name = answer.get().getID(answer);
@@ -73,7 +75,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 				if(q instanceof QuestionChoice) {
 					Answer a = mgn.addChoiceAnswer((QuestionChoice)q, name);
 					answer.get().storeObject(answer, a);
-					return new NewObjectCreated(a.getClass().getSimpleName()+"  "+a.getText());
+					return new NewObjectCreated(a.getClass().getSimpleName()+"  "+a.getName());
 				}
 				return new ObjectCreationError(name, this.getClass());
 			}

@@ -112,7 +112,7 @@ public class SCListEditorRenderer extends DeprecatedAbstractKnowWEAction {
 			for (AnswerChoice a : ((QuestionChoice) qaset).getAllAlternatives()) {
 				sb.append("&lt;input type=\\'checkbox\\' name=\\'f0idmc"
 						+ qaset.getId() + "\\' value=\\'" + a.getId()
-						+ " \\' &gt;" + replaceHTML(a.getText())
+						+ " \\' &gt;" + replaceHTML(a.getName())
 						+ "&lt;br /&gt;");
 			}
 

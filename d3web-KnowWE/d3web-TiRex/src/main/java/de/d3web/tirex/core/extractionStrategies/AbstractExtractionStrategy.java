@@ -49,7 +49,7 @@ public abstract class AbstractExtractionStrategy implements ExtractionStrategy {
 		if (toMatch instanceof NamedObject) {
 			qaText = ((NamedObject) toMatch).getName();
 		} else if (toMatch instanceof AnswerChoice) {
-			qaText = ((AnswerChoice) toMatch).getText();
+			qaText = ((AnswerChoice) toMatch).getName();
 		}
 
 		if (qaText == null)

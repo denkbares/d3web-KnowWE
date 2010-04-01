@@ -16,7 +16,6 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
 import de.d3web.we.kdom.objects.QuestionnaireDef;
@@ -29,6 +28,7 @@ import de.d3web.we.kdom.report.NewObjectCreated;
 import de.d3web.we.kdom.report.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.ObjectCreatedMessage;
 import de.d3web.we.kdom.report.ObjectCreationError;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -102,7 +102,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(article.getWeb())
 						.getKBM(article, qidSection);
 
-				String newRuleID = mgn.findNewIDFor(Rule.class);
+				String newRuleID = mgn.createRuleID();
 
 				Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 
@@ -135,7 +135,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, sec);
-
+			if (mgn==null) return null;
 			IDObject o = mgn.findQuestion(name);
 
 			if (o != null) {

@@ -53,7 +53,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 			QContainer qc = mgn.findQContainer(name);
 
 			if (qc != null) {
-				String newRuleID = mgn.findNewIDFor(Rule.class);
+				String newRuleID = mgn.createRuleID();
 				Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 				if (cond != null) {
 					Rule r = RuleFactory.createIndicationRule(newRuleID, qc,

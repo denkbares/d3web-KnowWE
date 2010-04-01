@@ -245,7 +245,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 			// TODO: choices are not considered in JS implementation of bool
 			// questions
 			for (AnswerChoice answer : ((QuestionChoice) object).getAllAlternatives()) {
-				buffer.append("\t\t<choice>").append(encodeXML(answer.getText())).append(
+				buffer.append("\t\t<choice>").append(encodeXML(answer.getName())).append(
 						"</choice>\n");
 			}
 		}

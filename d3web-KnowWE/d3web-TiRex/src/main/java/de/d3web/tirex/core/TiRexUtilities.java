@@ -104,7 +104,7 @@ public class TiRexUtilities {
 
 				for (Answer answer : answers) {
 					if (answer instanceof AnswerChoice) {
-						buffer.append(((AnswerChoice) answer).getText() + "\n");
+						buffer.append(((AnswerChoice) answer).getName() + "\n");
 					}
 				}
 			}

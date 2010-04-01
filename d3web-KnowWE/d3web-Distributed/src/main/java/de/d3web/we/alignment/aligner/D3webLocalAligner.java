@@ -159,7 +159,7 @@ public class D3webLocalAligner implements LocalAligner<NamedObject>{
 		if(ido instanceof NamedObject) {
 			return ((NamedObject)ido).getName();
 		} else if(ido instanceof AnswerChoice) {
-			return ((AnswerChoice)ido).getText();
+			return ((AnswerChoice)ido).getName();
 		} else if(ido instanceof AnswerNum) {
 			return ((AnswerNum)ido).getId();
 		}

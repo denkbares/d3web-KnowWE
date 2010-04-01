@@ -134,7 +134,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 	}
 
 	private Rule generateRule(MyRule rule) {
-		String newRuleID = idom.findNewIDFor(Rule.class);
+		String newRuleID = idom.createRuleID();
 		Rule newRule = null;
 		if (rule.type == ruletype.indication) {
 			Condition cond = rule.ifcond;

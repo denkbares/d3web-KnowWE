@@ -128,12 +128,12 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 					QuestionChoice qc = (QuestionChoice )q;
 					List<AnswerChoice> allAlternatives = qc.getAllAlternatives();
 					for (AnswerChoice answerChoice : allAlternatives) {
-						if(answerChoice.getText().equals(argument)) {
+						if(answerChoice.getName().equals(argument)) {
 							a = answerChoice;
 						}
 					}
 					if(a != null) {
-						String newRuleID = mgn.findNewIDFor(Rule.class);
+						String newRuleID = mgn.createRuleID();
 
 						Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 						
@@ -154,7 +154,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 					}
 					
 					if(d != null) {
-						String newRuleID = mgn.findNewIDFor(Rule.class);
+						String newRuleID = mgn.createRuleID();
 						Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 						Rule r  = RuleFactory.createAddValueRule(newRuleID, q, new Object[]{d},cond);
 						if (r != null) {
@@ -178,7 +178,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 				}
 				
 				if(score != null) {
-					String newRuleID = mgn.findNewIDFor(Rule.class);
+					String newRuleID = mgn.createRuleID();
 
 					Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 					

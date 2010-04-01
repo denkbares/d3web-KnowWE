@@ -24,6 +24,7 @@ import org.apache.tools.ant.filters.StringInputStream;
 
 import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
@@ -39,7 +40,9 @@ public class PluginConfigReviseSubtreeHandler implements ReviseSubTreeHandler {
 	@Override
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 		String xmlText = "<settings><plugins /><psmethods>"+s.getOriginalText()+"</psmethods></settings>";
-		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s).getKnowledgeBase();
+		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
+		if (kbm==null) return null;
+		KnowledgeBase kb = kbm.getKnowledgeBase();
 		try {
 			new PluginConfigPersistenceHandler().read(kb, new StringInputStream(xmlText), new DummyProgressListener());
 		}

@@ -142,7 +142,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 				for (AnswerChoice a:answers) {
 					qSheet.addCell(new Label(getColumn(isExtraAnswerColumn() ? 
 							AnswerChoice.class.getSimpleName() : Question.class.getSimpleName(), qSheet), 
-							row, isExtraAnswerColumn() ? a.getText() : " - " +  a.getText()));
+							row, isExtraAnswerColumn() ? a.getName() : " - " +  a.getName()));
 					writeMMInfos(a, qSheet, row);
 					
 					// ABNORMALITY DER ANTWORT RAUSSCHREIBEN

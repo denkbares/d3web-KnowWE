@@ -240,5 +240,10 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	public Diagnosis createDiagnosis(String id, String name, Diagnosis parent) {
 		return kbm.createDiagnosis(id, name, parent);
 	}
+
+	@Override
+	public String createRuleID() {
+		return kbm.createRuleID();
+	}
 	
 }

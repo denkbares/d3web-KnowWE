@@ -42,11 +42,10 @@ import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.KnOfficeParser.util.Scorefinder;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
-import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Diagnosis;
@@ -369,7 +368,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		for (String name : diags) {
 			Question q = idom.findQuestion(name);
 			Condition cond = getCondPath(line, linetext);
-			String newRuleID = idom.findNewIDFor(Rule.class);
+			String newRuleID = idom.createRuleID();
 			// Merkmalsherleitung
 			if (q != null) {
 				if (q instanceof QuestionNum) {
@@ -633,7 +632,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 
 	private void addQuestionOrQuestionclassIndication(QASet set,
 			Condition abscon, int line, String linetext) {
-		String newRuleID = idom.findNewIDFor(Rule.class);
+		String newRuleID = idom.createRuleID();
 		if (abscon instanceof CondDState) {
 			CondDState statecond = (CondDState) abscon;
 			List<QASet> action = new ArrayList<QASet>();

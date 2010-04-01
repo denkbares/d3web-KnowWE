@@ -172,7 +172,7 @@ public class UserFindingsAction extends DeprecatedAbstractKnowWEAction {
 			if(value instanceof String) {
 				Object valueObject = terminology.getObject(iio.getObjectId(), (String) value);
 				if(valueObject instanceof AnswerChoice) {
-					result.append(((AnswerChoice)valueObject).getText());
+					result.append(((AnswerChoice)valueObject).getName());
 				} else if(valueObject instanceof AnswerUnknown) {
 					result.append("unkown");
 				}

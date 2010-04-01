@@ -23,15 +23,14 @@ package de.d3web.KnOfficeParser.table;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import de.d3web.report.Message;
-import de.d3web.scoring.Score;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.KnOfficeParser.util.Scorefinder;
-import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.report.Message;
+import de.d3web.scoring.Score;
 /**
  * Erstellet Scoring Rules aus Tabellenzellen
  * @author Markus Friedrich
@@ -65,7 +64,7 @@ public class ScoringRuleBuilder implements CellKnowledgeBuilder {
 				return MessageKnOfficeGenerator.createScoreDoesntExistError(file, line, column, "", text);
 			}
 		}
-		String newRuleID = idom.findNewIDFor(Rule.class);
+		String newRuleID = idom.createRuleID();
 		RuleFactory.createHeuristicPSRule(newRuleID, diag, score, cond);
 		return null;
 	}

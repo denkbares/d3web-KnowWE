@@ -310,7 +310,7 @@ public class HTMLDialogRenderer {
 			}
 			String spanid = "span_" + q.getId() + "_" + answerChoice.getId();
 			buffi.append(getEnclosingTagOnClick("span", ""
-					+ answerChoice.getText() + " ", cssclass, jscall, null,
+					+ answerChoice.getName() + " ", cssclass, jscall, null,
 					spanid));
 			
 			
