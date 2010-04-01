@@ -543,7 +543,7 @@ ActionEditor.prototype.updateQuestions = function(addedQuestionText, addedQuesti
 
 		
 		
-		var url = "KnowCC.jsp?action=UpdateQuestions" + encodeURI(infos);
+		var url = "KnowCC.jsp?action=UpdateQuestions" + infos;
 		
 		new Ajax.Request(url, {
 			method: 'get',
