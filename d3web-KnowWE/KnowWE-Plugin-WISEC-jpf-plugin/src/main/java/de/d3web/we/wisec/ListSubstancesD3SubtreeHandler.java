@@ -134,7 +134,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 		Answer activeAnswer = kbm.findAnswer(listQuestion, "active");
 		
 		// Create Rule
-		RuleFactory.createSetValueRule(kbm.findNewIDFor(Rule.class), listQuestion, new Object[] {activeAnswer}, condition);
+		RuleFactory.createSetValueRule(kbm.createRuleID(), listQuestion, new Object[] {activeAnswer}, condition);
 		
 	}
 

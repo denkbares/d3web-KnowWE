@@ -150,7 +150,7 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 		FormulaExpression addition = new FormulaExpression(counterQuestion, add);
 
 		// Create Rule
-		RuleFactory.createSetValueRule(kbm.findNewIDFor(Rule.class), counterQuestion, addition, condition);
+		RuleFactory.createSetValueRule(kbm.createRuleID(), counterQuestion, addition, condition);
 	}
 
 }
