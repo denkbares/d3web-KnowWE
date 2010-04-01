@@ -143,6 +143,9 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 
 	private static void appendInfoObject(String web, KnowledgeService service, StringBuffer buffer) {
 		String id = service.getId();
+		// filters KnowWE-Doc from object tree
+		if (id.startsWith("Doc ")) return;
+		//
 		String name = id.substring(0, id.indexOf(".."));
 		buffer.append("\t<article");
 		buffer.append(" id='").append(id).append("'");

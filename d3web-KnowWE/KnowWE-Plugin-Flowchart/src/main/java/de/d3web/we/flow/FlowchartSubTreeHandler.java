@@ -79,6 +79,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -131,14 +132,16 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		if (!errors.isEmpty()) System.out.println(errors.size() + " errors in FlowTerminology '"
 				+ name + "': " + errors);
 
-		return new KDOMWarning() {
+		if (errors.isEmpty()) return null;
+		else return new KDOMWarning() {
 
 			@Override
 			public String getVerbalization(KnowWEUserContext usercontext) {
 				StringBuffer buffer = new StringBuffer();
 
 				for (Message message : errors) {
-					buffer.append(message.getLineNo() + ": " + message.getMessageText());
+					buffer.append(KnowWEUtils.maskHTML(message.getLineNo() + ": "
+							+ message.getMessageText() + "\r\n"));
 				}
 
 				return buffer.toString();
@@ -186,7 +189,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 					condition = ConditionTrue.INSTANCE;
 
 					errors.add(new Message("Could not parse condition: "
-							+ guardSection.getOriginalText()));
+							+ getXMLContentText(guardSection)));
 
 				}
 

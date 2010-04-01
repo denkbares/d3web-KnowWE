@@ -542,7 +542,8 @@ ActionEditor.prototype.updateQuestions = function(addedQuestionText, addedQuesti
 		var infos = addedQuestionText + addedQuestionType + pageName + answersToLine;
 
 		
-		var url = "KnowCC.jsp?action=UpdateQuestions" + infos;
+		
+		var url = "KnowCC.jsp?action=UpdateQuestions" + encodeURI(infos);
 		
 		new Ajax.Request(url, {
 			method: 'get',
@@ -1099,7 +1100,8 @@ ActionPane.prototype.render = function() {
 		valueText = ' ';
 		
 		//Hack for displaying waiting time (startnode) in Wait Nodes
-		if (this.action.isFlowCall() && this.action.expression.startsWith('CALL[Warten')) {
+		if (this.action.isFlowCall()) {
+			if (this.action.expression.startsWith('CALL[Warten') || this.action.expression.startsWith('CALL[Wait'))
 			valueText = this.action.getDisplayText();
 		}
 			
