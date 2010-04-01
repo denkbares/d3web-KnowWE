@@ -42,6 +42,7 @@ import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondNum;
 import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.NonTerminalCondition;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.knowledge.terminology.NamedObject;
@@ -109,8 +110,8 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		if (q instanceof QuestionNum) {
 			Object o = q.getProperties().getProperty(
 					Property.QUESTION_NUM_RANGE);
-			if (o instanceof Collection) {
-				Collection coll = (Collection) o;
+			if (o instanceof Collection<?>) {
+				Collection<?> coll = (Collection<?>) o;
 				if (coll.size() > 1) {
 					result += "{";
 				}
@@ -148,9 +149,9 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 
 	private void processSubQASets(QASet qaset, StringBuffer s) {
 		boolean qasetIsWritten = false;
-		List<? extends NamedObject> children = qaset.getChildren();
+		TerminologyObject[] children = qaset.getChildren();
 		List<QContainer> remainingQContainers = new LinkedList<QContainer>();
-		for (Object element: children) {
+		for (TerminologyObject element: children) {
 			if (element instanceof Question) {
 				if (!qasetIsWritten) {
 					s.append(quote(qaset.toString()));
@@ -460,6 +461,8 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	}
 	
 	private class AnswerList extends ArrayList<AnswerChoice> {
+
+		private static final long serialVersionUID = -7218215076349663635L;
 
 		public void remove(String answer) {
 	    	for (int i = 0; i < this.size(); i++) {

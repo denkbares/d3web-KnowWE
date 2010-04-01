@@ -21,10 +21,10 @@
 package de.d3web.knowledgeExporter.txtWriters;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
@@ -32,8 +32,8 @@ import de.d3web.knowledgeExporter.KnowledgeManager;
 
 public class QClassHierarchyWriter extends TxtKnowledgeWriter {
 	
-	private List initQASets;
-	private Set validQASets;
+	private List<? extends QASet> initQASets;
+	private Set<? extends QASet> validQASets;
 	private boolean exportQuestionClassHierarchieID;
 	
 	public QClassHierarchyWriter(KnowledgeManager manager) {
@@ -46,14 +46,14 @@ public class QClassHierarchyWriter extends TxtKnowledgeWriter {
 		StringBuffer text = new StringBuffer();
 		QASet set = manager.getKB().getRootQASet();
 		initQASets = manager.getKB().getInitQuestions();
-		addChildQASets(text, set, 0, new HashSet());
+		addChildQASets(text, set, 0, new HashSet<QASet>());
 		
 		return text.toString();
 	}
 	
 
 	private void addChildQASets(StringBuffer text, QASet qaSet, int level,
-			Set alreadyDone) {
+			Set<QASet> alreadyDone) {
 		boolean alreadyWritten = alreadyDone.contains(qaSet);
 		alreadyDone.add(qaSet);
 		if (!(qaSet instanceof Question) && (validQASets == null || validQASets.contains(qaSet))) {
@@ -92,18 +92,15 @@ public class QClassHierarchyWriter extends TxtKnowledgeWriter {
 			text.append("\n");
 			level++;
 			}
-			List<QASet> diagList = (List<QASet>) qaSet.getChildren();
-			
 			
 			if (!alreadyWritten) {
-				for (Iterator<QASet> iter = diagList.iterator(); iter.hasNext();) {
-					QASet element = iter.next();
-					addChildQASets(text, element, level, alreadyDone);
+				for (TerminologyObject to : qaSet.getChildren()) {
+					if (to instanceof QASet) {
+						addChildQASets(text, (QASet) to, level, alreadyDone);
+					}
 				}
 			}
-			
 		}
-		
 	}
 
 

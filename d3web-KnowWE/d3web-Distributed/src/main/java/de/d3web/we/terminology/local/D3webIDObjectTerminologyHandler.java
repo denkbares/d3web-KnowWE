@@ -23,6 +23,7 @@ package de.d3web.we.terminology.local;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
@@ -60,7 +61,7 @@ public class D3webIDObjectTerminologyHandler extends LocalTerminologyHandler<IDO
 				result.add(each);
 				if(each instanceof NamedObject) {
 					NamedObject no = (NamedObject) each;
-					for (NamedObject child : no.getChildren()) {
+					for (TerminologyObject child : no.getChildren()) {
 						if(!toExpand.contains(child) && !result.contains(child)) {
 							newToExpand.add(child);
 						}

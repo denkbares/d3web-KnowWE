@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.knowledge.terminology.NamedObject;
@@ -197,11 +198,11 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 	}
 
 
-	private void collectQuestions(NamedObject namedObject, List<Question> result) {
+	private void collectQuestions(TerminologyObject namedObject, List<Question> result) {
 		if (namedObject instanceof Question && !result.contains(namedObject)) {
 			result.add((Question) namedObject);
 		}
-		for (NamedObject child : namedObject.getChildren()) {
+		for (TerminologyObject child : namedObject.getChildren()) {
 			collectQuestions(child, result);
 		}
 	}

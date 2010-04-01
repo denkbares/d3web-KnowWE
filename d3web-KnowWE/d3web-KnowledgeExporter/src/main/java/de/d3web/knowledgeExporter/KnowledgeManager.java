@@ -20,6 +20,7 @@
 
 package de.d3web.knowledgeExporter;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,17 +31,17 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondQuestion;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.NonTerminalCondition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Diagnosis;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionIndication;
@@ -284,20 +285,18 @@ public class KnowledgeManager {
 	}
 
 	private void addQASetPath(QASet q, Set<QASet> l) {
-		List<? extends NamedObject> fathers = q.getParents();
 		l.add(q);
-		for (Iterator<? extends NamedObject> iter = fathers.iterator(); iter.hasNext();) {
-			QASet element = (QASet) iter.next();
+		for (TerminologyObject to: q.getParents()) {
+			QASet element = (QASet) to;
 			addQASetPath(element, l);
 		}
 
 	}
 
 	private void addQuestionPath(Question q, Set<QASet> s) {
-		List<? extends NamedObject> fathers = q.getParents();
 		s.add(q);
-		for (Iterator<? extends NamedObject> iter = fathers.iterator(); iter.hasNext();) {
-			QASet element = (QASet) iter.next();
+		for (TerminologyObject to: q.getParents()) {
+			QASet element = (QASet) to;
 			if (element instanceof Question) {
 				addQASetPath(element, s);
 			}
@@ -305,10 +304,8 @@ public class KnowledgeManager {
 	}
 
 	private void searchRelQASets(QASet q) {
-
-		List<? extends NamedObject> children = q.getChildren();
-		for (Iterator<? extends NamedObject> iter = children.iterator(); iter.hasNext();) {
-			QASet element = (QASet) iter.next();
+		for (TerminologyObject to: q.getChildren()) {
+			QASet element = (QASet) to;
 			if (element instanceof Question) {
 				if (questions.contains(element)) {
 					qClasses.add(q);
@@ -387,13 +384,13 @@ public class KnowledgeManager {
 	}
 
 	private void addPathToList(Diagnosis d, List<Diagnosis> l) {
-		List<? extends NamedObject> parents = d.getParents();
+		List<TerminologyObject> parents = Arrays.asList(d.getParents());
 		if (!l.contains(d)) {
 			l.add(d);
 		} else {
 			return;
 		}
-		for (Iterator<? extends NamedObject> iter = parents.iterator(); iter.hasNext();) {
+		for (Iterator<TerminologyObject> iter = parents.iterator(); iter.hasNext();) {
 			Diagnosis element = (Diagnosis) iter.next();
 			if (!l.contains(element)) {
 				l.add(element);

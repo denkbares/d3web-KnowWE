@@ -143,7 +143,7 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 					// TODO: define better mechanism with university and
 					// implement well
 					for (Question question : base.getQuestions()) {
-						if (!question.getParents().contains(base.getRootQASet())) {
+						if (!Arrays.asList(question.getParents()).contains(base.getRootQASet())) {
 							allKBObjects.add(question);
 						}
 					}

@@ -21,6 +21,7 @@
 package tests;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import utils.KBCreationTestUtil;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -70,8 +71,8 @@ public class DiagnosesTest extends TestCase {
 				assertEquals("Diagnosis " + expected.getName() + " has wrong name.", expected.getName(), actual.getName());
 				
 				// Test Hierarchy
-				assertEquals("Diagnosis " + expected.getName() + " has wrong parents.", expected.getParents(), actual.getParents());
-				assertEquals("Diagnosis " + expected.getName() + " has wrong children.", expected.getChildren(), actual.getChildren());
+				assertTrue("Diagnosis " + expected.getName() + " has wrong parents.", Arrays.equals(expected.getParents(), actual.getParents()));
+				assertTrue("Diagnosis " + expected.getName() + " has wrong children.", Arrays.equals(expected.getChildren(), actual.getChildren()));
 				
 				// Test Explanation
 				assertEquals("Diagnosis " + expected.getName() + " has wrong explanation.", expected.getProperties().getProperty(Property.EXPLANATION), actual.getProperties().getProperty(Property.EXPLANATION));

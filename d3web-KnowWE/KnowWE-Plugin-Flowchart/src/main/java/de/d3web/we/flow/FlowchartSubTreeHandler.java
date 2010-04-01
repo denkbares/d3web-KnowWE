@@ -42,6 +42,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -343,7 +344,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		QuestionMC question = null;
 
-		for (NamedObject child : container.getChildren()) {
+		for (TerminologyObject child : container.getChildren()) {
 
 			if (child.getName().equals(
 					flowName + "_" + FlowchartTerminologySubTreeHandler.STARTNODES_QUESTION_NAME)) question = (QuestionMC) child;

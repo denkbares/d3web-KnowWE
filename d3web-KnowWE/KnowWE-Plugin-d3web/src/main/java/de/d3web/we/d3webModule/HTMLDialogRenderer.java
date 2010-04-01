@@ -24,8 +24,8 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.session.XPSCase;
@@ -90,13 +90,10 @@ public class HTMLDialogRenderer {
 				buffi.append("<table id='tbl" + container.getId() + "' class='hidden'><tbody>");
 			}
 			
-			// get all question objects for the given qcontainer = questionnaire
-			java.util.List<? extends NamedObject> questions = container.getChildren();
-			
 			// counter, to be able to format the table lines alternatingly
 			int i = -1;
 			// go through all question objects
-			for (NamedObject namedObject : questions) {
+			for (TerminologyObject namedObject : container.getChildren()) {
 	
 				Question q = null;
 				if (namedObject instanceof Question) {
@@ -109,7 +106,7 @@ public class HTMLDialogRenderer {
 				i += 1;
 				
 				// if there are no follow-up questions
-				if(q.getChildren().isEmpty()){	
+				if(q.getChildren().length==0){	
 					
 					// assigns different css classes according to whether nr/line is
 					// odd or even
@@ -135,7 +132,7 @@ public class HTMLDialogRenderer {
 					
 					// then assemble the StringBuffer that contains all follow up questions
 					StringBuffer ch = new StringBuffer();
-					for(NamedObject cset : q.getChildren()){
+					for(TerminologyObject cset : q.getChildren()){
 						getFollowUpChildrenRekur(ch, (Question)cset, c, web, b.getId(), true, 35, q);
 					}
 					buffi.append(ch.toString());
@@ -183,8 +180,8 @@ public class HTMLDialogRenderer {
 		
 		// as long as the follow-up question has further child elements, call the method
 		// recursively for each of them
-		if(!set.getChildren().isEmpty()){
-			for(NamedObject cset : set.getChildren()){
+		if(set.getChildren().length!=0){
+			for(TerminologyObject cset : set.getChildren()){
 				getFollowUpChildrenRekur(children, (Question)cset, c, web, namespace, !bool, indent, parent);
 			}
 		} 

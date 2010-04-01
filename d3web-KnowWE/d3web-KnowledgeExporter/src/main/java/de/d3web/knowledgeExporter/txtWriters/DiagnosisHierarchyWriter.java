@@ -21,10 +21,9 @@
 package de.d3web.knowledgeExporter.txtWriters;
 
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.knowledgeExporter.KnowledgeManager;
@@ -42,12 +41,12 @@ public class DiagnosisHierarchyWriter extends TxtKnowledgeWriter {
 		StringBuffer text = new StringBuffer();
 		Diagnosis rootDiagnosis = manager.getKB().getRootDiagnosis();
 
-		addChildDiagnoses(text, rootDiagnosis, 0, new HashSet());
+		addChildDiagnoses(text, rootDiagnosis, 0, new HashSet<Diagnosis>());
 		return text.toString();
 	}
 
 	private void addChildDiagnoses(StringBuffer text, Diagnosis d, int level,
-			Set alreadyDone) {
+			Set<Diagnosis> alreadyDone) {
 		boolean alreadyWritten = alreadyDone.contains(d);
 		alreadyDone.add(d);
 		if (!d.equals(manager.getKB().getRootDiagnosis())
@@ -68,14 +67,11 @@ public class DiagnosisHierarchyWriter extends TxtKnowledgeWriter {
 			text.append ("\n");
 			level++;
 		}
-		List<Diagnosis> diagList = (List<Diagnosis>) d.getChildren();
-
 		if (!alreadyWritten) {
-			for (Iterator<Diagnosis> iter = diagList.iterator(); iter.hasNext();) {
-				Diagnosis element = iter.next();
-
-				addChildDiagnoses(text, element, level, alreadyDone);
-
+			for (TerminologyObject to : d.getChildren()) {
+				if (to instanceof Diagnosis) {
+					addChildDiagnoses(text, (Diagnosis) to, level, alreadyDone);
+				}
 			}
 		}
 	}

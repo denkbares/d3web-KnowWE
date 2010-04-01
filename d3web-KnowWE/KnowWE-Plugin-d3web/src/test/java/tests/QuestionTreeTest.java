@@ -21,6 +21,7 @@
 package tests;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import utils.KBCreationTestUtil;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -77,11 +78,8 @@ public class QuestionTreeTest extends TestCase {
 						expected.getName(), actual.getName());
 				
 				// Test Hierarchy
-				assertEquals("Question " + expected.getName() + " has wrong parents.",
-						expected.getParents(), actual.getParents());
-				assertEquals("Question " + expected.getName() + " has wrong children.",
-						expected.getChildren(), actual.getChildren());
-				
+				assertTrue("Question " + expected.getName() + " has wrong parents.", Arrays.equals(expected.getParents(), actual.getParents()));
+				assertTrue("Question " + expected.getName() + " has wrong children.", Arrays.equals(expected.getChildren(), actual.getChildren()));
 				// Test Properties (Abstraction, MMINFO)
 				assertEquals("Question " + expected.getName() + " should be abstract.",
 						expected.getProperties().getProperty(Property.ABSTRACTION_QUESTION),

@@ -21,6 +21,7 @@
 package tests;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
@@ -67,8 +68,8 @@ public class QuestionnaireTest extends TestCase {
 				assertEquals("QContainer " + expected.getName() + " has wrong name.", expected.getName(), actual.getName());
 				
 				// Test Hierarchy
-				assertEquals("QContainer " + expected.getName() + " has wrong parents.", expected.getParents(), actual.getParents());
-				assertEquals("QContainer " + expected.getName() + " has wrong children.", expected.getChildren(), actual.getChildren());
+				assertTrue("QContainer " + expected.getName() + " has wrong parents.", Arrays.equals(expected.getParents(), actual.getParents()));
+				assertTrue("QContainer " + expected.getName() + " has wrong children.", Arrays.equals(expected.getChildren(), actual.getChildren()));
 				
 				// Test Explanation
 				assertEquals("QContainer " + expected.getName() + " has wrong explanation.", expected.getProperties().getProperty(Property.EXPLANATION), actual.getProperties().getProperty(Property.EXPLANATION));

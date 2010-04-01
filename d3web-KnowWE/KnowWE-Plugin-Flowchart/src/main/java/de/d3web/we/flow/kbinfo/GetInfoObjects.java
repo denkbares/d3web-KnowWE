@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.DerivationType;
 import de.d3web.core.knowledge.terminology.Diagnosis;
 import de.d3web.core.knowledge.terminology.IDObject;
@@ -157,14 +158,14 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		if (service instanceof D3webKnowledgeService) {
 			D3webKnowledgeService d3Service = (D3webKnowledgeService) service;
 			KnowledgeBase base = d3Service.getBase();
-			List<NamedObject> qsets = new LinkedList<NamedObject>();
-			for (NamedObject object : base.getRootQASet().getChildren()) {
+			List<TerminologyObject> qsets = new LinkedList<TerminologyObject>();
+			for (TerminologyObject object : base.getRootQASet().getChildren()) {
 				// avoid top level questions ==> implicit imports
 				if (!(object instanceof Question)) {
 					qsets.add(object);
 				}
 			}
-			appendChilds(web, d3Service, qsets, buffer);
+			appendChilds(web, d3Service, qsets.toArray(new TerminologyObject[qsets.size()]), buffer);
 			appendChilds(web, d3Service, base.getRootDiagnosis(), buffer);
 			// TODO: append flowcharts out of knowledge base here
 			List<Section<FlowchartType>> flowcharts = ManagerUtils.getFlowcharts(web, d3Service);
@@ -294,8 +295,8 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		appendChilds(web, service, object.getChildren(), buffer);
 	}
 
-	private static void appendChilds(String web, D3webKnowledgeService service, List<? extends NamedObject> childs, StringBuffer buffer) {
-		for (NamedObject child : childs) {
+	private static void appendChilds(String web, D3webKnowledgeService service, TerminologyObject[] childs, StringBuffer buffer) {
+		for (TerminologyObject child : childs) {
 			buffer.append("\t\t<child>");
 			buffer.append(service.getId() + "/" + child.getId());
 			buffer.append("</child>\n");
