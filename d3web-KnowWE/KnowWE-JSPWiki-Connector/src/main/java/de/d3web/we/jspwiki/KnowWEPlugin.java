@@ -23,8 +23,6 @@ package de.d3web.we.jspwiki;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -66,7 +64,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * To initialize KnowWE.
-	 * 
+	 *
 	 * @see KnowWE_config.properties
 	 */
 	@Override
@@ -369,7 +367,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * Parses the request variables (GET and POST) using a wiki context object.
-	 * 
+	 *
 	 * @param context
 	 *            WikiContext to be used
 	 * @return A Map containing all request variables
@@ -386,13 +384,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		while (p.hasMoreElements()) {
 			String param = (String) p.nextElement();
-			try {
-				parameter.put(param, URLDecoder.decode(req.getParameter(param),
-						"UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				parameter
-						.put(param, URLDecoder.decode(req.getParameter(param)));
-			}
+			String parameter2 = req.getParameter(param);
+			if (param.equals("_editedtext")) continue;
+
+			// try {
+			parameter.put(param, parameter2);
+			// } catch (UnsupportedEncodingException e) {
+			// // parameter
+			// // .put(param, URLDecoder.decode(parameter2));
+			// }
 		}
 
 		return parameter;
@@ -425,7 +425,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * Adds the CSS and JS files to the current page.
-	 * 
+	 *
 	 * @param wikiContext
 	 */
 	private void handleIncludes(WikiContext wikiContext) {
