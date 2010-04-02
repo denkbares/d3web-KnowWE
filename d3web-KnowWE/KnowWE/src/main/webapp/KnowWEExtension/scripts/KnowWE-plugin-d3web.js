@@ -1173,6 +1173,73 @@ KNOWWE.plugin.d3web.solutionstate = function(){
     }   
 }();
 
+/**
+ * Namespace: KNOWWE.plugin.d3web.qcvalues
+ * The qcvalues namespace.
+ */
+KNOWWE.plugin.d3web.qcvalues = function(){
+    return {
+        /**
+         * Function: init
+         * Initializes the QuestionnaireValues functionality. 
+         */
+        init : function(){
+            KNOWWE.helper.observer.subscribe( 'update', this.updateQuestionnaireValues );
+        },
+        /**
+         * Function: updateQuestionnaireValues
+         * Updates the values of the questions in the questionnaires values panel.
+         */
+        updateQuestionnaireValues : function(){
+        	
+        	// There can be more than one QuestionnaireValuesViewHandler
+        	// TODO: this is more or less a hack, because it limits the amount of taghandlers to 100
+        	for (i = 0; i < 100; i++) {
+        		
+        		// Create the unique id of each panel
+        		var panelID = '#qcvalues-panel' + i;
+        		
+        		// Check the existence of the panel
+        		if(!_KS(panelID)) continue;
+        		
+        		// Find the childNode containing the name of the Questionnaire
+        		for (j = 0; j < _KS(panelID).childNodes.length; j++) {
+        			if(_KS(panelID).childNodes[j].className == 'qcname') {
+        				
+        				var questionnaireName = _KS(panelID).childNodes[j].innerHTML;
+        				
+                        var params = {
+                                action : 'QuestionnaireValuesViewAction',
+                                questionnaire: questionnaireName,
+                                KWikiWeb : 'default_web'
+                        }
+
+                        // Create the unique id of each result p
+                		var resultID = 'qcvalues-result' + i;
+                        
+                        if (!_KS('#' + resultID)) break;
+                        
+                        var options = {
+                            url : KNOWWE.core.util.getURL( params ),
+                            response : {
+                                action : 'insert',
+                                ids : [ resultID ]
+                            }
+                        }
+                        
+                        new _KA( options ).send(); 
+                		
+                        // If we have done this, we can leave THIS loop!
+        				break;
+        			
+        			
+        			}
+        		}
+        	}
+        }
+    }   
+}();
+
 
 /**
  * Namespace: KNOWWE.plugin.d3web.rerenderquestionsheet
