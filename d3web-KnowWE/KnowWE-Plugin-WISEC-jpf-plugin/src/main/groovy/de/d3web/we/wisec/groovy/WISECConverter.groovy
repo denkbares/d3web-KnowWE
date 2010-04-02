@@ -1,5 +1,7 @@
-package de.d3web.we.wisec.groovy
+#!/bin/groovy
 // groovy -classpath jxl.jar WISECConverter.groovy 
+
+package de.d3web.we.wisec.groovy
 
 import jxl.*;
 
