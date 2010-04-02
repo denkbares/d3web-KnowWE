@@ -16,7 +16,7 @@ class WISECConverter {
 	public static FILE_PRAEFIX = "WI_"
 	public static MAX_NUMBER_OF_LISTS_TO_CONVERT = 1000
 	public static MAX_NO_SUBSTANCES = 100
-	public static ASKS_ANNOTATION = true
+	public static ASKS_ANNOTATION = false
 
 	
 	public static void main(String[] args) {
