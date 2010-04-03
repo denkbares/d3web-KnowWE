@@ -78,6 +78,7 @@ public class UpdateQuestions extends AbstractAction {
 	 * @return
 	 */
 	public static String revertSpecialCharacterEscape(String text) {
+		text = text.replace("[FLOWCHART_PC]", "%");
 		text = text.replace("[FLOWCHART_ST]", "<");
 		text = text.replace("[FLOWCHART_AND]", "&");
 		text = text.replace("[FLOWCHART_PLUS]", "+");

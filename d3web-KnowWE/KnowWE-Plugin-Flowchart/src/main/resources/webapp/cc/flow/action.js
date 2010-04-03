@@ -513,13 +513,46 @@ ActionEditor.prototype.createQuestionDropdown = function(addedQuestionText, adde
 	return result;
 }
 
+// sends the ajax request
+// @param action: AbstractAction which handles the equest
+// @param text: differs from action to action, must be something like
+// '&text=hallowelt' , can have more than one info
+ActionEditor.prototype.sendAjaxRequest = function (action, text) {
+	
+	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
+	var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
+
+	pageName = '&pageName=' + pageName;	
+	
+	var url = 'KnowCC.jsp?action=' + action + pageName + text;
+	
+	new Ajax.Request(url, {
+		method: 'get',
+		onSuccess: function(transport) {
+			var parser = new DOMParser();
+			var xml = parser.parseFromString(transport.responseText, "text/xml");
+
+			KBInfo._updateCache(xml);
+		},
+		onFailure: function() {
+			CCMessage.warn(
+				'AJAX Verbindungs-Fehler', 
+				'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
+				'In spaeteren Aktionen koennte auch das Speichern der Aenderungen fehlschlagen.');
+		},
+		onException: function(transport, exception) {
+			CCMessage.warn(
+				'AJAX interner Fehler',
+				exception
+				);
+		}
+	}); 
+}
+
+
 // AJAX-Request for adding questions and their answers to the article
 ActionEditor.prototype.updateQuestions = function(addedQuestionText, addedQuestionType, possibleAnswers) {
 
-	
-		
-		var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
-		var pageName = window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
 		var answersToLine = '&answers=';
 		
 		if (addedQuestionType === 'yn') {
@@ -537,36 +570,11 @@ ActionEditor.prototype.updateQuestions = function(addedQuestionText, addedQuesti
 		
 		addedQuestionText = '&text=' + addedQuestionText;
 		addedQuestionType = '&type=' + addedQuestionType;
-		pageName = '&pageName=' + pageName;
 		
-		var infos = addedQuestionText + addedQuestionType + pageName + answersToLine;
-
+		var text = addedQuestionText + addedQuestionType + answersToLine;
+		var action = 'UpdateQuestions';
 		
-		
-		var url = "KnowCC.jsp?action=UpdateQuestions" + infos;
-		
-		new Ajax.Request(url, {
-			method: 'get',
-			onSuccess: function(transport) {
-
-			var parser = new DOMParser();
-			var xml = parser.parseFromString(transport.responseText, "text/xml");
-
-			KBInfo._updateCache(xml);
-			},
-			onFailure: function() {
-				CCMessage.warn(
-					'AJAX Verbindungs-Fehler', 
-					'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
-					'In spaeteren Aktionen koennte auch das Speichern der Aenderungen fehlschlagen.');
-			},
-			onException: function(transport, exception) {
-				CCMessage.warn(
-					'AJAX interner Fehler',
-					exception
-					);
-			}
-		}); 
+		ActionEditor.prototype.sendAjaxRequest(action, text);
 }
 
 // creates the Dropwdown menu for solutions
@@ -597,35 +605,10 @@ ActionEditor.prototype.createSolutionDropdown = function(solutionText) {
 //AJAX-Request for adding solutions to the article
 ActionEditor.prototype.updateSolutions = function(solutionText) {
 
-	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
-	var pageName = '&pageName=' + window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
 	solutionText = '&text=' + solutionText;
+	var action = 'UpdateSolutions';
 	
-	var infos = solutionText + pageName;
-
-	var url = "KnowCC.jsp?action=UpdateSolutions" + infos;
-	
-	new Ajax.Request(url, {
-		method: 'get',
-		onSuccess: function(transport) {
-			var parser = new DOMParser();
-			var xml = parser.parseFromString(transport.responseText, "text/xml");
-
-			KBInfo._updateCache(xml);
-		},
-		onFailure: function() {
-			CCMessage.warn(
-				'AJAX Verbindungs-Fehler', 
-				'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
-				'In sp?teren Aktionen k?nnte auch das Speichern der ?nderungen fehlschlagen.');
-		},
-		onException: function(transport, exception) {
-			CCMessage.warn(
-				'AJAX interner Fehler',
-				exception
-				);
-		}
-	}); 
+	ActionEditor.prototype.sendAjaxRequest(action, solutionText);	
 }
 
 
@@ -649,8 +632,6 @@ ActionEditor.getQuestionType = function () {
 
 ActionEditor.prototype.addSubFlow = function(exitNodes) {
 
-	var kdomID = window.location.search.substring(window.location.search.indexOf('kdomID=') + 7, window.location.search.indexOf('&'));
-	var pageName = '&pageName=' + window.location.search.substring(window.location.search.indexOf('Wiki_Topic=') + 11);
 	var name = '&name=' + document.choseQuestionText.questionText.value;
 	
 	var nodesToLine = '&nodes=';
@@ -662,33 +643,10 @@ ActionEditor.prototype.addSubFlow = function(exitNodes) {
 		} 
 	}
 	
-	var infos = pageName + name + nodesToLine;
-
-	var url = "KnowCC.jsp?action=AddSubFlowchart" + infos;
+	var action = 'AddSubFlowchart';
 	
-	new Ajax.Request(url, {
-		method: 'get',
-		onSuccess: function(transport) {
-			
-		var parser = new DOMParser();
-		var xml = parser.parseFromString(transport.responseText, "text/xml");
+	ActionEditor.prototype.sendAjaxRequest(action, name + nodesToLine);
 
-		KBInfo._updateCache(xml);
-		
-		},
-		onFailure: function() {
-			CCMessage.warn(
-				'AJAX Verbindungs-Fehler', 
-				'Eventuell werden einige Objekte anderer Wiki-Seiten nicht korrekt angezeigt. ' +
-				'In sp?teren Aktionen k?nnte auch das Speichern der ?nderungen fehlschlagen.');
-		},
-		onException: function(transport, exception) {
-			CCMessage.warn(
-				'AJAX interner Fehler',
-				exception
-				);
-		}
-	}); 
 }
 
 ActionEditor.prototype.createNewFlowchart = function() {
@@ -723,6 +681,7 @@ ActionEditor.prototype.createNewQuestion = function() {
 	// create the question
 	var root = this.dom.select('.value')[0];
 	var qText = document.choseQuestionText.questionText.value;
+	qText = qText.trim();
 	var qType = ActionEditor.getQuestionType();
 	var answers = this.getAnswers();
 	var actions;
@@ -823,6 +782,7 @@ ActionEditor.escapeSpecialCharacter = function(text) {
 	}
 	
 	// escape characters which cause bugs
+	text = text.ReplaceAll('%', '[FLOWCHART_PC]');
 	text = text.ReplaceAll('<', '[FLOWCHART_ST]');
 	text = text.ReplaceAll('&', '[FLOWCHART_AND]');
 	text = text.ReplaceAll('+', '[FLOWCHART_PLUS]');
