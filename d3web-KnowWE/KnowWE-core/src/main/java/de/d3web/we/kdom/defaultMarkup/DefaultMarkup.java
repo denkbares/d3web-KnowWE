@@ -54,8 +54,10 @@ public class DefaultMarkup {
 		 * @return whether the annotations pattern is matched
 		 */
 		public boolean matches(String annotationContent) {
-			if (pattern == null) return true;
-			if (annotationContent == null) return false;
+			if (pattern == null)
+				return true;
+			if (annotationContent == null)
+				return false;
 			return pattern.matcher(annotationContent).matches();
 		}
 
@@ -118,8 +120,10 @@ public class DefaultMarkup {
 	 * @param enumValues
 	 *            the allowed values for the annotation
 	 */
-	public void addAnnotation(String name, boolean mandatory, String... enumValues) {
-		String regex = "^("+de.d3web.we.utils.Strings.concat("|", enumValues)+")$";
+	public void addAnnotation(String name, boolean mandatory,
+			String... enumValues) {
+		String regex = "^(" + de.d3web.we.utils.Strings.concat("|", enumValues)
+				+ ")$";
 		int flags = Pattern.CASE_INSENSITIVE;
 		addAnnotation(name, mandatory, Pattern.compile(regex, flags));
 	}
@@ -135,8 +139,10 @@ public class DefaultMarkup {
 	 * @param enumValues
 	 *            the allowed values for the annotation
 	 */
-	public void addAnnotation(String name, boolean mandatory, Enum<?>... enumValues) {
-		String regex = "^("+de.d3web.we.utils.Strings.concat("|", enumValues)+")$";
+	public void addAnnotation(String name, boolean mandatory,
+			Enum<?>... enumValues) {
+		String regex = "^(" + de.d3web.we.utils.Strings.concat("|", enumValues)
+				+ ")$";
 		int flags = Pattern.CASE_INSENSITIVE;
 		addAnnotation(name, mandatory, Pattern.compile(regex, flags));
 	}
@@ -156,10 +162,11 @@ public class DefaultMarkup {
 		// do not allow duplicates
 		String key = name.toLowerCase();
 		if (annotations.containsKey(key)) {
-			throw new IllegalArgumentException("annotation " + name + " already added");
+			throw new IllegalArgumentException("annotation " + name
+					+ " already added");
 		}
 		// add new parameter
-		Annotation annotation = this.new Annotation(name, mandatory, pattern);
+		Annotation annotation = new Annotation(name, mandatory, pattern);
 		this.annotations.put(key, annotation);
 	}
 
@@ -175,13 +182,15 @@ public class DefaultMarkup {
 	 * @return the annotations of the markup
 	 */
 	public Annotation[] getAnnotations() {
-		return this.annotations.values().toArray(new Annotation[this.annotations.size()]);
+		return this.annotations.values().toArray(
+				new Annotation[this.annotations.size()]);
 	}
 
 	public void addAnnotationType(String name, KnowWEObjectType type) {
 		Annotation annotation = getAnnotation(name);
 		if (annotation == null) {
-			throw new IllegalArgumentException("no such annotation defined: " + name);
+			throw new IllegalArgumentException("no such annotation defined: "
+					+ name);
 		}
 		annotation.types.add(type);
 	}

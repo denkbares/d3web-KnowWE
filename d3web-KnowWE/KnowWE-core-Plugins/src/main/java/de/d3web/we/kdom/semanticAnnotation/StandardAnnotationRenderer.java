@@ -42,27 +42,30 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 	private static String TITLE_QUERY = "SELECT  ?title WHERE {  <URI> ns:hasTitle ?title }";
-	
-	
+
 	@Override
 	public void renderDefault(Section s, KnowWEUserContext user,
 			StringBuilder string) {
-				
-		Section<?> sec = s;		
+
+		Section<?> sec = s;
 		String object = "no object found";
-		Section<SimpleAnnotation> objectSection = sec.findSuccessor(SimpleAnnotation.class);
+		Section<SimpleAnnotation> objectSection = sec
+				.findSuccessor(SimpleAnnotation.class);
 		if (objectSection != null) {
 			object = objectSection.getOriginalText();
 		}
 
-		Section<AnnotatedString> astring = sec.findSuccessor(AnnotatedString.class);
+		Section<AnnotatedString> astring = sec
+				.findSuccessor(AnnotatedString.class);
 		String text = "";
 		if (astring != null)
 			text = "''" + astring.getOriginalText() + "''";
 		else
 			text = "<b>" + object + "</b>";
-		Section<SemanticAnnotationContent> content = sec.findSuccessor(SemanticAnnotationContent.class);
-		Section<SemanticAnnotationPropertyName> propSection = sec.findSuccessor(SemanticAnnotationPropertyName.class);
+		Section<SemanticAnnotationContent> content = sec
+				.findSuccessor(SemanticAnnotationContent.class);
+		Section<SemanticAnnotationPropertyName> propSection = sec
+				.findSuccessor(SemanticAnnotationPropertyName.class);
 
 		String property = "no property found";
 		if (propSection != null) {
@@ -71,7 +74,8 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 		String subject = "no subject found";
 
-		Section<SemanticAnnotationSubject> subjectSection = sec.findSuccessor(SemanticAnnotationSubject.class);
+		Section<SemanticAnnotationSubject> subjectSection = sec
+				.findSuccessor(SemanticAnnotationSubject.class);
 		if (subjectSection != null
 				&& subjectSection.getOriginalText().trim().length() > 0) {
 			subject = subjectSection.getOriginalText();
@@ -80,16 +84,19 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 			Context context = ContextManager.getInstance().getContext(sec,
 					DefaultSubjectContext.CID);
 			if (context != null) {
-				URI solutionURI = ((DefaultSubjectContext) context).getSolutionURI();
-				subject = solutionURI
-						.getLocalName();
-				TupleQueryResult result =  SPARQLUtil.executeTupleQuery(TITLE_QUERY.replaceAll("URI", solutionURI.toString()), sec.getTitle());
-				if(result != null) {
+				URI solutionURI = ((DefaultSubjectContext) context)
+						.getSolutionURI();
+				subject = solutionURI.getLocalName();
+				TupleQueryResult result = SPARQLUtil.executeTupleQuery(
+						TITLE_QUERY.replaceAll("URI", solutionURI.toString()),
+						sec.getTitle());
+				if (result != null) {
 					try {
-						if(result.hasNext()) {
+						if (result.hasNext()) {
 							BindingSet set = result.next();
-							String title = set.getBinding("title").getValue().stringValue();
-							 try {
+							String title = set.getBinding("title").getValue()
+									.stringValue();
+							try {
 								title = URLDecoder.decode(title, "UTF-8");
 								subject = title;
 							} catch (UnsupportedEncodingException e) {
@@ -103,32 +110,34 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 					}
 				}
 			}
-			
+
 		}
 
 		if (content != null) {
 			String title = subject + " " + property + " " + object;
-			text = KnowWEUtils.maskHTML("<a href=\"#"+s.getId()+"\"></a>"+"<span title='" + title + "'>"
-					+ text + "</span>");
+			text = KnowWEUtils.maskHTML("<a href=\"#" + s.getId() + "\"></a>"
+					+ "<span title='" + title + "'>" + text + "</span>");
 		}
 
-		IntermediateOwlObject tempio=(IntermediateOwlObject) KnowWEUtils.getStoredObject(objectSection, OwlHelper.IOO);
-			
-		if (!tempio.getValidPropFlag()){
+		IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
+				.getStoredObject(objectSection, OwlHelper.IOO);
+
+		if (!tempio.getValidPropFlag()) {
 			text = KnowWEUtils
-			.maskHTML("<p class=\"box error\">invalid annotation attribute:"
-					+ tempio.getBadAttribute()
-					+ "</p>");
-			
+					.maskHTML("<p class=\"box error\">invalid annotation attribute:"
+							+ tempio.getBadAttribute() + "</p>");
+
 		}
-		tempio=(IntermediateOwlObject) KnowWEUtils.getStoredObject(propSection, OwlHelper.IOO);
-		if (!tempio.getValidPropFlag()){
+		tempio = (IntermediateOwlObject) KnowWEUtils
+				.getStoredObject(sec
+						.findSuccessor(SemanticAnnotationProperty.class),
+						OwlHelper.IOO);
+		if (tempio != null && !tempio.getValidPropFlag()) {
 			text = KnowWEUtils
-			.maskHTML("<p class=\"box error\">invalid annotation attribute:"
-					+ tempio.getBadAttribute()
-					+ "</p>");
-			
-		}		
+					.maskHTML("<p class=\"box error\">invalid annotation attribute:"
+							+ tempio.getBadAttribute() + "</p>");
+
+		}
 		string.append(text);
 	}
 

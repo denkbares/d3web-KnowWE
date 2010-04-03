@@ -45,7 +45,8 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
+public final class SparqlDelegateRenderer extends
+		KnowWEDomRenderer<SparqlContent> {
 	private ResourceBundle rb;
 	private static SparqlDelegateRenderer instance;
 	private HashMap<String, SparqlRenderer> renderers;
@@ -141,10 +142,10 @@ public class SparqlDelegateRenderer extends KnowWEDomRenderer<SparqlContent> {
 		}
 	}
 
-	public static String addNamespaces(String value) {
-		if (value == null)
-			value = "";
-		String rawquery = value.trim();
+	public static String addNamespaces(String newns) {
+		if (newns == null)
+			newns = "";
+		String rawquery = newns.trim();
 		String querystring = SemanticCore.getInstance()
 				.getSparqlNamespaceShorts()
 				+ rawquery;
