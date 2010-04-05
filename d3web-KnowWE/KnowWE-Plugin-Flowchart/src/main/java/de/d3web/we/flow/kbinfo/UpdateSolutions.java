@@ -84,63 +84,29 @@ public class UpdateSolutions extends AbstractAction {
 		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, sec.getWeb());
 		String oldText = article.getSection().getOriginalText();
 
-		String firstPart = "";
-		String lastPart = "";
-		String newSolutionsSection = "";
 
-		// check if the page already contains a Kopic/Solutions-section
-		// and if not add it and create the new Solutions-section with
-		// the new Solution
-		if (oldText.contains("<Solutions-section>")
-				&& oldText.contains("</Solutions-section>")) {
-			firstPart = oldText.substring(0, oldText
-					.indexOf("<Solutions-section>"));
-			lastPart = oldText.substring(oldText
-					.indexOf("</Solutions-section>"));
-			String questionsSection = oldText.substring(oldText
-					.indexOf("<Solutions-section>"), oldText
-					.indexOf("</Solutions-section>"));
-			newSolutionsSection = this.addSolution(questionsSection,
-					solutionText);
+		// get everything for the new solution
+		String[] surroundings = UpdateQuestions.getRightInsertPosition(oldText, "Solutions");
+		String firstPart = surroundings[0];
+		String lastPart = surroundings[1];
+		String currentSolutionsSection = UpdateQuestions.getCurrentSectionContent(oldText, "Solutions");
+		String newSolutionsSection = this.addSolution(currentSolutionsSection, solutionText);
+		
 
-			// if there is a Kopic Tag, insert Solutions-section directly after
-		}
-		else if (oldText.contains("<Kopic>") && oldText.contains("</Kopic>")) {
-			firstPart = oldText.substring(0, oldText.indexOf("<Kopic>"));
-			lastPart = LINE_SEPARATOR + "</Solutions-section>"
-					+ oldText.substring(oldText.indexOf("<Kopic>") + 7);
-			newSolutionsSection = this.addSolution("<Kopic>" + LINE_SEPARATOR
-					+ "<Solutions-section>", solutionText);
-
-			// if Kopic as well as Solutions-section Tag are missing
-		}
-		else {
-			firstPart = oldText;
-			lastPart = "</Solutions-section>" + LINE_SEPARATOR + "</Kopic>";
-			newSolutionsSection = this.addSolution("<Kopic>" + LINE_SEPARATOR
-					+ "<Solutions-section>",
-					solutionText);
-		}
-
+		// save the new article
 		String newText = firstPart + newSolutionsSection + lastPart;
 		instance.saveArticle(sec.getWeb(), sec.getTitle(), newText, map);
-
+		
+		
+		// remove leading and ending quotes
+		solutionText = UpdateQuestions.removeLeadingAndClosingQuotes(solutionText);
+		
+		
+		// get the right id for the nodemodel
 		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
 				article, sec).getKnowledgeBase();
-
+		
 		List<Solution> diagnoses = kb.getDiagnoses();
-		
-		
-		
-		// renove leading and ending "
-		while (solutionText.startsWith("\"")) {
-			solutionText = solutionText.substring(1);
-		}
-		
-		while (solutionText.endsWith("\"")) {
-			solutionText = solutionText.substring(0, solutionText.length() -1);
-		}
-		
 
 		String diagnosisID = null;
 		for (Solution diagnosis : diagnoses) {
