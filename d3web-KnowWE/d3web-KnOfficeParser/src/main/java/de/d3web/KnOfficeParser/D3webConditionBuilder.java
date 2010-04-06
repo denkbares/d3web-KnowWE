@@ -69,6 +69,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	private Stack<Condition> condstack = new Stack<Condition>();
 	private List<Message> errors = new ArrayList<Message>();
 	private boolean lazy = false;
+	private boolean lazyAnswers = false;
 	private IDObjectManagement idom;
 
 	private Map<String, Question> questions = new HashMap<String, Question>();
@@ -88,6 +89,19 @@ public class D3webConditionBuilder implements ConditionBuilder {
 
 	public void setLazy(boolean lazy) {
 		this.lazy = lazy;
+	}
+	
+	public boolean isLazyAnswers() {
+		return lazyAnswers;
+	}
+
+	/**
+	 * Sets the lazyAnswerFlag. If lazy is true, answers will be
+	 * created lazy, even if this flag is false
+	 * @param lazyAnswers Flag
+	 */
+	public void setLazyAnswers(boolean lazyAnswers) {
+		this.lazyAnswers = lazyAnswers;
 	}
 
 	public D3webConditionBuilder(String file, List<Message> errors,
@@ -218,7 +232,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				answer = idom.findAnswerChoice(qc, value);
 			}
 			if (answer == null) {
-				if (lazy) {
+				if (lazy || lazyAnswers) {
 					answer = (AnswerChoice) idom.addChoiceAnswer(qc, value);
 					c = new CondEqual(qc, answer);
 				} else {
