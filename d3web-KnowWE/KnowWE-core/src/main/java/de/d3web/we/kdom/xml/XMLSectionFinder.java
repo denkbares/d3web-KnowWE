@@ -91,7 +91,7 @@ public class XMLSectionFinder extends SectionFinder {
 		
 		tagPattern = Pattern.compile("<(/)?(" + tagNamePattern + ")(\\s+[^>]*?)?(/)?> *\\r?\\n?");
 		
-		attributePattern = Pattern.compile("([^=\"\\s]+) *= *\"([^\"]*)\"");
+		attributePattern = Pattern.compile("([^=\"'\\s]+) *= *[\"']([^\"']*)[\"']");
 	}
 
 	private String getTagNamePatternString(String tagName) {
@@ -138,8 +138,8 @@ public class XMLSectionFinder extends SectionFinder {
 					
 					// found single-tag
 					if (tagMatcher.group(4) != null) {
-						result.add(makeResult(father, text, sectionStart, 
-								tagMatcher.end(), parameterMap));
+						result.add(makeSectionFinderResult(sectionStart, tagMatcher.end(),
+								makeSectionID(father, parameterMap), parameterMap));
 						parameterMap = new HashMap<String, String>();
 						foundTagName = new String();
 						continue;
@@ -155,8 +155,8 @@ public class XMLSectionFinder extends SectionFinder {
 				// it's the closing tag belonging to the first opening tag
 				if (depth == 1 && foundTagName.equals(tagMatcher.group(2))) {
 					parameterMap.put(AbstractXMLObjectType.TAIL, tagMatcher.group());
-					result.add(makeResult(father, text, sectionStart, 
-							tagMatcher.end(), parameterMap));
+					result.add(makeSectionFinderResult(sectionStart, tagMatcher.end(),
+							makeSectionID(father, parameterMap), parameterMap));
 				}
 				
 				// closing tags are counting backwards for the depth of the nesting
@@ -174,21 +174,25 @@ public class XMLSectionFinder extends SectionFinder {
 		return result;
 	}
 	
-	private SectionFinderResult makeResult(Section father, String text, int start, int end, Map<String, String> parameterMap) {
-
-		SectionID sectionID;
-		if (parameterMap.containsKey("id")) {
-			sectionID = new SectionID(father.getArticle(), parameterMap.get("id"));
-		} else {
-			sectionID = new SectionID(father, parameterMap.get(AbstractXMLObjectType.TAGNAME));
+	private SectionID makeSectionID(Section father, Map<String, String> parameterMap) {
+		
+		SectionID sectionID = null;
+		
+		if (father != null) {
+			if (parameterMap.containsKey("id")) {
+				sectionID = new SectionID(father.getArticle(), parameterMap.get("id"));
+			} else {
+				sectionID = new SectionID(father, parameterMap.get(AbstractXMLObjectType.TAGNAME));
+			}
+			
+			KnowWEArticle art = father.getArticle();
+			if (art != null) {
+				KnowWEUtils.storeSectionInfo(art.getWeb(), art.getTitle(), sectionID.toString(), ATTRIBUTE_MAP_STORE_KEY, parameterMap);
+			}
 		}
 		
-		KnowWEArticle art = father.getArticle();
-		if (art != null) {
-			KnowWEUtils.storeSectionInfo(art.getWeb(), art.getTitle(), sectionID.toString(), ATTRIBUTE_MAP_STORE_KEY, parameterMap);
-		}
-		
-		return makeSectionFinderResult(start, end, sectionID, parameterMap);
+		return sectionID;
+		//makeSectionFinderResult(start, end, sectionID, parameterMap);
 	}
 	
 	protected SectionFinderResult makeSectionFinderResult(int start, int end, SectionID sectionID, 
@@ -199,7 +203,7 @@ public class XMLSectionFinder extends SectionFinder {
 	// Everything below this line is for testing only!
 	public static void main(String[] args) {
 		TestSectionFinder finder = new XMLSectionFinder(null).new TestSectionFinder(null, "include");
-		String text = readTxtFile("D:/KFZDemo1.txt");
+		String text = "<include src='test' />";
 		List<SectionFinderResult> results= finder.lookForSections(text, null);
 		
 		for (SectionFinderResult result:results) {
