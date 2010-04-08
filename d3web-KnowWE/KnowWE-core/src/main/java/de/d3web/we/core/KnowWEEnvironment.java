@@ -337,9 +337,9 @@ public class KnowWEEnvironment {
 
 			}
 			if (wiki instanceof KnowWETestWikiConnector) {
+				KnowWETestWikiConnector connector = (KnowWETestWikiConnector) wiki;
 				String userdir = System.getProperty("user.dir");
-				knowweExtensionPath = userdir
-						+ "/../KnowWE/src/main/webapp/KnowWEExtension/";
+				knowweExtensionPath = userdir + connector.getHackedPath();
 
 			}
 

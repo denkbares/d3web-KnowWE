@@ -39,14 +39,25 @@ import de.d3web.we.wikiConnector.ConnectorAttachment;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 /**
- * Used in the tests. A WikiConnector is needed to initialize
- * the KnowWEEnvironment.
- * The methods are empty.
+ * Used in the tests. A WikiConnector is needed to initialize the
+ * KnowWEEnvironment. The methods are empty.
  * 
  * @author Johannes Dienst
- *
+ * 
  */
 public class KnowWETestWikiConnector implements KnowWEWikiConnector {
+
+	/**
+	 * This returns a path, that enables the use of this connector in tests of
+	 * projects, which are in a subdirectory of KnowWE All other projects must
+	 * define der own Connector, which can inhert this class and override this
+	 * method
+	 * 
+	 * @return relative Path to KnowWEExtensions
+	 */
+	public String getHackedPath() {
+		return "/../KnowWE/src/main/webapp/KnowWEExtension/";
+	}
 
 	@Override
 	public String appendContentToPage(String topic, String pageContent) {
@@ -124,7 +135,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		KnowWEEnvironment.getInstance().getArticleManager(
 				KnowWEEnvironment.DEFAULT_WEB).saveUpdatedArticle(
 				new KnowWEArticle(text, name, KnowWEEnvironment.getInstance()
-						.getRootType(), KnowWEEnvironment.DEFAULT_WEB));
+				.getRootType(), KnowWEEnvironment.DEFAULT_WEB));
 		return true;
 	}
 
@@ -164,7 +175,8 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
 	@Override
 	public Locale getLocale(HttpServletRequest request) {
-		return Locale.CANADA_FRENCH;	}
+		return Locale.CANADA_FRENCH;
+	}
 
 	@Override
 	public Collection findPages(String query) {
