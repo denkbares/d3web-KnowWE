@@ -47,16 +47,36 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
  */
 public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
+	private String hackedPath;
+
+	/**
+	 * This constructor can be used to construct a KnowWETestWikiConnector for
+	 * Projects which are in subdirectories of d3web-KnowWE. For all other
+	 * projects the constructor with the String must be used
+	 */
+	public KnowWETestWikiConnector() {
+		hackedPath = "/../KnowWE/src/main/webapp/KnowWEExtension/";
+	}
+
+	/**
+	 * This constructor can be used to define a relative path of this project to
+	 * the KnowWEExtensions. This must be used for all projects, which are no
+	 * subdirectories of d3web-KnowWE
+	 * 
+	 * @param path relative path to the KnowWEExtensions
+	 */
+	public KnowWETestWikiConnector(String path) {
+		hackedPath = path;
+	}
+
 	/**
 	 * This returns a path, that enables the use of this connector in tests of
-	 * projects, which are in a subdirectory of KnowWE All other projects must
-	 * define der own Connector, which can inhert this class and override this
-	 * method
+	 * projects
 	 * 
 	 * @return relative Path to KnowWEExtensions
 	 */
 	public String getHackedPath() {
-		return "/../KnowWE/src/main/webapp/KnowWEExtension/";
+		return hackedPath;
 	}
 
 	@Override
