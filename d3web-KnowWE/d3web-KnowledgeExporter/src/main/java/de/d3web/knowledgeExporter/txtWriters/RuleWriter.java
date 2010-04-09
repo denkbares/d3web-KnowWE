@@ -28,14 +28,17 @@ import de.d3web.abstraction.ActionAddValue;
 import de.d3web.abstraction.ActionQuestionSetter;
 import de.d3web.abstraction.ActionSetValue;
 import de.d3web.abstraction.formula.FormulaExpression;
-import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.ActionInstantIndication;
 import de.d3web.indication.ActionNextQASet;
@@ -52,18 +55,18 @@ import de.d3web.scoring.ActionHeuristicPS;
  */
 public class RuleWriter extends TxtKnowledgeWriter {
 	
-	private String string_if;
-	private String string_then;
-	private String string_or;
-	private String string_and;
-	private String string_not;
-	private String string_except;
-	private String string_kontext;
-	private String string_minmax;
-	private String string_instant;
-	private String string_hide;
-	private String string_known;
-	private String string_unknown;
+	private final String string_if;
+	private final String string_then;
+	private final String string_or;
+	private final String string_and;
+	private final String string_not;
+	private final String string_except;
+	private final String string_kontext;
+	private final String string_minmax;
+	private final String string_instant;
+	private final String string_hide;
+	private final String string_known;
+	private final String string_unknown;
 
 	
 	public RuleWriter(KnowledgeManager manager) {
@@ -113,8 +116,8 @@ public class RuleWriter extends TxtKnowledgeWriter {
 		StringBuffer ruleBuffer = new StringBuffer();
 		ruleBuffer.append("\n" + string_if + " ");
 		Condition cond = r.getCondition();
-		ruleBuffer.append((cond instanceof TerminalCondition ? "" : "(") 
-				+ verbalizer.verbalize(cond, RenderingFormat.PLAIN_TEXT, null) 
+		ruleBuffer.append((cond instanceof TerminalCondition ? "" : "(")
+				+ verbalizer.verbalize(cond, RenderingFormat.PLAIN_TEXT, null)
 				+ (cond instanceof TerminalCondition ? "" : ")"));
 		appendException(r,ruleBuffer);
 		appendKontext(r,ruleBuffer);
@@ -169,23 +172,26 @@ public class RuleWriter extends TxtKnowledgeWriter {
 			else if (action instanceof ActionAddValue)
 				s.append(" += ");
 			// append
-			Object[] values = action.getValues();
-			for (int i = 0; i < values.length; i++) {
-
-				if (values[i] instanceof Answer) {
-
-					Answer answer = (Answer) values[i];
-					s.append("" + quote(answer.toString())+ " ; ");
-				
-				} else if (values[i] instanceof FormulaExpression) {
-				
-					FormulaExpression exp = (FormulaExpression) values[i];
-
-					s.append("" + exp.getFormulaElement().toString()+ " ; ");
+			Object value = action.getValue();
+			if (value instanceof Value) {
+				if (value instanceof MultipleChoiceValue) {
+					MultipleChoiceValue mcv = (MultipleChoiceValue)value;
+					List<AnswerChoice> choices = (List<AnswerChoice>) mcv.getValue();
+					for (int i = 0; i < choices.size(); i++) {
+						s.append(choices.get(i).getName());
+						if (i < choices.size() - 1) {
+							s.append(" ; ");
+						}
+					}
+				}
+				else {
+					s.append("" + quote(((Value)value).getValue().toString()));
 				}
 			}
-			s.replace(s.length()-2,s.length()-1,"");
-			
+			else if (value instanceof FormulaExpression) {
+				FormulaExpression exp = (FormulaExpression) value;
+				s.append("" + exp.getFormulaElement().toString());
+			}
 		} else if (a instanceof ActionNextQASet) {
 			//[TODO] muss nochgeändert werden
 			if (a instanceof ActionInstantIndication) {
@@ -248,7 +254,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 	private boolean stringContainsAny(String s, String [] words) {
 		for (int i = 0; i < words.length; i++) {
 			if(s.contains(words[i]) || s.contains(words[i].toUpperCase()) || s.contains(words[i].toLowerCase())) {
-				return true;		
+				return true;
 			}
 		}
 		return false;

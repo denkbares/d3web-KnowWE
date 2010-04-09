@@ -36,6 +36,7 @@ import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.session.values.AnswerNum;
 import de.d3web.core.session.values.AnswerUnknown;
+import de.d3web.core.session.values.NumValue;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.utils.KnowWEUtils;
@@ -64,51 +65,51 @@ public class FindingHTMLWriter {
 		QuestionChoice theQC = (QuestionChoice) theQuestion;
 		String timestampid = (new Date()).getTime() + "";
 		
-		String rel = "url : '" + targetUrlPrefix + "'," 
-			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "'," 
-			+ KnowWEAttributes.WEB + ": '" + webname + "'," 
-			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";	
+		String rel = "url : '" + targetUrlPrefix + "',"
+			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "',"
+			+ KnowWEAttributes.WEB + ": '" + webname + "',"
+			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
 		
 		if (theQC.getAllAlternatives() != null) {
 			buffy.append("<form action='#' name='semanooc'>");
 			
 			for (AnswerChoice theAnswer : theQC.getAllAlternatives()) {
-				String answerText = KnowWEUtils.convertUmlaut(theAnswer.verbalizeValue(theCase));		
+				String answerText = KnowWEUtils.convertUmlaut(theAnswer.verbalizeValue(theCase));
 								
 				buffy.append("<INPUT TYPE='radio' NAME='f" + timestampid+"id"
-						+ theQuestion.getId() + "' " 
-						+ "value='" + theAnswer.getId() + "'" 
-						+ "id='semanooc" + theQuestion.getId() + "' " 
+						+ theQuestion.getId() + "' "
+						+ "value='" + theAnswer.getId() + "'"
+						+ "id='semanooc" + theQuestion.getId() + "' "
 						+ "rel=\"{" + rel
-						+ "ObjectID : '" + theQuestion.getId() + "'," 
+						+ "ObjectID : '" + theQuestion.getId() + "',"
 						+ "ValueID : '" + theAnswer.getId() + "'"
-						+ "}\" ");				
+						+ "}\" ");
 
 				if (theCase != null && theQuestion.getValue(theCase) != null
-						&& theQuestion.getValue(theCase).equals(theAnswer)) {		
+						&& theQuestion.getValue(theCase).equals(theAnswer)) {
 					buffy.append(" checked=\"checked\" ");
 				}
 				buffy.append("class='semano_oc'");
 				buffy.append(">"+answerText+"<br />");
 			}
-			String answerText = theQuestion.getUnknownAlternative().verbalizeValue(theCase);					
+			String answerText = theQuestion.getUnknownAlternative().verbalizeValue(theCase);
 											
-			buffy.append("<INPUT TYPE=radio NAME='f" + timestampid+"id" + theQuestion.getId() + "'" 
-					+ " value='" + theQuestion.getUnknownAlternative().getId() + "'" 
+			buffy.append("<INPUT TYPE=radio NAME='f" + timestampid+"id" + theQuestion.getId() + "'"
+					+ " value='" + theQuestion.getUnknownAlternative().getId() + "'"
 					+ " id='semanooc" + theQuestion.getId() + "' "
 					+ "rel=\"{"+rel
-					+ "ObjectID : '" + theQuestion.getId() + "'," 
+					+ "ObjectID : '" + theQuestion.getId() + "',"
 					+ "ValueID : '" + theQuestion.getUnknownAlternative().getId() + "'"
 					+ "}\" ");
 
 			if (theCase != null && theQuestion.getValue(theCase) != null
-					&& theQuestion.getValue(theCase).equals(theQuestion.getUnknownAlternative())) {		
+					&& theQuestion.getValue(theCase).equals(theQuestion.getUnknownAlternative())) {
 				buffy.append(" checked=\"checked\" ");
 			}
 			buffy.append("class='semano_oc'");
 
 			buffy.append(">"+renderAnswerText(answerText)+"<br />");
-		}	
+		}
 	}
 
 	private String renderAnswerText(String answerText) {
@@ -122,26 +123,26 @@ public class FindingHTMLWriter {
 			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		String timestampid = (new Date()).getTime() + "";
 		
-		String rel = "url : '" + targetUrlPrefix + "'," 
-			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "'," 
-			+ KnowWEAttributes.WEB + ": '" + webname + "'," 
-			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";		
+		String rel = "url : '" + targetUrlPrefix + "',"
+			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "',"
+			+ KnowWEAttributes.WEB + ": '" + webname + "',"
+			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
 		
 		if (theCase != null && theQuestion.getValue(theCase) != null) {
-			AnswerNum answer = (AnswerNum) theQuestion.getValue(theCase);			
+			NumValue answer = (NumValue) theQuestion.getValue(theCase);
 			if (answer != null) {
-				String answerText = answer.verbalizeValue(theCase);
+				String answerText = answer.getValue().toString();
 						
-				buffy.append("<INPUT TYPE=text size=10 maxlength=10 " 
-						+ "NAME='num" + timestampid + theQuestion.getId() + "' " 
-						+ "value='" + answer.getValue(theCase).toString() + "' " 
+				buffy.append("<INPUT TYPE=text size=10 maxlength=10 "
+						+ "NAME='num" + timestampid + theQuestion.getId() + "' "
+						+ "value='" + answer.getValue().toString() + "' "
 						+ "class=\"semano_num\""
 						+ "rel=\"{"+rel
 						+ "ObjectID : '" + theQuestion.getId() + "'"
 						+ "}\" ");
 
 				buffy.append(">");
-				buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" " 
+				buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" "
 						+ "rel=\"{"+rel
 						+ "ObjectID : '" + theQuestion.getId() + "'"
 						+ "}\" ");
@@ -154,18 +155,18 @@ public class FindingHTMLWriter {
 			an.setValue(new Double(0));
 			String answerText = an.verbalizeValue(theCase);
 			
-			buffy.append("<INPUT TYPE=text size=10 maxlength=10 " 
-					+ "NAME='num" + timestampid + theQuestion.getId() + "' " 
-					+ "value='' " 
+			buffy.append("<INPUT TYPE=text size=10 maxlength=10 "
+					+ "NAME='num" + timestampid + theQuestion.getId() + "' "
+					+ "value='' "
 					+ "class=\"semano_num\" "
 					+ "rel=\"{"+rel
-					+ "ObjectID : '" + theQuestion.getId() + "'" 
+					+ "ObjectID : '" + theQuestion.getId() + "'"
 					+ "}\" ");
 			buffy.append(">");
-			buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" " 
+			buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" "
 					+ "rel=\"{"+rel
-					+ "ObjectID : '" + theQuestion.getId() + "'" 
-					+ "}\" ");	
+					+ "ObjectID : '" + theQuestion.getId() + "'"
+					+ "}\" ");
 
 			buffy.append(answerText);
 			buffy.append("<br />");
@@ -179,10 +180,10 @@ public class FindingHTMLWriter {
 		String timestampid = (new Date()).getTime() + "";
 
 		
-		String rel = "url : '" + targetUrlPrefix + "'," 
-			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "'," 
-			+ KnowWEAttributes.WEB + ": '" + webname + "'," 
-			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";		
+		String rel = "url : '" + targetUrlPrefix + "',"
+			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "',"
+			+ KnowWEAttributes.WEB + ": '" + webname + "',"
+			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
 		
 		if (theMC.getAllAlternatives() != null) {
 			buffy.append("<form action='#' name='semanomc' id='semanomc'>");
@@ -193,16 +194,16 @@ public class FindingHTMLWriter {
 				} else {
 					
 					buffy.append("<INPUT TYPE=CHECKBOX NAME='f" + timestampid+"id"
-							+ theQuestion.getId() + "' " 
-							+ "value='" + theAnswer.getId() + "' " 
-							+ "id='semanomc" + theQuestion.getId() + "' " 
-							+ "class=\"semano_mc\" " 
+							+ theQuestion.getId() + "' "
+							+ "value='" + theAnswer.getId() + "' "
+							+ "id='semanomc" + theQuestion.getId() + "' "
+							+ "class=\"semano_mc\" "
 							+ " rel=\"{"+rel
-							+ "ObjectID : '" + theQuestion.getId() + "'," 
+							+ "ObjectID : '" + theQuestion.getId() + "',"
 							+ "ValueIDS : '" + theAnswer.getId() + "'"
 							+ "}\" ");
 
-					if (theCase != null && theQuestion.getValue(theCase) != null && theQuestion.getValue(theCase).equals(theAnswer)) {		
+					if (theCase != null && theQuestion.getValue(theCase) != null && theQuestion.getValue(theCase).equals(theAnswer)) {
 						buffy.append(" checked=\"checked\" ");
 					}
 					buffy.append(">");
@@ -239,10 +240,10 @@ public class FindingHTMLWriter {
 			String namespace, String webname, String topic, String targetUrlPrefix) {
 		
 		rb = D3webModule.getKwikiBundle_d3web();
-		String retVal = null;		
+		String retVal = null;
 		if (question == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
-					"null is no Question");	
+					"null is no Question");
 		} else {
 			retVal= "<h3>" + KnowWEUtils.convertUmlaut(question.getName()) + "</h3>";
 			if (question instanceof QuestionYN) {

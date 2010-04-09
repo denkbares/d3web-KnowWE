@@ -29,7 +29,6 @@ import java.util.Stack;
 import de.d3web.KnOfficeParser.util.ConditionGenerator;
 import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -38,15 +37,17 @@ import de.d3web.core.inference.condition.CondMofN;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.CondUnknown;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 
 /**
@@ -66,13 +67,13 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		this.file = file;
 	}
 
-	private Stack<Condition> condstack = new Stack<Condition>();
+	private final Stack<Condition> condstack = new Stack<Condition>();
 	private List<Message> errors = new ArrayList<Message>();
 	private boolean lazy = false;
 	private boolean lazyAnswers = false;
 	private IDObjectManagement idom;
 
-	private Map<String, Question> questions = new HashMap<String, Question>();
+	private final Map<String, Question> questions = new HashMap<String, Question>();
 	private boolean useQuestionmap = true;
 
 	public boolean isUseQuestionmap() {
@@ -234,7 +235,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			if (answer == null) {
 				if (lazy || lazyAnswers) {
 					answer = (AnswerChoice) idom.addChoiceAnswer(qc, value);
-					c = new CondEqual(qc, answer);
+					c = new CondEqual(qc, new ChoiceValue(answer));
 				} else {
 					errors.add(MessageKnOfficeGenerator
 							.createAnswerNotFoundException(file, line,
@@ -242,7 +243,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 					c = null;
 				}
 			} else {
-				c = new CondEqual(qc, answer);
+				c = new CondEqual(qc, new ChoiceValue(answer));
 			}
 		} else {
 			errors.add(MessageKnOfficeGenerator.createNoAnswerAllowedException(

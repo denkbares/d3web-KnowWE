@@ -31,15 +31,13 @@ import java.util.logging.Logger;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.PSMethodInit;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.QuestionOC;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.PropertiesContainer;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -47,10 +45,12 @@ import de.d3web.core.session.CaseFactory;
 import de.d3web.core.session.D3WebCase;
 import de.d3web.core.session.IEventSource;
 import de.d3web.core.session.KBOEventListener;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.ValuedObject;
 import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.XPSCaseEventListener;
-import de.d3web.core.session.values.AnswerNum;
+import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.indication.inference.PSMethodNextQASet;
 import de.d3web.kernel.dialogControl.DistributedControllerFactory;
 import de.d3web.kernel.dialogControl.ExternalClient;
@@ -129,7 +129,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		 * Map for interpolation of the scores. Keys are precentages, values are
 		 * assigned scores.
 		 */
-		private Map<Double, Integer> percentagesToScores = new LinkedHashMap();
+		private final Map<Double, Integer> percentagesToScores = new LinkedHashMap();
 
 		public XCLModelValueListener(D3webKnowledgeServiceSession kss,
 				Broker broker) {
@@ -226,7 +226,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	
 
 	private boolean instantly = true;
-	private List<ValuedObject> toChange;
+	private final List<ValuedObject> toChange;
 
 	public D3webKnowledgeServiceSession(KnowledgeBase base, Broker broker,
 			String id) {
@@ -292,13 +292,16 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	public void inform(Information info) {
 		IDObject object = base.search(info.getObjectID());
 
-		List<Object> values = new ArrayList<Object>();
+		// List<Object> values = new ArrayList<Object>();
+		Value value = null;
 		if (object instanceof QuestionChoice) {
-			values
-					.addAll(getAnswers((QuestionChoice) object, info
-							.getValues()));
+			value = getAnswers((QuestionChoice) object, info.getValues());
+			// values.addAll(getAnswers((QuestionChoice) object,
+			// info.getValues()));
 		} else if (object instanceof QuestionNum) {
-			values.addAll(getAnswers((QuestionNum) object, info.getValues()));
+			value = getAnswers((QuestionNum) object, info.getValues());
+			// values.addAll(getAnswers((QuestionNum) object,
+			// info.getValues()));
 		} else if (object instanceof Solution) {
 			PropertiesContainer pc = (PropertiesContainer) object;
 			Boolean external = (Boolean) pc.getProperties().getProperty(
@@ -306,7 +309,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			if (info.getInformationType().equals(
 					InformationType.SolutionInformation)) {
 				if (external != null && external) {
-					values.addAll(getStatesForDiagnosis(info.getValues()));
+					value = getStatesForDiagnosis(info.getValues());
 				}
 			} else {
 				// see ClusterSolutionManager
@@ -318,38 +321,29 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		if (object instanceof ValuedObject) {
 			vo = (ValuedObject) object;
 		}
-		if (object instanceof QuestionOC) { // [HOTFIX]:!!!!!!!!!!!!!
-			if (values.size() > 1) {
-				Object value = values.get(0);
-				values = new ArrayList<Object>();
-				values.add(value);
-			}
-		}
 
 		if (vo instanceof Solution) {
 			Solution diag = (Solution) vo;
-			if (!(values.isEmpty())) {
+			if (value != null) {
 				toChange.add(diag);
 				if (info.getInformationType().equals(
 						InformationType.SolutionInformation)) {
-					xpsCase.setValue(diag, values.toArray(),
+					xpsCase.setValue(diag, value,
 							PSMethodHeuristic.class);
 				} else if (info.getInformationType().equals(
 						InformationType.HeuristicInferenceInformation)) {
 					DiagnosisScore oldScore = diag.getScore(xpsCase,
 							PSMethodHeuristic.class);
 					DiagnosisScore newScore = oldScore
-							.add((DiagnosisScore) values.get(0));
-					List newValues = new ArrayList();
-					newValues.add(newScore);
-					xpsCase.setValue(diag, values.toArray(),
+							.add((DiagnosisScore) value);
+					xpsCase.setValue(diag, value,
 							PSMethodHeuristic.class);
 				}
 			}
 		} else {
 			if (vo != null) {
 				toChange.add(vo);
-				xpsCase.setValue(vo, values.toArray());
+				xpsCase.setValue(vo, value);
 			}else {
 				Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "ValuedObject is null: "+object.getClass().getName()+" :"+object.toString());
 			}
@@ -383,21 +377,16 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 	}
 
-	private Collection<? extends Answer> getAnswers(QuestionNum qn, List values) {
-		Collection<Answer> result = new ArrayList<Answer>();
+	private Value getAnswers(QuestionNum qn, List values) {
 		for (Object answerValue : values) {
 			if (answerValue instanceof Double) {
-				AnswerNum answer = new AnswerNum();
-				answer.setQuestion(qn);
-				answer.setValue((Double) answerValue);
-				result.add(answer);
+				return new NumValue((Double) answerValue);
 			}
 		}
-		return result;
+		return UndefinedValue.getInstance();
 	}
 
-	private Collection<Answer> getAnswers(QuestionChoice choice, List values) {
-		Collection<Answer> result = new ArrayList<Answer>();
+	private Value getAnswers(QuestionChoice choice, List values) {
 		// [HOTFIX]:Peter: known, but another answer
 		// if(values.isEmpty()) {
 		// result.add(choice.getUnknownAlternative());
@@ -405,13 +394,13 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		for (Object object : values) {
 			if (object instanceof String) {
 				String id = (String) object;
-				Answer answer = baseManagement.findAnswer(choice, id);
-				if (answer != null) {
-					result.add(answer);
+				Value answer = baseManagement.findValue(choice, id);
+				if (answer != null && answer != UndefinedValue.getInstance()) {
+					return answer;
 				}
 			}
 		}
-		return result;
+		return UndefinedValue.getInstance();
 	}
 
 	private Collection<DiagnosisScore> getValuesForDiagnosis(List values) {
@@ -426,29 +415,28 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return result;
 	}
 
-	private Collection<Object> getStatesForDiagnosis(List values) {
-		Collection<Object> result = new ArrayList<Object>();
+	private Value getStatesForDiagnosis(List values) {
 		if (values.size() == 1) {
 			SolutionState state = (SolutionState) values.get(0);
 			if (state.equals(SolutionState.ESTABLISHED)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(80);
-				result.add(score);
+				return score;
 			} else if (state.equals(SolutionState.SUGGESTED)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(20);
-				result.add(score);
+				return score;
 			} else if (state.equals(SolutionState.EXCLUDED)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(-80);
-				result.add(score);
+				return score;
 			} else if (state.equals(SolutionState.UNCLEAR)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(0);
-				result.add(score);
+				return score;
 			}
 		}
-		return result;
+		return UndefinedValue.getInstance();
 	}
 
 	protected void maybeNotifyBroker(ValuedObject valuedObject,
@@ -547,6 +535,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return xpsCase;
 	}
 
+	@Override
 	public String toString() {
 		return base.getDiagnoses().toString();
 	}

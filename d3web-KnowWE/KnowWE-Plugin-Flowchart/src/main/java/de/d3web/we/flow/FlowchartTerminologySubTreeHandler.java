@@ -31,6 +31,7 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.diaFlux.IndicateFlowAction;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
@@ -75,7 +76,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 
 		Section content = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
-		if (content == null) 
+		if (content == null)
 			return null;
 		
 		List<Message> errors = new ArrayList<Message>();
@@ -124,7 +125,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 			System.out.println("QContainer found:" + name);
 
 		QuestionMC startQ = createQuestion(flowQC, flow.getName() + "_" + STARTNODES_QUESTION_NAME, flow.getStartNodes(), kbm);
-		createRules(flow, startQ, kbm);		
+		createRules(flow, startQ, kbm);
 				
 		createQuestion(flowQC, flow.getName() + "_" + EXITNODES_QUESTION_NAME, flow.getExitNodes(), kbm);
 		
@@ -140,7 +141,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 			Rule rule = RuleFactory.createRule("FCIndication_" + startQ  + "_" + answer.getName());
 			
 			rule.setAction(new IndicateFlowAction(flow.getName(), answer.getName()));
-			rule.setCondition(new CondEqual(startQ, answer));
+			rule.setCondition(new CondEqual(startQ, new ChoiceValue(answer)));
 			
 		}
 		
@@ -172,8 +173,8 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 			
 			Section nodeContent = (Section) section.getChildren().get(1); //Section of NodeContentType
 			
-			// get the important info 
-			List<Section> children = nodeContent.getChildren(new SectionFilter() { 
+			// get the important info
+			List<Section> children = nodeContent.getChildren(new SectionFilter() {
 				
 				public boolean accept(Section section) {
 					return section.getObjectType() != PositionType.getInstance() && section.getObjectType() != PlainText.getInstance();
@@ -189,7 +190,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 			
 			String id = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
 			
-			if (nodeinfo.getObjectType() == StartType.getInstance()) 
+			if (nodeinfo.getObjectType() == StartType.getInstance())
 				result.add(createStartNode(id, nodeinfo));
 			else if (nodeinfo.getObjectType() == ExitType.getInstance())
 				result.add(createEndNode(id, nodeinfo));

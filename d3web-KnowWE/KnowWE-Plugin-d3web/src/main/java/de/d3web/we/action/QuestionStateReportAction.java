@@ -22,9 +22,9 @@ package de.d3web.we.action;
 
 import java.util.List;
 
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.session.Value;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -88,7 +88,7 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 		}
 		
 //		if(kss instanceof de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession){
-//			
+//
 //		}
 		
 		if(kss instanceof de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession && q != null) {
@@ -97,24 +97,18 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 			de.d3web.core.session.XPSCase case1 = d3kss.getXpsCase();
 			List<? extends Question> answeredQuestions = case1.getAnsweredQuestions();
 			if(answeredQuestions.contains(q)) {
-				Answer theanswer = q.getValue(case1);
+				Value theanswer = q.getValue(case1);
 				result = "#"+q.getName()+":";
-				if (theanswer != null)
-					result += theanswer.toString()+";";
-				else
+				if (theanswer != null) {
+					result += theanswer.getValue().toString() + ";";
+				}
+				else {
 					result += "no answer object";
-//				for (Object object : answers) {
-//					
-//					if(object instanceof Answer) {
-//						result += ((Answer)object).toString() +";";
-//					}else {
-//						result += "no answer object";
-//					}
-//				}
+				}
 			} else {
 				result = "undefined";
 			}
-		} 
+		}
 		
 		
 		

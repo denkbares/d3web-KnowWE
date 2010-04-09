@@ -32,11 +32,11 @@ import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -45,6 +45,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.Properties;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.kernel.psMethods.shared.Abnormality;
 import de.d3web.kernel.psMethods.shared.Weight;
 import de.d3web.knowledgeExporter.KnowledgeManager;
@@ -64,11 +65,11 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 	
 	@Override
 	protected void setVerticalAndHorizontalFreeze() {
-			wb.getSheet(0).getSettings().setVerticalFreeze(1); 
+			wb.getSheet(0).getSettings().setVerticalFreeze(1);
 			wb.getSheet(0).getSettings().setHorizontalFreeze(isExtraAnswerColumn() ? 2 : 1);
-			wb.getSheet(1).getSettings().setVerticalFreeze(1); 
+			wb.getSheet(1).getSettings().setVerticalFreeze(1);
 			wb.getSheet(1).getSettings().setHorizontalFreeze(1);
-//			wb.getSheet(2).getSettings().setVerticalFreeze(1); 
+//			wb.getSheet(2).getSettings().setVerticalFreeze(1);
 //			wb.getSheet(2).getSettings().setHorizontalFreeze(1);
 		
 	}
@@ -115,7 +116,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		
 		int row = 1;
 		for (Question q:questions) {
-			qSheet.addCell(new Label(getColumn(Question.class.getSimpleName(), qSheet), 
+			qSheet.addCell(new Label(getColumn(Question.class.getSimpleName(), qSheet),
 					row, q.getName(), getCellFormatBold()));
 			
 			//WEIGHT UND ABNORMALITY DIESER FRAGE RAUSSCHREIBEN
@@ -123,7 +124,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 			Abnormality abn = null;
 			for (KnowledgeSlice ks:kSlices) {
 				if (ks instanceof Weight) {
-					qSheet.addCell(new Label(getColumn(Weight.class.getSimpleName(), qSheet), 
+					qSheet.addCell(new Label(getColumn(Weight.class.getSimpleName(), qSheet),
 							row, Weight.convertValueToConstantString(((Weight) ks)
 							.getQuestionWeightValue().getValue()), getCellFormatCenter()));
 				}
@@ -140,15 +141,17 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 				
 				// ANTWORTEN RAUSSCHREIBEN
 				for (AnswerChoice a:answers) {
-					qSheet.addCell(new Label(getColumn(isExtraAnswerColumn() ? 
-							AnswerChoice.class.getSimpleName() : Question.class.getSimpleName(), qSheet), 
+					qSheet.addCell(new Label(getColumn(isExtraAnswerColumn() ?
+							AnswerChoice.class.getSimpleName() : Question.class.getSimpleName(), qSheet),
 							row, isExtraAnswerColumn() ? a.getName() : " - " +  a.getName()));
 					writeMMInfos(a, qSheet, row);
 					
 					// ABNORMALITY DER ANTWORT RAUSSCHREIBEN
 					if (abn != null) {
-						qSheet.addCell(new Label(getColumn(Abnormality.class.getSimpleName(), qSheet), 
-								row, AbstractAbnormality.convertValueToConstantString(abn.getValue(a)), getCellFormatCenter()));
+						qSheet.addCell(new Label(getColumn(Abnormality.class.getSimpleName(), qSheet),
+								row,
+								AbstractAbnormality.convertValueToConstantString(abn.getValue(new ChoiceValue(
+										a))), getCellFormatCenter()));
 					}
 					row++;
 				}
@@ -274,7 +277,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		
 		int row = 1;
 		for (Solution d:diagnoses) {
-			dSheet.addCell(new Label (getColumn(Solution.class.getSimpleName(), dSheet), 
+			dSheet.addCell(new Label (getColumn(Solution.class.getSimpleName(), dSheet),
 					row, d.getName(), getCellFormatBold()));
 			writeMMInfos(d, dSheet, row);
 			row++;
@@ -303,10 +306,10 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 	}
 
 	private void writeQClassesSheet() {
-		WritableSheet qcSheet = wb.createSheet(KnowledgeManager.getResourceBundle().getString("qclasses"), 2);	
+		WritableSheet qcSheet = wb.createSheet(KnowledgeManager.getResourceBundle().getString("qclasses"), 2);
 	}
 
-	private void writeMMInfos(Object object, WritableSheet sheet, int row) 
+	private void writeMMInfos(Object object, WritableSheet sheet, int row)
 			throws RowsExceededException, WriteException {
 		
 		Properties props = null;
@@ -319,7 +322,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 			if (p.equals(Property.MMINFO)) {
 				MMInfoStorage storage = (MMInfoStorage) props.getProperty(Property.MMINFO);
 				if (storage != null) {
-					for (Iterator<MMInfoSubject> subjects = MMInfoSubject.getIterator(); subjects.hasNext();) {				
+					for (Iterator<MMInfoSubject> subjects = MMInfoSubject.getIterator(); subjects.hasNext();) {
 						MMInfoSubject subject = subjects.next();
 						
 						DCMarkup markup = new DCMarkup();

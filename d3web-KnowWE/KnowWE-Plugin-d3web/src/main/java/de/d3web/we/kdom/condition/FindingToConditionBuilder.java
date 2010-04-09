@@ -21,10 +21,10 @@
 package de.d3web.we.kdom.condition;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.CondNot;
@@ -34,11 +34,22 @@ import de.d3web.core.inference.condition.CondNumGreaterEqual;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.CondOr;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
+import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.DateValue;
+import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.TextValue;
+import de.d3web.core.session.values.UndefinedValue;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.report.Message;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -69,7 +80,7 @@ public class FindingToConditionBuilder {
 	 * @param answer
 	 * @return
 	 */
-	private static Condition createCondition(KnowWEArticle article, Question kbQuest, Answer kbAns, Section comp, Section question, Section answer) {
+	private static Condition createCondition(KnowWEArticle article, Question kbQuest, Value kbAns, Section comp, Section question, Section answer) {
 		// CondEqual(Yes/No), CondNumEqual, CondNumGreater, CondNumGreaterEqual,
 		// CondNumLess, CondNumLessEqual
 		// Unhandled Conditions: CondKnown, CondNumIn, CondTextContains, CondTextEqual, CondUnknown
@@ -84,17 +95,14 @@ public class FindingToConditionBuilder {
 		// CondEqual and CondNumEqual have same Comparator
 		
 		if (kbQuest instanceof QuestionNum) {
-
 			Double valueOf = parseNumAnswer(article, answerText, answer);
-			
 			QuestionNum questionNum = (QuestionNum) kbQuest;
-			
 			return createCondNum(article, comp, comparator, valueOf,
 					questionNum);
 		} else {
 			if (comparator.equals("="))
 				return new CondEqual(kbQuest, kbAns);
-			else { 
+			else {
 				storeMessage(article, "Unkown comparator '" + comparator +"'.", comp);
 				return null;
 			}
@@ -145,7 +153,7 @@ public class FindingToConditionBuilder {
 		Section child = f.findChildOfType(ComplexFinding.class);
 		if (child != null) {
 			return FindingToConditionBuilder.analyseComplexFinding(article, child, kbm);
-		} else 
+		} else
 			return null;
 	}
 	
@@ -187,6 +195,25 @@ public class FindingToConditionBuilder {
 			// Look up the Answer for the Question
 			// Can be null if it is a Numerical Question
 			Answer kbAns = kbm.findAnswer(kbQuest, answertext);
+			Value kbValue = null;
+			if (kbAns != null && kbAns.equals(kbQuest.getUnknownAlternative())) {
+				kbValue = Unknown.getInstance();
+			}
+			if (kbAns != null && kbQuest instanceof QuestionOC) {
+				kbValue = new ChoiceValue((AnswerChoice) kbAns);
+			}
+			else if (kbAns != null && kbQuest instanceof QuestionNum) {
+				kbValue = new NumValue(Double.valueOf(answertext));
+			}
+			else if (kbAns != null && kbQuest instanceof QuestionText) {
+				kbValue = new TextValue(answertext);
+			}
+			else if (kbAns != null && kbQuest instanceof QuestionDate) {
+				kbValue = new DateValue(new Date(answertext));
+			}
+			else {
+				kbValue = UndefinedValue.getInstance();
+			}
 			
 			//TODO: errors when answer is not found for certain question types (YN, OC)
 			
@@ -195,7 +222,8 @@ public class FindingToConditionBuilder {
 				return null;
 			}
 			
-			Condition condition = createCondition(article, kbQuest, kbAns, comp, question, answer);
+			Condition condition = createCondition(article, kbQuest, kbValue, comp,
+					question, answer);
 			return negated ? new CondNot(condition) : condition;
 		} else {
 			storeMessage(article, "Question '" + question.getOriginalText() +"' not found.", question);
@@ -222,10 +250,10 @@ public class FindingToConditionBuilder {
 
 	/**
 	 * Creates a Condition from a ComplexFinding
-	 * Removes every sub-condition that could not be parsed.  
+	 * Removes every sub-condition that could not be parsed.
 	 * 
 	 * @param cf
-	 * @param kbm 
+	 * @param kbm
 	 * @return s the according Condition or null if neither side could be parsed
 	 */
 	private static Condition analyseComplexFinding(KnowWEArticle article, Section cf, KnowledgeBaseManagement kbm) {
@@ -273,7 +301,7 @@ public class FindingToConditionBuilder {
 		if (conjuncts.isEmpty())
 			return null;
 		else if (conjuncts.size() == 1) //no AND for single argument
-			return conjuncts.get(0); 
+			return conjuncts.get(0);
 		else
 			return new CondAnd(conjuncts);
 		

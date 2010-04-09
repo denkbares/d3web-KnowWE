@@ -27,10 +27,13 @@ import java.util.List;
 
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.IDObject;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.values.AnswerDate;
 import de.d3web.core.session.values.AnswerNum;
+import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.EvaluatableAnswerDateValue;
+import de.d3web.core.session.values.NumValue;
 
 public class ConverterUtils {
 
@@ -53,7 +56,8 @@ public class ConverterUtils {
 	}
 
 	/**
-	 * Use: public static List<Object> toValueList(Answer givenValue, XPSCase theCase) 
+	 * Use: public static List<Object> toValueList(Value givenValue, XPSCase
+	 * theCase)
 	 */
 	@Deprecated
 	public static List<Object> toValueList(List values, XPSCase theCase) {
@@ -79,6 +83,11 @@ public class ConverterUtils {
 		return result;
 	}
 	
+	/**
+	 * Use: public static List<Object> toValueList(Value givenValue, XPSCase
+	 * theCase)
+	 */
+	@Deprecated
 	public static List<Object> toValueList(Answer givenValue, XPSCase theCase) {
 		List<Object> result = new ArrayList<Object>();
 		if (givenValue instanceof AnswerNum) {
@@ -94,6 +103,28 @@ public class ConverterUtils {
 				result.add(value);
 			}
 		} else if (givenValue instanceof IDObject) {
+			result.add(((IDObject) givenValue).getId());
+		}
+		return result;
+	}
+
+	public static List<Object> toValueList(Value givenValue, XPSCase theCase) {
+		List<Object> result = new ArrayList<Object>();
+		if (givenValue instanceof NumValue) {
+			Double value = (Double) ((NumValue) givenValue).getValue();
+			if (value != null) {
+				result.add(value);
+			}
+		}
+		else if (givenValue instanceof DateValue) {
+			EvaluatableAnswerDateValue dateEval = (EvaluatableAnswerDateValue) ((DateValue) givenValue)
+					.getValue();
+			Date value = dateEval.eval(theCase);
+			if (value != null) {
+				result.add(value);
+			}
+		}
+		else if (givenValue instanceof IDObject) {
 			result.add(((IDObject) givenValue).getId());
 		}
 		return result;

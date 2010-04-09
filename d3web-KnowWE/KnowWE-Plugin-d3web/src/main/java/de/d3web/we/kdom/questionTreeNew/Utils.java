@@ -3,13 +3,15 @@ package de.d3web.we.kdom.questionTreeNew;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.FindingToConditionBuilder;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
@@ -68,7 +70,8 @@ public class Utils {
 		if (answerSec != null && q instanceof QuestionChoice) {
 			Answer a = answerSec.get().getObject(answerSec);
 			if (a != null) {
-				CondEqual c = new CondEqual((QuestionChoice) q, a);
+				CondEqual c = new CondEqual((QuestionChoice) q, new ChoiceValue(
+						(AnswerChoice) a));
 				return c;
 			}
 		}

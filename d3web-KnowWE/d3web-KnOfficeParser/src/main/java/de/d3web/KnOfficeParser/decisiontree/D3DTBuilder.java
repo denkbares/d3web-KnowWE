@@ -48,7 +48,6 @@ import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -59,6 +58,7 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -71,6 +71,7 @@ import de.d3web.core.manage.AnswerFactory;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 import de.d3web.scoring.Score;
 
@@ -89,15 +90,15 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	}
 
 	private Question currentQuestion;
-	private Stack<Tupel<Integer, Question>> questionStack = new Stack<Tupel<Integer, Question>>();;
-	private Stack<Integer> conddashstack = new Stack<Integer>();
+	private final Stack<Tupel<Integer, Question>> questionStack = new Stack<Tupel<Integer, Question>>();;
+	private final Stack<Integer> conddashstack = new Stack<Integer>();
 	private QASet currentQuestionclass;
-	private Stack<TerminalCondition> conditionStack = new Stack<TerminalCondition>();
-	private List<Tripel<String, Condition, Message>> qcontainertolink = new ArrayList<Tripel<String, Condition, Message>>();
-	private List<Tripel<String, Object, Message>> descriptionlinks = new ArrayList<Tripel<String, Object, Message>>();
+	private final Stack<TerminalCondition> conditionStack = new Stack<TerminalCondition>();
+	private final List<Tripel<String, Condition, Message>> qcontainertolink = new ArrayList<Tripel<String, Condition, Message>>();
+	private final List<Tripel<String, Object, Message>> descriptionlinks = new ArrayList<Tripel<String, Object, Message>>();
 	private List<String> allowedNames;
-	private List<Message> errors = new ArrayList<Message>();
-	private String file;
+	private final List<Message> errors = new ArrayList<Message>();
+	private final String file;
 	private boolean complexconditions = false;
 	private IDObjectManagement idom;
 
@@ -118,8 +119,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	 * @param <X>
 	 */
 	private class Tupel<T, X> {
-		private T first;
-		private X second;
+		private final T first;
+		private final X second;
 		boolean used = false;
 
 		public Tupel(T t, X x) {
@@ -129,7 +130,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	}
 
 	private class Tripel<T, X, U> extends Tupel<T, X> {
-		private U third;
+		private final U third;
 
 		public Tripel(T t, X x, U u) {
 			super(t, x);
@@ -195,7 +196,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				return;
 			}
 			CondEqual c = new CondEqual((QuestionChoice) currentQuestion,
-					answer);
+					new ChoiceValue(answer));
 			conditionStack.push(c);
 			conddashstack.push(dashes);
 			if (idlink != null) {
@@ -388,7 +389,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 								new Object[] { e }, cond);
 					}
 				} else {
-					Answer a = idom.findAnswer(q, value);
+					Answer a = (Answer) idom.findAnswer(q, value).getValue();
 					if (set) {
 						RuleFactory.createSetValueRule(newRuleID, q,
 								new Object[] { a }, cond);

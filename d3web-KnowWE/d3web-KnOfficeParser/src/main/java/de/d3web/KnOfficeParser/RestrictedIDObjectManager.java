@@ -24,13 +24,12 @@ import java.util.List;
 import java.util.Set;
 
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -40,7 +39,10 @@ import de.d3web.core.knowledge.terminology.info.Properties;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.AnswerFactory;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.Unknown;
 
 /**
  * An implementation of the IDObjectManagement for the package CostBenefit.
@@ -103,16 +105,16 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 
 
 	@Override
-	public Answer findAnswer(Question q, String name) {
-		Answer answer = kbm.findAnswer(q, name);
+	public Value findAnswer(Question q, String name) {
+		Value answer = kbm.findValue(q, name);
 		if (name.equalsIgnoreCase("unknown")||name.equalsIgnoreCase("unbekannt")) {
-			return q.getUnknownAlternative();
+			return Unknown.getInstance();
 		}
 		if (answer==null&&lazyAnswers) {
 			QuestionChoice qc = (QuestionChoice) q;
 			AnswerChoice ac = AnswerFactory.createAnswerChoice(kbm.findNewIDForAnswerChoice(qc), name);
 			qc.addAlternative(ac);
-			answer=ac;
+			answer = new ChoiceValue(ac);
 		}
 		return answer;
 	}

@@ -37,20 +37,20 @@ import de.d3web.KnOfficeParser.DefaultLexer;
 import de.d3web.KnOfficeParser.RestrictedIDObjectManager;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
 import de.d3web.abstraction.ActionSetValue;
-import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.diaFlux.ConditionTrue;
 import de.d3web.diaFlux.NoopAction;
 import de.d3web.diaFlux.flow.Flow;
@@ -371,7 +371,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			return NoopAction.INSTANCE;
 		}
 
-		action.setValues(new AnswerChoice[] { answer });
+		action.setValue(new ChoiceValue(answer));
 
 		return action;
 	}
@@ -460,7 +460,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			return null;
 		}
 
-		action.setValues(new AnswerChoice[] { answer });
+		action.setValue(new ChoiceValue(answer));
 
 		return FlowFactory.getInstance().createEndNode(id, name, action);
 	}

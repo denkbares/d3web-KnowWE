@@ -34,13 +34,14 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 
 public class KnowledgeUtils {
@@ -122,7 +123,7 @@ public class KnowledgeUtils {
 						kdomid, line, column, "", answer));
 				return errors;
 			}
-			cond = new CondEqual(qyn, ac);
+			cond = new CondEqual(qyn, new ChoiceValue(ac));
 		} else if (currentquestion instanceof QuestionChoice) {
 			QuestionChoice qc = (QuestionChoice) currentquestion;
 			AnswerChoice currentanswer = idom.findAnswerChoice(qc, answer);
@@ -133,7 +134,7 @@ public class KnowledgeUtils {
 
 			}
 
-			cond = new CondEqual(qc, currentanswer);
+			cond = new CondEqual(qc, new ChoiceValue(currentanswer));
 		} else {
 			cond = null;
 			errors.add(MessageKnOfficeGenerator

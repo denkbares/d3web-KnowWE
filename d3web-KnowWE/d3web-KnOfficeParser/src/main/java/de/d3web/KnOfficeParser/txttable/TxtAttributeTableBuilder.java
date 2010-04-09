@@ -73,7 +73,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 			
 			int requiredCellCount = 4;
 			if (cells.size() != requiredCellCount) {
-				messages.add(MessageKnOfficeGenerator.createErrorMSG("wrongCellCount", null, line, 
+				messages.add(MessageKnOfficeGenerator.createErrorMSG("wrongCellCount", null, line,
 						lineText, new Object[] {requiredCellCount, cells.size()}));
 			} else {
 				boolean lineOk = true;
@@ -86,7 +86,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 				// parse question and answer
 				List<Integer> dots = new ArrayList<Integer>();
 				for (int j = 0; j < objectString.length(); j++) {
-					if (objectString.charAt(j) == '.'  && !TxtTableParser.isEscapedSymbol(j, objectString)) 
+					if (objectString.charAt(j) == '.'  && !TxtTableParser.isEscapedSymbol(j, objectString))
 						dots.add(j);
 				}
 				if (dots.size() == 1) {
@@ -96,7 +96,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 					questionString = TxtTableParser.compile(objectString);
 					answerString = null;
 					if (dots.size() > 1)
-						messages.add(MessageKnOfficeGenerator.createWarningMSG("toManyDots", null, line, 
+						messages.add(MessageKnOfficeGenerator.createWarningMSG("toManyDots", null, line,
 								lineText, TxtTableParser.ESCAPE_SYMBOL));
 				}
 				
@@ -104,8 +104,10 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 				IDObject name = idom.getKnowledgeBase().searchObjectForName(questionString);
 				IDObject id = idom.getKnowledgeBase().search(questionString);
 				DCMarkup markup = new DCMarkup();
-				IDObject kbObject = null;
 				
+				// IDObject kbObject = null;
+				Object kbObject = null;
+
 				if (name != null) {
 					if (id != null) {
 						kbObject = id;
@@ -122,7 +124,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 					}
 				}
 				if (lineOk && kbObject instanceof Question && answerString != null) {
-					kbObject = idom.findAnswer((Question) kbObject, answerString);
+					kbObject = (Answer) idom.findAnswer((Question) kbObject, answerString).getValue();
 					if (kbObject == null) {
 						messages.add(MessageKnOfficeGenerator.createErrorMSG("objectNotFound", null,
 								line, lineText, answerString));
@@ -130,13 +132,13 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 					}
 				}
 				if (lineOk)
-					markup.setContent(DCElement.SOURCE, kbObject.getId());
+					markup.setContent(DCElement.SOURCE, ((IDObject) kbObject).getId());
 				
 				// retrieve MMInfoSubject
 				String subjectString = cells.get(1).toString().trim();
 				MMInfoSubject foundSubject = null;
 				StringBuilder possibleSubjects = new StringBuilder();
-				for (MMInfoSubject subject:MMInfoSubject.getSubjects()) {	
+				for (MMInfoSubject subject:MMInfoSubject.getSubjects()) {
 					if (subjectString.compareToIgnoreCase(subject.getName()) == 0) {
 						foundSubject = subject;
 					}
@@ -144,16 +146,16 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 				}
 				possibleSubjects.delete(possibleSubjects.length() - 2, possibleSubjects.length());
 				if (foundSubject == null)  {
-					messages.add(MessageKnOfficeGenerator.createErrorMSG("invalidMMInfoSubject", null, line, 
+					messages.add(MessageKnOfficeGenerator.createErrorMSG("invalidMMInfoSubject", null, line,
 							lineText, subjectString));
-					messages.add(MessageKnOfficeGenerator.createNoteMSG("validMMInfoSubjects", null, line, 
+					messages.add(MessageKnOfficeGenerator.createNoteMSG("validMMInfoSubjects", null, line,
 							lineText, possibleSubjects.toString()));
 					lineOk = false;
 				}
 				
 				// retrieve title and language of DCMarkup
 				String dcElementString =  cells.get(2).toString().trim();
-				Pattern dcCell = Pattern.compile("^(?:([^ ]*?(lang::)?[^ ]*?(de|en)?) +)?([^ ]+)$", 
+				Pattern dcCell = Pattern.compile("^(?:([^ ]*?(lang::)?[^ ]*?(de|en)?) +)?([^ ]+)$",
 						Pattern.CASE_INSENSITIVE);
 				Matcher dcMatcher = dcCell.matcher(dcElementString);
 				if (dcMatcher.find()) {
@@ -161,7 +163,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 						if (dcMatcher.group(2) != null && dcMatcher.group(3) != null) {
 							markup.setContent(DCElement.LANGUAGE, dcMatcher.group(3).toLowerCase());
 						} else {
-							messages.add(MessageKnOfficeGenerator.createErrorMSG("invalidLanguageSyntax", null, line, 
+							messages.add(MessageKnOfficeGenerator.createErrorMSG("invalidLanguageSyntax", null, line,
 									lineText, new Object[] {"lang::(de|en)", dcMatcher.group(1)}));
 						}
 					}
@@ -170,7 +172,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 						markup.setContent(DCElement.SUBJECT, foundSubject.getName());
 					}
 				} else {
-					messages.add(MessageKnOfficeGenerator.createErrorMSG("invalidDCSyntax", null, line, 
+					messages.add(MessageKnOfficeGenerator.createErrorMSG("invalidDCSyntax", null, line,
 							lineText, new Object[] {"[lang::(de|en)] titleOfElement", dcElementString}));
 					lineOk = false;
 				}
@@ -203,7 +205,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 		}
 		
 		if (parsedAttributes > 0) {
-			messages.add(0, MessageKnOfficeGenerator.createNoteMSG("attributesparsed", null, 0, 
+			messages.add(0, MessageKnOfficeGenerator.createNoteMSG("attributesparsed", null, 0,
 					null, parsedAttributes));
 		}
 		return messages;

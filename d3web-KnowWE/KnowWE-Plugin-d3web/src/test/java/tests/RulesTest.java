@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
 import de.d3web.abstraction.ActionQuestionSetter;
 import de.d3web.abstraction.formula.FormulaExpression;
@@ -39,14 +40,13 @@ import de.d3web.indication.inference.PSMethodNextQASet;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.inference.PSMethodHeuristic;
-import junit.framework.TestCase;
 
 /**
  * This class tests whether the Rules
- * are created as expected. 
+ * are created as expected.
  * 
  * This test also covers the rules
- * that are created "automatically" 
+ * that are created "automatically"
  * in the DecisionTree.
  * 
  * @author Sebastian Furth
@@ -68,9 +68,9 @@ public class RulesTest extends TestCase {
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 				
 		// load Rules in HashMaps (necessary because they are unsorted)
-		HashMap<String, Rule> loadedRules = 
+		HashMap<String, Rule> loadedRules =
 			getRulesInHashMap(loadedKB, PSMethodHeuristic.class);
-		HashMap<String, Rule> createdRules = 
+		HashMap<String, Rule> createdRules =
 			getRulesInHashMap(createdKB, PSMethodHeuristic.class);
 		
 		// Check number of rules
@@ -88,7 +88,7 @@ public class RulesTest extends TestCase {
 				loadedRule = loadedRules.get(key);
 				
 				// Compare ConditionTypes
-				assertEquals("Rule " + createdRule.getId() + " has wrong conditiontype.", 
+				assertEquals("Rule " + createdRule.getId() + " has wrong conditiontype.",
 						createdRule.getCondition().getClass(), loadedRule.getCondition().getClass());
 				
 				// Compare Conditions
@@ -99,7 +99,7 @@ public class RulesTest extends TestCase {
 				if (createdRule.getException() != null && loadedRule.getException() != null) {
 				
 					// Compare Exception ConditionTypes
-					assertEquals("Rule " + createdRule.getId() + " has wrong exception conditiontype.", 
+					assertEquals("Rule " + createdRule.getId() + " has wrong exception conditiontype.",
 							createdRule.getException().getClass(), loadedRule.getException().getClass());
 					
 					// Compare Exception Conditions
@@ -109,7 +109,7 @@ public class RulesTest extends TestCase {
 				}
 					
 				// Compare ActionTypes
-				assertEquals("Rule " + createdRule.getId() + " has wrong actiontype.", 
+				assertEquals("Rule " + createdRule.getId() + " has wrong actiontype.",
 						createdRule.getAction().getClass(), loadedRule.getAction().getClass());
 				
 				// ActionIndication specific tests
@@ -144,9 +144,9 @@ public class RulesTest extends TestCase {
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 				
 		// load Rules in HashMaps (necessary because they are unsorted)
-		HashMap<String, Rule> loadedRules = 
+		HashMap<String, Rule> loadedRules =
 			getRulesInHashMap(loadedKB, PSMethodNextQASet.class);
-		HashMap<String, Rule> createdRules = 
+		HashMap<String, Rule> createdRules =
 			getRulesInHashMap(createdKB, PSMethodNextQASet.class);
 		
 		// Check number of rules
@@ -164,7 +164,7 @@ public class RulesTest extends TestCase {
 				loadedRule = loadedRules.get(key);
 				
 				// Compare ConditionTypes
-				assertEquals("Rule " + createdRule.getId() + " has wrong conditiontype.", 
+				assertEquals("Rule " + createdRule.getId() + " has wrong conditiontype.",
 						createdRule.getCondition().getClass(), loadedRule.getCondition().getClass());
 				
 				// Compare Conditions
@@ -172,7 +172,7 @@ public class RulesTest extends TestCase {
 						createdRule.getCondition(), loadedRule.getCondition());
 				
 				// Compare ActionTypes
-				assertEquals("Rule " + createdRule.getId() + " has wrong actiontype.", 
+				assertEquals("Rule " + createdRule.getId() + " has wrong actiontype.",
 						createdRule.getAction().getClass(), loadedRule.getAction().getClass());
 				
 				// ActionIndication specific tests
@@ -211,9 +211,9 @@ public class RulesTest extends TestCase {
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 			
 		// load Rules in HashMaps (necessary because they are unsorted)
-		HashMap<String, Rule> loadedRules = 
+		HashMap<String, Rule> loadedRules =
 			getRulesInHashMap(loadedKB, PSMethodQuestionSetter.class);
-		HashMap<String, Rule> createdRules = 
+		HashMap<String, Rule> createdRules =
 			getRulesInHashMap(createdKB, PSMethodQuestionSetter.class);
 		
 		// Check number of rules
@@ -231,7 +231,7 @@ public class RulesTest extends TestCase {
 				loadedRule = loadedRules.get(key);
 				
 				// Compare ConditionTypes
-				assertEquals("Rule " + createdRule.getId() + " has wrong conditiontype.", 
+				assertEquals("Rule " + createdRule.getId() + " has wrong conditiontype.",
 						createdRule.getCondition().getClass(), loadedRule.getCondition().getClass());
 				
 				// Compare Conditions
@@ -239,7 +239,7 @@ public class RulesTest extends TestCase {
 						createdRule.getCondition(), loadedRule.getCondition());
 				
 				// Compare ActionTypes
-				assertEquals("Rule " + createdRule.getId() + " has wrong actiontype.", 
+				assertEquals("Rule " + createdRule.getId() + " has wrong actiontype.",
 						createdRule.getAction().getClass(), loadedRule.getAction().getClass());
 				
 				// ActionSetValue specific tests
@@ -254,25 +254,25 @@ public class RulesTest extends TestCase {
 							createdAction.getQuestion());
 					
 					// Compare types of ActionSetValue values
-					assertEquals("ActionSetValue of " + createdRule.getId() + " has wrong valuetype.", 
-							createdAction.getValues()[0].getClass(), 
-							loadedAction.getValues()[0].getClass());
+					assertEquals("ActionSetValue of " + createdRule.getId() + " has wrong valuetype.",
+							createdAction.getValue().getClass(),
+							loadedAction.getValue().getClass());
 					
 					// FormulaExpression specific tests
-					if (createdAction.getValues()[0] instanceof FormulaExpression) {
-						FormulaExpression createdFormula = 
-							(FormulaExpression) createdAction.getValues()[0];
-						FormulaExpression loadedFormula = 
-							(FormulaExpression) loadedAction.getValues()[0];
+					if (createdAction.getValue() instanceof FormulaExpression) {
+						FormulaExpression createdFormula =
+								(FormulaExpression) createdAction.getValue();
+						FormulaExpression loadedFormula =
+								(FormulaExpression) loadedAction.getValue();
 						
 						// Compare Question of FormulaExpression
-						assertEquals("FormulaExpression of " + createdRule.getId() + " has wrong QuestionNum", 
-								createdFormula.getQuestionNum(), 
+						assertEquals("FormulaExpression of " + createdRule.getId() + " has wrong QuestionNum",
+								createdFormula.getQuestionNum(),
 								loadedFormula.getQuestionNum());
 						
 						// Compare FormulaExpression formula (sorry for the toString() comparison)
-						assertEquals("FormulaExpression of " + createdRule.getId() + " has wrong FormulaElement", 
-								createdFormula.getFormulaElement().toString(), 
+						assertEquals("FormulaExpression of " + createdRule.getId() + " has wrong FormulaElement",
+								createdFormula.getFormulaElement().toString(),
 								loadedFormula.getFormulaElement().toString());
 					}
 					
@@ -297,7 +297,7 @@ public class RulesTest extends TestCase {
 	 * @param PSMethod PSMethod
 	 * @return HashMap<String, RuleComplex>
 	 */
-	private HashMap<String, Rule> getRulesInHashMap(KnowledgeBase kb, 
+	private HashMap<String, Rule> getRulesInHashMap(KnowledgeBase kb,
 			Class<? extends PSMethod> PSMethod) {
 		
 		HashMap<String, Rule> rules = new HashMap<String, Rule>();

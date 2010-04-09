@@ -25,12 +25,12 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.session.values.AnswerNum;
+import de.d3web.core.session.values.NumValue;
 
 /**
  * Class for rendering the HTML table-based interview
@@ -40,7 +40,7 @@ public class HTMLDialogRenderer {
 	/**
 	 * Renders the HTML table-based interview.
 	 * @param c the given XPS case
-	 * @param web 	
+	 * @param web
 	 * @return the String that represents the interview in HTML encoding
 	 */
 	public static String renderDialog(XPSCase c, String web) {
@@ -98,15 +98,15 @@ public class HTMLDialogRenderer {
 				Question q = null;
 				if (namedObject instanceof Question) {
 					q = (Question) namedObject;		// cast element to Question of possible
-				} else {	
-					continue;						// otherwise jump to next element in list								
+				} else {
+					continue;						// otherwise jump to next element in list
 				}
 				
 				// increase counter
 				i += 1;
 				
 				// if there are no follow-up questions
-				if(q.getChildren().length==0){	
+				if(q.getChildren().length==0){
 					
 					// assigns different css classes according to whether nr/line is
 					// odd or even
@@ -121,12 +121,12 @@ public class HTMLDialogRenderer {
 				// if there are follow-up questions
 				} else {
 				
-					// first render their initiating root element 
+					// first render their initiating root element
 					if (i % 2 == 0) {
-						buffi.append(getTableRowString(c, q, web, b.getId(), false, 
-								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right-s'"));	
+						buffi.append(getTableRowString(c, q, web, b.getId(), false,
+								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right-s'"));
 					} else {
-						buffi.append(getTableRowString(c, q, web, b.getId(), false, 
+						buffi.append(getTableRowString(c, q, web, b.getId(), false,
 								"id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right-s'"));
 					}
 					
@@ -184,7 +184,7 @@ public class HTMLDialogRenderer {
 			for(TerminologyObject cset : set.getChildren()){
 				getFollowUpChildrenRekur(children, (Question)cset, c, web, namespace, !bool, indent, parent);
 			}
-		} 
+		}
 		return children;
 	}
 	
@@ -231,12 +231,12 @@ public class HTMLDialogRenderer {
 	}
 	
 	
-	private static String renderFollowUpQuestion(XPSCase c, Question q, 
+	private static String renderFollowUpQuestion(XPSCase c, Question q,
 			String web, String namespace, int indent){
 		
 		StringBuffer html = new StringBuffer();
 			
-			html.append("<td class='labelcellFollow' style='margin: 0px 0px 0px " + indent+"px;'>" 
+			html.append("<td class='labelcellFollow' style='margin: 0px 0px 0px " + indent+"px;'>"
 					+ q.getName() + " </td>");
 			html.append("<td class='fieldcellFollow'><div id='" + q.getId() + "'>");
 			
@@ -262,22 +262,22 @@ public class HTMLDialogRenderer {
 			Question q, String web, String namespace) {
 		String value = "";
 		if (q.hasValue(c)) {
-			Answer answer = q.getValue(c);
-			if (answer != null && answer instanceof AnswerNum) {
-				value = Double.toString((Double) ((AnswerNum) answer).getValue(c));
+			Value answer = q.getValue(c);
+			if (answer != null && answer instanceof NumValue) {
+				value = answer.getValue().toString();
 			}
 		}
 		String id = "numInput_" + q.getId();
-		String jscall = " rel=\"{oid: '"+q.getId()+"'," 
+		String jscall = " rel=\"{oid: '"+q.getId()+"',"
 			    + "web: '"+web+"',"
 			    + "ns: '"+namespace+"',"
 			    + "qtext: '"+URLEncoder.encode(q.getName())+"',"
 			    + "inputid: '"+id+"'"
 				+ "}\" ";
-		buffi.append("<input id='" + id + "' type='text' " 
+		buffi.append("<input id='" + id + "' type='text' "
 				+ "value='" + value + "' "
-				+ "class='numInput num-cell-down' " 
-				+ "size='7' " 
+				+ "class='numInput num-cell-down' "
+				+ "size='7' "
 				+ jscall + ">");
 		buffi.append("<input type='button' value='ok' class=\"num-cell-ok\">");
 	}
@@ -296,7 +296,7 @@ public class HTMLDialogRenderer {
 			String cssclass="fieldcell";
 			
 			// For BIOLOG2
-			String jscall = " rel=\"{oid: '"+answerChoice.getId()+"'," 
+			String jscall = " rel=\"{oid: '"+answerChoice.getId()+"',"
 				    + "web: '"+web+"',"
 				    + "ns: '"+namespace+"',"
 				    + "qid: '"+q.getId()+"'"

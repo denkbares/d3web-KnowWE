@@ -37,15 +37,16 @@ import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 /**
  * Builder um d3web Wissen mithilfe des TableParsers zu generieren
@@ -56,12 +57,12 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 
 	private boolean lazy=false;
 	private boolean lazydiag=false;
-	private List<Message> errors = new ArrayList<Message>();
+	private final List<Message> errors = new ArrayList<Message>();
 	private QContainer currentqclass;
-	private String file;
+	private final String file;
 	private Question currentquestion;
 	private AnswerChoice currentanswer;
-	private CellKnowledgeBuilder ckb;
+	private final CellKnowledgeBuilder ckb;
 	private TableParser tb;
 	private int counter = 0;
 	private int errorcount =0;
@@ -208,7 +209,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 				errors.add(MessageKnOfficeGenerator.createAnswerNotYNException(file, line, column, "", answer));
 				return;
 			}
-			cond = new CondEqual(qyn, ac);
+			cond = new CondEqual(qyn, new ChoiceValue(ac));
 		} else  if (currentquestion instanceof QuestionChoice){
 			QuestionChoice qc = (QuestionChoice) currentquestion;
 			if (currentanswer==null||!currentanswer.getName().equals(answer)) {
@@ -227,7 +228,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 					}
 				}
 			}
-			cond = new CondEqual(qc, currentanswer);
+			cond = new CondEqual(qc, new ChoiceValue(currentanswer));
 		} else {
 			cond=null;
 			errors.add(MessageKnOfficeGenerator.createQuestionTypeNotSupportetException(file, line, column, "", question));

@@ -23,10 +23,10 @@ package de.d3web.we.action;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.XPSCase;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
@@ -82,7 +82,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 			articleText = articleText.replace("</" + CoveringListSection.TAG + ">", newXCL + "\n</" + CoveringListSection.TAG + ">");
 			KnowWEEnvironment.getInstance().saveArticle(web, topic, articleText, parameterMap);
 		
-		}		
+		}
 		return null;
 	}
 	
@@ -95,9 +95,10 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	private void createXCLRelation(XPSCase c, List<? extends Question> answeredQuestions, StringBuffer newXCL,
 			Solution d){
 		for( Question q : answeredQuestions ){
-			Answer theanswer = q.getValue( c );
+			Value theanswer = q.getValue(c);
 			if (theanswer != null) {
-				newXCL.append("\"" + q.getName() + "\" = \"" + theanswer.getValue( c ) + "\",\n");				
+				newXCL.append("\"" + q.getName() + "\" = \"" + theanswer.getValue()
+						+ "\",\n");
 			}
 //			for (Object o : answers) {
 //				if( o instanceof Answer ){
@@ -126,7 +127,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 */
 	private XPSCase getXPSCase(String web, String topic, String user){
 		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
-		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);	
+		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		service.getBase();
 		
 		if(knowledgeServiceInTopic == null) return null;

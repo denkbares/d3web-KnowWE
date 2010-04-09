@@ -24,19 +24,19 @@ import java.net.URLEncoder;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.XPSCase;
 import de.d3web.core.session.values.AnswerChoice;
-import de.d3web.core.session.values.AnswerNo;
-import de.d3web.core.session.values.AnswerNum;
-import de.d3web.core.session.values.AnswerUnknown;
-import de.d3web.core.session.values.AnswerYes;
+import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.MultipleChoiceValue;
+import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.we.d3webModule.D3webModule;
 
 /**
@@ -56,47 +56,55 @@ public class FindingXMLWriter {
 			QuestionChoice theQC = (QuestionChoice) theQuestion;
 			if (theQC.getAllAlternatives() != null) {
 				for (AnswerChoice each : theQC.getAllAlternatives()) {
-					appendAnswer(theQuestion, sb, each, theCase);
+					appendAnswer(theQuestion, sb, new ChoiceValue(each), theCase);
 				}
-				appendAnswer(theQuestion, sb, theQuestion.getUnknownAlternative(), theCase);
+				appendAnswer(theQuestion, sb, Unknown.getInstance(), theCase);
 			}
 		}
 		if (theQuestion instanceof QuestionNum) {
 			if(theCase != null) {
-				AnswerNum answer = (AnswerNum) theQuestion.getValue(theCase);
+				NumValue answer = (NumValue) theQuestion.getValue(theCase);
 				if(answer != null) {
 					appendAnswer(theQuestion, sb, answer, theCase);
 				}
 			} else {
-				AnswerNum an = new AnswerNum();
-				an.setQuestion(theQuestion);
-				an.setValue(new Double(0));
-				appendAnswer(theQuestion, sb, an, theCase);
+				appendAnswer(theQuestion, sb, new NumValue(0), theCase);
 			}
 		}
 		sb.append("</Answers>\n");
 	}
 
-	private void appendAnswer(Question theQuestion, StringBuffer sb, Answer theAnswer, XPSCase theCase) {
+	private void appendAnswer(Question theQuestion, StringBuffer sb, Value theAnswer, XPSCase theCase) {
+		String theID = theAnswer.getValue().toString();
+		if (theAnswer instanceof ChoiceValue) {
+			theID = ((ChoiceValue) theAnswer).getAnswerChoiceID();
+		}
+		else if (theAnswer instanceof MultipleChoiceValue) {
+			theID = ((MultipleChoiceValue) theAnswer).getAnswerChoicesID();
+		}
 		
-		sb.append("<Answer ID='" + theAnswer.getId() + "'");
-		if (theAnswer instanceof AnswerNo) {
-			sb.append(" type='AnswerNo'");
-		} else if (theAnswer instanceof AnswerYes) {
-			sb.append(" type='AnswerYes'");
-		} else if(theAnswer instanceof AnswerUnknown){
+		sb.append("<Answer ID='" + theID + "'");
+		// sb.append("<Answer ID='" + theAnswer.getId() + "'");
+		// joba, 04.2010, yes/no should be replaced by standard choice values
+		// if (theAnswer instanceof AnswerNo) {
+		// sb.append(" type='AnswerNo'");
+		// } else if (theAnswer instanceof AnswerYes) {
+		// sb.append(" type='AnswerYes'");
+		// } else
+		if (theAnswer instanceof Unknown) {
 			sb.append(" type='AnswerUnknown'");
-		} else if(theAnswer instanceof AnswerNum){
+		}
+		else if (theAnswer instanceof NumValue) {
 			sb.append(" type='AnswerNum'");
 		} else {
 			sb.append(" type='AnswerChoice'");
-		} 
+		}
 		if(theCase != null && theQuestion.getValue(theCase).equals(theAnswer)) {
 			sb.append(" active='true'");
 		}
 		sb.append(">\n");
-		String answerText = theAnswer.verbalizeValue(theCase);
-		if(theAnswer instanceof AnswerUnknown) {
+		String answerText = theAnswer.getValue().toString();
+		if (theAnswer instanceof Unknown) {
 			answerText = rb.getString("KnowWE.answer.unknown");
 		}
 		String text = "";

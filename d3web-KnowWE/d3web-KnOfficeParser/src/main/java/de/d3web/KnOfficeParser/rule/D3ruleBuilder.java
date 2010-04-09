@@ -49,17 +49,18 @@ import de.d3web.abstraction.formula.Mult;
 import de.d3web.abstraction.formula.QNumWrapper;
 import de.d3web.abstraction.formula.Sub;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.report.Message;
 import de.d3web.scoring.Score;
@@ -71,17 +72,17 @@ import de.d3web.scoring.Score;
  * 
  */
 public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
-	private String file;
-	private List<Message> errors = new ArrayList<Message>();
+	private final String file;
+	private final List<Message> errors = new ArrayList<Message>();
 	private Question currentquestion;
 	private Solution currentdiag;
-	private Stack<FormulaNumberElement> formulaStack = new Stack<FormulaNumberElement>();
-	private D3webConditionBuilder cb;
+	private final Stack<FormulaNumberElement> formulaStack = new Stack<FormulaNumberElement>();
+	private final D3webConditionBuilder cb;
 	private boolean lazy = false;
 	private boolean buildonlywith0Errors = false;
 	private int rulecount;
 	private List<MyRule> rules = new ArrayList<MyRule>();
-	private List<String> ruleIDs = new ArrayList<String>();
+	private final List<String> ruleIDs = new ArrayList<String>();
 	private IDObjectManagement idom;
 
 	private enum ruletype {
@@ -89,10 +90,10 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 	}
 
 	private class MyRule {
-		private ruletype type;
+		private final ruletype type;
 		private Question question;
-		private Condition ifcond;
-		private Condition exceptcond;
+		private final Condition ifcond;
+		private final Condition exceptcond;
 		private AnswerChoice[] answers;
 		private FormulaExpression formula;
 		private ArrayList<QASet> qcons;
@@ -361,9 +362,9 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				QuestionChoice qc = (QuestionChoice) q;
 				ArrayList<AnswerChoice> alist = new ArrayList<AnswerChoice>();
 				for (String s : anames) {
-					Answer a = idom.findAnswer(qc, s);
+					Value a = idom.findAnswer(qc, s);
 					if (a != null) {
-						alist.add((AnswerChoice) a);
+						alist.add((AnswerChoice) a.getValue());
 					} else {
 						errors.add(MessageKnOfficeGenerator
 								.createAnswerNotFoundException(file, line,
@@ -533,7 +534,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				return;
 			}
 			QuestionChoice qc = (QuestionChoice) currentquestion;
-			Answer a = idom.findAnswer(qc, value);
+			Answer a = (Answer) idom.findAnswer(qc, value).getValue();
+
 			if (a == null) {
 				if (lazy) {
 					a = idom.addChoiceAnswer(qc, value);

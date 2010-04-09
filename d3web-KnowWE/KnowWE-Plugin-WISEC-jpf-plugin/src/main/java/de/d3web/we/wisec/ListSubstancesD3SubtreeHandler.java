@@ -10,6 +10,8 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.DistributedRegistrationManager;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -55,12 +57,12 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 						
 			return new NewObjectCreated("Successfully created D3Web Objects");
 			
-		} else 
-			return new ObjectCreationError("Unable to create d3web Objects. KBM was null!", 
+		} else
+			return new ObjectCreationError("Unable to create d3web Objects. KBM was null!",
 					this.getClass());
 	}
 
-	private void createD3ObjectsUsingKDom(Section<ListSubstancesType> section, 
+	private void createD3ObjectsUsingKDom(Section<ListSubstancesType> section,
 			KnowledgeBaseManagement kbm, String listID, String web) {
 		
 		boolean failed = false;
@@ -68,13 +70,13 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 		// Check if the table was recognized
 		if (section.findSuccessor(WISECTable.class) == null) {
 			failed = true;
-		} else {				
+		} else {
 			// Get all lines
 			List<Section<TableLine>> tableLines = new ArrayList<Section<TableLine>>();
 			section.findSuccessorsOfType(TableLine.class, tableLines);
 			
 			// Find the SGN row
-			int sgnIndex = -1; 
+			int sgnIndex = -1;
 			if (tableLines.size() > 1)
 				sgnIndex = findSGNIndexKDOM(tableLines.get(0));
 			
@@ -89,7 +91,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 					// Create OWL statements from cell content
 					if (contents.size() >= sgnIndex) {
 						String sgn = contents.get(sgnIndex).getOriginalText().trim();
-						QuestionOC sgnQ = 
+						QuestionOC sgnQ =
 							kbm.createQuestionOC(sgn, kbm.findQContainer("Substances"), new String[] {"included", "excluded"});
 						addGlobalQuestion(sgn, web);
 						createListRule(kbm, listID, sgnQ);
@@ -125,8 +127,9 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			QuestionOC sgnQuestion) {
 		
 		// Create condition
-		Answer includedAnswer = kbm.findAnswer(sgnQuestion, "included");
-		CondEqual condition = new CondEqual(sgnQuestion, includedAnswer);
+		AnswerChoice includedAnswer = (AnswerChoice) kbm.findAnswer(sgnQuestion,
+				"included");
+		CondEqual condition = new CondEqual(sgnQuestion, new ChoiceValue(includedAnswer));
 		
 		// Get abstract List-Question
 		QuestionChoice listQuestion = (QuestionChoice) kbm.findQuestion(listID);
@@ -137,7 +140,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 		
 	}
 
-	private void createD3Objects(String tableContent, 
+	private void createD3Objects(String tableContent,
 			KnowledgeBaseManagement kbm, String listID, String web) {
 		
 		// Remove the trailing dashes
@@ -162,12 +165,12 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			for (int i = 1; i < lines.length; i++) {
 				cells = cellPattern.split(lines[i]);
 				String sgn = cells[sgnIndex].trim();
-				QuestionOC sgnQ = 
+				QuestionOC sgnQ =
 					kbm.createQuestionOC(sgn, kbm.findQContainer("Substances"), new String[] {"included", "excluded"});
 				addGlobalQuestion(sgn, web);
 				createListRule(kbm, listID, sgnQ);
 			}
-		}	
+		}
 	}
 
 	private int findSGNIndex(String tablehead) {

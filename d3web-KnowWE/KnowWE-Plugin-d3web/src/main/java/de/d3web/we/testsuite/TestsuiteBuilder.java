@@ -36,18 +36,18 @@ import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.core.session.values.AnswerNum;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.values.NumValue;
 import de.d3web.empiricalTesting.Finding;
 import de.d3web.empiricalTesting.RatedSolution;
 import de.d3web.empiricalTesting.RatedTestCase;
 import de.d3web.empiricalTesting.Rating;
-import de.d3web.empiricalTesting.StateRating;
 import de.d3web.empiricalTesting.SequentialTestCase;
+import de.d3web.empiricalTesting.StateRating;
 import de.d3web.empiricalTesting.TestSuite;
 import de.d3web.report.Message;
 
@@ -62,11 +62,11 @@ import de.d3web.report.Message;
 public class TestsuiteBuilder implements KnOfficeParser {
 	
 	private IDObjectManagement idom;
-	private String file;
-	private List<Message> errors = new ArrayList<Message>();
-	private List<SequentialTestCase> sequentialTestCases = new ArrayList<SequentialTestCase>();
+	private final String file;
+	private final List<Message> errors = new ArrayList<Message>();
+	private final List<SequentialTestCase> sequentialTestCases = new ArrayList<SequentialTestCase>();
 	private SequentialTestCase currentSequentialTestCase;
-	private RatedTestCase currentRatedTestCase;	
+	private RatedTestCase currentRatedTestCase;
 	private TestSuite testSuite;
 	
 	public TestsuiteBuilder(String file, IDObjectManagement idom) {
@@ -92,7 +92,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 		TestsuiteLexer lexer = new TestsuiteLexer(istream, new DefaultD3webLexerErrorHandler(errors, file));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		
-		TestsuiteANTLR parser = 
+		TestsuiteANTLR parser =
 			new TestsuiteANTLR(tokens, this, new DefaultD3webParserErrorHandler(errors, file, "BasicLexer"));
 		
 		// Parsing
@@ -118,7 +118,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	/**
 	 * Initializes a new RatedTestCase
 	 * @param i number of the RatedTestCase in current SQTestCase
-	 * @param line 
+	 * @param line
 	 * @param linetext
 	 */
 	public void addRatedTestCase(int i, int line, String linetext) {
@@ -136,16 +136,13 @@ public class TestsuiteBuilder implements KnOfficeParser {
 
 		Question q = idom.findQuestion(question);
 		
-		if (q == null) { 
+		if (q == null) {
 			errors.add(MessageKnOfficeGenerator
 					.createQuestionNotFoundException("", line, linetext, question));
 		} else if (q instanceof QuestionNum) {
 			try {
 				double value = Double.parseDouble(answer);
-				AnswerNum a = new AnswerNum();
-				a.setValue(value);
-				a.setQuestion(q);
-				Finding currentFinding = new Finding(q, a);
+				Finding currentFinding = new Finding(q, new NumValue(value));
 				currentRatedTestCase.add(currentFinding);
 				
 			} catch (NumberFormatException e) {
@@ -153,11 +150,11 @@ public class TestsuiteBuilder implements KnOfficeParser {
 						.createNaNException("", line, linetext, answer));
 			}
 		} else {
-			Answer a = idom.findAnswer(q, answer);
-			if (a == null) { 
+			Value a = idom.findAnswer(q, answer);
+			if (a == null) {
 				errors.add(MessageKnOfficeGenerator
 						.createAnswerNotFoundException("", line, linetext, answer, question));
-			} else { 
+			} else {
 				Finding currentFinding = new Finding(q, a);
 				currentRatedTestCase.add(currentFinding);
 			}
@@ -169,7 +166,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	 * @param solution name of the solution
 	 * @parm rating rating of the solution
 	 * @param line linenumber
-	 * @param linetext 
+	 * @param linetext
 	 */
 	public void addSolution(String name, String rating, int line, String linetext) {
 
@@ -303,7 +300,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 			KnowledgeBase kb = idom.getKnowledgeBase();
 			testSuite.setKb(kb);
 			testSuite.setRepository(sequentialTestCases);
-		}	
+		}
 	}
 	
 	@Override

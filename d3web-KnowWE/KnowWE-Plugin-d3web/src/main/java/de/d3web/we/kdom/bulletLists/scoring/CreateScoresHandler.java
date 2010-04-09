@@ -4,15 +4,16 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondEqual;
-import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionOC;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.scoring.Score;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -33,7 +34,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 		List<String> targets = BulletScoring
 				.getScoringTargets(scoringSection);
 		
-		if(targets == null) return null; 
+		if(targets == null) return null;
 
 		String defaultValue = BulletScoring.getDefaultValue(scoringSection);
 
@@ -70,8 +71,8 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 
 			}
 
-			Condition cond = createCondition(qc, kbm.findAnswerChoice(
-					qc, defaultValue));
+			Condition cond = createCondition(qc, new ChoiceValue(kbm.findAnswerChoice(
+					qc, defaultValue)));
 
 			Score scoreV = getScore(score);
 
@@ -145,7 +146,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 		return q;
 	}
 
-	private Condition createCondition(Question q, Answer a) {
+	private Condition createCondition(Question q, Value a) {
 		return new CondEqual(q, a);
 	}
 

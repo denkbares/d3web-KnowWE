@@ -8,15 +8,15 @@ import de.d3web.abstraction.formula.Add;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.QNumWrapper;
-import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondEqual;
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -62,8 +62,8 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 		
 			return new NewObjectCreated("Successfully created D3Web Objects");
 			
-		} else 
-			return new ObjectCreationError("Unable to create d3web Objects. KBM was null!", 
+		} else
+			return new ObjectCreationError("Unable to create d3web Objects. KBM was null!",
 										this.getClass());
 	}
 
@@ -71,8 +71,8 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			String listID) {
 		
 		// Create Question
-		QuestionOC q = kbm.createQuestionOC(kbm.findNewIDFor(QuestionOC.class), 
-											listID, kbm.getKnowledgeBase().getRootQASet(), 
+		QuestionOC q = kbm.createQuestionOC(kbm.findNewIDFor(QuestionOC.class),
+											listID, kbm.getKnowledgeBase().getRootQASet(),
 											new String[] {"active", "inactive"});
 		
 		// Make created Question abstract
@@ -100,7 +100,7 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 					String criteria = contents.get(0).getOriginalText().trim();
 					String value = contents.get(1).getOriginalText().trim();
 					if (criteria.matches("\\w+") && value.matches("\\d")) {
-						QuestionNum counterQ = 
+						QuestionNum counterQ =
 							kbm.createQuestionNum(criteria + "_counter", kbm.findQContainer("Counter"));
 						createCounterRule(kbm, listID, counterQ, value);
 					}
@@ -112,7 +112,7 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 		}
 	}
 
-	private void createD3Objects(String tableContent, KnowledgeBaseManagement kbm, 
+	private void createD3Objects(String tableContent, KnowledgeBaseManagement kbm,
 			String listID) {
 		
 		// Remove the trailing dashes
@@ -127,7 +127,7 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			String criteria = cells[i].trim();
 			String value = cells[i+1].trim();
 			if (criteria.matches("\\w+") && value.matches("\\d")) {
-				QuestionNum counterQ = 
+				QuestionNum counterQ =
 					kbm.createQuestionNum(criteria + "_counter", kbm.findQContainer("Counter"));
 				createCounterRule(kbm, listID, counterQ, value);
 			}
@@ -139,10 +139,10 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 		
 		// Get abstract List-Question
 		QuestionChoice listQuestion = (QuestionChoice) kbm.findQuestion(listID);
-		Answer activeAnswer = kbm.findAnswer(listQuestion, "active");
+		AnswerChoice activeAnswer = (AnswerChoice) kbm.findAnswer(listQuestion, "active");
 		
 		// Create condition
-		CondEqual condition = new CondEqual(listQuestion, activeAnswer);
+		CondEqual condition = new CondEqual(listQuestion, new ChoiceValue(activeAnswer));
 		
 		// Create rule action (here it is a FormulaExpression)
 		FormulaNumber valueFN = new FormulaNumber(Double.valueOf(value));

@@ -497,12 +497,12 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 							return Double.compare(((CondNumIn) n1).getMinValue(), ((CondNumIn) n2).getMinValue());
 						}
 					} else if (n1 instanceof CondNumIn) {
-						return Double.compare(((CondNumIn) n1).getMaxValue(), n2.getAnswerValue());
+						return Double.compare(((CondNumIn) n1).getMaxValue(), n2.getConditionValue());
 					} else {
-						return Double.compare(n1.getAnswerValue(), ((CondNumIn) n2).getMinValue());
+						return Double.compare(n1.getConditionValue(), ((CondNumIn) n2).getMinValue());
 					}
 				} else {
-					return Double.compare(n1.getAnswerValue(), n2.getAnswerValue());
+					return Double.compare(n1.getConditionValue(), n2.getConditionValue());
 					
 				}
 			}

@@ -31,10 +31,10 @@ import java.util.ResourceBundle;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.XPSCase;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
@@ -71,7 +71,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 	private static final String EXPECTEDANSWER = "EXPECTEDANSWER";
 	private static final String QUESTION = "QUESTION";
 	
-	private StringBuffer template; 
+	private StringBuffer template;
 	private ResourceBundle labels;
 	private Map<String, Object> parameterMap;
 	private String kbId;
@@ -192,7 +192,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 	
 	/**
 	 * method replaces wild card in template with corresponding table (HTML syntax)
-	 * @param type the table type 
+	 * @param type the table type
 	 * @param content the content of the table
 	 */
 	private void renderTable(String type, Collection<XCLRelation> content){
@@ -224,7 +224,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 		StringBuffer cont = new StringBuffer();
 		
 		for (XCLRelation rel : content) {
-			Condition cond = rel.getConditionedFinding();	
+			Condition cond = rel.getConditionedFinding();
 			cont.append("<tr><td>"
 					+ VerbalizationManager.getInstance().verbalize(cond,
 							RenderingFormat.HTML, parameterMap) + "</td></tr>");
@@ -242,13 +242,13 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 	 * @return a table representation of the content
 	 */
 	private String renderContentNotExplained(Collection<XCLRelation> content){
-		StringBuffer cont = new StringBuffer();	
+		StringBuffer cont = new StringBuffer();
 		cont.append("<tr class=emphasized><td>"+ this.labels.getString(QUESTION)+"</td>");
 		cont.append("<td>"+ this.labels.getString(GIVENANSWER)+"</td>");
 		cont.append("<td class=emphasized>"+ this.labels.getString(EXPECTEDANSWER)+"</td></tr>");
 		for (XCLRelation rel : content) {
 			cont.append("<tr><td>");
-			Condition cond = rel.getConditionedFinding();	
+			Condition cond = rel.getConditionedFinding();
 			List questions = cond.getTerminalObjects();
 			ListIterator condIt = questions.listIterator();
 			List<Question> askedQuestions = new ArrayList<Question>();
@@ -266,8 +266,8 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 				}
 			}
 			cont.append("</td><td>");
-			Answer theanswer = cq.getValue(this.currentCase);
-			cont.append(theanswer.getValue(this.currentCase));
+			Value theanswer = cq.getValue(this.currentCase);
+			cont.append(theanswer.getValue());
 			
 //			ListIterator iterator = answers.listIterator();
 //			count = 0;
@@ -285,7 +285,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 			cont.append("<td class=emphasized>"
 					+ VerbalizationManager.getInstance().verbalize(cond,
 							RenderingFormat.HTML, parameterMap) + "</td></tr>");
-		}	
+		}
 		return cont.toString();
 	}
 	
@@ -338,12 +338,12 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 				+ "</script></head>");
 		this.template.append("<body><div id=\"popup-xcle\">");
 		this.template.append(STATE);
-		this.template.append(SUFFICIENTLY);	
-		this.template.append(CONTRADICTED);	
-		this.template.append(REQUIRED);	
-		this.template.append(REQUIREDFALSE);	
-		this.template.append(EXPLAINED);	
-		this.template.append(NOTEXPLAINED);	
+		this.template.append(SUFFICIENTLY);
+		this.template.append(CONTRADICTED);
+		this.template.append(REQUIRED);
+		this.template.append(REQUIREDFALSE);
+		this.template.append(EXPLAINED);
+		this.template.append(NOTEXPLAINED);
 		this.template.append("</div></body></html>");
 	}
 
