@@ -37,6 +37,7 @@ import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
@@ -199,7 +200,7 @@ public class FindingToConditionBuilder {
 			if (kbAns != null && kbAns.equals(kbQuest.getUnknownAlternative())) {
 				kbValue = Unknown.getInstance();
 			}
-			if (kbAns != null && kbQuest instanceof QuestionOC) {
+			if (kbAns != null && kbQuest instanceof QuestionChoice) {
 				kbValue = new ChoiceValue((AnswerChoice) kbAns);
 			}
 			else if (kbAns != null && kbQuest instanceof QuestionNum) {

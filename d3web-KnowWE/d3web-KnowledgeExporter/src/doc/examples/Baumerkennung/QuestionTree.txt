@@ -1,8 +1,8 @@
 Startfragen
 - Einheimische Baumart [jn]
--- Ja
+-- Yes
 --- Baumfragen
--- Nein
+-- No
 --- Anderer Baum (P7)
 - Temperatur [num]
 

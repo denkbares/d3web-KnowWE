@@ -546,8 +546,8 @@ public class KBCreationTestUtil {
 		CondNumGreater c2 = new CondNumGreater(q3, 130.0);
 		ruleID = createdKBM.createRuleID();
 		Question q4 = createdKBM.findQuestion("Mileage evaluation");
-		Answer a = createdKBM.findAnswer(q4, "increased");
-		RuleFactory.createSetValueRule(ruleID, q4, new Object[] { a }, c2);
+		AnswerChoice a = (AnswerChoice) createdKBM.findAnswer(q4, "increased");
+		RuleFactory.createSetValueRule(ruleID, q4, new AnswerChoice[] { a }, c2);
 		
 		// Create rule R10:
 		// IF Driving = unsteady idle speed
