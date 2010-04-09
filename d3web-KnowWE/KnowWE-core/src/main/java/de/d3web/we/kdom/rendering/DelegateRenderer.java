@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
@@ -138,6 +139,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 			builder.append(KnowWEUtils.maskHTML("<span class='warning'>"));
 			builder.append("internal error while rendering section: " + e);
 			builder.append(KnowWEUtils.maskHTML("</span>"));
+			e.printStackTrace();
 		}
 
 		if (renderTypes) renderType(section, false, builder);
@@ -194,7 +196,8 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	private KnowWEDomRenderer getRenderer(Section<?> section,
 			KnowWEUserContext user) {
 		KnowWEDomRenderer renderer = null;
-		if (KDOMReportMessage.getErrors(section) != null) {
+		Set<KDOMError> errors = KDOMReportMessage.getErrors(section);
+		if (errors != null && !errors.isEmpty()) {
 			renderer = section.getObjectType().getErrorRenderer();
 		}
 

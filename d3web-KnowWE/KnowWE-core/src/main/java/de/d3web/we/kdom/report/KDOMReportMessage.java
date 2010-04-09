@@ -36,74 +36,85 @@ public abstract class KDOMReportMessage {
 	private static final String WARNING_STORE_KEY = "WARNING-SET";
 
 	private static final String NOTICE_STORE_KEY = "NOTICE-SET";
-
+	
+	public static void cleanMessages(Section s) {
+		cleanErrors(s);
+		cleanNotices(s);
+		cleanWarnings(s);
+	}
+	
+	public static void cleanErrors(Section s) {
+		Set<KDOMError> errors = getErrors(s);
+		if (errors != null) {
+			errors.clear();
+		}
+	}
+	
+	public static void cleanNotices(Section s) {
+		Set<KDOMNotice> notices = getNotices(s);
+		if (notices != null) {
+			notices.clear();
+		}
+	}
+	
+	public static void cleanWarnings(Section s) {
+		Set<KDOMWarning> warnings = getWarnings(s);
+		if (warnings != null) {
+			warnings.clear();
+		}
+	}
+	
 	public static void storeMessage(Section s, KDOMReportMessage m) {
 		if (m instanceof KDOMError) {
 			storeError(s, (KDOMError) m);
-		}
-
-		if (m instanceof KDOMNotice) {
+		} else if (m instanceof KDOMNotice) {
 			storeNotice(s, (KDOMNotice) m);
-		}
-
-		if (m instanceof KDOMWarning) {
+		} else if (m instanceof KDOMWarning) {
 			storeWarning(s, (KDOMWarning) m);
 		}
 
 	}
 
 	public static void storeWarning(Section s, KDOMWarning e) {
-		Set<KDOMWarning> warnings = (Set<KDOMWarning>) KnowWEUtils
-				.getStoredObject(s, WARNING_STORE_KEY);
+		Set<KDOMWarning> warnings = getWarnings(s);
 		if (warnings == null) {
 			warnings = new HashSet<KDOMWarning>();
 			KnowWEUtils.storeSectionInfo(s, WARNING_STORE_KEY, warnings);
 		}
 		warnings.add(e);
-
-	}
-
-	public static Set<? extends KDOMWarning> getWarnings(Section s) {
-		Set<? extends KDOMWarning> warnings = (Set<KDOMWarning>) KnowWEUtils
-				.getStoredObject(s, WARNING_STORE_KEY);
-		return warnings;
-
 	}
 
 	public static void storeNotice(Section s, KDOMNotice e) {
-		Set<KDOMNotice> notices = (Set<KDOMNotice>) KnowWEUtils
-				.getStoredObject(s, NOTICE_STORE_KEY);
+		Set<KDOMNotice> notices = getNotices(s);
 		if (notices == null) {
 			notices = new HashSet<KDOMNotice>();
 			KnowWEUtils.storeSectionInfo(s, NOTICE_STORE_KEY, notices);
 		}
 		notices.add(e);
-
 	}
-
-	public static Set<? extends KDOMNotice> getNotices(Section s) {
-		Set<? extends KDOMNotice> notices = (Set<KDOMNotice>) KnowWEUtils
-				.getStoredObject(s, NOTICE_STORE_KEY);
-		return notices;
-
-	}
-
+	
 	public static void storeError(Section s, KDOMError e) {
-		Set<KDOMError> errors = (Set<KDOMError>) KnowWEUtils.getStoredObject(s,
-				ERROR_STORE_KEY);
+		Set<KDOMError> errors = getErrors(s);
 		if (errors == null) {
 			errors = new HashSet<KDOMError>();
 			KnowWEUtils.storeSectionInfo(s, ERROR_STORE_KEY, errors);
 		}
 		errors.add(e);
-
+	}
+	
+	public static Set<KDOMWarning> getWarnings(Section s) {
+		return (Set<KDOMWarning>) KnowWEUtils
+				.getStoredObject(s, WARNING_STORE_KEY);
 	}
 
-	public static Set<? extends KDOMError> getErrors(Section s) {
-		Set<? extends KDOMError> errors = (Set<KDOMError>) KnowWEUtils
-				.getStoredObject(s, ERROR_STORE_KEY);
-		return errors;
+	public static Set<KDOMNotice> getNotices(Section s) {
+		return (Set<KDOMNotice>) KnowWEUtils
+				.getStoredObject(s, NOTICE_STORE_KEY);
+	}
 
+	public static Set<KDOMError> getErrors(Section s) {
+		return (Set<KDOMError>) KnowWEUtils.getStoredObject(s,
+				ERROR_STORE_KEY);
 	}
 	
 	@Override

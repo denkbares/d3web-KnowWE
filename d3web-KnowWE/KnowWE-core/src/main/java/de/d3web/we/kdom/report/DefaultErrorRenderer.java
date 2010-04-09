@@ -31,10 +31,9 @@ public class DefaultErrorRenderer extends KnowWEDomRenderer{
 	
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		Set<? extends KDOMError> errors = KDOMError.getErrors(sec);
+		Set<KDOMError> errors = KDOMError.getErrors(sec);
+
 		KDOMError e = errors.iterator().next();
-		
-		
 		
 		string.append(KnowWEUtils.maskHTML("<span")); 
 		if (e.getVerbalization(user) != null) {

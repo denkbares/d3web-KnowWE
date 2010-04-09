@@ -362,11 +362,13 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 */
 	@Override
 	public final void reviseSubtree(KnowWEArticle article, Section s) {
+		if (!subtreeHandler.isEmpty()) {
+			KDOMReportMessage.cleanMessages(s);
+		}
 		for (ReviseSubTreeHandler handler : subtreeHandler) {
 			try {
 				KDOMReportMessage message = handler.reviseSubtree(article, s);
 				KDOMReportMessage.storeMessage(s, message);
-
 			}
 			catch (Throwable e) {
 				String text = "unexpected internal error in subtree handler '" + handler + "'";
