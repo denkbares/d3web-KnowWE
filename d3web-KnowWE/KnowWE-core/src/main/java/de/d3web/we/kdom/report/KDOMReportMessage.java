@@ -72,7 +72,6 @@ public abstract class KDOMReportMessage {
 		} else if (m instanceof KDOMWarning) {
 			storeWarning(s, (KDOMWarning) m);
 		}
-
 	}
 
 	public static void storeWarning(Section s, KDOMWarning e) {
