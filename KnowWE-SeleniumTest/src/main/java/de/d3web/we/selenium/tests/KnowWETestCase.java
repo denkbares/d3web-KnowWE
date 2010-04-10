@@ -20,7 +20,6 @@
 
 package de.d3web.we.selenium.tests;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -237,11 +236,13 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 				
 				//Radio buttons or check box
 				String actInputLocator = "";
-				for (int i = 0; i < actCategoryInput.length; i++) {
+				int loopRepeatCounter = 0;
+				for (int i = 0; i < actCategoryInput.length && loopRepeatCounter < 5; i++) {
 					actInputLocator = "//form[@name='semanooc']/input[" + actCategoryInput[i] + "]";
 					if (selenium.isElementPresent(actInputLocator)) {
 						doSelActionAndWait(actInputLocator, "click");
 						
+						//Check if input was accepted
 						doSelActionAndWait("//span[text()='" + elem[j].toString().trim()+ "']", "click");						
 						//It's recommended to wait until the dialog pops up
 						threadSleep(sleepTime);
@@ -249,9 +250,11 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 						if (!selenium.isElementPresent(actInputLocator) 
 								|| !selenium.isChecked(actInputLocator)) {
 							i--;
+							loopRepeatCounter++;
 							continue;
 						}
 						//Choosing was succesful -> next one
+						loopRepeatCounter = 0;
 						continue;
 					}
 					actInputLocator = "//form[@name='semanomc']/input[" + actCategoryInput[i] + "]";
@@ -260,17 +263,27 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 						//CheckBoxes need some special treatment
 						threadSleep(sleepTime);
 						
+						//Check if input was accepted
 						doSelActionAndWait("//span[text()='" + elem[j].toString().trim()+ "']", "click");						
 						//It's recommended to wait until the dialog pops up
 						threadSleep(sleepTime);
 						if (!selenium.isElementPresent(actInputLocator)
 								|| !selenium.isChecked(actInputLocator)) {
 							i--;
+							loopRepeatCounter++;
 							continue;
 						}
 						//Choosing was succesful -> next one
+						loopRepeatCounter = 0;
 						continue;
 					}
+					
+					//If Pop-Up is still opened, the input wasen't correct
+					if (selenium.isElementPresent("//div[@id='o-lay-body']")
+							&& selenium.getText("//div[@id='o-lay-body']/h3").equals(elem[j].toString())) {
+						selenium.click("Your answer number is not existing.");
+					}
+					
 					//No Radiobutten no Checkbox present (pop-up
 					//closed already), so repeat this step
 					j--;
@@ -345,7 +358,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			ie.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * This method opens in the chosen window a new page and waits for its
 	 * loading.
