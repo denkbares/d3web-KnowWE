@@ -21,7 +21,9 @@
 package de.d3web.we.kdom.rendering;
 
 import java.util.Map;
+import java.util.ResourceBundle;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
@@ -80,7 +82,7 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		if( sec.getArticle().equals( article ) ) {
 			string.append(KnowWEUtils.maskHTML( this.generateQuickEdit
 					("Quickedit " + sec.getObjectType().getName() + " Section", sec.getId(), 
-							isEditable)));
+							isEditable, user)));
 		}
 		
 		if ( isEditable ) {
@@ -107,24 +109,25 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 	
 	/**
 	 * Generates a link used to enable or disable the Quick-Edit-Flag.
-	 * 
-	 * @param 
-	 *     topic - name of the current page.
 	 * @param 
 	 *     id - of the section the flag should assigned to.
+	 * @param  
+	 * 	   user - to get language preferences.
+	 * @param 
+	 *     topic - name of the current page.
 	 * @return
 	 *     The quick edit menu panel.
 	 */
-	protected String generateQuickEdit(String tooltip, String id, boolean isEditable) {
+	protected String generateQuickEdit(String tooltip, String id, boolean isEditable, KnowWEUserContext user) {
 		StringBuilder b = new StringBuilder();
+		final ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
 		b.append( "<div " + getQuickEditDivAttributes() + ">" );
-		b.append( "<img ");
-		if (isEditable) {
-			b.append("align=\"right\" ");
+		if (!isEditable) {
+			b.append("<img src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\"" + tooltip + "\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\" name=\"" + id + "_pencil\"/><br />");			
 		}
-		b.append("src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\"" + tooltip + "\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\"/><br />");
 		if( isEditable ){
-		    b.append( "<input rel=\"{id : '" + id + "'}\" type=\"submit\" value=\"save\" title=\"save\"/>" );
+			b.append("<input class=\"pointer\" rel=\"{id : '" + id + "'}\" style=\"padding:0 0 0 0; width: 25px; height: 25px; background: #FFF url(KnowWEExtension/images/msg_checkmark.png) no-repeat; border: none; vertical-align:top;\" name=\"" + id + "_accept\" type=\"submit\" value=\"\" title=\"" + rb.getString("KnowWE.TableContentRenderer.accept") + "\"><br/>" );
+			b.append("<img class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\" width=\"25\" title=\"" + rb.getString("KnowWE.TableContentRenderer.cancel") + "\" src=\"KnowWEExtension/images/msg_cross.png\" name=\"" + id + "_cancel\"/>");
 		}
 		b.append( "</div>" );		
 		return b.toString();
