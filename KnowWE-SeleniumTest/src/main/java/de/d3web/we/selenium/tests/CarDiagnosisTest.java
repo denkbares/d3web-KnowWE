@@ -68,6 +68,12 @@ public class CarDiagnosisTest extends KnowWETestCase{
 		assertEquals(comment, true, result);
 		
 		map.clear();
+		map.put("Exhaust pipe color", new Integer[] {4});
+		map.put("Fuel", new Integer[] {2});
+		result = checkSolutions(new String[] {"Clogged air filter"}, map, isDialog);
+		assertEquals("Covering-List not working:" + comment, true, result);
+		
+		map.clear();
 		map.put("Exhaust fumes", new Integer[] {1});
 		map.put("Fuel", new Integer[] {2});
 		result = checkSolutions(new String[] {"Clogged air filter"}, map, isDialog);

@@ -84,10 +84,11 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	}
 	
 	/**
-	 * If you open a link, which opens a new window because of
-	 * "target=_blank" Selenium can't find this new window.
+	 * Use this method if you want to open a link, which opens 
+	 * a new window because of "target=_blank" Selenium can't 
+	 * find this new window.
 	 * @param url
-	 * @param name
+	 * @param name The window's name
 	 * @param forwarding Boolean if the given url leads automatically to
 	 * another page
 	 */
@@ -95,19 +96,13 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		selenium.openWindow(url, name);
 		selenium.selectWindow(name);
 		selenium.windowFocus();
-		//Waiting till page starts loading
-		Long startTime = System.currentTimeMillis();
-		while (System.currentTimeMillis() - startTime < Long.parseLong(pageLoadTime)
-				&& selenium.getLocation().equals(url)) {
-			threadSleep(sleepTime);
-		}
 		System.out.println("Titel vor 1. Refresh: " + selenium.getTitle() + ", " + selenium.getLocation() + " @ " + System.currentTimeMillis());
-		refreshAndWait();
+		open(url);
 		System.out.println("Titel nach 1. Refresh: " + selenium.getTitle() + ", " + selenium.getLocation()+ " @ " + System.currentTimeMillis());
 		if (forwarding) {
 			System.out.println("Titel in if Zweig:" + selenium.getTitle() + ", " + selenium.getLocation()+ " @ " + System.currentTimeMillis());
 			//Waiting till forwarded page starts loading
-			startTime = System.currentTimeMillis();
+			Long startTime = System.currentTimeMillis();
 			while (System.currentTimeMillis() - startTime < Long.parseLong(pageLoadTime)
 					&& selenium.getLocation().equals(url)) {
 				threadSleep(sleepTime);
@@ -140,9 +135,9 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * @param selMethodName The name of the Selenium method to be run
 	 * (only limited number of Selenium Commands available; they have to
 	 * be added manually to this method)
-	 * @param option Some additional parameter if being used (e.g. select: optionLocator) 
+	 * @param value Some additional parameter if being needed (e.g. select: optionLocator) 
 	 */
-	protected void doSelActionAndWait(String locator, String selMethodName, String option) {
+	protected void doSelActionAndWait(String locator, String selMethodName, String value) {
 		Long startTime = System.currentTimeMillis();
 		while (!selenium.isElementPresent(locator) 
 				&& System.currentTimeMillis() - startTime < 
@@ -152,7 +147,8 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		}
 		try {
 			if (selMethodName.equals("click")) selenium.click(locator);
-			else if (selMethodName.equals("select")) selenium.select(locator, option);
+			else if (selMethodName.equals("select")) selenium.select(locator, value);
+			else if (selMethodName.equals("type")) selenium.type(locator, value);
 			else throw new IllegalSelMethodException( selMethodName + " is not an accepted Selenium method (in case it exists in Selenese you can add it");
 		} catch(IllegalSelMethodException isae) {
 			isae.printStackTrace();
@@ -367,27 +363,6 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	protected void open(String url) {
 		selenium.open(url);
 		selenium.waitForPageToLoad(pageLoadTime);
-	}
-	
-	/**
-	 * Same as selenium.type(locator, value) but tries again for a
-	 * specified time, if it didn't work before.
-	 * @param locator
-	 * @param value
-	 */
-	protected void type(String locator, String value) {
-		Long startTime = System.currentTimeMillis();
-		while (System.currentTimeMillis() - startTime
-				< Long.parseLong(rb.getString("KnowWE.SeleniumTest.RetryTime"))) {
-			try {
-				selenium.type(locator, value);
-				return;
-			} catch(Exception e) {
-				//refresh and retry
-				refreshAndWait();
-			}
-		}
-		selenium.type(locator, value);
 	}
 	
 	/**

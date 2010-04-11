@@ -84,8 +84,16 @@ public class CarDiagnosisDialogTest extends KnowWETestCase{
 		map.put("Fuel", new Integer[] {2});
 		map.put("Battery o.k.?", new Integer[] {2});
 		result = checkSolutions(new String[] {"Clogged air filter", "Empty battery"}, map, isDialog);
-		assertEquals(comment, true, result);
-		
+		assertEquals(comment, true, result);		
+	}
+	
+	public void testCDDialog7(){
+		initializeCDDTest();
+		map.clear();
+		map.put("Exhaust pipe color", new Integer[] {4});
+		map.put("Fuel", new Integer[] {2});
+		result = checkSolutions(new String[] {"Clogged air filter"}, map, isDialog);
+		assertEquals("Covering-List not working:" + comment, true, result);		
 	}
 	
 	private void initializeCDDTest() {

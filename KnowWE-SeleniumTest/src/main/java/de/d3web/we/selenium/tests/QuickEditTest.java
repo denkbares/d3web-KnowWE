@@ -33,15 +33,15 @@ public class QuickEditTest extends KnowWETestCase{
 	final String divID = rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test.TableID");
 	final String divLocator = "//div[@id='" + divID + "']";
 	
+	/**
+	 * Testing the quick-edit functionality on a table. Checks multiple
+	 * changes, refrehsing etc..
+	 */
 	public void testQuickTableEditing() {
 			
 		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Quick-Edit-Test");
 		assertTrue(selenium.getTitle().contains("KnowWE: Quick-Edit-Test"));
 		
-		//If another session opened Quick-Edit-Mode -> close it
-		if (selenium.isElementPresent(divID + "_cancel")) {
-			doSelActionAndWait(divID + "_cancel", "click");
-		}
 		
 		//Saves the page-content before the test starts (for comparison)
 		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
@@ -52,7 +52,7 @@ public class QuickEditTest extends KnowWETestCase{
 		//Warning! If one cell changed more than once: inconsistence possible
 		Map<String, String> oldCellValues = new HashMap<String, String>();
 		
-		doSelActionAndWait(divID +  "_pencil", "click");
+		openQuickEdit(divID);
 		verifyFalse(selenium.isElementPresent(divID + "_pencil"));
 		doSelActionAndWait(divID +  "_cancel", "click");
 		
@@ -91,6 +91,86 @@ public class QuickEditTest extends KnowWETestCase{
 		assertEquals("There were unexpected changes in the content of the page",
 				oldPageContent, newPageContent);
 		
+	}
+	
+	/**
+	 * Testing the quick-edit functionality for knowledge elements
+	 * like Questions-section, Solution-section ... . Checks adding 
+	 * new Solution, Question and Rule and if it's working in the
+	 * questionsheet and refresh bug.
+	 */
+	public void testKnowledgeElementsEditing() {
+		boolean result;
+		
+		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Quick-Edit-Test");
+		assertTrue(selenium.getTitle().contains("KnowWE: Quick-Edit-Test"));
+		assertTrue("Solutionstates nicht eingebunden",
+				selenium.isElementPresent("//div[@id='sstate-panel']/h3"));
+		
+		//Copy actual page content
+		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
+		String oldPageContent = selenium.getValue("//textarea[@id='editorarea']");
+		loadAndWait("//p[@id='submitbuttons']/input[@name='ok']");
+		
+		//Some basic functionality test
+		refreshAndWait();
+		String sectionID = "Quick-Edit-Test/RootType/Kopic/Kopic_content/SetCoveringList-section/SetCoveringList-section_content";
+		openQuickEdit(sectionID);
+		assertFalse("Quick-Edit button still present", selenium.isElementPresent(sectionID + "_pencil"));
+		assertTrue("Save button is not existing", selenium.isElementPresent(sectionID + "_accept"));
+		assertTrue("Cancel button is not existing", selenium.isElementPresent(sectionID + "_cancel"));
+		String actText = selenium.getBodyText();
+		refreshAndWait();
+		assertEquals("Unsupposed changes in the HTML code by refreshing and an opened quick-edit",
+				actText, selenium.getBodyText());
+		
+//		//Short check for questionsheet functionality
+//		Map<String, Integer[]> map = new HashMap<String, Integer[]>();
+//		map.put("Exhaust pipe color", new Integer[] {4});
+//		map.put("Fuel", new Integer[] {2});
+//		result = checkSolutions(new String[] {"Clogged air filter"}, map, false);
+//		assertEquals("Questionsheet not working (no quick-edit failure): " + comment, true, result);
+		
+		//Adding new solution
+		doSelActionAndWait(sectionID + "_cancel", "click");
+		sectionID = "Quick-Edit-Test/RootType/Kopic/Kopic_content/Solutions-section/Solutions-section_content";
+		quickEditAdd(sectionID, "\nMissing wheel");
+		assertTrue("", selenium.getText("//div[@id='" + sectionID + "']").contains("Missing wheel"));
+		
+		//Adding new question
+		sectionID = "Quick-Edit-Test/RootType/Kopic/Kopic_content/Questions-section/Questions-section_content";
+		quickEditAdd(sectionID, "\n-How many wheels do you have? [oc]\n-- \"< 4\"\n-- 4\n-- \"> 4\"\n");
+		refreshAndWait();
+		assertTrue("Adding new question failed", selenium.isElementPresent("//div[@id='questionsheet']//span[text()='How many wheels do you have?']"));
+		
+		//Adding new rule connecting solution and question 
+		openQuickEdit(sectionID);
+		quickEditAdd(sectionID, "\nIF \"How many wheels do you have?\" = \"< 4\"\nTHEN \"Missing wheel\" = P7");
+		
+//		//Again questionsheet test (still working)
+//		map.put("Exhaust pipe color", new Integer[] {4});
+//		map.put("Fuel", new Integer[] {2});
+//		result = checkSolutions(new String[] {"Clogged air filter"}, map, false);
+//		assertEquals(comment, true, result);
+//		
+//		//Testing if new Solution, Question and Rule are working
+//		map.put("How many wheels do you have?", new Integer[] {1});
+//		result = checkSolutions(new String[] {"Missing wheel"}, map, false);
+//		assertEquals(comment + "(Quick-Edit changes may had no effect)", true, result);
+		
+		//restore page
+		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
+		doSelActionAndWait("//textarea[@id='editorarea']", "type", oldPageContent);
+		loadAndWait("//p[@id='submitbuttons']/input[@name='ok']");
+	}
+	
+	
+	private void quickEditAdd(String sectionID, String newText) {
+		openQuickEdit(sectionID);
+		doSelActionAndWait("//div[@id='" + sectionID + "']//textarea[@id='default-edit-area']",
+				"type", selenium.getValue("//div[@id='" + sectionID + "']/textarea[@id='default-edit-area']") 
+				+ newText);
+		doSelActionAndWait(sectionID + "_accept", "click");
 	}
 
 	public void testQuickCoveringTableEditing() {
@@ -132,7 +212,7 @@ public class QuickEditTest extends KnowWETestCase{
 	private Map<String, String> doQuickEditTableChange(final Map<String,String> input,
 			final Boolean save, Boolean refresh) {
 		Map<String, String> output = new HashMap<String, String>();
-		doSelActionAndWait(divID +  "_pencil", "click");
+		openQuickEdit(divID);
 		if (refresh) {
 			refreshAndWait();
 		}
@@ -152,4 +232,16 @@ public class QuickEditTest extends KnowWETestCase{
 		return output;
 	}
 	
+	/**
+	 * Opens the Quick-Edit-Mode and checks if it was already opened.
+	 * @param locator The id of the section containing the Quick-Edit-Element
+	 * (e.g. Quick-Edit-Test/RootType/Kopic/Kopic_content/Rules-section/Rules-section_content)
+	 */
+	private void openQuickEdit(String locator) {
+		//If another session opened Quick-Edit-Mode -> close it
+		if (selenium.isElementPresent(locator + "_cancel")) {
+			doSelActionAndWait(locator + "_cancel", "click");
+		}
+		doSelActionAndWait(locator +  "_pencil", "click");
+	}	
 }

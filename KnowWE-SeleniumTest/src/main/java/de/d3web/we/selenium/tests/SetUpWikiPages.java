@@ -36,8 +36,8 @@ public class SetUpWikiPages extends KnowWETestCase{
 		if (!selenium.isElementPresent("sstate-panel")) {
 			open("/KnowWE/Wiki.jsp?page=LeftMenuFooter");
 			loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
-			type("editorarea", 
-					selenium.getText("editorarea")
+			doSelActionAndWait("editorarea", "type",
+					selenium.getValue("editorarea")
 					+ "\n\n[{KnowWEPlugin solutionstates}]");
 			loadAndWait("ok");
 			open("/KnowWE/Wiki.jsp?page=Main");
@@ -51,16 +51,16 @@ public class SetUpWikiPages extends KnowWETestCase{
 		}
 		
 		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
-		type("editorarea", selenium.getValue("editorarea") 
+		doSelActionAndWait("editorarea", "type", selenium.getValue("editorarea") 
 				+ "\n\n[Selenium-Test]");
 		loadAndWait("ok");
 		
 		loadAndWait("link=Selenium-Test");
-		type("editorarea",  rb.getString("KnowWE.SeleniumTest.MainPage"));
+		doSelActionAndWait("editorarea", "type",  rb.getString("KnowWE.SeleniumTest.MainPage"));
 		loadAndWait("ok");
 		
 		loadAndWait("link=Car-Diagnosis-Test");
-		type("editorarea", 
+		doSelActionAndWait("editorarea", "type", 
 				rb.getString("KnowWE.SeleniumTest.Car-Diagnosis-Test-Page"));
 		loadAndWait("ok");
 		
@@ -71,48 +71,48 @@ public class SetUpWikiPages extends KnowWETestCase{
 		
 		//Solutions-Pages, KB Page
 		loadAndWait("link=Damaged idle speed system");
-		type("editorarea", 
+		doSelActionAndWait("editorarea", "type", 
 				rb.getString("KnowWE.SeleniumTest.Damaged"));
 		loadAndWait("ok");
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Leaking air intake system");
-		type("editorarea", 
+		doSelActionAndWait("editorarea", "type", 
 				rb.getString("KnowWE.SeleniumTest.Leaking"));
 		loadAndWait("ok");
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Clogged air filter");
-		type("editorarea", 
+		doSelActionAndWait("editorarea", "type", 
 				rb.getString("KnowWE.SeleniumTest.Clogged"));
 		loadAndWait("ok");
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Bad ignition timing");
-		type("editorarea", 
+		doSelActionAndWait("editorarea", "type", 
 				rb.getString("KnowWE.SeleniumTest.Bad"));
 		loadAndWait("ok");
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Empty battery");
-		type("editorarea", 
+		doSelActionAndWait("editorarea", "type", 
 				rb.getString("KnowWE.SeleniumTest.Empty"));
+		loadAndWait("ok");
+		
+		open(rb.getString("KnowWE.SeleniumTest.url") + "/Wiki.jsp?page=Selenium-Test");
+		loadAndWait("link=Quick-Edit-Test");
+		doSelActionAndWait("editorarea", "type",
+				rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test"));
 		loadAndWait("ok");
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Car Diagnosis Compiled KB");
-		type("editorarea", 
+		doSelActionAndWait("editorarea", "type", 
 				rb.getString("KnowWE.SeleniumTest.KB"));
 		loadAndWait("ok");
 		
-		open(rb.getString("KnowWE.SeleniumTest.url") + "KnowWE/Edit.jsp?page=CD-compiled-KB");
+		open(rb.getString("KnowWE.SeleniumTest.url") + "/Edit.jsp?page=CD-compiled-KB");
 		loadAndWait("ok");
-		loadAndWait("link=Car-Diagnosis-Test");
-		
-		open(rb.getString("KnowWE.SeleniumTest.url") + "KnowWE/Wiki.jsp?page=Selenium-Test");
-		loadAndWait("link=Quick-Edit-Test");
-		type("editorarea",
-				rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test"));
-		loadAndWait("ok");
+		loadAndWait("link=Car-Diagnosis-Test");		
 	}
 }
