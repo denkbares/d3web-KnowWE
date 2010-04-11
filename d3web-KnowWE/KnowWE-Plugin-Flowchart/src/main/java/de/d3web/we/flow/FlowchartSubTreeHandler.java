@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,7 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.diaFlux.ConditionTrue;
 import de.d3web.diaFlux.NoopAction;
 import de.d3web.diaFlux.flow.Flow;
@@ -371,8 +373,12 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			return NoopAction.INSTANCE;
 		}
 
-		action.setValue(new ChoiceValue(answer));
-
+	//TODO: HOTFIX	
+			List<ChoiceValue> values = new LinkedList<ChoiceValue>();
+			values.add(new ChoiceValue(answer));
+		
+		action.setValue(new MultipleChoiceValue(values));
+//
 		return action;
 	}
 
@@ -460,8 +466,12 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			return null;
 		}
 
-		action.setValue(new ChoiceValue(answer));
-
+		//HOTFIX
+		List<ChoiceValue> values = new LinkedList<ChoiceValue>();
+		values.add(new ChoiceValue(answer));
+	
+	action.setValue(new MultipleChoiceValue(values));
+//
 		return FlowFactory.getInstance().createEndNode(id, name, action);
 	}
 
