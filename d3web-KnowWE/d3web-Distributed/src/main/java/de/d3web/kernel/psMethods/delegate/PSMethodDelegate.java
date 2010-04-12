@@ -28,7 +28,7 @@ import de.d3web.core.inference.PSMethodAdapter;
 import de.d3web.core.inference.PropagationEntry;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.Facts;
 
@@ -41,7 +41,7 @@ public class PSMethodDelegate extends PSMethodAdapter {
 
 
 	@Override
-	public void propagate(XPSCase theCase, Collection<PropagationEntry> changes) {
+	public void propagate(Session theCase, Collection<PropagationEntry> changes) {
 		
 		for (PropagationEntry propagationEntry : changes) {
 			

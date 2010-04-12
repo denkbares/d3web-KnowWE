@@ -28,7 +28,7 @@ import java.util.List;
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.values.AnswerDate;
 import de.d3web.core.session.values.AnswerNum;
 import de.d3web.core.session.values.DateValue;
@@ -60,7 +60,7 @@ public class ConverterUtils {
 	 * theCase)
 	 */
 	@Deprecated
-	public static List<Object> toValueList(List values, XPSCase theCase) {
+	public static List<Object> toValueList(List values, Session theCase) {
 		List<Object> result = new ArrayList<Object>();
 		for (Object idObject : values) {
 			if(idObject instanceof AnswerNum) {
@@ -88,7 +88,7 @@ public class ConverterUtils {
 	 * theCase)
 	 */
 	@Deprecated
-	public static List<Object> toValueList(Answer givenValue, XPSCase theCase) {
+	public static List<Object> toValueList(Answer givenValue, Session theCase) {
 		List<Object> result = new ArrayList<Object>();
 		if (givenValue instanceof AnswerNum) {
 			Double value = (Double) ((AnswerNum) givenValue).getValue(theCase);
@@ -108,7 +108,7 @@ public class ConverterUtils {
 		return result;
 	}
 
-	public static List<Object> toValueList(Value givenValue, XPSCase theCase) {
+	public static List<Object> toValueList(Value givenValue, Session theCase) {
 		List<Object> result = new ArrayList<Object>();
 		if (givenValue instanceof NumValue) {
 			Double value = (Double) ((NumValue) givenValue).getValue();

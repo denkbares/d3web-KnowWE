@@ -35,7 +35,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
@@ -76,7 +76,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 	private Map<String, Object> parameterMap;
 	private String kbId;
 	private Collection<XCLRelation> relations;
-	private XPSCase currentCase;
+	private Session currentCase;
 	
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
@@ -105,7 +105,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) serviceSession;
 			KnowledgeBaseManagement baseManagement = d3webKSS.getBaseManagement();
 			
-			XPSCase c = d3webKSS.getXpsCase();
+			Session c = d3webKSS.getXpsCase();
 			this.currentCase = c;
 			this.kbId = c.getKnowledgeBase().getId();
 			

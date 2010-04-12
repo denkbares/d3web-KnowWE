@@ -25,7 +25,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
@@ -71,9 +71,9 @@ public class RequestDialogRenderer extends DeprecatedAbstractKnowWEAction {
 			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) serviceSession;
 			
 			// add the case to a map and save it in application scope
-			Map<String, XPSCase> sessionToCaseMap = (Map) parameterMap.getSession().getServletContext().getAttribute("sessionToCaseMap");
+			Map<String, Session> sessionToCaseMap = (Map) parameterMap.getSession().getServletContext().getAttribute("sessionToCaseMap");
 			if (sessionToCaseMap == null) {
-				sessionToCaseMap = new HashMap<String, XPSCase>();
+				sessionToCaseMap = new HashMap<String, Session>();
 			}
 			HttpSession s = parameterMap.getSession();
 			String sID = s.getId();

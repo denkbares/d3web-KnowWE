@@ -22,7 +22,7 @@ package de.d3web.we.utils;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;
@@ -61,12 +61,12 @@ public class D3webUtils {
 	 * @param sec
 	 * @param user
 	 */
-	public static XPSCase getXPSCase(Section sec, KnowWEUserContext user) {
+	public static Session getXPSCase(Section sec, KnowWEUserContext user) {
 		
 		String xpsCaseId = sec.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(sec.getTitle());
 		Broker broker = D3webModule.getBroker(user.getUsername(), sec.getWeb());
 		KnowledgeServiceSession kss = broker.getSession().getServiceSession(xpsCaseId);
-		XPSCase xpsCase = null;
+		Session xpsCase = null;
 		
 		if (kss instanceof D3webKnowledgeServiceSession) {
 			
@@ -81,12 +81,12 @@ public class D3webUtils {
 	 * 
 	 * @param user
 	 */
-	public static XPSCase getXPSCase(String topic, KnowWEUserContext user, String web) {
+	public static Session getXPSCase(String topic, KnowWEUserContext user, String web) {
 		
 		String xpsCaseId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
 		Broker broker = D3webModule.getBroker(user.getUsername(), web);
 		KnowledgeServiceSession kss = broker.getSession().getServiceSession(xpsCaseId);
-		XPSCase xpsCase = null;
+		Session xpsCase = null;
 		
 		if (kss instanceof D3webKnowledgeServiceSession) {
 			

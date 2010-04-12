@@ -32,7 +32,7 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.session.values.AnswerNum;
 import de.d3web.core.session.values.AnswerUnknown;
@@ -61,7 +61,7 @@ public class FindingHTMLWriter {
 
 	@SuppressWarnings("deprecation")
 	private void appendOCAnswers(Question theQuestion, StringBuffer buffy,
-			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
+			Session theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		QuestionChoice theQC = (QuestionChoice) theQuestion;
 		String timestampid = (new Date()).getTime() + "";
 		
@@ -120,7 +120,7 @@ public class FindingHTMLWriter {
 
 	@SuppressWarnings("deprecation")
 	private void appendNUMAnswers(Question theQuestion, StringBuffer buffy,
-			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
+			Session theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		String timestampid = (new Date()).getTime() + "";
 		
 		String rel = "url : '" + targetUrlPrefix + "',"
@@ -175,7 +175,7 @@ public class FindingHTMLWriter {
 
 	@SuppressWarnings("deprecation")
 	private void appendMCAnswers(Question theQuestion, StringBuffer buffy,
-			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
+			Session theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		QuestionMC theMC = (QuestionMC) theQuestion;
 		String timestampid = (new Date()).getTime() + "";
 
@@ -216,7 +216,7 @@ public class FindingHTMLWriter {
 	}
 	
 	private String getHTMLString(Question theQuestion, String type,
-			XPSCase theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
+			Session theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		StringBuffer buffy = new StringBuffer();
 
 		buffy.append("<div class=\"semContents\" >");
@@ -236,7 +236,7 @@ public class FindingHTMLWriter {
 	}
 	
 	
-	public String getHTMLString(Question question, XPSCase theCase,
+	public String getHTMLString(Question question, Session theCase,
 			String namespace, String webname, String topic, String targetUrlPrefix) {
 		
 		rb = D3webModule.getKwikiBundle_d3web();

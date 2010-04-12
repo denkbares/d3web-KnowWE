@@ -28,7 +28,7 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.session.values.NumValue;
 
@@ -43,7 +43,7 @@ public class HTMLDialogRenderer {
 	 * @param web
 	 * @return the String that represents the interview in HTML encoding
 	 */
-	public static String renderDialog(XPSCase c, String web) {
+	public static String renderDialog(Session c, String web) {
 
 		// get the current knowledge base
 		KnowledgeBase b = c.getKnowledgeBase();
@@ -153,7 +153,7 @@ public class HTMLDialogRenderer {
 	 * assembles a StringBuffer, that represents one table row, that is a question and
 	 * its answer alternatives
 	 */
-	 private static String getTableRowString(XPSCase c, Question q, String web,
+	 private static String getTableRowString(Session c, Question q, String web,
 			  String namespace, boolean even, String classDecl){
 		 StringBuffer buffi = new StringBuffer();
 		 buffi.append("<tr " + classDecl + ">");
@@ -168,7 +168,7 @@ public class HTMLDialogRenderer {
 	 * them into a StringBuffer decorated with HTML tags
 	 */
 	private static StringBuffer getFollowUpChildrenRekur(StringBuffer children, Question set,
-			XPSCase c, String web, String namespace, boolean bool, int indent, Question parent){
+			Session c, String web, String namespace, boolean bool, int indent, Question parent){
 		//increase the indentation with every hierarchical descendance = each recursion level
 		indent +=15;
 		
@@ -204,7 +204,7 @@ public class HTMLDialogRenderer {
 		return html.toString();
 	}
 
-	private static String render(XPSCase c, Question q, String web,
+	private static String render(Session c, Question q, String web,
 			String namespace, boolean even) {
 		StringBuffer html = new StringBuffer();
 
@@ -231,7 +231,7 @@ public class HTMLDialogRenderer {
 	}
 	
 	
-	private static String renderFollowUpQuestion(XPSCase c, Question q,
+	private static String renderFollowUpQuestion(Session c, Question q,
 			String web, String namespace, int indent){
 		
 		StringBuffer html = new StringBuffer();
@@ -258,7 +258,7 @@ public class HTMLDialogRenderer {
 	}
 	
 
-	private static void renderNumAnswers(XPSCase c, StringBuffer buffi,
+	private static void renderNumAnswers(Session c, StringBuffer buffi,
 			Question q, String web, String namespace) {
 		String value = "";
 		if (q.hasValue(c)) {
@@ -282,7 +282,7 @@ public class HTMLDialogRenderer {
 		buffi.append("<input type='button' value='ok' class=\"num-cell-ok\">");
 	}
 
-	private static void renderChoiceAnswers(XPSCase c, StringBuffer buffi,
+	private static void renderChoiceAnswers(Session c, StringBuffer buffi,
 			Question q, List<AnswerChoice> list, String web, String namespace) {
 
 		// changed cssclass

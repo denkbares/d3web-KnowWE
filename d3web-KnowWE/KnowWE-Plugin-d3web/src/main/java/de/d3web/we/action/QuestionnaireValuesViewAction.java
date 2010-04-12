@@ -8,7 +8,7 @@ import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
@@ -27,7 +27,7 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 		StringBuilder result = new StringBuilder();
 		
 		for (KnowWEArticle article : KnowWEEnvironment.getInstance().getArticleManager(web).getArticles()) {
-			XPSCase theCase = D3webUtils.getXPSCase(article.getTitle(), context.getWikiContext(), web);
+			Session theCase = D3webUtils.getXPSCase(article.getTitle(), context.getWikiContext(), web);
 			if (theCase != null) {
 				IDObject io = theCase.getKnowledgeBase().searchObjectForName(questionnaireName);
 				if (io instanceof QContainer) {
@@ -47,7 +47,7 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 
 	}
 
-	private void renderQuestion(Question question, XPSCase theCase,
+	private void renderQuestion(Question question, Session theCase,
 			StringBuilder result) {
 		
 		Value v = null;

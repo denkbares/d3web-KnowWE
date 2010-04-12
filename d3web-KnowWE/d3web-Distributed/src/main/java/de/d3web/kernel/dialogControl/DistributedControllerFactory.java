@@ -20,7 +20,7 @@
 
 package de.d3web.kernel.dialogControl;
 
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.interviewmanager.DialogController;
 import de.d3web.core.session.interviewmanager.MQDialogController;
 import de.d3web.core.session.interviewmanager.QASetManager;
@@ -36,7 +36,7 @@ public class DistributedControllerFactory implements QASetManagerFactory {
 		this.proxy = proxy;
 	}
 	
-	public QASetManager createQASetManager(XPSCase theCase) {
+	public QASetManager createQASetManager(Session theCase) {
 		DialogController delegate = new MQDialogController(theCase);
 		DistributedDialogController result = new DistributedDialogController(delegate, proxy);
 		return result;

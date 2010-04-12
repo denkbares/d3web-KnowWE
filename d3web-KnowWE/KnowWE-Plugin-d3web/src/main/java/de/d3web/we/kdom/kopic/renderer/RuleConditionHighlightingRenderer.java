@@ -28,7 +28,7 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.NoAnswerException;
 import de.d3web.core.inference.condition.UnknownAnswerException;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -120,7 +120,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 				sec.getTitle(), ruleSection.getId(),
 				de.d3web.we.kdom.rules.Rule.KBID_KEY);
 
-		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
+		Session xpsCase = D3webUtils.getXPSCase(sec, user);
 		Rule rule = null;
 
 		if (xpsCase != null) {
@@ -179,7 +179,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	// }
 
 	private void renderConditionLine(KnowWEArticle article, Section sec,
-			Rule rc, XPSCase xpsCase, KnowWEUserContext user,
+			Rule rc, Session xpsCase, KnowWEUserContext user,
 			StringBuilder buffi) {
 
 		KnowWEObjectType type;
@@ -208,7 +208,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	 * @return
 	 */
 	private String highlightCondition(KnowWEArticle article, Section sec,
-			Rule rc, XPSCase xpsCase, KnowWEUserContext user) {
+			Rule rc, Session xpsCase, KnowWEUserContext user) {
 
 		StringBuilder buffi = new StringBuilder();
 		boolean braced = false;

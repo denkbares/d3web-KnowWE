@@ -30,7 +30,7 @@ import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.utils.D3webUtils;
@@ -61,7 +61,7 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String,String> values, String web) {
 		
-		XPSCase xpsCase = D3webUtils.getXPSCase(topic, user, web);
+		Session xpsCase = D3webUtils.getXPSCase(topic, user, web);
 		
 		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		

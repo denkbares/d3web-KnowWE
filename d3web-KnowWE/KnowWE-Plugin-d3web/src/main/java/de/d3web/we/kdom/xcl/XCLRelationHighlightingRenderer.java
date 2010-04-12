@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -79,7 +79,7 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 			return;
 		}
 
-		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
+		Session xpsCase = D3webUtils.getXPSCase(sec, user);
 		
 		if (xpsCase != null) {
 			

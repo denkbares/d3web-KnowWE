@@ -26,7 +26,7 @@ import java.util.List;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -54,7 +54,7 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String solution = sec.getOriginalText().replace("\"", "").trim();
 
-		XPSCase xpsCase = D3webUtils.getXPSCase(sec, user);
+		Session xpsCase = D3webUtils.getXPSCase(sec, user);
 
 		String spanStart = KnowWEUtils.maskHTML("<span style=\"background-color: rgb(");
 		String spanStartEnd = KnowWEUtils.maskHTML(";\">");

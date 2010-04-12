@@ -31,7 +31,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.values.AnswerChoice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
@@ -50,7 +50,7 @@ public class FindingXMLWriter {
 	private static ResourceBundle rb;
 	
 	
-	private void appendAnswers(Question theQuestion, StringBuffer sb, XPSCase theCase) {
+	private void appendAnswers(Question theQuestion, StringBuffer sb, Session theCase) {
 		sb.append("<Answers>\n");
 		if (theQuestion instanceof QuestionChoice) {
 			QuestionChoice theQC = (QuestionChoice) theQuestion;
@@ -74,7 +74,7 @@ public class FindingXMLWriter {
 		sb.append("</Answers>\n");
 	}
 
-	private void appendAnswer(Question theQuestion, StringBuffer sb, Value theAnswer, XPSCase theCase) {
+	private void appendAnswer(Question theQuestion, StringBuffer sb, Value theAnswer, Session theCase) {
 		String theID = theAnswer.getValue().toString();
 		if (theAnswer instanceof ChoiceValue) {
 			theID = ((ChoiceValue) theAnswer).getAnswerChoiceID();
@@ -116,7 +116,7 @@ public class FindingXMLWriter {
 		sb.append("</Answer>\n");
 	}
 
-	private String getXMLString(Question theQuestion, String type, XPSCase theCase) {
+	private String getXMLString(Question theQuestion, String type, Session theCase) {
 		StringBuffer sb = new StringBuffer();
 		String questionID = theQuestion.getId();
 		sb.append(
@@ -137,7 +137,7 @@ public class FindingXMLWriter {
 		return sb.toString();
 	}
 
-	public String getXMLString(Question question, XPSCase theCase) {
+	public String getXMLString(Question question, Session theCase) {
 		
 		rb = D3webModule.getKwikiBundle_d3web();
 		String retVal = null;

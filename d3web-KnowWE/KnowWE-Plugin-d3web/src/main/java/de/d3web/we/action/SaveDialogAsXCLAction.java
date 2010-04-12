@@ -27,7 +27,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -54,7 +54,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 		String web = parameterMap.getWeb();
 		String solution = parameterMap.get( "XCLSolution" );
 		
-		XPSCase c = getXPSCase(web, topic, user);
+		Session c = getXPSCase(web, topic, user);
 		
 		if( c != null ){
 			StringBuffer newXCL = new StringBuffer();
@@ -92,7 +92,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param answeredQuestions
 	 * @param content
 	 */
-	private void createXCLRelation(XPSCase c, List<? extends Question> answeredQuestions, StringBuffer newXCL,
+	private void createXCLRelation(Session c, List<? extends Question> answeredQuestions, StringBuffer newXCL,
 			Solution d){
 		for( Question q : answeredQuestions ){
 			Value theanswer = q.getValue(c);
@@ -125,7 +125,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param user
 	 * @return
 	 */
-	private XPSCase getXPSCase(String web, String topic, String user){
+	private Session getXPSCase(String web, String topic, String user){
 		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		service.getBase();
@@ -137,7 +137,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 		broker.activate(broker.getSession().getServiceSession(kbid), null, true, false, null);
 		broker.getDialogControl().showNextActiveDialog();
 		KnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(kbid);
-		XPSCase c = null;
+		Session c = null;
 		
 		if(serviceSession instanceof D3webKnowledgeServiceSession) {
 			c = ((D3webKnowledgeServiceSession)serviceSession).getXpsCase();

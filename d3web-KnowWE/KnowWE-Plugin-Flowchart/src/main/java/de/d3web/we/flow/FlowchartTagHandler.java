@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.d3web.core.session.CaseObjectSource;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.diaFlux.flow.DiaFluxCaseObject;
 import de.d3web.diaFlux.flow.EdgeSupport;
 import de.d3web.diaFlux.flow.FlowSet;
@@ -42,7 +42,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		
-		XPSCase theCase = D3webUtils.getXPSCase(topic, user, web);
+		Session theCase = D3webUtils.getXPSCase(topic, user, web);
 
 		if (!FluxSolver.getInstance().isFlowCase(theCase)) {
 			return "No Flowchart found.";
@@ -93,7 +93,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		return builder.toString(); 
 	}
 	
-	private boolean isActive(Section section, XPSCase theCase) {
+	private boolean isActive(Section section, Session theCase) {
 
 		//TODO
 //		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("id");
@@ -105,7 +105,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		return true;
 	}
 
-	private String getPathendText(XPSCase theCase) {
+	private String getPathendText(Session theCase) {
 		
 		if (theCase == null)
 			return "";
@@ -149,7 +149,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 
 
 
-	private String createPreviewWithHighlightedPath(Section section, XPSCase xpsCase) {
+	private String createPreviewWithHighlightedPath(Section section, Session xpsCase) {
 		
 		
 		

@@ -47,7 +47,7 @@ import de.d3web.core.session.IEventSource;
 import de.d3web.core.session.KBOEventListener;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.ValuedObject;
-import de.d3web.core.session.XPSCase;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.XPSCaseEventListener;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
@@ -146,7 +146,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			percentagesToScores.put(1.00, 100);
 		}
 
-		public void notify(IEventSource source, XPSCase theCase) {
+		public void notify(IEventSource source, Session theCase) {
 			if (theCase != xpsCase)
 				return;
 
@@ -222,7 +222,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private final KnowledgeBaseManagement baseManagement;
 	private final String id;
 	private final Broker broker;
-	private XPSCase xpsCase;
+	private Session xpsCase;
 	
 
 	private boolean instantly = true;
@@ -258,7 +258,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 	private void initConnection() {
 		xpsCase.addListener(new XPSCaseEventListener() {
-			public void notify(XPSCase source, ValuedObject o, Object context) {
+			public void notify(Session source, ValuedObject o, Object context) {
 				maybeNotifyBroker(o, source, context);
 			}
 		});
@@ -440,7 +440,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	}
 
 	protected void maybeNotifyBroker(ValuedObject valuedObject,
-			XPSCase xpsCase, Object context) {
+			Session xpsCase, Object context) {
 		// do not inform anyone about some things that were told you by the
 		// broker...
 		if (toChange.contains(valuedObject)) {
@@ -531,7 +531,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		this.instantly = instantly;
 	}
 
-	public XPSCase getXpsCase() {
+	public Session getXpsCase() {
 		return xpsCase;
 	}
 
