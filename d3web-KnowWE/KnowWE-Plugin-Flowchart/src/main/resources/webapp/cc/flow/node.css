@@ -50,17 +50,24 @@
 
 .added {
 	background-color: #00BB00;
-	color: #00BB00;
+	border-color: #00BB00;
+	border-width: 2px; 
+	border-style: solid;
 }
 
 .removed {
 	background-color: #FF0000;
-	color: #FF0000;
+	border-color: #FF0000;
+	border-width: 2px; 
+	border-style: solid;
 }
 
 .changed {
 	background-color: #000099;
-	color: #000099;
+	border-color: #000099;
+	border-width: 2px; 
+	border-style: solid;
+
 }
 
 .Node .action {

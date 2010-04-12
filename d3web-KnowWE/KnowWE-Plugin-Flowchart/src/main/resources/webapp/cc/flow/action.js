@@ -823,7 +823,7 @@ ActionEditor.prototype.addAnswer = function() {
 		var newAnswer = '<input type="text" size="30" name="answer"><br \>';
 		var buttonWeiter = '<input type="button" value="Weiter" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.createNewQuestion()"';
 		var buttonOK = '<input type="button" value="Hinzufügen" onclick="return this.parentNode.parentNode.parentNode.__ActionEditor.answerValue()"';
-		root.innerHTML = '<i>Lösungsvorschläge für</i><br\>' + questionText + ' [' + questionType + ']<br\><i>hinzufügen</i><br\><form name="addAnswer" id="addAnswer" method="get">' + newAnswer + buttonOK + buttonWeiter + '</form><i>bisherige Vorschläge:</i>';
+		root.innerHTML = '<i>Antwortalternativen für</i><br\>' + questionText + ' [' + questionType + ']<br\><i>hinzufügen</i><br\><form name="addAnswer" id="addAnswer" method="get">' + newAnswer + buttonOK + buttonWeiter + '</form><i>bisherige Antworten:</i>';
 	}
 	document.addAnswer.answer.focus();
 }

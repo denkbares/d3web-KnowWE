@@ -452,9 +452,13 @@ Flowchart.prototype.toPreviewHTML = function(node) {
 	if (node.src) html += ' src="' + node.src + '"';
 	// for nodes we have a problem: padding is not taken nto consideration
 	// therefore allow width+padding not to be more than parent's width - 2
-	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('flowchart') || node.hasClassName('action') || node.hasClassName('decision'))) {
+
+	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit') || node.hasClassName('flowchart') || node.hasClassName('action') || node.hasClassName('question'))) {
 		size.width = Element.getWidth(node.parentNode)-14;
 		size.height += 2; 
+	}
+	if (node.parentNode.hasClassName('Node') && (node.hasClassName('start') || node.hasClassName('exit'))) {
+		size.width += 2;
 	}
 	// for nodes we want to have the fixed size in addition to the style
 	var attributes = ['position', 'display', 'visibility', 'left', 'right', 'top', 'bottom', 'overflow'];
