@@ -362,7 +362,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				QuestionChoice qc = (QuestionChoice) q;
 				ArrayList<AnswerChoice> alist = new ArrayList<AnswerChoice>();
 				for (String s : anames) {
-					Value a = idom.findAnswer(qc, s);
+					Value a = idom.findValue(qc, s);
 					if (a != null) {
 						alist.add((AnswerChoice) a.getValue());
 					} else {
@@ -534,7 +534,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				return;
 			}
 			QuestionChoice qc = (QuestionChoice) currentquestion;
-			Answer a = (Answer) idom.findAnswer(qc, value).getValue();
+			Answer a = (Answer) idom.findValue(qc, value).getValue();
 
 			if (a == null) {
 				if (lazy) {

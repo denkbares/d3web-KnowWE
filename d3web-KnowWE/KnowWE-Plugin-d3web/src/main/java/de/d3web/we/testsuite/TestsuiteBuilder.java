@@ -150,7 +150,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 						.createNaNException("", line, linetext, answer));
 			}
 		} else {
-			Value a = idom.findAnswer(q, answer);
+			Value a = idom.findValue(q, answer);
 			if (a == null) {
 				errors.add(MessageKnOfficeGenerator
 						.createAnswerNotFoundException("", line, linetext, answer, question));

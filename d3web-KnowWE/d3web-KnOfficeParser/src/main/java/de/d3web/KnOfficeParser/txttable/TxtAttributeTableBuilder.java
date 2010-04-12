@@ -124,7 +124,7 @@ public class TxtAttributeTableBuilder extends TxtTableBuilder implements KnOffic
 					}
 				}
 				if (lineOk && kbObject instanceof Question && answerString != null) {
-					kbObject = (Answer) idom.findAnswer((Question) kbObject, answerString).getValue();
+					kbObject = (Answer) idom.findValue((Question) kbObject, answerString).getValue();
 					if (kbObject == null) {
 						messages.add(MessageKnOfficeGenerator.createErrorMSG("objectNotFound", null,
 								line, lineText, answerString));

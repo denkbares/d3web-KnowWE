@@ -389,7 +389,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 								new Object[] { e }, cond);
 					}
 				} else {
-					Answer a = (Answer) idom.findAnswer(q, value).getValue();
+					Answer a = (Answer) idom.findValue(q, value).getValue();
 					if (set) {
 						RuleFactory.createSetValueRule(newRuleID, q,
 								new Object[] { a }, cond);

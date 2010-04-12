@@ -78,7 +78,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	}
 
 	@Override
-	public Value findAnswer(Question q, String name) {
+	public Value findValue(Question q, String name) {
 		return kbm.findValue(q, name);
 	}
 

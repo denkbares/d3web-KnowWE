@@ -105,7 +105,7 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 
 
 	@Override
-	public Value findAnswer(Question q, String name) {
+	public Value findValue(Question q, String name) {
 		Value answer = kbm.findValue(q, name);
 		if (name.equalsIgnoreCase("unknown")||name.equalsIgnoreCase("unbekannt")) {
 			return Unknown.getInstance();
