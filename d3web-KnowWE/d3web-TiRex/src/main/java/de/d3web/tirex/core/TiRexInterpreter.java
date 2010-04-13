@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.tirex.core.extractionStrategies.ExtractionStrategy;
 
 /**
@@ -200,7 +200,7 @@ public class TiRexInterpreter {
 	public OriginalMatchAndStrategy extractAnswer(Question q, String knowledge,
 			KnowledgeBase kb, Collection<ExtractionStrategy> strategies) {
 
-		Collection<AnswerChoice> answers = null;
+		Collection<Choice> answers = null;
 		if (q != null) {
 			answers = TiRexUtilities.getInstance().getAllPossibleAnswers(q);
 		} else {
@@ -222,7 +222,7 @@ public class TiRexInterpreter {
 			}
 		} else {
 			for (ExtractionStrategy strategy : strategies) {
-				for (AnswerChoice answer : answers) {
+				for (Choice answer : answers) {
 					OriginalMatchAndStrategy match = null;
 
 					match = strategy.extract(answer, knowledge);
@@ -241,7 +241,7 @@ public class TiRexInterpreter {
 			Collection<ExtractionStrategy> strategies) {
 		Collection<OriginalMatchAndStrategy> returnList = new ArrayList<OriginalMatchAndStrategy>();
 
-		Collection<AnswerChoice> answers = null;
+		Collection<Choice> answers = null;
 		if (q != null) {
 			answers = TiRexUtilities.getInstance().getAllPossibleAnswers(q);
 		} else {
@@ -263,7 +263,7 @@ public class TiRexInterpreter {
 			}
 		} else {
 			for (ExtractionStrategy strategy : strategies) {
-				for (AnswerChoice answer : answers) {
+				for (Choice answer : answers) {
 					OriginalMatchAndStrategy match = null;
 
 					match = strategy.extract(answer, knowledge);

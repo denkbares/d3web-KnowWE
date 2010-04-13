@@ -38,7 +38,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -248,7 +248,7 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		else if (object instanceof QuestionChoice) {
 			// TODO: choices are not considered in JS implementation of bool
 			// questions
-			for (AnswerChoice answer : ((QuestionChoice) object).getAllAlternatives()) {
+			for (Choice answer : ((QuestionChoice) object).getAllAlternatives()) {
 				buffer.append("\t\t<choice>").append(encodeXML(answer.getName())).append(
 						"</choice>\n");
 			}

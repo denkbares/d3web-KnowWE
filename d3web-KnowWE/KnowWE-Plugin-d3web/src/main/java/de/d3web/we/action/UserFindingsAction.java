@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.AnswerUnknown;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
@@ -171,8 +171,8 @@ public class UserFindingsAction extends DeprecatedAbstractKnowWEAction {
 			Object value = iiv.getValue();
 			if(value instanceof String) {
 				Object valueObject = terminology.getObject(iio.getObjectId(), (String) value);
-				if(valueObject instanceof AnswerChoice) {
-					result.append(((AnswerChoice)valueObject).getName());
+				if(valueObject instanceof Choice) {
+					result.append(((Choice)valueObject).getName());
 				} else if(valueObject instanceof AnswerUnknown) {
 					result.append("unkown");
 				}

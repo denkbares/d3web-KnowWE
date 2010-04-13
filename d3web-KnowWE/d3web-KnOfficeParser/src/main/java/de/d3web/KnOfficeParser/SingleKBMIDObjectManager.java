@@ -38,7 +38,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 
 /**
  * Default implementation for the IDObjectManagement, searches and creates objects in a single kbm
@@ -83,7 +83,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	}
 
 	@Override
-	public AnswerChoice findAnswerChoice(QuestionChoice qc, String name) {
+	public Choice findAnswerChoice(QuestionChoice qc, String name) {
 		return kbm.findAnswerChoice(qc, name);
 	}
 
@@ -104,7 +104,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 
 	@Override
 	public QuestionMC createQuestionMC(String name, QASet parent,
-			AnswerChoice[] answers) {
+			Choice[] answers) {
 		return kbm.createQuestionMC(name, parent, answers);
 	}
 
@@ -121,7 +121,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 
 	@Override
 	public QuestionOC createQuestionOC(String name, QASet parent,
-			AnswerChoice[] answers) {
+			Choice[] answers) {
 		return kbm.createQuestionOC(name, parent, answers);
 	}
 
@@ -185,7 +185,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 
 
 	@Override
-	public QuestionMC createQuestionMC(String id, String name, QASet parent, AnswerChoice[] answers) {
+	public QuestionMC createQuestionMC(String id, String name, QASet parent, Choice[] answers) {
 		return kbm.createQuestionMC(id, name, parent, answers);
 	}
 
@@ -203,7 +203,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 
 
 	@Override
-	public QuestionOC createQuestionOC(String id, String name, QASet parent, AnswerChoice[] answers) {
+	public QuestionOC createQuestionOC(String id, String name, QASet parent, Choice[] answers) {
 		return kbm.createQuestionOC(id, name, parent, answers);
 	}
 

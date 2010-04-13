@@ -61,7 +61,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.report.Message;
 import de.d3web.scoring.Score;
 
@@ -94,7 +94,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		private Question question;
 		private final Condition ifcond;
 		private final Condition exceptcond;
-		private AnswerChoice[] answers;
+		private Choice[] answers;
 		private FormulaExpression formula;
 		private ArrayList<QASet> qcons;
 		private Score score;
@@ -102,7 +102,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		
 		public MyRule(ruletype type, Question question,
 				Condition ifcond, Condition exceptcond,
-				AnswerChoice[] answers, FormulaExpression formula,
+				Choice[] answers, FormulaExpression formula,
 				ArrayList<QASet> qcons) {
 			super();
 			this.type = type;
@@ -349,7 +349,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					q = D3webQuestionFactory.createQuestion(qname, type, null, idom);
 				} else {
 					q = idom.createQuestionOC(qname, idom.getKnowledgeBase()
-							.getRootQASet(), new AnswerChoice[0]);
+							.getRootQASet(), new Choice[0]);
 				}
 			} else {
 				errors.add(MessageKnOfficeGenerator
@@ -360,11 +360,11 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		} else {
 			if (q instanceof QuestionChoice) {
 				QuestionChoice qc = (QuestionChoice) q;
-				ArrayList<AnswerChoice> alist = new ArrayList<AnswerChoice>();
+				ArrayList<Choice> alist = new ArrayList<Choice>();
 				for (String s : anames) {
 					Value a = idom.findValue(qc, s);
 					if (a != null) {
-						alist.add((AnswerChoice) a.getValue());
+						alist.add((Choice) a.getValue());
 					} else {
 						errors.add(MessageKnOfficeGenerator
 								.createAnswerNotFoundException(file, line,
@@ -385,7 +385,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					}
 					if (ifcond == null)
 						return;
-					AnswerChoice[] array = alist.toArray(new AnswerChoice[alist.size()]);
+					Choice[] array = alist.toArray(new Choice[alist.size()]);
 					addRule(new MyRule(ruletype.supress, qc, ifcond,
 							exceptcond, array, null, null));
 				} else {
@@ -562,11 +562,11 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				return;
 			if (add) {
 				addRule(new MyRule(ruletype.addvalue, currentquestion, ifcond,
-						exceptcond, new AnswerChoice[] { (AnswerChoice) a }, null, null));
+						exceptcond, new Choice[] { (Choice) a }, null, null));
 
 			} else {
 				addRule(new MyRule(ruletype.setvalue, currentquestion, ifcond,
-						exceptcond, new AnswerChoice[] { (AnswerChoice) a }, null, null));
+						exceptcond, new Choice[] { (Choice) a }, null, null));
 			}
 		}
 	}

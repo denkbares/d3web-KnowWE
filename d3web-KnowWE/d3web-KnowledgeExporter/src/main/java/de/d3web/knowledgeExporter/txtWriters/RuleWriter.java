@@ -37,7 +37,7 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.ActionInstantIndication;
@@ -176,7 +176,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 			if (value instanceof Value) {
 				if (value instanceof MultipleChoiceValue) {
 					MultipleChoiceValue mcv = (MultipleChoiceValue)value;
-					List<AnswerChoice> choices = (List<AnswerChoice>) mcv.getValue();
+					List<Choice> choices = (List<Choice>) mcv.getValue();
 					for (int i = 0; i < choices.size(); i++) {
 						s.append(choices.get(i).getName());
 						if (i < choices.size() - 1) {

@@ -40,7 +40,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 
@@ -111,7 +111,7 @@ public class KnowledgeUtils {
 			if(cond == null) return errors;
 		} else if (currentquestion instanceof QuestionYN) {
 			QuestionYN qyn = (QuestionYN) currentquestion;
-			AnswerChoice ac;
+			Choice ac;
 			if (answer == null || answer.equalsIgnoreCase("ja")
 					|| answer.equalsIgnoreCase("yes")) {
 				ac = qyn.yes;
@@ -126,7 +126,7 @@ public class KnowledgeUtils {
 			cond = new CondEqual(qyn, new ChoiceValue(ac));
 		} else if (currentquestion instanceof QuestionChoice) {
 			QuestionChoice qc = (QuestionChoice) currentquestion;
-			AnswerChoice currentanswer = idom.findAnswerChoice(qc, answer);
+			Choice currentanswer = idom.findAnswerChoice(qc, answer);
 			if (currentanswer == null) {
 				errors.add(MessageKnOfficeGenerator
 						.createAnswerNotFoundException(kdomid, line, column,

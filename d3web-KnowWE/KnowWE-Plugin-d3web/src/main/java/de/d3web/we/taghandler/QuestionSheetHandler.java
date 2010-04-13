@@ -61,7 +61,7 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String,String> values, String web) {
 		
-		Session xpsCase = D3webUtils.getXPSCase(topic, user, web);
+		Session session = D3webUtils.getSession(topic, user, web);
 		
 		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		
@@ -83,9 +83,9 @@ public class QuestionSheetHandler  extends AbstractTagHandler{
 				
 				String answerstring = "";
 				
-				if(xpsCase != null && question.getValue(xpsCase) != null) {
+				if(session != null && question.getValue(session) != null) {
 					answerstring += " : ";
-					answerstring += question.getValue(xpsCase).toString();
+					answerstring += question.getValue(session).toString();
 //					for (Object object : answers) {
 //						answerstring += object.toString()+", ";
 //					}

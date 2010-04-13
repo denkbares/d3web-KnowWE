@@ -29,7 +29,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
@@ -150,7 +150,7 @@ class AnswerCellHandler implements ReviseSubTreeHandler {
 
 			String answerText = s.getOriginalText().trim();
 			if (q instanceof QuestionChoice) {
-				AnswerChoice ac = mgr.findAnswerChoice(((QuestionChoice) q),
+				Choice ac = mgr.findAnswerChoice(((QuestionChoice) q),
 						answerText);
 				if (ac == null) {
 					mgn.addChoiceAnswer(((QuestionChoice) q), answerText);

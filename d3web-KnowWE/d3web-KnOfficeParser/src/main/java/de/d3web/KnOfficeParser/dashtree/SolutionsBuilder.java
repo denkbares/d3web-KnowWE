@@ -46,7 +46,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.report.Message;
 
 public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
@@ -211,8 +211,8 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 				if (t.second instanceof NamedObject) {
 					NamedObject na = (NamedObject) t.second;
 					addMMInfo(na, des, type, text);
-				} else if (t.second instanceof AnswerChoice) {
-					AnswerChoice ac = (AnswerChoice) t.second;
+				} else if (t.second instanceof Choice) {
+					Choice ac = (Choice) t.second;
 					ac.getProperties().setProperty(Property.EXPLANATION, text);
 				} else {
 					errors.add(MessageKnOfficeGenerator

@@ -105,7 +105,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 			D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession) serviceSession;
 			KnowledgeBaseManagement baseManagement = d3webKSS.getBaseManagement();
 			
-			Session c = d3webKSS.getXpsCase();
+			Session c = d3webKSS.getSession();
 			this.currentCase = c;
 			this.kbId = c.getKnowledgeBase().getId();
 			

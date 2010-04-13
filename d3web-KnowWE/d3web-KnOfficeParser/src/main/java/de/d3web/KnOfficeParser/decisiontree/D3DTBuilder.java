@@ -70,7 +70,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.AnswerFactory;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 import de.d3web.scoring.Score;
@@ -161,7 +161,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		// answer
 		if (dashes == questionStack.peek().first + 1) {
 			currentQuestion = questionStack.peek().second;
-			AnswerChoice answer = null;
+			Choice answer = null;
 			if (currentQuestion instanceof QuestionYN) {
 				QuestionYN cq = (QuestionYN) currentQuestion;
 				if (name.equalsIgnoreCase("ja") || name.equalsIgnoreCase("yes")) {
@@ -236,7 +236,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 
 	}
 
-	private void setAnswerPropertytoCurrentQuestion(AnswerChoice answer,
+	private void setAnswerPropertytoCurrentQuestion(Choice answer,
 			Property property) {
 		Properties properties = currentQuestion.getProperties();
 		Object defproperty = properties.getProperty(property);
@@ -295,12 +295,12 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		return c;
 	}
 
-	private AnswerChoice createAnswer(String name, String ref) {
+	private Choice createAnswer(String name, String ref) {
 		if (ref == null) {
 			ref = idom
 					.findNewIDForAnswerChoice((QuestionChoice) currentQuestion);
 		}
-		AnswerChoice answer = AnswerFactory.createAnswerChoice(ref, name);
+		Choice answer = AnswerFactory.createAnswerChoice(ref, name);
 		return answer;
 	}
 
@@ -346,8 +346,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				if (t.second instanceof NamedObject) {
 					NamedObject na = (NamedObject) t.second;
 					addMMInfo(na, des, type, text, language);
-				} else if (t.second instanceof AnswerChoice) {
-					AnswerChoice ac = (AnswerChoice) t.second;
+				} else if (t.second instanceof Choice) {
+					Choice ac = (Choice) t.second;
 					ac.getProperties().setProperty(Property.EXPLANATION, text);
 				} else {
 					errors.add(MessageKnOfficeGenerator

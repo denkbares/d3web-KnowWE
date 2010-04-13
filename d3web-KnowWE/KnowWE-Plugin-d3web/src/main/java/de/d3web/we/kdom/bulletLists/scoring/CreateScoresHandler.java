@@ -12,7 +12,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.scoring.Score;
 import de.d3web.we.d3webModule.D3webModule;
@@ -132,16 +132,16 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 	private QuestionOC createQuestion(String question, String defaultValue,
 			KnowledgeBaseManagement kbm, Section s) {
 
-		AnswerChoice a1 = new AnswerChoice(s.getId()+defaultValue);
+		Choice a1 = new Choice(s.getId()+defaultValue);
 		a1.setText(defaultValue);
 		
-		AnswerChoice a2 = new AnswerChoice(s.getId()+"not " + defaultValue);
+		Choice a2 = new Choice(s.getId()+"not " + defaultValue);
 		a2.setText("not " + defaultValue);
 		
 		
 
 		QuestionOC q = kbm.createQuestionOC(question, kbm.getKnowledgeBase()
-				.getRootQASet(), new AnswerChoice[]{a1,a2});
+				.getRootQASet(), new Choice[]{a1,a2});
 
 		return q;
 	}

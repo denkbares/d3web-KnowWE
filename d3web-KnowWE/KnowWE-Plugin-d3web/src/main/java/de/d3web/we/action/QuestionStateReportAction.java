@@ -94,7 +94,7 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 		if(kss instanceof de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession && q != null) {
 			
 			D3webKnowledgeServiceSession d3kss = ((D3webKnowledgeServiceSession)kss);
-			de.d3web.core.session.Session case1 = d3kss.getXpsCase();
+			de.d3web.core.session.Session case1 = d3kss.getSession();
 			List<? extends Question> answeredQuestions = case1.getAnsweredQuestions();
 			if(answeredQuestions.contains(q)) {
 				Value theanswer = q.getValue(case1);

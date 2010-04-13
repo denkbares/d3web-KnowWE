@@ -27,7 +27,7 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 		StringBuilder result = new StringBuilder();
 		
 		for (KnowWEArticle article : KnowWEEnvironment.getInstance().getArticleManager(web).getArticles()) {
-			Session theCase = D3webUtils.getXPSCase(article.getTitle(), context.getWikiContext(), web);
+			Session theCase = D3webUtils.getSession(article.getTitle(), context.getWikiContext(), web);
 			if (theCase != null) {
 				IDObject io = theCase.getKnowledgeBase().searchObjectForName(questionnaireName);
 				if (io instanceof QContainer) {

@@ -44,7 +44,7 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
@@ -201,7 +201,7 @@ public class FindingToConditionBuilder {
 				kbValue = Unknown.getInstance();
 			}
 			if (kbAns != null && kbQuest instanceof QuestionChoice) {
-				kbValue = new ChoiceValue((AnswerChoice) kbAns);
+				kbValue = new ChoiceValue((Choice) kbAns);
 			}
 			else if (kbAns != null && kbQuest instanceof QuestionNum) {
 				kbValue = new NumValue(Double.valueOf(answertext));

@@ -32,7 +32,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.AnswerNum;
 import de.d3web.we.alignment.AlignmentUtilRepository;
 import de.d3web.we.alignment.LocalAlignment;
@@ -158,8 +158,8 @@ public class D3webLocalAligner implements LocalAligner<NamedObject>{
 	private Object getText(IDObject ido) {
 		if(ido instanceof NamedObject) {
 			return ((NamedObject)ido).getName();
-		} else if(ido instanceof AnswerChoice) {
-			return ((AnswerChoice)ido).getName();
+		} else if(ido instanceof Choice) {
+			return ((Choice)ido).getName();
 		} else if(ido instanceof AnswerNum) {
 			return ((AnswerNum)ido).getId();
 		}

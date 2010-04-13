@@ -54,17 +54,17 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String solution = sec.getOriginalText().replace("\"", "").trim();
 
-		Session xpsCase = D3webUtils.getXPSCase(sec, user);
+		Session session = D3webUtils.getSession(sec, user);
 
 		String spanStart = KnowWEUtils.maskHTML("<span style=\"background-color: rgb(");
 		String spanStartEnd = KnowWEUtils.maskHTML(";\">");
 		String spanEnd = KnowWEUtils.maskHTML("</span>");
 		
-		if (xpsCase != null) {
+		if (session != null) {
 			
-			List<Solution> diags = xpsCase.getKnowledgeBase().getDiagnoses();
+			List<Solution> diags = session.getKnowledgeBase().getDiagnoses();
 			Collection <KnowledgeSlice> slices =
-				xpsCase.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
+				session.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
 
 			for (Solution d : diags) {
 
@@ -75,7 +75,7 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 					if (diagModel == null)
 						state = DiagnosisState.UNCLEAR;
 					else
-						state = diagModel.getState(xpsCase);
+						state = diagModel.getState(session);
 
 					if (state == DiagnosisState.ESTABLISHED) {
 						string.append(spanStart + "51, 255, 51)" + spanStartEnd);

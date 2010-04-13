@@ -44,7 +44,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.Properties;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.kernel.psMethods.shared.Abnormality;
 import de.d3web.kernel.psMethods.shared.Weight;
@@ -137,12 +137,12 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 	
 			row++;
 			if (q instanceof QuestionChoice) {
-				List<AnswerChoice> answers = ((QuestionChoice) q).getAllAlternatives();
+				List<Choice> answers = ((QuestionChoice) q).getAllAlternatives();
 				
 				// ANTWORTEN RAUSSCHREIBEN
-				for (AnswerChoice a:answers) {
+				for (Choice a:answers) {
 					qSheet.addCell(new Label(getColumn(isExtraAnswerColumn() ?
-							AnswerChoice.class.getSimpleName() : Question.class.getSimpleName(), qSheet),
+							Choice.class.getSimpleName() : Question.class.getSimpleName(), qSheet),
 							row, isExtraAnswerColumn() ? a.getName() : " - " +  a.getName()));
 					writeMMInfos(a, qSheet, row);
 					
@@ -201,8 +201,8 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 				}
 			}
 			if (q instanceof QuestionChoice) {
-				List<AnswerChoice> answers = ((QuestionChoice) q).getAllAlternatives();
-				for (AnswerChoice a:answers) {
+				List<Choice> answers = ((QuestionChoice) q).getAllAlternatives();
+				for (Choice a:answers) {
 					boolean[] check = checkProperties(a);
 					if (check[0])
 						prompt = true;

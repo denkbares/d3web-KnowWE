@@ -41,14 +41,14 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.PropertiesContainer;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.CaseFactory;
-import de.d3web.core.session.D3WebCase;
+import de.d3web.core.session.SessionFactory;
+import de.d3web.core.session.D3WebSession;
 import de.d3web.core.session.IEventSource;
 import de.d3web.core.session.KBOEventListener;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.ValuedObject;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.XPSCaseEventListener;
+import de.d3web.core.session.SessionEventListener;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.indication.inference.PSMethodNextQASet;
@@ -147,7 +147,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		}
 
 		public void notify(IEventSource source, Session theCase) {
-			if (theCase != xpsCase)
+			if (theCase != session)
 				return;
 
 			XCLModel model = (XCLModel) source;
@@ -222,7 +222,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private final KnowledgeBaseManagement baseManagement;
 	private final String id;
 	private final Broker broker;
-	private Session xpsCase;
+	private Session session;
 	
 
 	private boolean instantly = true;
@@ -242,8 +242,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 	private void initCase() {
 		DistributedControllerFactory factory = getControllerFactory();
-		xpsCase = CaseFactory.createXPSCase(base, factory);
-		((D3WebCase) xpsCase).addUsedPSMethod(PSMethodDelegate.getInstance());
+		session = SessionFactory.createSession(base, factory);
+		((D3WebSession) session).addUsedPSMethod(PSMethodDelegate.getInstance());
 
 	}
 
@@ -257,7 +257,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	}
 
 	private void initConnection() {
-		xpsCase.addListener(new XPSCaseEventListener() {
+		session.addListener(new SessionEventListener() {
 			public void notify(Session source, ValuedObject o, Object context) {
 				maybeNotifyBroker(o, source, context);
 			}
@@ -328,22 +328,22 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				toChange.add(diag);
 				if (info.getInformationType().equals(
 						InformationType.SolutionInformation)) {
-					xpsCase.setValue(diag, value,
+					session.setValue(diag, value,
 							PSMethodHeuristic.class);
 				} else if (info.getInformationType().equals(
 						InformationType.HeuristicInferenceInformation)) {
-					DiagnosisScore oldScore = diag.getScore(xpsCase,
+					DiagnosisScore oldScore = diag.getScore(session,
 							PSMethodHeuristic.class);
 					DiagnosisScore newScore = oldScore
 							.add((DiagnosisScore) value);
-					xpsCase.setValue(diag, value,
+					session.setValue(diag, value,
 							PSMethodHeuristic.class);
 				}
 			}
 		} else {
 			if (vo != null) {
 				toChange.add(vo);
-				xpsCase.setValue(vo, value);
+				session.setValue(vo, value);
 			}else {
 				Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "ValuedObject is null: "+object.getClass().getName()+" :"+object.toString());
 			}
@@ -365,12 +365,12 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		// [TODO]: no idea if this is correct:
 		if (requestedDiagnoses.isEmpty()) {
 			for (QASet set : requestedFindings) {
-				xpsCase.getQASetManager().propagate(set, null,
+				session.getQASetManager().propagate(set, null,
 						PSMethodNextQASet.getInstance());
 			}
 		} else {
 			for (QASet set : base.getInitQuestions()) {
-				xpsCase.getQASetManager().propagate(set, null,
+				session.getQASetManager().propagate(set, null,
 						PSMethodInit.getInstance());
 			}
 		}
@@ -440,7 +440,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	}
 
 	protected void maybeNotifyBroker(ValuedObject valuedObject,
-			Session xpsCase, Object context) {
+			Session session, Object context) {
 		// do not inform anyone about some things that were told you by the
 		// broker...
 		if (toChange.contains(valuedObject)) {
@@ -453,8 +453,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			Question question = (Question) valuedObject;
 			if (instantly) {
 				broker.update(new Information(id, question.getId(),
-						ConverterUtils.toValueList(question.getValue(xpsCase),
-								xpsCase), TerminologyType.symptom, infoType));
+						ConverterUtils.toValueList(question.getValue(session),
+								session), TerminologyType.symptom, infoType));
 			} else {
 				// mag ich grad net
 			}
@@ -463,9 +463,9 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			if (instantly) {
 				List solutionList = new ArrayList();
 				solutionList.add(getLocalSolutionState(diagnosis.getState(
-						xpsCase, PSMethodHeuristic.class)));
+						session, PSMethodHeuristic.class)));
 				List inferenceList = new ArrayList();
-				inferenceList.add(diagnosis.getScore(xpsCase,
+				inferenceList.add(diagnosis.getScore(session,
 						PSMethodHeuristic.class).getScore());
 				broker.update(new Information(id, diagnosis.getId(),
 						solutionList, TerminologyType.diagnosis,
@@ -484,8 +484,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	}
 
 	public boolean isFinished() {
-		return xpsCase.isFinished()
-				|| !xpsCase.getQASetManager().hasNextQASet();
+		return session.isFinished()
+				|| !session.getQASetManager().hasNextQASet();
 	}
 
 	private SolutionState getLocalSolutionState(DiagnosisState state) {
@@ -531,8 +531,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		this.instantly = instantly;
 	}
 
-	public Session getXpsCase() {
-		return xpsCase;
+	public Session getSession() {
+		return session;
 	}
 
 	@Override

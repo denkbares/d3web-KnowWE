@@ -77,7 +77,7 @@ public class RequestDialogRenderer extends DeprecatedAbstractKnowWEAction {
 			}
 			HttpSession s = parameterMap.getSession();
 			String sID = s.getId();
-			sessionToCaseMap.put(sID, d3webKSS.getXpsCase());
+			sessionToCaseMap.put(sID, d3webKSS.getSession());
 			parameterMap.getSession().getServletContext().setAttribute("sessionToCaseMap", sessionToCaseMap);
 			
 

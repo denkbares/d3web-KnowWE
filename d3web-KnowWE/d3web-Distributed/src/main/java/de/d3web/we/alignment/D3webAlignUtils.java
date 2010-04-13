@@ -23,7 +23,7 @@ package de.d3web.we.alignment;
 
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.AnswerNum;
 
 public class D3webAlignUtils {
@@ -31,8 +31,8 @@ public class D3webAlignUtils {
 	public static String getText(IDObject ido) {
 		if(ido instanceof NamedObject) {
 			return ((NamedObject)ido).getName();
-		} else if(ido instanceof AnswerChoice) {
-			return ((AnswerChoice)ido).getName();
+		} else if(ido instanceof Choice) {
+			return ((Choice)ido).getName();
 		} else if(ido instanceof AnswerNum) {
 			return ((AnswerNum)ido).getId();
 		} else {

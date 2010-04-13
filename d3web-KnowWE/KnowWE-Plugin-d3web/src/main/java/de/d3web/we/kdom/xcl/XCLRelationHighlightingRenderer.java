@@ -79,12 +79,12 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 			return;
 		}
 
-		Session xpsCase = D3webUtils.getXPSCase(sec, user);
+		Session session = D3webUtils.getSession(sec, user);
 		
-		if (xpsCase != null) {
+		if (session != null) {
 			
 			// Get the KnowledgeSlices from KB and find the XCLRelation to be rendered
-			Collection<KnowledgeSlice> models = xpsCase.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
+			Collection<KnowledgeSlice> models = session.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
 			for (KnowledgeSlice knowledgeSlice : models) {
 				if(knowledgeSlice instanceof XCLModel) {
 					// Check if model contains the relation
@@ -94,7 +94,7 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 						
 						// eval the Relation to find the right Rendering
 						try {
-							boolean fulfilled = relation.eval(xpsCase);
+							boolean fulfilled = relation.eval(session);
 							// Highlight Relation
 							string.append( this.renderRelation(article, sec, user, fulfilled));
 							return;

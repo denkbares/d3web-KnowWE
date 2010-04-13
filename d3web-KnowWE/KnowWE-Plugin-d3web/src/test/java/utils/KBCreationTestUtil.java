@@ -58,7 +58,7 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.empiricalTesting.Finding;
@@ -411,7 +411,7 @@ public class KBCreationTestUtil {
 		// -- black
 		// --- Fuel [oc]
 		answer = createdKBM.findAnswer(condQuestion, "black");
-		condition = new CondEqual(condQuestion, new ChoiceValue((AnswerChoice) answer));
+		condition = new CondEqual(condQuestion, new ChoiceValue((Choice) answer));
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
 		
@@ -420,7 +420,7 @@ public class KBCreationTestUtil {
 		// -- blue
 		// --- &REF Fuel
 		answer = createdKBM.findAnswer(condQuestion, "blue");
-		condition = new CondEqual(condQuestion, new ChoiceValue((AnswerChoice) answer));
+		condition = new CondEqual(condQuestion, new ChoiceValue((Choice) answer));
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
 		
@@ -429,7 +429,7 @@ public class KBCreationTestUtil {
 		// -- invisible
 		// --- &REF Fuel
 		answer = createdKBM.findAnswer(condQuestion, "invisible");
-		condition = new CondEqual(condQuestion, new ChoiceValue((AnswerChoice) answer));
+		condition = new CondEqual(condQuestion, new ChoiceValue((Choice) answer));
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
 		
@@ -447,7 +447,7 @@ public class KBCreationTestUtil {
         // --- "Num. Mileage evaluation" SET (110)
 		QuestionChoice q1 = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer a1 = createdKBM.findAnswer(q1, "insufficient power on partial load");
-		CondEqual c1 = new CondEqual(q1, new ChoiceValue((AnswerChoice) a1));
+		CondEqual c1 = new CondEqual(q1, new ChoiceValue((Choice) a1));
 		String ruleID = createdKBM.createRuleID();
 		QuestionNum q2 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
 		FormulaNumber fn1 = new FormulaNumber(110.0);
@@ -459,7 +459,7 @@ public class KBCreationTestUtil {
         // -- insufficient power on full load
         // --- "Num. Mileage evaluation" (20)
 		Answer a2 = createdKBM.findAnswer(q1, "insufficient power on full load");
-		CondEqual c2 = new CondEqual(q1, new ChoiceValue((AnswerChoice) a2));
+		CondEqual c2 = new CondEqual(q1, new ChoiceValue((Choice) a2));
 		ruleID = createdKBM.createRuleID();
 		QuestionNum q3 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
 		FormulaNumber fn2 = new FormulaNumber(20.0);
@@ -480,7 +480,7 @@ public class KBCreationTestUtil {
 		QuestionChoice condQuestion = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer answer = createdKBM.findAnswer(condQuestion, "everything is fine");
 		CondEqual condition = new CondEqual(condQuestion, new ChoiceValue(
-				(AnswerChoice) answer));
+				(Choice) answer));
 		String ruleID = createdKBM.createRuleID();
 		Solution diag = createdKBM.findDiagnosis("Other problem");
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, condition);
@@ -547,8 +547,8 @@ public class KBCreationTestUtil {
 		CondNumGreater c2 = new CondNumGreater(q3, 130.0);
 		ruleID = createdKBM.createRuleID();
 		Question q4 = createdKBM.findQuestion("Mileage evaluation");
-		AnswerChoice a = (AnswerChoice) createdKBM.findAnswer(q4, "increased");
-		RuleFactory.createSetValueRule(ruleID, q4, new AnswerChoice[] { a }, c2);
+		Choice a = (Choice) createdKBM.findAnswer(q4, "increased");
+		RuleFactory.createSetValueRule(ruleID, q4, new Choice[] { a }, c2);
 		
 		// Create rule R10:
 		// IF Driving = unsteady idle speed
@@ -556,7 +556,7 @@ public class KBCreationTestUtil {
 		QuestionChoice questionIf4 = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer answerIf4 = createdKBM.findAnswer(questionIf4, "unsteady idle speed");
 		CondEqual conditionIf4 = new CondEqual(questionIf4, new ChoiceValue(
-				(AnswerChoice) answerIf4));
+				(Choice) answerIf4));
 		ruleID = createdKBM.createRuleID();
 		QuestionNum qnum = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
 		FormulaNumber fn2 = new FormulaNumber(2.0);
@@ -570,7 +570,7 @@ public class KBCreationTestUtil {
 		QuestionChoice questionIf5 = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer answerIf5 = createdKBM.findAnswer(questionIf5, "insufficient power on full load");
 		CondEqual conditionIf5 = new CondEqual(questionIf5, new ChoiceValue(
-				(AnswerChoice) answerIf5));
+				(Choice) answerIf5));
 		QuestionNum questionFormula = (QuestionNum) createdKBM.findQuestion("Average mileage /100km");
 		FormulaNumber fn3 = new FormulaNumber(2.0);
 		Add addition = new Add(new QNumWrapper(questionFormula), fn3);
@@ -585,7 +585,7 @@ public class KBCreationTestUtil {
 		QuestionChoice questionIf6 = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer answerIf6 = createdKBM.findAnswer(questionIf6, "insufficient power on partial load");
 		CondEqual conditionIf6 = new CondEqual(questionIf6, new ChoiceValue(
-				(AnswerChoice) answerIf6));
+				(Choice) answerIf6));
 		QuestionNum questionFormula2 = (QuestionNum) createdKBM.findQuestion("Average mileage /100km");
 		FormulaNumber fn4 = new FormulaNumber(1.0);
 		Sub subtraction = new Sub(new QNumWrapper(questionFormula2), fn4);
@@ -608,12 +608,12 @@ public class KBCreationTestUtil {
 		QuestionChoice questionIf = (QuestionChoice) createdKBM.findQuestion("Exhaust fumes");
 		Answer answerIf = createdKBM.findAnswer(questionIf, "black");
 		CondEqual conditionIf = new CondEqual(questionIf, new ChoiceValue(
-				(AnswerChoice) answerIf));
+				(Choice) answerIf));
 		
 		QuestionChoice questionExc = (QuestionChoice) createdKBM.findQuestion("Fuel");
 		Answer answerExc = createdKBM.findAnswer(questionExc, "diesel");
 		CondEqual conditionExc = new CondEqual(questionExc, new ChoiceValue(
-				(AnswerChoice) answerExc));
+				(Choice) answerExc));
 		
 		String ruleID = createdKBM.createRuleID();
 		Solution diag = createdKBM.findDiagnosis("Mechanical problem");
@@ -626,13 +626,13 @@ public class KBCreationTestUtil {
 		QuestionChoice questionIf2 = (QuestionChoice) createdKBM.findQuestion("Fuel");
 		Answer answerIf2 = createdKBM.findAnswer(questionIf2, "unleaded gasoline");
 		CondEqual conditionIf2 = new CondEqual(questionIf2, new ChoiceValue(
-				(AnswerChoice) answerIf2));
+				(Choice) answerIf2));
 		CondNot condNot1 = new CondNot(conditionIf2);
 		
 		QuestionChoice questionIf3 = (QuestionChoice) createdKBM.findQuestion("Exhaust fumes");
 		Answer answerIf3 = createdKBM.findAnswer(questionIf3, "black");
 		CondEqual conditionIf3 = new CondEqual(questionIf3, new ChoiceValue(
-				(AnswerChoice) answerIf3));
+				(Choice) answerIf3));
 		CondNot condNot2 = new CondNot(conditionIf3);
 		
 		List<Condition> conditions = new LinkedList<Condition>();
@@ -659,7 +659,7 @@ public class KBCreationTestUtil {
 		QASet actionQuestion = createdKBM.findQContainer("Technical Examinations");
 		Answer answer = createdKBM.findAnswer(condQuestion, "unsteady idle speed");
 		CondEqual condition = new CondEqual(condQuestion, new ChoiceValue(
-				(AnswerChoice) answer));
+				(Choice) answer));
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
 		
@@ -671,7 +671,7 @@ public class KBCreationTestUtil {
 		QuestionChoice actionQuestion3 = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer answer2 = createdKBM.findAnswer(condQuestion2, "increased");
 		CondEqual condition2 = new CondEqual(condQuestion2, new ChoiceValue(
-				(AnswerChoice) answer2));
+				(Choice) answer2));
 		List<QASet> nextQuestions = new ArrayList<QASet>();
 		nextQuestions.add(actionQuestion2);
 		nextQuestions.add(actionQuestion3);
@@ -700,31 +700,31 @@ public class KBCreationTestUtil {
 	    // "Idle speed system o.k.?" = Yes [--]
 		Question q1 = createdKBM.findQuestion("Idle speed system o.k.?");
 		Answer  a1 = createdKBM.findAnswer(q1, "Yes");
-		CondEqual c1 = new CondEqual(q1, new ChoiceValue((AnswerChoice) a1));
+		CondEqual c1 = new CondEqual(q1, new ChoiceValue((Choice) a1));
 		XCLModel.insertXCLRelation(createdKB, c1, d, XCLRelationType.contradicted);
 		
 	    // Driving = unsteady idle speed [!]
 		Question q2 = createdKBM.findQuestion("Driving");
 		Answer  a2 = createdKBM.findAnswer(q2, "unsteady idle speed");
-		CondEqual c2 = new CondEqual(q2, new ChoiceValue((AnswerChoice) a2));
+		CondEqual c2 = new CondEqual(q2, new ChoiceValue((Choice) a2));
 	    XCLModel.insertXCLRelation(createdKB, c2, d, XCLRelationType.requires);
 		
 	    // "Idle speed system o.k.?" = no [++]
 		Question q3 = createdKBM.findQuestion("Idle speed system o.k.?");
 		Answer  a3 = createdKBM.findAnswer(q3, "No");
-		CondEqual c3 = new CondEqual(q3, new ChoiceValue((AnswerChoice) a3));
+		CondEqual c3 = new CondEqual(q3, new ChoiceValue((Choice) a3));
 		XCLModel.insertXCLRelation(createdKB, c3, d, XCLRelationType.sufficiently);
 		
 		// Mileage evaluation = increased [3]
 		Question q4 = createdKBM.findQuestion("Mileage evaluation");
 		Answer  a4 = createdKBM.findAnswer(q4, "increased");
-		CondEqual c4 = new CondEqual(q4, new ChoiceValue((AnswerChoice) a4));
+		CondEqual c4 = new CondEqual(q4, new ChoiceValue((Choice) a4));
 		XCLModel.insertXCLRelation(createdKB, c4, d, XCLRelationType.explains, 3.0);
 		
 		// Exhaust fumes = black
 		Question q5 = createdKBM.findQuestion("Exhaust fumes");
 		Answer  a5 = createdKBM.findAnswer(q5, "black");
-		CondEqual c5 = new CondEqual(q5, new ChoiceValue((AnswerChoice) a5));
+		CondEqual c5 = new CondEqual(q5, new ChoiceValue((Choice) a5));
 		XCLModel.insertXCLRelation(createdKB, c5, d, XCLRelationType.explains);
 		
 	}
@@ -739,7 +739,7 @@ public class KBCreationTestUtil {
 		Question q = createdKBM.findQuestion("Driving");
 		Answer a = createdKBM.findAnswer(q, "everything is fine");
 		List<ChoiceValue> answers = new LinkedList<ChoiceValue>();
-		answers.add(new ChoiceValue((AnswerChoice) a));
+		answers.add(new ChoiceValue((Choice) a));
 		Finding f = new Finding(q, new MultipleChoiceValue(answers));
 		
 		// Create RatedSolution

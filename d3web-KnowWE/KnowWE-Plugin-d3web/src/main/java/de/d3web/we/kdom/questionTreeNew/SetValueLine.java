@@ -11,7 +11,7 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.scoring.Score;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -123,11 +123,11 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 			
 			
 			if(q != null) {
-				AnswerChoice a = null;
+				Choice a = null;
 				if(q instanceof QuestionChoice) {
 					QuestionChoice qc = (QuestionChoice )q;
-					List<AnswerChoice> allAlternatives = qc.getAllAlternatives();
-					for (AnswerChoice answerChoice : allAlternatives) {
+					List<Choice> allAlternatives = qc.getAllAlternatives();
+					for (Choice answerChoice : allAlternatives) {
 						if(answerChoice.getName().equals(argument)) {
 							a = answerChoice;
 						}

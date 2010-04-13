@@ -10,7 +10,7 @@ import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.FindingToConditionBuilder;
@@ -71,7 +71,7 @@ public class Utils {
 			Answer a = answerSec.get().getObject(answerSec);
 			if (a != null) {
 				CondEqual c = new CondEqual((QuestionChoice) q, new ChoiceValue(
-						(AnswerChoice) a));
+						(Choice) a));
 				return c;
 			}
 		}

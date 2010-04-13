@@ -10,7 +10,7 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.DistributedRegistrationManager;
@@ -127,7 +127,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			QuestionOC sgnQuestion) {
 		
 		// Create condition
-		AnswerChoice includedAnswer = (AnswerChoice) kbm.findAnswer(sgnQuestion,
+		Choice includedAnswer = (Choice) kbm.findAnswer(sgnQuestion,
 				"included");
 		CondEqual condition = new CondEqual(sgnQuestion, new ChoiceValue(includedAnswer));
 		

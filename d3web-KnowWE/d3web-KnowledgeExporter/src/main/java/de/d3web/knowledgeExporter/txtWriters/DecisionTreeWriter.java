@@ -57,7 +57,7 @@ import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.indication.ActionIndication;
 import de.d3web.indication.ActionNextQASet;
 import de.d3web.indication.inference.PSMethodNextQASet;
@@ -268,7 +268,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 			answerList.addAll(((QuestionChoice) q).getAllAlternatives());
 		}
 		
-		for (AnswerChoice ac:answerList) {
+		for (Choice ac:answerList) {
 			if (answerConds.containsKey(ac.toString())) {
 				sortedConditions.add(answerConds.remove(ac.toString()));
 			}
@@ -460,7 +460,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		this.exportDecisionTreeID = exportDecisionTreeID;
 	}
 	
-	private class AnswerList extends ArrayList<AnswerChoice> {
+	private class AnswerList extends ArrayList<Choice> {
 
 		private static final long serialVersionUID = -7218215076349663635L;
 
@@ -472,7 +472,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	    	}
 	    }
 	    
-	    public AnswerChoice get(String answer) {
+	    public Choice get(String answer) {
 	    	for (int i = 0; i < this.size(); i++) {
 	    		if (this.get(i).toString().equals(answer)) {
 	    			return this.get(i);

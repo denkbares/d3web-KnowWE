@@ -33,7 +33,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.AnswerNum;
 import de.d3web.core.session.values.AnswerUnknown;
 import de.d3web.core.session.values.NumValue;
@@ -73,7 +73,7 @@ public class FindingHTMLWriter {
 		if (theQC.getAllAlternatives() != null) {
 			buffy.append("<form action='#' name='semanooc'>");
 			
-			for (AnswerChoice theAnswer : theQC.getAllAlternatives()) {
+			for (Choice theAnswer : theQC.getAllAlternatives()) {
 				String answerText = KnowWEUtils.convertUmlaut(theAnswer.verbalizeValue(theCase));
 								
 				buffy.append("<INPUT TYPE='radio' NAME='f" + timestampid+"id"

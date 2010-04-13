@@ -46,7 +46,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 
@@ -185,7 +185,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				} else if (op.equals("=")) {
 					question = idom.createQuestionOC(qname, idom
 							.getKnowledgeBase().getRootQASet(),
-							new AnswerChoice[0]);
+							new Choice[0]);
 				} else {
 					question = idom.createQuestionNum(qname, idom
 							.getKnowledgeBase().getRootQASet());
@@ -217,7 +217,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			c = ConditionGenerator.condNum(qnum, op, d, errors, line, value,
 					file);
 		} else if (question instanceof QuestionChoice) {
-			AnswerChoice answer = null;
+			Choice answer = null;
 			QuestionChoice qc = (QuestionChoice) question;
 			if (qc instanceof QuestionYN) {
 				QuestionYN qyn = (QuestionYN) qc;
@@ -234,7 +234,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			}
 			if (answer == null) {
 				if (lazy || lazyAnswers) {
-					answer = (AnswerChoice) idom.addChoiceAnswer(qc, value);
+					answer = (Choice) idom.addChoiceAnswer(qc, value);
 					c = new CondEqual(qc, new ChoiceValue(answer));
 				} else {
 					errors.add(MessageKnOfficeGenerator
@@ -324,7 +324,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				}
 			} else {
 				q = idom.createQuestionOC(name, idom.getKnowledgeBase()
-						.getRootQASet(), new AnswerChoice[0]);
+						.getRootQASet(), new Choice[0]);
 			}
 		}
 		

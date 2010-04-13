@@ -54,7 +54,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 		String web = parameterMap.getWeb();
 		String solution = parameterMap.get( "XCLSolution" );
 		
-		Session c = getXPSCase(web, topic, user);
+		Session c = getSession(web, topic, user);
 		
 		if( c != null ){
 			StringBuffer newXCL = new StringBuffer();
@@ -125,7 +125,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param user
 	 * @return
 	 */
-	private Session getXPSCase(String web, String topic, String user){
+	private Session getSession(String web, String topic, String user){
 		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		service.getBase();
@@ -140,14 +140,14 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 		Session c = null;
 		
 		if(serviceSession instanceof D3webKnowledgeServiceSession) {
-			c = ((D3webKnowledgeServiceSession)serviceSession).getXpsCase();
+			c = ((D3webKnowledgeServiceSession)serviceSession).getSession();
 		}
 		
 		if(serviceSession == null) {
 			kbid =  KnowWEEnvironment.WIKI_FINDINGS+".."+KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
 			 serviceSession = broker.getSession().getServiceSession(kbid);
 			 if(serviceSession instanceof D3webKnowledgeServiceSession) {
-					c = ((D3webKnowledgeServiceSession)serviceSession).getXpsCase();
+					c = ((D3webKnowledgeServiceSession)serviceSession).getSession();
 				}
 		}
 		

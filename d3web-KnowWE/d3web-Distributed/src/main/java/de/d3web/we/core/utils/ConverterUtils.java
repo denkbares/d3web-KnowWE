@@ -56,7 +56,7 @@ public class ConverterUtils {
 	}
 
 	/**
-	 * Use: public static List<Object> toValueList(Value givenValue, XPSCase
+	 * Use: public static List<Object> toValueList(Value givenValue, Session
 	 * theCase)
 	 */
 	@Deprecated
@@ -84,7 +84,7 @@ public class ConverterUtils {
 	}
 	
 	/**
-	 * Use: public static List<Object> toValueList(Value givenValue, XPSCase
+	 * Use: public static List<Object> toValueList(Value givenValue, Session
 	 * theCase)
 	 */
 	@Deprecated

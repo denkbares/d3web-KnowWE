@@ -34,7 +34,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.utilities.ISetMap;
 import de.d3web.utilities.SetMap;
 import de.d3web.we.alignment.AlignmentUtilRepository;
@@ -147,7 +147,7 @@ public class D3webTermFactory implements TermFactory<TerminologyObject, Terminol
 		valueTerm.setInfo(TermInfoType.TERM_VALUE, D3webAlignUtils.getText(question.getUnknownAlternative()));
 		globalTerminology.addTerm(valueTerm);
 		if(question instanceof QuestionChoice) {
-			for (AnswerChoice each : ((QuestionChoice)question).getAllAlternatives()) {
+			for (Choice each : ((QuestionChoice)question).getAllAlternatives()) {
 				valueTerm = new Term(globalTerminology.getType());
 				valueTerm.setInfo(TermInfoType.TERM_NAME,  D3webAlignUtils.getText(question));
 				valueTerm.setInfo(TermInfoType.TERM_VALUE, D3webAlignUtils.getText(each));

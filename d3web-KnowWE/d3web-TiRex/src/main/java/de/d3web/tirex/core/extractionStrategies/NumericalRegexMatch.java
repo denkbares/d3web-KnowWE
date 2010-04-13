@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.IDObject;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.tirex.core.OriginalMatchAndStrategy;
 import de.d3web.tirex.core.TiRexSettings;
 
@@ -79,8 +79,8 @@ public class NumericalRegexMatch extends AbstractExtractionStrategy {
 
 			if (m.find()) {
 				if (toMatch == null) {
-					toMatch = new AnswerChoice(null);
-					((AnswerChoice) toMatch).setText(m.group());
+					toMatch = new Choice(null);
+					((Choice) toMatch).setText(m.group());
 				}
 				return new OriginalMatchAndStrategy(knowledge, toMatch, m
 						.group(), getInstance());

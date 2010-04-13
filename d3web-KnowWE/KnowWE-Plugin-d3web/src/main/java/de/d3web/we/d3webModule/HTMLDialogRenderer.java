@@ -29,7 +29,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.NumValue;
 
 /**
@@ -216,7 +216,7 @@ public class HTMLDialogRenderer {
 
 		html.append("<td class='fieldcell'><div id='" + q.getId() + "'>");
 		if (q instanceof QuestionChoice) {
-			List<AnswerChoice> list = ((QuestionChoice) q).getAllAlternatives();
+			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
 			renderChoiceAnswers(c, html, q, list, web, namespace);
 
 			// to remove the last comma after answers in built in dialog
@@ -241,7 +241,7 @@ public class HTMLDialogRenderer {
 			html.append("<td class='fieldcellFollow'><div id='" + q.getId() + "'>");
 			
 			if (q instanceof QuestionChoice) {
-				List<AnswerChoice> list = ((QuestionChoice) q).getAllAlternatives();
+				List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
 				renderChoiceAnswers(c, html, (Question)q, list, web, namespace);
 
 				// to remove the last comma after answers in built in dialog
@@ -283,7 +283,7 @@ public class HTMLDialogRenderer {
 	}
 
 	private static void renderChoiceAnswers(Session c, StringBuffer buffi,
-			Question q, List<AnswerChoice> list, String web, String namespace) {
+			Question q, List<Choice> list, String web, String namespace) {
 
 		// changed cssclass
 		//String cssclass = "fieldcell";
@@ -291,7 +291,7 @@ public class HTMLDialogRenderer {
 		int i=0;
 		// to space before and after commas evenly
 		//buffi.delete(buffi.length() - 1, buffi.length());
-		for (AnswerChoice answerChoice : list) {
+		for (Choice answerChoice : list) {
 
 			String cssclass="fieldcell";
 			
@@ -344,7 +344,7 @@ public class HTMLDialogRenderer {
 	}
 
 	/*
-	 * private static String renderQuestion(XPSCase c, Question q, String web,
+	 * private static String renderQuestion(Session c, Question q, String web,
 	 * String namespace) { StringBuffer buffi = new StringBuffer();
 	 * buffi.append(getEnclosingTag(SPAN, q.getText() + ": ",
 	 * "questionText",null)); if (q instanceof QuestionChoice) {

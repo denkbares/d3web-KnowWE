@@ -30,7 +30,7 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.diaFlux.IndicateFlowAction;
 import de.d3web.diaFlux.flow.Flow;
@@ -135,7 +135,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 
 	private void createRules(Flow flow, QuestionMC startQ, KnowledgeBaseManagement kbm) {
 
-		for (AnswerChoice answer : startQ.getAlternatives()) {
+		for (Choice answer : startQ.getAlternatives()) {
 			
 			
 			Rule rule = RuleFactory.createRule("FCIndication_" + startQ  + "_" + answer.getName());

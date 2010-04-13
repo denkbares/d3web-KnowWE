@@ -122,7 +122,7 @@ public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 						.getServiceSession(namespace);
 				if (kss instanceof D3webKnowledgeServiceSession) {
 					sb.append(questionWriter.getHTMLString((Question) obj,
-							((D3webKnowledgeServiceSession) kss).getXpsCase(),
+							((D3webKnowledgeServiceSession) kss).getSession(),
 							namespace, webname, topic, targetUrlPrefix));
 				}
 			} else {

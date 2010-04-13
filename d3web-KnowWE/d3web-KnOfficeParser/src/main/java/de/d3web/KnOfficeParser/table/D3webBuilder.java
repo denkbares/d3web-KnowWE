@@ -45,7 +45,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 /**
@@ -61,7 +61,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 	private QContainer currentqclass;
 	private final String file;
 	private Question currentquestion;
-	private AnswerChoice currentanswer;
+	private Choice currentanswer;
 	private final CellKnowledgeBuilder ckb;
 	private TableParser tb;
 	private int counter = 0;
@@ -135,7 +135,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 					} else if (answer.startsWith("<")||answer.startsWith("[")||answer.startsWith(">")||answer.startsWith("=")) {
 						currentquestion=idom.createQuestionNum(question, currentqclass);
 					} else {
-						currentquestion=idom.createQuestionOC(question, currentqclass, new AnswerChoice[0]);
+						currentquestion=idom.createQuestionOC(question, currentqclass, new Choice[0]);
 					}
 				} else {
 					errors.add(MessageKnOfficeGenerator.createQuestionNotFoundException(file, line, column, "", question));
@@ -200,7 +200,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 			}
 		} else if (currentquestion instanceof QuestionYN) {
 			QuestionYN qyn = (QuestionYN) currentquestion;
-			AnswerChoice ac;
+			Choice ac;
 			if (answer==null||answer.equalsIgnoreCase("ja")||answer.equalsIgnoreCase("yes")) {
 				ac=qyn.yes;
 			} else if (answer.equalsIgnoreCase("nein")||answer.equalsIgnoreCase("no")){
@@ -220,7 +220,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 							errors.add(MessageKnOfficeGenerator.createAnswerCreationUnambiguousException(file, line, column, "", answer));
 							return;
 						} else {
-							currentanswer=(AnswerChoice) idom.addChoiceAnswer(qc, answer);
+							currentanswer=(Choice) idom.addChoiceAnswer(qc, answer);
 						}
 					} else {
 						errors.add(MessageKnOfficeGenerator.createAnswerNotFoundException(file, line, column, "", answer, answer));

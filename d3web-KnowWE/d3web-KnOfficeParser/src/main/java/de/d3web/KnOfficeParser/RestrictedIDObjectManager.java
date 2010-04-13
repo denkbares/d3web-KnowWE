@@ -40,7 +40,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.AnswerFactory;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.Unknown;
 
@@ -112,7 +112,7 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 		}
 		if (answer==null&&lazyAnswers) {
 			QuestionChoice qc = (QuestionChoice) q;
-			AnswerChoice ac = AnswerFactory.createAnswerChoice(kbm.findNewIDForAnswerChoice(qc), name);
+			Choice ac = AnswerFactory.createAnswerChoice(kbm.findNewIDForAnswerChoice(qc), name);
 			qc.addAlternative(ac);
 			answer = new ChoiceValue(ac);
 		}
@@ -120,8 +120,8 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 	}
 
 	@Override
-	public AnswerChoice findAnswerChoice(QuestionChoice qc, String name) {
-		AnswerChoice answer = kbm.findAnswerChoice(qc, name);
+	public Choice findAnswerChoice(QuestionChoice qc, String name) {
+		Choice answer = kbm.findAnswerChoice(qc, name);
 		if (answer==null&&lazyAnswers) {
 			answer = AnswerFactory.createAnswerChoice(kbm.findNewIDForAnswerChoice(qc), name);
 			qc.addAlternative(answer);

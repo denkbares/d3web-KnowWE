@@ -24,7 +24,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -109,7 +109,7 @@ public class SCListEditorRenderer extends DeprecatedAbstractKnowWEAction {
 					.append("<span class=\"semLink\">"
 							+ tab
 							+ "<a onmouseout=\"return nd();\" onmouseover=\"return overlib('&lt;div class=&quot;semContents&quot; &gt;&lt;form action=&quot; javascript:void(); &quot; name=&quot;semanomcQ72&quot; id=&quot;semanomcQ72&quot; &gt;&lt;div align=left &gt;");
-			for (AnswerChoice a : ((QuestionChoice) qaset).getAllAlternatives()) {
+			for (Choice a : ((QuestionChoice) qaset).getAllAlternatives()) {
 				sb.append("&lt;input type=\\'checkbox\\' name=\\'f0idmc"
 						+ qaset.getId() + "\\' value=\\'" + a.getId()
 						+ " \\' &gt;" + replaceHTML(a.getName())

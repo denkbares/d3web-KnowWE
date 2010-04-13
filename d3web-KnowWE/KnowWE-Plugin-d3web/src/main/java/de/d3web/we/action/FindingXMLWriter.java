@@ -32,7 +32,7 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
@@ -55,7 +55,7 @@ public class FindingXMLWriter {
 		if (theQuestion instanceof QuestionChoice) {
 			QuestionChoice theQC = (QuestionChoice) theQuestion;
 			if (theQC.getAllAlternatives() != null) {
-				for (AnswerChoice each : theQC.getAllAlternatives()) {
+				for (Choice each : theQC.getAllAlternatives()) {
 					appendAnswer(theQuestion, sb, new ChoiceValue(each), theCase);
 				}
 				appendAnswer(theQuestion, sb, Unknown.getInstance(), theCase);

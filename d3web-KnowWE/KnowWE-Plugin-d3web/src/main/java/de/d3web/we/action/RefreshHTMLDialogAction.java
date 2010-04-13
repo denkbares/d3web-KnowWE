@@ -72,7 +72,7 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 		Session c = null;
 		
 		if(serviceSession instanceof D3webKnowledgeServiceSession) {
-			c = ((D3webKnowledgeServiceSession)serviceSession).getXpsCase();
+			c = ((D3webKnowledgeServiceSession)serviceSession).getSession();
 			return HTMLDialogRenderer.renderDialog(c,web);
 		}
 		
@@ -80,7 +80,7 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 			kbid =  KnowWEEnvironment.WIKI_FINDINGS+".."+KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
 			 serviceSession = broker.getSession().getServiceSession(kbid);
 			 if(serviceSession instanceof D3webKnowledgeServiceSession) {
-					c = ((D3webKnowledgeServiceSession)serviceSession).getXpsCase();
+					c = ((D3webKnowledgeServiceSession)serviceSession).getSession();
 					return HTMLDialogRenderer.renderDialog(c,web);
 				}
 		}

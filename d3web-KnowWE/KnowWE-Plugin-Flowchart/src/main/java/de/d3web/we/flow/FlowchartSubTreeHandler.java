@@ -50,7 +50,7 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.diaFlux.ConditionTrue;
@@ -361,8 +361,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		action.setQuestion(question);
 
-		AnswerChoice answer = null;
-		for (AnswerChoice child : question.getAllAlternatives()) {
+		Choice answer = null;
+		for (Choice child : question.getAllAlternatives()) {
 			if (child.getName().equals(nodeName)) answer = child;
 
 		}
@@ -454,8 +454,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		action.setQuestion(question);
 
-		AnswerChoice answer = null;
-		for (AnswerChoice child : question.getAllAlternatives()) {
+		Choice answer = null;
+		for (Choice child : question.getAllAlternatives()) {
 			if (child.getName().equals(name)) answer = child;
 
 		}

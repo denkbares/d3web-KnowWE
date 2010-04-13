@@ -47,7 +47,7 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * Highlights the Rules in Kopic-Sections according to the XPSCase.
+ * Highlights the Rules in Kopic-Sections according to the Session.
  * 
  * @author Johannes Dienst
  * 
@@ -81,28 +81,28 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	// String kbRuleId = (String) KnowWEUtils.getStoredObject(sec.getWeb(),
 	// sec.getTitle(), rule.getId(), Rule.KBID_KEY);
 	//		
-	// // Get KnowledgeServiceSession containing the XPSCase
-	// String xpsCaseId = sec.getTitle() + ".." +
+	// // Get KnowledgeServiceSession containing the Session
+	// String sessionId = sec.getTitle() + ".." +
 	// KnowWEEnvironment.generateDefaultID(sec.getTitle());
 	// Broker broker = D3webModule.getBroker(user.getUsername(), sec.getWeb());
 	// KnowledgeServiceSession kss =
-	// broker.getSession().getServiceSession(xpsCaseId);
+	// broker.getSession().getServiceSession(sessionId);
 	//		
 	// if (kss instanceof D3webKnowledgeServiceSession) {
 	//			
-	// // Get the XPSCase
+	// // Get the Session
 	// D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession)
 	// kss;
-	// XPSCase xpsCase = d3webKSS.getXpsCase();
+	// Session session = d3webKSS.getXpsCase();
 	//			
 	// // Get the RuleComplex with kbRuleId
 	// Collection<KnowledgeSlice> slices =
-	// xpsCase.getKnowledgeBase().getAllKnowledgeSlices();
+	// session.getKnowledgeBase().getAllKnowledgeSlices();
 	// for (KnowledgeSlice slice : slices) {
 	//				
 	// if (slice.getId().equals(kbRuleId)) {
 	// RuleComplex rc = (RuleComplex) slice;
-	// return this.renderConditionLine(sec, rc, xpsCase, user);
+	// return this.renderConditionLine(sec, rc, session, user);
 	// }
 	// }
 	// }
@@ -120,11 +120,11 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 				sec.getTitle(), ruleSection.getId(),
 				de.d3web.we.kdom.rules.Rule.KBID_KEY);
 
-		Session xpsCase = D3webUtils.getXPSCase(sec, user);
+		Session session = D3webUtils.getSession(sec, user);
 		Rule rule = null;
 
-		if (xpsCase != null) {
-			Collection<KnowledgeSlice> slices = xpsCase.getKnowledgeBase()
+		if (session != null) {
+			Collection<KnowledgeSlice> slices = session.getKnowledgeBase()
 					.getAllKnowledgeSlices();
 			for (KnowledgeSlice slice : slices) {
 				if (slice != null) {
@@ -141,7 +141,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 				}
 			}
 		}
-		if (rule != null) this.renderConditionLine(article, sec, rule, xpsCase, user,
+		if (rule != null) this.renderConditionLine(article, sec, rule, session, user,
 				result);
 		else result.append(sec.getOriginalText());
 	}
@@ -155,11 +155,11 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	 * 
 	 * @param sec
 	 * @param rc
-	 * @param xpsCase
+	 * @param session
 	 * @return
 	 */
-	// private String renderConditionLine(Section sec, RuleComplex rc, XPSCase
-	// xpsCase,
+	// private String renderConditionLine(Section sec, RuleComplex rc, Session
+	// session,
 	// KnowWEUserContext user) {
 	//		
 	// StringBuffer buffi = new StringBuffer();
@@ -170,7 +170,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	// if (type instanceof Finding || type instanceof ComplexFinding
 	// || type instanceof ComplexFindingBraced || type instanceof Conjunct
 	// || type instanceof Disjunct)
-	// buffi.append(this.highlightCondition(child, rc, xpsCase, user));
+	// buffi.append(this.highlightCondition(child, rc, session, user));
 	// else
 	// buffi.append(DelegateRenderer.getInstance().render(child, user));
 	// }
@@ -179,7 +179,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	// }
 
 	private void renderConditionLine(KnowWEArticle article, Section sec,
-			Rule rc, Session xpsCase, KnowWEUserContext user,
+			Rule rc, Session session, KnowWEUserContext user,
 			StringBuilder buffi) {
 
 		KnowWEObjectType type;
@@ -190,7 +190,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 					|| type instanceof ComplexFindingBraced
 					|| type instanceof Conjunct || type instanceof Disjunct) buffi.append(this.highlightCondition(
 					article, child, rc,
-					xpsCase, user));
+					session, user));
 			else {
 				StringBuilder b = new StringBuilder();
 				DelegateRenderer.getInstance().render(article, child, user, b);
@@ -204,11 +204,11 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	 * 
 	 * @param sec
 	 * @param rc
-	 * @param xpsCase
+	 * @param session
 	 * @return
 	 */
 	private String highlightCondition(KnowWEArticle article, Section sec,
-			Rule rc, Session xpsCase, KnowWEUserContext user) {
+			Rule rc, Session session, KnowWEUserContext user) {
 
 		StringBuilder buffi = new StringBuilder();
 		boolean braced = false;
@@ -219,7 +219,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 		}
 
 		try {
-			if (rc.getCondition().eval(xpsCase)) FontColorBackgroundRenderer.getRenderer(
+			if (rc.getCondition().eval(session)) FontColorBackgroundRenderer.getRenderer(
 					FontColorRenderer.COLOR5, "#33FF33").render(article,
 					sec, user, buffi);
 			else FontColorBackgroundRenderer.getRenderer(

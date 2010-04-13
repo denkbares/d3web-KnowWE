@@ -22,7 +22,7 @@ package de.d3web.tirex.core.extractionStrategies;
 
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.tirex.core.OriginalMatchAndStrategy;
 import de.d3web.tirex.core.TiRexSettings;
 
@@ -48,8 +48,8 @@ public abstract class AbstractExtractionStrategy implements ExtractionStrategy {
 		String qaText = null;
 		if (toMatch instanceof NamedObject) {
 			qaText = ((NamedObject) toMatch).getName();
-		} else if (toMatch instanceof AnswerChoice) {
-			qaText = ((AnswerChoice) toMatch).getName();
+		} else if (toMatch instanceof Choice) {
+			qaText = ((Choice) toMatch).getName();
 		}
 
 		if (qaText == null)

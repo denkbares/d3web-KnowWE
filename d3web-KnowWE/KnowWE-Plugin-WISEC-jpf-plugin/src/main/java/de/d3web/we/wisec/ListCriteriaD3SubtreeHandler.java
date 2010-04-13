@@ -15,7 +15,7 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -139,7 +139,7 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 		
 		// Get abstract List-Question
 		QuestionChoice listQuestion = (QuestionChoice) kbm.findQuestion(listID);
-		AnswerChoice activeAnswer = (AnswerChoice) kbm.findAnswer(listQuestion, "active");
+		Choice activeAnswer = (Choice) kbm.findAnswer(listQuestion, "active");
 		
 		// Create condition
 		CondEqual condition = new CondEqual(listQuestion, new ChoiceValue(activeAnswer));

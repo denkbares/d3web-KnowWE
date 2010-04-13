@@ -38,7 +38,7 @@ import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.session.values.AnswerChoice;
+import de.d3web.core.session.values.Choice;
 
 /**
  * A singleton class that contains numerous methods necessary to run the
@@ -100,11 +100,11 @@ public class TiRexUtilities {
 					+ question.getClass() + " ID: " + question.getId() + ")\n");
 
 			if (getAnswers) {
-				Collection<AnswerChoice> answers = getAllPossibleAnswers(question);
+				Collection<Choice> answers = getAllPossibleAnswers(question);
 
 				for (Answer answer : answers) {
-					if (answer instanceof AnswerChoice) {
-						buffer.append(((AnswerChoice) answer).getName() + "\n");
+					if (answer instanceof Choice) {
+						buffer.append(((Choice) answer).getName() + "\n");
 					}
 				}
 			}
@@ -142,8 +142,8 @@ public class TiRexUtilities {
 	 *         KnowledgeBase are in a Collection. Currently the only predefined
 	 *         Answers that I know of are Objects of the Class "AnswerChoice".
 	 */
-	public Collection<AnswerChoice> getAllPossibleAnswers(KnowledgeBase kb) {
-		Collection<AnswerChoice> coll = new ArrayList<AnswerChoice>();
+	public Collection<Choice> getAllPossibleAnswers(KnowledgeBase kb) {
+		Collection<Choice> coll = new ArrayList<Choice>();
 
 		for (Question q : kb.getQuestions()) {
 			coll.addAll(getAllPossibleAnswers(q));
@@ -158,9 +158,9 @@ public class TiRexUtilities {
 	 * @return All the predefined answers that could be found for the given
 	 *         Question are returned in a Collection.
 	 */
-	public Collection<AnswerChoice> getAllPossibleAnswers(Question q) {
+	public Collection<Choice> getAllPossibleAnswers(Question q) {
 		return (q instanceof QuestionChoice) ? ((QuestionChoice) q)
-				.getAllAlternatives() : new ArrayList<AnswerChoice>();
+				.getAllAlternatives() : new ArrayList<Choice>();
 	}
 
 	/**

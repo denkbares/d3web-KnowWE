@@ -40,8 +40,8 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-
-		Session theCase = D3webUtils.getXPSCase(topic, user, web);
+		
+		Session theCase = D3webUtils.getSession(topic, user, web);
 
 		if (!FluxSolver.getInstance().isFlowCase(theCase)) {
 			return "No Flowchart found.";
@@ -142,18 +142,22 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		return builder.toString();
 	}
 
-	private String createPreviewWithHighlightedPath(Section section, Session xpsCase) {
-
+	private String createPreviewWithHighlightedPath(Section section, Session session) {
+		
+		
+		
 		String preview = FlowchartUtils.extractPreview(section);
-
-		if (xpsCase == null) return preview;
-
+		
+		if (session == null)
+			return preview;
+		
 		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
-
-		CaseObjectSource flowSet = FluxSolver.getFlowSet(xpsCase);
-
-		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) xpsCase.getCaseObject(flowSet);
-
+		
+		CaseObjectSource flowSet = FluxSolver.getFlowSet(session);
+		
+		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(flowSet);
+       
+        
 		for (PathEntry entry : caseObject.getPathEnds()) {
 
 			preview = highlightPath(preview, flowID, entry);
