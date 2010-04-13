@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g 2010-04-01 16:34:51
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DecisionTree.g 2010-04-06 16:16:06
 
 package de.d3web.KnOfficeParser.decisiontree;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -2179,11 +2179,11 @@ public class DecisionTree extends Parser {
     // $ANTLR end synpred1_DecisionTree
 
     // Delegated rules
-    public DecisionTree_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
-    public DecisionTree_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
-    public DecisionTree_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
     public DecisionTree_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
+    public DecisionTree_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
+    public DecisionTree_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
+    public DecisionTree_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
 
     public final boolean synpred1_DecisionTree() {
         state.backtracking++;

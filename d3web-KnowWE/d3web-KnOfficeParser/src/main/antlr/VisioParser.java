@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2010-04-01 16:34:59
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2010-04-06 16:16:19
 
 package de.d3web.KnOfficeParser.visio;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -595,7 +595,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: y, x, shapetext, width, height
+            // elements: width, y, height, shapetext, x
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -700,7 +700,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: width, x, y, height
+            // elements: height, y, width, x
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -813,7 +813,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: width, height, textboxtext, y, x
+            // elements: height, textboxtext, x, width, y
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1398,7 +1398,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: questionid, INT, popup, INT, file
+            // elements: file, popup, questionid, INT, INT
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1744,7 +1744,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: name, name, DOT
+            // elements: DOT, name, name
             // token labels: 
             // rule labels: retval
             // token list labels: 

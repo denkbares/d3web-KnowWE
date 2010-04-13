@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g 2010-04-01 16:34:55
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\SCMCBR.g 2010-04-06 16:16:11
 
 package de.d3web.KnOfficeParser.scmcbr;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -1010,11 +1010,11 @@ public class SCMCBR extends Parser {
     // $ANTLR end "weight"
 
     // Delegated rules
+    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
     public String type() throws RecognitionException { return gBasicParser.type(); }
+    public SCMCBR_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
     public SCMCBR_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
     public SCMCBR_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
-    public SCMCBR_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
-    public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
     public SCMCBR_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
 
 

@@ -46,10 +46,10 @@ import de.d3web.core.knowledge.terminology.info.Properties;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
-import de.d3web.kernel.psMethods.shared.Abnormality;
-import de.d3web.kernel.psMethods.shared.Weight;
 import de.d3web.knowledgeExporter.KnowledgeManager;
+import de.d3web.shared.Abnormality;
 import de.d3web.shared.AbstractAbnormality;
+import de.d3web.shared.Weight;
 
 public class AttributeTableWriter extends XlsKnowledgeWriter {
 
