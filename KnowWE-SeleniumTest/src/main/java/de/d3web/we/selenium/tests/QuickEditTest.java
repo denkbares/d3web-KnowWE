@@ -116,6 +116,7 @@ public class QuickEditTest extends KnowWETestCase{
 		refreshAndWait();
 		String sectionID = "Quick-Edit-Test/RootType/Kopic/Kopic_content/SetCoveringList-section/SetCoveringList-section_content";
 		openQuickEdit(sectionID);
+//		openQuickEdit("Quick-Edit-Test/RootType/Kopic/Kopic_content/Solutions-section/Solutions-section_content");
 		assertFalse("Quick-Edit button still present", selenium.isElementPresent(sectionID + "_pencil"));
 		assertTrue("Save button is not existing", selenium.isElementPresent(sectionID + "_accept"));
 		assertTrue("Cancel button is not existing", selenium.isElementPresent(sectionID + "_cancel"));
@@ -132,10 +133,9 @@ public class QuickEditTest extends KnowWETestCase{
 //		assertEquals("Questionsheet not working (no quick-edit failure): " + comment, true, result);
 		
 		//Adding new solution
-		doSelActionAndWait(sectionID + "_cancel", "click");
 		sectionID = "Quick-Edit-Test/RootType/Kopic/Kopic_content/Solutions-section/Solutions-section_content";
 		quickEditAdd(sectionID, "\nMissing wheel");
-		assertTrue("", selenium.getText("//div[@id='" + sectionID + "']").contains("Missing wheel"));
+		assertTrue("New solution \"Missing wheel\" wasn't saved.", selenium.getText("//div[@id='" + sectionID + "']").contains("Missing wheel"));
 		
 		//Adding new question
 		sectionID = "Quick-Edit-Test/RootType/Kopic/Kopic_content/Questions-section/Questions-section_content";
@@ -167,8 +167,8 @@ public class QuickEditTest extends KnowWETestCase{
 	
 	private void quickEditAdd(String sectionID, String newText) {
 		openQuickEdit(sectionID);
-		doSelActionAndWait("//div[@id='" + sectionID + "']//textarea[@id='default-edit-area']",
-				"type", selenium.getValue("//div[@id='" + sectionID + "']/textarea[@id='default-edit-area']") 
+		doSelActionAndWait("//div[@id='" + sectionID + "']//textarea[@id='" + sectionID + "/default-edit-area']",
+				"type", selenium.getValue("//div[@id='" + sectionID + "']/textarea[@id='" + sectionID + "/default-edit-area']") 
 				+ newText);
 		doSelActionAndWait(sectionID + "_accept", "click");
 	}
