@@ -581,7 +581,7 @@ KNOWWE.core.edit = function(){
             var rel = eval("(" + el.getAttribute('rel') + ")");
             var params = {
                 action : 'UpdateKDOMNodeAction',
-                TargetNamespace : _KS('#default-edit-area').value,
+                TargetNamespace : _KS('#' + rel.id + '/default-edit-area').value,
                 SectionID :  rel.id,
                 KWiki_Topic : KNOWWE.helper.gup('page')
             }
