@@ -210,7 +210,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 
 	@Override
 	public QuestionOC createQuestionOC(String id, String name, QASet parent, String[] answers) {
-		return kbm.createQuestionOC(name, parent, answers);
+		return kbm.createQuestionOC(id, name, parent, answers);
 	}
 
 

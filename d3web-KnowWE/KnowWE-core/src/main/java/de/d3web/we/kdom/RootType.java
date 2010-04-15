@@ -19,7 +19,13 @@
  */
 package de.d3web.we.kdom;
 
+import java.util.List;
+
+import de.d3web.report.Message;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  *
@@ -42,6 +48,26 @@ public class RootType extends DefaultAbstractKnowWEObjectType {
 
 	public static RootType getInstance() {
 		return instance;
+	}
+
+	@Override
+	protected KnowWEDomRenderer<RootType> getDefaultRenderer() {
+		return new KnowWEDomRenderer<RootType>() {
+			@Override
+			public void render(KnowWEArticle article, Section<RootType> section, KnowWEUserContext user, StringBuilder string) {
+				List<Message> messages = KnowWEArticle.getMessages(article, section);
+				for (Message message : messages) {
+					String type = message.getMessageType();
+					String tag = Message.ERROR.equals(type)
+							? "error"
+							: Message.WARNING.equals(type) ? "warning" : "information";
+					string.append("\n%%").append(tag).append("\n");
+					string.append(message.getMessageText());
+					string.append("\n/%\n\n");
+				}
+				DelegateRenderer.getInstance().render(article, section, user, string);
+			}
+		};
 	}
 
 	

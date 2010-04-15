@@ -22,64 +22,80 @@ package de.d3web.we.knowRep;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import de.d3web.report.Message;
 import de.d3web.we.kdom.KnowWEArticle;
 
 public class KnowledgeRepresentationManager {
-	
-//	private static KnowledgeRepresentationManager instance;
-//	
-//		
-//	public static KnowledgeRepresentationManager getInstance() {
-//		if (instance == null)
-//			instance = new KnowledgeRepresentationManager();
-//		return instance;
-//	}
-	
-	private Map<String, KnowledgeRepresentationHandler> handlers = new HashMap<String, KnowledgeRepresentationHandler>();
-	
-	private String web;
-	
+
+	// private static KnowledgeRepresentationManager instance;
+	//
+	//
+	// public static KnowledgeRepresentationManager getInstance() {
+	// if (instance == null)
+	// instance = new KnowledgeRepresentationManager();
+	// return instance;
+	// }
+
+	private final Map<String, KnowledgeRepresentationHandler> handlers = new HashMap<String, KnowledgeRepresentationHandler>();
+
+	private final String web;
+
 	/**
-	 * <b>This constructor SHOULD NOT BE USED!</b><p/>
-	 * Use KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(String web) instead!
+	 * <b>This constructor SHOULD NOT BE USED!</b>
+	 * <p/>
+	 * Use KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(
+	 * String web) instead!
 	 */
 	public KnowledgeRepresentationManager(String web) {
 		this.web = web;
 	}
-	
 
-	
 	public void registerHandler(String key, KnowledgeRepresentationHandler handler) {
 		handlers.put(key, handler);
 	}
-	
+
 	public void registerHandler(KnowledgeRepresentationHandler handler) {
 		handlers.put(handler.getKey(), handler);
 	}
-	
-	
+
 	public void initArticle(KnowWEArticle art) {
-		for(KnowledgeRepresentationHandler handler : handlers.values()) {
+		for (KnowledgeRepresentationHandler handler : handlers.values()) {
 			handler.initArticle(art);
 		}
 	}
-	
+
 	public void finishArticle(KnowWEArticle art) {
-		for(KnowledgeRepresentationHandler handler : handlers.values()) {
-			handler.finishArticle(art);
+		for (KnowledgeRepresentationHandler handler : handlers.values()) {
+			try {
+				handler.finishArticle(art);
+			}
+			catch (Throwable e) {
+				List<Message> messages = KnowWEArticle.getMessages(art, art.getSection());
+				messages.add(new Message(Message.ERROR,
+						"This page's content caused a serious initialitation error:\n" +
+						e.getLocalizedMessage(),
+						null, 0, 0, ""));
+				KnowWEArticle.storeMessages(art, art.getSection(), messages);
+				Logger.getLogger("KnowWE-core").log(Level.SEVERE,
+						"Page content of page '" +
+						art.getTitle() +
+						"' caused a serious initialitation error", e);
+			}
 		}
 	}
-	
+
 	public KnowledgeRepresentationHandler getHandler(String key) {
 		return handlers.get(key);
 	}
-	
+
 	public Collection<KnowledgeRepresentationHandler> getHandlers() {
 		return handlers.values();
 	}
-
 
 	public String getWeb() {
 		return this.web;
