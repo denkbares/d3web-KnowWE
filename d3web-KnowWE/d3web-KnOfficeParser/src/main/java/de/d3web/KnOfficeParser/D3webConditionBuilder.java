@@ -173,7 +173,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		if (question == null) {
 			if (lazy) {
 				if (type != null) {
-					question = D3webQuestionFactory.createQuestion(qname, type, null,
+					question = D3webQuestionFactory.createQuestion(qname, null, type,
 							idom);
 					if (question == null) {
 						errors.add(MessageKnOfficeGenerator
@@ -268,7 +268,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		if (question == null) {
 			if (lazy) {
 				if (type != null) {
-					question = D3webQuestionFactory.createQuestion(qname, type, null,
+					question = D3webQuestionFactory.createQuestion(qname, null, type,
 							idom);
 					if (question == null) {
 						errors.add(MessageKnOfficeGenerator
@@ -314,7 +314,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		// create q if not exists and lazy enabled
 		if (q == null && lazy) {
 			if (type != null) {
-				q = D3webQuestionFactory.createQuestion(name, type, null, idom);
+				q = D3webQuestionFactory.createQuestion(name, null, type, idom);
 				if (q == null) {
 					errors.add(MessageKnOfficeGenerator
 							.createTypeRecognitionError(file, line,

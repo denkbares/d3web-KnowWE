@@ -272,8 +272,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				} else {
 					if (lazy) {
 						if (type != null) {
-							qcon = D3webQuestionFactory.createQuestion(s,
-									type, null, idom);
+							qcon = D3webQuestionFactory.createQuestion(s, null, type,
+									idom);
 							if (qcon != null) {
 								qcons.add(qcon);
 							} else {
@@ -346,7 +346,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		if (q == null) {
 			if (lazy) {
 				if (type != null) {
-					q = D3webQuestionFactory.createQuestion(qname, type, null, idom);
+					q = D3webQuestionFactory.createQuestion(qname, null, type, idom);
 				} else {
 					q = idom.createQuestionOC(qname, idom.getKnowledgeBase()
 							.getRootQASet(), new Choice[0]);
@@ -452,11 +452,11 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (currentdiag == null) {
 				if (lazy) {
 					if (type != null) {
-						currentquestion = D3webQuestionFactory.createQuestion(
-								s, type, null, idom);
+						currentquestion = D3webQuestionFactory.createQuestion(s, null,
+								type, idom);
 					} else {
-						currentquestion = D3webQuestionFactory.createQuestion(
-								s, "oc", null, idom);
+						currentquestion = D3webQuestionFactory.createQuestion(s, null,
+								"oc", idom);
 					}
 				} else {
 					errors.add(MessageKnOfficeGenerator
