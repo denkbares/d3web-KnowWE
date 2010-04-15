@@ -103,10 +103,7 @@ public class SectionTest extends TestCase{
 		article.getSection().collectTextsFromLeaves(buddy);
 		assertEquals("Two methdos collectTextsFromLeaves() with different results",
 				article.collectTextsFromLeaves(), buddy.toString());
-		//article has to be deleted, otherwise the changed nodes wouldn't be splitted
-		//TODO check the reason for that (could be found in Constructor of KnowWEArticle)
-		env.getArticleManager(web).deleteArticle(article);
-		env.saveArticle(web, "Test_Article", buddy.toString(), null);
+		env.getWikiConnector().saveArticle("Test_Article", buddy.toString(), null, true);
 		article = env.getArticle(web, "Test_Article");
 		assertNotSame(content, article.getSection().getOriginalText());
 		assertTrue(article.getSection().getOriginalText().contains(newHeader));

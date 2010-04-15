@@ -102,6 +102,11 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			return false;
 		}
 	}
+	
+	@Override
+	public boolean saveArticle(String name, String text, KnowWEParameterMap map, boolean fullParse) {
+		return saveArticle(name, text, map);
+	}
 
 	@Override
 	public LinkedList<String> getJarAttachments() {

@@ -86,6 +86,18 @@ public interface KnowWEWikiConnector {
 	public boolean saveArticle(String name, String text, KnowWEParameterMap map);
 
 	/**
+	 * Saves the article (persistently) into the connected wiki
+	 * 
+	 * @param name
+	 * @param text
+	 * @param map
+	 * @param fullParse possibility to force the full parsing of the page
+	 * (only for KnowWETestWikiConnector working)
+	 * @return
+	 */
+	public boolean saveArticle(String name, String text, KnowWEParameterMap map, boolean fullParse);
+	
+	/**
 	 * Returns a list of all jar attachment files of the wiki
 	 * 
 	 * @return

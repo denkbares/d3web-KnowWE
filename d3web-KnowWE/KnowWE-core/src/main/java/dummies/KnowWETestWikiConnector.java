@@ -158,6 +158,15 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 				.getRootType(), KnowWEEnvironment.DEFAULT_WEB));
 		return true;
 	}
+	
+	@Override
+	public boolean saveArticle(String name, String text, KnowWEParameterMap map, boolean fullParse) {
+		KnowWEEnvironment.getInstance().getArticleManager(
+				KnowWEEnvironment.DEFAULT_WEB).saveUpdatedArticle(
+				new KnowWEArticle(text, name, KnowWEEnvironment.getInstance()
+				.getRootType(), KnowWEEnvironment.DEFAULT_WEB, fullParse));
+		return true;
+	}
 
 	@Override
 	public boolean setPageLocked(String articlename, String user) {
