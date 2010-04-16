@@ -35,6 +35,7 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
+import de.d3web.core.session.values.Unknown;
 
 /**
  * Class for rendering the HTML table-based interview
@@ -301,7 +302,7 @@ public class HTMLDialogRenderer {
 				
 			Value value = session.getValue(question);
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
-					&& isAnsweredinCase(value, choice)) {
+					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
 				cssclass = "fieldcell answerTextActive";
 			}
 			String spanid = "span_" + question.getId() + "_" + choice.getId();
@@ -313,18 +314,30 @@ public class HTMLDialogRenderer {
 			}
 			i++;
 		}
+		// also render the unknown alternative for this question
+		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "',"
+				+ "web: '" + web + "',"
+				+ "ns: '" + namespace + "',"
+				+ "qid: '" + question.getId() + "'"
+				+ "}\" ";
+		String cssclass = "fieldcell";
+		String spanid = "span_" + question.getId() + "_" + Unknown.getInstance().getId();
+		buffi.append(getEnclosingTagOnClick("span", ""
+				+ Unknown.getInstance().getId() + " ", cssclass, jscall, null,
+				spanid));
+			
+		// TODO
+
 	}
 	
-	private static boolean isAnsweredinCase(Value value, Choice choice) {
-		ChoiceValue choiceValue = new ChoiceValue(choice);
-		// test for OC and MC values separately
-		if (value instanceof ChoiceValue) {
-			return value.equals(choiceValue);
+	private static boolean isAnsweredinCase(Value sessionValue, Value value) {
+		// test for MC values separately
+		if (sessionValue instanceof MultipleChoiceValue) {
+			return ((MultipleChoiceValue) sessionValue).contains(value);
 		}
-		else if (value instanceof MultipleChoiceValue) {
-			return ((MultipleChoiceValue) value).contains(choiceValue);
+		else {
+			return sessionValue.equals(value);
 		}
-		return false;
 	}
 
 	private static String getEnclosingTagOnClick(String tag, String text,

@@ -36,19 +36,20 @@ import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.PropertiesContainer;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.D3WebSession;
 import de.d3web.core.session.IEventSource;
 import de.d3web.core.session.KBOEventListener;
-import de.d3web.core.session.Value;
-import de.d3web.core.session.ValuedObject;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionEventListener;
+import de.d3web.core.session.SessionFactory;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.ValuedObject;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.indication.inference.PSMethodNextQASet;
@@ -386,17 +387,20 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return UndefinedValue.getInstance();
 	}
 
-	private Value getAnswers(QuestionChoice choice, List values) {
-		// [HOTFIX]:Peter: known, but another answer
-		// if(values.isEmpty()) {
-		// result.add(choice.getUnknownAlternative());
-		// }
-		for (Object object : values) {
-			if (object instanceof String) {
-				String id = (String) object;
-				Value answer = baseManagement.findValue(choice, id);
-				if (answer != null && answer != UndefinedValue.getInstance()) {
-					return answer;
+	private Value getAnswers(QuestionChoice question, List values) {
+		if (question instanceof QuestionMC) {
+			return baseManagement.findMultipleChoiceValue((QuestionMC) question,
+					(List<String>) values);
+		}
+		// for one-chocie questions
+		else {
+			for (Object object : values) {
+				if (object instanceof String) {
+					String id = (String) object;
+					Value answer = baseManagement.findValue(question, id);
+					if (answer != null && answer != UndefinedValue.getInstance()) {
+						return answer;
+					}
 				}
 			}
 		}
