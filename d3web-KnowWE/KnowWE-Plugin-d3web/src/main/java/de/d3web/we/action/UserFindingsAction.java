@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.session.values.Choice;
-import de.d3web.core.session.values.AnswerUnknown;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
 import de.d3web.we.core.DPSEnvironment;
@@ -41,10 +41,10 @@ import de.d3web.we.terminology.local.LocalTerminologyAccess;
 
 public class UserFindingsAction extends DeprecatedAbstractKnowWEAction {
 
-	private String htmlHeader;
-	private SimpleDateFormat dateFormat;
+	private final String htmlHeader;
+	private final SimpleDateFormat dateFormat;
 //	private String link = "/KnowWE.jsp?renderer=KWiki_dialog&action=KWiki_requestDialog&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
-	private String jumplink = "KnowWE.jsp?renderer=KWiki_dialog&action=RequestDialogRenderer&KWikiJumpId=%jumpId%&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
+	private final String jumplink = "KnowWE.jsp?renderer=KWiki_dialog&action=RequestDialogRenderer&KWikiJumpId=%jumpId%&KWikisessionid=%id%&KWikiUser=%user%&KWikiWeb=%web%";
 	
 	
 	public UserFindingsAction() {
@@ -89,7 +89,7 @@ public class UserFindingsAction extends DeprecatedAbstractKnowWEAction {
 		sb.append("<th>"+rb.getString("KnowWE.finding.value")+"</th>");
 		sb.append("<th>"+rb.getString("KnowWE.dialog.namespace")+"</th>");
 		sb.append("</tr></thead><tbody>");
-		for (Information information : userInfos) {	
+		for (Information information : userInfos) {
 			if(even){
 				sb.append("<tr class=\"even\">");
 			} else {
@@ -110,7 +110,7 @@ public class UserFindingsAction extends DeprecatedAbstractKnowWEAction {
 		return sb.toString();
 	}
 	
-//	FL: commented out, because it was never used	
+//	FL: commented out, because it was never used
 //	private String getLink(String namespaceID, String userString, String web) {
 //		StringBuffer sb = new StringBuffer();
 //		String l = link;
@@ -173,12 +173,13 @@ public class UserFindingsAction extends DeprecatedAbstractKnowWEAction {
 				Object valueObject = terminology.getObject(iio.getObjectId(), (String) value);
 				if(valueObject instanceof Choice) {
 					result.append(((Choice)valueObject).getName());
-				} else if(valueObject instanceof AnswerUnknown) {
+				}
+				else if (valueObject instanceof Unknown) {
 					result.append("unkown");
 				}
 			} else {
 				result.append(value.toString());
-			}	
+			}
 			if(iter.hasNext()) {
 				result.append(", ");
 			}

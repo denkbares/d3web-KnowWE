@@ -21,9 +21,7 @@
 package de.d3web.we.utils;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.values.Choice;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
@@ -45,15 +43,18 @@ public class D3webUtils {
 		return null;
 	}
 	
-	public static Choice getAnswer(KnowledgeServiceSession kss, String aid, String qid) {
-		Question q = getQuestion(kss, qid);
-		if(q != null) {
-			D3webKnowledgeServiceSession session = ((D3webKnowledgeServiceSession)kss);
-			KnowledgeBase kb = session.getBaseManagement().getKnowledgeBase();
-			return (Choice)session.getBaseManagement().findAnswer(q, aid);
-		}
-		return null;
-	}
+
+	// public static Choice getAnswer(KnowledgeServiceSession kss, String aid,
+	// String qid) {
+	// Question q = getQuestion(kss, qid);
+	// if(q != null) {
+	// D3webKnowledgeServiceSession session =
+	// ((D3webKnowledgeServiceSession)kss);
+	// KnowledgeBase kb = session.getBaseManagement().getKnowledgeBase();
+	// return (Choice) session.getBaseManagement().findAnswer(q, aid);
+	// }
+	// return null;
+	// }
 	
 	/**
 	 * Gets the Session Object.

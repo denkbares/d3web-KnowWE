@@ -7,8 +7,8 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.session.Value;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
@@ -61,7 +61,7 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 		if (v instanceof ChoiceValue)
 			result.append(v);
 		if (v instanceof MultipleChoiceValue) {
-			List<ChoiceValue> cvs = (List<ChoiceValue>) v.getValue();
+			List<ChoiceValue> cvs = (List<ChoiceValue>) ((MultipleChoiceValue) v.getValue()).getValue();
 			for (ChoiceValue cv : cvs) {
 				result.append(cv);
 				result.append(", ");

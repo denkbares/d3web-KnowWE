@@ -30,8 +30,8 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
-import de.d3web.core.session.Value;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
@@ -63,7 +63,7 @@ public class FindingXMLWriter {
 		}
 		if (theQuestion instanceof QuestionNum) {
 			if(theCase != null) {
-				NumValue answer = (NumValue) theQuestion.getValue(theCase);
+				NumValue answer = (NumValue) theCase.getValue(theQuestion);
 				if(answer != null) {
 					appendAnswer(theQuestion, sb, answer, theCase);
 				}
@@ -99,7 +99,7 @@ public class FindingXMLWriter {
 		} else {
 			sb.append(" type='AnswerChoice'");
 		}
-		if(theCase != null && theQuestion.getValue(theCase).equals(theAnswer)) {
+		if (theCase != null && theCase.getValue(theQuestion).equals(theAnswer)) {
 			sb.append(" active='true'");
 		}
 		sb.append(">\n");

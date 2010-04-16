@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
@@ -33,10 +32,12 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.values.Choice;
-import de.d3web.core.session.values.AnswerNum;
-import de.d3web.core.session.values.AnswerUnknown;
+import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.utils.KnowWEUtils;
@@ -61,160 +62,178 @@ public class FindingHTMLWriter {
 
 	@SuppressWarnings("deprecation")
 	private void appendOCAnswers(Question theQuestion, StringBuffer buffy,
-			Session theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
+			Session session, String namespace, String webname, String topic, String targetUrlPrefix) {
 		QuestionChoice theQC = (QuestionChoice) theQuestion;
 		String timestampid = (new Date()).getTime() + "";
-		
+
 		String rel = "url : '" + targetUrlPrefix + "',"
-			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "',"
-			+ KnowWEAttributes.WEB + ": '" + webname + "',"
-			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
-		
+				+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "',"
+				+ KnowWEAttributes.WEB + ": '" + webname + "',"
+				+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
+
 		if (theQC.getAllAlternatives() != null) {
 			buffy.append("<form action='#' name='semanooc'>");
-			
-			for (Choice theAnswer : theQC.getAllAlternatives()) {
-				String answerText = KnowWEUtils.convertUmlaut(theAnswer.verbalizeValue(theCase));
-								
-				buffy.append("<INPUT TYPE='radio' NAME='f" + timestampid+"id"
+
+			for (Choice choice : theQC.getAllAlternatives()) {
+				String choiceText = KnowWEUtils.convertUmlaut(choice.verbalizeValue(session));
+				Value choiceValue = new ChoiceValue(choice);
+				Value sessionValue = session.getValue(theQuestion);
+
+				buffy.append("<INPUT TYPE='radio' NAME='f" + timestampid + "id"
 						+ theQuestion.getId() + "' "
-						+ "value='" + theAnswer.getId() + "'"
+						+ "value='" + choice.getId() + "'"
 						+ "id='semanooc" + theQuestion.getId() + "' "
 						+ "rel=\"{" + rel
 						+ "ObjectID : '" + theQuestion.getId() + "',"
-						+ "ValueID : '" + theAnswer.getId() + "'"
+						+ "ValueID : '" + choice.getId() + "'"
 						+ "}\" ");
 
-				if (theCase != null && theQuestion.getValue(theCase) != null
-						&& theQuestion.getValue(theCase).equals(theAnswer)) {
+				if (session != null && sessionValue != UndefinedValue.getInstance()
+						&& sessionValue.equals(choiceValue)) {
 					buffy.append(" checked=\"checked\" ");
 				}
 				buffy.append("class='semano_oc'");
-				buffy.append(">"+answerText+"<br />");
+				buffy.append(">" + choiceText + "<br />");
 			}
-			String answerText = theQuestion.getUnknownAlternative().verbalizeValue(theCase);
-											
-			buffy.append("<INPUT TYPE=radio NAME='f" + timestampid+"id" + theQuestion.getId() + "'"
-					+ " value='" + theQuestion.getUnknownAlternative().getId() + "'"
-					+ " id='semanooc" + theQuestion.getId() + "' "
-					+ "rel=\"{"+rel
-					+ "ObjectID : '" + theQuestion.getId() + "',"
-					+ "ValueID : '" + theQuestion.getUnknownAlternative().getId() + "'"
-					+ "}\" ");
 
-			if (theCase != null && theQuestion.getValue(theCase) != null
-					&& theQuestion.getValue(theCase).equals(theQuestion.getUnknownAlternative())) {
-				buffy.append(" checked=\"checked\" ");
-			}
-			buffy.append("class='semano_oc'");
+			// TODO: 04.2010 joba: add Unknown alternative
+			// String answerText =
+			// theQuestion.getUnknownAlternative().verbalizeValue(
+			// theCase);
+			//
+			// buffy.append("<INPUT TYPE=radio NAME='f" + timestampid + "id"
+			// + theQuestion.getId() + "'"
+			// + " value='" + theQuestion.getUnknownAlternative().getId() + "'"
+			// + " id='semanooc" + theQuestion.getId() + "' "
+			// + "rel=\"{" + rel
+			// + "ObjectID : '" + theQuestion.getId() + "',"
+			// + "ValueID : '" + theQuestion.getUnknownAlternative().getId() +
+			// "'"
+			// + "}\" ");
 
-			buffy.append(">"+renderAnswerText(answerText)+"<br />");
+			// if (theCase != null
+			// && theCase.getValue(theQuestion) != UndefinedValue.getInstance()
+			// && theCase.getValue(theQuestion).equals(
+			// theQuestion.getUnknownAlternative())) {
+			// buffy.append(" checked=\"checked\" ");
+			// }
+			// buffy.append("class='semano_oc'");
+
+			// buffy.append(">" + renderAnswerText(answerText) + "<br />");
 		}
 	}
 
 	private String renderAnswerText(String answerText) {
-		//not needed right now
+		// not needed right now
 		return answerText;
-		
+
 	}
 
 	@SuppressWarnings("deprecation")
 	private void appendNUMAnswers(Question theQuestion, StringBuffer buffy,
-			Session theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
+			Session session, String namespace, String webname, String topic, String targetUrlPrefix) {
 		String timestampid = (new Date()).getTime() + "";
-		
+
 		String rel = "url : '" + targetUrlPrefix + "',"
-			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "',"
-			+ KnowWEAttributes.WEB + ": '" + webname + "',"
-			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
-		
-		if (theCase != null && theQuestion.getValue(theCase) != null) {
-			NumValue answer = (NumValue) theQuestion.getValue(theCase);
-			if (answer != null) {
-				String answerText = answer.getValue().toString();
-						
+				+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "',"
+				+ KnowWEAttributes.WEB + ": '" + webname + "',"
+				+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
+
+		Value sessionValue = session.getValue(theQuestion);
+
+		if (session != null && sessionValue != UndefinedValue.getInstance()) {
+			if (sessionValue != UndefinedValue.getInstance()) {
+				String valueText = sessionValue.getValue().toString();
+
 				buffy.append("<INPUT TYPE=text size=10 maxlength=10 "
 						+ "NAME='num" + timestampid + theQuestion.getId() + "' "
-						+ "value='" + answer.getValue().toString() + "' "
+						+ "value='" + valueText + "' "
 						+ "class=\"semano_num\""
-						+ "rel=\"{"+rel
+						+ "rel=\"{" + rel
 						+ "ObjectID : '" + theQuestion.getId() + "'"
 						+ "}\" ");
 
 				buffy.append(">");
 				buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" "
-						+ "rel=\"{"+rel
+						+ "rel=\"{" + rel
 						+ "ObjectID : '" + theQuestion.getId() + "'"
 						+ "}\" ");
-				buffy.append(answerText);
+				buffy.append(valueText);
 				buffy.append("<br />");
 			}
-		} else {
-			AnswerNum an = new AnswerNum();
-			an.setQuestion(theQuestion);
-			an.setValue(new Double(0));
-			String answerText = an.verbalizeValue(theCase);
-			
+		}
+		else {
+			NumValue numValue = new NumValue(0.0);
+			String valueText = numValue.getValue().toString();
+
 			buffy.append("<INPUT TYPE=text size=10 maxlength=10 "
 					+ "NAME='num" + timestampid + theQuestion.getId() + "' "
 					+ "value='' "
 					+ "class=\"semano_num\" "
-					+ "rel=\"{"+rel
+					+ "rel=\"{" + rel
 					+ "ObjectID : '" + theQuestion.getId() + "'"
 					+ "}\" ");
 			buffy.append(">");
 			buffy.append("<input type='button' name='submit' value='ok' class=\"semano_ok\" "
-					+ "rel=\"{"+rel
+					+ "rel=\"{" + rel
 					+ "ObjectID : '" + theQuestion.getId() + "'"
 					+ "}\" ");
 
-			buffy.append(answerText);
+			buffy.append(valueText);
 			buffy.append("<br />");
 		}
 	}
 
 	@SuppressWarnings("deprecation")
 	private void appendMCAnswers(Question theQuestion, StringBuffer buffy,
-			Session theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
+			Session session, String namespace, String webname, String topic, String targetUrlPrefix) {
 		QuestionMC theMC = (QuestionMC) theQuestion;
 		String timestampid = (new Date()).getTime() + "";
 
-		
 		String rel = "url : '" + targetUrlPrefix + "',"
-			+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "',"
-			+ KnowWEAttributes.WEB + ": '" + webname + "',"
-			+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
-		
+				+ "namespace : '" + java.net.URLEncoder.encode(namespace) + "',"
+				+ KnowWEAttributes.WEB + ": '" + webname + "',"
+				+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
+
 		if (theMC.getAllAlternatives() != null) {
 			buffy.append("<form action='#' name='semanomc' id='semanomc'>");
-			for (Answer theAnswer : theMC.getAllAlternatives()) {
-				String answerText = theAnswer.verbalizeValue(theCase);
-				if (theAnswer instanceof AnswerUnknown) {
-					answerText = KnowWEUtils.convertUmlaut(rb.getString("KnowWE.answer.unknown"));
-				} else {
-					
-					buffy.append("<INPUT TYPE=CHECKBOX NAME='f" + timestampid+"id"
-							+ theQuestion.getId() + "' "
-							+ "value='" + theAnswer.getId() + "' "
-							+ "id='semanomc" + theQuestion.getId() + "' "
-							+ "class=\"semano_mc\" "
-							+ " rel=\"{"+rel
-							+ "ObjectID : '" + theQuestion.getId() + "',"
-							+ "ValueIDS : '" + theAnswer.getId() + "'"
-							+ "}\" ");
+			for (Choice choice : theMC.getAllAlternatives()) {
+				ChoiceValue choiceValue = new ChoiceValue(choice);
+				Value sessionValue = session.getValue(theQuestion);
+				// TODO: 04.2010 joba: insert Unknown alternative
+				// if (theAnswer instanceof AnswerUnknown) {
+				// answerText =
+				// KnowWEUtils.convertUmlaut(rb.getString("KnowWE.answer.unknown"));
+				// }
+				// else {
 
-					if (theCase != null && theQuestion.getValue(theCase) != null && theQuestion.getValue(theCase).equals(theAnswer)) {
-						buffy.append(" checked=\"checked\" ");
-					}
-					buffy.append(">");
-					buffy.append(renderAnswerText(KnowWEUtils.convertUmlaut(answerText)));
-					buffy.append("<br />");
+				buffy.append("<INPUT TYPE=CHECKBOX NAME='f" + timestampid + "id"
+						+ theQuestion.getId() + "' "
+						+ "value='" + choice.getId() + "' "
+						+ "id='semanomc" + theQuestion.getId() + "' "
+						+ "class=\"semano_mc\" "
+						+ " rel=\"{" + rel
+						+ "ObjectID : '" + theQuestion.getId() + "',"
+						+ "ValueIDS : '" + choice.getId() + "'"
+						+ "}\" ");
+
+				if (session != null && sessionValue != UndefinedValue.getInstance()
+						&& containsValue((MultipleChoiceValue) sessionValue, choiceValue)) {
+					buffy.append(" checked=\"checked\" ");
 				}
+				buffy.append(">");
+				buffy.append(renderAnswerText(KnowWEUtils.convertUmlaut(choice.getName())));
+				buffy.append("<br />");
+				// }
 			}
 			buffy.append("</form>");
 		}
 	}
-	
+
+	private boolean containsValue(MultipleChoiceValue sessionValue, ChoiceValue choiceValue) {
+		return sessionValue.contains(choiceValue);
+	}
+
 	private String getHTMLString(Question theQuestion, String type,
 			Session theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
 		StringBuffer buffy = new StringBuffer();
@@ -222,58 +241,68 @@ public class FindingHTMLWriter {
 		buffy.append("<div class=\"semContents\" >");
 		buffy.append("<div class=\"questionsheet-layer\">");
 		if (type.equalsIgnoreCase(MC)) {
-			appendMCAnswers(theQuestion, buffy, theCase, namespace, webname, topic, targetUrlPrefix);
-		} else if (type.equalsIgnoreCase(OC) || type.equalsIgnoreCase(YN)) {
-			appendOCAnswers(theQuestion, buffy, theCase, namespace, webname, topic, targetUrlPrefix);
-		} else if (type.equalsIgnoreCase(NUM)) {
-			appendNUMAnswers(theQuestion, buffy, theCase, namespace, webname, topic, targetUrlPrefix);
-		} else {
+			appendMCAnswers(theQuestion, buffy, theCase, namespace, webname, topic,
+					targetUrlPrefix);
+		}
+		else if (type.equalsIgnoreCase(OC) || type.equalsIgnoreCase(YN)) {
+			appendOCAnswers(theQuestion, buffy, theCase, namespace, webname, topic,
+					targetUrlPrefix);
+		}
+		else if (type.equalsIgnoreCase(NUM)) {
+			appendNUMAnswers(theQuestion, buffy, theCase, namespace, webname, topic,
+					targetUrlPrefix);
+		}
+		else {
 			Logger.getLogger(ID).warning("invalid question type");
 		}
 		buffy.append("</div>");
 		buffy.append("</div>");
 		return buffy.toString();
 	}
-	
-	
+
 	public String getHTMLString(Question question, Session theCase,
 			String namespace, String webname, String topic, String targetUrlPrefix) {
-		
+
 		rb = D3webModule.getKwikiBundle_d3web();
 		String retVal = null;
 		if (question == null) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"null is no Question");
-		} else {
-			retVal= "<h3>" + KnowWEUtils.convertUmlaut(question.getName()) + "</h3>";
+		}
+		else {
+			retVal = "<h3>" + KnowWEUtils.convertUmlaut(question.getName()) + "</h3>";
 			if (question instanceof QuestionYN) {
 				retVal += getHTMLString((QuestionChoice) question, "YN",
-						theCase, namespace, webname,topic, targetUrlPrefix);
-			} else if (question instanceof QuestionOC) {
+						theCase, namespace, webname, topic, targetUrlPrefix);
+			}
+			else if (question instanceof QuestionOC) {
 				retVal += getHTMLString((QuestionChoice) question, "OC",
-						theCase, namespace, webname,topic, targetUrlPrefix);
-			} else if (question instanceof QuestionMC) {
+						theCase, namespace, webname, topic, targetUrlPrefix);
+			}
+			else if (question instanceof QuestionMC) {
 				retVal += getHTMLString((QuestionChoice) question, "MC",
-						theCase, namespace, webname,topic, targetUrlPrefix);
-			} else if (question instanceof QuestionNum) {
+						theCase, namespace, webname, topic, targetUrlPrefix);
+			}
+			else if (question instanceof QuestionNum) {
 				retVal += getHTMLString((Question) question, "Num", theCase,
-						namespace, webname,topic, targetUrlPrefix);
+						namespace, webname, topic, targetUrlPrefix);
 			} /*
-				 * else if (question instanceof QuestionText) { retVal =
-				 * getXMLString((Question) question, "Text", theCase); } else if
-				 * (question instanceof QuestionDate) { retVal =
-				 * getXMLString((Question) question, "Date", theCase); }
-				 */
+			 * else if (question instanceof QuestionText) { retVal =
+			 * getXMLString((Question) question, "Text", theCase); } else if
+			 * (question instanceof QuestionDate) { retVal =
+			 * getXMLString((Question) question, "Date", theCase); }
+			 */
 		}
-		String reencode=retVal;
-		//TODO: reencoding shouldn't be necessary -> everything utf8
-		if (reencode!=null){
-		try {
-			reencode =new String(retVal.getBytes("UTF-8"),"ISO-8859-1");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String reencode = retVal;
+		// TODO: reencoding shouldn't be necessary -> everything utf8
+		if (reencode != null) {
+			try {
+				reencode = new String(retVal.getBytes("UTF-8"), "ISO-8859-1");
+			}
+			catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return reencode;
 	}

@@ -25,12 +25,16 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.session.Value;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.values.Choice;
+import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.UndefinedValue;
 
 /**
  * Class for rendering the HTML table-based interview
@@ -49,8 +53,7 @@ public class HTMLDialogRenderer {
 		KnowledgeBase b = c.getKnowledgeBase();
 		
 		// get all qcontainers of kb into a list
-		java.util.List<de.d3web.core.knowledge.terminology.QContainer> containers = b
-				.getQContainers();
+		List<QContainer> containers = b.getQContainers();
 		
 		StringBuffer buffi = new StringBuffer();
 		
@@ -67,9 +70,8 @@ public class HTMLDialogRenderer {
 		boolean first = true;
 		
 		// go through all qcontainers of the knowledge base
-		for (de.d3web.core.knowledge.terminology.QContainer container : containers) {
-			
-			// skipt the rootiest root element "Q000"
+		for (QContainer container : containers) {
+			// skip the rootiest root element "Q000"
 			if (container.getName().endsWith("Q000"))
 				continue;
 
@@ -90,7 +92,7 @@ public class HTMLDialogRenderer {
 				buffi.append("<table id='tbl" + container.getId() + "' class='hidden'><tbody>");
 			}
 			
-			// counter, to be able to format the table lines alternatingly
+			// counter, to be able to format the table lines alternatively
 			int i = -1;
 			// go through all question objects
 			for (TerminologyObject namedObject : container.getChildren()) {
@@ -262,7 +264,7 @@ public class HTMLDialogRenderer {
 			Question q, String web, String namespace) {
 		String value = "";
 		if (q.hasValue(c)) {
-			Value answer = q.getValue(c);
+			Value answer = c.getValue(q);
 			if (answer != null && answer instanceof NumValue) {
 				value = answer.getValue().toString();
 			}
@@ -282,44 +284,49 @@ public class HTMLDialogRenderer {
 		buffi.append("<input type='button' value='ok' class=\"num-cell-ok\">");
 	}
 
-	private static void renderChoiceAnswers(Session c, StringBuffer buffi,
-			Question q, List<Choice> list, String web, String namespace) {
-
-		// changed cssclass
-		//String cssclass = "fieldcell";
-		
+	private static void renderChoiceAnswers(Session session, StringBuffer buffi,
+			Question question, List<Choice> choices, String web, String namespace) {
 		int i=0;
 		// to space before and after commas evenly
 		//buffi.delete(buffi.length() - 1, buffi.length());
-		for (Choice answerChoice : list) {
+		for (Choice choice : choices) {
+			String cssclass = "fieldcell";
 
-			String cssclass="fieldcell";
-			
 			// For BIOLOG2
-			String jscall = " rel=\"{oid: '"+answerChoice.getId()+"',"
+			String jscall = " rel=\"{oid: '"+choice.getId()+"',"
 				    + "web: '"+web+"',"
 				    + "ns: '"+namespace+"',"
-				    + "qid: '"+q.getId()+"'"
+				    + "qid: '"+question.getId()+"'"
 					+ "}\" ";
 				
-			if (q.getValue(c)!=null && q.getValue(c).equals(answerChoice)) {
+			Value value = session.getValue(question);
+			if (value != null && UndefinedValue.isNotUndefinedValue(value)
+					&& isAnsweredinCase(value, choice)) {
 				cssclass = "fieldcell answerTextActive";
 			}
-			String spanid = "span_" + q.getId() + "_" + answerChoice.getId();
+			String spanid = "span_" + question.getId() + "_" + choice.getId();
 			buffi.append(getEnclosingTagOnClick("span", ""
-					+ answerChoice.getName() + " ", cssclass, jscall, null,
+					+ choice.getName() + " ", cssclass, jscall, null,
 					spanid));
-			
-			
-			if(i<list.size()){
-				buffi.append(" , ");
+			if(i<choices.size()){
+				buffi.append(" . ");
 			}
 			i++;
 		}
 	}
+	
+	private static boolean isAnsweredinCase(Value value, Choice choice) {
+		ChoiceValue choiceValue = new ChoiceValue(choice);
+		// test for OC and MC values separately
+		if (value instanceof ChoiceValue) {
+			return value.equals(choiceValue);
+		}
+		else if (value instanceof MultipleChoiceValue) {
+			return ((MultipleChoiceValue) value).contains(choiceValue);
+		}
+		return false;
+	}
 
-	
-	
 	private static String getEnclosingTagOnClick(String tag, String text,
 			String cssclass, String onclick, String onmouseover, String id) {
 		StringBuffer sub = new StringBuffer();
@@ -342,31 +349,5 @@ public class HTMLDialogRenderer {
 		return sub.toString();
 
 	}
-
-	/*
-	 * private static String renderQuestion(Session c, Question q, String web,
-	 * String namespace) { StringBuffer buffi = new StringBuffer();
-	 * buffi.append(getEnclosingTag(SPAN, q.getText() + ": ",
-	 * "questionText",null)); if (q instanceof QuestionChoice) {
-	 * List<AnswerChoice> list = ((QuestionChoice) q).getAllAlternatives();
-	 * renderChoiceAnswers(c, buffi, q, list, web, namespace); } else { //
-	 * render NumInput renderNumAnswers(c, buffi, q, web, namespace); } return
-	 * buffi.toString(); }
-	 */
-
-	
-	/*
-	 * private static String getSaveAsXCLHTMLElement(){ return "<p>" +
-	 * rb.getString("KnowWE.solution") +
-	 * ": <input name='xcl-solution' id='xcl-solution' value='' type='text' size='50'><input type='button' value='Save as' id='xcl-save-as'></p>"
-	 * ; }
-	 */
-
-	
-	/*
-	 * private static String getEnclosingTag(String tag, String text, String
-	 * cssclass, String id) { return getEnclosingTagOnClick(tag, text, cssclass,
-	 * null, null, id); }
-	 */
 
 }

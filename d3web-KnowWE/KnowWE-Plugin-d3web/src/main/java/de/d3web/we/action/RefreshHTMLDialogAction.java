@@ -69,19 +69,19 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 		broker.getDialogControl().showNextActiveDialog();
 		KnowledgeServiceSession serviceSession = broker.getSession()
 				.getServiceSession(kbid);
-		Session c = null;
+		Session session = null;
 		
 		if(serviceSession instanceof D3webKnowledgeServiceSession) {
-			c = ((D3webKnowledgeServiceSession)serviceSession).getSession();
-			return HTMLDialogRenderer.renderDialog(c,web);
+			session = ((D3webKnowledgeServiceSession)serviceSession).getSession();
+			return HTMLDialogRenderer.renderDialog(session,web);
 		}
 		
 		if(serviceSession == null) {
 			kbid =  KnowWEEnvironment.WIKI_FINDINGS+".."+KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
 			 serviceSession = broker.getSession().getServiceSession(kbid);
 			 if(serviceSession instanceof D3webKnowledgeServiceSession) {
-					c = ((D3webKnowledgeServiceSession)serviceSession).getSession();
-					return HTMLDialogRenderer.renderDialog(c,web);
+					session = ((D3webKnowledgeServiceSession)serviceSession).getSession();
+					return HTMLDialogRenderer.renderDialog(session,web);
 				}
 		}
 		
