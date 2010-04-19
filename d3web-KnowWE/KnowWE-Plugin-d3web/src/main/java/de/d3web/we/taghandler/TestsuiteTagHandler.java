@@ -37,15 +37,13 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.kopic.Kopic;
-import de.d3web.we.kdom.kopic.KopicContent;
 import de.d3web.we.testsuite.TestsuiteSection;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TestsuiteTagHandler extends AbstractTagHandler {
 	
-	private Map<String, Section> testsuites = new HashMap<String, Section>();
+	private Map<String, Section<TestsuiteSection>> testsuites = new HashMap<String, Section<TestsuiteSection>>();
 	private DecimalFormat formatter = new DecimalFormat("0.00");
 	private String topic;
 	private String web;
@@ -87,7 +85,6 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		}
 		
 		return renderFindTestSuites();
-
 	}
 		
 
@@ -170,7 +167,6 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("</div>");
 		
 		return html.toString();
-		
 	}
 
 	private String renderTestsuiteResult(TestSuite t) {
@@ -184,7 +180,6 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		}
 		
 		return renderTestsuiteFailed(t);
-		
 	}
 	
 	private String renderTestsuitePassed(TestSuite t) {
@@ -498,7 +493,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 	}
 
 	private TestSuite loadTestSuite(String article) {
-		Section s = testsuites.get(article);
+		Section<TestsuiteSection> s = testsuites.get(article);
 		return (TestSuite) KnowWEUtils.getStoredObject(web, article, s.getId(), TestsuiteSection.TESTSUITEKEY);
 	}
 	
@@ -507,30 +502,11 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 			KnowWEEnvironment.getInstance().getArticleManager(web).getArticleIterator();
 		
 		while (iterator.hasNext()) {
-			
 			KnowWEArticle article = iterator.next();
-			// TODO: HOTFIX!! I don't think this is the proper way to get the TestsuiteSection...
-			Section s = article.getSection().getChildren().get(0).findChildOfType(TestsuiteSection.class);
-			
-			// Check for TestSuite-Section outside of Kopic-Section
-			if (s != null) {
-				testsuites.put(article.getTitle(), s);
-			} else {
-				// Check for Testsuite-Section inside of Kopic-Section
-				// TODO: HOTFIX!! I don't think this is the proper way to get the TestsuiteSection...
-				s = article.getSection().getChildren().get(0).findChildOfType(Kopic.class);
-				if (s != null) {
-					s = s.findChildOfType(KopicContent.class);
-					if (s != null) {
-						s = s.findChildOfType(TestsuiteSection.class);
-						if (s != null) {
-							testsuites.put(article.getTitle(), s);
-						}
-					}
-				}
-			}			
+			Section<TestsuiteSection> s = article.getSection().findSuccessor(TestsuiteSection.class);
+			if (s != null) 
+				testsuites.put(article.getTitle(), s);	
 		}
-		
 	}
 
 	private String findInconsistentRTC(TestSuite t) {
@@ -594,9 +570,6 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("</div>");
 		
 		return html.toString();
-		
-		
-		
 	}
 	
 	private String renderDOTDownload(TestSuite t) {
@@ -619,7 +592,6 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("</div>");
 		
 		return html.toString();
-		
 	}
 	
 	private String urlencode(String text) {

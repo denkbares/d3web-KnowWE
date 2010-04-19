@@ -57,21 +57,23 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 
 		result.append("<p>");
 		result.append(question.getName());
-		result.append(" = {");
-		if (v instanceof ChoiceValue)
+		
+		if (v instanceof ChoiceValue) {
+			result.append(": ");
 			result.append(v);
-		if (v instanceof MultipleChoiceValue) {
+		} else if (v instanceof MultipleChoiceValue) {
+			result.append(": ");
 			List<ChoiceValue> cvs = (List<ChoiceValue>) ((MultipleChoiceValue) v.getValue()).getValue();
 			for (ChoiceValue cv : cvs) {
 				result.append(cv);
 				result.append(", ");
 			}
 			result.delete(result.length() - 2, result.length());
-		}
-		if (v instanceof NumValue) {
+		} else if (v instanceof NumValue) {
+			result.append(": ");
 			result.append((Double) v.getValue());
 		}
-		result.append("}</p>");
+		result.append("</p>");
 	}
 
 }

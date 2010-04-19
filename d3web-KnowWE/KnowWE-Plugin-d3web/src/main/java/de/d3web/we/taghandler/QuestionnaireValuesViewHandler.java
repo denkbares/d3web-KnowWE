@@ -37,19 +37,16 @@ public class QuestionnaireValuesViewHandler extends AbstractTagHandler {
 		
 		int i = questionnaires.indexOf(questionnaireName);
 		
-		return "<div id='qcvalues-panel" + i + "' class='panel'>"
+		return "<div class='panel'>"
 				+ "<h3>"
-				+ 	rb.getString("KnowWE.Questionnaire.name")
-				+ "</h3>"
-				+ "<p class='qcname' style='display:none'>"
 				+ 	questionnaireName
-				+ "</p>"
-				+ "<p>Name: <b>"
+				+ "</h3><div id='qcvalues-panel" + i + "'>"
+				+ "<input type='hidden' class='qcname' value='"
 				+ 	questionnaireName
-				+ "</b></p>"
+				+ "'/>"
 				+ "<div id='qcvalues-result" + i + "'>" 
 			    + "</div>"
-			  + "</div>";
+			  + "</div></div>";
 	}
 	
 }
