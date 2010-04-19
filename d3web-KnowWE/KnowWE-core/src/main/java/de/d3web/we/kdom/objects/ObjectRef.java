@@ -33,7 +33,7 @@ public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType imple
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			if (!objectExisting(s)) {
-				KDOMReportMessage.storeError(s,
+				KDOMReportMessage.storeError(s, this.getClass(),
 						new NoSuchObjectError(s.get().getName() + ": "
 						+ s.getOriginalText()));
 			}

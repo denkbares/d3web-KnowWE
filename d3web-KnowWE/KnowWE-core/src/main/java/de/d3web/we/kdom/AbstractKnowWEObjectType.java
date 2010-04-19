@@ -367,8 +367,8 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 			try {
 				KDOMReportMessage message = handler.reviseSubtree(article, s);
 				if (message != null) {
-					KDOMReportMessage.cleanMessages(s);
-					KDOMReportMessage.storeMessage(s, message);
+					KDOMReportMessage.cleanMessages(s, handler.getClass());
+					KDOMReportMessage.storeMessage(s, handler.getClass(), message);
 				}
 			}
 			catch (Throwable e) {

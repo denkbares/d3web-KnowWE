@@ -245,7 +245,7 @@ class BracedCondition extends DefaultAbstractKnowWEObjectType {
 
 			// throw error if no corresponding closing bracket can be found
 			if (closingBracket == -1) {
-				KDOMReportMessage.storeMessage(father, new SyntaxError("missing \")\""));
+				KDOMReportMessage.storeMessage(father, this.getClass(), new SyntaxError("missing \")\""));
 				return null;
 			}
 

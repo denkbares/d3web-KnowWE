@@ -1,5 +1,6 @@
 package de.d3web.we.kdom.report;
 
+import java.util.Map;
 import java.util.Set;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -32,8 +33,8 @@ public class DefaultErrorRenderer extends KnowWEDomRenderer{
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		Set<KDOMError> errors = KDOMError.getErrors(sec);
-
-		KDOMError e = errors.iterator().next();
+		
+		KDOMError e = errors.iterator().next();	
 		
 		string.append(KnowWEUtils.maskHTML("<span")); 
 		if (e.getVerbalization(user) != null) {

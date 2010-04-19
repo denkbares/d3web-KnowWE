@@ -153,7 +153,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		renderer.render(article, subSection, user, builder);
 
 		// Render notices
-		Set<? extends KDOMNotice> notices = KDOMReportMessage
+		Set<KDOMNotice> notices = KDOMReportMessage
 				.getNotices(subSection);
 		if (notices != null && notices.size() > 0) {
 			for (KDOMNotice kdomNotice : notices) {
@@ -166,8 +166,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 
 		// Render warnings
-		Set<? extends KDOMWarning> warnings = KDOMReportMessage
-				.getWarnings(subSection);
+		Set<KDOMWarning> warnings = KDOMReportMessage.getWarnings(subSection);
 		if (warnings != null && warnings.size() > 0) {
 			for (KDOMWarning kdomWarning : warnings) {
 				MessageRenderer warningRenderer = subSection.get()

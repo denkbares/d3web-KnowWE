@@ -104,7 +104,7 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 			renderNormally(article, sec, user, srclink, content, string);
 		}
 		
-		string.append(KnowWEUtils.maskHTML("<p>"));
+		string.append(KnowWEUtils.maskHTML("<p>\n"));
 	}
 	
 	private void renderNormally(KnowWEArticle article, Section sec, KnowWEUserContext user, 

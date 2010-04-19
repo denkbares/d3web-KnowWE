@@ -23,7 +23,7 @@ public class Number extends DefaultAbstractKnowWEObjectType {
 				Double.parseDouble(s.getOriginalText().trim());
 			}
 			catch (Exception e) {
-				KDOMReportMessage.storeError(s, new
+				KDOMReportMessage.storeError(s, this.getClass(), new
 						InvalidNumberError(
 						s.getOriginalText().trim()));
 			}

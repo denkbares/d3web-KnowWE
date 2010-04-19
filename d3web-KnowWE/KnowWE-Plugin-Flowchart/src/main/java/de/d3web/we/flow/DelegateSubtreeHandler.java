@@ -55,7 +55,7 @@ public class DelegateSubtreeHandler implements ReviseSubTreeHandler {
 			
 			
 			KDOMReportMessage message = handler.reviseSubtree(article, child);
-			KDOMReportMessage.storeMessage(child, message);
+			KDOMReportMessage.storeMessage(child, this.getClass(), message);
 			
 		}
 		

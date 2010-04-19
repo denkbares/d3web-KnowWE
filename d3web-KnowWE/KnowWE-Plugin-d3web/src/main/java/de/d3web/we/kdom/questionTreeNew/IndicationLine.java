@@ -68,7 +68,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 						.getSimpleName());
 			} else {
 
-				KDOMError.storeError(s, new NoSuchObjectError(name));
+				KDOMError.storeError(s, this.getClass(), new NoSuchObjectError(name));
 			}
 			return null;
 		}
