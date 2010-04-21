@@ -69,7 +69,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		qid.addReviseSubtreeHandler(new CreateIndicationHandler());
 		return qid;
 	}
-	
+
 	static <T extends KnowWEObjectType> Section<T> badCast(T t, Section o) {
 		return o;
 	}
@@ -79,7 +79,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			//Section<QuestionID> qidSection = ((Section<QuestionID>) s);
-			
+
 			Section<QuestionDef> qidSection = badCast(new QuestionDef(), s);
 
 			String name = qidSection.get().getID(qidSection);
@@ -96,7 +96,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			Section<NumericCondLine> numCondSec = dashTreeFather
 			.findSuccessor(NumericCondLine.class);
 
-			
+
 			if (answerSec != null || numCondSec != null) {
 
 				KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(article.getWeb())
@@ -187,6 +187,10 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
 					.getDashTreeFather(element);
 
+			if (dashTreeFather == null) {
+				return null;
+			}
+
 			// climb up tree and look for QASet
 			QASet foundAncestorQASet = null;
 			while (foundAncestorQASet == null) {
@@ -272,7 +276,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 		public static QuestionType getQuestionType(Section<QuestionTypeDeclaration> typeSection) {
-			
+
 			if (typeSection == null)
 				return null;
 			String embracedContent = typeSection.getOriginalText();
