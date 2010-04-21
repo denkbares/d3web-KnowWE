@@ -79,18 +79,16 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
 
+				Section<TimeEventType> sec = (Section<TimeEventType>) section;
+
 				/* Getting all the sections from KDOM */
-				Section descriptionSection = section
-						.findChildOfType(TimeEventDescriptionType.class);
-				Section titleSection = section
-						.findChildOfType(TimeEventTitleType.class);
-				Section importanceSection = section
-						.findChildOfType(TimeEventImportanceType.class);
-				Section dateSection = section
-						.findChildOfType(TimeEventDateType.class);
-				List<Section> sources = new ArrayList<Section>();
-				section
-						.findSuccessorsOfType(TimeEventSourceType.class,
+				Section<? extends TimeEventDescriptionType> descriptionSection = sec.findChildOfType(TimeEventDescriptionType.class);
+				Section<? extends TimeEventTitleType> titleSection = sec.findChildOfType(TimeEventTitleType.class);
+				Section<? extends TimeEventImportanceType> importanceSection = sec.findChildOfType(TimeEventImportanceType.class);
+				Section<? extends TimeEventDateType> dateSection = sec.findChildOfType(TimeEventDateType.class);
+
+				List<Section<TimeEventSourceType>> sources = new ArrayList<Section<TimeEventSourceType>>();
+				sec.findSuccessorsOfType(TimeEventSourceType.class,
 								sources);
 
 				if (descriptionSection == null) {
@@ -109,7 +107,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 				String importance = importanceSection.getOriginalText();
 				String date = dateSection.getOriginalText();
 				List<String> sourceStrings = new ArrayList<String>();
-				for (Section s : sources) {
+				for (Section<TimeEventSourceType> s : sources) {
 					sourceStrings.add(s.getOriginalText());
 				}
 
@@ -188,7 +186,8 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 
 				io.addAllStatements(slist);
 
-			} catch (RepositoryException e) {
+			}
+			catch (RepositoryException e) {
 				e.printStackTrace();
 			}
 
