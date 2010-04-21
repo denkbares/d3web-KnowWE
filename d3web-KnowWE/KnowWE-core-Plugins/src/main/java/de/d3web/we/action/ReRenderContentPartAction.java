@@ -30,6 +30,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.rendering.RendererManager;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -43,7 +44,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction  {
 
 	@Override
-	public String perform(KnowWEParameterMap map) {
+	public String perform( KnowWEParameterMap map ) {
 		
 		String web = map.getWeb();
 		String nodeID = map.get("KdomNodeId");
@@ -58,11 +59,19 @@ public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction  {
 			
 		if( secWithNodeID != null ) {
 			StringBuilder b = new StringBuilder();
-			KnowWEDomRenderer renderer = secWithNodeID.getObjectType().getRenderer();
-			if( renderer != null ){
+			
+			KnowWEObjectType type = secWithNodeID.getObjectType();
+			KnowWEDomRenderer<? extends KnowWEObjectType> renderer = RendererManager.getInstance().getRenderer(type, user.getUsername(), topic);
+			
+			if( renderer != null ) {
 				renderer.render(article, secWithNodeID, user, b);
 			} else {
-				DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
+				renderer = type.getRenderer();
+				if ( renderer != null ) {
+					renderer.render(article, secWithNodeID, user, b);
+				} else {
+					DelegateRenderer.getInstance().render(article, secWithNodeID, user, b);
+				}
 			}
 			
 			String pagedata = b.toString();
