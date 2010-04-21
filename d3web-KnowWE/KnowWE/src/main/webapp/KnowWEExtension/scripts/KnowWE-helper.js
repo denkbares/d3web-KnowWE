@@ -672,8 +672,8 @@ KNOWWE.helper.element.prototype = {
      */    
     _setProperties : function( properties , elem){
         if(properties.constructor === Object){
-            for(var name in properties){
-                var value = (properties[name] || '');
+            for(var property in properties){
+                var value = (properties[property] || '');
                 if(value.constructor === Object){ /* allows objects as properties, like style etc.*/
                     var s = '';
                     for (var i in value){
@@ -682,10 +682,26 @@ KNOWWE.helper.element.prototype = {
                     value = s;
                 }
 
-                name = { 'for': 'htmlFor', 'class': 'class' }[name] || name;
+                property = { 'for': 'htmlFor', 'class': 'class' }[property] || property;
                 //elem[name] = value;
                 
-                var node = document.createAttribute( name );
+                switch( property )  {
+                    case 'style': 
+                        var styles = value.split(';');
+                        for(var i = 0; i < styles.length; i++){
+                            var t = styles[i].split(':');
+                            property = t[0];
+                            switch( property ){
+                                case 'float': 
+                                    property = (window.attachEvent) ? 'styleFloat' : 'cssFloat' ;
+                            }
+                            
+                            //var node = document.createAttribute( property );
+                            //node.nodeValue = t[1];
+                            elem.style[property] = t[1];                            
+                        }
+                }
+                var node = document.createAttribute( property );
                 node.nodeValue = value;
                 elem.setAttributeNode(node);
             }
@@ -937,7 +953,8 @@ KNOWWE.helper.selector.regex = {
     ID : /^#[A-Za-z]+([A-Za-z0-9\s\-\/\_:\.])*$/,
     TAG : /^([A-Za-z0-9])+$/,
     CLASS : /^\.[A-Za-z0-9\-\_]+$/,
-    ATTR : /^(\w+)?\[(\w+)=?(\w+)?\]$/
+    ATTR : /^(\w+)?\[(\w+)=?(\w+)?\]$/,
+    SPEZIAL : /^:[A-Za-z]+([A-Za-z0-9\s\-\/\_:\.#])*$/
 };
 /**
  * The KNOWWE.helper.selector.filter namespace.
@@ -1040,7 +1057,22 @@ KNOWWE.helper.selector.filter = function(){
          */
         SPEZIAL : function( context, selector ){
             //:input :checked :submit :button :selected
-            return new Array();
+            //:div#QuestionTree
+            var r = new Array(), t, e;
+            
+            if( selector.indexOf('#') !== -1 ) {
+                t = selector.replace(/:/, '').split('#');
+                if(t.length != 2) return;
+                e = context.getElementsByTagName(t[0]);
+                for(var i = 0; i < e.length; i++){
+                    var b = e[i];
+                    var di = b.id;
+                    if( di.indexOf( t[1]) !== -1 ) {
+                        r.push(e[i]);
+                    }
+                }
+            }
+            return r;
         }
     }
 }();
