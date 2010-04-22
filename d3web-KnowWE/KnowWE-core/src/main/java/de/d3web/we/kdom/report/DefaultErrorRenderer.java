@@ -1,44 +1,49 @@
 package de.d3web.we.kdom.report;
 
-import java.util.Map;
-import java.util.Set;
-
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class DefaultErrorRenderer extends KnowWEDomRenderer{
+/**
+ * Default renderer for error messages
+ *
+ * To have your own customized ErrorRenderer overwrite getErrorRenderer in your
+ * KnowWEObjectType and return a (custom) MessageRenderer of your choice
+ * 
+ * @author Jochen
+ *
+ */
+public class DefaultErrorRenderer implements MessageRenderer {
 
 	private static DefaultErrorRenderer instance = null;
-	
+
 	public static DefaultErrorRenderer getInstance() {
 		if (instance == null) {
 			instance = new DefaultErrorRenderer();
-			
+
 		}
 
 		return instance;
 	}
-	
-	
-	
+
+
+
 	private final String cssClass = "KDDOMError";
 	private final String cssStyle = "color:red;text-decoration:underline;";
-	
-	
-	
+
+
+
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		Set<KDOMError> errors = KDOMError.getErrors(sec);
-		
-		KDOMError e = errors.iterator().next();	
-		
-		string.append(KnowWEUtils.maskHTML("<span")); 
-		if (e.getVerbalization(user) != null) {
-			string.append(" title='").append(e.getVerbalization(user)).append("'");
+	public String postRenderMessage(KDOMReportMessage m, KnowWEUserContext user) {
+		return KnowWEUtils.maskHTML("</span>");
+	}
+
+	@Override
+	public String preRenderMessage(KDOMReportMessage m, KnowWEUserContext user) {
+		StringBuilder string = new StringBuilder();
+
+		string.append(KnowWEUtils.maskHTML("<span"));
+		if (m.getVerbalization(user) != null) {
+			string.append(" title='").append(m.getVerbalization(user)).append("'");
 		}
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
@@ -46,11 +51,11 @@ public class DefaultErrorRenderer extends KnowWEDomRenderer{
 		if (cssStyle != null) {
 			string.append(" style='").append(cssStyle).append("'");
 		}
-		
+
 		string.append(KnowWEUtils.maskHTML(">"));
-		DelegateRenderer.getInstance().render(article, sec, user, string);
-		string.append(KnowWEUtils.maskHTML("</span>"));
+
+		return string.toString();
 	}
-	
+
 
 }

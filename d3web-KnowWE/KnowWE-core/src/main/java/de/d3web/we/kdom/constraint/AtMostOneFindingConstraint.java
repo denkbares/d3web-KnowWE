@@ -9,17 +9,26 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class AtMostOneFindingConstraint implements SectionFinderConstraint{
 
+	private static AtMostOneFindingConstraint instance = null;
+
+	public static AtMostOneFindingConstraint getInstance() {
+		if (instance == null) {
+			instance = new AtMostOneFindingConstraint();
+		}
+		return instance;
+	}
+
 	@Override
 	public void filterCorrectResults(
 			List<SectionFinderResult> found, Section father, KnowWEObjectType type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		if(found == null || found.size() == 0) return ;
-		
-		
+
+
 		SectionFinderResult firstResult = found.get(0);
 		found.clear();
 		found.add(firstResult);
-		
+
 	}
 
 	@Override
@@ -31,6 +40,6 @@ public class AtMostOneFindingConstraint implements SectionFinderConstraint{
 		return false;
 	}
 
-	
-	
+
+
 }

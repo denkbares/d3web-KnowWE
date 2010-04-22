@@ -18,8 +18,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.report;
+package de.d3web.we.kdom.report.message;
 
+import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ObjectCreatedMessage extends KDOMNotice{

@@ -18,22 +18,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.report;
+package de.d3web.we.kdom.report.message;
 
+import de.d3web.we.kdom.ReviseSubTreeHandler;
+import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class NewObjectCreated extends KDOMNotice{
+public class ObjectCreationError extends KDOMError{
 
 	private String s;
+	private Class<? extends ReviseSubTreeHandler> c;
 	
-	public NewObjectCreated(String s) {
+	public ObjectCreationError(String s, Class<? extends ReviseSubTreeHandler> c) {
 		this.s = s;
+		this.c = c;
 	}
 	
 	@Override
 	public String getVerbalization(KnowWEUserContext usercontext) {
-		// TODO Auto-generated method stub
-		return "Object created: "+s;
+		return "Could not create Object: "+s+" - Unknown Error in: "+c.getSimpleName();
 	}
 
 }

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -87,7 +87,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	// try {
 	// renderer.render(section, user, result);
 	// } catch (NotImplementedException e) {
-	//					
+	//
 	// result.append(renderer.render(section, user));
 	// }
 	//
@@ -97,7 +97,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	// }
 	//
 	// }
-	// 
+	//
 	// return result.toString();
 	// }
 
@@ -148,11 +148,33 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	protected void renderSubSection(KnowWEArticle article, Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
 		renderAnchor(subSection, builder);
 
+		// any messageRenderer has pre- and post rendering hook
+		// first call pre-rendering for all messages of this subsection
+		renderMessagesPre(subSection, user, builder);
+
 		// use subSection's renderer
 		KnowWEDomRenderer renderer = getRenderer(subSection, user);
 		renderer.render(article, subSection, user, builder);
 
-		// Render notices
+		// then call post rendering for all messages of this subsection
+		renderMessagesPost(subSection, user, builder);
+	}
+
+	private void renderMessagesPost(Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
+		// Render errors post
+		Set<KDOMError> errors = KDOMReportMessage
+				.getErrors(subSection);
+		if (errors != null && errors.size() > 0) {
+			for (KDOMError kdomNotice : errors) {
+				MessageRenderer errorRenderer = subSection.get()
+						.getErrorRenderer();
+				if (errorRenderer != null) {
+					builder.append(errorRenderer.postRenderMessage(kdomNotice, user));
+				}
+			}
+		}
+
+		// Render notices post
 		Set<KDOMNotice> notices = KDOMReportMessage
 				.getNotices(subSection);
 		if (notices != null && notices.size() > 0) {
@@ -160,12 +182,12 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 				MessageRenderer noticeRenderer = subSection.get()
 						.getNoticeRenderer();
 				if (noticeRenderer != null) {
-					builder.append(noticeRenderer.renderMessage(kdomNotice, user));
+					builder.append(noticeRenderer.postRenderMessage(kdomNotice, user));
 				}
 			}
 		}
 
-		// Render warnings
+		// Render warnings post
 		Set<KDOMWarning> warnings = KDOMReportMessage.getWarnings(subSection);
 		if (warnings != null && warnings.size() > 0) {
 			for (KDOMWarning kdomWarning : warnings) {
@@ -173,7 +195,48 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 						.getWarningRenderer();
 				if (warningRenderer != null) {
 					builder.append(warningRenderer
-							.renderMessage(kdomWarning, user));
+							.postRenderMessage(kdomWarning, user));
+				}
+			}
+		}
+	}
+
+	private void renderMessagesPre(Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
+		// Render warnings pre
+		Set<KDOMWarning> warnings = KDOMReportMessage.getWarnings(subSection);
+		if (warnings != null && warnings.size() > 0) {
+			for (KDOMWarning kdomWarning : warnings) {
+				MessageRenderer warningRenderer = subSection.get()
+						.getWarningRenderer();
+				if (warningRenderer != null) {
+					builder.append(warningRenderer
+							.preRenderMessage(kdomWarning, user));
+				}
+			}
+		}
+
+		// Render notices pre
+		Set<KDOMNotice> notices = KDOMReportMessage
+				.getNotices(subSection);
+		if (notices != null && notices.size() > 0) {
+			for (KDOMNotice kdomNotice : notices) {
+				MessageRenderer noticeRenderer = subSection.get()
+						.getNoticeRenderer();
+				if (noticeRenderer != null) {
+					builder.append(noticeRenderer.preRenderMessage(kdomNotice, user));
+				}
+			}
+		}
+
+		// Render errors pre
+		Set<KDOMError> errors = KDOMReportMessage
+				.getErrors(subSection);
+		if (errors != null && errors.size() > 0) {
+			for (KDOMError kdomNotice : errors) {
+				MessageRenderer errorRenderer = subSection.get()
+						.getErrorRenderer();
+				if (errorRenderer != null) {
+					builder.append(errorRenderer.preRenderMessage(kdomNotice, user));
 				}
 			}
 		}
@@ -195,10 +258,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 	private KnowWEDomRenderer getRenderer(Section<?> section,
 			KnowWEUserContext user) {
 		KnowWEDomRenderer renderer = null;
-		Set<KDOMError> errors = KDOMReportMessage.getErrors(section);
-		if (errors != null && !errors.isEmpty()) {
-			renderer = section.getObjectType().getErrorRenderer();
-		}
+
 
 		KnowWEObjectType objectType = section.getObjectType();
 		if (renderer == null) {

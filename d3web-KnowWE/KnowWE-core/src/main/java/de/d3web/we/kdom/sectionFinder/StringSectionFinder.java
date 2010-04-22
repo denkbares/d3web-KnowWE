@@ -20,42 +20,45 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.d3web.we.kdom.Section;
 
-public class StringSectionFinder extends SectionFinder {
-	
-	private String string;
+/**
+ * Simple SectionFinder that identifies the first (or last if flagged)
+ * occurrence of a specific String in the text
+ *
+ *
+ * @author Jochen
+ * 
+ */
+public class StringSectionFinder extends AbstractSingleResultFinder {
+
+	private final String string;
 	private boolean last = false;
-	
+
 	public StringSectionFinder(String s) {
 		this.string = s;
 	}
-	
+
 	public StringSectionFinder(String s, boolean last) {
 		this.string = s;
 		this.last = last;
 	}
-	
+
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		
+	public SectionFinderResult lookForSection(String text, Section father) {
+
 		int index;
-		
-		if(last) 
+
+		if(last)
 			index = text.lastIndexOf(string);
-		else 
+		else
 			index = text.indexOf(string);
-		
-		
-		if(index == -1) 
+
+
+		if(index == -1)
 			return null;
-		
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);
-		result.add(new SectionFinderResult(index, index + string.length()));		
-		return result;
+
+		return new SectionFinderResult(index, index + string.length());
 	}
 
 }

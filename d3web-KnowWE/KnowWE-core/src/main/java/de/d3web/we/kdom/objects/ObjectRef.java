@@ -5,7 +5,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.NoSuchObjectError;
+import de.d3web.we.kdom.report.message.NoSuchObjectError;
 
 /**
  * A type representing a text slice, which _references_ an (existing) Object. It
@@ -21,11 +21,20 @@ import de.d3web.we.kdom.report.NoSuchObjectError;
  */
 public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType implements ObjectIDContainer<T> {
 
+	/**
+	 * has to check whether the referenced object is existing, i.e., has been
+	 * created before (by a corresponding ObjectDef)
+	 *
+	 * @param s
+	 * @return
+	 */
 	public abstract boolean objectExisting(Section<?> s);
 
 	public ObjectRef() {
+		// TODO make ObjectChcker singleton (somehow)
 		this.addReviseSubtreeHandler(new ObjectChecker());
 	}
+
 
 
 	class ObjectChecker implements ReviseSubTreeHandler {
@@ -35,7 +44,7 @@ public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType imple
 			if (!objectExisting(s)) {
 				KDOMReportMessage.storeError(s, this.getClass(),
 						new NoSuchObjectError(s.get().getName() + ": "
-						+ s.getOriginalText()));
+								+ s.getOriginalText()));
 			}
 			return null;
 		}

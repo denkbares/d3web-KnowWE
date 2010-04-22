@@ -23,29 +23,44 @@ package de.d3web.we.kdom.report;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
+/**
+ * Default renderer for Warning messages
+ * 
+ * To have your own customized WarningRenderer overwrite getWarningRenderer in
+ * your KnowWEObjectType and return a (custom) MessageRenderer of your choice
+ * 
+ * @author Jochen
+ * 
+ */
 public class DefaultWarningRenderer implements MessageRenderer {
 
 private static DefaultWarningRenderer instance = null;
-	
+
 	public static DefaultWarningRenderer getInstance() {
 		if (instance == null) {
 			instance = new DefaultWarningRenderer();
-			
+
 		}
 
 		return instance;
 	}
-	
+
 	@Override
-	public String renderMessage(KDOMReportMessage notice, KnowWEUserContext user) {
-		
+	public String preRenderMessage(KDOMReportMessage notice, KnowWEUserContext user) {
+		// does do nothing --> happens post
+		return "";
+	}
+
+	@Override
+	public String postRenderMessage(KDOMReportMessage notice, KnowWEUserContext user) {
+
 		StringBuffer buffy = new StringBuffer();
-		
+
 		buffy.append(" <img style='vertical-align:middle;' height='12' src='KnowWEExtension/images/lo.gif'");
-		
+
 		buffy.append(" title='"+notice.getVerbalization(user)+"'>");
-		
+
 		return  KnowWEUtils.maskHTML(buffy.toString());
-		
+
 	}
 }

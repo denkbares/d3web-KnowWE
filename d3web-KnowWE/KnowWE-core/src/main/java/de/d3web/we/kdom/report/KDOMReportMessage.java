@@ -25,13 +25,30 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
+/**
+ *
+ * Abstract class for a KnowWEMessage
+ *
+ * Also contains the management of the messages with resprect to the
+ * corresponding sections
+ *
+ *
+ * @author Jochen
+ *
+ */
 public abstract class KDOMReportMessage {
 
+	/**
+	 * return the verbalization of this message. Will be rendered into the wiki
+	 * page by the given MessageRenderer of the KnowWEObjectType of the section
+	 *
+	 * @param usercontext
+	 * @return
+	 */
 	public abstract String getVerbalization(KnowWEUserContext usercontext);
 
 	private static final String ERROR_STORE_KEY = "ERROR-SET";
@@ -39,9 +56,9 @@ public abstract class KDOMReportMessage {
 	private static final String WARNING_STORE_KEY = "WARNING-SET";
 
 	private static final String NOTICE_STORE_KEY = "NOTICE-SET";
-	
+
 	/**
-	 * Cleans all KDOMReportMessages from the given ReviseSubTreeHandler <tt>h</tt> 
+	 * Cleans all KDOMReportMessages from the given ReviseSubTreeHandler <tt>h</tt>
 	 * for the Section <tt>s</tt>.
 	 */
 	public static void cleanMessages(Section s, Class<?> source) {
@@ -49,28 +66,28 @@ public abstract class KDOMReportMessage {
 		cleanNotices(s, source);
 		cleanWarnings(s, source);
 	}
-	
+
 	public static void cleanErrors(Section s, Class<?> source) {
 		Map<String, Set<KDOMError>> errors = getErrorsMap(s);
 		if (errors != null) {
 			errors.remove(source.getName());
 		}
 	}
-	
+
 	public static void cleanNotices(Section s, Class<?> source) {
 		Map<String, Set<KDOMNotice>> notices = getNoticesMap(s);
 		if (notices != null) {
 			notices.remove(source.getName());
 		}
 	}
-	
+
 	public static void cleanWarnings(Section s, Class<?> source) {
 		Map<String, Set<KDOMWarning>> warnings = getWarningsMap(s);
 		if (warnings != null) {
 			warnings.remove(source.getName());
 		}
 	}
-	
+
 	/**
 	 * Stores the given KDOMReportMessage <tt>m</tt> from the ReviseSubTreeHandler <tt>h</tt>
 	 * for Section <tt>s</tt>.
@@ -112,7 +129,7 @@ public abstract class KDOMReportMessage {
 		}
 		ns.add(e);
 	}
-	
+
 	public static void storeError(Section s, Class<?> source, KDOMError e) {
 		Map<String, Set<KDOMError>> errors = getErrorsMap(s);
 		if (errors == null) {
@@ -126,7 +143,7 @@ public abstract class KDOMReportMessage {
 		}
 		es.add(e);
 	}
-	
+
 	public static Map<String, Set<KDOMWarning>> getWarningsMap(Section s) {
 		return (Map<String, Set<KDOMWarning>>) KnowWEUtils
 				.getStoredObject(s, WARNING_STORE_KEY);
@@ -141,7 +158,7 @@ public abstract class KDOMReportMessage {
 		return (Map<String, Set<KDOMError>>) KnowWEUtils
 			.getStoredObject(s,ERROR_STORE_KEY);
 	}
-	
+
 	public static Set<KDOMWarning> getWarnings(Section s) {
 		Map<String, Set<KDOMWarning>> warnings = getWarningsMap(s);
 		if (warnings == null) {
@@ -177,13 +194,13 @@ public abstract class KDOMReportMessage {
 		}
 		return allSets;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		// TODO better implementation possible
 		return this.getVerbalization(null).hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof KDOMReportMessage) {

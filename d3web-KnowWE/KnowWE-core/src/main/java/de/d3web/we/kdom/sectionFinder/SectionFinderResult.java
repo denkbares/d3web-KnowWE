@@ -48,6 +48,7 @@ public class SectionFinderResult implements Comparable<SectionFinderResult>{
 	}
 
 	public static List<SectionFinderResult> createSingleItemList(SectionFinderResult s){
+		if (s == null) return null;
 		List<SectionFinderResult> resultList = new ArrayList<SectionFinderResult>();
 		resultList.add(s);
 		return resultList;

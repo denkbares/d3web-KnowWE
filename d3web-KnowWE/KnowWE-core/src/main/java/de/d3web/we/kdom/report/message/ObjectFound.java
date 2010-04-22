@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2010 denkbares GmbH
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -17,22 +16,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package de.d3web.we.kdom.report.message;
 
-package de.d3web.we.kdom.report;
-
+import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+/**
+ * Creates a notice, that an object has been found
+ *
+ * @author Markus Friedrich (denkbares GmbH)
+ */
+public class ObjectFound extends KDOMNotice {
 
-public class CreateRelationFailed extends KDOMWarning{
-
-	private String s;
+private String s;
 	
-	public CreateRelationFailed(String s) {
+	public ObjectFound(String s) {
 		this.s = s;
 	}
 	
 	@Override
 	public String getVerbalization(KnowWEUserContext usercontext) {
-		return "Failed to create: "+s;
+		return "Object found: "+s;
 	}
 
 }

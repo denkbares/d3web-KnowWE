@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -34,6 +34,7 @@ import de.d3web.we.kdom.report.DefaultErrorRenderer;
 import de.d3web.we.kdom.report.DefaultNoticeRenderer;
 import de.d3web.we.kdom.report.DefaultWarningRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -42,16 +43,16 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/**
 	 * This is just a (conventional) key under which messages can be stored (and
 	 * then be found again) in the sectionStore
-	 * 
+	 *
 	 */
 	public static final String MESSAGES_STORE_KEY = "messages";
 
 	/**
 	 * the children types of the type. Used to serve the getAllowedChildrenTypes
 	 * of the KnowWEObjectType interface
-	 * 
+	 *
 	 * @see KnowWEObjectType#getAllowedChildrenTypes()
-	 * 
+	 *
 	 */
 	protected List<KnowWEObjectType> childrenTypes = new ArrayList<KnowWEObjectType>();
 
@@ -60,7 +61,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
-	 * 
+	 *
 	 * @see ReviseSubTreeHandler
 	 */
 	protected List<ReviseSubTreeHandler> subtreeHandler = new ArrayList<ReviseSubTreeHandler>();
@@ -94,14 +95,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/**
 	 * The sectionFinder of this type, used to serve the getSectionFinder-method
 	 * of the KnowWEObjectType interface
-	 * 
+	 *
 	 * @see KnowWEObjectType#getSectioner()
 	 */
 	protected SectionFinder sectionFinder;
 
 	/**
 	 * Allows to set a specific sectionFinder for this type
-	 * 
+	 *
 	 * @param sectionFinder
 	 */
 	public void setSectionFinder(SectionFinder sectionFinder) {
@@ -117,7 +118,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * constructor calling init() which is abstract
-	 * 
+	 *
 	 */
 	public AbstractKnowWEObjectType() {
 		// TODO: vb: this is dangerous behavior. Should be replaced. The objects
@@ -133,7 +134,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Returns the list of the registered ReviseSubtreeHandlers
-	 * 
+	 *
 	 * @return list of handlers
 	 */
 	public List<ReviseSubTreeHandler> getSubtreeHandler() {
@@ -142,7 +143,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Can be used to register new ReviseSubtreeHandlers
-	 * 
+	 *
 	 * @param handler
 	 */
 	public void addReviseSubtreeHandler(ReviseSubTreeHandler handler) {
@@ -152,7 +153,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/**
 	 * A mechanism to help clean up old information, when a new version of a
 	 * page is saved
-	 * 
+	 *
 	 * @param articleName
 	 * @param clearedTypes
 	 */
@@ -174,7 +175,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * Returns all the messages stored for this section put doesn't create a new
 	 * empty MessageList in the SectionStore if no MessageList is there yet.
 	 * Returns <tt>null</tt> in this case.
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -192,7 +193,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Returns all the messages stored for this section.
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -238,7 +239,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Stores a list of messages under to message-store-key
-	 * 
+	 *
 	 * @param article is the article, the message is getting stored for. Be
 	 *        aware, that this is not automatically the article the section is
 	 *        directly linked to (because this Section might be included), but
@@ -254,7 +255,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEObjectType#deactivateType()
 	 */
 	public void deactivateType() {
@@ -263,7 +264,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEObjectType#activateType()
 	 */
 	public void activateType() {
@@ -272,7 +273,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getActivationStatus()
 	 */
 	public boolean getActivationStatus() {
@@ -294,7 +295,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getName()
 	 */
 	@Override
@@ -306,7 +307,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getSectioner()
 	 */
 	@Override
@@ -319,7 +320,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getAllowedChildrenTypes()
 	 */
 	@Override
@@ -355,14 +356,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.KnowWErticle
 	 * , de.d3web.we.kdom.Section)
 	 */
 	@Override
 	public final void reviseSubtree(KnowWEArticle article, Section s) {
-		
+
 		for (ReviseSubTreeHandler handler : subtreeHandler) {
 			try {
 				KDOMReportMessage message = handler.reviseSubtree(article, s);
@@ -377,7 +378,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 				storeMessages(article, s, Arrays.asList(msg));
 				// TODO: vb: store the error also in the article. (see below for
 				// more details)
-				// 
+				//
 				// Idea 1:
 				// Any unexpected error (and therefore catched here) of the
 				// ReviseSubtreeHandlers
@@ -408,7 +409,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEType#getRenderer()
 	 */
 	@Override
@@ -418,7 +419,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return getDefaultRenderer();
 	}
 
-	public KnowWEDomRenderer getErrorRenderer() {
+	public MessageRenderer getErrorRenderer() {
 		return DefaultErrorRenderer.getInstance();
 	}
 
@@ -436,7 +437,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Allows to set a custom renderer for this type
-	 * 
+	 *
 	 * @param renderer
 	 */
 	public void setCustomRenderer(KnowWEDomRenderer renderer) {
@@ -445,7 +446,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEType#isAssignableFromType(java.lang.Class)
 	 */
 	@Override
@@ -455,7 +456,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEType#isType(java.lang.Class)
 	 */
 	@Override
@@ -465,7 +466,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEObjectType#isLeafType()
 	 */
 	@Override
@@ -476,7 +477,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEObjectType#isNotRecyclable()
 	 */
 	@Override
@@ -486,7 +487,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.KnowWEObjectType#setNotRecyclable(boolean)
 	 */
 	@Override

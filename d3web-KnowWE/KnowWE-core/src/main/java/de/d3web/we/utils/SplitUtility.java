@@ -67,6 +67,15 @@ public class SplitUtility {
 		return splitUnquoted(text+"1", symbol).size() > 1;
 	}
 
+	public static String unquote(String text) {
+		if (text == null) return null;
+		text = text.trim();
+		if (text.startsWith("\"") && text.endsWith("\"")) {
+			return text.substring(1, text.length() - 1).trim();
+		}
+		return text;
+	}
+
 	/**
 	 * scans the 'text' for the (first) occurrence of 'symbol' which is not
 	 * emboded in quotes ('"')

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2010 denkbares GmbH
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -16,25 +17,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.report;
 
+package de.d3web.we.kdom.report.message;
+
+import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
-/**
- * Creates a notice, that an object has been found
- *
- * @author Markus Friedrich (denkbares GmbH)
- */
-public class ObjectFound extends KDOMNotice {
 
-private String s;
+public class NewObjectCreated extends KDOMNotice{
+
+	private String s;
 	
-	public ObjectFound(String s) {
+	public NewObjectCreated(String s) {
 		this.s = s;
 	}
 	
 	@Override
 	public String getVerbalization(KnowWEUserContext usercontext) {
-		return "Object found: "+s;
+		// TODO Auto-generated method stub
+		return "Object created: "+s;
 	}
 
 }

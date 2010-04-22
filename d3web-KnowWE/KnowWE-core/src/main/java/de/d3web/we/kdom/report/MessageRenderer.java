@@ -23,7 +23,9 @@ package de.d3web.we.kdom.report;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public interface MessageRenderer {
-	
-	public String renderMessage(KDOMReportMessage m, KnowWEUserContext user);
+
+	public String postRenderMessage(KDOMReportMessage m, KnowWEUserContext user);
+
+	public String preRenderMessage(KDOMReportMessage m, KnowWEUserContext user);
 
 }
