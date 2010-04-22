@@ -25,8 +25,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.report.DefaultErrorRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -34,34 +37,41 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * Type to detect Too-much-dashes-Erros in DashTree-Markup
  * This error is first ignored by the dash-tree parser (leaves it as plaintext/comment)
  * This type catches it to render it highlighted.
- * 
- * 
+ *
+ *
  * @author Jochen
- *	
- *	
+ *
+ *
  *
  */
 public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
-	
+
 	@Override
 	protected void init() {
-		this.setCustomRenderer(DefaultErrorRenderer.getInstance());
+
+		this.addReviseSubtreeHandler(new ReviseSubTreeHandler() {
+			@Override
+			public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+				return new SyntaxError("to many dashes; remove \"-\"");
+			}
+		});
+
 		this.sectionFinder = new SectionFinder() {
-			
+
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section father) {
 				int level = -1;
-				
-				
+
+
 				//IMPORTANT: +1
 				if(father.getObjectType() instanceof SubTree) {
 					level = SubTree.getLevel(father) + 1;
 				}
-				
+
 				Matcher m  = Pattern.compile("^\\s*" + "(-{"+level+"})",
 						Pattern.MULTILINE).matcher(text);
 				if(m.find()) {
-					
+
 					return SectionFinderResult.createSingleItemList(new SectionFinderResult(m.start(1), m.start(1) + level));
 				}
 				return null;
