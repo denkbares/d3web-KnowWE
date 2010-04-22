@@ -8,7 +8,6 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
 import de.d3web.we.taghandler.AbstractTagHandler;
@@ -32,7 +31,7 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
 	String yearAfter = getIntAsString(-10000, values, TIME_AFTER);
 	String querystring = null;
 	try {
-	    querystring = TIME_SPARQL.replaceAll("TOPIC", "\"" + topic + "\"");
+			querystring = TIME_SPARQL.replaceAll("TOPIC", "lns:" + topic);
 	} catch (Exception e) {
 	    return "Illegal query String: " + querystring + "<br />"
 		    + " no valid parameter for: " + TIME_AFTER;
@@ -60,7 +59,9 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
 	StringBuffer buffy = new StringBuffer();
 	try {
 	    buffy.append("<ul>");
+			boolean found = false;
 	    while (result.hasNext()) {
+				found = true;
 		BindingSet set = result.next();
 		try {
 		    String importance = URLDecoder.decode(set.getBinding("imp")
@@ -88,6 +89,7 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
 		// + "<br>");
 		// }
 	    }
+			if (!found) buffy.append("no results found");
 	    buffy.append("</ul>");
 	} catch (QueryEvaluationException e) {
 	    return "error";
