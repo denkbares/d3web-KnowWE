@@ -36,9 +36,9 @@ import de.d3web.we.kdom.Annotation.FindingComparator;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.condition.ComplexFinding;
-import de.d3web.we.kdom.condition.Conjunct;
-import de.d3web.we.kdom.condition.Disjunct;
 import de.d3web.we.kdom.condition.OrOperator;
+import de.d3web.we.kdom.condition.old.Conjunct;
+import de.d3web.we.kdom.condition.old.Disjunct;
 import de.d3web.we.kdom.dashTree.questionnaires.QuestionnairesTreeANTLR;
 import de.d3web.we.kdom.dashTree.solutions.SolutionsTreeANTLR;
 import de.d3web.we.kdom.decisionTree.QuestionTreeANTLR;
@@ -66,7 +66,7 @@ import dummies.KnowWETestWikiConnector;
 /**
  * Especially for the d3web-SectionFinder which
  * cannot be testet in KnowWE2SectionFinder test.
- * 
+ *
  * @author Johannes Dienst
  *
  */
@@ -83,65 +83,65 @@ public class d3webSectionFinderTest extends TestCase {
 	private static final String WRONG_COUNT = "Children count wrong";
 	private static final String WRONG_TYPE = "Wrong KnowWEObjectType";
 	private static final String WRONG_TYPE_COUNT = "Wrong KnowWEObjectType  section count:";
-	
+
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}
-	
+
 	public void testAllAnnotationRelatedSectionFinder() {
-		
+
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
 		KnowWEEnvironment.getInstance().getArticle("default_web", "Test_Article");
-		
+
 		String test = "blablub {{the currently measured mileage"
 			+ "<=> asks::Real mileage  /100km}}bla blub";
-		
+
 		Annotation type = new de.d3web.we.kdom.Annotation.Annotation();
 		KnowWEArticle article = new KnowWEArticle(test, "Test_Article2", type, "default_web");
 		Section artSec = article.getSection();
 		List<Section> childs = artSec.getChildren();
-		
+
 		// Annotation
 		assertEquals(WRONG_COUNT, 3, childs.size());
 		assertEquals(WRONG_TYPE, new Annotation().getName(), childs.get(1).getObjectType().getName());
-		
+
 		// StartSymbol, Content, EndSymbol
 		childs = childs.get(1).getChildren();
 		assertEquals(WRONG_COUNT, 3, childs.size());
 		assertEquals(WRONG_TYPE, new SemanticAnnotationStartSymbol("{{").getName(), childs.get(0).getObjectType().getName());
 		assertEquals(WRONG_TYPE, new AnnotationContent().getName(), childs.get(1).getObjectType().getName());
 		assertEquals(WRONG_TYPE, new SemanticAnnotationEndSymbol("}}").getName(), childs.get(2).getObjectType().getName());
-		
+
 		// AnnotatedString, Annotation MapSign, AnnotationObject
 		childs = childs.get(1).getChildren();
 		assertEquals(WRONG_COUNT, 3, childs.size());
 		assertEquals(WRONG_TYPE, new AnnotatedString().getName(), childs.get(0).getObjectType().getName());
 		assertEquals(WRONG_TYPE, new AnnotationMapSign().getName(), childs.get(1).getObjectType().getName());
 		assertEquals(WRONG_TYPE, new AnnotationObject().getName(), childs.get(2).getObjectType().getName());
-		
+
 		// PlainText, AnnotationProperty, SimpleAnnotation
 		childs = childs.get(2).getChildren();
 		assertEquals(WRONG_COUNT, 3, childs.size());
 		assertEquals(WRONG_TYPE, new PlainText().getName(), childs.get(0).getObjectType().getName());
 		assertEquals(WRONG_TYPE, new SemanticAnnotationProperty().getName(), childs.get(1).getObjectType().getName());
 		assertEquals(WRONG_TYPE, new SimpleAnnotation().getName(), childs.get(2).getObjectType().getName());
-		
+
 		// AnnotationPropertyName, AnnotationPropertyDelimiter
 		childs = childs.get(1).getChildren();
 		assertEquals(WRONG_TYPE, new SemanticAnnotationPropertyName().getName(), childs.get(0).getObjectType().getName());
 		assertEquals(WRONG_TYPE, new SemanticAnnotationPropertyDelimiter().getName(), childs.get(1).getObjectType().getName());
 	}
-	
+
 	public void testAnnotationSectioner() {
 		String test = "blablub {{the currently measured mileage <=> asks:: Real mileage  /100km}}bla blub";
-		List<SectionFinderResult> results = 
+		List<SectionFinderResult> results =
 			new Annotation().new AnnotationSectionFinder().lookForSections(test, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 8, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 74, results.get(0).getEnd());
 	}
-	
+
 	/**
 	 * Seems not right. finding tests only if text.contains("=")
 	 */
@@ -149,34 +149,35 @@ public class d3webSectionFinderTest extends TestCase {
 		String test = "Are you hungry? = Yes OR Are you hungry? = Very very hungry";
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
 		KnowWEEnvironment.getInstance().getArticle("default_web", "Test_Article");
-		
+
 		KnowWEArticle article = new KnowWEArticle(test, "Test_Article2", new ComplexFinding(), "default_web");
 		Section artSec = article.getSection();
 		List<Section> childs = artSec.getChildren();
-		
+
 		// ComplexFinding
 		assertEquals(WRONG_COUNT, 1, childs.size());
 		assertEquals(WRONG_TYPE, new ComplexFinding().getName(), childs.get(0).getObjectType().getName());
-		
+
 		// disjunctive form
 		Section disjunction = childs.get(0);
 		childs = disjunction.getChildren();
 		assertEquals(WRONG_COUNT, 5, childs.size());
-		
+
 		// TODO Test order more deeply: disj, or, disj
 		assertEquals(WRONG_TYPE_COUNT+" "+OrOperator.class.toString(),1,  disjunction.findChildrenOfType(OrOperator.class).size());
 		assertEquals(WRONG_TYPE_COUNT+" "+Disjunct.class.getName(),2, disjunction.findChildrenOfType(Disjunct.class).size());
-		
+
 		//conjunctive form (trivial in this case)
 		childs = childs.get(0).getChildren();
 		assertEquals(WRONG_COUNT, 1, childs.size());
-		assertEquals(WRONG_TYPE, new Conjunct().getName(), childs.get(0).getObjectType().getName());
-		
+		assertEquals(WRONG_TYPE, new Conjunct().getName(),
+				childs.get(0).getObjectType().getName());
+
 		//conjunctive form (trivial in this case)
 		childs = childs.get(0).getChildren();
 		assertEquals(WRONG_COUNT, 1, childs.size());
 		assertEquals(WRONG_TYPE, new Finding().getName(), childs.get(0).getObjectType().getName());
-		
+
 		// FindingQuestion, findingComparator, FindingAnswer
 		Section finding = childs.get(0);
 		childs = finding.getChildren();
@@ -186,8 +187,8 @@ public class d3webSectionFinderTest extends TestCase {
 		assertEquals(WRONG_TYPE_COUNT+" "+FindingAnswer.class.toString(),1,  finding.findChildrenOfType(FindingAnswer.class).size());
 
 	}
-	
-	/** 
+
+	/**
 	 * Seems not right. finding tests only if text.contains("=")
 	 */
 	public void testComplexFindingANTLRSectionCreator() {
@@ -198,19 +199,19 @@ public class d3webSectionFinderTest extends TestCase {
 		assertEquals(WRONG_FIRST_START, -1, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 58, results.get(0).getEnd());
 	}
-	
-	/** 
+
+	/**
 	 * Seems not right. finding tests only if text.contains(=)
 	 */
 	public void testFindingSectionFinder() {
 		String text = "Are you hungry? = Yes";
 		Finding.FindingSectionFinder f = new Finding().new FindingSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		 
+
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 21, results.get(0).getEnd());
 	}
-	
+
 	// TODO: What text...
 	public void testQuestionnairesKDOMANTLRSectionFinder() {
 		String text = "";
@@ -218,7 +219,7 @@ public class d3webSectionFinderTest extends TestCase {
 			new QuestionnairesTreeANTLR().new QuestionnairesKDOMANTLRSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 	}
-	
+
 	// TODO: What text...
 	public void testQuestionTreeKDOMANTLRSectionFinder() {
 		String text = "bla blub <Questions-section>"
@@ -237,54 +238,54 @@ public class d3webSectionFinderTest extends TestCase {
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 		System.out.println();
 	}
-	
+
 	public void testRuleActionLineSectionFinder() {
 		String text = " yoyo THEN Exhaust pipe color evaluation += abnormal";
 		RuleActionLine.RuleActionLineSectionFinder f =
 			new RuleActionLine().new RuleActionLineSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 6, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 52, results.get(0).getEnd());
 	}
-	
+
 	public void testRuleCondLineSectionFinder() {
 		String text = " yoyo IF (Fuel = unleaded gasoline AND Exhaust pipe color = sooty black)";
 		SectionFinder f =
 			new RuleCondLine().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 6, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 72, results.get(0).getEnd());
 	}
-	
+
 	public void testRuleSectionFinder() {
 		String text = " yoyo IF (Fuel = diesel AND Exhaust pipe color = sooty black)\r\n"
 					+ "THEN Exhaust pipe color evaluation += normal";
 		SectionFinder f = new Rule().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 6, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 107, results.get(0).getEnd());
 	}
-	
+
 	// TODO: What text...
 	public void testSolutionsKDOMANTLRSectionFinder() {
 		String text = "";
-		SolutionsTreeANTLR.SolutionsKDOMANTLRSectionFinder f = 
+		SolutionsTreeANTLR.SolutionsKDOMANTLRSectionFinder f =
 			new SolutionsTreeANTLR().new SolutionsKDOMANTLRSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
 	}
-	
+
 	// TODO How to test that
 	public void testTableSectionFinder() {
 		String text = "<Table default=\"+,-,0\" width=\"100\" row=\"1\" column=\"1\">"
 			+ "|                        | Apple \r \n"
 			+ "| sweetness              |   +   "
 			+ "</Table>";
-				
+
 	}
-	
+
 	public void testXCListSectionFinder() {
 		String text = "Buy some food { \r\n"
 		    		+ "Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],\r\n"
@@ -298,17 +299,17 @@ public class d3webSectionFinderTest extends TestCase {
 		    	    + "Is your fridge empty? = Yes [1],\r\n"
 		    	    + "What do you like? = Meeting people,\r\n"
 		    		+ "}\r\n";
-		
+
 		SectionFinder f = new XCList().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 198, results.get(0).getEnd());
-		
+
 		assertEquals(WRONG_SECOND_START, 203, results.get(1).getStart());
 		assertEquals(WRONG_SECOND_END, 450, results.get(1).getEnd());
 	}
-	
+
 	public void testXCLBodySectionFinder() {
 		String text = "Buy some food { \r\n"
 				+ "Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],\r\n"
@@ -322,14 +323,14 @@ public class d3webSectionFinderTest extends TestCase {
 //				+ "Is your fridge empty? = Yes [1],\r\n"
 //				+ "What do you like? = Meeting people,\r\n"
 //				+ "}\r\n";
-		
+
 		XCLBody.XCLBodySectionFinder f = new XCLBody().new XCLBodySectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 14, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 198, results.get(0).getEnd());
 	}
-	
+
 	public void testXCLHeadSectionFinder() {
 		String text = "Buy some food { \r\n"
 					+ "Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],\r\n"
@@ -337,10 +338,10 @@ public class d3webSectionFinderTest extends TestCase {
 					+ "What do you like? = Shopping,\r\n"
 					+ "Are the stores still open? = Yes [!],\r\n"
 					+ "}\r\n \r\n \r \n";
-		
+
 		XCLHead.XCLHeadSectionFinder f = new XCLHead().new XCLHeadSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 13, results.get(0).getEnd());
 	}
@@ -358,33 +359,33 @@ public class d3webSectionFinderTest extends TestCase {
 			+ "Is your fridge empty? = Yes [1],\r\n"
 			+ "What do you like? = Meeting people,\r\n"
 			+ "} [lol] \r\n";
-		
+
 		XCLTail.XCLTailSectionFinder f = new XCLTail().new XCLTailSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 456, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 461, results.get(0).getEnd());
 	}
-	
+
 	public void testXCLRelationSectionFinder() {
 		String text = "Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],\r\n"
 			+ "Are you hungry? = Very very hungry,\r\n"
 			+ "What do you like? = Shopping,\r\n"
 			+ "} \r\n \r\n \r \n";
-		
+
 		SectionFinder f = new XCLRelation().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 69, results.get(0).getEnd());
-		
+
 		assertEquals(WRONG_SECOND_START, 72, results.get(1).getStart());
 		assertEquals(WRONG_SECOND_END, 106, results.get(1).getEnd());
-		
+
 		assertEquals(WRONG_THIRD_START, 109, results.get(2).getStart());
 		assertEquals(WRONG_THIRD_END, 137, results.get(2).getEnd());
 	}
-	
+
 	public void testXCLRelationWeightSectionFinder() {
 		String text = "Buy some food { \r\n"
 			+ "Is your fridge empty? = Yes OR Are you hungry? = Very very hungry [2],\r\n"
@@ -393,23 +394,23 @@ public class d3webSectionFinderTest extends TestCase {
 			+ "Are the stores still open? = Yes [++],\r\n"
 			+ "Is there any body out there? = NO [;:], \r\n"
 			+ "} \r\n \r\n \r \n";
-		
-		XCLRelationWeight.XCLRelationWeightSectionFinder f = 
+
+		XCLRelationWeight.XCLRelationWeightSectionFinder f =
 			new XCLRelationWeight().new XCLRelationWeightSectionFinder();
 		List<SectionFinderResult> results = f.lookForSections(text, null);
-		
+
 		assertEquals(WRONG_FIRST_START, 84, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 87, results.get(0).getEnd());
-		
+
 		assertEquals(WRONG_SECOND_START, 124, results.get(1).getStart());
 		assertEquals(WRONG_SECOND_END, 128, results.get(1).getEnd());
-		
+
 		assertEquals(WRONG_THIRD_START, 159, results.get(2).getStart());
 		assertEquals(WRONG_THIRD_END, 162, results.get(2).getEnd());
-		
+
 		assertEquals(WRONG_FOURTH_START, 198, results.get(3).getStart());
 		assertEquals(WRONG_FOURTH_END, 202, results.get(3).getEnd());
 	}
-	
-	
+
+
 }

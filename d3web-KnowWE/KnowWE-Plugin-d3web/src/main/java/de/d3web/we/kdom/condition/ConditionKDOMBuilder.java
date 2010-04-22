@@ -30,6 +30,7 @@ import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingComparator;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
+import de.d3web.we.kdom.condition.old.Conjunct;
 import de.d3web.we.kdom.rules.RuleCondLine;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 /**
@@ -39,8 +40,8 @@ import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
  */
 public class ConditionKDOMBuilder implements ConditionBuilder {
 
-	private Stack<ExpandedSectionFinderResult> sections = new Stack<ExpandedSectionFinderResult>();	
-	
+	private final Stack<ExpandedSectionFinderResult> sections = new Stack<ExpandedSectionFinderResult>();
+
 	@Override
 	public void all(int line, String linetext, String question, String type,
 			List<String> answers) {
@@ -52,10 +53,11 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 	public void andcond(String text) {
 		if(text == null) return;
 		if (sections.size() >= 2) {
-			ExpandedSectionFinderResult disjunct = new ExpandedSectionFinderResult(text, new Conjunct(), -1);
+			ExpandedSectionFinderResult disjunct = new ExpandedSectionFinderResult(text,
+					new Conjunct(), -1);
 			ExpandedSectionFinderResult second = sections.pop();
 			disjunct.addChild(sections.pop());
-			
+
 			Pattern andPattern = Pattern.compile("( +AND +)" + Pattern.quote(second.getText()));
 			Matcher m = andPattern.matcher(text);
 			String and = " AND ";
@@ -64,13 +66,13 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 				and = m.group(1);
 				offset = m.start();
 			}
-			
+
 			disjunct.addChild(new ExpandedSectionFinderResult(and, new AndOperator(), offset));
 			disjunct.addChild(second);
 			sections.push(disjunct);
 		}
 	}
-	
+
 	@Override
 	public void orcond(String text) {
 		if(text == null) return;
@@ -78,7 +80,7 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 			ExpandedSectionFinderResult cf = new ExpandedSectionFinderResult(text, new ComplexFinding(),  -1);
 			ExpandedSectionFinderResult second = sections.pop();
 			cf.addChild(sections.pop());
-			
+
 			Pattern orPattern = Pattern.compile("( +OR +)" + Pattern.quote(second.getText()));
 			Matcher m = orPattern.matcher(text);
 			String or = " OR ";
@@ -87,7 +89,7 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 				or = m.group(1);
 				offset = m.start();
 			}
-			
+
 			cf.addChild(new ExpandedSectionFinderResult(or, new OrOperator(), offset));
 			cf.addChild(second);
 			sections.push(cf);
@@ -111,7 +113,7 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 			sections.push(bracedCond);
 		}
 	}
-	
+
 	public ExpandedSectionFinderResult peek() {
 		if(sections.size() == 0) return null;
 		return sections.peek();
@@ -120,30 +122,30 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 	@Override
 	public void condition(int line, String linetext, String qname, String type,
 			String op, String value) {
-		if(linetext == null) return;		
+		if(linetext == null) return;
 		ExpandedSectionFinderResult cond = new ExpandedSectionFinderResult(linetext, new Finding(), -1);
 		sections.add(cond);
 		if(qname == null || op == null || value == null) return;
-		
-		Pattern condPattern = Pattern.compile("\\A(\"?" + Pattern.quote(qname) + "\"?)( +" + Pattern.quote(op) 
+
+		Pattern condPattern = Pattern.compile("\\A(\"?" + Pattern.quote(qname) + "\"?)( +" + Pattern.quote(op)
 				+ " +)(\"?" + Pattern.quote(value) + "\"?)");
 		Matcher m = condPattern.matcher(linetext);
-		
+
 		int offset1 = 1;
 		int offset2 = 2;
 		int offset3 = 3;
-		
+
 		if (m.find()) {
 			offset1 = m.start(1);
 			qname = m.group(1);
-			
+
 			offset2 = m.start(2);
 			op = m.group(2);
 
 			offset3 = m.start(3);
 			value = m.group(3);
 		}
-		
+
 		cond.addChild(new ExpandedSectionFinderResult(qname, new FindingQuestion(), offset1));
 		cond.addChild(new ExpandedSectionFinderResult(op, new FindingComparator(), offset2));
 		cond.addChild(new ExpandedSectionFinderResult(value, new FindingAnswer(), offset3));
@@ -152,59 +154,59 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 	@Override
 	public void condition(int line, String linetext, String qname, String type,
 			double left, double right, boolean in) {
-		
+
 		ExpandedSectionFinderResult cond = new ExpandedSectionFinderResult(linetext, new RuleCondLine(), -1);
 		sections.add(cond);
-		
+
 		int offset1 = 1;
-		
+
 		int offset2 = 2;
 		String inString = " IN ";
-		
+
 		int offset3 = 3;
 		String bracketOpen = "[";
-		
+
 		int offset4 = 4;
 		String bracketClose = "]";
-		
+
 		int offset5 = 5;
-		String leftBorder = trimZeros(Double.toString(left)); 
-		
+		String leftBorder = trimZeros(Double.toString(left));
+
 		int offset6 = 6;
 		String rightBorder = trimZeros(Double.toString(right));
-		
-		Pattern condPattern = Pattern.compile("\\A( *\"" + Pattern.quote(qname) + "\")( +IN +)?(\\[ *)(" 
+
+		Pattern condPattern = Pattern.compile("\\A( *\"" + Pattern.quote(qname) + "\")( +IN +)?(\\[ *)("
 				+ leftBorder + " +)(" + rightBorder + " *)(\\] *)");
 		Matcher m = condPattern.matcher(linetext);
-		
+
 		if (m.find()) {
 			offset1 = m.start(1);
 			qname = m.group(1);
-			
+
 			if (m.group(2) != null) {
 				offset2 = m.start(2);
 				inString = m.group(2);
 			}
-			
+
 			offset3 = m.start(3);
 			bracketOpen = m.group(3);
-			
+
 			offset4 = m.start(4);
 			leftBorder = m.group(4);
-			
+
 			offset5 = m.start(5);
 			rightBorder = m.group(5);
-			
+
 			offset6 = m.start(6);
 			bracketClose = m.group(6);
-			
+
 		}
-		
+
 		cond.addChild(new ExpandedSectionFinderResult(qname, new FindingQuestion(), offset1));
-		
+
 		//TODO: Bedeutung von type? Überflüssig?
 		//if (type!=null) Section.createExpandedSection(type, null, cond, fatherindex++, topic, null, null, idgen);
-		
+
 		if (in) cond.addChild(new ExpandedSectionFinderResult(inString, new IN(), offset2));
 		cond.addChild(new ExpandedSectionFinderResult(bracketOpen, new IntervallBracketOpen(), offset3));
 		cond.addChild(new ExpandedSectionFinderResult(leftBorder, new IntervallLeftBorderValue(), offset4));
@@ -233,7 +235,7 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 		s.addChild(new ExpandedSectionFinderResult(name, new FindingQuestion(), 2));
 		s.addChild(new ExpandedSectionFinderResult("]", new CondKnownSyntax(), 3));
 		sections.push(s);
-	
+
 
 	}
 

@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.kopic.renderer.RuleConditionHighlightingRenderer;
+import de.d3web.we.kdom.rule.If;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 
 public class RuleCondLine extends DefaultAbstractKnowWEObjectType{

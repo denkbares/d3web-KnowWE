@@ -35,8 +35,8 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.condition.ComplexFinding;
 import de.d3web.we.kdom.condition.ComplexFindingBraced;
-import de.d3web.we.kdom.condition.Conjunct;
-import de.d3web.we.kdom.condition.Disjunct;
+import de.d3web.we.kdom.condition.old.Conjunct;
+import de.d3web.we.kdom.condition.old.Disjunct;
 import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -48,9 +48,9 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Highlights the Rules in Kopic-Sections according to the Session.
- * 
+ *
  * @author Johannes Dienst
- * 
+ *
  */
 public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 
@@ -58,7 +58,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 
 	/**
 	 * Singleton.
-	 * 
+	 *
 	 * @return
 	 */
 	public static RuleConditionHighlightingRenderer getInstance() {
@@ -75,31 +75,31 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 
 	// @Override
 	// public String render(Section sec, KnowWEUserContext user) {
-	//		
+	//
 	// // get the rule: Eval it and highlight the condition
 	// Section rule = KnowWEObjectTypeUtils.getAncestorOfType(sec, Rule.class);
 	// String kbRuleId = (String) KnowWEUtils.getStoredObject(sec.getWeb(),
 	// sec.getTitle(), rule.getId(), Rule.KBID_KEY);
-	//		
+	//
 	// // Get KnowledgeServiceSession containing the Session
 	// String sessionId = sec.getTitle() + ".." +
 	// KnowWEEnvironment.generateDefaultID(sec.getTitle());
 	// Broker broker = D3webModule.getBroker(user.getUsername(), sec.getWeb());
 	// KnowledgeServiceSession kss =
 	// broker.getSession().getServiceSession(sessionId);
-	//		
+	//
 	// if (kss instanceof D3webKnowledgeServiceSession) {
-	//			
+	//
 	// // Get the Session
 	// D3webKnowledgeServiceSession d3webKSS = (D3webKnowledgeServiceSession)
 	// kss;
 	// Session session = d3webKSS.getXpsCase();
-	//			
+	//
 	// // Get the RuleComplex with kbRuleId
 	// Collection<KnowledgeSlice> slices =
 	// session.getKnowledgeBase().getAllKnowledgeSlices();
 	// for (KnowledgeSlice slice : slices) {
-	//				
+	//
 	// if (slice.getId().equals(kbRuleId)) {
 	// RuleComplex rc = (RuleComplex) slice;
 	// return this.renderConditionLine(sec, rc, session, user);
@@ -152,7 +152,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	 * RuleCondition everything has to be done here. TODO: A ConditionLine
 	 * should only contain RuleCondition. So a special Renderer only for this
 	 * section can be written.
-	 * 
+	 *
 	 * @param sec
 	 * @param rc
 	 * @param session
@@ -161,9 +161,9 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 	// private String renderConditionLine(Section sec, RuleComplex rc, Session
 	// session,
 	// KnowWEUserContext user) {
-	//		
+	//
 	// StringBuffer buffi = new StringBuffer();
-	//		
+	//
 	// KnowWEObjectType type;
 	// for (Section child : sec.getChildren()) {
 	// type = child.getObjectType();
@@ -201,7 +201,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 
 	/**
 	 * Renders the Condition with highlighting.
-	 * 
+	 *
 	 * @param sec
 	 * @param rc
 	 * @param session

@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.condition;
+package de.d3web.we.kdom.condition.old;
 
 import java.util.List;
 
@@ -35,46 +35,48 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.basic.RoundBracedType;
-import de.d3web.we.kdom.kopic.rules.ruleActionLine.SolutionValueAssignment;
+import de.d3web.we.kdom.condition.AndOperator;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class Conjunct extends DefaultAbstractKnowWEObjectType  {
+public class Disjunct extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
-		this.childrenTypes.add(new RoundBracedType(this));
-		this.childrenTypes.add(new SolutionValueAssignment());
-		this.childrenTypes.add(new CondKnownType());
-		this.childrenTypes.add(new Finding());
 		this.sectionFinder = new AllTextFinderTrimmed();
-		this.addReviseSubtreeHandler(new ConjunctSubTreeHandler());
+		this.childrenTypes.add(new RoundBracedType(this));
+		this.childrenTypes.add(new AndOperator());
+		this.childrenTypes.add(new Conjunct());
+		this.addReviseSubtreeHandler(new DisjunctSubTreeHandler());
 	}
-	
-	private class ConjunctSubTreeHandler implements ReviseSubTreeHandler{
+
+	private class DisjunctSubTreeHandler implements ReviseSubTreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			KDOMReportMessage msg=null;
+			KDOMReportMessage msg = null;
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
 				UpperOntology uo = UpperOntology.getInstance();
+
 				URI compositeexpression = uo.getHelper().createlocalURI(
 						s.getTitle() + ".." + s.getId());
-				io.addStatement(uo.getHelper().createStatement(compositeexpression,
-						RDF.TYPE, D3WebOWLVokab.CONJUNCTION));
+				io.addStatement(uo.getHelper().createStatement(
+						compositeexpression, RDF.TYPE,
+						D3WebOWLVokab.DISJUNCTION));
 				io.addLiteral(compositeexpression);
 				List<Section> children = s.getChildren();
 				for (Section current : children) {
-					if (current.getObjectType() instanceof Finding) {
-						IntermediateOwlObject iohandler =(IntermediateOwlObject) KnowWEUtils.getStoredObject(current,OwlHelper.IOO); 
+					if (current.getObjectType() instanceof Conjunct) {
+						IntermediateOwlObject iohandler = (IntermediateOwlObject) KnowWEUtils
+								.getStoredObject(current, OwlHelper.IOO);
 						for (URI curi : iohandler.getLiterals()) {
 							Statement state = uo.getHelper().createStatement(
-									compositeexpression,D3WebOWLVokab.HASCONJUNCTS
-									, curi);
+									compositeexpression,
+									D3WebOWLVokab.HASDISJUNCTS, curi);
 							io.addStatement(state);
 							iohandler.removeLiteral(curi);
 						}
@@ -82,13 +84,13 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType  {
 					}
 				}
 			} catch (RepositoryException e) {
-				// TODO error management?
+				msg = new SimpleMessageError(e.getMessage());
 			}
-			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);			
+			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
+
 			return msg;
 		}
-		
-	}
 
+	}
 
 }

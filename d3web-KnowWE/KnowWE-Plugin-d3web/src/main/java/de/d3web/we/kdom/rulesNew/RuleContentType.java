@@ -20,15 +20,16 @@
 
 package de.d3web.we.kdom.rulesNew;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.rules.If;
-import de.d3web.we.kdom.rules.Rule;
+import de.d3web.we.kdom.rule.ConditionActionRule;
 import de.d3web.we.kdom.rules.RuleAction;
-import de.d3web.we.kdom.rules.Then;
-import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
+import de.d3web.we.kdom.rulesNew.terminalCondition.CondKnown;
+import de.d3web.we.kdom.rulesNew.terminalCondition.Finding;
+import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 
 public class RuleContentType extends DefaultAbstractKnowWEObjectType {
@@ -36,32 +37,21 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.sectionFinder = new AllTextSectionFinder();
-		Rule ruleType = new Rule();
-		configureChildrenTypes(ruleType);
-		this.addChildType(ruleType);
+
+		// configure the rule
+		ConditionActionRule rule = new ConditionActionRule(new RuleAction());
+		List<KnowWEObjectType> termConds = new ArrayList<KnowWEObjectType>();
+		// add all the various allowed TerminalConditions here
+		termConds.add(new NumericalFinding());
+		termConds.add(new Finding());
+		termConds.add(new CondKnown());
+		rule.setTerminalConditions(termConds);
+
+		this.addChildType(rule);
 
 	}
 
-	private void configureChildrenTypes(Rule rule) {
-		List<KnowWEObjectType> list = rule.getAllowedChildrenTypes();
-		KnowWEObjectType[] array = list.toArray(new KnowWEObjectType[list.size()]);
-		for (KnowWEObjectType knowWEObjectType : array) {
-			rule.removeChildType(knowWEObjectType);
-		}
-		rule.addChildType(new If());
-		Then then = new Then();
-		rule.addChildType(then);
-		ConditionArea cond = new ConditionArea();
-		cond.setSectionFinder(new AllBeforeTypeSectionFinder(then));
-		rule.addChildType(cond);
-		rule.addChildType(new RuleAction());
-	}
+
 }
 
-class ConditionArea extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	protected void init() {
-		this.addChildType(new CompositeCondition());
-	}
-}
