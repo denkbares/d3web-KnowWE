@@ -183,7 +183,10 @@ public class Sectionizer {
 							Section match = sectionsOfSameType.remove(secText
 									.substring(result.getStart(), result.getEnd()));
 
-							if (match != null && (!match.isReusedBy(match.getTitle()) && !match.hasReusedSuccessor)) {
+							if (match != null
+									&& (!match.isReusedBy(match.getTitle())
+									&& !match.hasReusedSuccessor)
+									&& !match.isDirty()) {
 
 								match.setReusedBy(match.getTitle(), true);
 
