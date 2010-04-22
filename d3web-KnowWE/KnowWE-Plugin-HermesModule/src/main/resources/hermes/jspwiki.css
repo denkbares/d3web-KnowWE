@@ -21,15 +21,17 @@
 	background: #FFF url(images/background-torus.jpg) 0 0 repeat; 
 	margin:1em 2em; 
 	padding:0.25em;
+	max-width:1000px;
 }
 #header, #footer {
 	padding:0 0 0 20%;
 }
 #header .applicationlogo {
 	position:absolute;
-	left:2em; 
+	left:2em;
 	right:auto;
 	width:18%;
+	max-width:180px;
 }
 #footer .applicationlogo,
 #footer .companylogo,
@@ -53,7 +55,7 @@
 }
 #favorites {
 	float:left;
-	margin-top:1.75em;
+	margin-top:3.75em;
 	width:18%;
 	padding:0.5em;
 }
@@ -360,13 +362,15 @@ img.attlink {
 } 
 .applicationlogo a {
 	display:block;
-	height:122px;
-	width:122px;
+	height:152px;
+	width:185px;
 	overflow:hidden;
 	margin-left:auto;
 	margin-right:auto;
 	text-indent:-1000px;
-	background:url(images/eule.gif) 0 0 no-repeat;
+	background-image:url(images/eule-uni.gif);
+	background-repeat:no-repeat;
+	background-position:0 0;
 }
 
 .applicationlogo a:hover {
