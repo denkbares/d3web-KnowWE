@@ -1,5 +1,8 @@
 package de.d3web.we.hermes.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -37,7 +40,9 @@ public class InsertRelationAction extends DeprecatedAbstractKnowWEAction {
 					insertion.append("]");
 					
 					if(!description.getOriginalText().contains(insertion.toString())) {
-						articleManager.replaceKDOMNode(parameterMap, topic, description.getId(), description.getOriginalText()+" - "+insertion.toString());
+						Map<String, String> nodesMap = new HashMap<String, String>();
+						nodesMap.put(description.getId(), description.getOriginalText()+" - "+insertion.toString());
+						articleManager.replaceKDOMNodes(parameterMap, topic, nodesMap);
 					}
 					return "done";
 				}

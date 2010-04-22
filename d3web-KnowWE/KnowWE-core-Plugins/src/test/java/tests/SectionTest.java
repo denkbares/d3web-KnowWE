@@ -69,16 +69,16 @@ public class SectionTest extends TestCase{
 		assertEquals(content, article.collectTextsFromLeaves());
 		
 		//First some initial sectionizing test
-		Section headerSec = checkChildsTillLine(article, 0);
+		Section headerSec = checkChildsTillLine(article, 0, false);
 		checkCellContents(headerSec, new String[] {" ", "Apple", "Lemon", "Coconut"});
-		Section lineSec = checkChildsTillLine(article, 1);
+		Section lineSec = checkChildsTillLine(article, 1, false);
 		checkCellContents(lineSec, new String[] {"sweetness", "+", "-", "hm"});
 
 		
 		//Testing setOriginalTextSetLeaf for a node being not a leaf
 		String newHeader = "| |Football|Soccer|Rugby\n";
 		article.getSection().setOriginalTextSetLeaf(headerSec.getId(), newHeader);
-		Section newHeaderSec = checkChildsTillLine(article, 0);
+		Section newHeaderSec = checkChildsTillLine(article, 0, false);
 		assertEquals("Childs of node weren't deleted", 0, newHeaderSec.getChildren().size());
 		assertEquals("New text wasn't saved to orgingialtext from" + headerSec.getId(),
 				newHeader, newHeaderSec.getOriginalText());
@@ -86,16 +86,20 @@ public class SectionTest extends TestCase{
 		article = KnowWEEnvironment.getInstance().getArticle(web, "Test_Article");
 		assertEquals(content, article.getSection().getOriginalText());
 		assertNotSame(content, article.collectTextsFromLeaves());
+		checkChildsTillLine(article, 0, true); //isDirty = true?!
 		
 		
+		//not being leafs (go down once more)
 		//Testing setOriginalTextSetLeaf for nodes being a leaf
 		String lineText = lineSec.getOriginalText();
-		String[] newLine = new String[] {"|speed", "|0", "|+", "|+", "\n"};
+		String[] newLine = new String[] {"speed", "0", "+", "+"};
 		for (int i = 0; i < newLine.length; i++) {
-			article.getSection().setOriginalTextSetLeaf(((Section) lineSec.getChildren().get(i)).getId(), newLine[i]);
+			article.getSection().setOriginalTextSetLeaf(((Section)((Section) lineSec.getChildren().get(i)).getChildren().get(1)).getId(), newLine[i]);
 		}
+		article.getSection().setOriginalTextSetLeaf(((Section) lineSec.getChildren().get(newLine.length)).getId(), "\n");
 		assertEquals("OrignialText from parent changed by changing childs (befor save)",
 				lineText, lineSec.getOriginalText());
+		checkChildsTillLine(article, 1, true); //isDirty = true?!
 		
 		
 		//Saving changes to article
@@ -110,9 +114,9 @@ public class SectionTest extends TestCase{
 		
 		
 		//Sectionizing test for new article
-		headerSec = checkChildsTillLine(article, 0);
+		headerSec = checkChildsTillLine(article, 0, false);
 		checkCellContents(headerSec, new String[] {" ", "Football", "Soccer", "Rugby"});
-		lineSec = checkChildsTillLine(article, 1);
+		lineSec = checkChildsTillLine(article, 1, false);
 		checkCellContents(lineSec, new String[] {"speed", "0", "+", "+"});	
 	}
 	
@@ -120,24 +124,43 @@ public class SectionTest extends TestCase{
 	 * Goes down through the KDOM and checks the right number of children.
 	 * @param article Article
 	 * @param line number of the table-row which should be returned
+	 * @param dirtyCheck TODO
 	 * @return Section of the 'line'th table-row
 	 */
-	private Section checkChildsTillLine (KnowWEArticle article, int line) {
+	private Section checkChildsTillLine (KnowWEArticle article, int line, boolean dirtyCheck) {
 		Section actSec = article.getSection();
 		assertEquals(actSec + ": ", 1, actSec.getChildren().size());
 		//RootType
-		actSec = (Section) actSec.getChildren().get(0);
-		assertEquals(actSec + ": ",2, actSec.getChildren().size());
+		actSec = getChild(actSec, 0, 2, dirtyCheck);
 		//TableXMLType
-		actSec = (Section) actSec.getChildren().get(1);
-		assertEquals(actSec + ": ",3, actSec.getChildren().size());
+		actSec = getChild(actSec, 1, 3, dirtyCheck);
 		//XMLContent
-		actSec = (Section) actSec.getChildren().get(1);
+		actSec = getChild(actSec, 1, 1, dirtyCheck);
 		//XMLWrappedTable
-		actSec = (Section) actSec.getChildren().get(0);
-		assertEquals(actSec + ": ",4, actSec.getChildren().size());
+		actSec = getChild(actSec, 0, 4, dirtyCheck);
 		//TableHeaderLine
 		actSec = (Section) actSec.getChildren().get(line);
+		return actSec;
+	}
+	
+	/**
+	 * Little help for testing the KDOM. Returns a child of the given 
+	 * section, checks the right number of childs of this child and whether
+	 * the isDirty flag is set correctly.
+	 * @param actSec The given Section to get the child from
+	 * @param childPos Position in the children list of actSec
+	 * @param childCount Chosen child's expected number of children
+	 * @param dirtyCheck Chosen child's isDirty flag should have this value
+	 * @return The Section with position childPos in the actSec's children list
+	 */
+	private Section getChild (Section actSec, int childPos, int childCount, boolean dirtyCheck) {
+		actSec = (Section) actSec.getChildren().get(childPos);
+		assertEquals(actSec + ": ", childCount, actSec.getChildren().size());
+		if (dirtyCheck) {
+			assertEquals("The section's flag isDirty should be " +
+					"true because its orignialText was " +
+					"changed", true, actSec.isDirty());
+		}
 		return actSec;
 	}
 	

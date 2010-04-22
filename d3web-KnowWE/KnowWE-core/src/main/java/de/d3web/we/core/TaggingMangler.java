@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -102,8 +103,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 					article.getSection().removeChild(tagslist.get(i));
 				}
 			}
+			Map<String, String> nodesMap = new HashMap<String, String>();
+			nodesMap.put(keep.getId(), output);
 			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
-					.replaceKDOMNode(params, pagename, keep.getId(), output);
+					.replaceKDOMNodes(params, pagename, nodesMap);
 		} else {
 			addNewTagSection(pagename, tag, params);
 		}
@@ -141,8 +144,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 				article.getSection().removeChild(tagslist.get(i));
 			}
 		}
-		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNode(
-				params, pagename, keep.getId(), output);
+		Map<String, String> nodesMap = new HashMap<String, String>();
+		nodesMap.put(keep.getId(), output);
+		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNodes(
+				params, pagename, nodesMap);
 	}
 
 	/**
@@ -310,8 +315,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 					article.getSection().removeChild(tagslist.get(i));
 				}
 			}
+			Map<String, String> nodesMap = new HashMap<String, String>();
+			nodesMap.put(keep.getId(), output);
 			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
-					.replaceKDOMNode(params, topic, keep.getId(), output);
+					.replaceKDOMNodes(params, topic, nodesMap);
 		} else {
 			addNewTagSection(topic, output, params);
 		}
@@ -335,8 +342,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 			}
 		}
 		text += "<tags>" + output.trim() + "</tags>";
-		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNode(
-				params, topic, asection.getId(), text);
+		Map<String, String> nodesMap = new HashMap<String, String>();
+		nodesMap.put(asection.getId(), text);
+		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).replaceKDOMNodes(
+				params, topic, nodesMap);
 	}
 
 	public ArrayList<GenericSearchResult> searchPages(String querytags) {

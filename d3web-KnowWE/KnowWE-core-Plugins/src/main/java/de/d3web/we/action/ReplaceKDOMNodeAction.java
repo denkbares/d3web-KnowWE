@@ -20,6 +20,9 @@
 
 package de.d3web.we.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -34,7 +37,9 @@ public class ReplaceKDOMNodeAction extends DeprecatedAbstractKnowWEAction {
 		String name = parameterMap.getTopic();
 		String newText = parameterMap.get(KnowWEAttributes.TEXT);
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
-		mgr.replaceKDOMNode(parameterMap, name, nodeID, newText);
+		Map<String, String> nodesMap = new HashMap<String, String>();
+		nodesMap.put(nodeID, newText);
+		mgr.replaceKDOMNodes(parameterMap, name, nodesMap);
 		
 		return "done";
 	}

@@ -20,6 +20,9 @@
 
 package de.d3web.we.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -47,6 +50,8 @@ public class UpdateTableKDOMNodesAction extends DeprecatedAbstractKnowWEAction {
 		
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 
+		Map<String, String> nodesMap = new HashMap<String, String>();
+		
 		if( nodes != "" )
 		{
 			if( nodes.contains( UPDATE_NODE_SEPERATOR )) 
@@ -57,7 +62,7 @@ public class UpdateTableKDOMNodesAction extends DeprecatedAbstractKnowWEAction {
 					String[] node = string.split( UPDATE_CELL_SEPERATOR );
 					if( node.length == 2)
 					{
-						mgr.getArticle(name).getSection().setOriginalTextSetLeaf(node[0], node[1]);
+						nodesMap.put(node[0], node[1]);
 					}
 				}
 			}
@@ -66,12 +71,11 @@ public class UpdateTableKDOMNodesAction extends DeprecatedAbstractKnowWEAction {
 				String[] node = nodes.split( UPDATE_CELL_SEPERATOR );
 				if( node.length == 2)
 				{
-					mgr.getArticle(name).getSection().setOriginalTextSetLeaf(node[0], node[1]);
+					nodesMap.put(node[0], node[1]);
 				}
 			}
 			StringBuilder buddy = new StringBuilder();
-			mgr.getArticle(name).getSection().collectTextsFromLeaves(buddy, false);
-			KnowWEEnvironment.getInstance().saveArticle(web, name, buddy.toString(), parameterMap);
+			mgr.replaceKDOMNodes(parameterMap, name, nodesMap);
 		}
 		
 		return "done";

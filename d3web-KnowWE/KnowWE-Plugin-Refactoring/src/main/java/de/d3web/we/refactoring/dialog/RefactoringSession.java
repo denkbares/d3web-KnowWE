@@ -6,6 +6,7 @@ import groovy.lang.MissingPropertyException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.locks.Condition;
@@ -146,9 +147,9 @@ public class RefactoringSession {
 					// FIXME: dies ist wieder so ein Hack :-)
 					refManager.saveUpdatedArticle(changedArticle);
 					KnowWEArticle consinstentChangedArticle = refManager.getArticle(changedArticleID);
-					knowWEManager.replaceKDOMNode(parameters, changedArticleID, changedArticleID,
-							consinstentChangedArticle.getSection()
-							.getOriginalText());
+					Map<String, String> nodesMap = new HashMap<String, String>();
+					nodesMap.put(changedArticleID, consinstentChangedArticle.getSection().getOriginalText());
+					knowWEManager.replaceKDOMNodes(parameters, changedArticleID, nodesMap);
 					int versionAfter = we.getPage(changedArticleID).getVersion();
 					String textAfter = "textAfter";
 					try {

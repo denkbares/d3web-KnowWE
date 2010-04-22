@@ -1,5 +1,8 @@
 package de.d3web.we.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -22,8 +25,10 @@ public class AppendToPageContentAction extends DeprecatedAbstractKnowWEAction {
 		KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle art = mgr.getArticle(name);
 		
-		// replaces old article content with old article content + text to append 
-		return mgr.replaceKDOMNode(parameterMap, name, art.getSection().getId(), art.getSection().getOriginalText()+appendText);
+		// replaces old article content with old article content + text to append
+		Map<String, String> nodesMap = new HashMap<String, String>();
+		nodesMap.put(art.getSection().getId(), art.getSection().getOriginalText() + appendText);
+		return mgr.replaceKDOMNodes(parameterMap, name, nodesMap);
 	}
 
 }

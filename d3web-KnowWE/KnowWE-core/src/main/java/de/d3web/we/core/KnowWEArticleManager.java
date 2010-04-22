@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -107,20 +108,23 @@ public class KnowWEArticleManager {
 	public Collection<KnowWEArticle> getArticles() {
 		return articleMap.values();
 	}
-
+	
 	/**
-	 * Replaces a KDOM-node with the given text
-	 * 
-	 * by now generates new KDOM from changed text
+	 * Replaces KDOM-nodes with the given texts, but not
+	 * in the KDOM itself. It collects the originalTexts
+	 * deep through the KDOM and appends the new text 
+	 * (instead of the originalText) for the nodes with
+	 * an ID in the nodesMap. Finally the article is saved
+	 * with this new content.
 	 * 
 	 * @param map
 	 * @param articleName
-	 * @param nodeID
-	 * @param text
+	 * @param nodesMap containing pairs of the nodeID and
+	 * the new text for this node
 	 * @return
 	 */
-	public String replaceKDOMNode(KnowWEParameterMap map, String articleName,
-			String nodeID, String text) {
+	public String replaceKDOMNodes(KnowWEParameterMap map, String articleName,
+			Map<String, String> nodesMap) {
 		// String user = map.getUser();
 		String web = map.getWeb();
 		KnowWEArticle art = this.getArticle(articleName);
@@ -128,7 +132,7 @@ public class KnowWEArticleManager {
 			return "article not found: " + articleName;
 		Section<KnowWEArticle> root = art.getSection();
 		StringBuffer newText = new StringBuffer();
-		appendTextReplaceNode(root, nodeID, text, newText);
+		appendTextReplaceNode(root, nodesMap, newText);
 
 		String newArticleSourceText = newText.toString();
 		KnowWEEnvironment.getInstance().saveArticle(web, articleName,
@@ -140,24 +144,27 @@ public class KnowWEArticleManager {
 	}
 
 	/**
-	 * Replaces a KDOM-node with the given text
-	 * 
-	 * by now generates new KDOM from changed text
+	 * Replaces KDOM-nodes with the given texts, but not
+	 * in the KDOM itself. It collects the originalTexts
+	 * deep through the KDOM and appends the new text 
+	 * (instead of the originalText) for the nodes with
+	 * an ID in the nodesMap.
 	 * 
 	 * @param map
 	 * @param articleName
-	 * @param nodeID
-	 * @param text
-	 * @return
+	 * @param nodesMap containing pairs of the nodeID and
+	 * the new text for this node
+	 * @return The content of the article with the text changes or an 
+	 * error String if the article wasn't found.
 	 */
-	public String replaceKDOMNodeWithoutSave(KnowWEParameterMap map,
-			String articleName, String nodeID, String text) {
+	public String replaceKDOMNodesWithoutSave(KnowWEParameterMap map,
+			String articleName, Map<String, String> nodesMap) {
 		KnowWEArticle art = this.getArticle(articleName);
 		if (art == null)
 			return "article not found: " + articleName;
 		Section root = art.getSection();
 		StringBuffer newText = new StringBuffer();
-		appendTextReplaceNode(root, nodeID, text, newText);
+		appendTextReplaceNode(root, nodesMap, newText);
 
 		String newArticleSourceText = newText.toString();
 		// saveUpdatedArticle(new KnowWEArticle(newArticleSourceText,
@@ -198,10 +205,10 @@ public class KnowWEArticleManager {
 		return findNode(articleName, nodeID);
 	}
 
-	private void appendTextReplaceNode(Section sec, String nodeID, String text,
+	private void appendTextReplaceNode(Section sec, Map<String, String> nodesMap,
 			StringBuffer newText) {
-		if (sec.getId().equals(nodeID)) {
-			newText.append(text);
+		if (nodesMap.containsKey(sec.getId())) {
+			newText.append(nodesMap.get(sec.getId()));
 			return;
 		}
 		List<Section> children = sec.getChildren();
@@ -211,7 +218,7 @@ public class KnowWEArticleManager {
 			return;
 		}
 		for (Section section : children) {
-			appendTextReplaceNode(section, nodeID, text, newText);
+			appendTextReplaceNode(section, nodesMap, newText);
 		}
 	}
 

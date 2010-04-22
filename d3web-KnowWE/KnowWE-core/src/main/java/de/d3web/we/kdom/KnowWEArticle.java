@@ -54,8 +54,6 @@ import de.d3web.we.kdom.validation.Validator;
  */
 public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
-	private boolean isDirty = false;
-
 	/**
 	 * Name of this article (topic-name)
 	 */
@@ -408,14 +406,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		List<Section> foundChildren = new ArrayList<Section>();
 		sec.findSuccessorsOfTypeAtTheEndOfPath(path, 0, foundChildren);
 		return foundChildren;
-	}
-
-	public boolean isDirty() {
-		return isDirty;
-	}
-
-	public void setDirty(boolean invalidated) {
-		this.isDirty = invalidated;
 	}
 
 	public String collectTextsFromLeaves() {

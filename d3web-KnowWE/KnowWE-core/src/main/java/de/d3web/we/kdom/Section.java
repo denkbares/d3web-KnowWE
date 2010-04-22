@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hamcrest.core.IsInstanceOf;
+
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.AnonymousType;
@@ -80,6 +82,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	protected KnowWEArticle article;
 
 	protected boolean isExpanded = false;
+		
+	/**
+	 * Specifies whether the orignialText was changed
+	 * without changing the ancestor ones
+	 */
+	private boolean isDirty = false;
 
 	/**
 	 * The id of this node, unique in an article
@@ -341,9 +349,40 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	public void setOriginalText(String newText) {
 		this.originalText = newText;
-		this.article.setDirty(true);
+		this.isDirty = true;
+		//Setting the isDirty flag to true for all ancestor sections
+		//so that the article is build correctly (updating mechanism 
+		//of Sectionizer)
+		if (this.get() instanceof KnowWEObjectType && 
+				!(this.get() instanceof KnowWEArticle)) {
+			Section<KnowWEObjectType> nextAncestor = 
+				(Section<KnowWEObjectType>) this.getFather();			
+			 while (true) {
+				 nextAncestor.setDirty(true);
+				 if (nextAncestor.getFather().get() instanceof KnowWEArticle) {
+					return;
+				 }
+				 nextAncestor = (Section<KnowWEObjectType>) nextAncestor.getFather();
+			 }
+		}
+	}
+	
+	/**
+	 * Getter method for boolean variable isDirty.
+	 * @return The section's actual value of isDirty
+	 */
+	public boolean isDirty() {
+		return isDirty;
 	}
 
+	/**
+	 * Setter method for boolean variable is Dirty.
+	 * @param invalidated New value for section's variable isDirty
+	 */
+	public void setDirty(boolean invalidated) {
+		this.isDirty = invalidated;
+	}
+	
 	/**
 	 * Searches the successor-node with nodeID in the successors of this node,
 	 * sets the text of the successor-node and makes it a leaf by deleting all its children.

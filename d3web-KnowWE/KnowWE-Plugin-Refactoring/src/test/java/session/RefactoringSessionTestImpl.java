@@ -1,5 +1,8 @@
 package session;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -33,7 +36,9 @@ public class RefactoringSessionTestImpl extends RefactoringSession {
 			//der Artikel wird sicherheitshalber in einen konsistenten Zustand gebracht
 			refManager.saveUpdatedArticle(changedArticle);
 			KnowWEArticle consinstentChangedArticle = refManager.getArticle(changedArticleID);
-			knowWEManager.replaceKDOMNode(parameters, changedArticleID, changedArticleID, consinstentChangedArticle.getSection().getOriginalText());
+			Map<String, String> nodesMap = new HashMap<String, String>();
+			nodesMap.put(changedArticleID, consinstentChangedArticle.getSection().getOriginalText());
+			knowWEManager.replaceKDOMNodes(parameters, changedArticleID, nodesMap);
 			
 			//TODO wenn man einen neuen Artikel im knowWEManager anlegen möchte
 //			//der Artikel wird sicherheitshalber in einen konsistenten Zustand gebracht
