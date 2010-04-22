@@ -12,12 +12,12 @@ import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.report.KDOMError;
-import de.d3web.we.kdom.report.NoSuchObjectError;
 import de.d3web.we.kdom.objects.QuestionnaireDef;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.report.CreateRelationFailed;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.ObjectCreatedMessage;
+import de.d3web.we.kdom.report.message.CreateRelationFailed;
+import de.d3web.we.kdom.report.message.NoSuchObjectError;
+import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 

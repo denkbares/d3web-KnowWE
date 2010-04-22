@@ -6,7 +6,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 
-public class AnswerRefImpl<Answer> extends AnswerRef<Answer> {
+public class AnswerRefImpl<Answer> extends AnswerRef {
 	@Override
 	protected void init() {
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR5));
@@ -17,7 +17,7 @@ public class AnswerRefImpl<Answer> extends AnswerRef<Answer> {
 
 	@Override
 	public boolean objectExisting(Section<?> s) {
-		Section<AnswerRef<Answer>> a = (Section<AnswerRef<Answer>>) s;
+		Section<AnswerRef> a = (Section<AnswerRef>) s;
 
 		Section<? extends QuestionRef> qidSection =
 				this.getQuestionSection(a);
@@ -44,7 +44,7 @@ public class AnswerRefImpl<Answer> extends AnswerRef<Answer> {
 
 
 	@Override
-	public Section<QuestionRef> getQuestionSection(Section<? extends AnswerRef<Answer>> s) {
+	public Section<QuestionRef> getQuestionSection(Section<? extends AnswerRef> s) {
 		return s.getFather().findSuccessor(QuestionRef.class);
 	}
 

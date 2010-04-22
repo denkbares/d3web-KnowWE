@@ -7,6 +7,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.d3webModule.D3webModule;
@@ -18,22 +19,22 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
-import de.d3web.we.kdom.objects.QuestionnaireDef;
-import de.d3web.we.kdom.questionTreeNew.QuestionLine.QuestionTypeDeclaration.QuestionType;
+import de.d3web.we.kdom.objects.QuestionDef.QuestionType;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.report.CreateRelationFailed;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.NewObjectCreated;
-import de.d3web.we.kdom.report.ObjectAlreadyDefinedWarning;
-import de.d3web.we.kdom.report.ObjectCreatedMessage;
-import de.d3web.we.kdom.report.ObjectCreationError;
 import de.d3web.we.kdom.report.SimpleMessageError;
-import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
+import de.d3web.we.kdom.report.message.CreateRelationFailed;
+import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
+import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
+import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
@@ -56,21 +57,34 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		QuestionTypeDeclaration typeDeclarationType = new QuestionTypeDeclaration();
 		this.childrenTypes.add(typeDeclarationType);
+		this.childrenTypes.add(new QuestionText());
 		this.childrenTypes
-				.add(createQuestionDefTypeBefore(typeDeclarationType));
+				.add(new QuestionDefQTree());
 	}
 
-	private KnowWEObjectType createQuestionDefTypeBefore(
-			KnowWEObjectType typeAfter) {
-		QuestionDef qid = new QuestionDef();
-		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
-		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
-		qid.addReviseSubtreeHandler(new CreateQuestionHandler());
-		qid.addReviseSubtreeHandler(new CreateIndicationHandler());
-		return qid;
+
+	static class QuestionDefQTree extends QuestionDef {
+
+		@Override
+		protected void init() {
+			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
+			this.setSectionFinder(AllTextFinderTrimmed.getInstance());
+			this.addReviseSubtreeHandler(new CreateIndicationHandler());
+		}
+		@Override
+		public de.d3web.we.kdom.objects.QuestionDef.QuestionType getQuestionType(Section<QuestionDef> s) {
+			return QuestionTypeDeclaration
+					.getQuestionType(s.getFather().findSuccessor(
+							QuestionTypeDeclaration.class));
+		}
+
 	}
 
 	static <T extends KnowWEObjectType> Section<T> badCast(T t, Section o) {
+		return o;
+	}
+
+	static <T extends KnowWEObjectType> Section<T> badCast(Class<T> c, Section o) {
 		return o;
 	}
 
@@ -80,7 +94,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			//Section<QuestionID> qidSection = ((Section<QuestionID>) s);
 
-			Section<QuestionDef> qidSection = badCast(new QuestionDef(), s);
+			Section<QuestionDef> qidSection = badCast(QuestionDef.class, s);
 
 			String name = qidSection.get().getID(qidSection);
 
@@ -122,123 +136,14 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	static class CreateQuestionHandler implements ReviseSubTreeHandler {
 
-		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article,
-				Section sec) {
-
-			Section<QuestionDef> qidSection = (sec);
-
-			String name = qidSection.get().getID(qidSection);
-
-
-			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(article.getWeb())
-					.getKBM(article, sec);
-			if (mgn==null) return null;
-			IDObject o = mgn.findQuestion(name);
-
-			if (o != null) {
-				return new ObjectAlreadyDefinedWarning(o.getClass()
-						.getSimpleName());
-			} else {
-				QASet parent = findParent(sec, mgn);
-
-				QuestionType questionType = QuestionTypeDeclaration
-						.getQuestionType(qidSection.getFather().findSuccessor(QuestionTypeDeclaration.class));
-				Question q = null;
-				if (questionType.equals(QuestionType.OC)) {
-					q = mgn.createQuestionOC(name, parent, new String[] {});
-				} else if (questionType.equals(QuestionType.MC)) {
-					q = mgn.createQuestionMC(name, parent, new String[] {});
-				} else if (questionType.equals(QuestionType.NUM)) {
-					q = mgn.createQuestionNum(name, parent);
-				} else if (questionType.equals(QuestionType.YN)) {
-					q = mgn.createQuestionYN(name, parent);
-				} else if (questionType.equals(QuestionType.DATE)) {
-					q = mgn.createQuestionDate(name, parent);
-				} else if (questionType.equals(QuestionType.TEXT)) {
-					q = mgn.createQuestionText(name, parent);
-				} else {
-					// no valid type...
-				}
-
-				if (q != null) {
-
-				}
-				if (q != null) {
-					qidSection.get().storeObject(qidSection, q);
-					return new NewObjectCreated(q.getClass().getSimpleName()
-							+ " " + q.getName());
-				} else {
-					return new ObjectCreationError(name, this.getClass());
-				}
-
-			}
-
-		}
-
-		private QASet findParent(Section s, KnowledgeBaseManagement mgn) {
-
-			// current DashTreeElement
-			Section<DashTreeElement> element = KnowWEObjectTypeUtils
-					.getAncestorOfType(s, new DashTreeElement());
-			// get dashTree-father
-			Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
-					.getDashTreeFather(element);
-
-			if (dashTreeFather == null) {
-				return null;
-			}
-
-			// climb up tree and look for QASet
-			QASet foundAncestorQASet = null;
-			while (foundAncestorQASet == null) {
-				foundAncestorQASet = findParentObject(dashTreeFather, mgn);
-				dashTreeFather = DashTreeElement
-						.getDashTreeFather(dashTreeFather);
-				if (dashTreeFather == null)
-					break;
-
-			}
-
-			if (foundAncestorQASet == null) {
-				// root QASet as default parent
-				foundAncestorQASet = mgn.getKnowledgeBase().getRootQASet();
-			}
-
-			return foundAncestorQASet;
-		}
-
-		private QASet findParentObject(
-				Section<? extends DashTreeElement> dashTreeElement,
-				KnowledgeBaseManagement mgn) {
-
-			if (dashTreeElement.findSuccessor(QuestionnaireDef.class) != null) {
-				String qClassName = dashTreeElement.findSuccessor(QuestionnaireDef.class).getOriginalText();
-				QASet parent = mgn.findQContainer(qClassName);
-				if (parent != null)
-					return parent;
-			}
-
-			if (dashTreeElement.findSuccessor(QuestionDef.class) != null) {
-				String qName = dashTreeElement.findSuccessor(QuestionDef.class)
-						.getOriginalText();
-				QASet parent = mgn.findQuestion(qName);
-				if (parent != null)
-					return parent;
-			}
-
-			return null;
-		}
-
-	}
 
 	static class TypeDeclarationRenderer extends KnowWEDomRenderer<QuestionTypeDeclaration> {
 
 		@Override
 		public void render(KnowWEArticle article, Section sec,
 				KnowWEUserContext user, StringBuilder string) {
+
 			String imgTagPrefix = "<img src='KnowWEExtension/images/";
 			QuestionType questionType = QuestionTypeDeclaration
 					.getQuestionType(sec);
@@ -268,12 +173,103 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
+	static class QuestionText extends DefaultAbstractKnowWEObjectType {
+
+		private static final String QTEXT_START_SYMBOL = "~";
+
+		@Override
+		protected void init() {
+			this.sectionFinder = new MatchUntilEndFinder(new StringSectionFinderUnquoted(
+					QTEXT_START_SYMBOL));
+
+			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR8));
+			this.addReviseSubtreeHandler( new ReviseSubTreeHandler() {
+
+				@Override
+				public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+
+					Section<QuestionText> sec = (Section<QuestionText>) s;
+
+					Section<QuestionDef> qDef = sec.getFather().findSuccessor(
+							QuestionDef.class);
+
+					if (qDef != null) {
+
+						Question question = qDef.get().getObject(qDef);
+
+						// TODO - quick-fix: delete this part when reviseHandler
+						// priority is solved
+						// this part does itself created the actual question
+						// (which in principle shouldnt happen here!)
+						if(question == null) {
+
+							String name = qDef.get().getID(qDef);
+
+							KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
+									article.getWeb())
+									.getKBM(article, sec);
+							if (mgn == null) return null;
+
+							IDObject o = mgn.findQuestion(name);
+
+							if (o == null) {
+								QASet parent = D3webUtils.findParent(qDef, mgn);
+
+								de.d3web.we.kdom.objects.QuestionDef.QuestionType questionType = qDef.get().getQuestionType(
+										qDef);
+
+								if (questionType.equals(QuestionType.OC)) {
+									question = mgn.createQuestionOC(name, parent, new String[] {});
+								}
+								else if (questionType.equals(QuestionType.MC)) {
+									question = mgn.createQuestionMC(name, parent, new String[] {});
+								}
+								else if (questionType.equals(QuestionType.NUM)) {
+									question = mgn.createQuestionNum(name, parent);
+								}
+								else if (questionType.equals(QuestionType.YN)) {
+									question = mgn.createQuestionYN(name, parent);
+								}
+								else if (questionType.equals(QuestionType.DATE)) {
+									question = mgn.createQuestionDate(name, parent);
+								}
+								else if (questionType.equals(QuestionType.TEXT)) {
+									question = mgn.createQuestionText(name, parent);
+								}
+								else {
+									// no valid type...
+								}
+
+						}}
+
+
+						if (question != null) {
+							D3webUtils.addMMInfo(question, "LT",
+									MMInfoSubject.PROMPT.getName(),
+									QuestionText.getQuestionText(sec), null);
+							return new ObjectCreatedMessage("QuestionText created");
+						}
+					}
+					return new ObjectCreationError("QuestionText",
+							this.getClass());
+				}
+			});
+		}
+
+		public static String getQuestionText(Section<QuestionText> s) {
+			String text = s.getOriginalText();
+			if (text.startsWith(QTEXT_START_SYMBOL)) {
+				text = text.substring(1).trim();
+			}
+
+			return SplitUtility.unquote(text);
+		}
+	}
+
 	static class QuestionTypeDeclaration extends
 			DefaultAbstractKnowWEObjectType {
 
-		public static enum QuestionType {
-			OC, MC, YN, NUM, DATE, TEXT;
-		}
+
 
 		public static QuestionType getQuestionType(Section<QuestionTypeDeclaration> typeSection) {
 

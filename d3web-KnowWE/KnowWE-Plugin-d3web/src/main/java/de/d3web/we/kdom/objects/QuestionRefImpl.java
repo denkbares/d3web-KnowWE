@@ -6,7 +6,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
 
 
-public class QuestionRefImpl<Question> extends QuestionRef<Question> {
+public class QuestionRefImpl<Question> extends QuestionRef {
 
 
 	@Override

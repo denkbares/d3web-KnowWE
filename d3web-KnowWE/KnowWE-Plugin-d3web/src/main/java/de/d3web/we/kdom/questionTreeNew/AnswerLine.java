@@ -14,8 +14,8 @@ import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.NewObjectCreated;
-import de.d3web.we.kdom.report.ObjectCreationError;
+import de.d3web.we.kdom.report.message.NewObjectCreated;
+import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 
@@ -56,13 +56,13 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 
 			if(s.getObjectType() instanceof QuestionTreeAnswerDef) {
-				
+
 				KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, s);
-				
+
 				if (mgn==null) return null;
-				
+
 				//"safe unsafe cast"
 				Section<QuestionTreeAnswerDef> answer = s;
 				String name = answer.get().getID(answer);
@@ -77,7 +77,8 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 					answer.get().storeObject(answer, a);
 					return new NewObjectCreated(a.getClass().getSimpleName()+"  "+a.getName());
 				}
-				return new ObjectCreationError(name, this.getClass());
+				return new ObjectCreationError("no choice question - " + name,
+						this.getClass());
 			}
 			return new ObjectCreationError(null, this.getClass());
 		}

@@ -6,7 +6,6 @@ import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.objects.QuestionRef;
 import de.d3web.we.kdom.objects.QuestionRefImpl;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -19,9 +18,9 @@ import de.d3web.we.utils.SplitUtility;
 /**
  * A type implementing a cond-num TerminalCondition {@link TerminalCondition} It
  * has a allowed list of comparators
- * 
+ *
  * syntax: <questionID> <comp> <number> e.g.: mileage evaluation >= 130
- * 
+ *
  * @author Jochen
  *
  */
@@ -40,7 +39,7 @@ public class NumericalFinding extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(comparator);
 
 		// question
-		QuestionRef<Question> question = new QuestionRefImpl<Question>();
+		QuestionRef question = new QuestionRefImpl<Question>();
 		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
@@ -77,11 +76,13 @@ public class NumericalFinding extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	class Question extends QuestionDef {
+	class Question extends QuestionRefImpl {
 		@Override
 		protected void init() {
 			this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 		}
+
+
 
 	}
 

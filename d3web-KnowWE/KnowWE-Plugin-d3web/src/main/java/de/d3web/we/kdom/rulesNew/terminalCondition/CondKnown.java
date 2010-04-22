@@ -30,7 +30,7 @@ public class CondKnown extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 		this.sectionFinder = new CondKnownFinder();
 
-		QuestionRef<Question> question = new QuestionRefImpl<Question>();
+		QuestionRef question = new QuestionRefImpl<Question>();
 		question.setSectionFinder(new SectionFinder() {
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section father) {

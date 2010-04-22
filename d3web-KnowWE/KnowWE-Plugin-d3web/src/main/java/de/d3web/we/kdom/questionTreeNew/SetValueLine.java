@@ -5,10 +5,10 @@ import java.util.List;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.Choice;
@@ -21,12 +21,13 @@ import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionDef;
+import de.d3web.we.kdom.objects.QuestionRef;
+import de.d3web.we.kdom.objects.QuestionRefImpl;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.report.CreateRelationFailed;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.ObjectCreatedMessage;
+import de.d3web.we.kdom.report.message.CreateRelationFailed;
+import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -60,7 +61,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	private KnowWEObjectType createObjectRefTypeBefore(
 			KnowWEObjectType typeAfter) {
-		QuestionDef qid = new QuestionDef();
+		QuestionRef qid = new QuestionRefImpl<Question>();
 		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
 		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
 		qid.addReviseSubtreeHandler(new CreateSetValueRuleHandler());
@@ -112,16 +113,16 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils
 					.getAncestorOfType(s, new DashTreeElement());
 			// get dashTree-father
-			
+
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, s);
-			
+
 			Question q = mgn.findQuestion(trimQuotes(s));
-			
+
 			String argument = getArgumentString(s);
-			
-			
-			
+
+
+
 			if(q != null) {
 				Choice a = null;
 				if(q instanceof QuestionChoice) {
@@ -136,13 +137,13 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 						String newRuleID = mgn.createRuleID();
 
 						Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
-						
+
 						Rule r = RuleFactory.createSetValueRule(newRuleID, qc, new Object[]{a}, cond, null);
 						if (r != null) {
 							return new ObjectCreatedMessage(r.getClass() + " : "
 									+ r.getId());
 						}
-						
+
 					}
 				}
 				if(q instanceof QuestionNum) {
@@ -152,7 +153,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 					} catch (NumberFormatException e) {
 						return new InvalidNumberError(argument);
 					}
-					
+
 					if(d != null) {
 						String newRuleID = mgn.createRuleID();
 						Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
@@ -162,10 +163,10 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 									+ r.getId());
 						}
 					}
-					
+
 				}
 			}
-			
+
 			Solution d = mgn.findDiagnosis(s.getOriginalText());
 			if( d != null) {
 				Score score = null;
@@ -176,12 +177,12 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 						break;
 					}
 				}
-				
+
 				if(score != null) {
 					String newRuleID = mgn.createRuleID();
 
 					Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
-					
+
 					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, d, score, cond);
 					if (r != null) {
 						return new ObjectCreatedMessage(r.getClass() + " : "
@@ -189,9 +190,9 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 					}
 				}
 			}
-			
+
 			return new CreateRelationFailed(Rule.class.getSimpleName());
-			
+
 		}
 
 		private String getArgumentString(Section s) {
@@ -209,16 +210,16 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 	}
-	
+
 	public static String trimQuotes(Section s) {
 		String content = s.getOriginalText();
-		
+
 		String trimmed = content.trim();
-		
+
 		if(trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
 			return trimmed.substring(1, trimmed.length()-1).trim();
 		}
-		
+
 		return trimmed;
 	}
 }

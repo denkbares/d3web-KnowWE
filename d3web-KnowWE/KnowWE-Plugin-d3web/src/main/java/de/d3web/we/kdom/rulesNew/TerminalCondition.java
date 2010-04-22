@@ -27,7 +27,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.UnexpectedSequence;
+import de.d3web.we.kdom.report.message.UnexpectedSequence;
 import de.d3web.we.kdom.rulesNew.terminalCondition.CondKnown;
 import de.d3web.we.kdom.rulesNew.terminalCondition.Finding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
