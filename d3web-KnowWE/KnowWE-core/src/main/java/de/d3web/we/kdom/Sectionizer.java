@@ -110,6 +110,11 @@ public class Sectionizer {
 		// SEARCH ALL SPECIAL SECTIONS IN DEFINED ORDER
 		for (KnowWEObjectType ob : allowedTypes) {
 
+			// for the case that somehow null came into childrentypes-list
+			if (ob == null) {
+				continue;
+			}
+
 			SectionFinder finder = ob.getSectioner();
 			if (finder == null) {
 				continue;
