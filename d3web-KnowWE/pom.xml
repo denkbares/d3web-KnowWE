@@ -88,6 +88,7 @@
 		<module>KnowWE-ExtensionPoints</module>
 		<module>KnowWE-core-Plugins</module>
 		<module>KnowWE-Plugin-WISEC-jpf-plugin</module>
+		<module>KnowWE-Plugin-CI4KE</module>
 	</modules>
 	<repositories>
 		<repository>

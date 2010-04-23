@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-CI4KE" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="CIAction">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.action.CIAction" />
+		<parameter id="name" value="CIAction" />
+		<parameter id="description" value="Action CIAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>	
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="CI4KETagHandler">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.CI4KETagHandler" />
+		<parameter id="name" value="CI4KETagHandler" />
+		<parameter id="description" value="TagHandler CI4KETagHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+<!--	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="CI4KnowWEType">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.CI4KnowWEType" />
+		<parameter id="name" value="CI4KnowWEType" />
+		<parameter id="description" value="KnowWEObjectType CI4KnowWEType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension> 
+-->
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
+		id="GroovyCITestType">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.groovy.GroovyCITestType" />
+		<parameter id="name" value="GroovyCITestType" />
+		<parameter id="description" value="KnowWEObjectType GroovyCITestType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>		
+	
+</plugin>
