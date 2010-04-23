@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hamcrest.core.IsInstanceOf;
-
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.basic.AnonymousType;
@@ -69,9 +67,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 //	private boolean reused = false;
 
-	private Map<String, Boolean> reusedBy = new HashMap<String, Boolean>();
+	private final Map<String, Boolean> reusedBy = new HashMap<String, Boolean>();
 
-	private Map<String, Boolean> notYetRevisedBy = new HashMap<String, Boolean>();
+	private final Map<String, Boolean> notYetRevisedBy = new HashMap<String, Boolean>();
 	
 	protected boolean hasReusedSuccessor = false;
 
@@ -107,7 +105,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
 	protected List<Section<? extends KnowWEObjectType>> children = new ArrayList<Section<? extends KnowWEObjectType>>();
-	private List<Section<? extends KnowWEObjectType>> childrenParsingOrder = new LinkedList<Section<? extends KnowWEObjectType>>();
+	private final List<Section<? extends KnowWEObjectType>> childrenParsingOrder = new LinkedList<Section<? extends KnowWEObjectType>>();
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through
