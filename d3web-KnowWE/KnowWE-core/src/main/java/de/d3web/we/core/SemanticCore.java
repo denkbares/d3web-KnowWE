@@ -268,9 +268,9 @@ public class SemanticCore {
 	 * @param sec source section
 	 */
 	public void addStatements(IntermediateOwlObject inputio, Section sec) {
-		// clearContext(sec);
+		 clearContext(sec);
 		List<Statement> allStatements = inputio.getAllStatements();
-		// statementcache.put(sec.getId().hashCode() + "", allStatements);
+		statementcache.put(sec.getId().hashCode() + "", allStatements);
 		Logger.getLogger(this.getClass().getName()).finer(
 				"semantic core updating " + sec.getId() + "  "
 				+ allStatements.size());
@@ -379,11 +379,12 @@ public class SemanticCore {
 		List<Statement> allstatements = new ArrayList<Statement>();
 		// walk all children
 		for (Section<? extends KnowWEObjectType> current : s.getChildren()) {
-			if (statementcache.get(current.getId().hashCode() + "") != null) {
-				// add statements of this section
-				allstatements.addAll(statementcache.get(current.getId()
-						.hashCode()
-						+ ""));
+			String key = current.getId()
+			.hashCode()
+			+ "";
+			if (statementcache.get(key) != null) {
+				// add statements of this section		
+				allstatements.addAll(statementcache.get(key));
 			}
 			// add the rest
 			allstatements.addAll(getSectionStatements(current));
@@ -450,23 +451,23 @@ public class SemanticCore {
 	 * @param sec
 	 */
 	public void clearContext(Section sec) {
-		RepositoryConnection con = uo.getConnection();
-		try {
-			con.clear(getContext(sec));
-		}
-		catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		RepositoryConnection con = uo.getConnection();
+//		try {
+//			con.clear(getContext(sec));
+//		}
+//		catch (RepositoryException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
-		// RepositoryConnection con = uo.getConnection();
-		// try {
-		// con.remove(getSectionStatements(sec));
-		// // con.commit();
-		// } catch (RepositoryException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+		 RepositoryConnection con = uo.getConnection();
+		 try {
+		 con.remove(getSectionStatements(sec));
+		  con.commit();
+		 } catch (RepositoryException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 }
 
 	}
 
