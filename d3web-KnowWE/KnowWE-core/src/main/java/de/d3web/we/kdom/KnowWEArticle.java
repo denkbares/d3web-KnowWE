@@ -129,7 +129,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		clearTypeStore(rootType, title);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
+				Level.FINER,
 				"<- Initialized article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -148,7 +148,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		instance.getIncludeManager(web).getSectionizingArticles().remove(title);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
+				Level.FINER,
 				"<- Built KDOM for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -172,7 +172,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// }
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
+				Level.FINER,
 				"<- Built Knowledge for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -181,13 +181,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// calls Validator if configured
 		if (Validator.getResourceBundle().getString("validator.active")
 				.contains("true")) {
-			Logger.getLogger(this.getClass().getName()).log(Level.FINE,
+			Logger.getLogger(this.getClass().getName()).log(Level.FINER,
 					"-> Starting to validate article '" + title + "' ->");
 
 			Validator.getFileHandlerInstance().validateArticle(this);
 
 			Logger.getLogger(this.getClass().getName()).log(
-					Level.FINE,
+					Level.FINER,
 					"<- Finished validating article '" + title + "' in "
 							+ (System.currentTimeMillis() - startTime)
 							+ "ms <-");
@@ -199,7 +199,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				.finishArticle(this);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINE,
+				Level.FINER,
 				"<- Registered Knowledge for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -374,10 +374,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	private Map<String, Map<String, Section>> knownResults = new HashMap<String, Map<String, Section>>();
 
 	/**
-	 * Finds all children of type <tt>class1</tt> in the KDOM at the end of the
-	 * given <tt>path</tt> of ancestors. The <tt>path</tt> has to start with the
-	 * KnowWEArticle and end with the ObjectType of the Sections you are looking
-	 * for.
+	 * Finds all children with the same path of ObjectTypes in the KDOM.
+	 * The <tt>path</tt> has to start with theKnowWEArticle and end with 
+	 * the ObjectType of the Sections you are looking for.
 	 * 
 	 * @return Map of Sections, using their originalText as key.
 	 */
@@ -394,10 +393,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	/**
-	 * Finds all children of type <tt>class1</tt> in the KDOM at the end of the
-	 * given path of ancestors. The <tt>path</tt> has to start with the
-	 * KnowWEArticle and end with the ObjectType of the Sections you are looking
-	 * for.
+	 * Finds all children with the same path of ObjectTypes in the KDOM.
+	 * The <tt>path</tt> has to start with theKnowWEArticle and end with 
+	 * the ObjectType of the Sections you are looking for.
 	 * 
 	 * @return List of Sections
 	 */

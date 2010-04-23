@@ -98,6 +98,10 @@ public class SectionID {
 		return this.id;
 	}
 	
+	/**
+	 * This returns the part of the ID, that was specifically given for 
+	 * this ID to be used instead of the name of the ObjectType.
+	 */
 	public String getSpecificID() {
 		return this.specificID;
 	}

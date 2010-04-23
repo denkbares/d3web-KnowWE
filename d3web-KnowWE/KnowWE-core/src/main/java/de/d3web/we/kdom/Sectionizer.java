@@ -173,56 +173,72 @@ public class Sectionizer {
 						Section s = null;
 
 						// Update mechanism
-						// try to get unchanged Sections from old article
+						// try to get unchanged Sections from the last version of the article
 						if (article.getLastVersionOfArticle() != null
 								&& !article.isFullParse()
 								&& !(result instanceof ExpandedSectionFinderResult)
 								&& !ob.isNotRecyclable()
 								&& !(ob.isLeafType() && !(ob instanceof Include))) {
 
+							// get path of of ObjectTypes the Section to be created would have
 							List<Class<? extends KnowWEObjectType>> path = father.getPathFromArticleToThis();
 							path.add(ob.getClass());
+							
+							// find all Sections with same path of ObjectTypes in the last version
 							Map<String, Section> sectionsOfSameType = article.getLastVersionOfArticle()
 									.findChildrenOfTypeMap(path);
 
 							Section match = sectionsOfSameType.remove(secText
 									.substring(result.getStart(), result.getEnd()));
-
+							
+							// don't reuse matches that are already reused elsewhere...
+							// the same section object would be hooked in the KDOM twice
+							// -> conflict with IDs an other stuff
 							if (match != null
 									&& (!match.isReusedBy(match.getTitle())
 									&& !match.hasReusedSuccessor)
 									&& !match.isDirty()) {
-
-								match.setReusedBy(match.getTitle(), true);
-
+								
+								// mark ancestors, that they have an reused successor
 								Section ancestor = match.getFather();
 								while (ancestor != null) {
 									ancestor.hasReusedSuccessor = true;
 									ancestor = ancestor.getFather();
 								}
-
+								
+								// use match instead of creating a new Section
+								// (thats the idea of updating ;) )
 								s = match;
 								s.setOffSetFromFatherText(thisSection.getOffSetFromFatherText()
 										+ result.getStart());
 								s.setFather(father);
 								father.addChild(s);
 
-								//System.out.println("Used old " + s.getObjectType().getName());
+								// perform necessary actions on complete reused KDOM subtree
 								List<Section> newNodes = new ArrayList<Section>();
 								s.getAllNodesPreOrder(newNodes);
 								for (Section node:newNodes) {
-
+									
 									if (node.getObjectType() instanceof Include) {
 										article.getIncludeSections().add(node);
 									}
 
-									SectionStore oldStore = KnowWEUtils.getLastSectionStore(node.getWeb(), father.getTitle(), node.id);
-
+									SectionStore lastStore = KnowWEUtils.getLastSectionStore(node.getWeb(), father.getTitle(), node.id);
+									
+									// don't do the following if the node is included
 									if (node.getTitle().equals(father.getTitle())) {
+										// mark as reused (so its not reused again)
 										node.setReusedBy(node.getTitle(), true);
+										// update pointer to article
 										node.article = article;
 
-										if (!(node.preAssignedID && node == s)) {
+										// if the result comes with an ID, use it
+										// for the found match
+										// update the id for all other nodes
+										if (result.getId() != null && node == s) {
+											node.id = result.getId().toString();
+											node.specificID = result.getId().getSpecificID();
+										} else {
 											if (node.specificID == null) {
 												node.id = new SectionID(node.father, node.objectType).toString();
 											} else {
@@ -230,10 +246,10 @@ public class Sectionizer {
 											}
 										}
 									}
-
-									//System.out.print(oldStore.getAllObjects().isEmpty() ? "" : "#" + node.getId() + " put " + oldStore.getAllObjects() + "\n");
-									if (oldStore != null) {
-										KnowWEUtils.putSectionStore(node.getWeb(), father.getTitle(), node.id, oldStore);
+									
+									if (lastStore != null) {
+										// reuse last section store
+										KnowWEUtils.putSectionStore(node.getWeb(), father.getTitle(), node.id, lastStore);
 									}
 								}
 							}
@@ -242,12 +258,14 @@ public class Sectionizer {
 						if (s == null) {
 							if (result instanceof ExpandedSectionFinderResult) {
 								s = createExpandedSection((ExpandedSectionFinderResult) result, father);
+								
 							} else if (result instanceof IncludeSectionFinderResult) {
 								s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
 										result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
 										+ result.getStart(), article, result.getId(), false,
 										((IncludeSectionFinderResult) result).getIncludeAddress(),ob);
 								KnowWEEnvironment.getInstance().getIncludeManager(s.getWeb()).registerInclude(s);
+								
 							} else {
 								s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
 										result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
@@ -269,7 +287,7 @@ public class Sectionizer {
 					List<Section> newSections = new ArrayList<Section>();
 					Section firstFinding = findings.get(0);
 					if (findings.size() == 1 && firstFinding.isExpanded()) {
-						// the generated section is already expanded and is just hanged into the tree
+						// the generated section is already expanded and is just hooked into the tree
 //						long start = System.currentTimeMillis();
 //						Validator.getConsoleInstance().validateSubTree(father);
 //						System.out.println("###" + (System.currentTimeMillis() - start));

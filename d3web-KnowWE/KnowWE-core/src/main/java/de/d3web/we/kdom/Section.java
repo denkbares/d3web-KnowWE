@@ -91,11 +91,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * The id of this node, unique in an article
 	 */
 	protected String id;
-
+	
+	/**
+	 * This is the part of the ID, that was specifically given for 
+	 * the ID of this Section to be used instead of the name of the 
+	 * ObjectType.
+	 */
 	protected String specificID;
-
-	protected boolean preAssignedID;
-
+	
 	/**
 	 * Contains the text of this KDOM-node
 	 */
@@ -220,14 +223,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		offSetFromFatherText = beginIndexFather;
 
 		if (sectionID == null) {
-			this.preAssignedID = false;
 			if (objectType instanceof KnowWEArticle) {
 				this.id = new SectionID(getTitle()).toString();
 			} else {
 				this.id = new SectionID(father, objectType).toString();
 			}
 		} else {
-			this.preAssignedID = true;
 			this.id = sectionID.toString();
 			this.specificID = sectionID.getSpecificID();
 		}
@@ -348,20 +349,13 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public void setOriginalText(String newText) {
 		this.originalText = newText;
 		this.isDirty = true;
-		//Setting the isDirty flag to true for all ancestor sections
-		//so that the article is build correctly (updating mechanism 
-		//of Sectionizer)
-		if (this.get() instanceof KnowWEObjectType && 
-				!(this.get() instanceof KnowWEArticle)) {
-			Section<KnowWEObjectType> nextAncestor = 
-				(Section<KnowWEObjectType>) this.getFather();			
-			 while (true) {
-				 nextAncestor.setDirty(true);
-				 if (nextAncestor.getFather().get() instanceof KnowWEArticle) {
-					return;
-				 }
-				 nextAncestor = (Section<KnowWEObjectType>) nextAncestor.getFather();
-			 }
+		// setting the isDirty flag to true for all ancestor sections
+		// since they are also dirty (concatenation of leafs doesn't
+		// represent original text of the section, offsets don't fit...)
+		Section<? extends KnowWEObjectType> ancestor = this.getFather();
+		while (ancestor != null) {
+			ancestor.setDirty(true);
+			ancestor = ancestor.getFather();
 		}
 	}
 	
@@ -416,7 +410,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	public List<Section<? extends KnowWEObjectType>> getChildren() {
 		if (objectType instanceof Include) {
-			return KnowWEEnvironment.getInstance().getIncludeManager(getWeb()).getChildrenForSection(this);
+			return KnowWEEnvironment.getInstance().getIncludeManager(getWeb())
+					.getChildrenForSection((Section<Include>) this);
 		}
 		else {
 			return children;
@@ -503,8 +498,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public List<Section<? extends KnowWEObjectType>> getChildrenParsingOrder() {
 		if (objectType instanceof Include) {
 			return getChildren();
-		}
-		else {
+		} else {
 			sortChildrenParsingOrder();
 			return childrenParsingOrder;
 		}
@@ -523,7 +517,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			return;
 		}
 		// for every ObjectType a list with all Includes that include a Section with this ObjectType
-		Map<Class<? extends KnowWEObjectType>, List<Section<? extends KnowWEObjectType>>> includes = new HashMap<Class<? extends KnowWEObjectType>, List<Section<? extends KnowWEObjectType>>>();
+		Map<Class<? extends KnowWEObjectType>, List<Section<? extends KnowWEObjectType>>> includes 
+				= new HashMap<Class<? extends KnowWEObjectType>, List<Section<? extends KnowWEObjectType>>>();
 		// all ObjectTypes that are possible in the children list
 		Set<Class<? extends KnowWEObjectType>> types = new HashSet<Class<? extends KnowWEObjectType>>();
 		for (KnowWEObjectType type:getObjectType().getAllowedChildrenTypes()) {
@@ -735,9 +730,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	/**
-	 * <b>IMPORTANT:</b> This is NOT the actual ID, this may NOT be unique and this should only be used
-	 * in situations where a short version of the ID is needed e.g. to make it easier to
-	 * read for humans in debugging, logging and similar stuff.
+	 * <b>IMPORTANT:</b> This is NOT the actual ID, this may NOT be unique and 
+	 * this should ONLY be used in situations where a short version of the ID 
+	 * is needed e.g. to make it easier to read for humans in debugging, logging 
+	 * and similar stuff.
 	 */
 	public String getShortId() {
 		String temp = id;

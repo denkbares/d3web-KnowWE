@@ -52,8 +52,8 @@ public class KnowWEIncludeManager {
 	 * This map stores for every Include Section the Section they are including.
 	 * Key is the Include Section, value the included Section.
 	 */
-	private Map<Section<Include>, Section<? extends KnowWEObjectType>> src2target 
-			= new HashMap<Section<Include>, Section<? extends KnowWEObjectType>>();
+	private Map<Section<Include>, List<Section<? extends KnowWEObjectType>>> src2target 
+			= new HashMap<Section<Include>, List<Section<? extends KnowWEObjectType>>>();
 	
 	/**
 	 * This map stores for every title a set of Include Sections that include a
@@ -84,11 +84,11 @@ public class KnowWEIncludeManager {
 			IncludeAddress address = src.getIncludeAddress();
 			
 			// this is the Section the Include Section wants to include
-			Section<? extends KnowWEObjectType> target = null;
+			List<Section<? extends KnowWEObjectType>> target = 
+					new ArrayList<Section<? extends KnowWEObjectType>>();
 			
 			if (address == null) {
-				
-				target = getNoValidAddressErrorSection(src);
+				target.add(getNoValidAddressErrorSection(src));
 				
 			} else if (sectionizingArticles.contains(address.getTargetArticle())) {
 				// check for include loops
@@ -96,7 +96,7 @@ public class KnowWEIncludeManager {
 				// yet build but the Include Sections wants to include from
 				// it. If these initializing Articles directly or indirectly include
 				// this article, which isn't completely build itself, we got a loop.)
-				target = getIncludeLoopErrorSection(src);
+				target.add(getIncludeLoopErrorSection(src));
 				
 			} else {
 				// no loops found then, get the targeted article
@@ -123,10 +123,10 @@ public class KnowWEIncludeManager {
 				}
 		
 				if (art != null) {
-					target = findTarget(art, src);
+					target = findTargets(art, src);
 				} else {
-					target = new IncludeErrorSection("Error: Article '" + address.getTargetArticle()
-							+ "' not found.", src, src.getArticle());
+					target.add(new IncludeErrorSection("Error: Article '" + address.getTargetArticle()
+							+ "' not found.", src, src.getArticle()));
 				}
 			}
 			
@@ -141,87 +141,117 @@ public class KnowWEIncludeManager {
 	/**
 	 * Finds the target of the Include in the given Article
 	 */
-	private Section<? extends KnowWEObjectType> findTarget(KnowWEArticle art, Section<Include> src) {
+	private List<Section<? extends KnowWEObjectType>> findTargets(KnowWEArticle art, Section<Include> includeSec) {
 		
-		IncludeAddress address = src.getIncludeAddress();
-		Section<? extends KnowWEObjectType> target;
+		IncludeAddress address = includeSec.getIncludeAddress();
+		List<Section<? extends KnowWEObjectType>> targets = new ArrayList<Section<? extends KnowWEObjectType>>();
 		
 		if (address == null) {
-			return getNoValidAddressErrorSection(src);
+			targets.add(getNoValidAddressErrorSection(includeSec));
+			return targets;
 		}
 		
 		// search node in Article
-		List<Section<? extends KnowWEObjectType>> allNodes = art.getAllNodesPreOrder();
-		List<Section<? extends KnowWEObjectType>> matchingObjectTypeName = new ArrayList<Section<? extends KnowWEObjectType>>();
-		List<Section<? extends KnowWEObjectType>> matchingIdEnd = new ArrayList<Section<? extends KnowWEObjectType>>();
-		Section<? extends KnowWEObjectType> matchingID = null;
+		
+		List<Section<? extends KnowWEObjectType>> matchingObjectTypeNameSections = new ArrayList<Section<? extends KnowWEObjectType>>();
+		List<Section<? extends KnowWEObjectType>> matchingIdEndSections = new ArrayList<Section<? extends KnowWEObjectType>>();
+		Section<? extends KnowWEObjectType> matchingIDSection = null;
 		
 		String typeName = address.isContentSectionTarget() ? address.getTargetSection().substring(0, 
-				address.getTargetSection().length() - SectionID.CONTENT_SUFFIX.length()) 
+				address.getTargetSection().indexOf(SectionID.CONTENT_SUFFIX.length())) 
 				: address.getTargetSection();
 		
-		for (Section node : allNodes) {
-			// if the complete ID is given
-			if (node.getId().equalsIgnoreCase(address.getOriginalAddress())) {
-				matchingID = node;
-				break;
-			}
-			// if only the last part of the ID is given
-			if ((node.getId().length() > address.getTargetSection().length() 
-					&& node.getId().substring(node.getId().length() - address.getTargetSection().length())
-						.equalsIgnoreCase(address.getTargetSection()))) {
-				matchingIdEnd.add(node);
-				if (matchingIdEnd.size() > 1) {
+		if (address.getTargetSection() != null) {
+			for (Section node : art.getAllNodesPreOrder()) {
+				// if the complete ID is given
+				if (node.getId().equalsIgnoreCase(address.getOriginalAddress())) {
+					matchingIDSection = node;
 					break;
 				}
-			}
-			// or the ObjectType
-			if (node.getObjectType().getClass().getSimpleName()
-						.compareToIgnoreCase(typeName) == 0) {
-				matchingObjectTypeName.add(node);
-				if (matchingObjectTypeName.size() > 1) {
-					break;
+				// if only the last part of the ID is given
+				if ((node.getId().length() > address.getTargetSection().length() 
+						&& node.getId().substring(node.getId().length() - address.getTargetSection().length())
+							.equalsIgnoreCase(address.getTargetSection()))) {
+					matchingIdEndSections.add(node);
+					if (!address.isWildcardSectionTarget() && matchingIdEndSections.size() > 1) {
+						break;
+					}
+				}
+				// or the ObjectType
+				if (node.getObjectType().getClass().getSimpleName()
+							.compareToIgnoreCase(typeName) == 0) {
+					matchingObjectTypeNameSections.add(node);
+					if (!address.isWildcardSectionTarget() && matchingObjectTypeNameSections.size() > 1) {
+						break;
+					}
 				}
 			}
 		}
 		
 		// check the Lists if matching Sections were found
-		if (matchingID != null) {
-			target = matchingID;
-		} else if (matchingObjectTypeName.size() == 1) {
-			Section locatedNode = matchingObjectTypeName.get(0);
-			// get XMLContent if necessary
-			if (address.isContentSectionTarget() 
-					&& !(locatedNode.getObjectType() instanceof XMLContent)) {
-				if (locatedNode.getObjectType() instanceof AbstractXMLObjectType
-						&& locatedNode.findChildOfType(XMLContent.class) != null) {
-					target = locatedNode.findChildOfType(XMLContent.class);
+		if (matchingIDSection != null) {
+			targets.add(matchingIDSection);
+			
+		}  else if (!address.isWildcardSectionTarget() 
+				&& (matchingObjectTypeNameSections.size() > 1 || matchingIdEndSections.size() > 1)) {
+			targets.add(new IncludeErrorSection("Error: Include '"
+					+ address.getOriginalAddress() + "' is ambiguous. Try IDs.", 
+					includeSec, includeSec.getArticle()));
+			
+		} else if (!matchingObjectTypeNameSections.isEmpty()) {
+			
+			for (Section<? extends KnowWEObjectType> locatedNode:matchingObjectTypeNameSections) {
+				// get XMLContent if necessary
+				if (address.isContentSectionTarget() 
+						&& !(locatedNode.getObjectType() instanceof XMLContent)) {
+					if (locatedNode.getObjectType() instanceof AbstractXMLObjectType
+							&& locatedNode.findChildOfType(XMLContent.class) != null) {
+						targets.add(locatedNode.findChildOfType(XMLContent.class));
+					} else {
+						targets.add(new IncludeErrorSection("Error: No content Section found for Include '"
+								+ address.getOriginalAddress() + "'.", includeSec, includeSec.getArticle()));
+					}
 				} else {
-					target = new IncludeErrorSection("Error: No content Section found for Include '"
-							+ address.getOriginalAddress() + "'.", src, src.getArticle());
+					targets.add(locatedNode);
 				}
-			} else {
-				target = locatedNode;
 			}
-		} else if (matchingIdEnd.size() == 1) {
-			target = matchingIdEnd.get(0);
-		} else if (matchingObjectTypeName.size() > 1 || matchingIdEnd.size() > 1) {
-			target = new IncludeErrorSection("Error: Include '"
-					+ address.getOriginalAddress() + "' is not unique. Try IDs.", 
-					src, src.getArticle());
-		} else {
-			target = new IncludeErrorSection("Error: Include '"
-					+ address.getOriginalAddress() + "' not found.", src, src.getArticle());
+			
+		} else if (!matchingIdEndSections.isEmpty()) {
+			targets.addAll(matchingIdEndSections);
+			
+		} 
+// this is not yet supported... problems with parsing order for ReviseSubTreeHandler
+//		else if (address.getTargetSection() == null) {
+//			Section<? extends RootType> root = art.getSection().findChildOfType(RootType.class);
+//			if (root != null) {
+//				List<Section<? extends KnowWEObjectType>> children = root.getChildren();
+//				if (!children.isEmpty()) {
+//					targets.addAll(children);
+//				}
+//			}
+//			
+//		} 
+		else {
+			targets.add(new IncludeErrorSection("Error: Include '"
+					+ address.getOriginalAddress() + "' not found.", includeSec, includeSec.getArticle()));
 		}
 		// check if the included Section originates from the requesting article,
 		// but isn't directly included from it -> causes update loops
 		// (auto includes are allowed, but not via other articles)
-		if (!(target instanceof IncludeErrorSection)
-				&& !address.getTargetArticle().equals(src.getTitle())
-				&& target.getTitle().equals(src.getTitle())) {
-			target = getIncludeLoopErrorSection(src);
+		boolean loop = false;
+		for (Section<? extends KnowWEObjectType> tar:targets) {
+			if (!(tar instanceof IncludeErrorSection)
+					&& !address.getTargetArticle().equals(includeSec.getTitle())
+					&& tar.getTitle().equals(includeSec.getTitle())) {
+				loop = true;
+				break;
+			}
 		}
-		return target;
+		if (loop) {
+			targets.clear();
+			targets.add(getIncludeLoopErrorSection(includeSec));
+		}
+		return targets;
 	}
 	
 	private IncludeErrorSection getNoValidAddressErrorSection(Section<Include> src) {
@@ -243,28 +273,46 @@ public class KnowWEIncludeManager {
 		Set<Section<Include>> includes = new HashSet<Section<Include>>(getIncludingSectionsForArticle(article.getTitle()));
 		for (Section<Include> inc:includes) {
 			// check if the target of the Include Section has changed
-			Section<? extends KnowWEObjectType> target = findTarget(article, inc);
-			Section<? extends KnowWEObjectType> lastTarget = src2target.get(inc);
+			List<Section<? extends KnowWEObjectType>> targets = findTargets(article, inc);
+			List<Section<? extends KnowWEObjectType>> lastTargets = src2target.get(inc);
+			
 			// if the target of an Include changes, the article needs to be rebuild
 			// if the target stays the same but contains an Include, it is possible, 
 			// that the target of that Include has changed and therefore the article
 			// also needs to be rebuild
-			if (lastTarget != target || target.findSuccessor(Include.class) != null) {
-				if (lastTarget != null) {
+			boolean includeSuccessor = false;
+			for (Section<? extends KnowWEObjectType> tar:targets) {
+				if (tar.findSuccessor(Include.class) != null) {
+					includeSuccessor = true;
+					break;
+				}
+			}
+			if (!targets.equals(lastTargets) || includeSuccessor) {
+				if (lastTargets != null) {
 					// since the target has changed, the including article doesn't 
 					// reuse the last target
-					lastTarget.setReusedStateRecursively(inc.getTitle(), false);
+					for (Section<? extends KnowWEObjectType> lastTar:lastTargets) {
+						lastTar.setReusedStateRecursively(inc.getTitle(), false);
+					}
 				}
 				// overwrite the last target
-				src2target.put(inc, target);
+				src2target.put(inc, targets);
 				if (inc.getIncludeAddress() != null) {
 					getIncludingSectionsForArticle(inc.getIncludeAddress().getTargetArticle()).add(inc);
 				}
 				// don't revise the article that is currently revised again
 				// and don't revise if the originalText hasn't changed
-				if (!inc.getTitle().equals(article.getTitle()) 
-						&& !lastTarget.getOriginalText().equals(target.getOriginalText())) {
-					reviseArticles.put(inc.getTitle(), inc.getArticle());
+				if (!inc.getTitle().equals(article.getTitle())) {
+					if (targets.size() == lastTargets.size()) {
+						for (int i = 0; i < targets.size(); i++) {
+							if (!targets.get(i).getOriginalText().equals(lastTargets.get(i).getOriginalText())) {
+								reviseArticles.put(inc.getTitle(), inc.getArticle());
+								break;
+							}
+						}
+					} else {
+						reviseArticles.put(inc.getTitle(), inc.getArticle());
+					}
 				}
 			}
 		}
@@ -282,13 +330,12 @@ public class KnowWEIncludeManager {
 	/**
 	 * @returns the children respectively the target of the Include Section
 	 */
-	public List<Section<? extends KnowWEObjectType>> getChildrenForSection(Section<?> src) {
-		List<Section<? extends KnowWEObjectType>> children = new ArrayList<Section<? extends KnowWEObjectType>>();
-		Section<? extends KnowWEObjectType> target = src2target.get(src);
-		if (target != null) {
-			children.add(target);
-		} 
-		else {
+	public List<Section<? extends KnowWEObjectType>> getChildrenForSection(Section<Include> src) {
+		List<Section<? extends KnowWEObjectType>> children = src2target.get(src);
+		if (children == null) {
+			children = new ArrayList<Section<? extends KnowWEObjectType>>();
+		}
+		if (children.isEmpty()) {
 			children.add(new IncludeErrorSection("Section " + src.toString() 
 					+ " is not registered as an including Section", src, src.getArticle()));
 		}
@@ -327,10 +374,12 @@ public class KnowWEIncludeManager {
 			// if an Include is from the article with the given title but not in 
 			// the active Includes of this article, it is out of use
 			if (inc.getTitle().equals(title) && !activeIncludes.contains(inc)) {
-				Section targetSection = src2target.get(inc);
+				List<Section<? extends KnowWEObjectType>> targetSections = src2target.get(inc);
 				// since the target has changed, the including article doesn't 
 				// reuse the last target
-				targetSection.setReusedStateRecursively(inc.getTitle(), false);
+				for (Section<? extends KnowWEObjectType> tar:targetSections) {
+					tar.setReusedStateRecursively(inc.getTitle(), false);
+				}
 				// remove from map...
 				src2target.remove(inc);
 				// also delete the Include from the set of Includes of
