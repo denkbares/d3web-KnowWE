@@ -20,6 +20,10 @@
 
 package de.d3web.we.ci4ke.groovy;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 
@@ -29,6 +33,7 @@ import de.d3web.report.Message;
 import de.d3web.we.ci4ke.handling.CIConfiguration;
 import de.d3web.we.ci4ke.handling.TestResult;
 import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
@@ -36,6 +41,7 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class GroovyCITestReviseSubtreeHandler implements ReviseSubTreeHandler {
@@ -56,12 +62,23 @@ public class GroovyCITestReviseSubtreeHandler implements ReviseSubTreeHandler {
 		
 		//TODO: check if name-annotation is unique!!!
 		String testname = DefaultMarkupType.getAnnotation(s, "name");
+		Map<String,Section<GroovyCITestType>> map = CIConfiguration.getAllGroovyCITestSections(KnowWEEnvironment.DEFAULT_WEB);
+		if(map.containsKey(testname)){
+			Section<GroovyCITestType> testSection = map.get(testname);
+			if(!testSection.getId().equals(s.getId()))
+				DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, 
+						"Test name '"+testname+"' is not unique!", null, -1, null));
+		}
+			
 		
 		try {
 			parseGroovyCITestSection(s);
 		} catch (Throwable th) {
-			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, th.getLocalizedMessage(), "", -1, ""));
-			return new TestCouldNotBeCreated(testname);
+			//th.printStackTrace();
+			//System.out.println(th.getMessage());
+			String errorMessageMasked = KnowWEUtils.maskHTML(KnowWEUtils.maskNewline(th.getLocalizedMessage()));
+			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, errorMessageMasked, null, -1, null));
+			return null;//new TestCouldNotBeCreated(testname, errorMessageMasked);
 		}
 		
 		return new TestCreatedSuccessfully(testname);		

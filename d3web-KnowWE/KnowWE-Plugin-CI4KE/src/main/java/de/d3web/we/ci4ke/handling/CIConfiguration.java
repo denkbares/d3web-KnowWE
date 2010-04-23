@@ -116,13 +116,17 @@ public class CIConfiguration {
 		return KnowWEEnvironment.getInstance().getArticle(this.get(WEB_KEY), this.get(MONITORED_ARTICLE_KEY));
 	}
 	
+	public String getMonitoredArticleTitle(){
+		return this.get(MONITORED_ARTICLE_KEY);
+	}
+	
 	public String getWeb(){
 		return this.get(WEB_KEY);
 	}
 
 	private List<Class<? extends CITest>> parseTestClasses(String testClassNames){
 		//get all Sections containing a GroovyCITest
-		Map<String,Section<GroovyCITestType>> groovyTestSections = getAllGroovyCITestSections();
+		Map<String,Section<GroovyCITestType>> groovyTestSections = getAllGroovyCITestSections(this.getWeb());
 		//our return list
 		List<Class<? extends CITest>> classesList = new LinkedList<Class<? extends CITest>>();
 		//the test class names are separeted by colons... lets split() them!
@@ -151,29 +155,30 @@ public class CIConfiguration {
 				Class<?> clazz = null;
 				try {
 					clazz = Class.forName(packagePrefix+c);
+					
+					//If our new class implements the ITest-interface...
+					if(CITest.class.isAssignableFrom(clazz)){
+						//this cast is legit due to the type-checking beforehand
+						@SuppressWarnings("unchecked") Class<? extends CITest> testClass =
+							(Class<? extends CITest>) clazz;
+						classesList.add(testClass);		
+					}
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					// e.printStackTrace();
 					
 				}
-				//If our new class implements the ITest-interface...
-				if(CITest.class.isAssignableFrom(clazz)){
-					//this cast is legit due to the type-checking beforehand
-					@SuppressWarnings("unchecked") Class<? extends CITest> testClass =
-						(Class<? extends CITest>) clazz;
-					classesList.add(testClass);		
-				}					
 			}
 		}
 		return classesList;
 	}
 	
-	private Map<String,Section<GroovyCITestType>> getAllGroovyCITestSections(){
+	public static Map<String,Section<GroovyCITestType>> getAllGroovyCITestSections(String web){
 		//return map
 		Map<String,Section<GroovyCITestType>> sectionsMap = new HashMap<String,Section<GroovyCITestType>>();
 		//a collection containing all wiki-articles
 		Collection<KnowWEArticle> allWikiArticles = KnowWEEnvironment.getInstance().
-						getArticleManager(this.get(WEB_KEY)).getArticles();
+						getArticleManager(web).getArticles();
 		//iterate over all articles
 		for(KnowWEArticle article : allWikiArticles){
 			List<Section<GroovyCITestType>> sectionsList = new LinkedList<Section<GroovyCITestType>>();

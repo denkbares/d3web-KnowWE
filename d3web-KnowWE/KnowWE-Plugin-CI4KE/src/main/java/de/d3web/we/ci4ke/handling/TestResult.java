@@ -30,6 +30,10 @@ public final class TestResult {
 	
 	private final TestResultType result;
 	
+	public TestResultType getResult() {
+		return result;
+	}
+
 	private final String testResultMessage;
 	
 	public TestResult(TestResultType result){

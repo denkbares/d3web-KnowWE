@@ -39,6 +39,8 @@ public class CIDashboard {
 	
 	private CIConfiguration config;
 	
+	private CIBuilder builder;
+	
 	/**
 	 * Constructs a new CI Dashboard
 	 * @param parameters
@@ -46,6 +48,7 @@ public class CIDashboard {
 	 */
 	public CIDashboard(Map<String, String> parameters, String dashboardArticleTitle){
 		config = new CIConfiguration(parameters, dashboardArticleTitle);
+		builder = new CIBuilder(this, config);
 	}
 
 	
@@ -55,7 +58,9 @@ public class CIDashboard {
 		
 		StringBuffer html = new StringBuffer();
 		
-		html.append("<div id='ci-panel' class='panel'><h3>Continuous Integration Dashboard - "+config.getMonitoredArticle().getTitle()+"</h3>\n");
+		String title = config.getMonitoredArticleTitle();
+		html.append("<div id='ci-panel' class='panel'><h3>Continuous Integration Dashboard - "+title+"</h3>\n");
+		
 		html.append("<div id='ci-content-wrapper'>");//Main content wrapper
 		//html.append("<b>This is the content wrapper. It is not supposed to contain any content.</b>");
 			
@@ -68,6 +73,8 @@ public class CIDashboard {
 //			for(Method m : methods){
 //				html.append(m.getName()+"<br/>");
 //			}
+			
+
 			
 			
 //			KnowWEWikiConnector con = KnowWEEnvironment.getInstance().getWikiConnector();
@@ -98,8 +105,8 @@ public class CIDashboard {
 			//html.append("Here<br/>...<br/>goes<br/>...<br/>the<br/>...<br/>right<br/>...<br/>column!<br/>..<br/>..<br/>And<br/>even<br/>more<br/>of<br/>the<br/>right<br/>column!");
 			html.append("Right Column: Contains all test results of the currently selected build<br/>");
 			
-			Build b = new Build(this, config);
-			html.append(b.executeBuild());
+			
+			html.append(builder.executeBuild());
 			
 			html.append("</div>");
 			
@@ -113,16 +120,16 @@ public class CIDashboard {
 //		return monitoredArticle;
 //	}
 	
-private class TestWikiEventListener implements WikiEventListener {
-
-	@Override
-	public void actionPerformed(WikiEvent event) {
-		if ((event instanceof WikiPageEvent)
-				&& (event.getType() == WikiPageEvent.POST_SAVE_END)) {
-			System.out.println("JEEAHHHWWW!");
-		}
-	}
-	
-}
+//private class TestWikiEventListener implements WikiEventListener {
+//
+//	@Override
+//	public void actionPerformed(WikiEvent event) {
+//		if ((event instanceof WikiPageEvent)
+//				&& (event.getType() == WikiPageEvent.POST_SAVE_END)) {
+//			System.out.println("JEEAHHHWWW!");
+//		}
+//	}
+//	
+//}
 	
 }
