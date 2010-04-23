@@ -1,0 +1,38 @@
+#ci-column-left
+	{ 
+	border: thin solid #000000;
+	float: left; 
+	width: 33%;
+	}
+#ci-column-middle
+	{ 
+	border: thin solid #ff0000; 
+	float: left; 
+	width: 33%;
+	}
+#ci-column-right
+	{ 
+	border: thin solid #0000ff; 
+	float: left; 
+	width: 33%;
+	}
+
+/* easy clearing */
+#ci-content-wrapper:after
+	{
+	content: '[DO NOT LEAVE IT IS NOT REAL]'; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+	}
+#ci-content-wrapper
+	{
+	display: inline-block;
+	}
+/*\*/
+#ci-content-wrapper
+	{
+	display: block;
+	}
+/* end easy clearing */

@@ -1,0 +1,6 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<builds article="CarDiagnosis">
+	<build nr="5" basedOnPageVersion="17" executed="11.04.2010" >
+		<test name="CITest1" result="SUCCESSFUL"/>
+	</build>
+</builds>

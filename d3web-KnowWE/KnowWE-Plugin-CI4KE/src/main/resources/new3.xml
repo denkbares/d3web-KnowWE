@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<builds article="CarDiagnosis">
+  <build Nr="10" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+  <build Nr="9" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+  <build Nr="8" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+  <build Nr="7" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+  <build Nr="6" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+  <build Nr="5" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+  <build Nr="4" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+  <build Nr="3" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+  <build Nr="2" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+  <build Nr="1" executed="Thu Apr 22 17:59:57 CEST 2010">
+    <test name="CITest1" result="SUCCESSFUL" />
+    <test name="CITest2" result="SUCCESSFUL" />
+    <test name="CITest3" result="SUCCESSFUL" />
+    <test name="CITest4" result="SUCCESSFUL" />
+  </build>
+</builds>
+
