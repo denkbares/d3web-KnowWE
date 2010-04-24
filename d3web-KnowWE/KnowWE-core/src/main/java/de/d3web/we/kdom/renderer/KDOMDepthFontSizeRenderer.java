@@ -17,12 +17,12 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  */
 public class KDOMDepthFontSizeRenderer extends KnowWEDomRenderer<KnowWEObjectType> {
 
-	private double initialFontsize = 1.3;
-	private double depthDiscount = 0.06;
+	private double initialFontsize = 340;
+	private double depthDiscountFactor = 0.88;
 
 	public KDOMDepthFontSizeRenderer(double initial, double discount) {
 		this.initialFontsize = initial;
-		this.depthDiscount = discount;
+		this.depthDiscountFactor = discount;
 	}
 
 	public KDOMDepthFontSizeRenderer() {
@@ -33,18 +33,18 @@ public class KDOMDepthFontSizeRenderer extends KnowWEDomRenderer<KnowWEObjectTyp
 	public void render(KnowWEArticle article, Section<KnowWEObjectType> sec, KnowWEUserContext user, StringBuilder string) {
 		// font-size:1.2em
 
-		double font = 1.0;
-		Section father = sec.getFather();
+		double font = initialFontsize;
+		Section<?> father = sec.getFather();
 		while (father != null) {
-			font -= 0.04;
+			font = font * depthDiscountFactor;
 			father = father.getFather();
 		}
-		String fontString = Double.toString(font).substring(0, 4);
+		String fontString = Double.toString(font);
 		// for border: border-width:1px;border-color:black;border-style:solid;
 		new StyleRenderer(
 				"font-size:"
 						+ fontString
-				+ "cm;").render(
+						+ "%;").render(
 				article, sec, user,
 				string);
 

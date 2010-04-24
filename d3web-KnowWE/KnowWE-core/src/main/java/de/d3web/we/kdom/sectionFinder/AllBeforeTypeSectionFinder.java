@@ -4,22 +4,27 @@ import java.util.List;
 
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.constraint.SingleChildConstraint;
 
 public class AllBeforeTypeSectionFinder extends SectionFinder {
-	
+
 	KnowWEObjectType markerType = null;
-	
+
 	public AllBeforeTypeSectionFinder(KnowWEObjectType type) {
+		this.addConstraint(new SingleChildConstraint());
 		this.markerType = type;
 	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		Section s = father.getChildSectionAtPosition(father.getOriginalText().indexOf(text)+text.length() + 1);
+		// note this indexOf call is unsafe - wrong matches are caught by SingelChildConstraint
+		Section s = father.getChildSectionAtPosition(father.getOriginalText().indexOf(
+				text)
+				+ text.length());
 		if(s != null && s.getObjectType().getName().equals(markerType.getName())) {
 			return AllTextFinderTrimmed.getInstance().lookForSections(text, father);
 		}
-		
+
 		return null;
 	}
 

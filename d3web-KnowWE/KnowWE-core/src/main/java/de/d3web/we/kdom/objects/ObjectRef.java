@@ -28,10 +28,12 @@ public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType imple
 	 * @param s
 	 * @return
 	 */
-	public abstract boolean objectExisting(Section<?> s);
+	public abstract boolean objectExisting(Section<? extends ObjectRef<T>> s);
+
+	public abstract T getObject(Section<? extends ObjectRef<T>> s);
 
 	public ObjectRef() {
-		// TODO make ObjectChcker singleton (somehow)
+		// TODO make ObjectChecker singleton (somehow)
 		this.addReviseSubtreeHandler(new ObjectChecker());
 	}
 

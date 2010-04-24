@@ -42,6 +42,8 @@ import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeAddress;
+import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
 import de.d3web.we.user.UserSettingsManager;
@@ -70,7 +72,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	private final Map<String, Boolean> reusedBy = new HashMap<String, Boolean>();
 
 	private final Map<String, Boolean> notYetRevisedBy = new HashMap<String, Boolean>();
-	
+
 	protected boolean hasReusedSuccessor = false;
 
 	private PairOfInts startPosFromTmp;
@@ -80,7 +82,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	protected KnowWEArticle article;
 
 	protected boolean isExpanded = false;
-		
+
 	/**
 	 * Specifies whether the orignialText was changed
 	 * without changing the ancestor ones
@@ -91,14 +93,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * The id of this node, unique in an article
 	 */
 	protected String id;
-	
+
 	/**
-	 * This is the part of the ID, that was specifically given for 
-	 * the ID of this Section to be used instead of the name of the 
+	 * This is the part of the ID, that was specifically given for
+	 * the ID of this Section to be used instead of the name of the
 	 * ObjectType.
 	 */
 	protected String specificID;
-	
+
 	/**
 	 * Contains the text of this KDOM-node
 	 */
@@ -183,7 +185,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	public Section<? extends KnowWEObjectType> getChildSectionAtPosition(int index) {
 		for (Section<?> child : this.children) {
-			if(child.getOffSetFromFatherText() <= index && index < child.getOffSetFromFatherText() + child.getOriginalText().length()) {
+			if (child.getOffSetFromFatherText() <= index
+					&& index < child.getOffSetFromFatherText()
+							+ child.getOriginalText().length()) {
 				return child;
 			}
 		}
@@ -303,7 +307,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				+ this.getOriginalText().length()) + " - "
 				+ this.getOriginalText();
 	}
-	
+
 	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 *
@@ -326,7 +330,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 		this.children.add(index, s);
 	}
-	
+
 
 	/**
 	 * @return the text of this Section/Node
@@ -358,7 +362,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			ancestor = ancestor.getFather();
 		}
 	}
-	
+
 	/**
 	 * Getter method for boolean variable isDirty.
 	 * @return The section's actual value of isDirty
@@ -374,7 +378,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public void setDirty(boolean invalidated) {
 		this.isDirty = invalidated;
 	}
-	
+
 	/**
 	 * Searches the successor-node with nodeID in the successors of this node,
 	 * sets the text of the successor-node and makes it a leaf by deleting all its children.
@@ -517,7 +521,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			return;
 		}
 		// for every ObjectType a list with all Includes that include a Section with this ObjectType
-		Map<Class<? extends KnowWEObjectType>, List<Section<? extends KnowWEObjectType>>> includes 
+		Map<Class<? extends KnowWEObjectType>, List<Section<? extends KnowWEObjectType>>> includes
 				= new HashMap<Class<? extends KnowWEObjectType>, List<Section<? extends KnowWEObjectType>>>();
 		// all ObjectTypes that are possible in the children list
 		Set<Class<? extends KnowWEObjectType>> types = new HashSet<Class<? extends KnowWEObjectType>>();
@@ -730,9 +734,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	/**
-	 * <b>IMPORTANT:</b> This is NOT the actual ID, this may NOT be unique and 
-	 * this should ONLY be used in situations where a short version of the ID 
-	 * is needed e.g. to make it easier to read for humans in debugging, logging 
+	 * <b>IMPORTANT:</b> This is NOT the actual ID, this may NOT be unique and
+	 * this should ONLY be used in situations where a short version of the ID
+	 * is needed e.g. to make it easier to read for humans in debugging, logging
 	 * and similar stuff.
 	 */
 	public String getShortId() {
@@ -774,7 +778,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		this.children.remove(s);
 
 	}
-	
+
 	public void removeChildren(List<Section<? extends KnowWEObjectType>> removeList) {
 		for(Section<? extends KnowWEObjectType> s : removeList) {
 			this.removeChild(s);
@@ -1270,7 +1274,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			child.setReusedSuccessorStateRecursively(reused);
 		}
 	}
-	
+
 	public boolean isNotYetRevisedBy(String title) {
 		Boolean notYetRevised = notYetRevisedBy.get(title);
 		if (notYetRevised == null) {
@@ -1297,6 +1301,23 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public void setFather(Section father) {
 		this.father = father;
+	}
+
+	/**
+	 * Method that looks (recursivly down) for this section whether some error
+	 * has been stored in that subtree
+	 *
+	 * @return
+	 */
+	public boolean hasErrorInSubtree() {
+		Set<KDOMError> s = KDOMReportMessage.getErrors(this);
+		if (s != null && s.size() > 0) return true;
+		for (Section<?> child : children) {
+			boolean err = child.hasErrorInSubtree();
+			if (err) return true;
+		}
+
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")

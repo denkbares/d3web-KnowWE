@@ -25,21 +25,21 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 
 /**
  * Abstract class for a ReviseSubtreeHandler. This handler has to be registered to a type and then,
- * after the KDOM is build, this handler is called with that section and 
+ * after the KDOM is build, this handler is called with that section and
  * the subtree can be processed (e.g. translated to a target representation)
- * 
+ *
  * @author Jochen
  *
  */
-public interface ReviseSubTreeHandler {
-	
+public interface ReviseSubTreeHandler<T extends KnowWEObjectType> {
+
 	/**
 	 * Revises the subtree of this section.
-	 * 
+	 *
 	 * @param article is the article that called this method... not necessarily the
 	 * 		article the Section is hooked into directly, since Sections can also be included!
 	 * @param s is the root section of the subtree to revise
 	 */
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s);
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<T> s);
 
 }
