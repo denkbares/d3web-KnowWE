@@ -8,6 +8,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
@@ -24,6 +25,8 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 	public QuestionDef() {
 		super("QUESTION_STORE_KEY");
 		this.addReviseSubtreeHandler(new CreateQuestionHandler());
+		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
+
 	}
 
 	public abstract QuestionType getQuestionType(Section<QuestionDef> s);

@@ -32,6 +32,7 @@ import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
@@ -169,14 +170,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 			Solution d = mgn.findDiagnosis(s.getOriginalText());
 			if( d != null) {
-				Score score = null;
-				List<Score> allScores = Score.getAllScores();
-				for (Score sc : allScores) {
-					if(sc.getSymbol().equals(argument)) {
-						score = sc;
-						break;
-					}
-				}
+				Score score = D3webUtils.getScoreForString(argument);
 
 				if(score != null) {
 					String newRuleID = mgn.createRuleID();

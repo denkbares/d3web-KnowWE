@@ -17,59 +17,82 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.kopic.rules.ruleActionLine;
+package de.d3web.we.kdom.rulesNew.ruleAction;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.core.inference.PSAction;
+import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.decisionTree.SolutionID;
+import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
+import de.d3web.we.kdom.objects.SolutionRef;
+import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
+import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.utils.D3webUtils;
 
 /**
  * @author Johannes Dienst
  *
  */
-public class SolutionValueAssignment extends DefaultAbstractKnowWEObjectType {
-	
+public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssignment> {
+
+	private final ArrayList<String> possibleScorePoints = new ArrayList<String>();
+
+	// TODO Add missing score values
+	public SolutionValueAssignment() {
+
+		this.sectionFinder = new DiagnosisRuleActionSectionFinder(possibleScorePoints);
+		ScorePoint scorePoint = new ScorePoint();
+		Equals equ = new Equals();
+		SolutionRef solutionRef = new SolutionRef();
+		solutionRef.setSectionFinder(new AllBeforeTypeSectionFinder(equ));
+
+		this.childrenTypes.add(scorePoint);
+		this.childrenTypes.add(equ);
+		this.childrenTypes.add(solutionRef);
+
+		String n = "N";
+		String p = "P";
+		for (int i = 1; i <= 7; i++) {
+			possibleScorePoints.add(n + i);
+			possibleScorePoints.add(p + i);
+		}
+		possibleScorePoints.add("P5x");
+		possibleScorePoints.add("N5x");
+		possibleScorePoints.add("!");
+		possibleScorePoints.add("?");
+		possibleScorePoints.add("excluded");
+		possibleScorePoints.add("established");
+		possibleScorePoints.add("suggested");
+		scorePoint.setSectionFinder(new OneOfStringEnumUnquotedFinder(
+				possibleScorePoints.toArray(new String[possibleScorePoints.size()])));
+	}
+
 	@Override
 	public void init() {
-		this.sectionFinder = new DiagnosisRuleActionSectionFinder();
-		this.childrenTypes.add(new SolutionID());
-		this.childrenTypes.add(new Equals());
-		this.childrenTypes.add(new ScorePoint());
+
 	}
-	
+
 	/**
 	 * Searches the pattern diagnosis = Score.
 	 */
 	private class DiagnosisRuleActionSectionFinder extends SectionFinder {
 
 		private ArrayList<String> possibleScorePoints = new ArrayList<String>();
-		
+
 		// TODO Add missing score values
-		public DiagnosisRuleActionSectionFinder() {
-			String n = "N";
-			String p = "P";
-			for (int i = 1; i <=7; i++) {
-				possibleScorePoints.add(n+i);
-				possibleScorePoints.add(p+i);
-			}
-			possibleScorePoints.add("P5x");
-			possibleScorePoints.add("N5x");
-			possibleScorePoints.add("!");
-			possibleScorePoints.add("?");
-			possibleScorePoints.add("excluded");
-			possibleScorePoints.add("established");
-			possibleScorePoints.add("suggested");
+		public DiagnosisRuleActionSectionFinder(ArrayList<String> possibleScorePoints) {
+			this.possibleScorePoints = possibleScorePoints;
 		}
-		
+
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			if (text.contains(" = ")) {
-				
+
 				int start = 0;
 				int end = text.length();
 				while (text.charAt(end-1) == ' ' || text.charAt(end-1) == '"') {
@@ -78,9 +101,9 @@ public class SolutionValueAssignment extends DefaultAbstractKnowWEObjectType {
 				}
 				text = text.substring(start, end);
 				String[] textArr = text.split(" ");
-				
+
 				String searchMe = textArr[textArr.length-1];
-				
+
 				if (possibleScorePoints.contains(searchMe)) {
 					while (text.charAt(start) == ' ' || text.charAt(start) == '"') {
 						start++;
@@ -94,6 +117,21 @@ public class SolutionValueAssignment extends DefaultAbstractKnowWEObjectType {
 
 			return null;
 		}
-		
+
+	}
+
+	class ScorePoint extends DefaultAbstractKnowWEObjectType {
+
+
+	}
+
+	@Override
+	public PSAction getAction(Section<SolutionValueAssignment> s) {
+		Section<SolutionRef> solutionRef = s.findSuccessor(SolutionRef.class);
+		Section<ScorePoint> scoreRef = s.findSuccessor(ScorePoint.class);
+		ActionHeuristicPS a = new ActionHeuristicPS();
+		a.setDiagnosis(solutionRef.get().getObject(solutionRef));
+		a.setScore(D3webUtils.getScoreForString(scoreRef.getOriginalText()));
+		return a;
 	}
 }

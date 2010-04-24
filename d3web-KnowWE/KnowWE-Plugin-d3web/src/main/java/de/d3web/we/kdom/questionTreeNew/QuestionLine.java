@@ -16,6 +16,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
@@ -67,8 +68,9 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		protected void init() {
-			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
-			this.setSectionFinder(AllTextFinderTrimmed.getInstance());
+			SectionFinder f = new AllTextFinderTrimmed();
+			f.addConstraint(SingleChildConstraint.getInstance());
+			this.setSectionFinder(f);
 			this.addReviseSubtreeHandler(new CreateIndicationHandler());
 		}
 		@Override
@@ -313,7 +315,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				}
 			};
 			this.setSectionFinder(typeFinder);
-			this.setCustomRenderer(new TypeDeclarationRenderer());
+			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 			this.addReviseSubtreeHandler(new StringEnumChecker(
 					QUESTION_DECLARATIONS, new SimpleMessageError(
 							"Invalid Question type - allowing only: "

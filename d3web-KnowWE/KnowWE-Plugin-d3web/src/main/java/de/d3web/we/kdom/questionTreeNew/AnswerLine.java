@@ -12,7 +12,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
@@ -43,7 +42,6 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 		};
 
 		QuestionTreeAnswerDef aid = new QuestionTreeAnswerDef();
-		aid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR6));
 		aid.setSectionFinder(AllTextFinderTrimmed.getInstance());
 		aid.addReviseSubtreeHandler(new createAnswerHandler());
 		this.childrenTypes.add(aid);

@@ -20,6 +20,8 @@
 
 package de.d3web.we.utils;
 
+import java.util.List;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -30,6 +32,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
+import de.d3web.scoring.Score;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
@@ -207,6 +210,18 @@ public class D3webUtils {
 		}
 
 		return null;
+	}
+
+	public static Score getScoreForString(String argument) {
+		Score score = null;
+		List<Score> allScores = Score.getAllScores();
+		for (Score sc : allScores) {
+			if(sc.getSymbol().equals(argument)) {
+				score = sc;
+				break;
+			}
+		}
+		return score;
 	}
 
 }

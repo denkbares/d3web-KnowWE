@@ -7,6 +7,11 @@ public abstract class D3webObjectRef<T> extends ObjectRef<T> {
 
 
 	@Override
+	public boolean objectExisting(Section<? extends ObjectRef<T>> s) {
+		return getObject(s) != null;
+	}
+
+	@Override
 	public String getID(Section s) {
 		String content = s.getOriginalText();
 

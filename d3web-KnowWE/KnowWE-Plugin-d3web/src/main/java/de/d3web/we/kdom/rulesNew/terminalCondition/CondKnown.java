@@ -4,10 +4,10 @@ import java.util.List;
 
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.QuestionRef;
 import de.d3web.we.kdom.objects.QuestionRefImpl;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -21,7 +21,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  * @author Jochen
  *
  */
-public class CondKnown extends DefaultAbstractKnowWEObjectType {
+public class CondKnown extends D3webTerminalCondition<CondKnown> {
 
 	protected static String[] KEYWORDS = {
 			"KNOWN", "BEKANNT" };
@@ -29,6 +29,7 @@ public class CondKnown extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.sectionFinder = new CondKnownFinder();
+		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR7));
 
 		QuestionRef question = new QuestionRefImpl<Question>();
 		question.setSectionFinder(new SectionFinder() {
@@ -36,7 +37,8 @@ public class CondKnown extends DefaultAbstractKnowWEObjectType {
 			public List<SectionFinderResult> lookForSections(String text, Section father) {
 				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
 						text.indexOf('[') + 1, text.indexOf(']')));
-			}});
+			}
+		});
 		this.addChildType(question);
 	}
 
@@ -56,5 +58,17 @@ public class CondKnown extends DefaultAbstractKnowWEObjectType {
 
 	}
 
+	@Override
+	public TerminalCondition getTerminalCondition(Section<CondKnown> s) {
+		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
+		if (qRef != null) {
+			Question q = qRef.get().getObject(qRef);
+
+			if (q != null) {
+				return new de.d3web.core.inference.condition.CondKnown(q);
+			}
+		}
+		return null;
+	}
 
 }

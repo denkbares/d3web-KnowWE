@@ -15,6 +15,17 @@ public class Number extends DefaultAbstractKnowWEObjectType {
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR7));
 	}
 
+	public static Double getNumber(Section<Number> s) {
+		try {
+			return Double.parseDouble(s.getOriginalText().trim());
+		}
+		catch (Exception e) {
+
+		}
+
+		return null;
+	}
+
 	class NumberChecker implements ReviseSubTreeHandler {
 
 		@Override

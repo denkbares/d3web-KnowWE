@@ -2,11 +2,12 @@ package de.d3web.we.kdom.objects;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.values.Choice;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 
-public class AnswerRefImpl<Answer> extends AnswerRef {
+public class AnswerRefImpl extends AnswerRef {
 	@Override
 	protected void init() {
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR5));
@@ -14,9 +15,15 @@ public class AnswerRefImpl<Answer> extends AnswerRef {
 
 
 
+	@Override
+	public Section<QuestionRef> getQuestionSection(Section<? extends AnswerRef> s) {
+		return s.getFather().findSuccessor(QuestionRef.class);
+	}
+
+
 
 	@Override
-	public boolean objectExisting(Section<?> s) {
+	public boolean objectExisting(Section<? extends ObjectRef<Choice>> s) {
 		Section<AnswerRef> a = (Section<AnswerRef>) s;
 
 		Section<? extends QuestionRef> qidSection =
@@ -28,7 +35,7 @@ public class AnswerRefImpl<Answer> extends AnswerRef {
 
 			KnowledgeBaseManagement mgn =
 					D3webModule.getKnowledgeRepresentationHandler(s.getArticle().getWeb())
-					.getKBM(s.getArticle(), s);
+							.getKBM(s.getArticle(), s);
 
 			Question o = mgn.findQuestion(name);
 
@@ -39,13 +46,6 @@ public class AnswerRefImpl<Answer> extends AnswerRef {
 		}
 
 		return false;
-	}
-
-
-
-	@Override
-	public Section<QuestionRef> getQuestionSection(Section<? extends AnswerRef> s) {
-		return s.getFather().findSuccessor(QuestionRef.class);
 	}
 
 }

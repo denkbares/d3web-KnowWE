@@ -22,8 +22,11 @@ package de.d3web.we.kdom.rulesNew.terminalCondition;
 
 import java.util.List;
 
+import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.session.values.Choice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
@@ -31,7 +34,6 @@ import de.d3web.we.kdom.objects.AnswerRef;
 import de.d3web.we.kdom.objects.AnswerRefImpl;
 import de.d3web.we.kdom.objects.QuestionRef;
 import de.d3web.we.kdom.objects.QuestionRefImpl;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -48,7 +50,7 @@ import de.d3web.we.utils.SplitUtility;
  * @author Jochen
  *
  */
-public class Finding extends DefaultAbstractKnowWEObjectType {
+public class Finding extends D3webTerminalCondition<Finding> {
 
 	@Override
 	protected void init() {
@@ -73,6 +75,23 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(answer);
 	}
 
+	@Override
+	public TerminalCondition getTerminalCondition(Section<Finding> s) {
+
+		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
+
+		Section<AnswerRef> aRef = s.findSuccessor(AnswerRef.class);
+
+		if(qRef != null && aRef != null) {
+			Choice answer = aRef.get().getObject(aRef);
+			ChoiceValue value = new ChoiceValue(
+					answer);
+			return new CondEqual(qRef.get().getObject(qRef), value);
+		}
+
+		return null;
+	}
+
 }
 
 class FindingFinder extends SectionFinder {
@@ -89,10 +108,6 @@ class FindingFinder extends SectionFinder {
 
 class Comparator extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	protected void init() {
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR3));
-	}
 }
 
 

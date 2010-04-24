@@ -8,6 +8,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
@@ -29,6 +30,8 @@ public abstract class AnswerDef extends D3webObjectDef<Answer> {
 	public AnswerDef() {
 		super("ANSWER_STORE_KEY");
 		this.addReviseSubtreeHandler(new createAnswerHandler());
+		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
+
 	}
 
 	static class createAnswerHandler implements ReviseSubTreeHandler {
