@@ -100,14 +100,151 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 		this.addChildType(terminalCondition);
 	}
 
+	/**
+	 * Sets the set of terminalConditions for this CompositeCondition
+	 *
+	 * Any terminal that is not accepted by one of these will be marked by an
+	 * UnrecognizedTerminalCondition causing an error
+	 *
+	 * @param types
+	 */
 	public void setAllowedTerminalConditions(List<KnowWEObjectType> types) {
 		terminalCondition.setAllowedTerminalConditions(types);
 	}
+
+	/**
+	 * tells whether a CompositeCondition is a disjunction
+	 *
+	 * @param c
+	 * @return
+	 */
+	public boolean isDisjunction(Section<CompositeCondition> c) {
+		return getDisjuncts(c).size() > 0;
+	}
+
+	/**
+	 * returns the disjuncts of a disjunction
+	 *
+	 * @param c
+	 * @return
+	 */
+	public List<Section<? extends NonTerminalCondition>> getDisjuncts(Section<CompositeCondition> c) {
+
+		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
+		List<Section<Disjunct>> childrenOfType = c.findChildrenOfType(Disjunct.class);
+
+		result.addAll(childrenOfType);
+		return result;
+	}
+
+	/**
+	 * tells whether a CompositeCondition is a Conjunction
+	 *
+	 * @param c
+	 * @return
+	 */
+	public boolean isConjunction(Section<CompositeCondition> c) {
+		return getConjuncts(c).size() > 0;
+	}
+
+	/**
+	 * returns the conjunts of a conjunction
+	 *
+	 * @param c
+	 * @return
+	 */
+	public List<Section<? extends NonTerminalCondition>> getConjuncts(Section<CompositeCondition> c) {
+
+		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
+		List<Section<Conjunct>> childrenOfType = c.findChildrenOfType(Conjunct.class);
+
+		result.addAll(childrenOfType);
+		return result;
+	}
+
+	/**
+	 * tells whether a CompositeCondition is a bracedexpression
+	 *
+	 * @param c
+	 * @return
+	 */
+	public boolean isBraced(Section<CompositeCondition> c) {
+		return getBraced(c) != null;
+	}
+
+	/**
+	 * returns the BracedCondition
+	 *
+	 * @param c
+	 * @return
+	 */
+	public Section<? extends NonTerminalCondition> getBraced(Section<CompositeCondition> c) {
+
+		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
+		Section<? extends BracedCondition> childrenOfType = c.findChildOfType(BracedCondition.class);
+		return childrenOfType;
+	}
+
+	/**
+	 * tells whether a CompositeCondition is a NegatedExpression
+	 *
+	 * @param c
+	 * @return
+	 */
+	public boolean isNegation(Section<CompositeCondition> c) {
+		return getNegation(c) != null;
+	}
+
+	/**
+	 * returns the NegatedExpression of a Negation
+	 *
+	 * @param c
+	 * @return
+	 */
+	public Section<? extends NonTerminalCondition> getNegation(Section<CompositeCondition> c) {
+
+		List<Section<? extends NonTerminalCondition>> result = new ArrayList<Section<? extends NonTerminalCondition>>();
+		Section<? extends NonTerminalCondition> negEx = c.findChildOfType(NegatedExpression.class);
+
+		return negEx;
+	}
+
+	/**
+	 * tells whether this CompositeCondition is a TerminalCondition
+	 *
+	 * @param c
+	 * @return
+	 */
+	public boolean isTerminal(Section<CompositeCondition> c) {
+		return getTerminal(c) != null;
+	}
+
+	/**
+	 * returns the TerminalCondition of a (terminal-)CompositeCondition
+	 *
+	 * @param c
+	 * @return
+	 */
+	public Section<? extends TerminalCondition> getTerminal(Section<CompositeCondition> c) {
+
+		List<Section<? extends TerminalCondition>> result = new ArrayList<Section<? extends TerminalCondition>>();
+		Section<? extends TerminalCondition> terminal = c.findChildOfType(TerminalCondition.class);
+
+		return terminal;
+	}
+
+
 }
 
-
-
-class Disjunct extends DefaultAbstractKnowWEObjectType {
+/**
+ * @author Jochen
+ *
+ *         Type for a disjunct element in the CompositeCondition
+ *
+ *         example: 'a OR b' here 'a' and 'b' are nodes of type disjunct
+ *
+ */
+class Disjunct extends NonTerminalCondition {
 	@Override
 	protected void init() {
 
@@ -116,7 +253,15 @@ class Disjunct extends DefaultAbstractKnowWEObjectType {
 	}
 }
 
-class Conjunct extends DefaultAbstractKnowWEObjectType {
+/**
+ * @author Jochen
+ *
+ *         Type for a conjunct element in the CompositeCondition
+ *
+ *         example: 'a AND b' here 'a' and 'b' are nodes of type conjunct
+ *
+ */
+class Conjunct extends NonTerminalCondition {
 
 	static String[] CONJ_SIGNS = {
 			"AND", "UND", "&" };
@@ -128,7 +273,15 @@ class Conjunct extends DefaultAbstractKnowWEObjectType {
 
 }
 
-class NegatedExpression extends DefaultAbstractKnowWEObjectType {
+/**
+ * @author Jochen
+ *
+ *         Type for a negated element in the CompositeCondition
+ *
+ *         example: 'NOT b' here 'b' is not nodes of type NegatedExpression
+ *
+ */
+class NegatedExpression extends NonTerminalCondition {
 
 	static String[] NEG_SIGNS = {
 			"NOT", "NICHT", "!" };
@@ -202,7 +355,14 @@ class ConjunctSectionFinder extends SectionFinder {
 
 }
 
-class BracedConditionContent extends DefaultAbstractKnowWEObjectType {
+/**
+ * @author Jochen
+ *
+ *         Content of an EmbracedCondition (without the brackets)
+ * @see BracedCondition
+ *
+ */
+class BracedConditionContent extends NonTerminalCondition {
 	@Override
 	protected void init() {
 		this.sectionFinder = new BracedConditionContentFinder();
@@ -228,7 +388,14 @@ class BracedConditionContent extends DefaultAbstractKnowWEObjectType {
 	}
 }
 
-class BracedCondition extends DefaultAbstractKnowWEObjectType {
+/**
+ * @author Jochen
+ *
+ *         Any expression enclosed with brackets is a BracedCondition each has a
+ *         child of type BracedConditionContent
+ *
+ */
+class BracedCondition extends NonTerminalCondition {
 
 	@Override
 	protected void init() {

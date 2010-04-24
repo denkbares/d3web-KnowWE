@@ -34,15 +34,15 @@ import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author Jochen
- * 
+ *
  *         A DashTree-Subtree containing the subtree-content of a
  *         (root-)element. This type is defined recursively - meaning it has
  *         itself as a child (allowing any depth of parsing).
- * 
+ *
  *         General Structure of this dashTree: SubTree always has 1 child which
  *         is an Element, which is the root of the subtree. Then it contains
  *         0..* subtrees as further children.
- * 
+ *
  */
 public class SubTree extends DefaultAbstractKnowWEObjectType {
 
@@ -60,7 +60,7 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Delivers the (dash-) level of a SubTree-section by asking its
 	 * Root-Element (which is (KDOM-)child of the SubTree)
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -74,12 +74,27 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * @author Jochen
-	 * 
+	 *
 	 *         finds the subtrees for a given (dash-) level the level is
 	 *         retrieved from father.
-	 * 
+	 *
 	 */
 	class SubTreeFinder extends SectionFinder {
+
+		Pattern p0 = Pattern.compile("^\\s*[\\w\"]+.*$",
+				Pattern.MULTILINE);
+
+		Pattern p1 = Pattern.compile("^\\s*" + "-{1}" + "[^-]",
+				Pattern.MULTILINE);
+
+		Pattern p2 = Pattern.compile("^\\s*" + "-{2}" + "[^-]",
+				Pattern.MULTILINE);
+
+		Pattern p3 = Pattern.compile("^\\s*" + "-{3}" + "[^-]",
+				Pattern.MULTILINE);
+
+		Pattern p4 = Pattern.compile("^\\s*" + "-{4}" + "[^-]",
+				Pattern.MULTILINE);
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
@@ -92,7 +107,7 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 				level = getLevel(father);
 			}
 
-			
+
 			Matcher m = null;
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			if (KnowWEUtils.isEmpty(text))
@@ -103,11 +118,26 @@ public class SubTree extends DefaultAbstractKnowWEObjectType {
 				// Exceptions: One additional dash, linebreak (ie. empty lines)
 				// and comment lines (starting with '/')
 				if (level > 0) {
-					m = Pattern.compile("^\\s*" + "-{"+level+"}" + "[^-]",
-							Pattern.MULTILINE).matcher(text);
+					// just to increase speed by reuse of precompiled patterns
+					if (level == 1) {
+						m = p1.matcher(text);
+					}
+					else if (level == 2) {
+						m = p2.matcher(text);
+					}
+					else if (level == 3) {
+						m = p3.matcher(text);
+					}
+					else if (level == 4) {
+						m = p4.matcher(text);
+					}
+					else {
+						m = Pattern.compile("^\\s*" + "-{" + level + "}" + "[^-]",
+								Pattern.MULTILINE).matcher(text);
+					}
+
 				} else {
-					m = Pattern.compile("^\\s*[\\w\"]+.*$",
-							Pattern.MULTILINE).matcher(text);
+					m = p0.matcher(text);
 				}
 			} catch (StackOverflowError e) {
 				e.printStackTrace();

@@ -28,7 +28,6 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.UnexpectedSequence;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -50,12 +49,7 @@ public class TerminalCondition extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.sectionFinder = AllTextFinderTrimmed.getInstance();
-		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR6));
 
-		// // add all the various allowed TerminalConditions here
-		// this.addChildType(new NumericalFinding());
-		// this.addChildType(new Finding());
-		// this.addChildType(new CondKnown());
 
 
 		// last: Anything left is an UnrecognizedTC throwing an error
