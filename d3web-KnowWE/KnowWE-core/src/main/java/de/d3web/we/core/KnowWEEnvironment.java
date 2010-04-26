@@ -42,6 +42,7 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.d3web.we.action.KnowWEActionDispatcher;
+import de.d3web.we.event.EventManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
@@ -65,13 +66,13 @@ import dummies.KnowWETestWikiConnector;
 
 /**
  * @author Jochen
- * 
+ *
  *         This is the core class of KnowWE2. It manages the ArticleManager(s)
  *         and provides methods to access KnowWE-Articles, KnowWE-Modules and
  *         Parse-reports. Further it is connected to the used Wiki-engine,
  *         holding an instance of KnowWEWikiConnector and allows page saves.
- * 
- * 
+ *
+ *
  */
 
 public class KnowWEEnvironment {
@@ -110,19 +111,19 @@ public class KnowWEEnvironment {
 	 * An article manager for each web. In case of JSPWiki there is only on web
 	 * ('default_web')
 	 */
-	private Map<String, KnowWEArticleManager> articleManagers = new HashMap<String, KnowWEArticleManager>();
+	private final Map<String, KnowWEArticleManager> articleManagers = new HashMap<String, KnowWEArticleManager>();
 
 	/**
 	 * An knowledge manager for each web. In case of JSPWiki there is only on
 	 * web ('default_web')
 	 */
-	private Map<String, KnowledgeRepresentationManager> knowledgeManagers = new HashMap<String, KnowledgeRepresentationManager>();
+	private final Map<String, KnowledgeRepresentationManager> knowledgeManagers = new HashMap<String, KnowledgeRepresentationManager>();
 
 	/**
 	 * An include manager for each web. In case of JSPWiki there is only on web
 	 * ('default_web')
 	 */
-	private Map<String, KnowWEIncludeManager> includeManagers = new HashMap<String, KnowWEIncludeManager>();
+	private final Map<String, KnowWEIncludeManager> includeManagers = new HashMap<String, KnowWEIncludeManager>();
 
 	// /**
 	// * The servlet context of the running application. Necessary to determine
@@ -139,14 +140,14 @@ public class KnowWEEnvironment {
 
 	/**
 	 * holding the default tag handlers of KnowWE2
-	 * 
+	 *
 	 * @see renderTags
 	 */
-	private HashMap<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
+	private final HashMap<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
 
 	/**
 	 * grants access on the default tag handlers of KnowWE2
-	 * 
+	 *
 	 * @return HashMap holding the default tag handlers of KnowWE2
 	 */
 	public HashMap<String, TagHandler> getDefaultTagHandlers() {
@@ -261,7 +262,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Returns the KnowWEArticle object for a given web and pagename
-	 * 
+	 *
 	 * @param web
 	 * @param topic
 	 * @return
@@ -272,7 +273,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * returns the ArtilceManager for a given web
-	 * 
+	 *
 	 * @param web
 	 * @return
 	 */
@@ -296,7 +297,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * returns the ArtilceManager for a given web
-	 * 
+	 *
 	 * @param web
 	 * @return
 	 */
@@ -309,11 +310,13 @@ public class KnowWEEnvironment {
 		return mgr;
 	}
 
+	public static final String EVENT_INIT = "KnowWE initialization";
+
 	/**
 	 * private contructor
-	 * 
+	 *
 	 * @see getInstance()
-	 * 
+	 *
 	 * @param wiki
 	 *            Connector to the used core wiki engine
 	 */
@@ -330,7 +333,7 @@ public class KnowWEEnvironment {
 				// convert the $web_app$-variable from the resourcebundle
 				// defaultJarsPath = KnowWEUtils.getRealPath(context, bundle
 				// .getString("path_to_jars"));
-				
+
 				knowweExtensionPath = KnowWEUtils.getRealPath(wikiConnector
 						.getServletContext(), bundle
 						.getString("path_to_knowweextension"));
@@ -351,6 +354,9 @@ public class KnowWEEnvironment {
 			// loadData(context);
 			initWikiSolutionsPage();
 			SemanticCore.getInstance(this); /// init lazy instance
+
+			// firing the init event
+			EventManager.getInstance().fireEvent("system init", null, EVENT_INIT);
 
 			System.out.println("INITIALISED KNOWWE ENVIRONMENT");
 		}
@@ -375,7 +381,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * creates a WikiSolution-page.
-	 * 
+	 *
 	 * @see WikiSolutionTagHandler
 	 */
 	private void writeNewSolutionsPage() {
@@ -389,7 +395,7 @@ public class KnowWEEnvironment {
 	private void initModules(ServletContext context, String web) {
 		// add the default modules
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
-		
+
 		File libDir = new File(knowweExtensionPath+"/../WEB-INF/lib");
 		//when testing, libDir doesn't exist, but the pluginframework is initialised
 		//in junittest, so there is no problem
@@ -402,9 +408,9 @@ public class KnowWEEnvironment {
 				}
 			}
 			JPFPluginManager.init(pluginFiles.toArray(new File[pluginFiles.size()]));
-			
+
 			Plugin[] plugins = PluginManager.getInstance().getPlugins();
-			
+
 			for (Plugin p: plugins) {
 				Resource[] resources = p.getResources();
 				for (Resource r: resources) {
@@ -433,18 +439,18 @@ public class KnowWEEnvironment {
 				}
 			}
 		}
-		
-		
+
+
 		for (Instantiation inst: Plugins.getInstantiations()) {
 			inst.init(context);
 		}
-		
+
 		for (TagHandler tagHandler: Plugins.getTagHandlers() ) {
 			initTagHandler(tagHandler);
 		}
-		
+
 		appendHandlers = Plugins.getPageAppendHandlers();
-		
+
 		for (KnowWEObjectType type: Plugins.getRootTypes()) {
 			addRootType(type);
 		}
@@ -454,9 +460,9 @@ public class KnowWEEnvironment {
 			handler.setWeb(web);
 			manager.registerHandler(handler);
 		}
-		
-		
-		
+
+
+
 		Plugins.initJS();
 	}
 
@@ -479,7 +485,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Getter for KnowWEWikiConnector
-	 * 
+	 *
 	 * @return this.wikiConnector
 	 */
 	public KnowWEWikiConnector getWikiConnector() {
@@ -489,9 +495,9 @@ public class KnowWEEnvironment {
 	/**
 	 * returns the ActionDispatcher from the WikiConnector (JSPWiki: used by
 	 * KnowWE.jsp)
-	 * 
+	 *
 	 * TODO factor out in KnowWE.jsp
-	 * 
+	 *
 	 * @return
 	 */
 	public KnowWEActionDispatcher getDispatcher() {
@@ -559,7 +565,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Replaced with introduction of DOM. Delete when DOM established
-	 * 
+	 *
 	 * @param user
 	 * @param topic
 	 * @param web
@@ -578,10 +584,13 @@ public class KnowWEEnvironment {
 	// return this.articleManagers.get(web).getArticle(topic).getSections();
 	//
 	// }
+
+	public static final String EVENT_ARTICLE_CREATED = "article-created";
+
 	/**
 	 * Called from the Wikiplugin when article is saved. Parses and updates
 	 * inner knowledge representation of KnowWE2
-	 * 
+	 *
 	 * @param username
 	 * @param content
 	 * @param topic
@@ -590,14 +599,22 @@ public class KnowWEEnvironment {
 	 */
 	public String processAndUpdateArticle(String username, String content,
 			String topic, String web) {
+
+		// create article with the new content
+		KnowWEArticle article = new KnowWEArticle(content, topic, KnowWEEnvironment
+				.getInstance().getRootType(), web);
+
+		// fire 'article-created' event
+		EventManager.getInstance().fireEvent(username, article.getSection(),
+				EVENT_ARTICLE_CREATED);
+
 		return this.getArticleManager(web).saveUpdatedArticle(
-				new KnowWEArticle(content, topic, KnowWEEnvironment
-				.getInstance().getRootType(), web)).getHTML();
+				article).getHTML();
 	}
 
 	/**
 	 * Called by the Core-Junit-Tests
-	 * 
+	 *
 	 * @param username
 	 * @param content
 	 * @param topic
@@ -618,7 +635,7 @@ public class KnowWEEnvironment {
 	/**
 	 * Knowledge Services (Kopic) needs to have an id. This is how a default id
 	 * is generated when users dont enter one.
-	 * 
+	 *
 	 * @param topic
 	 * @return
 	 */
@@ -649,9 +666,9 @@ public class KnowWEEnvironment {
 	// }
 
 	/**
-	 * 
+	 *
 	 * Writes a modified article to the wiki engine using the wikiConnector
-	 * 
+	 *
 	 * @param web
 	 * @param name
 	 * @param articleText
@@ -665,9 +682,9 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 * 
+	 *
 	 * use KnowWEUtils.unmaskHTML
-	 * 
+	 *
 	 * @param htmlContent
 	 * @return
 	 */
@@ -678,9 +695,9 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 * 
+	 *
 	 * use KnowWEUtils.maskHTML
-	 * 
+	 *
 	 * @param htmlContent
 	 * @return
 	 */
@@ -707,7 +724,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Collects all KnowWEObjectTypes.
-	 * 
+	 *
 	 * @return
 	 */
 	public List<KnowWEObjectType> getAllKnowWEObjectTypes() {
@@ -728,7 +745,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * @See KnowWEObjectTypeBrowserAction
-	 * 
+	 *
 	 * @param clazz
 	 * @return
 	 */
@@ -741,7 +758,7 @@ public class KnowWEEnvironment {
 		}
 		return null;
 	}
-	
+
 	public List<KnowWEObjectType> searchTypeInstances(Class<?> clazz) {
 		List<KnowWEObjectType> instances = new ArrayList<KnowWEObjectType>();
 		getRootType().findTypeInstances(clazz, instances);
@@ -750,7 +767,7 @@ public class KnowWEEnvironment {
 		// }
 		return instances;
 	}
-	
+
 	private static void stream(InputStream in, OutputStream out) throws IOException {
 		byte[] buf = new byte[1024];
 		int len;

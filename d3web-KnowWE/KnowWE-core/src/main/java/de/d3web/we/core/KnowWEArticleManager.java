@@ -39,9 +39,9 @@ import dummies.KnowWETestWikiConnector;
 
 /**
  * @author Jochen
- * 
+ *
  *         Manages all the articles of one web in a HashMap
- * 
+ *
  */
 public class KnowWEArticleManager {
 
@@ -56,8 +56,8 @@ public class KnowWEArticleManager {
 		return typeStore;
 	}
 
-	private String web;
-	private SemanticCore sc;
+	private final String web;
+	private final SemanticCore sc;
 
 	public String jarsPath;
 	public String reportPath;
@@ -93,7 +93,7 @@ public class KnowWEArticleManager {
 
 	/**
 	 * Servs the KnowWEArticle for a given article name
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -108,15 +108,15 @@ public class KnowWEArticleManager {
 	public Collection<KnowWEArticle> getArticles() {
 		return articleMap.values();
 	}
-	
+
 	/**
 	 * Replaces KDOM-nodes with the given texts, but not
 	 * in the KDOM itself. It collects the originalTexts
-	 * deep through the KDOM and appends the new text 
+	 * deep through the KDOM and appends the new text
 	 * (instead of the originalText) for the nodes with
 	 * an ID in the nodesMap. Finally the article is saved
 	 * with this new content.
-	 * 
+	 *
 	 * @param map
 	 * @param articleName
 	 * @param nodesMap containing pairs of the nodeID and
@@ -146,15 +146,15 @@ public class KnowWEArticleManager {
 	/**
 	 * Replaces KDOM-nodes with the given texts, but not
 	 * in the KDOM itself. It collects the originalTexts
-	 * deep through the KDOM and appends the new text 
+	 * deep through the KDOM and appends the new text
 	 * (instead of the originalText) for the nodes with
 	 * an ID in the nodesMap.
-	 * 
+	 *
 	 * @param map
 	 * @param articleName
 	 * @param nodesMap containing pairs of the nodeID and
 	 * the new text for this node
-	 * @return The content of the article with the text changes or an 
+	 * @return The content of the article with the text changes or an
 	 * error String if the article wasn't found.
 	 */
 	public String replaceKDOMNodesWithoutSave(KnowWEParameterMap map,
@@ -175,7 +175,7 @@ public class KnowWEArticleManager {
 
 	/**
 	 * Looks in KDOM of given article for the Section object with given nodeID
-	 * 
+	 *
 	 * @param articleName
 	 * @param nodeID
 	 * @return null if article or node not found
@@ -191,7 +191,7 @@ public class KnowWEArticleManager {
 	/**
 	 * Looks in KDOM for the Section object with given nodeID The article name
 	 * is not needed because it is part of the nodeID
-	 * 
+	 *
 	 * @param nodeID
 	 * @return null if article or node not found
 	 */
@@ -224,14 +224,15 @@ public class KnowWEArticleManager {
 
 	/**
 	 * updates an article that has changed
-	 * 
-	 * 
+	 *
+	 *
 	 * @param user
 	 * @param text
 	 * @param topic
 	 * @return
 	 */
 	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle art) {
+
 		// store new article
 		articleMap.put(art.getTitle(), art);
 		long startTime = System.currentTimeMillis();
@@ -278,7 +279,7 @@ public class KnowWEArticleManager {
 	/**
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
-	 * 
+	 *
 	 * @param art
 	 *            The article to delete
 	 */
