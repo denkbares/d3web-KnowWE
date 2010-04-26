@@ -20,8 +20,6 @@
 
 package de.d3web.we.ci4ke.groovy;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -56,11 +54,9 @@ public class GroovyCITestReviseSubtreeHandler implements ReviseSubTreeHandler {
     					"import static "+TestResultType.class.getName()+".*;\n";
 	
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 		
-		//TODO: check if name-annotation is unique!!!
 		String testname = DefaultMarkupType.getAnnotation(s, "name");
 		Map<String,Section<GroovyCITestType>> map = CIConfiguration.getAllGroovyCITestSections(KnowWEEnvironment.DEFAULT_WEB);
 		if(map.containsKey(testname)){

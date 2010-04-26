@@ -20,10 +20,16 @@
 
 package de.d3web.we.ci4ke.util;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class StringUtilities {
+import com.ecyrd.jspwiki.WikiEngine;
+
+import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
+import de.d3web.we.core.KnowWEEnvironment;
+
+public class CIUtilities {
 
 	/**
 	 * Implodes the collection by concatenating all elements, 
@@ -42,5 +48,33 @@ public class StringUtilities {
 		return ret.toString();
 	}
 	
+	/**
+	 * 
+	 * @return the save path for ci-build xml´s
+	 */
+	public static File getCIBuildDir(){
+		WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().
+				getWikiConnector().getServletContext(), null);
+		String wikiDir = we.getWikiProperties().getProperty("var.basedir");
+		return new File(wikiDir,"/ci-builds/");
+	}
 	
+	// RENDER - HELPERS
+	
+	public static String renderResultType(TestResultType resultType, int pixelSize){
+		
+		String imgBulb = "<img src='KnowWEExtension/images/"+
+			pixelSize+"x"+pixelSize+"/%s.gif' alt='$s'>";
+		
+		switch(resultType){
+			case SUCCESSFUL:
+				imgBulb = String.format(imgBulb, "green", "green");
+			case FAILED:
+				imgBulb = String.format(imgBulb, "red", "red");
+			case ERROR:
+				imgBulb = String.format(imgBulb, "grey", "grey");
+		}
+		
+		return imgBulb;
+	}	
 }

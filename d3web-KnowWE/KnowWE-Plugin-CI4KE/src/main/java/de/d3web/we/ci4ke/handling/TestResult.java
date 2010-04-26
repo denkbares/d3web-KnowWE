@@ -30,7 +30,7 @@ public final class TestResult {
 	
 	private final TestResultType result;
 	
-	public TestResultType getResult() {
+	public TestResultType getResultType() {
 		return result;
 	}
 

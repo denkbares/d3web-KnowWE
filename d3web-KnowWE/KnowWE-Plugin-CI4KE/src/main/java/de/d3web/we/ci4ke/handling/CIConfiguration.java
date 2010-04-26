@@ -46,7 +46,8 @@ public class CIConfiguration {
 	
 	//PUBLIC KEY CONSTANTS
 	public static final String WEB_KEY 					= "web";
-	public static final String MONITORED_ARTICLE_KEY 	= "article";
+	public static final String MONITORED_ARTICLE_KEY 	= "monitoredArticle";
+	public static final String DASHBOARD_ARTICLE_KEY 	= "dashboardArticle";
 	public static final String TESTS_KEY 				= "tests";
 
 	//*** PRIVATE MEMBERS ***
