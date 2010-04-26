@@ -73,7 +73,6 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 public class SemanticCore {
 
 	private final UpperOntology uo;
-
 	private final KnowWEEnvironment knowWEEnvironment;
 	private static SemanticCore me;
 	private static ResourceBundle settingsbundle;
@@ -105,8 +104,7 @@ public class SemanticCore {
 		defaultnamespaces = new HashMap<String, String>();
 		try {
 			uo.setLocaleNS(knowWEEnvironment.getWikiConnector().getBaseUrl());
-		}
-		catch (RepositoryException e1) {
+		} catch (RepositoryException e1) {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					e1.getMessage());
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
@@ -128,7 +126,8 @@ public class SemanticCore {
 
 	private void readIncludings() {
 		File[] files = getImportList();
-		if (files == null) return;
+		if (files == null)
+			return;
 		for (File f : files) {
 			uo.loadOwlFile(f);
 		}
@@ -147,16 +146,14 @@ public class SemanticCore {
 			}
 			output += "[{KnowWEPlugin OwlImport}]";
 			wiki.createWikiPage("SemanticSettings", output, "semanticcore");
-		}
-		else {
+		} else {
 			for (String piece : settingspage.split(System
 					.getProperty("line.separator"))) {
 				if (piece.contains("=")) {
 					String[] s = piece.split("=");
 					try {
 						settings.put(s[0].trim(), s[1].trim());
-					}
-					catch (IndexOutOfBoundsException e) {
+					} catch (IndexOutOfBoundsException e) {
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.WARNING, e.getMessage());
 					}
@@ -215,8 +212,7 @@ public class SemanticCore {
 				}
 
 				con.commit();
-			}
-			catch (RepositoryException e) {
+			} catch (RepositoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -264,16 +260,20 @@ public class SemanticCore {
 	/**
 	 * adds Statements to the repository
 	 * 
-	 * @param inputio the output of the section
-	 * @param sec source section
+	 * @param inputio
+	 *            the output of the section
+	 * @param sec
+	 *            source section
 	 */
 	public void addStatements(IntermediateOwlObject inputio, Section sec) {
-		 clearContext(sec);
+		
 		List<Statement> allStatements = inputio.getAllStatements();
+		clearContext(sec);
 		statementcache.put(sec.getId().hashCode() + "", allStatements);
 		Logger.getLogger(this.getClass().getName()).finer(
 				"semantic core updating " + sec.getId() + "  "
-				+ allStatements.size());
+						+ allStatements.size());
+
 		addStaticStatements(inputio, sec);
 
 	}
@@ -283,7 +283,8 @@ public class SemanticCore {
 	 * statements that are not connected to a specific section and therefore are
 	 * not updated during the wiki lifetime.
 	 * 
-	 * @param inputio the statements to be added
+	 * @param inputio
+	 *            the statements to be added
 	 * @author volker_belli
 	 * @date 19.03.2010
 	 */
@@ -295,8 +296,7 @@ public class SemanticCore {
 			List<Statement> allStatements = inputio.getAllStatements();
 			con.add(allStatements, getContext(sec));
 			// con.commit();
-		}
-		catch (RepositoryException e) {
+		} catch (RepositoryException e) {
 			Logging.getInstance().severe(e.getMessage());
 		}
 
@@ -377,16 +377,21 @@ public class SemanticCore {
 	public List<Statement> getSectionStatements(
 			Section<? extends KnowWEObjectType> s) {
 		List<Statement> allstatements = new ArrayList<Statement>();
-		// walk all children
+		String key = s.getId().hashCode() + "";
+		if (statementcache.get(key) != null) {
+			// add statements of this section
+			allstatements.addAll(statementcache.get(key));
+		}
+		
+		// walk over all children
 		for (Section<? extends KnowWEObjectType> current : s.getChildren()) {
-			String key = current.getId()
-			.hashCode()
-			+ "";
+			//add statemts from the current child
+			key = current.getId().hashCode() + "";
 			if (statementcache.get(key) != null) {
-				// add statements of this section		
+				// add statements of this section
 				allstatements.addAll(statementcache.get(key));
 			}
-			// add the rest
+			// collect statements of the the children's descendants
 			allstatements.addAll(getSectionStatements(current));
 		}
 
@@ -438,8 +443,7 @@ public class SemanticCore {
 		try {
 			con.clear(key);
 			// con.commit();
-		}
-		catch (RepositoryException e) {
+		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -451,23 +455,23 @@ public class SemanticCore {
 	 * @param sec
 	 */
 	public void clearContext(Section sec) {
-//		RepositoryConnection con = uo.getConnection();
-//		try {
-//			con.clear(getContext(sec));
-//		}
-//		catch (RepositoryException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// RepositoryConnection con = uo.getConnection();
+		// try {
+		// con.clear(getContext(sec));
+		// }
+		// catch (RepositoryException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
-		 RepositoryConnection con = uo.getConnection();
-		 try {
-		 con.remove(getSectionStatements(sec));
-		  con.commit();
-		 } catch (RepositoryException e) {
-		 // TODO Auto-generated catch block
-		 e.printStackTrace();
-		 }
+		RepositoryConnection con = uo.getConnection();
+		try {
+			con.remove(getSectionStatements(sec));
+			con.commit();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -519,21 +523,19 @@ public class SemanticCore {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		}
-		catch (RepositoryException e) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.SEVERE, e.getMessage());
-		}
-		catch (MalformedQueryException e) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.SEVERE, e.getMessage());
+		} catch (RepositoryException e) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					e.getMessage());
+		} catch (MalformedQueryException e) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					e.getMessage());
 		}
 		TupleQueryResult result = null;
-		if (query == null) return resultlist;
+		if (query == null)
+			return resultlist;
 		try {
 			result = ((TupleQuery) query).evaluate();
-		}
-		catch (QueryEvaluationException e) {
+		} catch (QueryEvaluationException e) {
 			e.printStackTrace();
 		}
 
@@ -542,13 +544,14 @@ public class SemanticCore {
 				while (result.hasNext()) {
 					BindingSet b = result.next();
 					Binding binding = b.getBinding(targetbinding);
-					if (binding == null) continue;
+					if (binding == null)
+						continue;
 					String tag = binding.toString();
-					if (tag.split("#").length == 2) tag = tag.split("#")[1];
+					if (tag.split("#").length == 2)
+						tag = tag.split("#")[1];
 					try {
 						tag = URLDecoder.decode(tag, "UTF-8");
-					}
-					catch (UnsupportedEncodingException e) {
+					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
 					if (tag.contains("=")) {
@@ -562,15 +565,12 @@ public class SemanticCore {
 					}
 					resultlist.add(tag.trim());
 				}
-			}
-			catch (QueryEvaluationException e) {
+			} catch (QueryEvaluationException e) {
 				return resultlist;
-			}
-			finally {
+			} finally {
 				try {
 					result.close();
-				}
-				catch (QueryEvaluationException e) {
+				} catch (QueryEvaluationException e) {
 					e.printStackTrace();
 				}
 			}
