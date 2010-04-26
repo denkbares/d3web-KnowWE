@@ -27,7 +27,7 @@ import de.d3web.we.ci4ke.handling.CIConfiguration;
 import de.d3web.we.ci4ke.handling.CITest;
 import de.d3web.we.ci4ke.handling.TestResult;
 import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
-import de.d3web.we.ci4ke.util.StringUtilities;
+import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 
@@ -56,7 +56,7 @@ public class TestArticleContainsTODO implements CITest {
 		if(namesOfArticlesWhichContainTODO.size() > 0)
 			return new TestResult(TestResultType.FAILED,
 					"<b>The following Articles contain a 'TODO': "+
-					StringUtilities.implode(namesOfArticlesWhichContainTODO, ", ")+"</b>");
+					CIUtilities.implode(namesOfArticlesWhichContainTODO, ", ")+"</b>");
 		else
 			return new TestResult(TestResultType.SUCCESSFUL);
 		
