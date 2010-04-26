@@ -18,7 +18,7 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 	@Override
 	public void render(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
 
-        string.append(KnowWEUtils.maskHTML("<div id=\"" + section.getId() + "\">\n"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + section.getId() + "\">\n"));
 		// render pre-formatted box
 		string.append("{{{\n");
 
@@ -29,20 +29,19 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 		// render messages and content
 		renderMessages(section, string);
 		DelegateRenderer.getInstance().render(article, section, user, string);
-	
+
 		// and close the box
 		string.append("}}}\n");
 		string.append(KnowWEUtils.maskHTML("</div>\n"));
 	}
 
-
-	public static void renderMessages(Section<?> section, StringBuilder string) {
-		Collection<Message> messages = DefaultMarkupType.getErrorMessages(section);
+	public static void renderMessages(Section<? extends DefaultMarkupType> section, StringBuilder string) {
+		Collection<Message> messages = DefaultMarkupType.getAllErrorMessages(section);
 		renderMessageBlock(getMessagesOfType(messages, Message.ERROR), string);
 		renderMessageBlock(getMessagesOfType(messages, Message.WARNING), string);
 		renderMessageBlock(getMessagesOfType(messages, Message.NOTE), string);
 	}
-	
+
 	private static Message[] getMessagesOfType(Collection<Message> allMessages, String messageType) {
 		if (allMessages == null) return null;
 		Collection<Message> result = new LinkedList<Message>();
@@ -53,7 +52,7 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 		}
 		return result.toArray(new Message[result.size()]);
 	}
-	
+
 	private static void renderMessageBlock(Message[] messages, StringBuilder string) {
 		if (messages == null) return;
 		if (messages.length == 0) return;
@@ -72,7 +71,7 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 			className = "error";
 		}
 
-		string.append(KnowWEUtils.maskHTML("<span class='"+className+"'>"));
+		string.append(KnowWEUtils.maskHTML("<span class='" + className + "'>"));
 		for (Message error : messages) {
 			string.append(error.getMessageText());
 			int lineNo = error.getLineNo();

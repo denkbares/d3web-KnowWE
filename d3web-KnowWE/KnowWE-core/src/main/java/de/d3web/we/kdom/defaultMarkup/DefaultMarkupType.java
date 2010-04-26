@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.report.Message;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -219,9 +220,10 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	/**
-	 * Returns all annotations section of the specified name. If the
-	 * section is not of type "DefaultMarkup" an IllegalArgumentException is
-	 * thrown. If there is no annotation section with the specified name, an empty list is returned.
+	 * Returns all annotations section of the specified name. If the section is
+	 * not of type "DefaultMarkup" an IllegalArgumentException is thrown. If
+	 * there is no annotation section with the specified name, an empty list is
+	 * returned.
 	 * 
 	 * @param section
 	 *            the section to be searched
@@ -285,8 +287,31 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Collection<Message> getErrorMessages(Section<?> section) {
-		return (Collection<Message>) KnowWEUtils.getStoredObject(section,
+		Collection<Message> storedObject = (Collection<Message>) KnowWEUtils.getStoredObject(
+				section,
 				ERROR_MESSAGE_STORE_KEY);
+		if (storedObject != null) {
+			return storedObject;
+		}
+		else {
+			return new LinkedList<Message>();
+		}
+	}
+
+	/**
+	 * Returns all Messages including messages of children, grandchildren...
+	 * 
+	 * @param section
+	 * @return
+	 */
+	public static Collection<Message> getAllErrorMessages(Section<? extends DefaultMarkupType> section) {
+		Collection<Message> errorMessages = getErrorMessages(section);
+		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
+		section.getAllNodesParsingPostOrder(nodes);
+		for (Section<?> child : nodes) {
+			errorMessages.addAll(getErrorMessages(child));
+		}
+		return errorMessages;
 	}
 
 }
