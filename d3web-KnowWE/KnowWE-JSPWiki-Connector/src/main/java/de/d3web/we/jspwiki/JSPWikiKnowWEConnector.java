@@ -22,6 +22,7 @@ package de.d3web.we.jspwiki;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,9 +59,9 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 /**
  * For code documentation look at the KnowWEWikiConnector interface definition
- * 
+ *
  * @author Jochen
- * 
+ *
  */
 public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
@@ -311,9 +312,9 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	// private String getHashMapContent(HashMap<String, String> pageContent,
 	// String topic ) {
-	//		
+	//
 	// String content = "<Kopic id=\"" + topic + "\"" + ">";
-	//		
+	//
 	// // append the Sections to content if they are not "".
 	// // 1. Questionnaires-section
 	// if (pageContent.get("qClassHierarchy") != "") {
@@ -321,35 +322,35 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	// content += pageContent.get("qClassHierarchy");
 	// content += "</Questionnaires-section>\n";
 	// }
-	//		
+	//
 	// // 2.Questions-section
 	// if (pageContent.get("decisionTree") != "") {
 	// content += "<Questions-section>\n";
 	// content += pageContent.get("decisionTree");
 	// content += "</Questions-section>\n";
 	// }
-	//		
+	//
 	// // 3. SetCoveringList-Section
 	// if (pageContent.get("xcl") != "") {
 	// content += "<SetCoveringList-section>\n";
 	// content += pageContent.get("xcl");
 	// content += "</SetCoveringList-section>\n";
 	// }
-	//				
+	//
 	// // 4. Rules-section
 	// if (pageContent.get("rules") != "") {
 	// content.concat("<Rules-section>\n");
 	// content.concat(pageContent.get("rules"));
 	// content.concat("</Rules-section>\n");
 	// }
-	//		
+	//
 	// // 5. Solutions-Section
 	// if (pageContent.get("diagnosisHierarchy") != "") {
 	// content += "<Solutions-section>\n";
 	// content += pageContent.get("diagnosisHierarchy");
 	// content += "</Solutions-section>\n";
 	// }
-	//				
+	//
 	// content += "</Kopic>";
 	// return content;
 	// }
@@ -418,7 +419,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current user has the rights to edit the given page.
 	 * IReturns TRUE if the user has editing permission, otherwise FALSE and
 	 * editing of the page is denied.
-	 * 
+	 *
 	 * @param articlename
 	 */
 	@Override
@@ -436,7 +437,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current user has the rights to edit the given page.
 	 * IReturns TRUE if the user has editing permission, otherwise FALSE and
 	 * editing of the page is denied.
-	 * 
+	 *
 	 * @param articlename
 	 * @param r
 	 *            HttpRequest
@@ -457,7 +458,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current page has an access lock. If TRUE no user other then
 	 * the lock owner can edit the page. If FALSE the current page has no lock
 	 * and can be edited by anyone.
-	 * 
+	 *
 	 * @param articlename
 	 */
 	@Override
@@ -471,7 +472,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	/**
 	 * Checks if the current page has been locked by the current user. Returns
 	 * TRUE if yes, FALSE otherwise.
-	 * 
+	 *
 	 * @param articlename
 	 * @param user
 	 * @return
@@ -493,7 +494,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	/**
 	 * Locks a page in the WIKI so no other user can edit the page.
-	 * 
+	 *
 	 * @param articlename
 	 */
 	@Override
@@ -510,7 +511,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	/**
 	 * Removes a page lock from a certain page in the WIKI so other users can
 	 * edit the page.
-	 * 
+	 *
 	 * @param articlename
 	 */
 	@Override
@@ -628,5 +629,27 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		WikiContext context = engine.createContext(req, WikiContext.VIEW);
 		pagedata = engine.textToHTML(context, pagedata);
 		return pagedata;
+	}
+
+	@Override
+	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r) {
+		AuthorizationManager authmgr = engine.getAuthorizationManager();
+
+		// which article is not relevant
+		String articleName = "Main";
+		WikiPage page = new WikiPage(engine, articleName);
+		WikiContext context = new WikiContext(this.engine, r, this.engine
+				.getPage(articleName));
+
+
+		Principal[] princ = context.getWikiSession().getRoles();
+
+		for (Principal p : princ) {
+			if (p.getName().equals(groupname)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
