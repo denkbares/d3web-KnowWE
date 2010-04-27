@@ -102,7 +102,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public boolean saveArticle(String name, String text, KnowWEParameterMap map, boolean fullParse) {
 		return saveArticle(name, text, map);
@@ -134,11 +134,13 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	@Override
 	public Collection<ConnectorAttachment> getAttachments() {
 		try {
-			Collection<?> attachments = this.engine.getAttachmentManager().getAllAttachments();
+			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			Collection<?> attachments = attachmentManager.getAllAttachments();
 			Collection<ConnectorAttachment> ret = new LinkedList<ConnectorAttachment>();
 			for (Object o : attachments) {
 				if (o instanceof Attachment) {
-					ret.add(new JSPWikiConnectorAttachment((Attachment) o));
+					ret.add(new JSPWikiConnectorAttachment((Attachment) o,
+							attachmentManager));
 				}
 			}
 			return ret;
@@ -236,7 +238,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		Collection<Attachment> attList;
 
 		try {
-			attList = this.engine.getAttachmentManager().getAllAttachments();
+			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			attList = attachmentManager.getAllAttachments();
 		}
 		catch (ProviderException e) {
 			// TODO Auto-generated catch block
@@ -387,16 +390,17 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	@Override
 	public String getArticleSource(String name) {
-	
+
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if( (this.engine == null) || (this.engine.getPage(name) == null) )
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
 				return null;
-		} catch (NullPointerException e) {
+		}
+		catch (NullPointerException e) {
 			return null;
 		}
-		
+
 		WikiContext context = new WikiContext(this.engine, this.engine
 				.getPage(name));
 
@@ -614,7 +618,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	@Override
 	public String getSavePath() {
-		String path = (String)engine.getWikiProperties().get("var.basedir");		
+		String path = (String) engine.getWikiProperties().get("var.basedir");
 		return path;
 	}
 
@@ -625,5 +629,4 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		pagedata = engine.textToHTML(context, pagedata);
 		return pagedata;
 	}
-
 }
