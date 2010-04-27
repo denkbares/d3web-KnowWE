@@ -2,8 +2,10 @@ package de.d3web.we.kdom.defaultMarkup;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.d3web.report.Message;
@@ -305,7 +307,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public static Collection<Message> getAllErrorMessages(Section<? extends DefaultMarkupType> section) {
-		Collection<Message> errorMessages = getErrorMessages(section);
+		Set<Message> errorMessages = new HashSet<Message>(getErrorMessages(section));
 		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
 		section.getAllNodesParsingPostOrder(nodes);
 		for (Section<?> child : nodes) {
