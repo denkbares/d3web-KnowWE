@@ -41,13 +41,13 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 /**
  * Used in the tests. A WikiConnector is needed to initialize the
  * KnowWEEnvironment. The methods are empty.
- * 
+ *
  * @author Johannes Dienst
- * 
+ *
  */
 public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
-	private String hackedPath;
+	private final String hackedPath;
 
 	/**
 	 * This constructor can be used to construct a KnowWETestWikiConnector for
@@ -62,7 +62,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	 * This constructor can be used to define a relative path of this project to
 	 * the KnowWEExtensions. This must be used for all projects, which are no
 	 * subdirectories of d3web-KnowWE
-	 * 
+	 *
 	 * @param path relative path to the KnowWEExtensions
 	 */
 	public KnowWETestWikiConnector(String path) {
@@ -72,7 +72,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	/**
 	 * This returns a path, that enables the use of this connector in tests of
 	 * projects
-	 * 
+	 *
 	 * @return relative Path to KnowWEExtensions
 	 */
 	public String getHackedPath() {
@@ -158,7 +158,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 				.getRootType(), KnowWEEnvironment.DEFAULT_WEB));
 		return true;
 	}
-	
+
 	@Override
 	public boolean saveArticle(String name, String text, KnowWEParameterMap map, boolean fullParse) {
 		KnowWEEnvironment.getInstance().getArticleManager(
@@ -251,6 +251,12 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	@Override
 	public String renderWikiSyntax(String pagedata, KnowWEParameterMap map) {
 		return null;
+	}
+
+	@Override
+	public boolean userIsMemberOfGroup(String username, String groupname, HttpServletRequest r) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
