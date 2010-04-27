@@ -271,8 +271,8 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 */
 	public static void addErrorMessage(Section<?> section, Message message) {
 		Collection<Message> messages = getErrorMessages(section);
-		if (messages == null) {
-			messages = new LinkedList<Message>();
+		if (messages.size() == 0) {
+			// messages is lazy created, needs to be inserted
 			KnowWEUtils.storeSectionInfo(section, ERROR_MESSAGE_STORE_KEY, messages);
 		}
 		messages.add(message);
