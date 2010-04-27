@@ -60,7 +60,7 @@ public class EventManager {
 				"KnowWEExtensionPoints",
 				"EventListener");
 		for (Extension extension : exts) {
-			Object o = extension.getNewInstance();
+			Object o = extension.getSingleton();
 			if (o instanceof EventListener) {
 				EventListener listener = ((EventListener) o);
 				for (String event : listener.getEvents()) {
