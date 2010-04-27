@@ -242,6 +242,10 @@ public class KnowWEEnvironment {
 	public static void initKnowWE(KnowWEWikiConnector wiki) {
 		instance = new KnowWEEnvironment(wiki);
 		instance.initModules(wiki.getServletContext(), DEFAULT_WEB);
+
+		// firing the init event
+		EventManager.getInstance().fireEvent("system init", null, EVENT_INIT);
+
 	}
 
 	public boolean registerConditionalRendererToType(Class<? extends KnowWEObjectType> clazz,
@@ -355,8 +359,6 @@ public class KnowWEEnvironment {
 			initWikiSolutionsPage();
 			SemanticCore.getInstance(this); /// init lazy instance
 
-			// firing the init event
-			EventManager.getInstance().fireEvent("system init", null, EVENT_INIT);
 
 			System.out.println("INITIALISED KNOWWE ENVIRONMENT");
 		}
