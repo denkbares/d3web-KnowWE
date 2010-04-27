@@ -49,9 +49,9 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 
-		this.addReviseSubtreeHandler(new ReviseSubTreeHandler() {
+		this.addReviseSubtreeHandler(new ReviseSubTreeHandler<OverdashedElement>() {
 			@Override
-			public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+			public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<OverdashedElement> s) {
 				return new SyntaxError("to many dashes; remove \"-\"");
 			}
 		});
