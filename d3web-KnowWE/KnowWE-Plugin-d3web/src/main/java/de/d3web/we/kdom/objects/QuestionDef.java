@@ -41,7 +41,7 @@ static class CreateQuestionHandler implements ReviseSubTreeHandler {
 
 		Section<QuestionDef> qidSection = (sec);
 
-		String name = qidSection.get().getID(qidSection);
+		String name = qidSection.get().getTermName(qidSection);
 
 		KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 				article.getWeb())

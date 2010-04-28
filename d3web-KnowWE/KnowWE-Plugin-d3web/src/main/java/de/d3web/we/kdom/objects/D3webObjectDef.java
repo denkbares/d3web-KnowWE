@@ -9,7 +9,7 @@ public abstract class D3webObjectDef<T> extends ObjectDef<T> {
 	}
 
 	@Override
-	public String getID(Section<? extends ObjectIDContainer<T>> s) {
+	public String getTermName(Section<? extends TermReference<T>> s) {
 		String content = s.getOriginalText();
 
 		String trimmed = content.trim();

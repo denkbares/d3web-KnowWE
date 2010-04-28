@@ -63,7 +63,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
 				//"safe unsafe cast"
 				Section<QuestionTreeAnswerDef> answer = s;
-				String name = answer.get().getID(answer);
+				String name = answer.get().getTermName(answer);
 				Section<? extends QuestionDef> questionID = answer.get().getQuestionSection(
 						answer);
 

@@ -48,7 +48,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils
 					.getAncestorOfType(s, new DashTreeElement());
 
-			String name = indicationSec.get().getID(indicationSec);
+			String name = indicationSec.get().getTermName(indicationSec);
 
 			QContainer qc = mgn.findQContainer(name);
 

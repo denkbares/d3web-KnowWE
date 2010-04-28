@@ -31,7 +31,7 @@ public class AnswerRefImpl extends AnswerRef {
 
 		if (qidSection != null) {
 
-			String name = qidSection.get().getID(qidSection);
+			String name = qidSection.get().getTermName(qidSection);
 
 			KnowledgeBaseManagement mgn =
 					D3webModule.getKnowledgeRepresentationHandler(s.getArticle().getWeb())
@@ -40,7 +40,7 @@ public class AnswerRefImpl extends AnswerRef {
 			Question o = mgn.findQuestion(name);
 
 			de.d3web.core.knowledge.terminology.Answer answer = mgn.findAnswer(o,
-					a.get().getID(a));
+					a.get().getTermName(a));
 
 			return answer != null;
 		}

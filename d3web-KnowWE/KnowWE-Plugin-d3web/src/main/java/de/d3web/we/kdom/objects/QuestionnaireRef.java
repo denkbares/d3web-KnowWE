@@ -16,7 +16,7 @@ public class QuestionnaireRef extends D3webObjectRef<QContainer> {
 	public QContainer getObject(Section<? extends ObjectRef<QContainer>> s) {
 		if (s.get() instanceof QuestionnaireRef) {
 			Section<QuestionnaireRef> sec = (Section<QuestionnaireRef>) s;
-			String qcName = sec.get().getID(sec);
+			String qcName = sec.get().getTermName(sec);
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					s.getArticle().getWeb())

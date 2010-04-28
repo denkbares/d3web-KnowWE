@@ -16,7 +16,7 @@ public abstract class QuestionRef extends D3webObjectRef<Question> {
 	public Question getObject(Section<? extends ObjectRef<Question>> s) {
 		if (s.get() instanceof QuestionRef) {
 			Section<QuestionRef> sec = (Section<QuestionRef>) s;
-			String questionName = sec.get().getID(sec);
+			String questionName = sec.get().getTermName(sec);
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					s.getArticle().getWeb())

@@ -26,7 +26,7 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 				Section<SolutionDef> qidSection) {
 
 
-			String name = qidSection.get().getID(qidSection);
+			String name = qidSection.get().getTermName(qidSection);
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb())

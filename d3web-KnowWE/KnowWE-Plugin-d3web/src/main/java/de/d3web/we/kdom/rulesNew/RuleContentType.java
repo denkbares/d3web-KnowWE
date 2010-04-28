@@ -96,11 +96,12 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 						null,
 						null);
 				if (r != null) {
-					return new ObjectCreatedMessage("Rule created");
+					return new ObjectCreatedMessage("Rule");
 				}
 
 			}
 
+			// should not happen
 			return new ObjectCreationError("error creating rule",
 					this.getClass());
 		}

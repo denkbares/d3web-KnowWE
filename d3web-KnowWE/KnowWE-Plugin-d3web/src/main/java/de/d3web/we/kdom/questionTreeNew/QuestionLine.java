@@ -98,7 +98,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 			Section<QuestionDef> qidSection = badCast(QuestionDef.class, s);
 
-			String name = qidSection.get().getID(qidSection);
+			String name = qidSection.get().getTermName(qidSection);
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils
@@ -205,7 +205,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 						// (which in principle shouldnt happen here!)
 						if(question == null) {
 
-							String name = qDef.get().getID(qDef);
+							String name = qDef.get().getTermName(qDef);
 
 							KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 									article.getWeb())
