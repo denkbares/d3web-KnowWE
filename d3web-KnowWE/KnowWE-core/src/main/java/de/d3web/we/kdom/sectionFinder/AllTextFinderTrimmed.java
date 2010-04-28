@@ -17,6 +17,9 @@ public class AllTextFinderTrimmed extends SectionFinder {
 
 		return instance;
 	}
+	
+	private AllTextFinderTrimmed() {
+	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {

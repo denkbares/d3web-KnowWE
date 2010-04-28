@@ -46,7 +46,7 @@ public class Disjunct extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
-		this.sectionFinder = new AllTextFinderTrimmed();
+		this.sectionFinder = AllTextFinderTrimmed.getInstance();
 		this.childrenTypes.add(new RoundBracedType(this));
 		this.childrenTypes.add(new AndOperator());
 		this.childrenTypes.add(new Conjunct());

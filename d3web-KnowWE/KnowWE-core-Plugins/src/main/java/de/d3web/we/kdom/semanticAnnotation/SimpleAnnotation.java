@@ -45,7 +45,7 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
-		this.sectionFinder = new AllTextFinderTrimmed();
+		this.sectionFinder = AllTextFinderTrimmed.getInstance();
 		this.addReviseSubtreeHandler(new SimpleAnnotationSubTreeHandler());
 	}
 

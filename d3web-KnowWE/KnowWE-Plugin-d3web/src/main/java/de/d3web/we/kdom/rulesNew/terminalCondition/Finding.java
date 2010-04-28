@@ -64,7 +64,7 @@ public class Finding extends D3webTerminalCondition<Finding> {
 
 		// question
 		QuestionRef question = new QuestionRefImpl<Question>();
-		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
+		AllTextFinderTrimmed questionFinder = AllTextFinderTrimmed.getInstance();
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
 		this.childrenTypes.add(question);

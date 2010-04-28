@@ -41,7 +41,7 @@ public class AddQuestionValue extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new PlusEqual());
 		this.childrenTypes.add(new FindingQuestion());
 		AddedValue aA = new AddedValue();
-		aA.setSectionFinder(new AllTextFinderTrimmed()); //TODO more specificly parsing
+		aA.setSectionFinder(AllTextFinderTrimmed.getInstance()); //TODO more specificly parsing
 		this.childrenTypes.add(aA);
 	}
 

@@ -46,7 +46,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 		// question
 		QuestionRef question = new NumQuestionRefImpl();
-		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
+		AllTextFinderTrimmed questionFinder = AllTextFinderTrimmed.getInstance();
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
 		this.childrenTypes.add(question);

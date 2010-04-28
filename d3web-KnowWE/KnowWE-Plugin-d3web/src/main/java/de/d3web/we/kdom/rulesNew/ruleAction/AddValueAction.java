@@ -45,7 +45,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			this.childrenTypes.add(qr);
 
 			de.d3web.we.kdom.rulesNew.terminalCondition.Number a = new de.d3web.we.kdom.rulesNew.terminalCondition.Number();
-			a.setSectionFinder(new AllTextFinderTrimmed());
+			a.setSectionFinder(AllTextFinderTrimmed.getInstance());
 			this.childrenTypes.add(a);
 
 			this.setSectionFinder(new ConditionalAllTextFinder() {
@@ -94,7 +94,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			this.childrenTypes.add(qr);
 
 			AnswerRef a = new AnswerRefImpl();
-			a.setSectionFinder(new AllTextFinderTrimmed());
+			a.setSectionFinder(AllTextFinderTrimmed.getInstance());
 			this.childrenTypes.add(a);
 			this.sectionFinder = AllTextFinderTrimmed.getInstance();
 		}

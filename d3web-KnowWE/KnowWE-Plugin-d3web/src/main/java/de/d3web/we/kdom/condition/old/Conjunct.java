@@ -52,7 +52,7 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType  {
 		this.childrenTypes.add(new SolutionValueAssignment());
 		this.childrenTypes.add(new CondKnownType());
 		this.childrenTypes.add(new Finding());
-		this.sectionFinder = new AllTextFinderTrimmed();
+		this.sectionFinder = AllTextFinderTrimmed.getInstance();
 		this.addReviseSubtreeHandler(new ConjunctSubTreeHandler());
 	}
 

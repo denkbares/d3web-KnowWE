@@ -38,7 +38,7 @@ public class FindingAnswer extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			if(father.hasLeftSonOfType(FindingComparator.class, text)) {
-				List<SectionFinderResult> foundsections = new AllTextFinderTrimmed().lookForSections(text, father);
+				List<SectionFinderResult> foundsections = AllTextFinderTrimmed.getInstance().lookForSections(text, father);
 				
 				return foundsections;
 			}
