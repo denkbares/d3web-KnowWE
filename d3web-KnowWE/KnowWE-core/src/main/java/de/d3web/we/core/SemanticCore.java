@@ -377,6 +377,7 @@ public class SemanticCore {
 	public List<Statement> getSectionStatements(
 			Section<? extends KnowWEObjectType> s) {
 		List<Statement> allstatements = new ArrayList<Statement>();
+		
 		String key = s.getId().hashCode() + "";
 		if (statementcache.get(key) != null) {
 			// add statements of this section
@@ -481,15 +482,9 @@ public class SemanticCore {
 	 * @param sec
 	 */
 	public void clearContext(KnowWEArticle art) {
-		clearAllChildSections(art.getSection());
+		clearContext(art.getSection());
 	}
 
-	public void clearAllChildSections(Section<? extends KnowWEObjectType> sec) {
-		for (Section<? extends KnowWEObjectType> cur : sec.getChildren()) {
-			clearAllChildSections(cur);
-			clearContext(cur);
-		}
-	}
 
 	public String getSparqlNamespaceShorts() {
 		StringBuffer buffy = new StringBuffer();

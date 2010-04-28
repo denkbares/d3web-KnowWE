@@ -286,6 +286,7 @@ public class KnowWEArticleManager {
 	public void deleteArticle(KnowWEArticle art) {
 		KnowWEEnvironment.getInstance().processAndUpdateArticle("", "",
 				art.getTitle(), web);
+		SemanticCore.getInstance().clearContext(art);
 		articleMap.remove(art.getTitle());
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,

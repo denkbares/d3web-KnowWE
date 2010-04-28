@@ -25,6 +25,7 @@ package tests;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 
@@ -117,7 +118,7 @@ public class TaggingManglerTest extends TestCase {
 		tm.removeTag("AddTag", "tagtest", params);
 		assertEquals("<tags></tags>", am.getArticle("AddTag").getSection()
 				.getOriginalText());
-		sc.clearContext(article1);
+		sc.clearContext(am.getArticle("AddTag"));
 	}
 
 	/**
@@ -133,13 +134,16 @@ public class TaggingManglerTest extends TestCase {
 				KnowWEEnvironment.DEFAULT_WEB);
 		am.saveUpdatedArticle(article1);
 		tm.addTag("AddTag", "tagtest", params);
+		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
+		String keyorig = article1.getSection().getId().hashCode()+"";
 		assertEquals("<tags>tagtest</tags>", am.getArticle("AddTag")
 				.getSection().getOriginalText());
 		ArrayList<String> tags = tm.getPageTags("AddTag");
 		assertEquals(1, tags.size());
 		assertEquals("tagtest", tags.get(0));
 		// remove statements from triplestore
-		sc.clearContext(article1);
+		assertEquals(keyorig, article1.getSection().getId().hashCode()+"");
+		sc.clearContext(am.getArticle("AddTag"));
 		tags = tm.getPageTags("AddTag");
 		// make sure it is gone
 		assertEquals(0, tags.size());
@@ -181,6 +185,7 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag2", "tag", params);
 		tm.addTag("Tag3", "tod", params);
 		tm.addTag("Tag4", "tag", params);
+		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
 		ArrayList<String> pages = tm.getPages("tag");
 		assertNotNull(pages);
 		assertEquals(3, pages.size());
@@ -188,10 +193,10 @@ public class TaggingManglerTest extends TestCase {
 		assertTrue("not found page Tag2", pages.contains("Tag2"));
 		assertTrue("not found page Tag4", pages.contains("Tag4"));
 		assertTrue("found page Tag3", !pages.contains("Tag3"));
-		sc.clearContext(article1);
-		sc.clearContext(article2);
-		sc.clearContext(article3);
-		sc.clearContext(article4);
+		sc.clearContext(am.getArticle("Tag1"));
+		sc.clearContext(am.getArticle("Tag2"));
+		sc.clearContext(am.getArticle("Tag3"));
+		sc.clearContext(am.getArticle("Tag4"));
 	}
 
 	/**
@@ -206,11 +211,12 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag", "tick", params);
 		tm.addTag("Tag", "trick", params);
 		tm.addTag("Tag", "track", params);
+		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
 		ArrayList<String> tags = tm.getPageTags("Tag");
 		assertTrue(tags.contains("tick"));
 		assertTrue(tags.contains("trick"));
 		assertTrue(tags.contains("track"));
-		sc.clearContext(article);
+		sc.clearContext(am.getArticle("Tag"));
 	}
 
 	/**
@@ -230,14 +236,15 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag1", "tag", params);
 		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
+		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
 		ArrayList<String> tags = tm.getAllTags();
 		assertNotNull(tags);
 		assertTrue(tags.contains("tag"));
 		assertTrue(tags.contains("leben"));
 		assertTrue(tags.contains("tod"));
-		sc.clearContext(article1);
-		sc.clearContext(article2);
-		sc.clearContext(article3);
+		sc.clearContext(am.getArticle("Tag1"));
+		sc.clearContext(am.getArticle("Tag2"));
+		sc.clearContext(am.getArticle("Tag3"));
 	}
 
 	/**
@@ -259,12 +266,14 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
 		tm.addTag("Tag3", "leben", params);
+		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
 		HashMap<String, Integer> tags = tm.getCloudList(10, 20);
 		assertEquals(Integer.valueOf(20), tags.get("leben"));
 		assertEquals(Integer.valueOf(10), tags.get("tod"));
-		sc.clearContext(article1);
-		sc.clearContext(article2);
-		sc.clearContext(article3);
+		am.deleteArticle(am.getArticle("Tag1"));
+		am.deleteArticle(am.getArticle("Tag2"));
+		am.deleteArticle(am.getArticle("Tag3"));
+		
 	}
 
 	/**
@@ -273,6 +282,12 @@ public class TaggingManglerTest extends TestCase {
 	 */
 	@Test
 	public void testGetCloudList2() {
+		//clear out the articles from the previous tests
+		Iterator<KnowWEArticle> ait=am.getArticleIterator();
+		while (ait.hasNext()){
+			KnowWEArticle art=ait.next();
+			am.deleteArticle(art);
+		}
 		KnowWEArticle article1 = new KnowWEArticle("", "Tag1", type,
 				"default_web");
 		KnowWEArticle article2 = new KnowWEArticle("", "Tag2", type,
@@ -285,13 +300,14 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag1", "tag", params);
 		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
+		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
 		HashMap<String, Integer> tags = tm.getCloudList(10, 20);
 		assertEquals(Integer.valueOf(15), tags.get("leben"));
 		assertEquals(Integer.valueOf(15), tags.get("tod"));
 		assertEquals(Integer.valueOf(15), tags.get("tag"));
-		sc.clearContext(article1);
-		sc.clearContext(article2);
-		sc.clearContext(article3);
+		sc.clearContext(am.getArticle("Tag1"));
+		sc.clearContext(am.getArticle("Tag2"));
+		sc.clearContext(am.getArticle("Tag3"));
 	}
 
 	/**
@@ -328,15 +344,16 @@ public class TaggingManglerTest extends TestCase {
 		tm.addTag("Tag2", "leben", params);
 		tm.addTag("Tag3", "tod", params);
 		tm.addTag("Tag3", "leben", params);
+		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
 		ArrayList<GenericSearchResult> pages = tm.searchPages("leben");
 		assertEquals(2, pages.size());
 		GenericSearchResult a = pages.get(0);
 		GenericSearchResult b = pages.get(1);
 		assertEquals("Tag3", a.getPagename());
 		assertEquals("Tag2", b.getPagename());
-		sc.clearContext(article1);
-		sc.clearContext(article2);
-		sc.clearContext(article3);
+		sc.clearContext(am.getArticle("Tag1"));
+		sc.clearContext(am.getArticle("Tag2"));
+		sc.clearContext(am.getArticle("Tag3"));
 	}
 
 }
