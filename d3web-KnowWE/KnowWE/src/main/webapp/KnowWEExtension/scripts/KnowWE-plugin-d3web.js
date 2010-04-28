@@ -655,7 +655,7 @@ KNOWWE.plugin.d3web.dialog = function(){
             }
                       
             new _KA( options ).send();         
-        },  
+        },
         /**
          * Function: saveAsXCL
          * Stores the selected findings in the HTMLDialog as an XCLRealtion.
@@ -1420,7 +1420,12 @@ KNOWWE.plugin.d3web.dt = function(){
                    //head._next()._show(); not needed when in answer mode
                    showUL( getCertainChild( head, 'ul' )); //head.next() when question should be visible
                 }
-            }   
+            }
+            var infos = _KS('.collapsible-info');
+            for(var i = 0; i < infos.length; i++){
+                _KE.add('click', infos[i], KNOWWE.plugin.d3web.dt.showHint);
+            }
+            _KS('#collapsible-questiontree-info')._hide();
          },
          /**
           * Function: setCustomRenderer
@@ -1607,19 +1612,20 @@ KNOWWE.plugin.d3web.dt = function(){
          * Shows additional information of an answer
          */
         showHint : function( e ){
-            var el, obj = '';
+            var o, i = '';
             
             _KE.cancel( e );
             e = _KE.target( e );
             
             //get stored information from element, element has token rel:info
             //add showHint event to root QuestionTreeDiv
-            obj = e.getAttribute('rel');
-            if( !obj ) return;
-            obj = JSON.parse( info );
+            o = e.getAttribute('rel');
+            if( !o ) return;
+            i = eval( "(" + o + ")");
  
             el = _KS('#collapsible-questiontree-info');
-            el.innerHTML = obj.info;
+            el._show();
+            el.innerHTML = i.info;
         }
     }
 }();

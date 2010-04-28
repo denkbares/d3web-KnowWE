@@ -45,10 +45,10 @@ public class QuestionTreeRootTypeRenderer extends CustomRenderer{
 	public void render(KnowWEArticle article, Section sec,
 			KnowWEUserContext user, StringBuilder string) {
 		
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getId() + "\" class=\"collapsible-questiontree\" " + 
-				"style=\"background:none repeat scroll 0 0 #F9F9F9; border:1px solid #DDDDDD; margin:1em 2.5%; padding:0.5em; position:relative;\">\n"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getId() + "\" class=\"collapsible-questiontree\" >\n"));
 		
-		string.append(KnowWEUtils.maskHTML("<div style=\"position:absolute; right:5%; top: 25%;\" id=\"collapsible-questiontree-info\"></div>"));
+		//string.append(KnowWEUtils.maskHTML("<div style=\"position:absolute; right:5%; top: 25%;\" id=\"collapsible-questiontree-info\"></div>"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"collapsible-questiontree-info\"></div>"));
 		
 		// add an anchor to enable direct link to the section
 		String anchorName = KnowWEUtils.getAnchor(sec);

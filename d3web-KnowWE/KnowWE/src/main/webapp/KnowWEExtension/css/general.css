@@ -837,6 +837,24 @@ font-size:120%;
  see also: http://www.rowanw.com/bugs/overflow_relative.htm 
 */
 .collapsebody{
-    position: relative
+    position: relative;
 } 
+
+div.collapsible-questiontree {
+    background:none repeat scroll 0 0 #F9F9F9;
+    border:1px solid #DDDDDD;
+    margin:1em 2.5%; padding:0.5em; position:relative;  
+}
+
+div.collapsible-questiontree ul .pointer{
+    background: rgb(255,255,255) url('../images/arrow_right_s.png') no-repeat left bottom;
+    padding-left: 12px;
+}
+
+#collapsible-questiontree-info{
+    background-color: rgb(255,255,255);
+    border: 1px solid #DDDDDD;
+    padding:10px;
+    clear:both; float: right; width:300px;
+}
 
