@@ -49,12 +49,7 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 
-		this.addReviseSubtreeHandler(new ReviseSubTreeHandler<OverdashedElement>() {
-			@Override
-			public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<OverdashedElement> s) {
-				return new SyntaxError("to many dashes; remove \"-\"");
-			}
-		});
+		this.addReviseSubtreeHandler(new OverDashedErrorHandler());
 
 		this.sectionFinder = new SectionFinder() {
 
@@ -77,6 +72,13 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 				return null;
 			}
 		};
+	}
+
+	class OverDashedErrorHandler implements ReviseSubTreeHandler<OverdashedElement> {
+		@Override
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<OverdashedElement> s) {
+			return new SyntaxError("to many dashes; remove \"-\"");
+		}
 	}
 
 }
