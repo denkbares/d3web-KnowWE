@@ -11,179 +11,179 @@ This diagnostic flow covers examinations and solutions (diagnoses) for the follo
 * [Starter|Automobile self starter]
 * [Electronic system|Automobile electronics]
 
-<flowchart id="sh001" name="Car Diagnosis" icon="sanduhr.gif" width="750" height="500">
+<flowchart fcid="sh001" name="Car Diagnosis" icon="sanduhr.gif" width="750" height="500">
 
 	<!-- nodes of the flowchart -->
-	<node id="#node_10">
+	<node fcid="#node_10">
 		<position left="171" top="10"></position>
 		<start>Car Diagnosis</start>
 	</node>
 
-	<node id="#node_6">
+	<node fcid="#node_6">
 		<position left="363" top="158"></position>
 		<action markup="KnOffice">ERFRAGE[Spark to plugs?]</action>
 	</node>
 
-	<node id="#node_5">
+	<node fcid="#node_5">
 		<position left="145" top="229"></position>
 		<action markup="KnOffice">"Battery Check" = "Start"</action>
 	</node>
 
-	<node id="#node_0">
+	<node fcid="#node_0">
 		<position left="149" top="64"></position>
 		<action markup="KnOffice">ERFRAGE["Starter cranks?"]</action>
 	</node>
 
-	<node id="#node_2">
+	<node fcid="#node_2">
 		<position left="75" top="158"></position>
 		<action markup="KnOffice">ERFRAGE["Starter spins?"]</action>
 	</node>
 
-	<node id="#node_4">
+	<node fcid="#node_4">
 		<position left="472" top="64"></position>
 		<action markup="KnOffice">ERFRAGE[Engine fires?]</action>
 	</node>
 
-	<node id="#node_1">
+	<node fcid="#node_1">
 		<position left="373" top="347"></position>
 		<action markup="KnOffice">"Fuel system diagnosis" = "Start"</action>
 	</node>
 
-	<node id="#node_7">
+	<node fcid="#node_7">
 		<position left="521" top="151"></position>
 		<action markup="KnOffice">ERFRAGE[Starts and stalls?]</action>
 	</node>
 
-	<node id="#node_9">
+	<node fcid="#node_9">
 		<position left="469" top="272"></position>
 		<action markup="KnOffice">"Battery Check" = "Start"</action>
 	</node>
 
-	<node id="#node_11">
+	<node fcid="#node_11">
 		<position left="581" top="347"></position>
 		<action markup="KnOffice">"Engine Diagnosis" = "Start"</action>
 	</node>
 
-	<node id="#node_3">
+	<node fcid="#node_3">
 		<position left="291" top="265"></position>
 		<action markup="KnOffice">"Electronic system" = "Start"</action>
 	</node>
 
-	<node id="#node_8">
+	<node fcid="#node_8">
 		<position left="10" top="278"></position>
 		<action markup="KnOffice">"Starter Diagnosis" = "Start"</action>
 	</node>
 
-	<node id="#node_12">
+	<node fcid="#node_12">
 		<position left="317" top="460"></position>
 		<exit>Diagnosis finished</exit>
 	</node>
 
 
 	<!-- rules of the flowchart -->
-	<edge id="#rule_3">
-		<source>#node_0</source>
+	<edge fcid="#rule_3">
+		<origin>#node_0</origin>
 		<target>#node_2</target>
 		<guard markup="KnOffice">"Starter cranks?" = "No"</guard>
 	</edge>
 
-	<edge id="#rule_5">
-		<source>#node_0</source>
+	<edge fcid="#rule_5">
+		<origin>#node_0</origin>
 		<target>#node_4</target>
 		<guard markup="KnOffice">"Starter cranks?" = "Yes"</guard>
 	</edge>
 
-	<edge id="#rule_6">
-		<source>#node_2</source>
+	<edge fcid="#rule_6">
+		<origin>#node_2</origin>
 		<target>#node_5</target>
 		<guard markup="KnOffice">"Starter spins?" = "No"</guard>
 	</edge>
 
-	<edge id="#rule_7">
-		<source>#node_5</source>
+	<edge fcid="#rule_7">
+		<origin>#node_5</origin>
 		<target>#node_0</target>
 		<guard markup="KnOffice">"Battery Check" = "Battery ok"</guard>
 	</edge>
 
-	<edge id="#rule_0">
-		<source>#node_10</source>
+	<edge fcid="#rule_0">
+		<origin>#node_10</origin>
 		<target>#node_0</target>
 	</edge>
 
-	<edge id="#rule_1">
-		<source>#node_4</source>
+	<edge fcid="#rule_1">
+		<origin>#node_4</origin>
 		<target>#node_6</target>
 		<guard markup="KnOffice">"Engine fires?" = "No"</guard>
 	</edge>
 
-	<edge id="#rule_2">
-		<source>#node_6</source>
+	<edge fcid="#rule_2">
+		<origin>#node_6</origin>
 		<target>#node_1</target>
 		<guard markup="KnOffice">"Spark to plugs?" = "Yes"</guard>
 	</edge>
 
-	<edge id="#rule_8">
-		<source>#node_4</source>
+	<edge fcid="#rule_8">
+		<origin>#node_4</origin>
 		<target>#node_7</target>
 		<guard markup="KnOffice">"Engine fires?" = "Yes"</guard>
 	</edge>
 
-	<edge id="#rule_10">
-		<source>#node_7</source>
+	<edge fcid="#rule_10">
+		<origin>#node_7</origin>
 		<target>#node_9</target>
 		<guard markup="KnOffice">"Starts and stalls?" = "No"</guard>
 	</edge>
 
-	<edge id="#rule_12">
-		<source>#node_7</source>
+	<edge fcid="#rule_12">
+		<origin>#node_7</origin>
 		<target>#node_11</target>
 		<guard markup="KnOffice">"Starts and stalls?" = "Yes"</guard>
 	</edge>
 
-	<edge id="#rule_4">
-		<source>#node_6</source>
+	<edge fcid="#rule_4">
+		<origin>#node_6</origin>
 		<target>#node_3</target>
 		<guard markup="KnOffice">"Spark to plugs?" = "No"</guard>
 	</edge>
 
-	<edge id="#rule_9">
-		<source>#node_2</source>
+	<edge fcid="#rule_9">
+		<origin>#node_2</origin>
 		<target>#node_8</target>
 		<guard markup="KnOffice">"Starter spins?" = "Yes"</guard>
 	</edge>
 
-	<edge id="#rule_13">
-		<source>#node_5</source>
+	<edge fcid="#rule_13">
+		<origin>#node_5</origin>
 		<target>#node_12</target>
 		<guard markup="KnOffice">"Battery Check" = "Done"</guard>
 	</edge>
 
-	<edge id="#rule_14">
-		<source>#node_8</source>
+	<edge fcid="#rule_14">
+		<origin>#node_8</origin>
 		<target>#node_12</target>
 		<guard markup="KnOffice">"Starter Diagnosis" = "Done"</guard>
 	</edge>
 
-	<edge id="#rule_15">
-		<source>#node_3</source>
+	<edge fcid="#rule_15">
+		<origin>#node_3</origin>
 		<target>#node_12</target>
 		<guard markup="KnOffice">"Electronic system" = "Done"</guard>
 	</edge>
 
-	<edge id="#rule_16">
-		<source>#node_1</source>
+	<edge fcid="#rule_16">
+		<origin>#node_1</origin>
 		<target>#node_12</target>
 		<guard markup="KnOffice">"Fuel system diagnosis" = "Done"</guard>
 	</edge>
 
-	<edge id="#rule_17">
-		<source>#node_9</source>
+	<edge fcid="#rule_17">
+		<origin>#node_9</origin>
 		<target>#node_12</target>
 		<guard markup="KnOffice">"Battery Check" = "Done"</guard>
 	</edge>
 
-	<edge id="#rule_18">
-		<source>#node_11</source>
+	<edge fcid="#rule_18">
+		<origin>#node_11</origin>
 		<target>#node_12</target>
 		<guard markup="KnOffice">"Engine Diagnosis" = "Done"</guard>
 	</edge>
@@ -222,7 +222,7 @@ Observations
 - Car starts?[yn]
 
 Technical Examinations
-- "Idle speed system o.k.?" [yn]
+- "fcidle speed system o.k.?" [yn]
 - "Air intake system o.k.?" [yn]
 - "Air filter o.k.?" [yn]
 - "Ignition timing o.k.?" [yn]

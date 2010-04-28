@@ -1,114 +1,114 @@
 !!!Clean Terminals
 
-<flowchart id="sh025" name="Clean Terminals" icon="sanduhr.gif" width="750" height="400">
+<flowchart fcid="sh025" name="Clean Terminals" icon="sanduhr.gif" width="750" height="400">
 
 	<!-- nodes of the flowchart -->
-	<node id="#node_10">
+	<node fcid="#node_10">
 		<position left="13" top="152"></position>
 		<start>Start</start>
 	</node>
 
-	<node id="#node_0">
+	<node fcid="#node_0">
 		<position left="161" top="141"></position>
 		<action markup="KnOffice">INSTANT["Battery voltage?"]</action>
 	</node>
 
-	<node id="#node_2">
+	<node fcid="#node_2">
 		<position left="161" top="254"></position>
 		<action markup="KnOffice">ERFRAGE[Are terminals clean?]</action>
 	</node>
 
-	<node id="#node_4">
+	<node fcid="#node_4">
 		<position left="170" top="24"></position>
 		<action markup="KnOffice">"Empty battery" = P7</action>
 	</node>
 
-	<node id="#node_1">
+	<node fcid="#node_1">
 		<position left="357" top="134"></position>
 		<action markup="KnOffice">"Damaged Battery" = P7</action>
 	</node>
 
-	<node id="#node_5">
+	<node fcid="#node_5">
 		<position left="377" top="24"></position>
 		<action markup="KnOffice">"Wait" = "12h"</action>
 	</node>
 
-	<node id="#node_8">
+	<node fcid="#node_8">
 		<position left="549" top="17"></position>
 		<action markup="KnOffice">ERFRAGE["Battery max voltage?"]</action>
 	</node>
 
-	<node id="#node_6">
+	<node fcid="#node_6">
 		<position left="357" top="254"></position>
 		<action markup="KnOffice">"Damaged Starter" = P7</action>
 	</node>
 
-	<node id="#node_11">
+	<node fcid="#node_11">
 		<position left="602" top="141"></position>
 		<action markup="KnOffice">INSTANT["Car starts?"]</action>
 	</node>
 
-	<node id="#node_13">
+	<node fcid="#node_13">
 		<position left="606" top="272"></position>
 		<exit>Battery ok</exit>
 	</node>
 
 
 	<!-- rules of the flowchart -->
-	<edge id="#rule_1">
-		<source>#node_10</source>
+	<edge fcid="#rule_1">
+		<origin>#node_10</origin>
 		<target>#node_0</target>
 	</edge>
 
-	<edge id="#rule_5">
-		<source>#node_0</source>
+	<edge fcid="#rule_5">
+		<origin>#node_0</origin>
 		<target>#node_4</target>
 		<guard markup="KnOffice">"Battery voltage?" &gt;= 11.9 UND "Battery voltage?" &lt; 12.5</guard>
 	</edge>
 
-	<edge id="#rule_6">
-		<source>#node_0</source>
+	<edge fcid="#rule_6">
+		<origin>#node_0</origin>
 		<target>#node_2</target>
 		<guard markup="KnOffice">"Battery voltage?" &gt;= 12.5</guard>
 	</edge>
 
-	<edge id="#rule_2">
-		<source>#node_0</source>
+	<edge fcid="#rule_2">
+		<origin>#node_0</origin>
 		<target>#node_1</target>
 		<guard markup="KnOffice">"Battery voltage?" &lt; 11.9</guard>
 	</edge>
 
-	<edge id="#rule_7">
-		<source>#node_4</source>
+	<edge fcid="#rule_7">
+		<origin>#node_4</origin>
 		<target>#node_5</target>
 	</edge>
 
-	<edge id="#rule_10">
-		<source>#node_5</source>
+	<edge fcid="#rule_10">
+		<origin>#node_5</origin>
 		<target>#node_8</target>
 		<guard markup="KnOffice">"Wait" = "passed"</guard>
 	</edge>
 
-	<edge id="#rule_11">
-		<source>#node_8</source>
+	<edge fcid="#rule_11">
+		<origin>#node_8</origin>
 		<target>#node_1</target>
 		<guard markup="KnOffice">"Battery max voltage?" &lt; 12.5</guard>
 	</edge>
 
-	<edge id="#rule_8">
-		<source>#node_2</source>
+	<edge fcid="#rule_8">
+		<origin>#node_2</origin>
 		<target>#node_6</target>
 		<guard markup="KnOffice">"Are terminals clean?" = "Yes"</guard>
 	</edge>
 
-	<edge id="#rule_12">
-		<source>#node_8</source>
+	<edge fcid="#rule_12">
+		<origin>#node_8</origin>
 		<target>#node_11</target>
 		<guard markup="KnOffice">"Battery max voltage?" &gt;= 12.5</guard>
 	</edge>
 
-	<edge id="#rule_14">
-		<source>#node_11</source>
+	<edge fcid="#rule_14">
+		<origin>#node_11</origin>
 		<target>#node_13</target>
 		<guard markup="KnOffice">"Car starts?" = "No"</guard>
 	</edge>

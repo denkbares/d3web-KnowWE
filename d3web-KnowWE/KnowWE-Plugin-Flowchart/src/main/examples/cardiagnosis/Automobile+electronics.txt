@@ -1,20 +1,20 @@
-<flowchart id="sh0073" name="Electronic system" icon="sanduhr.gif" width="750" height="950">
+<flowchart ficd="sh0073" name="Electronic system" icon="sanduhr.gif" width="750" height="950">
 
 	<!-- nodes of the flowchart -->
-	<node id="#node_0">
+	<node ficd="#node_0">
 		<position left="167" top="221"></position>
 		<exit>Done</exit>
 	</node>
 
-	<node id="#node_1">
+	<node ficd="#node_1">
 		<position left="183" top="51"></position>
 		<start>Start</start>
 	</node>
 
 
 	<!-- rules of the flowchart -->
-	<edge id="#rule_0">
-		<source>#node_1</source>
+	<edge ficd="#rule_0">
+		<origin>#node_1</origin>
 		<target>#node_0</target>
 	</edge>
 

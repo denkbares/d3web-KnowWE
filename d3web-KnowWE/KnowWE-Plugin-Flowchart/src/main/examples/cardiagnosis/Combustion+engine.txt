@@ -7,23 +7,23 @@ The internal combustion engine is an engine in which the combustion of a fuel oc
 
 
 
-<flowchart id="sh024" name="Engine Diagnosis" icon="sanduhr.gif" width="750" height="950">
+<flowchart fcid="sh024" name="Engine Diagnosis" icon="sanduhr.gif" width="750" height="950">
 
 	<!-- nodes of the flowchart -->
-	<node id="#node_10">
+	<node fcid="#node_10">
 		<position left="301" top="28"></position>
 		<start>Start</start>
 	</node>
 
-	<node id="#node_3">
+	<node fcid="#node_3">
 		<position left="300" top="181"></position>
 		<exit>Done</exit>
 	</node>
 
 
 	<!-- rules of the flowchart -->
-	<edge id="#rule_0">
-		<source>#node_10</source>
+	<edge fcid="#rule_0">
+		<origin>#node_10</origin>
 		<target>#node_3</target>
 	</edge>
 

@@ -2,23 +2,23 @@
 
 
 
-<flowchart id="sh76" name="Fuel system diagnosis" icon="sanduhr.gif" width="750" height="950">
+<flowchart fcid="sh76" name="Fuel system diagnosis" icon="sanduhr.gif" width="750" height="950">
 
 	<!-- nodes of the flowchart -->
-	<node id="#node_10">
+	<node fcid="#node_10">
 		<position left="301" top="28"></position>
 		<start>Start</start>
 	</node>
 
-	<node id="#node_0">
+	<node fcid="#node_0">
 		<position left="324" top="243"></position>
 		<exit>Done</exit>
 	</node>
 
 
 	<!-- rules of the flowchart -->
-	<edge id="#rule_0">
-		<source>#node_10</source>
+	<edge fcid="#rule_0">
+		<origin>#node_10</origin>
 		<target>#node_0</target>
 	</edge>
 

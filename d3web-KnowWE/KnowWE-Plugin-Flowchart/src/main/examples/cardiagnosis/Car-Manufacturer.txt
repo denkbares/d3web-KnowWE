@@ -1,42 +1,42 @@
 !!! Car-Manufacturer 
 	
-	<flowchart id="sh002" name="General" icon="sanduhr.gif" width="750" height="500">
+	<flowchart fcid="sh002" name="General" icon="sanduhr.gif" width="750" height="500">
 
 	<!-- nodes of the flowchart -->
-	<node id="#node_100">
+	<node fcid="#node_100">
 		<position left="42" top="124"></position>
 		<start>General</start>
 	</node>
 
-	<node id="#node_0">
+	<node fcid="#node_0">
 		<position left="175" top="113"></position>
 		<action markup="KnOffice">ERFRAGE[Make of car]</action>
 	</node>
 
-	<node id="#node_2">
+	<node fcid="#node_2">
 		<position left="340" top="106"></position>
 		<action markup="KnOffice">ERFRAGE[Year of construction]</action>
 	</node>
 
-	<node id="#node_4">
+	<node fcid="#node_4">
 		<position left="538" top="124"></position>
 		<exit>done</exit>
 	</node>
 
 
 	<!-- rules of the flowchart -->
-	<edge id="#rule_1">
-		<source>#node_100</source>
+	<edge fcid="#rule_1">
+		<origin>#node_100</origin>
 		<target>#node_0</target>
 	</edge>
 
-	<edge id="#rule_3">
-		<source>#node_0</source>
+	<edge fcid="#rule_3">
+		<origin>#node_0</origin>
 		<target>#node_2</target>
 	</edge>
 
-	<edge id="#rule_5">
-		<source>#node_2</source>
+	<edge fcid="#rule_5">
+		<origin>#node_2</origin>
 		<target>#node_4</target>
 	</edge>
 
