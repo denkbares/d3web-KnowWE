@@ -16,7 +16,7 @@ import de.d3web.we.utils.KnowWEUtils;
  *
  * @param <T>
  */
-public abstract class ObjectDef<T> extends DefaultAbstractKnowWEObjectType implements ObjectIDContainer<T> {
+public abstract class ObjectDef<T> extends DefaultAbstractKnowWEObjectType implements TermReference<T> {
 
 	protected String key;
 

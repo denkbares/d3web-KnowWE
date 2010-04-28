@@ -19,7 +19,7 @@ import de.d3web.we.kdom.report.message.NoSuchObjectError;
  *
  * @param <T>
  */
-public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType implements ObjectIDContainer<T> {
+public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType implements TermReference<T> {
 
 	/**
 	 * has to check whether the referenced object is existing, i.e., has been
@@ -39,10 +39,10 @@ public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType imple
 
 
 
-	class ObjectChecker implements ReviseSubTreeHandler {
+	class ObjectChecker implements ReviseSubTreeHandler<ObjectRef<T>> {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<ObjectRef<T>> s) {
 			if (!objectExisting(s)) {
 				KDOMReportMessage.storeError(s, this.getClass(),
 						new NoSuchObjectError(s.get().getName() + ": "
