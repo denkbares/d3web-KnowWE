@@ -145,9 +145,16 @@ public class CIBuilder {
 		}else{
 			//file exists...
 			xmlDocument = new SAXBuilder().build(xmlFile);
+			nextBuildNumber = 1;//Default
 			
-			Object buildnr = XPath.selectSingleNode(xmlDocument, "/builds/build[last()]/@nr");
-			nextBuildNumber = Integer.parseInt(((Attribute) buildnr).getValue())+1;
+			//try to parse the most current build NR
+			Object o = XPath.selectSingleNode(xmlDocument, "/builds/build[last()]/@nr");
+			if(o instanceof Attribute){
+				Attribute attr = (Attribute)o;
+				String buildNr = attr.getValue();
+				if(buildNr!=null && !buildNr.equals(""))
+					nextBuildNumber = Long.parseLong(buildNr)+1;
+			}
 			
 			String xmlBuildStatus = xmlDocument.getRootElement().
 					getAttributeValue(ACTUAL_BUILD_STATUS);

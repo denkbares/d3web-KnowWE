@@ -42,7 +42,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class GroovyCITestReviseSubtreeHandler implements ReviseSubTreeHandler {
+public class GroovyCITestReviseSubtreeHandler implements ReviseSubTreeHandler/*<GroovyCITestType>*/ {
 
 //	private static Logger log = Logger.getLogger(CITestReviseSubtreeHandler.class.getName());
 	
@@ -55,7 +55,7 @@ public class GroovyCITestReviseSubtreeHandler implements ReviseSubTreeHandler {
 	
 	
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section/*<GroovyCITestType>*/ s) {
 		
 		String testname = DefaultMarkupType.getAnnotation(s, "name");
 		Map<String,Section<GroovyCITestType>> map = CIConfiguration.getAllGroovyCITestSections(KnowWEEnvironment.DEFAULT_WEB);

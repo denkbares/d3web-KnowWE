@@ -20,13 +20,18 @@
 
 package de.d3web.we.ci4ke.groovy;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import groovy.lang.Script;
 import de.d3web.we.ci4ke.handling.CIConfiguration;
 import de.d3web.we.ci4ke.handling.CITest;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.xcl.XCLRelation;
+import de.d3web.we.kdom.xcl.XCList;
 
 /**
  * This abstract class serves as base class for implementing a Groovy CITest 
@@ -39,5 +44,25 @@ public abstract class AbstractCITestScript extends Script implements CITest {
 	public Collection<KnowWEArticle> getAllArticles(CIConfiguration config){
 		return KnowWEEnvironment.getInstance().
 				getArticleManager(config.get(CIConfiguration.WEB_KEY)).getArticles();
+	}
+	
+	//just for documentation purposes
+	public KnowWEArticle getArticle(CIConfiguration config){
+		return config.getMonitoredArticle();
+	}
+	
+	public static List<String> findXCListsWithLessThenXRelations(KnowWEArticle article, int limitRelations){
+		List<String> sectionIDs = new ArrayList<String>();
+		
+		List<Section<XCList>> found = new ArrayList<Section<XCList>>();
+		article.getSection().findSuccessorsOfType(XCList.class, found);
+		
+		for(Section<XCList> xclSection : found){
+			List<Section<XCLRelation>> relations = new ArrayList<Section<XCLRelation>>();
+			xclSection.findSuccessorsOfType(XCLRelation.class, relations);
+			if(relations.size() < limitRelations)
+				sectionIDs.add(xclSection.getId());
+		}		
+		return sectionIDs;
 	}
 }

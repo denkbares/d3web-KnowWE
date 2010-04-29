@@ -47,10 +47,5 @@ public class CI4KETagHandler extends AbstractTagHandler {
 		
 		CIDashboard board = new CIDashboard(values,topic);
 		return board.render();
-//		WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().getWikiConnector().getServletContext(), null);
-//		WikiContext context = we.createContext(user.getHttpRequest(), WikiContext.VIEW);
-//		return we.getPageManager().getProvider().getClass().getName();
-//		return we.getWikiProperties().getProperty(PageManager.PROP_PAGEPROVIDER);
-//		return "BLA";
 	}
 }

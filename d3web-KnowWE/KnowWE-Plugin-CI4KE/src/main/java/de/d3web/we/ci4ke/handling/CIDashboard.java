@@ -33,11 +33,13 @@ import com.ecyrd.jspwiki.event.WikiEventUtils;
 import com.ecyrd.jspwiki.event.WikiPageEvent;
 import com.ecyrd.jspwiki.providers.VersioningFileProvider;
 
+import de.d3web.we.ci4ke.groovy.AbstractCITestScript;
 import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.jspwiki.JSPWikiKnowWEConnector;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 
@@ -165,7 +167,7 @@ public class CIDashboard {
 			//Left Column: Lists all the knowledge-base Builds of the targeted article
 			html.append("<div id='ci-column-left'>");
 			//html.append("Here<br/>...<br/>goes<br/>...<br/>the<br/>...<br/>left<br/>...<br/>column!<br/>");
-			html.append("Left Column: Lists the newest knowledge-base Builds of the monitored article<br/>");
+			//html.append("Left Column: Lists the newest knowledge-base Builds of the monitored article<br/>");
 			
 //			Method[] methods = KnowWEEnvironment.getInstance().getWikiConnector().getClass().getMethods();
 //			for(Method m : methods){
@@ -189,11 +191,14 @@ public class CIDashboard {
 			html.append("</div>");
 			
 			//Mid Column: Contains all wiki changes of the currently selected build in diff style
-			html.append("<div id='ci-column-middle'>");
+//			html.append("<div id='ci-column-middle'>");
 			//html.append("Here<br/>...<br/>goes<br/>...<br/>the<br/>...<br/>middle<br/>...<br/>column!<br/>");
-			html.append("Mid Column: Contains all wiki changes of the currently selected build in diff style");
+			//html.append("Mid Column: Contains all wiki changes of the currently selected build in diff style");
 			
-			
+//			KnowWEArticle a = KnowWEEnvironment.getInstance().getArticle("default_web", "XCL-Test");
+//			for(String s : AbstractCITestScript.findXCListsWithLessThenXRelations(a, 4)){
+//				html.append(s+"<br/>");
+//			}
 			//Section<TestsuiteSection> sec = monitoredArticle.getSection().findSuccessor(TestsuiteSection.class);
 			
 			//if(sec != null)
@@ -201,15 +206,15 @@ public class CIDashboard {
 			//else
 			//	html.append("sec is null!");
 			
-			html.append("</div>");
+//			html.append("</div>");
 			
 			//Right Column: Contains all test results of the currently selected build
 			html.append("<div id='ci-column-right'>");
 			//html.append("Here<br/>...<br/>goes<br/>...<br/>the<br/>...<br/>right<br/>...<br/>column!<br/>..<br/>..<br/>And<br/>even<br/>more<br/>of<br/>the<br/>right<br/>column!");
-			html.append("Right Column: Contains all test results of the currently selected build<br/>");
+//			html.append("Right Column: Contains all test results of the currently selected build<br/>");
 			
 			
-			//builder.executeBuild();
+			builder.executeBuild();
 			
 			html.append("</div>");
 			
