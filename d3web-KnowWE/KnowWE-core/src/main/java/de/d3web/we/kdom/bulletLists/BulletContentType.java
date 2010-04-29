@@ -7,7 +7,7 @@ public class BulletContentType extends DefaultAbstractKnowWEObjectType {
 	
 	@Override
 	public void init() {
-		this.sectionFinder = AllTextFinderTrimmed.getInstance();
+		this.sectionFinder = new AllTextFinderTrimmed();
 	}
 
 }

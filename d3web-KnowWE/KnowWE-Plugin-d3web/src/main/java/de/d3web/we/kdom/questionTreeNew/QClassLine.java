@@ -29,7 +29,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 
 		QuestionnaireDef qc = new QuestionnaireDef();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR5));
-		qc.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		qc.setSectionFinder(new AllTextFinderTrimmed());
 		qc.addReviseSubtreeHandler(new CreateQuestionnaireHandler());
 		this.childrenTypes.add(qc);
 	}

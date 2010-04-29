@@ -60,7 +60,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 		// this composite takes everything it gets => needs suitable wrapper
 		// type as father
-		this.sectionFinder = AllTextFinderTrimmed.getInstance();
+		this.sectionFinder = new AllTextFinderTrimmed();
 		this.setCustomRenderer(new de.d3web.we.kdom.renderer.KDOMDepthFontSizeRenderer());
 
 		// a composite condition may either be a BracedCondition,...
@@ -299,7 +299,7 @@ class NegatedExpression extends NonTerminalCondition {
 				String trimmed = text.trim();
 				for (String sign : NEG_SIGNS) {
 					if (trimmed.startsWith(sign)) {
-						return AllTextFinderTrimmed.getInstance().lookForSections(text,
+						return new AllTextFinderTrimmed().lookForSections(text,
 								father);
 					}
 				}

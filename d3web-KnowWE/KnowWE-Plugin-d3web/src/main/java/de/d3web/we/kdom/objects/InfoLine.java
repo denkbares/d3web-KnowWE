@@ -29,7 +29,7 @@ public class InfoLine extends D3webObjectDef<String> {
 
 	public InfoLine() {
 		super("info");
-		setSectionFinder(AllTextFinderTrimmed.getInstance());
+		setSectionFinder(new AllTextFinderTrimmed());
 	}
 
 }

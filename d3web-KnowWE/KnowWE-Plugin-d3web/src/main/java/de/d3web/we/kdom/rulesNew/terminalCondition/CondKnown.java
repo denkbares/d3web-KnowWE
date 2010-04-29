@@ -49,7 +49,7 @@ public class CondKnown extends D3webTerminalCondition<CondKnown> {
 
 			for (String key : KEYWORDS) {
 				if (text.trim().startsWith(key + "[") && text.trim().endsWith("]")) {
-					return AllTextFinderTrimmed.getInstance().lookForSections(text,
+					return new AllTextFinderTrimmed().lookForSections(text,
 							father);
 				}
 			}

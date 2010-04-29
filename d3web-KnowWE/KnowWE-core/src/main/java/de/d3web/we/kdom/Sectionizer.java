@@ -43,7 +43,7 @@ import de.d3web.we.utils.PairOfInts;
  * @author Jochen (some changes by astriffler)
  *
  * This singleton contains the algorithm which parses the KDOM. The algorithm
- * searches occorrences that match certain types.
+ * searches occurrences that match certain types.
  * @param <T>
  * @see splitToSections
  *
@@ -77,15 +77,15 @@ public class Sectionizer {
 	/**
 	 * DO NEVER TOUCH THIS ALGORITHM because this works
 	 *
-	 * Working for types as priority in list: -searches type occorances in text
+	 * Working for types as priority in list: -searches type occurences in text
 	 * -creates according section nodes which parse itself recursively
-	 * -unallocated text parts are temporarely store as UndefinedSection which
+	 * -unallocated text parts are temporarily store as UndefinedSection which
 	 * can be allocated by later types of the type-list
 	 *
 	 * When list is done, UndefinedSections are made PlainText-nodes
 	 *
 	 * @param text
-	 *            The text to be searched for type occorrances
+	 *            The text to be searched for type occurrences
 	 * @param allowedTypes
 	 *            The types that are searched for, priority ordered
 	 * @param father
@@ -348,14 +348,20 @@ public class Sectionizer {
 
 		//check if left brother is exclusive
 		Section<?> leftBrother = father.getChildSectionAtPosition(offset-1);
-		if(leftBrother != null && leftBrother.get().getSectioner().getConstraints().contains(ExclusiveType.getInstance())) {
-			return true;
+		if(leftBrother != null) { 
+			List<SectionFinderConstraint> constraints = leftBrother.get().getSectioner().getConstraints();
+			if (constraints.contains(ExclusiveType.getInstance())) {
+				return true;
+			}
 		}
 
 		//and if right  brother is exclusive
 		Section<?> rightBrother = father.getChildSectionAtPosition(offset+thisSection.getOriginalText().length());
-		if(rightBrother != null && rightBrother.get().getSectioner().getConstraints().contains(ExclusiveType.getInstance())) {
-			return true;
+		if(rightBrother != null) {
+			List<SectionFinderConstraint> constraints = rightBrother.get().getSectioner().getConstraints();
+			if (constraints.contains(ExclusiveType.getInstance())) {
+				return true;
+			}
 		}
 
 		return false;
@@ -364,6 +370,10 @@ public class Sectionizer {
 	private void validateConstraints(List<SectionFinderResult> results, Section father,
 			KnowWEObjectType ob) {
 		List<SectionFinderConstraint> constraints = ob.getSectioner().getConstraints();
+		
+		if (constraints == null)
+			return;
+		
 		for (SectionFinderConstraint sectionFinderConstraint : constraints) {
 			if(!sectionFinderConstraint.satisfiesConstraint(results, father, ob)) {
 				sectionFinderConstraint.filterCorrectResults(results, father, ob);

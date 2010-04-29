@@ -35,10 +35,11 @@ public class FindingQuestion extends DefaultAbstractKnowWEObjectType {
 	
 	public class AnnotationKnowledgeSliceObjectQuestiongetSectionFinder extends SectionFinder {
 
+		private AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			if(father.hasRightSonOfType(FindingComparator.class, text)) {
-				return AllTextFinderTrimmed.getInstance().lookForSections(text, father);
+				return textFinder.lookForSections(text, father);
 			}
 			return null;
 		}

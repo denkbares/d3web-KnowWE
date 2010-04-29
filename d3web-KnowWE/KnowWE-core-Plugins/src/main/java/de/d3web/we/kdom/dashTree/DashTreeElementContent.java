@@ -37,7 +37,7 @@ public class DashTreeElementContent extends DefaultAbstractKnowWEObjectType{
 	
 	@Override
 	protected void init() {
-		this.sectionFinder = AllTextFinderTrimmed.getInstance();
+		this.sectionFinder = new AllTextFinderTrimmed();
 	}
 
 }

@@ -36,13 +36,17 @@ import de.d3web.we.kdom.constraint.SectionFinderConstraint;
 public abstract class SectionFinder {
 	
 
-	List<SectionFinderConstraint> constraintList = new ArrayList<SectionFinderConstraint>();
+	List<SectionFinderConstraint> constraintList;
 	
 	public List<SectionFinderConstraint> getConstraints() {
 		return constraintList;
 	}
 
 	public void addConstraint(SectionFinderConstraint constraint) {
+		if (constraintList == null) {
+			constraintList = new ArrayList<SectionFinderConstraint>();
+			
+		}
 		this.constraintList.add(constraint);
 	}
 

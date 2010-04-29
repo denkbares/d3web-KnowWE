@@ -59,11 +59,13 @@ public class PropertyDetails extends DefaultAbstractKnowWEObjectType{
 
 class PropertyDetailsSectionFinder extends SectionFinder {
 
+	private AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
+	
 	@Override
 	public List<SectionFinderResult> lookForSections(String text,
 			Section father) {
 		if(text.contains("-->")) {
-			return AllTextFinderTrimmed.getInstance().lookForSections(text, father);
+			return textFinder.lookForSections(text, father);
 		}
 		return null;
 	}
@@ -100,7 +102,7 @@ class RangeDefinition extends DefaultAbstractKnowWEObjectType{
 
 	@Override
 	protected void init() {
-		this.sectionFinder = AllTextFinderTrimmed.getInstance();
+		this.sectionFinder = new AllTextFinderTrimmed();
 		this.setCustomRenderer(new RangeRenderer());
 	}
 }	

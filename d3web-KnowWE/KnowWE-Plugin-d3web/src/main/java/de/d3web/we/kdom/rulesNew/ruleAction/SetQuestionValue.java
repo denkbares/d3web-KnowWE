@@ -54,7 +54,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		this.childrenTypes.add(qr);
 
 		AnswerRef a = new AnswerRefImpl();
-		a.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		a.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(a);
 
 		// this.childrenTypes.add(qr);

@@ -37,7 +37,7 @@ public class ConditionActionRule extends DefaultAbstractKnowWEObjectType {
 
 		condArea.setSectionFinder(new AllBeforeTypeSectionFinder(then));
 		this.addChildType(condArea);
-		action.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		action.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(action);
 	}
 

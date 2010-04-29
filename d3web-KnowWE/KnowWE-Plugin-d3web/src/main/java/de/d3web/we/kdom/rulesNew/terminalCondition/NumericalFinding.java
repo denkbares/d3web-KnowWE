@@ -46,25 +46,27 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 		// question
 		QuestionRef question = new NumQuestionRefImpl();
-		AllTextFinderTrimmed questionFinder = AllTextFinderTrimmed.getInstance();
+		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
 		this.childrenTypes.add(question);
 
 		// answer
 		Number num = new Number();
-		num.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		num.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(num);
 	}
 
 	class NumericalFindingFinder extends SectionFinder {
 
+		private AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
+		
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			for (String comp : comparators) {
 				if (SplitUtility.containsUnquoted(text, comp)) {
 
-					return AllTextFinderTrimmed.getInstance().lookForSections(text,
+					return textFinder.lookForSections(text,
 							father);
 				}
 			}

@@ -37,7 +37,7 @@ public class GroupDeclaration extends DefaultAbstractKnowWEObjectType {
 	Pattern p = Pattern.compile("group:?(.*)", Pattern.DOTALL);
 
 	public GroupDeclaration() {
-		this.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		this.setSectionFinder(new AllTextFinderTrimmed());
 	}
 
 	public String getGroup(Section<GroupDeclaration> s) {

@@ -25,11 +25,11 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		this.sectionFinder = AllTextFinderTrimmed.getInstance();
+		this.sectionFinder = new AllTextFinderTrimmed();
 
 		QuestionnaireDef qc = new QuestionnaireDef();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
-		qc.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		qc.setSectionFinder(new AllTextFinderTrimmed());
 		qc.addReviseSubtreeHandler(new CreateIndication());
 		this.childrenTypes.add(qc);
 	}

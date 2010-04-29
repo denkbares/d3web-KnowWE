@@ -27,15 +27,8 @@ import de.d3web.we.kdom.Section;
 
 public class AllTextSectionFinder extends SectionFinder {
 
-	private static AllTextSectionFinder instance = null;
 	
-	public static AllTextSectionFinder getInstance() {
-		if (instance == null) {
-			instance = new AllTextSectionFinder();
-			
-		}
-
-		return instance;
+	public AllTextSectionFinder() {
 	}
 	
 	@Override

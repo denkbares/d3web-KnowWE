@@ -64,14 +64,14 @@ public class Finding extends D3webTerminalCondition<Finding> {
 
 		// question
 		QuestionRef question = new QuestionRefImpl<Question>();
-		AllTextFinderTrimmed questionFinder = AllTextFinderTrimmed.getInstance();
+		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
 		this.childrenTypes.add(question);
 
 		// answer
 		AnswerRef answer = new AnswerRefImpl();
-		answer.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		answer.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(answer);
 	}
 
@@ -96,10 +96,12 @@ public class Finding extends D3webTerminalCondition<Finding> {
 
 class FindingFinder extends SectionFinder {
 
+	private AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
+
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
 		if (SplitUtility.containsUnquoted(text, "=")) {
-			return AllTextFinderTrimmed.getInstance().lookForSections(text, father);
+			return textFinder.lookForSections(text, father);
 		}
 		return null;
 	}

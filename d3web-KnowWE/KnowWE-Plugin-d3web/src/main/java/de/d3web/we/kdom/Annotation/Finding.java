@@ -143,12 +143,14 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 
 	public class FindingSectionFinder extends SectionFinder {
 
+		private AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
+
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section father) {
 			if (text.contains(">") || text.contains("=") || text.contains("<")) {
 				if (!text.contains("+=")) { // hack excluding "+="
-					return AllTextFinderTrimmed.getInstance().lookForSections(
+					return textFinder.lookForSections(
 							text, father);
 				}
 			}

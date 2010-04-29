@@ -27,7 +27,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 public class XMLContent extends DefaultAbstractKnowWEObjectType {
 	
 	public XMLContent() {
-		sectionFinder = AllTextSectionFinder.getInstance();
+		sectionFinder = new AllTextSectionFinder();
 	}
 	
 	public XMLContent(KnowWEObjectType child) {

@@ -10,7 +10,7 @@ public class QuotedQuestion extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 		this.childrenTypes.add(new QuotedType(new SimpleQuestionType()));
 		this.childrenTypes.add(new SimpleQuestionType());
-		this.sectionFinder = AllTextFinderTrimmed.getInstance();
+		this.sectionFinder = new AllTextFinderTrimmed();
 	}
 
 }

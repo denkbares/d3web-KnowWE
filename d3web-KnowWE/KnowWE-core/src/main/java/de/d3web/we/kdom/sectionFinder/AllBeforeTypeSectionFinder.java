@@ -9,6 +9,8 @@ import de.d3web.we.kdom.constraint.SingleChildConstraint;
 public class AllBeforeTypeSectionFinder extends SectionFinder {
 
 	KnowWEObjectType markerType = null;
+	
+	private AllTextFinderTrimmed allTextFinderTrimmed = new AllTextFinderTrimmed();
 
 	public AllBeforeTypeSectionFinder(KnowWEObjectType type) {
 		this.addConstraint(new SingleChildConstraint());
@@ -22,7 +24,7 @@ public class AllBeforeTypeSectionFinder extends SectionFinder {
 				text)
 				+ text.length());
 		if(s != null && s.getObjectType().getName().equals(markerType.getName())) {
-			return AllTextFinderTrimmed.getInstance().lookForSections(text, father);
+			return allTextFinderTrimmed.lookForSections(text, father);
 		}
 
 		return null;

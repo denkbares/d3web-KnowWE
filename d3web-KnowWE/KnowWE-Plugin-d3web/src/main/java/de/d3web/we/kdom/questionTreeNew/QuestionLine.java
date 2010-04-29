@@ -68,7 +68,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		protected void init() {
-			SectionFinder f = AllTextFinderTrimmed.getInstance();
+			SectionFinder f = new AllTextFinderTrimmed();
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
 			this.addReviseSubtreeHandler(new CreateIndicationHandler());

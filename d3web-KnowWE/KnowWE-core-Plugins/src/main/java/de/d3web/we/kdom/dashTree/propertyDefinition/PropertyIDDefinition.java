@@ -51,7 +51,7 @@ public class PropertyIDDefinition extends DefaultAbstractKnowWEObjectType{
 	
 	@Override
 	protected void init() {
-		this.sectionFinder = AllTextFinderTrimmed.getInstance();
+		this.sectionFinder = new AllTextFinderTrimmed();
 		this.setCustomRenderer(new PropertyIDRenderer());
 	}
 	

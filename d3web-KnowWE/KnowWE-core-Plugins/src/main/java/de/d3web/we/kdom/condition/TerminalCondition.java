@@ -48,14 +48,14 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 public class TerminalCondition extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
-		this.sectionFinder = AllTextFinderTrimmed.getInstance();
+		this.sectionFinder = new AllTextFinderTrimmed();
 
 
 
 		// last: Anything left is an UnrecognizedTC throwing an error
 		AnonymousType unrecognizedCond = new AnonymousType(
 				"UnrecognizedTerminalCondition");
-		unrecognizedCond.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
 		unrecognizedCond.addReviseSubtreeHandler(new ReviseSubTreeHandler() {
 			@Override
 			public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

@@ -87,7 +87,7 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType implements T
 	@Override
 	protected void init() {
 		childrenTypes.add(new TableLine());
-		this.sectionFinder =  AllTextSectionFinder.getInstance();
+		this.sectionFinder = new AllTextSectionFinder();
 		this.setCustomRenderer(new TableContentRenderer());
 		this.addReviseSubtreeHandler(new TableSubTreeHandler());
 	}

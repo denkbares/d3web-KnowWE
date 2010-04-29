@@ -42,7 +42,7 @@ public class RuleActionLine extends DefaultAbstractKnowWEObjectType {
 		childrenTypes.add(new LineBreak());
 		childrenTypes.add(new Then());
 		AnonymousType action = new AnonymousType("RuleAction");
-		action.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		action.setSectionFinder(new AllTextFinderTrimmed());
 		childrenTypes.add(action);
 	}
 

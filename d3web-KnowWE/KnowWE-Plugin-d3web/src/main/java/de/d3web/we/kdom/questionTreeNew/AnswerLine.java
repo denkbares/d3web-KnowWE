@@ -42,7 +42,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 		};
 
 		QuestionTreeAnswerDef aid = new QuestionTreeAnswerDef();
-		aid.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		aid.setSectionFinder(new AllTextFinderTrimmed());
 		aid.addReviseSubtreeHandler(new createAnswerHandler());
 		this.childrenTypes.add(aid);
 	}
