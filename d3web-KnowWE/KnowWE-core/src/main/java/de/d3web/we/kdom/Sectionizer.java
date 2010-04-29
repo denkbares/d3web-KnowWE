@@ -183,14 +183,14 @@ public class Sectionizer {
 							// get path of of ObjectTypes the Section to be created would have
 							List<Class<? extends KnowWEObjectType>> path = father.getPathFromArticleToThis();
 							path.add(ob.getClass());
-							
+
 							// find all Sections with same path of ObjectTypes in the last version
 							Map<String, Section> sectionsOfSameType = article.getLastVersionOfArticle()
 									.findChildrenOfTypeMap(path);
 
 							Section match = sectionsOfSameType.remove(secText
 									.substring(result.getStart(), result.getEnd()));
-							
+
 							// don't reuse matches that are already reused elsewhere...
 							// the same section object would be hooked in the KDOM twice
 							// -> conflict with IDs an other stuff
@@ -198,14 +198,14 @@ public class Sectionizer {
 									&& (!match.isReusedBy(match.getTitle())
 									&& !match.hasReusedSuccessor)
 									&& !match.isDirty()) {
-								
+
 								// mark ancestors, that they have an reused successor
 								Section ancestor = match.getFather();
 								while (ancestor != null) {
 									ancestor.hasReusedSuccessor = true;
 									ancestor = ancestor.getFather();
 								}
-								
+
 								// use match instead of creating a new Section
 								// (thats the idea of updating ;) )
 								s = match;
@@ -218,13 +218,13 @@ public class Sectionizer {
 								List<Section> newNodes = new ArrayList<Section>();
 								s.getAllNodesPreOrder(newNodes);
 								for (Section node:newNodes) {
-									
+
 									if (node.getObjectType() instanceof Include) {
 										article.getIncludeSections().add(node);
 									}
 
 									SectionStore lastStore = KnowWEUtils.getLastSectionStore(node.getWeb(), father.getTitle(), node.id);
-									
+
 									// don't do the following if the node is included
 									if (node.getTitle().equals(father.getTitle())) {
 										// mark as reused (so its not reused again)
@@ -246,7 +246,7 @@ public class Sectionizer {
 											}
 										}
 									}
-									
+
 									if (lastStore != null) {
 										// reuse last section store
 										KnowWEUtils.putSectionStore(node.getWeb(), father.getTitle(), node.id, lastStore);
@@ -258,14 +258,14 @@ public class Sectionizer {
 						if (s == null) {
 							if (result instanceof ExpandedSectionFinderResult) {
 								s = createExpandedSection((ExpandedSectionFinderResult) result, father);
-								
+
 							} else if (result instanceof IncludeSectionFinderResult) {
 								s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
 										result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
 										+ result.getStart(), article, result.getId(), false,
 										((IncludeSectionFinderResult) result).getIncludeAddress(),ob);
 								KnowWEEnvironment.getInstance().getIncludeManager(s.getWeb()).registerInclude(s);
-								
+
 							} else {
 								s = Section.createTypedSection(thisSection.getOriginalText().substring(result.getStart(),
 										result.getEnd()), ob, father, thisSection.getOffSetFromFatherText()
@@ -348,9 +348,9 @@ public class Sectionizer {
 
 		//check if left brother is exclusive
 		Section<?> leftBrother = father.getChildSectionAtPosition(offset-1);
-		if(leftBrother != null) { 
+		if(leftBrother != null) {
 			List<SectionFinderConstraint> constraints = leftBrother.get().getSectioner().getConstraints();
-			if (constraints.contains(ExclusiveType.getInstance())) {
+			if (constraints != null && constraints.contains(ExclusiveType.getInstance())) {
 				return true;
 			}
 		}
@@ -359,7 +359,7 @@ public class Sectionizer {
 		Section<?> rightBrother = father.getChildSectionAtPosition(offset+thisSection.getOriginalText().length());
 		if(rightBrother != null) {
 			List<SectionFinderConstraint> constraints = rightBrother.get().getSectioner().getConstraints();
-			if (constraints.contains(ExclusiveType.getInstance())) {
+			if (constraints != null && constraints.contains(ExclusiveType.getInstance())) {
 				return true;
 			}
 		}
@@ -370,10 +370,10 @@ public class Sectionizer {
 	private void validateConstraints(List<SectionFinderResult> results, Section father,
 			KnowWEObjectType ob) {
 		List<SectionFinderConstraint> constraints = ob.getSectioner().getConstraints();
-		
+
 		if (constraints == null)
 			return;
-		
+
 		for (SectionFinderConstraint sectionFinderConstraint : constraints) {
 			if(!sectionFinderConstraint.satisfiesConstraint(results, father, ob)) {
 				sectionFinderConstraint.filterCorrectResults(results, father, ob);
