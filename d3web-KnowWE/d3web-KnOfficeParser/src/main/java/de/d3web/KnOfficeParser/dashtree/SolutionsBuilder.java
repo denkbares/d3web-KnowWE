@@ -38,15 +38,9 @@ import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.knowledge.terminology.info.DCElement;
-import de.d3web.core.knowledge.terminology.info.DCMarkup;
-import de.d3web.core.knowledge.terminology.info.MMInfoObject;
-import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.values.Choice;
 import de.d3web.report.Message;
 
 public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
@@ -57,45 +51,17 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 		return builder.addKnowledge(reader, idom, null);
 	}
 
-	private List<Tripel<String, Object, Message>> descriptionlinks = new ArrayList<Tripel<String, Object, Message>>();
 	private List<String> allowedNames;
 	private List<Message> errors = new ArrayList<Message>();
 	private String file;
-	private HashMap< Integer, Solution > diagParents = new HashMap< Integer, Solution >();
+	private HashMap<Integer, Solution> diagParents = new HashMap<Integer, Solution>();
 	private IDObjectManagement idom;
-	
-	/**
-	 * Innere Klasse um ein generisches Tupel aufzunehmen
-	 * 
-	 * @author Markus Friedrich
-	 * 
-	 * @param <T>
-	 * @param <X>
-	 */
-	private class Tupel<T, X> {
-		private T first;
-		private X second;
-
-		public Tupel(T t, X x) {
-			first = t;
-			second = x;
-		}
-	}
-
-	private class Tripel<T, X, U> extends Tupel<T, X> {
-		private U third;
-
-		public Tripel(T t, X x, U u) {
-			super(t, x);
-			third = u;
-		}
-	}
 
 	public SolutionsBuilder(String file, IDObjectManagement idom) {
 		this.idom = idom;
 		this.file = file;
 	}
-	
+
 	@Override
 	public List<Message> addKnowledge(Reader r,
 			IDObjectManagement idom, KnOfficeParameterSet s) {
@@ -104,7 +70,8 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 		ANTLRInputStream istream = null;
 		try {
 			istream = new ANTLRInputStream(input);
-		} catch (IOException e1) {
+		}
+		catch (IOException e1) {
 			errors.add(MessageKnOfficeGenerator.createAntlrInputError(file, 0,
 					""));
 		}
@@ -116,75 +83,50 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 				new DefaultD3webParserErrorHandler(errors, file, "BasicLexer"));
 		try {
 			parser.knowledge();
-		} catch (RecognitionException e) {
+		}
+		catch (RecognitionException e) {
 			e.printStackTrace();
 		}
 		return getErrors();
 	}
-	
+
 	/**
 	 * @author Sebastian Furth
 	 */
 	@Override
-	public void addNode(int dashes, String diag, int line,
+	public void addNode(int dashes, String diag, String ref, int line,
 			String diagDescription, int order) {
-				
+
 		Solution parent;
 		Solution newDiag = idom.findDiagnosis(diag);
-		
+
 		// this gets the appropriate parent for the new Diagnosis
 		if (dashes == 0) {
 			// only possible parent is the rootDiagnosis from KB
-			parent = idom.getKnowledgeBase().getRootDiagnosis();
-		} else {
-			// parent is HashMap entry for dashes - 1 
-			parent = diagParents.get(dashes - 1);
-		}	
-		
-		// create new diagnosis in KB if there isn't already the same diagnosis
-		if (newDiag == null) {						
-			newDiag = idom.createDiagnosis(diag, parent);
+			parent = idom.getKnowledgeBase().getRootSolution();
 		}
-		
+		else {
+			// parent is HashMap entry for dashes - 1
+			parent = diagParents.get(dashes - 1);
+		}
+
+		// create new diagnosis in KB if there isn't already the same diagnosis
+		if (newDiag == null) {
+			newDiag = idom.createDiagnosis(ref, diag, parent);
+		}
+
 		// saves the description of the solution if available
 		if (diagDescription != null) {
-			newDiag.getProperties().setProperty(Property.EXPLANATION,diagDescription);	
+			newDiag.getProperties().setProperty(Property.EXPLANATION, diagDescription);
 		}
-			
+
 		// save created diagnosis in HashMap with dashes representing the key
 		// this diagnosis is the parent for diagnoses with dashes + 1
 		diagParents.remove(dashes);
 		diagParents.put(dashes, newDiag);
-			
-	}	
-	
-	/**
-	 * @author Jochen Reutelshoefer
-	 * @param o
-	 * @param title
-	 * @param subject
-	 * @param content
-	 */
-	private void addMMInfo(NamedObject o, String title, String subject,
-			String content) {
-		if (o == null)
-			return;
-		MMInfoStorage mmis;
-		DCMarkup dcm = new DCMarkup();
-		dcm.setContent(DCElement.TITLE, title);
-		dcm.setContent(DCElement.SUBJECT, subject);
-		dcm.setContent(DCElement.SOURCE, o.getId());
-		MMInfoObject mmi = new MMInfoObject(dcm, content);
-		if (o.getProperties().getProperty(Property.MMINFO) == null) {
-			mmis = new MMInfoStorage();
-		} else {
-			mmis = (MMInfoStorage) o.getProperties().getProperty(
-					Property.MMINFO);
-		}
-		o.getProperties().setProperty(Property.MMINFO, mmis);
-		mmis.addMMInfo(mmi);
+
 	}
-	
+
 	@Override
 	public void addDescription(String id, String type, String des, String text,
 			int line, String linetext) {
@@ -204,28 +146,8 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 					line, linetext, type));
 			return;
 		}
-		List<Tupel<String, Object>> dellist = new ArrayList<Tupel<String, Object>>();
-		for (Tupel<String, Object> t : descriptionlinks) {
-			if (t.first.equals(id)) {
-				dellist.add(t);
-				if (t.second instanceof NamedObject) {
-					NamedObject na = (NamedObject) t.second;
-					addMMInfo(na, des, type, text);
-				} else if (t.second instanceof Choice) {
-					Choice ac = (Choice) t.second;
-					ac.getProperties().setProperty(Property.EXPLANATION, text);
-				} else {
-					errors.add(MessageKnOfficeGenerator
-							.createDescriptionNotAllowed(file, line, linetext));
-				}
-			}
-		}
-		// Entfernen der gesetzten Beschreibungslinks
-		for (Tupel<String, Object> t : dellist) {
-			descriptionlinks.remove(t);
-		}
 	}
-		
+
 	@Override
 	public void setallowedNames(List<String> allowedNames, int line,
 			String linetext) {
@@ -234,18 +156,19 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 
 	public List<Message> getErrors() {
 		List<Message> ret = new ArrayList<Message>(errors);
-				
+
 		// check if there are any unset links to descriptions
 		// at the moment obsolete because links are not parsed
-//		for (Tripel<String, Object, Message> t : descriptionlinks) {
-//			ret.add(t.third);
-//		}
-				
+		// for (Tripel<String, Object, Message> t : descriptionlinks) {
+		// ret.add(t.third);
+		// }
+
 		if (ret.size() == 0) {
-			ret.add(MessageKnOfficeGenerator.createSolutionsParsedNote(file, 0, "", idom.getKnowledgeBase()
-					.getDiagnoses().size() - 1));
+			ret.add(MessageKnOfficeGenerator.createSolutionsParsedNote(file, 0, "",
+					idom.getKnowledgeBase()
+					.getSolutions().size() - 1));
 		}
-		
+
 		return ret;
 	}
 

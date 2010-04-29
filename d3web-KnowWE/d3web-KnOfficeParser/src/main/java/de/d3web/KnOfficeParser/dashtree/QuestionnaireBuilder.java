@@ -19,7 +19,7 @@
  */
 
 package de.d3web.KnOfficeParser.dashtree;
- 
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -46,9 +46,9 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.report.Message;
 
-
 /**
  * This builder handles Questionnaires/QContainers.
+ * 
  * @author Markus Friedrich
  * @author Alex Legler
  */
@@ -56,85 +56,93 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 	private IDObjectManagement idom;
 	private String file;
 	private List<Message> errors = new ArrayList<Message>();
-	
+
 	/**
-	 * Little internal tree to cache the QContainers, allowing for a sorted inclusion.
+	 * Little internal tree to cache the QContainers, allowing for a sorted
+	 * inclusion.
 	 */
-	private Node cacheTree = new Node("root", Integer.MAX_VALUE, null);
-	
+	private Node cacheTree = new Node("root", null, Integer.MAX_VALUE, null);
+
 	/**
 	 * The start-up questions
 	 */
 	private Map<Integer, QContainer> startQContainers = new HashMap<Integer, QContainer>();
-	
+
 	private Node prevNode = cacheTree;
 
 	/**
 	 * Internal class representing a QContainer in the hierarchy
+	 * 
 	 * @author Alex Legler
 	 */
 	class Node {
 		private String content;
+		private String id;
 		private String description;
 		private int order;
 		private List<Node> children = new LinkedList<Node>();
 		private Node parent;
-		
+
 		/**
 		 * Creates a new Node.
-		 * @param content Name of the questionnaire
-		 * @param order The initial questionnaire order ([X] in the markup)
-		 * @param description An optional description
+		 * 
+		 * @param content
+		 *            Name of the questionnaire
+		 * @param order
+		 *            The initial questionnaire order ([X] in the markup)
+		 * @param description
+		 *            An optional description
 		 */
-		public Node(String content, int order, String description) {
+		public Node(String content, String id, int order, String description) {
 			this.content = content;
+			this.id = id;
 			this.order = order;
 			this.description = description;
 		}
-		
+
 		public int getOrder() {
 			return order;
 		}
-		
+
 		public String getContent() {
 			return content;
 		}
-		
+
 		public String getDescription() {
 			return description;
 		}
-		
+
 		public void setParent(Node p) {
 			parent = p;
 		}
-		
+
 		public Node getParent() {
 			return parent;
 		}
-		
+
 		public List<Node> getChildren() {
 			return Collections.unmodifiableList(children);
 		}
-		
+
 		public boolean addChild(Node child) {
 			if (child == null || children.contains(child))
 				return false;
-			
+
 			children.add(child);
 			child.setParent(this);
 			return true;
 		}
-		
+
 		public int getLevel() {
 			return (parent == null) ? -1 : parent.getLevel() + 1;
 		}
 	}
-	
+
 	public QuestionnaireBuilder(String file, IDObjectManagement idom) {
 		this.file = file;
-		this.idom=idom;
+		this.idom = idom;
 	}
- 
+
 	@Override
 	public void addDescription(String id, String type, String des, String text,
 			int line, String linetext) {
@@ -145,20 +153,22 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 	 * Processes a Questionnaire item
 	 */
 	@Override
-	public void addNode(int dashes, String name, int line, String description, int order) {
-		Node node = new Node(name, order, description);
+	public void addNode(int dashes, String name, String ref, int line, String description, int order) {
+		Node node = new Node(name, ref, order, description);
 
 		// If we go one level deeper
 		if (dashes > prevNode.getLevel()) {
 			prevNode.addChild(node);
-		// Same level
-		} else if (dashes == prevNode.getLevel()) {
+			// Same level
+		}
+		else if (dashes == prevNode.getLevel()) {
 			prevNode.getParent().addChild(node);
-		// One up
-		} else {
+			// One up
+		}
+		else {
 			prevNode.getParent().getParent().addChild(node);
 		}
-		
+
 		prevNode = node;
 	}
 
@@ -166,30 +176,31 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 	public void finishOldQuestionsandConditions(int dashes) {
 		throw new AssertionError("should not be called");
 	}
- 
+
 	@Override
 	public void line(String text) {
 	}
- 
+
 	@Override
 	public void newLine() {
 	}
- 
+
 	@Override
 	public void setallowedNames(List<String> allowedNames, int line,
 			String linetext) {
 		throw new AssertionError("should not be called");
 	}
- 
+
 	@Override
 	public List<Message> addKnowledge(Reader r,
 			IDObjectManagement idom, KnOfficeParameterSet s) {
-		this.idom=idom;
+		this.idom = idom;
 		ReaderInputStream input = new ReaderInputStream(r);
 		ANTLRInputStream istream = null;
 		try {
 			istream = new ANTLRInputStream(input);
-		} catch (IOException e1) {
+		}
+		catch (IOException e1) {
 			errors.add(MessageKnOfficeGenerator.createAntlrInputError(file, 0,
 					""));
 		}
@@ -201,56 +212,63 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 				new DefaultD3webParserErrorHandler(errors, file, "BasicLexer"));
 		try {
 			parser.knowledge();
-		} catch (RecognitionException e) {
+		}
+		catch (RecognitionException e) {
 			e.printStackTrace();
 		}
-		
+
 		finish();
-		
+
 		return getErrors();
 	}
-	
+
 	/**
-	 * Adds the cached QContainer tree to the KBM and sets the ordered QContainers
-	 * as start-up questionnaires.
+	 * Adds the cached QContainer tree to the KBM and sets the ordered
+	 * QContainers as start-up questionnaires.
 	 */
 	private void finish() {
 		processNode(cacheTree, null);
-		
+
 		List<Integer> initQuestions = new ArrayList<Integer>(startQContainers.keySet());
 		Collections.sort(initQuestions);
-		
+
 		List<QContainer> questions = new LinkedList<QContainer>();
-		
+
 		for (Integer key : initQuestions) {
 			questions.add(startQContainers.get(key));
 		}
-		
+
 		idom.getKnowledgeBase().setInitQuestions(questions);
 	}
- 
+
 	/**
 	 * Adds a single node to the KBM.
-	 * @param n Node to process
-	 * @param parent Parent node (if applicable)
+	 * 
+	 * @param n
+	 *            Node to process
+	 * @param parent
+	 *            Parent node (if applicable)
 	 */
 	private void processNode(Node n, QASet parent) {
 		List<Node> children = n.getChildren();
-		
+
 		if (children.size() > 0) {
 			for (Node child : children) {
-				QContainer q = idom.createQContainer(child.getContent(), (parent == null) ? idom.getKnowledgeBase().getRootQASet() : parent);
-				
+				QContainer q = idom.createQContainer(child.id, child.getContent(),
+						(parent == null)
+								? idom.getKnowledgeBase().getRootQASet()
+								: parent);
+
 				if (child.getDescription() != null)
-					q.getProperties().setProperty(Property.EXPLANATION, child.getDescription());
-				
+					q.getProperties().setProperty(Property.EXPLANATION,
+						child.getDescription());
+
 				if (child.getOrder() > 0) {
-					if (startQContainers.keySet().contains(child.getOrder()))
-						errors.add(MessageKnOfficeGenerator.createAmbiguousOrderError(file, 0, "", child.getOrder()));
-					else
-						startQContainers.put(child.getOrder(), q);
+					if (startQContainers.keySet().contains(child.getOrder())) errors.add(MessageKnOfficeGenerator.createAmbiguousOrderError(
+							file, 0, "", child.getOrder()));
+					else startQContainers.put(child.getOrder(), q);
 				}
-				
+
 				processNode(child, q);
 			}
 		}
@@ -259,17 +277,18 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 	public List<Message> getErrors() {
 		List<Message> ret = new ArrayList<Message>(errors);
 		if (ret.size() == 0) {
-			ret.add(MessageKnOfficeGenerator.createQContainerParsedNote(file, 0, "", idom.getKnowledgeBase()
+			ret.add(MessageKnOfficeGenerator.createQContainerParsedNote(file, 0, "",
+					idom.getKnowledgeBase()
 					.getQContainers().size() - 1));
 		}
 		return ret;
 	}
- 
+
 	@Override
 	public List<Message> checkKnowledge() {
 		return getErrors();
 	}
- 
+
 	public static List<Message> parse(Reader reader, IDObjectManagement idom) {
 		QuestionnaireBuilder builder = new QuestionnaireBuilder("", idom);
 		return builder.addKnowledge(reader, idom, null);
@@ -279,5 +298,5 @@ public class QuestionnaireBuilder implements DashTBuilder, KnOfficeParser {
 	public void addInclude(String url, int line, String linetext) {
 		throw new AssertionError("should not be called");
 	}
- 
+
 }

@@ -86,7 +86,7 @@ line
 |dashes {i=$dashes.i;}(node[i])) NL ;
 
 node [int Dashes]
-: a=name (TILDE b=name)? (SBO order SBC)? {dashcount = $Dashes; builder.addNode($Dashes, $a.value, $a.start.getLine(), $b.value, $order.o);};
+: a=name (TILDE b=name)? (NS manualref)? (SBO order SBC)? {dashcount = $Dashes; builder.addNode($Dashes, $a.value, $manualref.text, $a.start.getLine(), $b.value, $order.o);};
 
 include
 : INCLUDE EQ String G {builder.addInclude(delQuotes($String.text), $String.getLine(), $text);};

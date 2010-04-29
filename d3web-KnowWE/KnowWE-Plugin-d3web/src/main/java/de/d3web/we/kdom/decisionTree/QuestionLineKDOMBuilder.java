@@ -49,10 +49,13 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 		if (linetext == null)
 			return;
 		String da = makeDashes(dashes);
-		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da + linetext + "\r\n", new AnswerLine(), -1);
+		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da + linetext
+				+ "\r\n", new AnswerLine(), -1);
 		lineS.addChild(new ExpandedSectionFinderResult(da, new Dashes(), 0));
-		lineS.addChild(new ExpandedSectionFinderResult(linetext, new AnswerDef(), da.length()));
-		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(), (da + linetext).length()));
+		lineS.addChild(new ExpandedSectionFinderResult(linetext, new AnswerDef(),
+				da.length()));
+		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(),
+				(da + linetext).length()));
 
 		sections.push(lineS);
 
@@ -61,22 +64,26 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 	@Override
 	public void addDescription(String id, String type, String des, String text,
 			int line, String linetext, String language) {
-		
-		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(linetext + "\r\n",
-				new DescriptionLine(), sections.size() * (-1));
-		
-		//TODO: Not sure if this child is needed since it wasn't hooked in the KDOM before the interface change
-		//lineS.addChild(new ExpandedSectionFinderResult(linetext, new Description(), 0));
-		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(), linetext.length()));
 
-		//TODO language?
+		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(linetext
+				+ "\r\n",
+				new DescriptionLine(), sections.size() * (-1));
+
+		// TODO: Not sure if this child is needed since it wasn't hooked in the
+		// KDOM before the interface change
+		// lineS.addChild(new ExpandedSectionFinderResult(linetext, new
+		// Description(), 0));
+		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(),
+				linetext.length()));
+
+		// TODO language?
 		sections.push(lineS);
 	}
 
 	public static String makeDashes(int k) {
 		StringBuilder dashes = new StringBuilder();
 		for (int i = 0; i < k; i++) {
-			dashes .append("-");
+			dashes.append("-");
 		}
 		return dashes.toString() + " ";
 	}
@@ -91,8 +98,10 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da
 				+ linetext + "\r\n", new SolutionLine(), sections.size());
 		lineS.addChild(new ExpandedSectionFinderResult(da, new Dashes(), 0));
-		lineS.addChild(new ExpandedSectionFinderResult(linetext, new SolutionID(), da.length()));
-		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(), (da + linetext).length()));
+		lineS.addChild(new ExpandedSectionFinderResult(linetext, new SolutionID(),
+				da.length()));
+		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(),
+				(da + linetext).length()));
 
 		sections.push(lineS);
 	}
@@ -116,11 +125,14 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 		if (linetext == null)
 			return;
 		String da = makeDashes(dashes);
-		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da + linetext + "\r\n", 
-				new NumericCondLine(), sections.size()* (-1));
+		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da + linetext
+				+ "\r\n",
+				new NumericCondLine(), sections.size() * (-1));
 		lineS.addChild(new ExpandedSectionFinderResult(da, new Dashes(), 0));
-		lineS.addChild(new ExpandedSectionFinderResult(linetext, new NumericCond(), da.length()));
-		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(), (da + linetext).length()));
+		lineS.addChild(new ExpandedSectionFinderResult(linetext, new NumericCond(),
+				da.length()));
+		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(),
+				(da + linetext).length()));
 
 		sections.push(lineS);
 	}
@@ -133,13 +145,15 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 			List<String> values) {
 		if (linetext == null)
 			return;
-		
+
 		String da = makeDashes(dashes);
 		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da
 				+ linetext + "\r\n", new QuestionDefLine(), sections.size() * (-1));
 		lineS.addChild(new ExpandedSectionFinderResult(da, new Dashes(), 0));
-		lineS.addChild(new ExpandedSectionFinderResult(linetext, new QuestionDef(), da.length()));
-		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(), (da + linetext).length()));
+		lineS.addChild(new ExpandedSectionFinderResult(linetext, new QuestionDef(),
+				da.length()));
+		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(),
+				(da + linetext).length()));
 		sections.push(lineS);
 
 	}
@@ -150,25 +164,29 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 		if (linetext == null)
 			return;
 		String da = makeDashes(dashes);
-		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da + linetext + "\r\n",
+		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(da + linetext
+				+ "\r\n",
 				new QuestionReferenceLine(), sections.size() * (-1));
 		lineS.addChild(new ExpandedSectionFinderResult(da, new Dashes(), 0));
-		lineS.addChild(new ExpandedSectionFinderResult(linetext, new QuestionReference(), da.length()));
-		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(), (da + linetext).length()));
+		lineS.addChild(new ExpandedSectionFinderResult(linetext, new QuestionReference(),
+				da.length()));
+		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(),
+				(da + linetext).length()));
 		sections.push(lineS);
 
 	}
 
 	@Override
-	public void addQuestionclass(String name, int line, String linetext,
+	public void addQuestionclass(String name, String ref, int line, String linetext,
 			List<String> attributes, List<String> values) {
 		if (linetext == null)
 			return;
-		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(linetext + "\r\n",
+		ExpandedSectionFinderResult lineS = new ExpandedSectionFinderResult(linetext
+				+ "\r\n",
 				new QuestionnaireLine(), sections.size() * (-1));
 		lineS.addChild(new ExpandedSectionFinderResult(linetext, new QClassID(), 0));
-		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(), linetext.length()));
-		
+		lineS.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(),
+				linetext.length()));
 
 		sections.push(lineS);
 	}
@@ -196,17 +214,17 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 		this.sections = sections;
 	}
 
-//	public void setTopic(String topic) {
-//		this.topic = topic;
-//	}
-//
-//	public String getTopic() {
-//		return topic;
-//	}
-//
-//	public void setIdgen(IDGenerator idgen) {
-//		this.idgen = idgen;
-//	}
+	// public void setTopic(String topic) {
+	// this.topic = topic;
+	// }
+	//
+	// public String getTopic() {
+	// return topic;
+	// }
+	//
+	// public void setIdgen(IDGenerator idgen) {
+	// this.idgen = idgen;
+	// }
 
 	@Override
 	public void line(String text) {
@@ -219,8 +237,9 @@ public class QuestionLineKDOMBuilder implements DTBuilder {
 
 	@Override
 	public void newLine() {
-		//TODO change to system property "linebreak" ???
-		sections.push(new ExpandedSectionFinderResult("\r\n", new TextLine(), sections.size() * (-1)));
+		// TODO change to system property "linebreak" ???
+		sections.push(new ExpandedSectionFinderResult("\r\n", new TextLine(),
+				sections.size() * (-1)));
 
 	}
 }

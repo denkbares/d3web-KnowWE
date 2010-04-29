@@ -26,7 +26,6 @@ import java.util.Stack;
 import de.d3web.KnOfficeParser.dashtree.DashTBuilder;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 
-
 public interface DashTreeKDOMBuilder extends DashTBuilder {
 
 	public void reInit();
@@ -35,29 +34,29 @@ public interface DashTreeKDOMBuilder extends DashTBuilder {
 
 	public void setSections(Stack<ExpandedSectionFinderResult> sections);
 
-//	public void setTopic(String topic);
-//
-//	public String getTopic();
-//
-//	public void setIdgen(IDGenerator idgen);
-	
+	// public void setTopic(String topic);
+	//
+	// public String getTopic();
+	//
+	// public void setIdgen(IDGenerator idgen);
+
 	public Stack<ExpandedSectionFinderResult> getSections();
 
 	@Override
 	public void line(String text);
-	
+
 	@Override
 	public void finishOldQuestionsandConditions(int dashes);
 
 	@Override
 	public void setallowedNames(List<String> allowedNames, int line,
-			String linetext);	
+			String linetext);
 
 	@Override
 	public void newLine();
 
 	@Override
-	public void addNode(int dashes, String name, int line, String description, int order);
+	public void addNode(int dashes, String name, String ref, int line, String description, int order);
 
 	@Override
 	public void addDescription(String id, String type, String des, String text,

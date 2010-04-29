@@ -86,7 +86,7 @@ line
 |dashes {i=$dashes.i;}{(i<=dashcount+1)}? {builder.finishOldQuestionsandConditions(i);}(numeric[i]|answer[i]|question[i]|diagnosis[i]|manyQCLinks[i])) NL ;
 
 questionclass
-: name dialogannotations? {dashcount = 0;} {builder.addQuestionclass($name.value, $start.getLine(), $text, $dialogannotations.attribute, $dialogannotations.value);};
+: name dialogannotations? (NS manualref)? {dashcount = 0;} {builder.addQuestionclass($name.value, $manualref.text, $start.getLine(), $text, $dialogannotations.attribute, $dialogannotations.value);};
 
 question [int Dashes]
 : (REF h=name {builder.addQuestionLink($Dashes, $h.value, $h.start.getLine(), $text);}

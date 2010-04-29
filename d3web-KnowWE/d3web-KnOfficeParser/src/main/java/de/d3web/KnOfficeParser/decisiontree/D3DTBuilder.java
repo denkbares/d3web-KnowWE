@@ -166,44 +166,51 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				QuestionYN cq = (QuestionYN) currentQuestion;
 				if (name.equalsIgnoreCase("ja") || name.equalsIgnoreCase("yes")) {
 					answer = cq.yes;
-				} else if (name.equalsIgnoreCase("nein")
+				}
+				else if (name.equalsIgnoreCase("nein")
 						|| name.equalsIgnoreCase("no")) {
 					answer = cq.no;
-				} else {
+				}
+				else {
 					errors.add(MessageKnOfficeGenerator.createWrongYNAnswer(
 							file, line, linetext, cq.getName()));
 					return;
 				}
-			} else if (currentQuestion instanceof QuestionOC) {
+			}
+			else if (currentQuestion instanceof QuestionOC) {
 				if (ref != null) {
 					answer = createAnswer(name, currentQuestion.getId() + ref);
-				} else {
+				}
+				else {
 					answer = createAnswer(name, null);
 				}
 				QuestionOC cq = (QuestionOC) currentQuestion;
 				cq.addAlternative(answer);
-			} else if (currentQuestion instanceof QuestionMC) {
+			}
+			else if (currentQuestion instanceof QuestionMC) {
 				if (ref != null) {
 					answer = createAnswer(name, currentQuestion.getId() + ref);
-				} else {
+				}
+				else {
 					answer = createAnswer(name, null);
 				}
 				QuestionMC cq = (QuestionMC) currentQuestion;
 				cq.addAlternative(answer);
-			} else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator
 						.createNoAnswerAllowedException(file, line, linetext));
 				return;
 			}
-			CondEqual c = new CondEqual((QuestionChoice) currentQuestion,
+			CondEqual c = new CondEqual(currentQuestion,
 					new ChoiceValue(answer));
 			conditionStack.push(c);
 			conddashstack.push(dashes);
 			if (idlink != null) {
 				descriptionlinks.add(new Tripel<String, Object, Message>(
 						idlink, answer, MessageKnOfficeGenerator
-								.createDescriptionTextNotFoundError(file, line,
-										linetext, idlink)));
+						.createDescriptionTextNotFoundError(file, line,
+						linetext, idlink)));
 			}
 			// answer is the default answer
 			if (def) {
@@ -220,16 +227,19 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			addQcontainerIndication(name, ref, syn, def, line, linetext,
 					idlink, cond);
 			// Frageklasse an Diagnose
-		} else if ((dashes == questionStack.peek().first + 3)) {
+		}
+		else if ((dashes == questionStack.peek().first + 3)) {
 			if (dashes == conddashstack.peek() + 1) {
 				Condition cond = conditionStack.peek();
 				addQcontainerIndication(name, ref, syn, def, line, linetext,
 						idlink, cond);
-			} else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator.createNoAddtoLink(file,
 						line, linetext));
 			}
-		} else {
+		}
+		else {
 			errors.add(MessageKnOfficeGenerator.createNoAddtoLink(file, line,
 					linetext));
 		}
@@ -248,7 +258,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					defproperty = s;
 				}
 			}
-		} else {
+		}
+		else {
 			defproperty = answer.getId();
 		}
 		properties.setProperty(property, defproperty);
@@ -261,21 +272,22 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		if (qcon != null) {
 			addQuestionOrQuestionclassIndication(qcon, getCondPath(line,
 					linetext), line, linetext);
-		} else {
+		}
+		else {
 			qcontainertolink
 					.add(new Tripel<String, Condition, Message>(name,
-							cond, MessageKnOfficeGenerator
-									.createQuestionClassNotFoundException(file,
-											line, linetext, name)));
+					cond, MessageKnOfficeGenerator
+					.createQuestionClassNotFoundException(file,
+					line, linetext, name)));
 			if ((ref != null) || (syn != null) || (def)) {
 				errors.add(MessageKnOfficeGenerator
 						.createTooManyPropertiesOnQuestionLinkWarning(file,
-								line, linetext));
+						line, linetext));
 			}
 			if (idlink != null) {
 				errors.add(MessageKnOfficeGenerator
 						.createNoDescriptionsAtQuestionClassWarning(file, line,
-								linetext));
+						linetext));
 			}
 		}
 	}
@@ -289,7 +301,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		if ((conditionStack.size() <= 1) || (!complexconditions)) {
 			c = conditionStack.peek();
-		} else {
+		}
+		else {
 			c = new CondAnd(new ArrayList<Condition>(conditionStack));
 		}
 		return c;
@@ -346,10 +359,12 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				if (t.second instanceof NamedObject) {
 					NamedObject na = (NamedObject) t.second;
 					addMMInfo(na, des, type, text, language);
-				} else if (t.second instanceof Choice) {
+				}
+				else if (t.second instanceof Choice) {
 					Choice ac = (Choice) t.second;
 					ac.getProperties().setProperty(Property.EXPLANATION, text);
-				} else {
+				}
+				else {
 					errors.add(MessageKnOfficeGenerator
 							.createDescriptionNotAllowed(file, line, linetext));
 				}
@@ -377,23 +392,26 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					if (d == null) {
 						errors.add(MessageKnOfficeGenerator
 								.createNaNAtFeatureDerivationError(file, line,
-										linetext, value));
+								linetext, value));
 						continue;
 					}
 					FormulaNumber num = new FormulaNumber(d);
 					FormulaExpression e = new FormulaExpression(q, num);
 					if (set) {
 						RuleFactory.createSetValueRule(newRuleID, q, e, cond);
-					} else {
+					}
+					else {
 						RuleFactory.createAddValueRule(newRuleID, q,
 								new Object[] { e }, cond);
 					}
-				} else {
+				}
+				else {
 					Answer a = (Answer) idom.findValue(q, value).getValue();
 					if (set) {
 						RuleFactory.createSetValueRule(newRuleID, q,
 								new Object[] { a }, cond);
-					} else {
+					}
+					else {
 						RuleFactory.createAddValueRule(newRuleID, q,
 								new Object[] { a }, cond);
 					}
@@ -401,14 +419,14 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				if (idlink != null) {
 					descriptionlinks.add(new Tripel<String, Object, Message>(
 							idlink, q, MessageKnOfficeGenerator
-									.createDescriptionTextNotFoundError(file,
-											line, linetext, idlink)));
+							.createDescriptionTextNotFoundError(file,
+							line, linetext, idlink)));
 				}
 				if ((link != null) || (linkdes != null)) {
 					errors
 							.add(MessageKnOfficeGenerator
-									.createNotUsedDescriptionsAtFeatureDerivationWarning(
-											file, line, linetext));
+							.createNotUsedDescriptionsAtFeatureDerivationWarning(
+							file, line, linetext));
 				}
 			}
 			// Diagnoseherleitung
@@ -417,18 +435,19 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				if (diag == null) {
 					errors.add(MessageKnOfficeGenerator
 							.createDiagnosisNotFoundException(file, line,
-									linetext, name));
+							linetext, name));
 					continue;
-				} else if (set) {
+				}
+				else if (set) {
 					errors.add(MessageKnOfficeGenerator
 							.createSetOnlyAllowedAtFeatureDerivationWarning(
-									file, line, linetext));
+							file, line, linetext));
 				}
 				Score score = Scorefinder.getScore(value);
 				if (score == null) {
 					errors.add(MessageKnOfficeGenerator
 							.createScoreDoesntExistError(file, line, linetext,
-									value));
+							value));
 					return;
 				}
 				RuleFactory.createHeuristicPSRule(newRuleID, diag, score, cond);
@@ -438,19 +457,21 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				if (idlink != null) {
 					descriptionlinks.add(new Tripel<String, Object, Message>(
 							idlink, diag, MessageKnOfficeGenerator
-									.createDescriptionTextNotFoundError(file,
-											line, linetext, idlink)));
+							.createDescriptionTextNotFoundError(file,
+							line, linetext, idlink)));
 				}
 				// Condition falls Frageklassenindikationen als Kinder
 				// existieren
 				DiagnosisState state;
 				if (score == Score.P7 || score == Score.P6) {
-					state = DiagnosisState.ESTABLISHED;
-				} else if (score == Score.P5 || score == Score.P4
+					state = new DiagnosisState(DiagnosisState.State.ESTABLISHED);
+				}
+				else if (score == Score.P5 || score == Score.P4
 						|| score == Score.P3) {
-					state = DiagnosisState.SUGGESTED;
-				} else {
-					state = DiagnosisState.UNCLEAR;
+					state = new DiagnosisState(DiagnosisState.State.SUGGESTED);
+				}
+				else {
+					state = new DiagnosisState(DiagnosisState.State.UNCLEAR);
 				}
 				TerminalCondition c = new CondDState(diag, state);
 				conditionStack.push(c);
@@ -483,13 +504,15 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			if (op != null) {
 				c = ConditionGenerator.condNum(qnum, op, a, errors, line,
 						linetext, file);
-			} else {
+			}
+			else {
 				c = ConditionGenerator.condNum(qnum, a, b, errors, line,
 						linetext, file);
 			}
 			conditionStack.push(c);
 			conddashstack.push(dashes);
-		} else {
+		}
+		else {
 			errors.add(MessageKnOfficeGenerator.createNoNumQuestionException(
 					file, line, linetext));
 		}
@@ -511,10 +534,12 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		QASet parent;
 		if (dashes == 1) {
 			parent = currentQuestionclass;
-		} else {
+		}
+		else {
 			if (!questionStack.isEmpty()) {
 				parent = questionStack.peek().second;
-			} else {
+			}
+			else {
 				parent = null;
 				errors.add(MessageKnOfficeGenerator
 						.createNoParentQuestionError(file, line, linetext));
@@ -531,15 +556,18 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			if (parent != null) {
 				parent.addLinkedChild(currentQuestion);
 				currentQuestion.addLinkedParent(parent);
-			}else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator
 						.createNoParentQuestionError(file, line, linetext));
 				return;
 			}
-			if (ref!=null && !ref.equals(currentQuestion.getId())) {
-				errors.add(MessageKnOfficeGenerator.createCannotChangeIDError(file, line, linetext, name));
+			if (ref != null && !ref.equals(currentQuestion.getId())) {
+				errors.add(MessageKnOfficeGenerator.createCannotChangeIDError(file, line,
+						linetext, name));
 			}
-		} else {
+		}
+		else {
 			currentQuestion = D3webQuestionFactory.createQuestion(idom, parent,
 					name, ref, type);
 		}
@@ -556,7 +584,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					NumericalInterval range = new NumericalInterval(lowerbound,
 							upperbound);
 					prop.setProperty(Property.QUESTION_NUM_RANGE, range);
-				} else {
+				}
+				else {
 					errors.add(MessageKnOfficeGenerator
 							.createIntervallRangeError(file, line, linetext));
 				}
@@ -564,7 +593,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			if (unit != null) {
 				prop.setProperty(Property.UNIT, unit);
 			}
-		} else if (unit != null || lowerbound != null || upperbound != null) {
+		}
+		else if (unit != null || lowerbound != null || upperbound != null) {
 			errors.add(MessageKnOfficeGenerator
 					.createUnitAndRangeOnlyAtNumWarning(file, line, linetext));
 		}
@@ -578,7 +608,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			addMMInfo(currentQuestion, "LT", MMInfoSubject.PROMPT.getName(),
 					longname, null);
 		}
-		
+
 		// Wenn die Frage eine Folgefrage auf eine Antwort ist, diese der
 		// Antwort zuordnen
 		if ((dashes != 1) && (dashes == questionStack.peek().first + 2)) {
@@ -595,20 +625,19 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					linetext);
 
 		}
-		
-		
+
 		questionStack
 				.push(new Tupel<Integer, Question>(dashes, currentQuestion));
 		if (idlink != null) {
 			descriptionlinks.add(new Tripel<String, Object, Message>(idlink,
 					currentQuestion, MessageKnOfficeGenerator
-							.createDescriptionTextNotFoundError(file, line,
-									linetext, idlink)));
+					.createDescriptionTextNotFoundError(file, line,
+					linetext, idlink)));
 		}
 		if (attributes != null && values != null) {
 			// TODO setzen der Dialogannotationen
 			int i = 0;
-			//System.out.println("Frage " + name + ": ");
+			// System.out.println("Frage " + name + ": ");
 			for (String s : attributes) {
 				System.out.println(s + "=" + values.get(i));
 				i++;
@@ -638,17 +667,22 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			CondDState statecond = (CondDState) abscon;
 			List<QASet> action = new ArrayList<QASet>();
 			action.add(set);
-			if (statecond.getStatus() == DiagnosisState.ESTABLISHED) {
+			if (statecond.getStatus().equals(
+					new DiagnosisState(DiagnosisState.State.ESTABLISHED))) {
 				RuleFactory.createRefinementRule(newRuleID, action, statecond
 						.getDiagnosis(), statecond);
-			} else if (statecond.getStatus() == DiagnosisState.SUGGESTED) {
+			}
+			else if (statecond.getStatus().equals(
+					new DiagnosisState(DiagnosisState.State.SUGGESTED))) {
 				RuleFactory.createClarificationRule(newRuleID, action,
 						statecond.getDiagnosis(), statecond);
-			} else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator.createWrongDiagScore(
 						newRuleID, line, linetext));
 			}
-		} else {
+		}
+		else {
 			RuleFactory.createIndicationRule(newRuleID, set, abscon);
 		}
 	}
@@ -659,7 +693,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	 * @see DTBuilder#addQuestionclass(java.lang.String)
 	 */
 	@Override
-	public void addQuestionclass(String name, int line, String linetext,
+	public void addQuestionclass(String name, String ref, int line, String linetext,
 			List<String> attributes, List<String> values) {
 		if (name.equalsIgnoreCase("default")) {
 			// TODO defaults setzen
@@ -675,12 +709,24 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		QASet qs1 = idom.findQContainer(name);
 		if (qs1 == null) {
-			qs1 = idom.createQContainer(name, idom.getKnowledgeBase()
-					.getRootQASet());
+			if (ref == null) {
+				qs1 = idom.createQContainer(name, idom.getKnowledgeBase()
+						.getRootQASet());
+			}
+			else {
+				qs1 = idom.createQContainer(ref, name,
+						idom.getKnowledgeBase().getRootQASet());
+			}
 			if (idom.getKnowledgeBase().getInitQuestions().isEmpty()) {
 				ArrayList<QASet> tmp = new ArrayList<QASet>();
 				tmp.add(qs1);
 				idom.getKnowledgeBase().setInitQuestions(tmp);
+			}
+		}
+		else {
+			if (ref != null && !qs1.getId().equals(ref)) {
+				errors.add(MessageKnOfficeGenerator.createCannotChangeIDError(file, line,
+						linetext, name));
 			}
 		}
 		currentQuestionclass = qs1;
@@ -737,7 +783,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		MMInfoObject mmi = new MMInfoObject(dcm, content);
 		if (o.getProperties().getProperty(Property.MMINFO) == null) {
 			mmis = new MMInfoStorage();
-		} else {
+		}
+		else {
 			mmis = (MMInfoStorage) o.getProperties().getProperty(
 					Property.MMINFO);
 		}
@@ -752,13 +799,14 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		if (currentQuestion == null) {
 			errors
 					.add(MessageKnOfficeGenerator
-							.createQuestionNotFoundException(file, line,
-									linetext, name));
+					.createQuestionNotFoundException(file, line,
+					linetext, name));
 			return;
 		}
 		if (dashes == 1) {
 			currentQuestion.addParent(currentQuestionclass);
-		} else {
+		}
+		else {
 			currentQuestion.addParent(questionStack.peek().second);
 			// Wenn die Frage eine Folgefrage auf eine Antwort ist, diese der
 			// Antwort zuordnen
@@ -780,7 +828,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		Double d;
 		try {
 			d = Double.parseDouble(s);
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e) {
 			d = null;
 		}
 		return d;
@@ -818,7 +867,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		ANTLRInputStream istream = null;
 		try {
 			istream = new ANTLRInputStream(input);
-		} catch (IOException e1) {
+		}
+		catch (IOException e1) {
 			errors.add(MessageKnOfficeGenerator.createAntlrInputError(file, 0,
 					""));
 		}
@@ -830,7 +880,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				new DefaultD3webParserErrorHandler(errors, file, "BasicLexer"));
 		try {
 			parser.knowledge();
-		} catch (RecognitionException e) {
+		}
+		catch (RecognitionException e) {
 			e.printStackTrace();
 		}
 		return getErrors();

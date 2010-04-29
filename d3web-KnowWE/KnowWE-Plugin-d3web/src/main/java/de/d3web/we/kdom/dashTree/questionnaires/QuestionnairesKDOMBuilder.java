@@ -32,7 +32,7 @@ import de.d3web.we.kdom.decisionTree.QClassID;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 
 public class QuestionnairesKDOMBuilder implements DashTreeKDOMBuilder {
-	
+
 	private Stack<ExpandedSectionFinderResult> sections = new Stack<ExpandedSectionFinderResult>();
 
 	public void reInit() {
@@ -78,51 +78,56 @@ public class QuestionnairesKDOMBuilder implements DashTreeKDOMBuilder {
 
 	@Override
 	public void newLine() {
-		//TODO change to system property "linebreak"??
-		sections.push(new ExpandedSectionFinderResult("\n", new TextLine(), sections.size() * (-1)));
+		// TODO change to system property "linebreak"??
+		sections.push(new ExpandedSectionFinderResult("\n", new TextLine(),
+				sections.size() * (-1)));
 	}
 
 	@Override
-	public void addNode(int dashes, String name, int line, String description, int order) {
-		
+	public void addNode(int dashes, String name, String ref, int line, String description, int order) {
+
 		String da = makeDashes(dashes);
-		String linetext = name + (description != null ? " ~ " + description : "") + 
-						  (order != 0 ? " [" + order + "]" : "") + "\r\n";
-		
-		ExpandedSectionFinderResult qsection = new ExpandedSectionFinderResult(da + linetext, new QuestionnaireLine(),
+		String linetext = name + (description != null ? " ~ " + description : "") +
+				(order != 0 ? " [" + order + "]" : "") + "\r\n";
+
+		ExpandedSectionFinderResult qsection = new ExpandedSectionFinderResult(da
+				+ linetext, new QuestionnaireLine(),
 				sections.size() * (-1));
-		
+
 		if (dashes > 0) {
 			qsection.addChild(new ExpandedSectionFinderResult(da, new Dashes(), 0));
 		}
-		
+
 		if (name != null) {
-		    qsection.addChild(new ExpandedSectionFinderResult(name, new QClassID(), da.length()));
+			qsection.addChild(new ExpandedSectionFinderResult(name, new QClassID(),
+					da.length()));
 		}
-		
+
 		if (description != null) {
 			qsection.addChild(new ExpandedSectionFinderResult(" ~", new Tilde(),
 					getOffset(qsection)));
-			
-			qsection.addChild(new ExpandedSectionFinderResult(" " + description, new QClassDescription(),
+
+			qsection.addChild(new ExpandedSectionFinderResult(" " + description,
+					new QClassDescription(),
 					getOffset(qsection)));
 		}
-		
+
 		if (order != 0) {
-			qsection.addChild(new ExpandedSectionFinderResult(" [" + order + "]", new QClassOrder(),
+			qsection.addChild(new ExpandedSectionFinderResult(" [" + order + "]",
+					new QClassOrder(),
 					getOffset(qsection)));
 		}
-		
+
 		qsection.addChild(new ExpandedSectionFinderResult("\r\n", new LineBreak(),
 				getOffset(qsection)));
-	
+
 		sections.push(qsection);
-				
+
 	}
-	
+
 	private int getOffset(ExpandedSectionFinderResult father) {
 		int i = 0;
-		for (ExpandedSectionFinderResult child:father.getChildren()) {
+		for (ExpandedSectionFinderResult child : father.getChildren()) {
 			i += child.getText().length();
 		}
 		return i;
