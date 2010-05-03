@@ -98,7 +98,7 @@
 			<plugin>
 				<groupId>de.uniwue.maven.plugins</groupId>
 				<artifactId>knowwe-versionator</artifactId>
-				<version>0.0.3</version>
+				<version>1.0</version>
 				<executions>
 					<execution>
 						<id>vers</id>
