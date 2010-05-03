@@ -13,9 +13,9 @@ public class ContentType extends DefaultAbstractKnowWEObjectType {
 			// prefix (declare the markup section)
 			"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=\\p{Space}]\\p{Blank}*" +
 			// content (any reluctant matched)
-			"\\p{Space}*(.*?)\\p{Space}*" +
+			"\\p{Space}*?(.*?)\\p{Space}*" +
 			// suffix: terminate-tag or end-of-input or declare next parameter
-			"(?:(?:^\\p{Blank}*%\\p{Blank}*$)" +
+			"(?:(?:^\\p{Blank}*/?%\\p{Blank}*$)" +
 			"|" +
 			"(?:\\z)" +
 			"|" +

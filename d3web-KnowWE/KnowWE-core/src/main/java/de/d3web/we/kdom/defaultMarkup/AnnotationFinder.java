@@ -33,7 +33,7 @@ public class AnnotationFinder extends SectionFinder {
 		Pattern.compile("\\p{Space}+@\\w+", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
 
 	private final static Pattern endpattern = 
-		Pattern.compile("\\p{Space}*^\\p{Blank}*%\\p{Blank}*$", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
+		Pattern.compile("\\p{Space}*^\\p{Blank}*/?%\\p{Blank}*$", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE);
 
 	private final String name;
 	private final Pattern startPattern;

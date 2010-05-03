@@ -20,8 +20,9 @@ import de.d3web.we.utils.KnowWEUtils;
  * This class represents a section of the top-level default markup. That markup
  * always starts with "%%" followed by an alpha-numerical string. After that an
  * optional ":" is allowed. This is followed by either a one-line declaration or
- * a multiple-line-block terminated by an "%" denoted in a line with no other
- * content.
+ * a multiple-line-block terminated by an "/%" denoted in a line with no other
+ * content. Because of backward-compatibility reasons, the multiple-line-block 
+ * can also be terminated by an single "%".
  * <p>
  * Within the block declaration you may use java-style end-line comments. Within
  * the single-line declaration you may also use this comments at the end of the
@@ -41,13 +42,13 @@ import de.d3web.we.utils.KnowWEUtils;
  * %%rule // define 2 rules in one block
  *   &lt;condition&gt; --> &lt;action&gt;
  *   &lt;condition&gt; --> &lt;action&gt;
- * %
+ * /%
  * 
  * %%rule // use annotations
  *   &lt;condition&gt; --> &lt;action&gt;
  *   &lt;condition&gt; --> &lt;action&gt;
  *   &#64;lazy: create 
- * %
+ * /%
  * </pre>
  * 
  * <p>
@@ -90,13 +91,13 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 			"(?:" +
 				// multi-line content with termination
 			// starts with an empty rest of the line (only comment is allowed)
-			// and followed by any text terminated by a single "% in a line with
-			// no other content
+			// and followed by any text terminated by "/%" or a single "%" in 
+			// a line with no other content
 			"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" + // only comment allowed before
 			// end-of-line
 			"(.*?)" + // CONTENT --> anything in multiple lines (reluctant
 			// match)
-			"^\\p{Blank}*%\\p{Blank}*$" + // only % in a line
+			"^\\p{Blank}*/?%\\p{Blank}*$" + // "/%" or "%" in a line
 			")" +
 						// or single-line content with termination
 			"|(?:" +
@@ -147,12 +148,17 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	 * 
 	 * @param section
 	 *            the section to take the content block from
-	 * @return the contents of the content block
+	 * @return the contents of the content block, if the section is not null.
+	 * 				An empty string otherwise.
 	 * @throws IllegalArgumentException
 	 *             if the specified section is not of {@link DefaultMarkupType}
 	 */
 	public static String getContent(Section<?> section) {
-		return getContentSection(section).getOriginalText();
+		Section<? extends ContentType> contentSection = getContentSection(section);
+		if(contentSection != null)
+			return contentSection.getOriginalText();
+		else
+			return "";
 	}
 
 	/**
