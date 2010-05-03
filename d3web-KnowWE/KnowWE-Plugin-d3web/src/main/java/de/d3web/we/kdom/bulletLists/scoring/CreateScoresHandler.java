@@ -58,7 +58,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 			
 			boolean lazy = isLazy(s);
 			
-			Solution d = kbm.findDiagnosis(solution);
+			Solution d = kbm.findSolution(solution);
 			if (d == null && lazy) {
 				d = createSolution(solution, kbm);
 			}
@@ -109,9 +109,9 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 
 	private Solution createSolution(String solution,
 			KnowledgeBaseManagement mgn) {
-		Solution d = mgn.findDiagnosis(solution);
+		Solution d = mgn.findSolution(solution);
 		if (d == null) {
-			d = mgn.createDiagnosis(solution, mgn.getKnowledgeBase()
+			d = mgn.createSolution(solution, mgn.getKnowledgeBase()
 					.getRootDiagnosis());
 		}
 		return d;

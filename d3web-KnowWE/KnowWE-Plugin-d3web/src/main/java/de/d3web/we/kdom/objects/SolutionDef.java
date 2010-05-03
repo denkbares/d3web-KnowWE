@@ -33,7 +33,7 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 					.getKBM(article, qidSection);
 			if (mgn == null) return null;
 
-			IDObject o = mgn.findDiagnosis(name);
+			IDObject o = mgn.findSolution(name);
 
 			if (o != null) {
 				return new ObjectAlreadyDefinedWarning(o.getClass()
@@ -42,7 +42,7 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 			else {
 
 
-				Solution s = mgn.createDiagnosis(name);
+				Solution s = mgn.createSolution(name);
 
 				if (s != null) {
 					qidSection.get().storeObject(qidSection, s);

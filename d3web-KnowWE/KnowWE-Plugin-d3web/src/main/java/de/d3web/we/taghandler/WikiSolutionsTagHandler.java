@@ -64,7 +64,7 @@ public class WikiSolutionsTagHandler extends AbstractTagHandler{
 			//TODO refactor using alingnment knowledge
 			for (KnowledgeService service : services) {
 				if(service instanceof D3webKnowledgeService) {
-					Solution d = KnowledgeBaseManagement.createInstance(((D3webKnowledgeService)service).getBase()).findDiagnosis( (String)term.getInfo(TermInfoType.TERM_NAME));
+					Solution d = KnowledgeBaseManagement.createInstance(((D3webKnowledgeService)service).getBase()).findSolution( (String)term.getInfo(TermInfoType.TERM_NAME));
 					if(d != null) {
 						String topicName = service.getId().substring(0,service.getId().indexOf(".."));
 						String link = "<a href=\"Wiki.jsp?page="+ topicName + "\">"

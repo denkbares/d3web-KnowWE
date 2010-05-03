@@ -401,7 +401,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		solution = solution.substring(1, solution.length() - 1);
 
 		KnowledgeBaseManagement kbm = getKBM(article, section);
-		Solution diagnosis = kbm.findDiagnosis(solution);
+		Solution diagnosis = kbm.findSolution(solution);
 
 		if (diagnosis == null) {
 			errors.add(new Message("Diagnosis not found: " + solution));

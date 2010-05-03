@@ -168,7 +168,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 				}
 			}
 
-			Solution d = mgn.findDiagnosis(s.getOriginalText());
+			Solution d = mgn.findSolution(s.getOriginalText());
 			if( d != null) {
 				Score score = D3webUtils.getScoreForString(argument);
 

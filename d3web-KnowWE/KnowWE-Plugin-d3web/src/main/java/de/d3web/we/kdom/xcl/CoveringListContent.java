@@ -112,9 +112,9 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 				
 				// Insert Solution into KnowledgeBase when Solution doesnt exist
 				Section head = elements.get(0);
-				Solution currentdiag = kbm.findDiagnosis(head.getOriginalText().replaceAll(p.toString(), "").trim());
+				Solution currentdiag = kbm.findSolution(head.getOriginalText().replaceAll(p.toString(), "").trim());
 				if (currentdiag == null) {
-					currentdiag = kbm.createDiagnosis(head.getOriginalText().replaceAll(p.toString(), "").trim(), kbm.getKnowledgeBase().getRootDiagnosis());
+					currentdiag = kbm.createSolution(head.getOriginalText().replaceAll(p.toString(), "").trim(), kbm.getKnowledgeBase().getRootDiagnosis());
 				}
 				
 				// Insert XCLRelations belonging to current Diagnosis

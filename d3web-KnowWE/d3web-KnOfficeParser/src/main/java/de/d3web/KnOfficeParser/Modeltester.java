@@ -57,11 +57,11 @@ public class Modeltester {
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();
 		SingleKBMIDObjectManager idom = new SingleKBMIDObjectManager(kbm);
 		D3DTBuilder builder = new D3DTBuilder(file.toString(), idom);
-		kbm.createDiagnosis("Schwanger", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Übergewicht", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Normalgewicht", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Gliederschmerzen", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Verteilte Schmerzen", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Schwanger", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Übergewicht", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Normalgewicht", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Gliederschmerzen", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Verteilte Schmerzen", kbm.getKnowledgeBase().getRootDiagnosis());
 		Reader r = new FileReader(file);
 		Collection<Message> col = builder.addKnowledge(r, idom, null);
 		List<Message> errors=(List<Message>) col;

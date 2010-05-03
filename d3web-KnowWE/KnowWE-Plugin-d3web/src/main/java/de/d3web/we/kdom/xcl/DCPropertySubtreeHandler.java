@@ -109,10 +109,10 @@ public class DCPropertySubtreeHandler extends D3webReviseSubTreeHandler {
 			return null;
 		}
 
-		NamedObject d = kbm.findDiagnosis(diagnosis.getSubject());
+		NamedObject d = kbm.findSolution(diagnosis.getSubject());
 
 		if (d == null) { //atm diag is not created before, due to sequence of subtreehandlers
-			d = kbm.createDiagnosis(diagnosis.getSubject());
+			d = kbm.createSolution(diagnosis.getSubject());
 		}
 		return d;
 	}

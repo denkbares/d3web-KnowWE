@@ -55,11 +55,11 @@ public class Tester {
 		File file = new File("examples\\car.txt");
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();
 		D3DTBuilder builder = new D3DTBuilder(file.toString(), new SingleKBMIDObjectManager(kbm));
-		kbm.createDiagnosis("Leerlaufsystem defekt", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Ansaugsystem undicht", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Luftfiltereinsatz verschmutzt", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Zündeinstellung falsch", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Batterie leer", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Leerlaufsystem defekt", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Ansaugsystem undicht", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Luftfiltereinsatz verschmutzt", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Zündeinstellung falsch", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Batterie leer", kbm.getKnowledgeBase().getRootDiagnosis());
 		Reader r = new FileReader(file);
 		Collection<Message> col = builder.addKnowledge(r, new SingleKBMIDObjectManager(kbm), null);
 		List<Message> errors=(List<Message>) col;

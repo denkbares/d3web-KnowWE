@@ -262,7 +262,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				D3webKnowledgeService ks = ((D3webKnowledgeService) knowledgeService);
 				KnowledgeBaseManagement mgn = KnowledgeBaseManagement
 						.createInstance(ks.getBase());
-				Solution d = mgn.findDiagnosis(solution);
+				Solution d = mgn.findSolution(solution);
 				if (d != null) {
 					return knowledgeService.getId().substring(0,
 							knowledgeService.getId().indexOf(".."));

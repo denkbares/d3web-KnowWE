@@ -372,7 +372,7 @@ public class KBCreationTestUtil {
 	private void createAttributeTable() {
 		
 		// Get the Diagnosis which will get the MMInfo
-		Solution d = createdKBM.findDiagnosis("Mechanical problem");
+		Solution d = createdKBM.findSolution("Mechanical problem");
 		
 		// Add MMInfo which is similar to the MMInfo created from the AttributeTable
 		// | Mechanical problem | info | description | some problem description
@@ -482,7 +482,7 @@ public class KBCreationTestUtil {
 		CondEqual condition = new CondEqual(condQuestion, new ChoiceValue(
 				(Choice) answer));
 		String ruleID = createdKBM.createRuleID();
-		Solution diag = createdKBM.findDiagnosis("Other problem");
+		Solution diag = createdKBM.findSolution("Other problem");
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, condition);
 		
 	}
@@ -499,7 +499,7 @@ public class KBCreationTestUtil {
 		List<QASet> action = new ArrayList<QASet>();
 		action.add(question);
 		String ruleID = createdKBM.createRuleID();
-		Solution diag = createdKBM.findDiagnosis("Other problem");
+		Solution diag = createdKBM.findSolution("Other problem");
 		CondDState condition = new CondDState(diag,
 				DiagnosisState.ESTABLISHED);
 		RuleFactory.createRefinementRule(ruleID, action, diag, condition);
@@ -616,7 +616,7 @@ public class KBCreationTestUtil {
 				(Choice) answerExc));
 		
 		String ruleID = createdKBM.createRuleID();
-		Solution diag = createdKBM.findDiagnosis("Mechanical problem");
+		Solution diag = createdKBM.findSolution("Mechanical problem");
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, conditionIf, conditionExc);
 		
 		
@@ -695,7 +695,7 @@ public class KBCreationTestUtil {
 	 */
 	private void createXCLModels() {
 			
-		Solution d = createdKBM.findDiagnosis("Damaged idle speed system");
+		Solution d = createdKBM.findSolution("Damaged idle speed system");
 
 	    // "Idle speed system o.k.?" = Yes [--]
 		Question q1 = createdKBM.findQuestion("Idle speed system o.k.?");
@@ -743,7 +743,7 @@ public class KBCreationTestUtil {
 		Finding f = new Finding(q, new MultipleChoiceValue(answers));
 		
 		// Create RatedSolution
-		Solution d = createdKBM.findDiagnosis("Other problem");
+		Solution d = createdKBM.findSolution("Other problem");
 		StateRating sr = new StateRating(DiagnosisState.ESTABLISHED);
 		RatedSolution rs = new RatedSolution(d, sr);
 		

@@ -22,7 +22,7 @@ public class SolutionRef extends D3webObjectRef<Solution> {
 						s.getArticle().getWeb())
 						.getKBM(s.getArticle(), sec);
 
-			Solution sol = mgn.findDiagnosis(questionName);
+			Solution sol = mgn.findSolution(questionName);
 			return sol;
 		}
 		return null;

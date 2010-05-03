@@ -37,7 +37,7 @@ private final KnowledgeBaseManagement kbm;
 	}
 
 	public NamedObject getObject(String objectId, String valueId) {
-		return kbm.findDiagnosis(objectId);
+		return kbm.findSolution(objectId);
 	}
 
 	public LocalTerminologyHandler<NamedObject, NamedObject> getHandler(Collection<Class> include, Collection<Class> exclude) {

@@ -54,9 +54,9 @@ public class DTTester {
 		File file = new File("examples\\testbogen.txt");
 		D3DTBuilder builder = new D3DTBuilder(file.toString(), new SingleKBMIDObjectManager(null));
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance();
-		kbm.createDiagnosis("Rheumaerkrankung eher wahrscheinlich", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Rheumaerkrankung möglich", kbm.getKnowledgeBase().getRootDiagnosis());
-		kbm.createDiagnosis("Rheumaerkrankung eher unwahrscheinlich", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Rheumaerkrankung eher wahrscheinlich", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Rheumaerkrankung möglich", kbm.getKnowledgeBase().getRootDiagnosis());
+		kbm.createSolution("Rheumaerkrankung eher unwahrscheinlich", kbm.getKnowledgeBase().getRootDiagnosis());
 		Reader r = new FileReader(file);
 		Collection<Message> col = builder.addKnowledge(r, new SingleKBMIDObjectManager(kbm), null);
 		List<Message> errors=(List<Message>) col;

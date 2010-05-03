@@ -64,7 +64,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 
 			Solution d = findDiagnosis(web, topic, solution);
 			if( isDiagnosisNew( d )){
-				d = getKBM( c.getKnowledgeBase() ).createDiagnosis(solution, c.getKnowledgeBase().getRootDiagnosis());
+				d = getKBM( c.getKnowledgeBase() ).createSolution(solution, c.getKnowledgeBase().getRootDiagnosis());
 			} else {
 				return null;
 			}
@@ -164,7 +164,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	private Solution findDiagnosis(String web, String topic, String solution){
 		D3webKnowledgeService ks = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		
-		Solution d = getKBM( ks.getBase()).findDiagnosis(solution);
+		Solution d = getKBM( ks.getBase()).findSolution(solution);
 		return d;
 	}
 	

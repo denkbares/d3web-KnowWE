@@ -64,7 +64,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 
 	@Override
 	public Solution createDiagnosis(String name, Solution parent) {
-		return kbm.createDiagnosis(name, parent);
+		return kbm.createSolution(name, parent);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 
 	@Override
 	public Solution findDiagnosis(String name) {
-		return kbm.findDiagnosis(name);
+		return kbm.findSolution(name);
 	}
 
 	@Override
@@ -239,7 +239,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 
 	@Override
 	public Solution createDiagnosis(String id, String name, Solution parent) {
-		return kbm.createDiagnosis(id, name, parent);
+		return kbm.createSolution(id, name, parent);
 	}
 
 	@Override
