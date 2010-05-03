@@ -64,6 +64,20 @@
 				<version>2.1-beta-1-uniwue-1</version>
 			</plugin>
 
+			<plugin>
+				<groupId>de.uniwue.maven.plugins</groupId>
+				<artifactId>knowwe-versionator</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>versionate-plugin</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>versionate-plugin</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

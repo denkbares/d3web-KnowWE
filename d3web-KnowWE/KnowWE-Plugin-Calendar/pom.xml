@@ -1,34 +1,55 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <artifactId>d3web-KnowWE</artifactId>
-    <groupId>de.uniwue.d3web</groupId>
-    <version>0-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>de.uniwue.d3web</groupId>
-  <artifactId>KnowWE-Plugin-Calendar-jpf-plugin</artifactId>
-  <name>KnowWE Plugin: Calendar</name>
-  <version>0-SNAPSHOT</version>
-  <dependencies>
-  	<dependency>
-  		<groupId>de.uniwue.d3web</groupId>
-  		<artifactId>KnowWE-core</artifactId>
-  		<version>0-SNAPSHOT</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>de.uniwue.d3web</groupId>
-  		<artifactId>KnowWE-JSPWiki-Connector</artifactId>
-  		<version>0-SNAPSHOT</version>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.tomcat</groupId>
-  		<artifactId>servlet-api</artifactId>
-  		<version>6.0.20</version>
-  		<type>jar</type>
-  		<scope>provided</scope>
-  	</dependency>
-  </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>d3web-KnowWE</artifactId>
+		<groupId>de.uniwue.d3web</groupId>
+		<version>0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.uniwue.d3web</groupId>
+	<artifactId>KnowWE-Plugin-Calendar-jpf-plugin</artifactId>
+	<name>KnowWE Plugin: Calendar</name>
+	<version>0-SNAPSHOT</version>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>de.uniwue.maven.plugins</groupId>
+				<artifactId>knowwe-versionator</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>versionate-plugin</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>versionate-plugin</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-core</artifactId>
+			<version>0-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-JSPWiki-Connector</artifactId>
+			<version>0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>6.0.20</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project>
