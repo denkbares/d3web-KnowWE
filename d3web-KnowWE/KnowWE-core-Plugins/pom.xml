@@ -33,6 +33,20 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>de.uniwue.maven.plugins</groupId>
+				<artifactId>knowwe-versionator</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>versionate-plugin</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>versionate-plugin</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
