@@ -27,6 +27,7 @@ import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -73,8 +74,10 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 		string.append(KnowWEUtils.maskHTML("<div style=\"text-align:left; padding-top:5px; padding-right:5px; " 
 				+ "padding-left:5px; padding-bottom: 6px; border:thin solid #99CC99\">"));
 		
+		List<Section> includedChildren = sec.getChildren();
 		if (render != null && render.equalsIgnoreCase("false")
-				&& !(sec.getObjectType() instanceof IncludeError)) {
+				&& !(includedChildren != null && includedChildren.size() == 1 
+						&& includedChildren.get(0).getObjectType() instanceof IncludeError)) {
 
 			List<Section> successors = new ArrayList<Section>();
 			sec.getAllNodesPreOrder(successors);
