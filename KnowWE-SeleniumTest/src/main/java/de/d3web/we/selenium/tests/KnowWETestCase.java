@@ -153,7 +153,6 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		} catch(IllegalSelMethodException isae) {
 			isae.printStackTrace();
 		}
-		
 		threadSleep(sleepTime);
 	}
 	
@@ -312,7 +311,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 		doSelActionAndWait("sstate-update", "click");
 		assertEquals("No solutions displayed", true, selenium.isElementPresent("//div[@id='sstate-result']"));
 		if (selenium.isElementPresent("//div[@id='sstate-result']/div/ul/")) {
-			actSolutions = selenium.getText("//div[@id='sstate-result']/div/ul/");			
+			actSolutions = selenium.getText("//div[@id='sstate-result']/div/ul/");
 		}
 		//If there are suggested AND established solutions
 		if (selenium.isElementPresent("//div[@id='sstate-result']/div[2]/ul/")) {
@@ -333,13 +332,13 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 			}
 			result = result && hasntNotExpSol;
 		}
-		doSelActionAndWait("sstate-clear", "click");
 		//Retry the check if result is false and time isn't expired
 		if (System.currentTimeMillis() - startTime < 
 				Long.parseLong(rb.getString("KnowWE.SeleniumTest.RetryTime")) && !result) {
 			refreshAndWait();
 			return verifySolutions(expSolutions, notExpSolutions, startTime);
 		}
+		doSelActionAndWait("sstate-clear", "click");
 		return result;
 	}
 	

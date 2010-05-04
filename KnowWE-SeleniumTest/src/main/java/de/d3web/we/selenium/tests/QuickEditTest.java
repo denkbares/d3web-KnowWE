@@ -135,6 +135,7 @@ public class QuickEditTest extends KnowWETestCase{
 		//Adding new solution
 		sectionID = "Quick-Edit-Test/RootType/Kopic/Kopic_content/Solutions-section/Solutions-section_content";
 		quickEditAdd(sectionID, "\nMissing wheel");
+		refreshAndWait();
 		assertTrue("New solution \"Missing wheel\" wasn't saved.", selenium.getText("//div[@id='" + sectionID + "']").contains("Missing wheel"));
 		
 		//Adding new question
@@ -228,6 +229,7 @@ public class QuickEditTest extends KnowWETestCase{
 			doSelActionAndWait(divID +  "_cancel", "click");
 			output.clear();
 		}
+		refreshAndWait();
 		assertTrue("Accept or cancel button didn't worked", selenium.isElementPresent(divID + "_pencil"));
 		return output;
 	}
