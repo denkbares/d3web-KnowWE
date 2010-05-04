@@ -14,6 +14,17 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
+
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="CIEventHandler">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.handling.CIEventHandler" />
+		<parameter id="name" value="CIEventHandler" />
+		<parameter id="description" value="EventListener CIEventHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CIAction">
@@ -44,7 +55,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
-	</extension> 
+	</extension>
 -->
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
@@ -56,6 +67,6 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
-	</extension>		
+	</extension>
 	
 </plugin>
