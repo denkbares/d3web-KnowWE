@@ -69,6 +69,7 @@
 	</build>
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<versionatorVersion>1.1</versionatorVersion>
   	</properties>
 	<modules>
 		<module>d3web-Report</module>

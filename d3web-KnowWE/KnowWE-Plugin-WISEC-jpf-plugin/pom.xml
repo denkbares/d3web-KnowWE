@@ -101,7 +101,7 @@
 			<plugin>
 				<groupId>de.uniwue.maven.plugins</groupId>
 				<artifactId>knowwe-versionator</artifactId>
-				<version>1.0</version>
+				<version>${versionatorVersion}</version>
 				<executions>
 					<execution>
 						<id>versionate-plugin</id>
