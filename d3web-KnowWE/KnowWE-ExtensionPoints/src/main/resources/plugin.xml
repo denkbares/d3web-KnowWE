@@ -3,6 +3,7 @@
 <plugin id="KnowWEExtensionPoints" version="0.0.1">
 <!-- This plugin only defines extension points for KnowWE. -->
 	<attributes>
+		<attribute id="placeholder" value="foobar" />
 	</attributes>
 	
 	<extension-point id="Instantiation">
