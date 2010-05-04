@@ -38,7 +38,7 @@ public class AttributeTableContent extends XMLContent {
 	@Override
 	protected void init() {
 		TxtAttributeTableBuilder builder = new TxtAttributeTableBuilder();
-		this.subtreeHandler.add(new AttributeTableContentSubTreeHandler(builder));
+		this.addSubtreeHandler(new AttributeTableContentSubTreeHandler(builder));
 		this.childrenTypes.add(new AttributeTableLine(builder));
 		this.setCustomRenderer(new TxtAttributeTableContentRenderer());
 	}

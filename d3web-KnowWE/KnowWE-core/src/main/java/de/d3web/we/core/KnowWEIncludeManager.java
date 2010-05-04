@@ -29,6 +29,7 @@ import java.util.Set;
 
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.include.Include;
@@ -219,21 +220,49 @@ public class KnowWEIncludeManager {
 		} else if (!matchingIdEndSections.isEmpty()) {
 			targets.addAll(matchingIdEndSections);
 			
-		} 
-// this is not yet supported... problems with parsing order for ReviseSubTreeHandler
-//		else if (address.getTargetSection() == null) {
-//			Section<? extends RootType> root = art.getSection().findChildOfType(RootType.class);
-//			if (root != null) {
-//				List<Section<? extends KnowWEObjectType>> children = root.getChildren();
-//				if (!children.isEmpty()) {
-//					targets.addAll(children);
-//				}
-//			}
-//			
-//		} 
-		else {
-			targets.add(new IncludeErrorSection("Error: Include '"
-					+ address.getOriginalAddress() + "' not found.", includeSec, includeSec.getArticle()));
+		} else if (address.getTargetSection() == null) {
+			Section<? extends RootType> root = art.getSection().findChildOfType(RootType.class);
+			if (root != null) {
+				List<Section<? extends KnowWEObjectType>> children = root.getChildren();
+				if (!children.isEmpty()) {
+					
+					// Checks the given List of children if it contains Sections that
+					// were already included in the article in another place.
+					Set<Section<? extends KnowWEObjectType>> candidates 
+						= new HashSet<Section<? extends KnowWEObjectType>>(children);
+
+					List<Section<? extends KnowWEObjectType>> potentialDuplicates =
+						new ArrayList<Section<? extends KnowWEObjectType>>();
+				
+					for (Section<Include> inc:includeSec.getArticle().getIncludeSections()) {
+						if (inc != includeSec) {
+							inc.getAllNodesPreOrderToDepth(potentialDuplicates, 2);
+						}
+					}
+					
+					for (Section<? extends KnowWEObjectType> pd:potentialDuplicates) {
+						// Found duplicates get removed.
+						candidates.remove(pd);
+					}
+
+					if (candidates.isEmpty()) {
+						targets.add(new IncludeErrorSection("Error: All Sections at the address '" 
+								+ address.getOriginalAddress() + "' are already added in other Includes.",
+								includeSec, includeSec.getArticle()));
+					} else {
+						// restore order
+						for (Section<? extends KnowWEObjectType> sec:children) {
+							if (candidates.contains(sec)) {
+								targets.add(sec);
+							}
+						}
+					}
+				}
+			}
+			
+		} else {
+			targets.add(new IncludeErrorSection("Error: Include '" + includeSec.getOriginalText() 
+					+ "' not found.", includeSec, includeSec.getArticle()));
 		}
 		// check if the included Section originates from the requesting article,
 		// but isn't directly included from it -> causes update loops
@@ -253,7 +282,7 @@ public class KnowWEIncludeManager {
 		}
 		return targets;
 	}
-	
+
 	private IncludeErrorSection getNoValidAddressErrorSection(Section<Include> src) {
 		return new IncludeErrorSection("Error: No valid address found in '" + 
 				src.getOriginalText().trim() + "'.", src, src.getArticle());

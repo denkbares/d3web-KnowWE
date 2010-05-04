@@ -31,10 +31,10 @@ import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -46,11 +46,11 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 	@Override
 	public void init() {
 		this.sectionFinder = new AllTextFinderTrimmed();
-		this.addReviseSubtreeHandler(new SimpleAnnotationSubTreeHandler());
+		this.addSubtreeHandler(new SimpleAnnotationSubTreeHandler());
 	}
 
 	private class SimpleAnnotationSubTreeHandler implements
-			ReviseSubTreeHandler {
+			SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

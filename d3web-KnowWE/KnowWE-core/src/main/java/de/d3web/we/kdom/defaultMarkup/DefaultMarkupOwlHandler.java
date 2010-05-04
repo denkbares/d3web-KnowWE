@@ -35,11 +35,11 @@ import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -62,7 +62,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * 
  * @author Volker Belli (denkbares GmbH)
  */
-public class DefaultMarkupOwlHandler implements ReviseSubTreeHandler {
+public class DefaultMarkupOwlHandler implements SubtreeHandler {
 
 	private final DefaultMarkupType defaultMarkupType;
 	private URI conceptURI = null;

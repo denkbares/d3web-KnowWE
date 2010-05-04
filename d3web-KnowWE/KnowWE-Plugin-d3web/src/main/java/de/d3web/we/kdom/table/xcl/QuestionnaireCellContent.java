@@ -9,9 +9,9 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class QuestionnaireCellContent extends
@@ -29,18 +29,18 @@ public class QuestionnaireCellContent extends
 	}
 
 	private QuestionnaireCellContent() {
-		this.addReviseSubtreeHandler(new QuestionnaireCellHandler());
+		this.addSubtreeHandler(new QuestionnaireCellHandler());
 	}
 
-	class QuestionnaireCellHandler implements ReviseSubTreeHandler {
+	class QuestionnaireCellHandler implements SubtreeHandler<QuestionnaireCellContent> {
 
 		public static final String KEY_REPORT = "report_message";
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<QuestionnaireCellContent> s) {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
-					.getKBM(article, s);
+					.getKBM(article, this, s);
 
 			if (mgn == null) {
 				return null;

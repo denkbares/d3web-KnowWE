@@ -48,9 +48,9 @@ public class FlowchartType extends AbstractXMLObjectType {
 	protected void init() {
 
 		this.childrenTypes.add(FlowchartContentType.getInstance());
-		addReviseSubtreeHandler(new FlowchartTerminologySubTreeHandler());
+		addSubtreeHandler(new FlowchartTerminologySubTreeHandler());
 
-		RootType.getInstance().addReviseSubtreeHandler(
+		RootType.getInstance().addSubtreeHandler(
 				new DelegateSubtreeHandler(new FlowchartSubTreeHandler(), FlowchartType.class));
 		// setNotRecyclable(true);
 

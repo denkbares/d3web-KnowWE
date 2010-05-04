@@ -20,7 +20,7 @@ public abstract class QuestionRef extends D3webObjectRef<Question> {
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					s.getArticle().getWeb())
-					.getKBM(s.getArticle(), sec);
+					.getKBM(s.getArticle(), null, sec);
 
 			Question question = mgn.findQuestion(questionName);
 			return question;

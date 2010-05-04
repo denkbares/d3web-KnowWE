@@ -38,7 +38,7 @@ public abstract class AnswerRef extends D3webObjectRef<Choice> {
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					s.getArticle().getWeb())
-					.getKBM(s.getArticle(), sec);
+					.getKBM(s.getArticle(), null, sec);
 
 			Question question = mgn.findQuestion(questionName);
 			if (question != null && question instanceof QuestionChoice) {

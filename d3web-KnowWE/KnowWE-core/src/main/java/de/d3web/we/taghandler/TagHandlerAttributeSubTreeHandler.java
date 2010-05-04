@@ -24,16 +24,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * Reads out the attributes of TagHandlerTypeContent and stores
  * them in KnowWESectionStore.
  */
-public class TagHandlerAttributeSubTreeHandler implements ReviseSubTreeHandler {
+public class TagHandlerAttributeSubTreeHandler implements SubtreeHandler {
 
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 	

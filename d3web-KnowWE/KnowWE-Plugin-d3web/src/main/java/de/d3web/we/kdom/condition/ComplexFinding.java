@@ -42,7 +42,6 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.condition.old.Disjunct;
@@ -55,6 +54,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
@@ -65,7 +65,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 		this.childrenTypes.add(new OrOperator());
 		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new Disjunct());
-		this.addReviseSubtreeHandler(new ComplexFindingSubtreeHandler());
+		this.addSubtreeHandler(new ComplexFindingSubtreeHandler());
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 	}
 
 	
-	private class ComplexFindingSubtreeHandler implements ReviseSubTreeHandler {
+	private class ComplexFindingSubtreeHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

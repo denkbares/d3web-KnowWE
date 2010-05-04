@@ -4,12 +4,12 @@ import java.util.List;
 
 import de.d3web.report.Message;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public class DefaultMarkupSubtreeHandler implements ReviseSubTreeHandler {
+public class DefaultMarkupSubtreeHandler implements SubtreeHandler {
 
 	private final DefaultMarkup markup;
 

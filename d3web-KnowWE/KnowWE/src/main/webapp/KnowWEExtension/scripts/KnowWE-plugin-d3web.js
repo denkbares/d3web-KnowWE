@@ -1052,7 +1052,15 @@ KNOWWE.plugin.d3web.solutionstate = function(){
             
             var params = {
                 action : 'DPSSolutionsAction',
-                KWikiWeb : 'default_web'
+                KWikiWeb : 'default_web',
+                ArticleSelection : (function () {
+                    var box = document.getElementById('sdropdownbox');
+                    
+                    if(box.selectedIndex){
+                        return box.selectedIndex;
+                    }
+                    return "";
+                })()
             }
 
             var id = 'sstate-result';

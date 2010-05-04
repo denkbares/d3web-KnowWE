@@ -33,7 +33,6 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.basic.RoundBracedType;
@@ -41,6 +40,7 @@ import de.d3web.we.kdom.condition.CondKnownType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.rulesNew.ruleAction.SolutionValueAssignment;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 @Deprecated
@@ -53,10 +53,10 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType  {
 		this.childrenTypes.add(new CondKnownType());
 		this.childrenTypes.add(new Finding());
 		this.sectionFinder = new AllTextFinderTrimmed();
-		this.addReviseSubtreeHandler(new ConjunctSubTreeHandler());
+		this.addSubtreeHandler(new ConjunctSubTreeHandler());
 	}
 
-	private class ConjunctSubTreeHandler implements ReviseSubTreeHandler{
+	private class ConjunctSubTreeHandler implements SubtreeHandler{
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

@@ -14,7 +14,6 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
@@ -35,6 +34,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -71,7 +71,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			SectionFinder f = new AllTextFinderTrimmed();
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
-			this.addReviseSubtreeHandler(new CreateIndicationHandler());
+			this.addSubtreeHandler(new CreateIndicationHandler());
 		}
 		@Override
 		public de.d3web.we.kdom.objects.QuestionDef.QuestionType getQuestionType(Section<QuestionDef> s) {
@@ -90,7 +90,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		return o;
 	}
 
-	static class CreateIndicationHandler implements ReviseSubTreeHandler {
+	static class CreateIndicationHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
@@ -116,7 +116,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			if (answerSec != null || numCondSec != null) {
 
 				KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(article.getWeb())
-						.getKBM(article, qidSection);
+						.getKBM(article, this, qidSection);
 
 				String newRuleID = mgn.createRuleID();
 
@@ -185,7 +185,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 					QTEXT_START_SYMBOL));
 
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR8));
-			this.addReviseSubtreeHandler( new ReviseSubTreeHandler() {
+			this.addSubtreeHandler( new SubtreeHandler() {
 
 				@Override
 				public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
@@ -209,7 +209,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 							KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 									article.getWeb())
-									.getKBM(article, sec);
+									.getKBM(article, this, sec);
 							if (mgn == null) return null;
 
 							IDObject o = mgn.findQuestion(name);
@@ -316,7 +316,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			};
 			this.setSectionFinder(typeFinder);
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
-			this.addReviseSubtreeHandler(new StringEnumChecker(
+			this.addSubtreeHandler(new StringEnumChecker(
 					QUESTION_DECLARATIONS, new SimpleMessageError(
 							"Invalid Question type - allowing only: "
 									+ QUESTION_DECLARATIONS.toString())));

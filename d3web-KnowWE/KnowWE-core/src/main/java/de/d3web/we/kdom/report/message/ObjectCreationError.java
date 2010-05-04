@@ -20,16 +20,16 @@
 
 package de.d3web.we.kdom.report.message;
 
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class ObjectCreationError extends KDOMError{
 
 	private String s;
-	private Class<? extends ReviseSubTreeHandler> c;
+	private Class<? extends SubtreeHandler> c;
 	
-	public ObjectCreationError(String s, Class<? extends ReviseSubTreeHandler> c) {
+	public ObjectCreationError(String s, Class<? extends SubtreeHandler> c) {
 		this.s = s;
 		this.c = c;
 	}

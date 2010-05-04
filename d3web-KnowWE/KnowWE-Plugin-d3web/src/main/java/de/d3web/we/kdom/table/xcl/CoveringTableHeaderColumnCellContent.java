@@ -23,9 +23,9 @@ package de.d3web.we.kdom.table.xcl;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableLine;
@@ -47,16 +47,16 @@ public class CoveringTableHeaderColumnCellContent extends
 
 	@Override
 	public void init() {
-		this.addReviseSubtreeHandler(new CoveringTableHeaderColumnCellContentHandler());
+		this.addSubtreeHandler(new CoveringTableHeaderColumnCellContentHandler());
 	}
 
 	class CoveringTableHeaderColumnCellContentHandler implements
-			ReviseSubTreeHandler {
+			SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			KnowledgeBaseManagement mgn = D3webModule
-					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
+					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 			
 			Section<CoveringTableHeaderColumnCellContent> cell = s;
 			

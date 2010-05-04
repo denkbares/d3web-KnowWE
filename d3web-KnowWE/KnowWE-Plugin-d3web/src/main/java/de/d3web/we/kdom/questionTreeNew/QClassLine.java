@@ -7,7 +7,6 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionnaireDef;
@@ -18,6 +17,7 @@ import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
 public class QClassLine extends DefaultAbstractKnowWEObjectType {
@@ -30,7 +30,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		QuestionnaireDef qc = new QuestionnaireDef();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR5));
 		qc.setSectionFinder(new AllTextFinderTrimmed());
-		qc.addReviseSubtreeHandler(new CreateQuestionnaireHandler());
+		qc.addSubtreeHandler(new CreateQuestionnaireHandler());
 		this.childrenTypes.add(qc);
 	}
 
@@ -60,7 +60,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		};
 	}
 
-	static class CreateQuestionnaireHandler implements ReviseSubTreeHandler {
+	static class CreateQuestionnaireHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
@@ -69,7 +69,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 			
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
-					.getKBM(article, s);
+					.getKBM(article, this, s);
 			//ReviseSubtreeHandler will be called again with a correct mgn
 			if (mgn == null) return null;
 			

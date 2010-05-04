@@ -20,7 +20,7 @@ public class SolutionRef extends D3webObjectRef<Solution> {
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 						s.getArticle().getWeb())
-						.getKBM(s.getArticle(), sec);
+						.getKBM(s.getArticle(), null, sec);
 
 			Solution sol = mgn.findSolution(questionName);
 			return sol;

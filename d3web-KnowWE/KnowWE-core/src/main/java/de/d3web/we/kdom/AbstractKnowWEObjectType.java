@@ -21,11 +21,12 @@
 package de.d3web.we.kdom;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import de.d3web.report.Message;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -33,9 +34,10 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.DefaultErrorRenderer;
 import de.d3web.we.kdom.report.DefaultNoticeRenderer;
 import de.d3web.we.kdom.report.DefaultWarningRenderer;
-import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.subtreeHandler.Priority;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
@@ -62,9 +64,10 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
 	 *
-	 * @see ReviseSubTreeHandler
+	 * @see SubtreeHandler
 	 */
-	protected List<ReviseSubTreeHandler> subtreeHandler = new ArrayList<ReviseSubTreeHandler>();
+	protected TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> subtreeHandler 
+			= new TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>>();
 
 	/**
 	 * types can be activated and deactivated in KnowWE this field is holding
@@ -73,7 +76,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	protected boolean isActivated = true;
 
 	/**
-	 * a flag for the updating mechanism, which mananges translations to
+	 * a flag for the updating mechanism, which manages translations to
 	 * explicit knowledge formats
 	 */
 	private boolean isNotRecyclable = false;
@@ -137,17 +140,40 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 *
 	 * @return list of handlers
 	 */
-	public List<ReviseSubTreeHandler> getSubtreeHandler() {
+	@Override
+	public final TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> getSubtreeHandlers() {
 		return subtreeHandler;
+	}
+	
+	public final List<SubtreeHandler<? extends KnowWEObjectType>> getSubtreeHandlers(Priority p) {
+		List<SubtreeHandler<? extends KnowWEObjectType>> handlers = subtreeHandler.get(p);
+		if (handlers == null) {
+			handlers = new ArrayList<SubtreeHandler<? extends KnowWEObjectType>>();
+			subtreeHandler.put(p, handlers);
+		}
+		return handlers;
 	}
 
 	/**
-	 * Can be used to register new ReviseSubtreeHandlers
-	 *
-	 * @param handler
+	 * Registers the given SubtreeHandlers with the given Priority.
 	 */
-	public void addReviseSubtreeHandler(ReviseSubTreeHandler handler) {
-		subtreeHandler.add(handler);
+	public final void addSubtreeHandler(Priority p, SubtreeHandler<? extends KnowWEObjectType> handler) {
+		getSubtreeHandlers(p).add(handler);
+	}
+	
+	/**
+	 * Registers the given SubtreeHandlers at position <tt>pos</tt>
+	 * in the List of SubtreeHandlers of the given Priority.
+	 */
+	public final void addSubtreeHandler(int pos, Priority p, SubtreeHandler<? extends KnowWEObjectType> handler) {
+		getSubtreeHandlers(p).add(pos, handler);
+	}
+	
+	/**
+	 * Registers the given SubtreeHandlers with Priority.DEFAULT.
+	 */
+	public void addSubtreeHandler(SubtreeHandler<? extends KnowWEObjectType> handler) {
+		getSubtreeHandlers(Priority.DEFAULT).add(handler);
 	}
 
 	/**
@@ -247,7 +273,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * @param s
 	 * @param messages
 	 */
-	public static void storeMessages(KnowWEArticle article, Section s,
+	public static void storeMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
 			List<Message> messages) {
 		KnowWEUtils.storeSectionInfo(article.getWeb(), article
 				.getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
@@ -354,58 +380,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	// + "/span" + KnowWEEnvironment.HTML_GT;
 	// }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.KnowWErticle
-	 * , de.d3web.we.kdom.Section)
-	 */
-	@Override
-	public final void reviseSubtree(KnowWEArticle article, Section s) {
-
-		for (ReviseSubTreeHandler handler : subtreeHandler) {
-			try {
-				KDOMReportMessage message = handler.reviseSubtree(article, s);
-				if (message != null) {
-					KDOMReportMessage.cleanMessages(s, handler.getClass());
-					KDOMReportMessage.storeMessage(s, handler.getClass(), message);
-				}
-			}
-			catch (Throwable e) {
-				String text = "unexpected internal error in subtree handler '" + handler + "'";
-				Message msg = new Message(text + ": " + e);
-				storeMessages(article, s, Arrays.asList(msg));
-				// TODO: vb: store the error also in the article. (see below for
-				// more details)
-				//
-				// Idea 1:
-				// Any unexpected error (and therefore catched here) of the
-				// ReviseSubtreeHandlers
-				// shall be remarked at the "article" object. When rendering the
-				// article page,
-				// the error should be placed at the top level. A KnowWEPlugin
-				// to list all
-				// erroneous articles as links with its errors shall be
-				// introduced. A call to this
-				// plugin should be placed in the LeftMenu-page.
-				//
-				// Idea 2:
-				// The errors are not marked at the article, but as a special
-				// message
-				// type is added to this section. When rendering the page, the
-				// error
-				// message should be placed right before the section and the
-				// content
-				// of the section as original text in pre-formatted style (no
-				// renderer
-				// used!):
-				// {{{ <div class=error>EXCEPTION WITH MESSAGE</div> ORIGINAL
-				// TEXT }}}
-			}
-		}
-		s.setReusedBy(article.getTitle(), true);
-	}
 
 	/*
 	 * (non-Javadoc)

@@ -23,10 +23,11 @@ package de.d3web.we.terminology;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.subtreeHandler.Priority;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public abstract class D3webReviseSubTreeHandler implements ReviseSubTreeHandler {
+public abstract class D3webReviseSubTreeHandler implements SubtreeHandler {
 	
 	/**
 	 * @param article is the article you need the KBM from
@@ -35,7 +36,7 @@ public abstract class D3webReviseSubTreeHandler implements ReviseSubTreeHandler 
 	 * is returned if the Knowledge of the given section doesn't need to be rebuild.
 	 */
 	protected KnowledgeBaseManagement getKBM(KnowWEArticle article, Section sec) {
-		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, sec);
+		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, sec);
 	}
 	
 //	/**

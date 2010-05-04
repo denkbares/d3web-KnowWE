@@ -122,8 +122,8 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 			this.childrenTypes.add(new AnnotationType(parameter));
 		}
 		this.childrenTypes.add(new UnknownAnnotationType());
-		this.addReviseSubtreeHandler(new DefaultMarkupSubtreeHandler(markup));
-		this.addReviseSubtreeHandler(new DefaultMarkupOwlHandler(this));
+		this.addSubtreeHandler(new DefaultMarkupSubtreeHandler(markup));
+		this.addSubtreeHandler(new DefaultMarkupOwlHandler(this));
 	}
 
 	@Override
@@ -315,7 +315,7 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	public static Collection<Message> getAllErrorMessages(Section<? extends DefaultMarkupType> section) {
 		Set<Message> errorMessages = new HashSet<Message>(getErrorMessages(section));
 		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
-		section.getAllNodesParsingPostOrder(nodes);
+		section.getAllNodesPreOrder(nodes);
 		for (Section<?> child : nodes) {
 			errorMessages.addAll(getErrorMessages(child));
 		}

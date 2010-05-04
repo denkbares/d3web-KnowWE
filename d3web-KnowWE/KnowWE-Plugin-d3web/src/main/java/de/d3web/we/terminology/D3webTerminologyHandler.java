@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import de.d3web.we.d3webModule.DistributedRegistrationManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 
 /**
@@ -119,6 +121,9 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 			= new HashMap<String, Map<Class<? extends KnowledgeRecyclingObjectType>, Integer>>();
 	
 	
+	private Map<String, List<ReviseTuble>> notYetRevised 
+			= new HashMap<String, List<ReviseTuble>>();
+	
 	/**
 	 * Stores for each Article if the jar file already got built
 	 */
@@ -142,23 +147,24 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	
 	/**
 	 * @param article is the article you need the KBM from
+	 * @param h is the SubTreeHandler that calls this method. If no SubTreeHandler calls
+	 * 			this method, set <tt>h</tt> to <tt>null</tt>.
 	 * @param s is the knowledge containing section you need the KBM for 
 	 * @returns the KBM or <tt>null</tt> for article <tt>article</tt>. <tt>null</tt> 
 	 * is returned if the Knowledge of the given section doesn't need to be rebuild.
 	 */
-	public KnowledgeBaseManagement getKBM(KnowWEArticle article, Section s) {
+	public <T extends KnowWEObjectType> KnowledgeBaseManagement getKBM(KnowWEArticle article, SubtreeHandler<T> h, Section<T> s) {
 		if (buildKnowledge(article, s)) {
-			//System.out.println("Got KBM for " + s.getObjectType().getName());
 			return kbms.get(article.getTitle());
 		} else {
-			s.setNotYetRevisedBy(article.getTitle(), true);
-			// TODO: Thats not completely accurate, because actually not the
-			// the sections is 'not yet revised' but the ReviseSubTreeHandler
-			// who calls this method hasn't done (will not do) is job yet (every 
-			// Section can have more than one ReviseSubTreeHandler).
-			// But to differentiate between single SubTreeHandler, an interface
-			// change is necessary... maybe that can be done along with other
-			// big (interface) changes. 
+			if (h != null) {
+				List<ReviseTuble> tublesList = notYetRevised.get(article.getTitle());
+				if (tublesList == null) {
+					tublesList = new ArrayList<ReviseTuble>();
+					notYetRevised.put(article.getTitle(), tublesList);
+				}
+				tublesList.add(new ReviseTuble(h, s));
+			}
 			return null;
 		}
 	}
@@ -197,6 +203,7 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 		finishedKBM.put(art.getTitle(), false);
 		typesToClean.put(art.getTitle(), new HashSet<Class<? extends KnowledgeRecyclingObjectType>>());
 		recyclingTypes.put(art.getTitle(), new HashSet<Class<? extends KnowledgeRecyclingObjectType>>());
+		notYetRevised.put(art.getTitle(), new ArrayList<ReviseTuble>());
 		terminologySectionsCount.put(art.getTitle(), 0);
 		knowledgeSectionsCount.put(art.getTitle(), new HashMap<Class<? extends KnowledgeRecyclingObjectType>, Integer>());
 		kbms.put(art.getTitle(), KnowledgeBaseManagement.createInstance());
@@ -209,7 +216,7 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	 */
 	@Override
 	public void finishArticle(KnowWEArticle art) {
-			KnowledgeBaseManagement kbm = this.getKBM(art, art.getSection());
+			KnowledgeBaseManagement kbm = this.getKBM(art, null, art.getSection());
 			if(!isEmpty(kbm)) {
 				DistributedRegistrationManager.getInstance().registerKnowledgeBase(kbm, 
 						art.getTitle(), art.getWeb());
@@ -253,35 +260,25 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	 * reparsed or if Knowledge is already in the reused old KnowledgeBase
 	 */
 	@Override
-	public boolean buildKnowledge(KnowWEArticle article, Section s) {
+	public boolean buildKnowledge(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
 		String title = article.getTitle();
 		
-		// if the finishedKBM flag is set, always return true, so the KBM gets
-		// returned from the getKBM method
-		// the flag gets set after all Sections are revised, respectively after
+		// If the finishedKBM flag is set, always return true, so the KBM gets
+		// returned from the getKBM method.
+		// The flag gets set after all Sections are revised, respectively after
 		// the knowledge is completely build or recycled... so
 		// for example renderer get the KBM without further checks.
+		// The same applies if the SubtreeHandler is null (method not called by an
+		// SubtreeHandler).
 		if (finishedKBM.get(title)) {
 			return true;
 		}
 		
-		// counts knowledge containing Sections of this version of the article so it
+		// Counts knowledge containing Sections of this version of the article so it
 		// can later be compared to the number in the last version.
-		if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
-			recyclingTypes.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
-			
-			Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> countMap = 
-				knowledgeSectionsCount.get(title);
-			if (!countMap.containsKey(s.getObjectType().getClass())) {
-				countMap.put(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass(), 0);
-			}
-			countMap.put(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass(), 
-					countMap.get(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass()) + 1);
-		} else {
-			terminologySectionsCount.put(title, terminologySectionsCount.get(title) + 1);
-		}
+		changeSectionCount(title, s, 1);
 		
-		// if this flag is set, all knowledge needs to be reparsed, so
+		// If this flag is set, all knowledge needs to be reparsed, so
 		// return true every time.
 		if (usingNewKBM.get(title)) {
 			return true;
@@ -289,20 +286,20 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 		
 		KnowledgeBaseManagement lastKbm = lastKbms.get(title);
 		
-		// if this Section has changed or is the root Section
+		// If this Section has changed or is the root Section.
 		if (s.getObjectType() instanceof KnowWEArticle 
 				|| !s.isReusedBy(title)) {
 			
-			// in case the useOldKBM flag is already set from a previous Section
+			// In case the useOldKBM flag is already set from a previous Section.
 			if (usingOldKBM.get(title)) {
 				if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
-					// add the ObjectType to the List of ObjectTypes whose knowledge need
+					// Add the ObjectType to the List of ObjectTypes whose knowledge need
 					// to get cleaned in the KnowledgeBase (happens when root Sections calls
 					// the buildKnowledge method), if the ObjectType implements the the
-					// Interface KnowledgeRecyclingObjectType, indicating that this is even possible
+					// Interface KnowledgeRecyclingObjectType, indicating that this is even possible.
 					typesToClean.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
 				} else if (!(s.getObjectType() instanceof KnowWEArticle)) {
-					// since the Sections with an ObjectTypes not implementing the interface
+					// Since the Sections with an ObjectTypes not implementing the interface
 					// KnowledgeRecyclingObjectType should be parsed and calling this method
 					// before the ones implementing that interface, this only happen if something
 					// is wrong with that order.
@@ -310,28 +307,28 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 						.log(Level.WARNING, "Wrong order of parsing for ObjectType '" +
 								s.getObjectType() + "'!");
 				} else if (lastTerminologySectionsCount.get(title) != terminologySectionsCount.get(title)) {
-					// this is the case, when a terminology containing Section gets removed from the article
+					// This is the case, when a terminology containing Section gets removed from the article
 					// but only Sections with recyclable knowledge get changed. None the less a complete
 					// rebuild is needed.
 					kbms.put(title, KnowledgeBaseManagement.createInstance());
 					useNewKBM(article, s);
 				} else {
-					// the Section must be the root Section (objectType instanceof KnowWEArticle)
-					// so there is nothing left but to clean the reused KnowledgeBase
+					// The Section must be the root Section (objectType instanceof KnowWEArticle)
+					// so there is nothing left but to clean the reused KnowledgeBase.
 					cleanKnowledge(article);
 				}
 				return true;
 			}
 			
-			// during the building of an Article, this point is only reached the first time 
-			// a changed Section or the root Section calls this method
+			// During the building of an Article, this point is only reached the first time 
+			// a changed Section or the root Section calls this method.
 			if (lastKbm != null && isEmpty(kbms.get(title))
 					&& (s.getObjectType() instanceof KnowledgeRecyclingObjectType
 							|| (s.getObjectType() instanceof KnowWEArticle 
 								&& lastTerminologySectionsCount.get(title) 
 									== terminologySectionsCount.get(title)))) {
 				
-				// if there exists a previous version of the KnowledgeBase, there hasn't been
+				// If there exists a previous version of the KnowledgeBase, there hasn't been
 				// added any knowledge to the current KnowledgeBase and the current (changed) Section
 				// contains knowledge that can be modified in the KnowledgeBase or the current Section
 				// is the root Section and the number of terminology containing Sections hasn't changed
@@ -340,19 +337,19 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 				usingOldKBM.put(title, true);
 				kbms.put(title, lastKbm);
 				if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
-					// remember to clean that type of knowledge in the KnowledgeBase
+					// Remember to clean that type of knowledge in the KnowledgeBase.
 					typesToClean.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
 				}
 				if (s.getObjectType() instanceof KnowWEArticle) {
-					// this is the root Section respectively the last time in the process of
+					// This is the root Section respectively the last time in the process of
 					// building this article this method is called, so its time to clean the
 					// KnowledgeBase (it is still possible, that the some knowledge containing
-					// Sections got deleted, so their knowledge needs to get deleted too)
+					// Sections got deleted, so their knowledge needs to get deleted too).
 					cleanKnowledge(article);
 				}
 				return true;
 			} else {
-				// if the last version of the KnowledgeBase can not be reused it needs to be rebuild
+				// If the last version of the KnowledgeBase can not be reused it needs to be rebuild.
 				useNewKBM(article, s);
 				return true;
 			}
@@ -365,8 +362,8 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 		Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> lastCountMap = lastKnowledgeSectionsCount.get(article.getTitle());
 		for (Class<? extends KnowledgeRecyclingObjectType> clazz:lastCountMap.keySet()) {
 			if (countMap.get(clazz) == null || !countMap.get(clazz).equals(lastCountMap.get(clazz))) {
-				// add the ObjectTypes whose number of Sections in the article has changed
-				// to the list of ObjectTypes to clean
+				// Add the ObjectTypes whose number of Sections in the article has changed
+				// to the list of ObjectTypes to clean.
 				typesToClean.get(article.getTitle()).add(clazz);
 			}
 		}
@@ -382,18 +379,37 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 		}
 	}
 	
-	private void useNewKBM(KnowWEArticle article, Section s) {
+	private <T extends KnowWEObjectType> void useNewKBM(KnowWEArticle article, Section<T> s) {
 		usingNewKBM.put(article.getTitle(), true);
-		
 		savedToJar.put(article.getTitle(), false);
-		List<Section<? extends KnowWEObjectType>> sectionsToRevise = article.getAllNodesParsingPostOrder();
-		List<Section<? extends KnowWEObjectType>> strSub = sectionsToRevise.subList(0, sectionsToRevise.indexOf(s));
-		for (Section<? extends KnowWEObjectType> sec:strSub) {
-			if (sec.isNotYetRevisedBy(article.getTitle())) {
-				// see TODO @ getKBM(...)
-				sec.getObjectType().reviseSubtree(article, sec);
-				sec.setNotYetRevisedBy(article.getTitle(), false);
+		
+		List<ReviseTuble> reviseList = notYetRevised.get(article.getTitle());
+		
+		if (reviseList != null) {
+			for (ReviseTuble tuble:reviseList) {
+				tuble.section.runSubtreeHandler(article, tuble.handler);
+				// Since these Section get counted twice, count -1 here
+				// to set the counter right. 
+				// Maybe it is possible to don't count them twice in the
+				// first place... 
+				changeSectionCount(article.getTitle(), s, -1);
 			}
+		}	
+	}
+	
+	private void changeSectionCount(String title, Section<? extends KnowWEObjectType> s, int i) {
+		if (s.getObjectType() instanceof KnowledgeRecyclingObjectType) {
+			recyclingTypes.get(title).add(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass());
+			
+			Map<Class<? extends KnowledgeRecyclingObjectType>, Integer> countMap = 
+				knowledgeSectionsCount.get(title);
+			if (!countMap.containsKey(s.getObjectType().getClass())) {
+				countMap.put(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass(), 0);
+			}
+			countMap.put(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass(), 
+					countMap.get(((KnowledgeRecyclingObjectType) s.getObjectType()).getClass()) + i);
+		} else {
+			terminologySectionsCount.put(title, terminologySectionsCount.get(title) + i);
 		}
 	}
 
@@ -432,5 +448,18 @@ public class D3webTerminologyHandler implements KnowledgeRepresentationHandler {
 	public void setWeb(String web) {
 		this.web=web;
 	}
+	
+	private class ReviseTuble {
+
+		private SubtreeHandler<? extends KnowWEObjectType> handler;
+		
+		private Section<? extends KnowWEObjectType> section;
+		
+		private ReviseTuble(SubtreeHandler<? extends KnowWEObjectType> h, Section<? extends KnowWEObjectType> s) {
+			handler = h;
+			section = s;
+		}
+	}
+
 	
 }

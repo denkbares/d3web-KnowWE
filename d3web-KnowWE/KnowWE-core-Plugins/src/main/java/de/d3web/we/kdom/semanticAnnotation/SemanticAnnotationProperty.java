@@ -36,11 +36,11 @@ import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -55,7 +55,7 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType
 		this.sectionFinder = new AnnotationPropertySectionFinder();
 		this.childrenTypes.add(new SemanticAnnotationPropertyDelimiter());
 		this.childrenTypes.add(new SemanticAnnotationPropertyName());
-		this.addReviseSubtreeHandler(new SemanticAnnotationPropertySubTreeHandler());
+		this.addSubtreeHandler(new SemanticAnnotationPropertySubTreeHandler());
 	}
 
 	public static class AnnotationPropertySectionFinder extends SectionFinder {
@@ -77,7 +77,7 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType
 	}
 
 	private class SemanticAnnotationPropertySubTreeHandler implements
-			ReviseSubTreeHandler {
+			SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

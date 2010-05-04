@@ -23,22 +23,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * Applies the subtree handler to all childs of s of the given type
  * @author Reinhard Hatko
  * Created on: 17.12.2009
  */
-public class DelegateSubtreeHandler implements ReviseSubTreeHandler {
+public class DelegateSubtreeHandler implements SubtreeHandler {
 
-	private final ReviseSubTreeHandler handler;
+	private final SubtreeHandler handler;
 	private final Class sectionType;
 	
 	
-	public DelegateSubtreeHandler(ReviseSubTreeHandler handler,
+	public DelegateSubtreeHandler(SubtreeHandler handler,
 			Class sectionType) {
 		this.handler = handler;
 		this.sectionType = sectionType;

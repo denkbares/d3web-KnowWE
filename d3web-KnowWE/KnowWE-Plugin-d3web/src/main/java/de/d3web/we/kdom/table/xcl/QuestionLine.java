@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.TableLine;
@@ -50,11 +50,11 @@ public class QuestionLine extends TableLine {
 	
 	@Override
 	public void init() {
-		this.addReviseSubtreeHandler(new QuestionLineHandler());
+		this.addSubtreeHandler(new QuestionLineHandler());
 	}
 
 	
-	class QuestionLineHandler implements ReviseSubTreeHandler {
+	class QuestionLineHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

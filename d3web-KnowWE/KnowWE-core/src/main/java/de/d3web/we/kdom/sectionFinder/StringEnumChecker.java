@@ -21,13 +21,13 @@
 package de.d3web.we.kdom.sectionFinder;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 
-public class StringEnumChecker implements ReviseSubTreeHandler{
+public class StringEnumChecker implements SubtreeHandler{
 
 	private String [] values;
 	private KDOMError error;

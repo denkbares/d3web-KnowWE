@@ -59,11 +59,12 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 	protected void init() {
 		this.childrenTypes.add(new XCList());
 		this.childrenTypes.add(new CommentLineType());
-		subtreeHandler.add(new CoveringListContentSubTreeHandler());
+		this.addSubtreeHandler(new CoveringListContentSubTreeHandler());
 		this.setCustomRenderer(new EditSectionRenderer());
 	}
 	
 	public class CoveringListContentSubTreeHandler extends D3webReviseSubTreeHandler {
+		
 
 //		KnowledgeBaseManagement kbm = null;
 //		String currentWeb = "";

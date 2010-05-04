@@ -7,7 +7,6 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
@@ -17,6 +16,7 @@ import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
@@ -43,11 +43,11 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
 		QuestionTreeAnswerDef aid = new QuestionTreeAnswerDef();
 		aid.setSectionFinder(new AllTextFinderTrimmed());
-		aid.addReviseSubtreeHandler(new createAnswerHandler());
+		aid.addSubtreeHandler(new createAnswerHandler());
 		this.childrenTypes.add(aid);
 	}
 
-	static class createAnswerHandler implements ReviseSubTreeHandler {
+	static class createAnswerHandler implements SubtreeHandler {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -57,7 +57,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
 				KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
-					.getKBM(article, s);
+					.getKBM(article, this, s);
 
 				if (mgn==null) return null;
 

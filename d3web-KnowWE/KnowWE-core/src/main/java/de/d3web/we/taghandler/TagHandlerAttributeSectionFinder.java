@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class TagHandlerAttributeSectionFinder implements ReviseSubTreeHandler {
+public class TagHandlerAttributeSectionFinder implements SubtreeHandler {
 
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 	

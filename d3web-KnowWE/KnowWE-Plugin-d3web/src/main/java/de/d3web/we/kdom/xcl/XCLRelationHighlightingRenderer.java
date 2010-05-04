@@ -79,7 +79,7 @@ public class XCLRelationHighlightingRenderer extends KnowWEDomRenderer {
 			return;
 		}
 
-		Session session = D3webUtils.getSession(sec, user);
+		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 		
 		if (session != null) {
 			

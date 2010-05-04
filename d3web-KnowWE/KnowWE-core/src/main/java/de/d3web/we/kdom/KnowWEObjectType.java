@@ -22,9 +22,12 @@ package de.d3web.we.kdom;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.TreeMap;
 
 import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.subtreeHandler.Priority;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * @author Jochen
@@ -42,7 +45,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
  * @see getRenderer
  *
  */
-public interface KnowWEObjectType extends KnowWEType{
+public interface KnowWEObjectType extends KnowWEType {
 
 
 	/**
@@ -71,7 +74,9 @@ public interface KnowWEObjectType extends KnowWEType{
 	 * @param section
 	 * @param kbm
 	 */
-	public abstract void reviseSubtree(KnowWEArticle article, Section section);
+	//public void reviseSubtree(KnowWEArticle article, Section<? extends KnowWEObjectType> section, Priority p);
+	
+	//public <T extends KnowWEObjectType> void reviseSubtree(KnowWEArticle article, Section<T> section, SubtreeHandler<T> h);
 
 	public Collection<Section> getAllSectionsOfType();
 
@@ -95,4 +100,8 @@ public interface KnowWEObjectType extends KnowWEType{
 	public boolean isNotRecyclable();
 
 	public void setNotRecyclable(boolean notRecyclable);
+	
+	public TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> getSubtreeHandlers();
+	
+	public List<SubtreeHandler<? extends KnowWEObjectType>> getSubtreeHandlers(Priority p);
 }

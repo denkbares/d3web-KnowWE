@@ -24,9 +24,9 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 
 public interface KnowWEType {
 	
-	public boolean isType(Class <?extends KnowWEObjectType> clazz);
+	public boolean isType(Class <? extends KnowWEObjectType> clazz);
 	
-	public boolean isAssignableFromType(Class <?extends KnowWEObjectType> clazz);
+	public boolean isAssignableFromType(Class <? extends KnowWEObjectType> clazz);
 
 	/**
 	 * When KnowWE renders the article this renderer is used to render this node.

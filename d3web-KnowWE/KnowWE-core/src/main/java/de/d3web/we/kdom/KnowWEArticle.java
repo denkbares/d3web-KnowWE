@@ -20,8 +20,6 @@
 
 package de.d3web.we.kdom;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +39,7 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.validation.Validator;
 
 /**
@@ -254,31 +254,32 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			return num;
 		}
 	}
-
-	public Section getNode(String nodeID) {
+	
+	@Deprecated
+	public Section<? extends KnowWEObjectType> getNode(String nodeID) {
 		return sec.getNode(nodeID);
 	}
 
-	/**
-	 * stores report as html-page on harddisk
-	 * 
-	 * @param topicname
-	 * @param htmlReport
-	 */
-	private void writeOutReport(String topicname, String htmlReport, String web) {
-		File f = new File(KnowWEEnvironment.getInstance()
-				.getArticleManager(web).getReportPath()
-				+ topicname + ".html");
-		try {
-			FileOutputStream out = new FileOutputStream(f);
-			out.write(htmlReport.getBytes());
-			out.flush();
-			out.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	/**
+//	 * stores report as html-page on harddisk
+//	 * 
+//	 * @param topicname
+//	 * @param htmlReport
+//	 */
+//	private void writeOutReport(String topicname, String htmlReport, String web) {
+//		File f = new File(KnowWEEnvironment.getInstance()
+//				.getArticleManager(web).getReportPath()
+//				+ topicname + ".html");
+//		try {
+//			FileOutputStream out = new FileOutputStream(f);
+//			out.write(htmlReport.getBytes());
+//			out.flush();
+//			out.close();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	// /**
 	// * updates the distributed reasoning engine when KB has changed after
@@ -367,11 +368,12 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return report;
 	}
 
-	public Section findSmallestNodeContaining(int start, int end) {
+	public Section<? extends KnowWEObjectType> findSmallestNodeContaining(int start, int end) {
 		return sec.findSmallestNodeContaining(start, end);
 	}
 
-	private Map<String, Map<String, Section>> knownResults = new HashMap<String, Map<String, Section>>();
+	private Map<String, Map<String, Section<? extends KnowWEObjectType>>> knownResults 
+			= new HashMap<String, Map<String, Section<? extends KnowWEObjectType>>>();
 
 	/**
 	 * Finds all children with the same path of ObjectTypes in the KDOM.
@@ -380,12 +382,12 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * 
 	 * @return Map of Sections, using their originalText as key.
 	 */
-	public Map<String, Section> findChildrenOfTypeMap(
+	public Map<String, Section<? extends KnowWEObjectType>> findChildrenOfTypeMap(
 			List<Class<? extends KnowWEObjectType>> path) {
 		String stringPath = path.toString();
-		Map<String, Section> foundChildren = knownResults.get(stringPath);
+		Map<String, Section<? extends KnowWEObjectType>> foundChildren = knownResults.get(stringPath);
 		if (foundChildren == null) {
-			foundChildren = new HashMap<String, Section>();
+			foundChildren = new HashMap<String, Section<? extends KnowWEObjectType>>();
 			sec.findSuccessorsOfTypeAtTheEndOfPath(path, 0, foundChildren);
 			knownResults.put(stringPath, foundChildren);
 		}
@@ -399,9 +401,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * 
 	 * @return List of Sections
 	 */
-	public List<Section> findChildrenOfTypeList(
+	public List<Section<? extends KnowWEObjectType>> findChildrenOfTypeList(
 			LinkedList<Class<? extends KnowWEObjectType>> path) {
-		List<Section> foundChildren = new ArrayList<Section>();
+		List<Section<? extends KnowWEObjectType>> foundChildren 
+				= new ArrayList<Section<? extends KnowWEObjectType>>();
 		sec.findSuccessorsOfTypeAtTheEndOfPath(path, 0, foundChildren);
 		return foundChildren;
 	}
@@ -418,12 +421,18 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return nodes;
 	}
 
-	public List<Section<? extends KnowWEObjectType>> getAllNodesParsingPostOrder() {
+//	public List<Section<? extends KnowWEObjectType>> getAllNodesParsingPostOrder() {
+//		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
+//		sec.getAllNodesParsingPostOrder(nodes);
+//		return nodes;
+//	}
+
+	public List<Section<? extends KnowWEObjectType>> getAllNodesPostOrder() {
 		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
-		sec.getAllNodesParsingPostOrder(nodes);
+		sec.getAllNodesPostOrder(nodes);
 		return nodes;
 	}
-
+	
 	@Override
 	public String toString() {
 		return sec.getOriginalText();
@@ -434,14 +443,31 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	public void reviseArticle() {
-		List<Section<? extends KnowWEObjectType>> nodes = getAllNodesParsingPostOrder();
-		for (Section<? extends KnowWEObjectType> node : nodes) {
-			// set false for the case this is an reused node with the flag still 
-			// set from an previous updating...
-			node.setNotYetRevisedBy(title, false);
-			node.getObjectType().reviseSubtree(this, node);
+		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap = 
+				Priority.createPrioritySortedList(getAllNodesPostOrder());
+		
+		for (Priority priority:prioMap.descendingKeySet()) {
+			List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
+			for (Section<? extends KnowWEObjectType> section:prioList) {
+				section.setReviseAgain(false);
+				section.runSubtreeHandlers(this, priority);
+			}
+			
 		}
 	}
+	
+//	// This method is needed for the case that Sections get reused and are flagged
+//	// false from previous revising.
+//	private List<Section<? extends KnowWEObjectType>> setAllHandlersToNotYetRevised
+//			(List<Section<? extends KnowWEObjectType>> sectionList) {
+//		for (Section<? extends KnowWEObjectType> section:sectionList) {
+//			for (SubtreeHandler<? extends KnowWEObjectType> handler
+//					:section.getObjectType().getSubtreeHandlers()) {
+//				handler.setNotYetRevisedBy(title, true);
+//			}
+//		}
+//		return sectionList;
+//	}
 
 	public boolean isFullParse() {
 		return this.fullParse;

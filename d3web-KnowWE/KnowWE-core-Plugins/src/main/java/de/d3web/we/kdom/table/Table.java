@@ -23,10 +23,10 @@ package de.d3web.we.kdom.table;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.xml.XMLContent;
 
 /**
@@ -89,10 +89,10 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType implements T
 		childrenTypes.add(new TableLine());
 		this.sectionFinder = new AllTextSectionFinder();
 		this.setCustomRenderer(new TableContentRenderer());
-		this.addReviseSubtreeHandler(new TableSubTreeHandler());
+		this.addSubtreeHandler(new TableSubTreeHandler());
 	}
 
-	private class TableSubTreeHandler implements ReviseSubTreeHandler {
+	private class TableSubTreeHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section sec) {

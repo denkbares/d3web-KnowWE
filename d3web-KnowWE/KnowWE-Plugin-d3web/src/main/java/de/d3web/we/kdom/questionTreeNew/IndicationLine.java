@@ -8,7 +8,6 @@ import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.report.KDOMError;
@@ -19,6 +18,7 @@ import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
 public class IndicationLine extends DefaultAbstractKnowWEObjectType {
@@ -30,17 +30,17 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 		QuestionnaireDef qc = new QuestionnaireDef();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 		qc.setSectionFinder(new AllTextFinderTrimmed());
-		qc.addReviseSubtreeHandler(new CreateIndication());
+		qc.addSubtreeHandler(new CreateIndication());
 		this.childrenTypes.add(qc);
 	}
 
-	static class CreateIndication implements ReviseSubTreeHandler {
+	static class CreateIndication implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
-					.getKBM(article, s);
+					.getKBM(article, this, s);
 
 			Section<QuestionnaireDef> indicationSec = (s);
 

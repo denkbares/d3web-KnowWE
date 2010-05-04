@@ -124,7 +124,7 @@ public class TemplateTagHandler extends AbstractTagHandler{
 	public static List<Section<Template>> getTemplateTypes(KnowWEArticle article) {
 		ArrayList<Section<? extends KnowWEObjectType>> found =
 			new ArrayList<Section<? extends KnowWEObjectType>>();
-		article.getSection().getAllNodesParsingPreOrder(found);
+		article.getSection().getAllNodesPreOrder(found);
 //		article.getSection().findSuccessorsOfType(TemplateType.class, found);
 		ArrayList<Section<Template>> cleaned = new ArrayList<Section<Template>>();
 		for (Section<? extends KnowWEObjectType> s : found) {

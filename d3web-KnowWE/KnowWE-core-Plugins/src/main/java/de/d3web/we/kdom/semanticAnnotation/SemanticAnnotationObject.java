@@ -38,7 +38,6 @@ import de.d3web.we.core.semantic.PropertyManager;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
@@ -46,6 +45,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -64,7 +64,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 		this.childrenTypes.add(subject);
 		this.childrenTypes.add(new SimpleAnnotation());
 		this.sectionFinder = new AllTextSectionFinder();
-		this.addReviseSubtreeHandler(new SemanticAnnotationObjectSubTreeHandler());
+		this.addSubtreeHandler(new SemanticAnnotationObjectSubTreeHandler());
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 	}
 
 	private class SemanticAnnotationObjectSubTreeHandler implements
-			ReviseSubTreeHandler {
+			SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

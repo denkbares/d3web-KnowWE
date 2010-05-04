@@ -31,13 +31,13 @@ import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * @author Jochen
@@ -57,10 +57,10 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 		e.setSteal(true);
 		this.childrenTypes.add(e);
 		this.childrenTypes.add(new PropertyIDDefinition());
-		this.addReviseSubtreeHandler(new PropertyDashTreeElementContentOWLSubTreeHandler());
+		this.addSubtreeHandler(new PropertyDashTreeElementContentOWLSubTreeHandler());
 	}
 
-	private class PropertyDashTreeElementContentOWLSubTreeHandler implements ReviseSubTreeHandler
+	private class PropertyDashTreeElementContentOWLSubTreeHandler implements SubtreeHandler
 	{
 
 		@Override

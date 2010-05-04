@@ -22,7 +22,7 @@ package de.d3web.we.kdom;
 
 
 
-public class UndefinedSection extends Section{
+public class UndefinedSection extends Section {
 	
 
 	public UndefinedSection(String text, int offset, KnowWEArticle article) {

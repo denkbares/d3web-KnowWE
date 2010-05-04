@@ -185,8 +185,9 @@ public class Sectionizer {
 							path.add(ob.getClass());
 
 							// find all Sections with same path of ObjectTypes in the last version
-							Map<String, Section> sectionsOfSameType = article.getLastVersionOfArticle()
-									.findChildrenOfTypeMap(path);
+							Map<String, Section<? extends KnowWEObjectType>> sectionsOfSameType 
+									= article.getLastVersionOfArticle()
+										.findChildrenOfTypeMap(path);
 
 							Section match = sectionsOfSameType.remove(secText
 									.substring(result.getStart(), result.getEnd()));

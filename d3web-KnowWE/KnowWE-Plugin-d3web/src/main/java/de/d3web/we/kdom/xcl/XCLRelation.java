@@ -35,7 +35,6 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.condition.ComplexFinding;
@@ -44,6 +43,7 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.Patterns;
 
@@ -56,10 +56,10 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new RegexSectionFinder(Patterns.XCRelation,
 				Pattern.MULTILINE, 1);
 		this.setCustomRenderer(XCLRelationKdomIdWrapperRenderer.getInstance());
-		this.addReviseSubtreeHandler(new XCLRelationOWLSubTreeHandler());
+		this.addSubtreeHandler(new XCLRelationOWLSubTreeHandler());
 	}
 
-	private class XCLRelationOWLSubTreeHandler implements ReviseSubTreeHandler{
+	private class XCLRelationOWLSubTreeHandler implements SubtreeHandler{
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

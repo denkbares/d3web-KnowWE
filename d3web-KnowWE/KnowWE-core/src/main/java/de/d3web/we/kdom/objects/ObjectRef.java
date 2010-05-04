@@ -2,10 +2,10 @@ package de.d3web.we.kdom.objects;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * A type representing a text slice, which _references_ an (existing) Object. It
@@ -34,12 +34,12 @@ public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType imple
 
 	public ObjectRef() {
 		// TODO make ObjectChecker singleton (somehow)
-		this.addReviseSubtreeHandler(new ObjectChecker());
+		this.addSubtreeHandler(new ObjectChecker());
 	}
 
 
 
-	class ObjectChecker implements ReviseSubTreeHandler<ObjectRef<T>> {
+	class ObjectChecker implements SubtreeHandler<ObjectRef<T>> {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<ObjectRef<T>> s) {

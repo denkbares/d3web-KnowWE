@@ -5,21 +5,21 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class SolutionDef extends D3webObjectDef<Solution> {
 
 	public SolutionDef() {
 		super("QUESTION_STORE_KEY");
-		this.addReviseSubtreeHandler(new CreateSolutionHandler());
+		this.addSubtreeHandler(new CreateSolutionHandler());
 	}
 
-	static class CreateSolutionHandler implements ReviseSubTreeHandler<SolutionDef> {
+	static class CreateSolutionHandler implements SubtreeHandler<SolutionDef> {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article,
@@ -30,7 +30,7 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb())
-					.getKBM(article, qidSection);
+					.getKBM(article, this, qidSection);
 			if (mgn == null) return null;
 
 			IDObject o = mgn.findSolution(name);

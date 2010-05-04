@@ -36,7 +36,7 @@ public class KnowledgeReaderType extends DefaultMarkupType {
 	
 	public KnowledgeReaderType() {
 		super(MARKUP);
-		this.addReviseSubtreeHandler(new KnowledgeReaderReviseSubtreeHandler());
+		this.addSubtreeHandler(new KnowledgeReaderReviseSubtreeHandler());
 	}
 	
 	

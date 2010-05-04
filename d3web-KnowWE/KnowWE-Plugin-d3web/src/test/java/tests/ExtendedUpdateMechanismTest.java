@@ -84,7 +84,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		
 		List<Section<? extends KnowWEObjectType>> sections1 = article1.getAllNodesPreOrder();
 		
-		KnowledgeBase kb1 =  d3Handler.getKBM(article1, article1.getSection()).getKnowledgeBase();
+		KnowledgeBase kb1 =  d3Handler.getKBM(article1, null, article1.getSection()).getKnowledgeBase();
 		
 		/*
 		 * Init a second, identical Article
@@ -94,7 +94,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 		
 		List<Section<? extends KnowWEObjectType>> sections2 = article2.getAllNodesPreOrder();
 		
-		KnowledgeBase kb2 =  d3Handler.getKBM(article2, article2.getSection()).getKnowledgeBase();
+		KnowledgeBase kb2 =  d3Handler.getKBM(article2, null, article2.getSection()).getKnowledgeBase();
 		
 		assertEquals("Articles dont have the same amount of sections:", sections1.size(), sections2.size());
 		
@@ -133,7 +133,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 				types, web);
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article1);
 		List<Section<? extends KnowWEObjectType>> sections1 = article1.getAllNodesPreOrder();		
-		KnowledgeBase kb1 = d3Handler.getKBM(article1, article1.getSection()).getKnowledgeBase();
+		KnowledgeBase kb1 = d3Handler.getKBM(article1, null, article1.getSection()).getKnowledgeBase();
 		
 		/*
 		 * Init a second, altered Article
@@ -142,7 +142,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 				types, "default_web");
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article2);		
 		List<Section<? extends KnowWEObjectType>> sections2 = article2.getAllNodesPreOrder();		
-		KnowledgeBase kb2 = d3Handler.getKBM(article2, article2.getSection()).getKnowledgeBase();		
+		KnowledgeBase kb2 = d3Handler.getKBM(article2, null, article2.getSection()).getKnowledgeBase();		
 		Collection<KnowledgeSlice> slices2 = kb2.getAllKnowledgeSlices();
 		Set<de.d3web.core.inference.Rule> rules2 = new HashSet<de.d3web.core.inference.Rule>();
 		for (KnowledgeSlice slice:slices2) {
@@ -182,7 +182,7 @@ public class ExtendedUpdateMechanismTest extends TestCase {
 				types, web);
 		KnowWEEnvironment.getInstance().getArticleManager(web).saveUpdatedArticle(article3);	
 		List<Section<? extends KnowWEObjectType>> sections3 = article3.getAllNodesPreOrder();
-		KnowledgeBase kb3 = d3Handler.getKBM(article3, article3.getSection()).getKnowledgeBase();
+		KnowledgeBase kb3 = d3Handler.getKBM(article3, null, article3.getSection()).getKnowledgeBase();
 		Collection<KnowledgeSlice> slices3 = kb2.getAllKnowledgeSlices();
 		
 		assertEquals("Articles dont have the same amount of sections:", sections2.size(), sections3.size());

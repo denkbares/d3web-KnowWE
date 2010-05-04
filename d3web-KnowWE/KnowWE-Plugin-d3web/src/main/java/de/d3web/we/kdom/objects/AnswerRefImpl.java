@@ -35,7 +35,7 @@ public class AnswerRefImpl extends AnswerRef {
 
 			KnowledgeBaseManagement mgn =
 					D3webModule.getKnowledgeRepresentationHandler(s.getArticle().getWeb())
-							.getKBM(s.getArticle(), s);
+							.getKBM(s.getArticle(), null, s);
 
 			Question o = mgn.findQuestion(name);
 

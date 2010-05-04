@@ -42,7 +42,7 @@ public class DCPropertyType extends DefaultAbstractKnowWEObjectType {
 		childrenTypes.add(new DCPropertyContentType());
 		
 		setSectionFinder(new RegexSectionFinder(Patterns.DCPROPERTY, Pattern.MULTILINE));
-		addReviseSubtreeHandler(new DCPropertySubtreeHandler());
+		addSubtreeHandler(new DCPropertySubtreeHandler());
 	}
 	
 	

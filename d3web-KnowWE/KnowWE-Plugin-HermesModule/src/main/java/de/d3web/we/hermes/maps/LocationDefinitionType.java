@@ -23,12 +23,12 @@ import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType
@@ -42,11 +42,11 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType
 				+ END_TAG);
 		this.setCustomRenderer(new EditSectionRenderer(LocationRenderer
 				.getInstance()));
-		this.addReviseSubtreeHandler(new LocationDefinitionTypeOWLSubTreeHandler());
+		this.addSubtreeHandler(new LocationDefinitionTypeOWLSubTreeHandler());
 	}
 
 	private class LocationDefinitionTypeOWLSubTreeHandler implements
-			ReviseSubTreeHandler {
+			SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

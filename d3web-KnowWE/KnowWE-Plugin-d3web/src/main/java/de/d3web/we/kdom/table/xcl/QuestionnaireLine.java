@@ -1,9 +1,9 @@
 package de.d3web.we.kdom.table.xcl;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.TableLine;
 
@@ -21,11 +21,11 @@ public class QuestionnaireLine extends TableLine{
 	}
 	
 	private QuestionnaireLine() {
-		this.addReviseSubtreeHandler(new QuestionnaireLineHandler());
+		this.addSubtreeHandler(new QuestionnaireLineHandler());
 	}
 	
 	
-	static class QuestionnaireLineHandler implements ReviseSubTreeHandler {
+	static class QuestionnaireLineHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

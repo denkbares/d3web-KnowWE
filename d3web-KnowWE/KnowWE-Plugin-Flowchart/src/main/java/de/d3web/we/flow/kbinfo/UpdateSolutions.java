@@ -80,7 +80,7 @@ public class UpdateSolutions extends AbstractAction {
 		KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
 		KnowWEArticle article = artManager.getArticle(pageName);
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
-		Section sec = article.getSection();
+		Section<KnowWEArticle> sec = article.getSection();
 		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, sec.getWeb());
 		String oldText = article.getSection().getOriginalText();
 
@@ -104,7 +104,7 @@ public class UpdateSolutions extends AbstractAction {
 		
 		// get the right id for the nodemodel
 		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
-				article, sec).getKnowledgeBase();
+				article, null, sec).getKnowledgeBase();
 		
 		List<Solution> diagnoses = kb.getDiagnoses();
 

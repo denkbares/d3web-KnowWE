@@ -34,12 +34,12 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.KnowledgeUtils;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.kdom.table.TableLine;
@@ -74,7 +74,7 @@ public class EntryCellContent extends TableCellContent {
 
 	@Override
 	public void init() {
-		this.addReviseSubtreeHandler(new EntryCellContentSubtreeHandler());
+		this.addSubtreeHandler(new EntryCellContentSubtreeHandler());
 	}
 
 }
@@ -98,7 +98,7 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 			// Get the KnowledgeSlices from KB and find the XCLRelation to be
 			// rendered
 			KnowledgeBaseManagement mgn = D3webModule
-					.getKnowledgeRepresentationHandler(sec.getArticle().getWeb()).getKBM(sec.getArticle(), sec);
+					.getKnowledgeRepresentationHandler(sec.getArticle().getWeb()).getKBM(sec.getArticle(), null, sec);
 
 			Collection<KnowledgeSlice> models = mgn.getKnowledgeBase()
 					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
@@ -178,7 +178,7 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 
 }
 
-class EntryCellContentSubtreeHandler implements ReviseSubTreeHandler {
+class EntryCellContentSubtreeHandler implements SubtreeHandler {
 
 	public static final String XCLRELATION_ID = "xclid";
 	public static final String KEY_REPORT = "report_message";
@@ -188,7 +188,7 @@ class EntryCellContentSubtreeHandler implements ReviseSubTreeHandler {
 		if (s.getOriginalText().trim().length() > 0) {
 
 			KnowledgeBaseManagement mgn = D3webModule
-					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
+					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 			
 			if (mgn == null) {
 				return null;

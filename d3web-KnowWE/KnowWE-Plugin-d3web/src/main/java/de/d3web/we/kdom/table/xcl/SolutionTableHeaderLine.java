@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.Table;
@@ -45,11 +45,11 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 
 	@Override
 	protected void init() {
-		this.addReviseSubtreeHandler(new SolutionHeaderLineSubtreeHandler());
+		this.addSubtreeHandler(new SolutionHeaderLineSubtreeHandler());
 
 	}
 	
-	class SolutionHeaderLineSubtreeHandler implements ReviseSubTreeHandler {
+	class SolutionHeaderLineSubtreeHandler implements SubtreeHandler {
 
 		/* creates the solution contexts
 		 * allowing the EntryCells (@see EntryCellContent) to

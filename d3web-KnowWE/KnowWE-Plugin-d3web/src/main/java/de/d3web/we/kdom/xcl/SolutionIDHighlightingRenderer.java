@@ -54,7 +54,7 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String solution = sec.getOriginalText().replace("\"", "").trim();
 
-		Session session = D3webUtils.getSession(sec, user);
+		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 
 		String spanStart = KnowWEUtils.maskHTML("<span style=\"background-color: rgb(");
 		String spanStartEnd = KnowWEUtils.maskHTML(";\">");

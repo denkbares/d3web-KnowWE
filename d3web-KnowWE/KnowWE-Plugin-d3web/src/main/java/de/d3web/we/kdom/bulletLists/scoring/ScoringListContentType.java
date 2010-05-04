@@ -22,7 +22,7 @@ public class ScoringListContentType extends XMLContent{
 		
 		
 		if(contentType instanceof AbstractKnowWEObjectType) { // damn, not nice. maybe we need some interface changes one day
-			((AbstractKnowWEObjectType)contentType).addReviseSubtreeHandler(new CreateScoresHandler());
+			((AbstractKnowWEObjectType)contentType).addSubtreeHandler(new CreateScoresHandler());
 			((AbstractKnowWEObjectType)contentType).setCustomRenderer(new ValueRenderer());
 		}
 		

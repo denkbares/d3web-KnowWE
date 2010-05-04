@@ -25,12 +25,12 @@ import java.util.List;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.UnexpectedSequence;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * The TerminalCondition type of the CompositeCondition
@@ -56,7 +56,7 @@ public class TerminalCondition extends DefaultAbstractKnowWEObjectType {
 		AnonymousType unrecognizedCond = new AnonymousType(
 				"UnrecognizedTerminalCondition");
 		unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
-		unrecognizedCond.addReviseSubtreeHandler(new ReviseSubTreeHandler() {
+		unrecognizedCond.addSubtreeHandler(new SubtreeHandler() {
 			@Override
 			public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 				return new UnexpectedSequence("no valid TerminalCondition: "

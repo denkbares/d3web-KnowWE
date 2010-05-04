@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
@@ -62,7 +61,7 @@ public class UpdateQuestions extends AbstractAction {
     	KnowWEArticleManager artManager = KnowWEEnvironment.getInstance().getArticleManager(web);
     	KnowWEArticle article = artManager.getArticle(pageName);
     	KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
-    	Section sec = article.getSection();
+    	Section<KnowWEArticle> sec = article.getSection();
     	KnowWEParameterMap map =  new KnowWEParameterMap(KnowWEAttributes.WEB, sec.getWeb());
     	String oldText = article.getSection().getOriginalText();
     	
@@ -85,7 +84,7 @@ public class UpdateQuestions extends AbstractAction {
     	
     	// get the right id for the nodemodel
     	KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
-    			article, sec).getKnowledgeBase();
+    			article, null, sec).getKnowledgeBase();
     	List<Question> questions = kb.getQuestions();
     	String questionID = null;
     	

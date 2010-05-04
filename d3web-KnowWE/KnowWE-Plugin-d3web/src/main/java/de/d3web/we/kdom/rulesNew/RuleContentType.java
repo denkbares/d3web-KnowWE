@@ -32,7 +32,6 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -46,6 +45,7 @@ import de.d3web.we.kdom.rulesNew.terminalCondition.CondKnown;
 import de.d3web.we.kdom.rulesNew.terminalCondition.Finding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
@@ -64,13 +64,13 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
 		rule.setTerminalConditions(termConds);
 
-		rule.addReviseSubtreeHandler(new RuleCompiler());
+		rule.addSubtreeHandler(new RuleCompiler());
 
 		this.addChildType(rule);
 
 	}
 
-	class RuleCompiler implements ReviseSubTreeHandler<ConditionActionRule> {
+	class RuleCompiler implements SubtreeHandler<ConditionActionRule> {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<ConditionActionRule> s) {
@@ -81,7 +81,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
 					article.getWeb())
-					.getKBM(article, s);
+					.getKBM(article, this, s);
 
 			Section<CompositeCondition> cond = s.findSuccessor(CompositeCondition.class);
 

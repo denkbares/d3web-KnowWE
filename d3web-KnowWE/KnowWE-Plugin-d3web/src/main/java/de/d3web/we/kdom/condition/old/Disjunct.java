@@ -33,13 +33,13 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.condition.AndOperator;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class Disjunct extends DefaultAbstractKnowWEObjectType {
@@ -50,10 +50,10 @@ public class Disjunct extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new RoundBracedType(this));
 		this.childrenTypes.add(new AndOperator());
 		this.childrenTypes.add(new Conjunct());
-		this.addReviseSubtreeHandler(new DisjunctSubTreeHandler());
+		this.addSubtreeHandler(new DisjunctSubTreeHandler());
 	}
 
-	private class DisjunctSubTreeHandler implements ReviseSubTreeHandler {
+	private class DisjunctSubTreeHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

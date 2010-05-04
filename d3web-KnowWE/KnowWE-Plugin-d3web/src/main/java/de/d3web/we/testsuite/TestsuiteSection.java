@@ -54,7 +54,7 @@ public class TestsuiteSection extends AbstractKopicSection{
 	@Override
 	protected void init() {
 		childrenTypes.add(new TestsuiteContent());
-		subtreeHandler.add(new TestsuiteSectionSubTreeHandler());
+		this.addSubtreeHandler(new TestsuiteSectionSubTreeHandler());
 		setCustomRenderer(new TestsuiteSectionRenderer());
 	}
 	

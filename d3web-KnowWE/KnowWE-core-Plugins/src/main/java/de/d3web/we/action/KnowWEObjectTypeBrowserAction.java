@@ -66,9 +66,10 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 
 		// Build the Findings
 		StringBuilder buildi = new StringBuilder();
-		ArrayList<Section> found = new ArrayList<Section>();
-		String types = map.get("TypeBrowserQuery");
 		
+		ArrayList<Section> found 
+				= new ArrayList<Section>();
+		String types = map.get("TypeBrowserQuery");
 		try {
 			KnowWEObjectType typ = null;
 			typ = KnowWEEnvironment.getInstance().searchType(Class.forName(types));

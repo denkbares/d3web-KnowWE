@@ -17,14 +17,14 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.scoring.Score;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class CreateScoresHandler implements ReviseSubTreeHandler {
+public class CreateScoresHandler implements SubtreeHandler {
 
 	@Override
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
@@ -52,7 +52,7 @@ public class CreateScoresHandler implements ReviseSubTreeHandler {
 			String question = s.getOriginalText();
 
 			KnowledgeBaseManagement kbm = D3webModule
-					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
+					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 
 			if(kbm == null) return; //dirty hack for testing
 			

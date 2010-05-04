@@ -120,7 +120,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 				sec.getTitle(), ruleSection.getId(),
 				de.d3web.we.kdom.rules.Rule.KBID_KEY);
 
-		Session session = D3webUtils.getSession(sec, user);
+		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 		Rule rule = null;
 
 		if (session != null) {

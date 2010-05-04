@@ -36,7 +36,6 @@ import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.kdom.renderer.TimeEventTypeRenderer;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
@@ -45,6 +44,7 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 
@@ -64,12 +64,12 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new TimeEventDescriptionType());
 
 		this.setCustomRenderer(TimeEventTypeRenderer.getInstance());
-		this.addReviseSubtreeHandler(new TimeEventTypeOWLSubTreeHandler());
+		this.addSubtreeHandler(new TimeEventTypeOWLSubTreeHandler());
 
 	}
 
 	private class TimeEventTypeOWLSubTreeHandler implements
-			ReviseSubTreeHandler {
+			SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article,

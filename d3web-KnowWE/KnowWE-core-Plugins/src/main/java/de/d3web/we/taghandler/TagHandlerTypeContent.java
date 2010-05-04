@@ -37,7 +37,7 @@ public class TagHandlerTypeContent extends DefaultAbstractKnowWEObjectType{
 	@Override
 	protected void init() {
 		this.sectionFinder = new AllTextSectionFinder();
-		this.addReviseSubtreeHandler(new TagHandlerAttributeSubTreeHandler());
+		this.addSubtreeHandler(new TagHandlerAttributeSubTreeHandler());
 	}
 
 }

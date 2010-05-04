@@ -29,18 +29,18 @@ import de.d3web.plugin.io.PluginConfigPersistenceHandler;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public class PluginConfigReviseSubtreeHandler implements ReviseSubTreeHandler {
+public class PluginConfigReviseSubtreeHandler implements SubtreeHandler {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 		String xmlText = "<settings><plugins /><psmethods>"+s.getOriginalText()+"</psmethods></settings>";
-		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, s);
+		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 		if (kbm==null) return null;
 		KnowledgeBase kb = kbm.getKnowledgeBase();
 		try {

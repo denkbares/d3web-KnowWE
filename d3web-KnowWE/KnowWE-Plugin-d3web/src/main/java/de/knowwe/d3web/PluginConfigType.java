@@ -31,7 +31,7 @@ public class PluginConfigType extends DefaultMarkupType {
 	
 	public PluginConfigType() {
 		super(MARKUP);
-		this.addReviseSubtreeHandler(new PluginConfigReviseSubtreeHandler());
+		this.addSubtreeHandler(new PluginConfigReviseSubtreeHandler());
 	}
 
 }

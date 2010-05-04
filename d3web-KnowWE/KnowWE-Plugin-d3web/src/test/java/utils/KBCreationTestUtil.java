@@ -181,7 +181,7 @@ public class KBCreationTestUtil {
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article);
 		
 		// Load KnowledgeBase
-		loadedKB =  d3Handler.getKBM(article, article.getSection()).getKnowledgeBase();
+		loadedKB =  d3Handler.getKBM(article, null, article.getSection()).getKnowledgeBase();
 		
 		// Load TestSuite
 		// TODO: HOTFIX!! I don't think this is the proper way to get the TestsuiteSection...

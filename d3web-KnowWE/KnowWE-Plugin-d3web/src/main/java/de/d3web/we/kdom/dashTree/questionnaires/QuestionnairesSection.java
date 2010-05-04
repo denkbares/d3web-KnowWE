@@ -33,6 +33,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 
 public class QuestionnairesSection extends AbstractKopicSection {
@@ -46,11 +47,11 @@ public class QuestionnairesSection extends AbstractKopicSection {
 	@Override
 	protected void init() {
 		childrenTypes.add(new QuestionnairesContent());
-		subtreeHandler.add(new QuestionnairesSubTreeHandler());
+		this.addSubtreeHandler(Priority.increment(Priority.TERMINOLOGY), new QuestionnairesSubTreeHandler());
 	}
 
 	private class QuestionnairesSubTreeHandler extends D3webReviseSubTreeHandler {
-	
+
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 			

@@ -2,16 +2,16 @@ package de.d3web.we.kdom.rulesNew.terminalCondition;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class Number extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		this.addReviseSubtreeHandler(new NumberChecker());
+		this.addSubtreeHandler(new NumberChecker());
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR7));
 	}
 
@@ -26,7 +26,7 @@ public class Number extends DefaultAbstractKnowWEObjectType {
 		return null;
 	}
 
-	class NumberChecker implements ReviseSubTreeHandler {
+	class NumberChecker implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

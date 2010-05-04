@@ -26,12 +26,12 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * Type to detect Too-much-dashes-Erros in DashTree-Markup
@@ -49,7 +49,7 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 
-		this.addReviseSubtreeHandler(new OverDashedErrorHandler());
+		this.addSubtreeHandler(new OverDashedErrorHandler());
 
 		this.sectionFinder = new SectionFinder() {
 
@@ -74,7 +74,8 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 		};
 	}
 
-	class OverDashedErrorHandler implements ReviseSubTreeHandler<OverdashedElement> {
+	class OverDashedErrorHandler implements SubtreeHandler<OverdashedElement> {
+		
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<OverdashedElement> s) {
 			return new SyntaxError("to many dashes; remove \"-\"");

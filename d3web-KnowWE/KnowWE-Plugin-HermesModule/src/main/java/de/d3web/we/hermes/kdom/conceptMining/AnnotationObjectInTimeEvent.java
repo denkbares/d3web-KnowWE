@@ -15,7 +15,6 @@ import de.d3web.we.core.semantic.PropertyManager;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.hermes.kdom.TimeEventContext;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -26,6 +25,7 @@ import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationObject;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationProperty;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationSubject;
 import de.d3web.we.kdom.semanticAnnotation.SimpleAnnotation;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class AnnotationObjectInTimeEvent extends SemanticAnnotationObject {
@@ -39,11 +39,11 @@ public class AnnotationObjectInTimeEvent extends SemanticAnnotationObject {
 		this.childrenTypes.add(subject);
 		this.childrenTypes.add(new SimpleAnnotation());
 		this.sectionFinder = new AllTextSectionFinder();
-		this.addReviseSubtreeHandler(new AnnotationObjectInTimeEventSubTreeHandler());
+		this.addSubtreeHandler(new AnnotationObjectInTimeEventSubTreeHandler());
 	}
 	
 	private class AnnotationObjectInTimeEventSubTreeHandler implements
-			ReviseSubTreeHandler {
+			SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

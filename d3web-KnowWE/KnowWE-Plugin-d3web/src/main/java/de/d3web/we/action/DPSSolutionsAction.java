@@ -45,6 +45,7 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
+import de.d3web.we.taghandler.SolutionStateViewHandler;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 import de.d3web.we.utils.KnowWEUtils;
@@ -190,7 +191,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			List<Term> list, ISetMap<Term, Information> assumptionMap) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<ul>");
-		for (Term term : list) {
+		for (Term term : list) {		
 			sb.append("<li>");
 			String exactPrefix = KnowWEUtils.replaceUmlaut(((String) term
 					.getInfo(TermInfoType.TERM_NAME)))
@@ -424,11 +425,17 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 		
 		String web = parameterMap.get(KnowWEAttributes.WEB);
 		String user = parameterMap.get(KnowWEAttributes.USER);
-
-		return renderSolutionStates(web, user);
+		String index = parameterMap.get("ArticleSelection");
+		String topic = parameterMap.getTopic();
+		if (index == null || index.equals("")) {
+			index = "0";
+		}
+		int i = Integer.parseInt(index);
+		SolutionStateViewHandler.setSelected(user, web, i);
+		return renderSolutionStates(web, user, topic, i);
 	}
 
-	public String renderSolutionStates( String web, String user) {
+	public String renderSolutionStates(String web, String user, String topic, int index) {
 		StringBuffer sb = new StringBuffer();
 		DPSEnvironment dpse = DPSEnvironmentManager.getInstance()
 				.getEnvironments(web);
@@ -444,6 +451,22 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 		List<Term> conflict = new ArrayList<Term>();
 		for (Entry<Term, SolutionState> entry : globalSolutions.entrySet()) {
 			Term term = entry.getKey();
+			
+			boolean skip = true;
+			if (index > 0) {
+				for (Information info : assumptionMap.get(term)) {
+					if (info.getNamespace().substring(0, info.getNamespace().indexOf(".."))
+							.equals(index == 1 ? topic 
+									: SolutionStateViewHandler.getArticleNames(web).get(index - 2))) {
+						skip = false;
+						continue;
+					}
+				}
+				if (skip) {
+					continue;
+				}
+			}
+			
 			SolutionState solutionState = entry.getValue();
 			if (solutionState.equals(SolutionState.ESTABLISHED)) {
 				established.add(term);

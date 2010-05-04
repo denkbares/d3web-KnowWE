@@ -16,10 +16,10 @@ import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -42,7 +42,7 @@ public class MapType extends AbstractXMLObjectType {
 		return new MapRenderer();
 	}
 
-	private class MapTypeOWLSubTreeHandler implements ReviseSubTreeHandler {
+	private class MapTypeOWLSubTreeHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

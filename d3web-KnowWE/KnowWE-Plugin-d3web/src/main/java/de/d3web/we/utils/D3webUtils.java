@@ -38,6 +38,7 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
@@ -110,16 +111,14 @@ public class D3webUtils {
 	// return null;
 	// }
 
+
 	/**
 	 * Gets the Session Object.
-	 *
-	 * @param sec
-	 * @param user
 	 */
-	public static Session getSession(Section sec, KnowWEUserContext user) {
+	public static Session getSession(String topic, KnowWEUserContext user, String web) {
 
-		String sessionId = sec.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(sec.getTitle());
-		Broker broker = D3webModule.getBroker(user.getUsername(), sec.getWeb());
+		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
+		Broker broker = D3webModule.getBroker(user.getUsername(), web);
 		KnowledgeServiceSession kss = broker.getSession().getServiceSession(sessionId);
 		Session session = null;
 
@@ -130,16 +129,14 @@ public class D3webUtils {
 		}
 		return session;
 	}
-
+	
 	/**
 	 * Gets the Session Object.
-	 *
-	 * @param user
 	 */
-	public static Session getSession(String topic, KnowWEUserContext user, String web) {
+	public static Session getSession(String topic, String user, String web) {
 
 		String sessionId = topic + ".." + KnowWEEnvironment.generateDefaultID(topic);
-		Broker broker = D3webModule.getBroker(user.getUsername(), web);
+		Broker broker = D3webModule.getBroker(user, web);
 		KnowledgeServiceSession kss = broker.getSession().getServiceSession(sessionId);
 		Session session = null;
 

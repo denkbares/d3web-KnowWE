@@ -36,7 +36,6 @@ import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.contexts.ContextManager;
@@ -46,6 +45,7 @@ import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.logging.Logging;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.utils.Patterns;
@@ -60,8 +60,8 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 		sID.setCustomRenderer(SolutionIDHighlightingRenderer.getInstance());
 		this.childrenTypes.add(sID);
 		this.childrenTypes.add(new LineBreak());
-		this.addReviseSubtreeHandler(new XCLHeadSubtreeHandler());
-		this.addReviseSubtreeHandler(new XCLHeadOWLSubTreeHandler());
+		this.addSubtreeHandler(new XCLHeadSubtreeHandler());
+		this.addSubtreeHandler(new XCLHeadOWLSubTreeHandler());
 		
 	}
 	
@@ -122,7 +122,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private class XCLHeadOWLSubTreeHandler implements ReviseSubTreeHandler{
+	private class XCLHeadOWLSubTreeHandler implements SubtreeHandler{
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section section) {

@@ -6,12 +6,12 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 
 
@@ -29,12 +29,12 @@ public abstract class AnswerDef extends D3webObjectDef<Answer> {
 
 	public AnswerDef() {
 		super("ANSWER_STORE_KEY");
-		this.addReviseSubtreeHandler(new createAnswerHandler());
+		this.addSubtreeHandler(new createAnswerHandler());
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
 
 	}
 
-	static class createAnswerHandler implements ReviseSubTreeHandler {
+	static class createAnswerHandler implements SubtreeHandler {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -44,7 +44,7 @@ public abstract class AnswerDef extends D3webObjectDef<Answer> {
 
 				KnowledgeBaseManagement mgn = D3webModule
 						.getKnowledgeRepresentationHandler(article.getWeb())
-						.getKBM(article, s);
+						.getKBM(article, this, s);
 
 				if (mgn == null) return null;
 

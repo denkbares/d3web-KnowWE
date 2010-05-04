@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class DefaultMarkup {
 
@@ -70,7 +70,7 @@ public class DefaultMarkup {
 		 * <p>
 		 * The annotation may also contain any other text. It will be recognized
 		 * as {@link PlainText}, such in any other section or wiki-page. It is
-		 * in responsibility of the {@link ReviseSubTreeHandler} of the
+		 * in responsibility of the {@link SubtreeHandler} of the
 		 * {@link DefaultMarkupType} instance to check for non-allowed content.
 		 * 
 		 * @return the KnowWEObjectTypes of this annotation
@@ -207,7 +207,7 @@ public class DefaultMarkup {
 	 * <p>
 	 * The mark-up may also contain any other text. It will be recognized as
 	 * {@link PlainText}, such in any other section or wiki-page. It is in
-	 * responsibility of the {@link ReviseSubTreeHandler} of the
+	 * responsibility of the {@link SubtreeHandler} of the
 	 * {@link DefaultMarkupType} instance to check for non-allowed content.
 	 * 
 	 * @return the KnowWEObjectTypes of this mark-up

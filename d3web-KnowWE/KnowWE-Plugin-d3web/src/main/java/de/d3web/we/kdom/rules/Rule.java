@@ -63,7 +63,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 	@Override
 	protected void init() {
-		subtreeHandler.add(new RuleSubTreeHandler());
+		this.addSubtreeHandler(new RuleSubTreeHandler());
 		sectionFinder = new RegexSectionFinder("(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN"
 				+ "|\\s*\\z))",
 				Pattern.DOTALL);

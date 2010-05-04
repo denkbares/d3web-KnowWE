@@ -47,7 +47,7 @@ public class CoveringTableSection extends AbstractKopicSection implements TableA
 	@Override
 	protected void init() {
 		childrenTypes.add(new CoveringTableContent());
-		subtreeHandler.add(new CoveringTableSubTreeHandler());
+		addSubtreeHandler(new CoveringTableSubTreeHandler());
 		setCustomRenderer(new KopicTableSectionRenderer());
 		setNotRecyclable(true);
 	}

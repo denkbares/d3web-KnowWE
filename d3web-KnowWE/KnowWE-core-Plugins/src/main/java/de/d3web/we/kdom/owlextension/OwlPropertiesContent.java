@@ -27,10 +27,10 @@ import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.xml.XMLContent;
 
 /**
@@ -46,11 +46,11 @@ public class OwlPropertiesContent extends XMLContent{
 	public void init() {	    
 	    this.setCustomRenderer(OwlPropertiesRenderer.getInstance());
 	    this.sectionFinder=new AllTextSectionFinder();
-	    this.addReviseSubtreeHandler(new OwlPropertiesContentOWLSubTreeHandler());
+	    this.addSubtreeHandler(new OwlPropertiesContentOWLSubTreeHandler());
 	}
 	
 
-	private class OwlPropertiesContentOWLSubTreeHandler implements ReviseSubTreeHandler{
+	private class OwlPropertiesContentOWLSubTreeHandler implements SubtreeHandler{
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

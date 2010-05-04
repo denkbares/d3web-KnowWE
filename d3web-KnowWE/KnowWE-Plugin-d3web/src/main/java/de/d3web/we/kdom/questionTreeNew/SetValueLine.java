@@ -17,7 +17,6 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
@@ -32,6 +31,7 @@ import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -65,7 +65,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 		QuestionRef qid = new QuestionRefImpl<Question>();
 		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
 		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
-		qid.addReviseSubtreeHandler(new CreateSetValueRuleHandler());
+		qid.addSubtreeHandler(new CreateSetValueRuleHandler());
 		return qid;
 	}
 
@@ -105,7 +105,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	static class CreateSetValueRuleHandler implements ReviseSubTreeHandler {
+	static class CreateSetValueRuleHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
@@ -116,7 +116,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 			// get dashTree-father
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(article.getWeb())
-					.getKBM(article, s);
+					.getKBM(article, this, s);
 
 			Question q = mgn.findQuestion(trimQuotes(s));
 

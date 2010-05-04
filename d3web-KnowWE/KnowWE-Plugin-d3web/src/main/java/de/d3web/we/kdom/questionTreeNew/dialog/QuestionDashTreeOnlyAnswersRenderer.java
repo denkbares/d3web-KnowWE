@@ -167,7 +167,7 @@ public class QuestionDashTreeOnlyAnswersRenderer extends CustomRenderer {
 			Section<? extends KnowWEObjectType> child = section.findChildOfType(QuestionDashTreeElementContent.class);
 			String name = child.getOriginalText();
 
-			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, section);
+			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, null, section);
 			
 			NamedObject o = kbm.findQuestion( name );
 

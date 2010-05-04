@@ -30,10 +30,10 @@ import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.NothingRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.xml.XMLContent;
 
 public class TagsContent extends XMLContent {
@@ -41,10 +41,10 @@ public class TagsContent extends XMLContent {
 	@Override
 	protected void init() {
 		this.setCustomRenderer(NothingRenderer.getInstance());
-		this.addReviseSubtreeHandler(new TagsContentOWLSubTreeHandler());
+		this.addSubtreeHandler(new TagsContentOWLSubTreeHandler());
 	}
 
-	private class TagsContentOWLSubTreeHandler implements ReviseSubTreeHandler {
+	private class TagsContentOWLSubTreeHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

@@ -28,11 +28,12 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.subtreeHandler.Priority;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * TableLine.
@@ -46,7 +47,7 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 		childrenTypes.add(new TableCell());
 		sectionFinder = new TableLineSectionFinder();
-		subtreeHandler.add(0, new TableLineHandler());
+		this.addSubtreeHandler(0, Priority.DEFAULT, new TableLineHandler());
 		setCustomRenderer(new TableLineRenderer());
 	}
 
@@ -78,7 +79,7 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private class TableLineHandler implements ReviseSubTreeHandler {
+	private class TableLineHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

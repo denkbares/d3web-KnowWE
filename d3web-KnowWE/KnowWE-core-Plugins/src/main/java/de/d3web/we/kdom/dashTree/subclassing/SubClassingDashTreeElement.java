@@ -27,22 +27,22 @@ import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class SubClassingDashTreeElement extends DashTreeElement {
 
 	@Override
 	protected void init() {
 		super.init();
-		this.addReviseSubtreeHandler(new SubClassingDashTreeElementOWLSubTreeHandler());
+		this.addSubtreeHandler(new SubClassingDashTreeElementOWLSubTreeHandler());
 	}
 	
 	private class SubClassingDashTreeElementOWLSubTreeHandler implements
-			ReviseSubTreeHandler {
+			SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

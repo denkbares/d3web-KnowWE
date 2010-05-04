@@ -34,7 +34,6 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.QuotedType;
 import de.d3web.we.kdom.condition.NOT;
@@ -47,6 +46,7 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class Finding extends DefaultAbstractKnowWEObjectType {
@@ -62,7 +62,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new QuotedType(new FindingAnswer()));
 		this.childrenTypes.add(new FindingAnswer());
 		this.sectionFinder = new FindingSectionFinder();
-		this.addReviseSubtreeHandler(new FindingSubTreeHandler());
+		this.addSubtreeHandler(new FindingSubTreeHandler());
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				FontColorRenderer.COLOR5, color);
 	}
 
-	private class FindingSubTreeHandler implements ReviseSubTreeHandler {
+	private class FindingSubTreeHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article,

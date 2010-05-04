@@ -30,12 +30,12 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.KnowledgeUtils;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.kdom.table.Table;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
@@ -65,7 +65,7 @@ public class QuestionCell extends CoveringTableHeaderColumnCellContent {
 
 	@Override
 	public void init() {
-		this.addReviseSubtreeHandler(new QuestionCellHandler());
+		this.addSubtreeHandler(new QuestionCellHandler());
 	}
 
 }
@@ -113,7 +113,7 @@ class QuestionCellRenderer extends TableCellContentRenderer {
 
 }
 
-class QuestionCellHandler implements ReviseSubTreeHandler {
+class QuestionCellHandler implements SubtreeHandler {
 
 	public static final String KEY_REPORT = "report_message";
 
@@ -121,7 +121,7 @@ class QuestionCellHandler implements ReviseSubTreeHandler {
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 		KnowledgeBaseManagement mgn = D3webModule
 				.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
-						article, s);
+						article, this, s);
 
 		if (mgn == null) {
 			return null;
