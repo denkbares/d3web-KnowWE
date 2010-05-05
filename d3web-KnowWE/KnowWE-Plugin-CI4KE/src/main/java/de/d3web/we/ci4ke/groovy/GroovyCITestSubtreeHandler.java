@@ -33,16 +33,16 @@ import de.d3web.we.ci4ke.handling.TestResult;
 import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class GroovyCITestReviseSubtreeHandler implements ReviseSubTreeHandler/*<GroovyCITestType>*/ {
+public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITestType>*/ {
 
 //	private static Logger log = Logger.getLogger(CITestReviseSubtreeHandler.class.getName());
 	

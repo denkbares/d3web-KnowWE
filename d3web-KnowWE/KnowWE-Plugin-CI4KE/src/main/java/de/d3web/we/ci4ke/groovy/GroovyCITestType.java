@@ -34,7 +34,7 @@ public class GroovyCITestType extends DefaultMarkupType {
 	
 	public GroovyCITestType() {
 		super(MARKUP);
-		this.addReviseSubtreeHandler(new GroovyCITestReviseSubtreeHandler());
+		this.addSubtreeHandler(new GroovyCITestSubtreeHandler());
 		//this.setCustomRenderer(new GroovySectionRenderer());
 	}
 

@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.we.ci4ke.groovy.GroovyCITestReviseSubtreeHandler;
+import de.d3web.we.ci4ke.groovy.GroovyCITestSubtreeHandler;
 import de.d3web.we.ci4ke.groovy.GroovyCITestType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -143,7 +143,7 @@ public class CIConfiguration {
 				//the current class name matches the name of a (groovy) test section
 				Section<GroovyCITestType> sec = groovyTestSections.get(c);
 				
-				Script script = GroovyCITestReviseSubtreeHandler.parseGroovyCITestSection(sec);
+				Script script = GroovyCITestSubtreeHandler.parseGroovyCITestSection(sec);
 				
 				@SuppressWarnings("unchecked") Class<? extends CITest> testClass =
 					(Class<? extends CITest>) script.getClass();
