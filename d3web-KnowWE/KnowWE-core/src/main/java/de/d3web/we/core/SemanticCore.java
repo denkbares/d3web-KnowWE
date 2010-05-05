@@ -78,7 +78,7 @@ public class SemanticCore {
 	private static ResourceBundle settingsbundle;
 	private final HashMap<String, Resource> contextmap;
 	private final HashMap<String, String> settings;
-	private final HashMap<String, List<Statement>> statementcache;
+	private final HashMap<String, HashMap<String, List<Statement>>> statementcache;
 	private HashMap<String, String> namespaces;
 	private HashMap<String, String> defaultnamespaces;
 
@@ -86,7 +86,7 @@ public class SemanticCore {
 		this.knowWEEnvironment = ke;
 		me = this;
 		contextmap = new HashMap<String, Resource>();
-		statementcache = new HashMap<String, List<Statement>>();
+		statementcache = new HashMap<String, HashMap<String, List<Statement>>>();
 		String path = ke.getKnowWEExtensionPath();
 		settingsbundle = ResourceBundle.getBundle("semanticdefaults");
 		settings = new HashMap<String, String>();
@@ -199,7 +199,14 @@ public class SemanticCore {
 					.createlocalProperty(props);
 			List<Statement> allStatements = io.getAllStatements();
 
-			statementcache.put("SemanticSettings", allStatements);
+			HashMap<String, List<Statement>> semanticsettingsstatements = null;
+			if (statementcache.get("SemanticSettings") == null)
+				semanticsettingsstatements = new HashMap<String, List<Statement>>();
+			else
+				semanticsettingsstatements = statementcache
+						.get("SemanticSettings");
+			semanticsettingsstatements.put("SemanticSettings", allStatements);
+			statementcache.put("SemanticSettings", semanticsettingsstatements);
 			try {
 				for (Statement current : allStatements) {
 					if (current != null) {
@@ -266,16 +273,38 @@ public class SemanticCore {
 	 *            source section
 	 */
 	public void addStatements(IntermediateOwlObject inputio, Section sec) {
-		
+
 		List<Statement> allStatements = inputio.getAllStatements();
 		clearContext(sec);
-		statementcache.put(sec.getId().hashCode() + "", allStatements);
+		addToStatementcache(sec, allStatements);
+
 		Logger.getLogger(this.getClass().getName()).finer(
 				"semantic core updating " + sec.getId() + "  "
 						+ allStatements.size());
 
 		addStaticStatements(inputio, sec);
 
+	}
+
+	// centralizing statementcache management ... for better understanding
+	private void addToStatementcache(Section sec, List<Statement> allStatements) {
+		HashMap<String, List<Statement>> temp = statementcache.get(sec
+				.getArticle().getTitle());
+		if (temp == null) {
+			temp = new HashMap<String, List<Statement>>();
+
+		}
+		temp.put(sec.getId(), allStatements);
+		statementcache.put(sec.getArticle().getTitle(), temp);
+	}
+
+	private List<Statement> getStatementsofSingleSection(
+			Section<? extends KnowWEObjectType> sec) {
+		HashMap<String, List<Statement>> temp = statementcache.get(sec
+				.getArticle().getTitle());
+		if (temp != null)
+			return temp.get(sec.getId());
+		return null;
 	}
 
 	/**
@@ -366,7 +395,7 @@ public class SemanticCore {
 		Section<? extends KnowWEObjectType> rootsection = KnowWEEnvironment
 				.getInstance().getArticle(KnowWEEnvironment.DEFAULT_WEB, topic)
 				.getSection();
-		return getSectionStatements(rootsection);
+		return getSectionStatementsRecursive(rootsection);
 	}
 
 	/**
@@ -374,26 +403,25 @@ public class SemanticCore {
 	 * 
 	 * @return List of statements.
 	 */
-	public List<Statement> getSectionStatements(
+	public List<Statement> getSectionStatementsRecursive(
 			Section<? extends KnowWEObjectType> s) {
 		List<Statement> allstatements = new ArrayList<Statement>();
-		
-		String key = s.getId().hashCode() + "";
-		if (statementcache.get(key) != null) {
+
+		if (getStatementsofSingleSection(s) != null) {
 			// add statements of this section
-			allstatements.addAll(statementcache.get(key));
+			allstatements.addAll(getStatementsofSingleSection(s));
 		}
-		
+
 		// walk over all children
 		for (Section<? extends KnowWEObjectType> current : s.getChildren()) {
-			//add statemts from the current child
-			key = current.getId().hashCode() + "";
-			if (statementcache.get(key) != null) {
+			// add statemts from the current child
+
+			if (getStatementsofSingleSection(current) != null) {
 				// add statements of this section
-				allstatements.addAll(statementcache.get(key));
+				allstatements.addAll(getStatementsofSingleSection(current));
 			}
 			// collect statements of the the children's descendants
-			allstatements.addAll(getSectionStatements(current));
+			allstatements.addAll(getSectionStatementsRecursive(current));
 		}
 
 		return allstatements;
@@ -467,7 +495,7 @@ public class SemanticCore {
 
 		RepositoryConnection con = uo.getConnection();
 		try {
-			con.remove(getSectionStatements(sec));
+			con.remove(getSectionStatementsRecursive(sec));
 			con.commit();
 		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
@@ -477,14 +505,30 @@ public class SemanticCore {
 	}
 
 	/**
-	 * removes all statements produced by a specific topic
+	 * removes all statements produced by a specific topic including those
+	 * statements that were added by section that are now not in the article
+	 * anymore. this addresses #166 so don't you mess with this unless you
+	 * _really_ know what you're doing
 	 * 
 	 * @param sec
 	 */
 	public void clearContext(KnowWEArticle art) {
-		clearContext(art.getSection());
-	}
+		HashMap<String, List<Statement>> temp = statementcache.get(art
+				.getName());
+		if (temp != null) {
+			for (Entry<String, List<Statement>> cur : temp.entrySet()) {
+				RepositoryConnection con = uo.getConnection();
+				try {
+					con.remove(cur.getValue());
+					con.commit();
+				} catch (RepositoryException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		statementcache.remove(art.getName());
 
+	}
 
 	public String getSparqlNamespaceShorts() {
 		StringBuffer buffy = new StringBuffer();
@@ -621,6 +665,38 @@ public class SemanticCore {
 		}
 
 		return s;
+	}
+
+	/**
+	 * this method clears out any orphaned statements left in the core. those
+	 * are created after updating an article without completely rebuilding it.
+	 * when a section gets deleted which had formerly created statements for the
+	 * core, the statements aren't cleand out because the old section doesn't
+	 * exist anymore -> they aren't found... so we check for statements in the
+	 * core from sections not existing anymore in the article
+	 * 
+	 * @param art
+	 */
+	public void cleanOrphans(KnowWEArticle art) {
+		HashMap<String, List<Statement>> temp = statementcache.get(art
+				.getTitle());
+		if (temp != null) {
+			for (Entry<String, List<Statement>> cur : temp.entrySet()) {
+				if (null == art.findSection(cur.getKey())) {
+					RepositoryConnection con = uo.getConnection();
+					try {
+						con.remove(cur.getValue());
+						con.commit();
+					} catch (RepositoryException e) {
+						e.printStackTrace();
+					}
+					temp.remove(cur.getKey());
+				}
+			}
+			statementcache.put(art.getTitle(),temp);
+		}
+		
+
 	}
 
 }
