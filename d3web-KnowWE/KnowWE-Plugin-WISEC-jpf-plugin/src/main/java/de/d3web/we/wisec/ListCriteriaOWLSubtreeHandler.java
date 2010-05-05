@@ -12,15 +12,15 @@ import org.openrdf.repository.RepositoryException;
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.ReviseSubTreeHandler;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.logging.Logging;
 
-public class ListCriteriaOWLSubtreeHandler implements ReviseSubTreeHandler {
+public class ListCriteriaOWLSubtreeHandler implements SubtreeHandler {
 	
 	@Override
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {

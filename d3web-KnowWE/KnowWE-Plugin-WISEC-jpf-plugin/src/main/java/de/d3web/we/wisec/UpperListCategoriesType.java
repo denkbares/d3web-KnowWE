@@ -32,7 +32,7 @@ public class UpperListCategoriesType extends DefaultAbstractKnowWEObjectType {
 
 	public UpperListCategoriesType() {
 		setSectionFinder(new AllTextSectionFinder());
-		addReviseSubtreeHandler(new UpperListCategoriesOWLSubtreeHandler());	
+		addSubtreeHandler(new UpperListCategoriesOWLSubtreeHandler());	
 		addChildType(new WISECTable());
 	}
 	

@@ -32,8 +32,8 @@ public class ListCriteriaType extends DefaultAbstractKnowWEObjectType {
 
 	public ListCriteriaType() {
 		setSectionFinder(new AllTextSectionFinder());
-		addReviseSubtreeHandler(new ListCriteriaOWLSubtreeHandler());
-		addReviseSubtreeHandler(new ListCriteriaD3SubtreeHandler());
+		addSubtreeHandler(new ListCriteriaOWLSubtreeHandler());
+		addSubtreeHandler(new ListCriteriaD3SubtreeHandler());
 		addChildType(new WISECTable());
 	}
 		

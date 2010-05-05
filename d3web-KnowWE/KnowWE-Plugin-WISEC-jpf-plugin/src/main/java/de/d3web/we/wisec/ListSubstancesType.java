@@ -32,8 +32,8 @@ public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
 
 	public ListSubstancesType() {
 		setSectionFinder(new AllTextSectionFinder());
-		addReviseSubtreeHandler(new ListSubstancesOWLSubtreeHandler());	
-		addReviseSubtreeHandler(new ListSubstancesD3SubtreeHandler());
+		addSubtreeHandler(new ListSubstancesOWLSubtreeHandler());	
+		addSubtreeHandler(new ListSubstancesD3SubtreeHandler());
 		addChildType(new WISECTable());
 	}
 }
