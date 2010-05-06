@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
- 
+
 package de.d3web.KnOfficeParser;
 
 import java.util.LinkedList;
@@ -45,74 +45,86 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.Unknown;
 
 /**
- * An implementation of the IDObjectManagement for the package CostBenefit.
- * It searches for questions in the actual QContainer. This provides the possibility to differ between
- * questions with the same text.
+ * An implementation of the IDObjectManagement for the package CostBenefit. It
+ * searches for questions in the actual QContainer. This provides the
+ * possibility to differ between questions with the same text.
+ * 
  * @author Markus Friedrich (denkbares GmbH)
  */
 public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 
 	private QContainer currentQContainer;
-	private boolean lazyQuestions=false;
-	private boolean lazyDiags=false;
-	private boolean lazyAnswers=false;
-	
+	private boolean lazyQuestions = false;
+	private boolean lazyDiags = false;
+	private boolean lazyAnswers = false;
+	private boolean semirestricted = false;
+
 	public RestrictedIDObjectManager(KnowledgeBaseManagement kbm) {
 		super(kbm);
 	}
-	
-	
+
+	/**
+	 * If semirestricted is set to true, questions will be searched in the whole
+	 * kbm, when the question is not found in the current qcontainer
+	 * 
+	 * @return semirestricted
+	 */
+	public boolean isSemirestricted() {
+		return semirestricted;
+	}
+
+	/**
+	 * If semirestricted is set to true, questions will be searched in the whole
+	 * kbm, when the question is not found in the current qcontainer
+	 * 
+	 * @param semirestricted
+	 */
+	public void setSemirestricted(boolean semirestricted) {
+		this.semirestricted = semirestricted;
+	}
+
 	public boolean isLazyQuestions() {
 		return lazyQuestions;
 	}
-
 
 	public void setLazyQuestions(boolean lazyQuestions) {
 		this.lazyQuestions = lazyQuestions;
 	}
 
-
 	public boolean isLazyAnswers() {
 		return lazyAnswers;
 	}
-
 
 	public void setLazyAnswers(boolean lazyAnswers) {
 		this.lazyAnswers = lazyAnswers;
 	}
 
-
 	public boolean isLazyDiags() {
 		return lazyDiags;
 	}
-
 
 	public void setLazyDiags(boolean lazyDiags) {
 		this.lazyDiags = lazyDiags;
 	}
 
-
 	public QContainer getCurrentQContainer() {
 		return currentQContainer;
 	}
-
-
 
 	public void setCurrentQContainer(QContainer currentQContainer) {
 		this.currentQContainer = currentQContainer;
 	}
 
-
-
 	@Override
 	public Value findValue(Question q, String name) {
 		Value answer = kbm.findValue(q, name);
-		if (name.equalsIgnoreCase("unknown")||name.equalsIgnoreCase("unbekannt")) {
+		if (name.equalsIgnoreCase("unknown") || name.equalsIgnoreCase("unbekannt")) {
 			return Unknown.getInstance();
 		}
-		if (answer==null&&lazyAnswers) {
+		if (answer == null && lazyAnswers) {
 			QuestionChoice qc = (QuestionChoice) q;
-			Choice ac = AnswerFactory.createAnswerChoice(kbm.findNewIDForAnswerChoice(qc), name);
+			Choice ac = AnswerFactory.createAnswerChoice(
+					kbm.findNewIDForAnswerChoice(qc), name);
 			qc.addAlternative(ac);
 			answer = new ChoiceValue(ac);
 		}
@@ -122,8 +134,9 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 	@Override
 	public Choice findAnswerChoice(QuestionChoice qc, String name) {
 		Choice answer = kbm.findAnswerChoice(qc, name);
-		if (answer==null&&lazyAnswers) {
-			answer = AnswerFactory.createAnswerChoice(kbm.findNewIDForAnswerChoice(qc), name);
+		if (answer == null && lazyAnswers) {
+			answer = AnswerFactory.createAnswerChoice(kbm.findNewIDForAnswerChoice(qc),
+					name);
 			qc.addAlternative(answer);
 		}
 		return answer;
@@ -132,27 +145,29 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 	@Override
 	public Solution findDiagnosis(String name) {
 		Solution diag = kbm.findSolution(name);
-		if (diag==null&&lazyDiags) {
-			diag=createDiagnosis(name, null);
+		if (diag == null && lazyDiags) {
+			diag = createDiagnosis(name, null);
 		}
 		return diag;
 	}
 
 	@Override
 	public Question findQuestion(String name) {
-		if (currentQContainer==null) {
+		if (currentQContainer == null) {
 			Question q = kbm.findQuestion(name);
-			if (q==null&&lazyQuestions) {
-				q=createQuestionOC(name, kbm.getKnowledgeBase().getRootQASet(), new String[0]);
+			if (q == null && lazyQuestions) {
+				q = createQuestionOC(name, kbm.getKnowledgeBase().getRootQASet(),
+						new String[0]);
 			}
 			return q;
-		} else {
+		}
+		else {
 			List<Question> questions = new LinkedList<Question>();
 			collectQuestions(currentQContainer, questions);
-			for (Question q: questions) {
+			for (Question q : questions) {
 				Properties properties = q.getProperties();
 				MMInfoStorage mmis = (MMInfoStorage) properties.getProperty(Property.MMINFO);
-				if (mmis!=null) {
+				if (mmis != null) {
 					DCMarkup markup = new DCMarkup();
 					markup.setContent(DCElement.SUBJECT,
 							MMInfoSubject.PROMPT.getName());
@@ -164,8 +179,9 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 					}
 				}
 			}
-			//if there is no question with the text, search for one with the name
-			for (NamedObject no: questions) {
+			// if there is no question with the text, search for one with the
+			// name
+			for (NamedObject no : questions) {
 				if (no instanceof Question) {
 					Question q = (Question) no;
 					if (q.getName().equals(name)) {
@@ -173,32 +189,32 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 					}
 				}
 			}
-			//if there is still no question found and lazy is true, generate it
+			// if there is still no question found and lazy is true, generate it
 			if (lazyQuestions) {
 				return createQuestionOC(name, currentQContainer, new String[0]);
 			}
-			return kbm.findQuestion(name);
+			if (semirestricted) {
+				return kbm.findQuestion(name);
+			}
+			return null;
 		}
 	}
 
-
 	@Override
 	public Solution createDiagnosis(String id, String name, Solution parent) {
-		if (parent==null) {
-			parent=kbm.getKnowledgeBase().getRootDiagnosis();
+		if (parent == null) {
+			parent = kbm.getKnowledgeBase().getRootSolution();
 		}
 		return kbm.createSolution(id, name, parent);
 	}
 
-
 	@Override
 	public QContainer createQContainer(String name, QASet parent) {
-		if (parent==null) {
-			parent=kbm.getKnowledgeBase().getRootQASet();
+		if (parent == null) {
+			parent = kbm.getKnowledgeBase().getRootQASet();
 		}
 		return kbm.createQContainer(name, parent);
 	}
-
 
 	private void collectQuestions(TerminologyObject namedObject, List<Question> result) {
 		if (namedObject instanceof Question && !result.contains(namedObject)) {
