@@ -514,7 +514,7 @@ public class SemanticCore {
 	 */
 	public void clearContext(KnowWEArticle art) {
 		HashMap<String, List<Statement>> temp = statementcache.get(art
-				.getName());
+				.getTitle());
 		if (temp != null) {
 			for (Entry<String, List<Statement>> cur : temp.entrySet()) {
 				RepositoryConnection con = uo.getConnection();
