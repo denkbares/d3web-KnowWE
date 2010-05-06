@@ -130,7 +130,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		 * Map for interpolation of the scores. Keys are precentages, values are
 		 * assigned scores.
 		 */
-		private final Map<Double, Integer> percentagesToScores = new LinkedHashMap();
+		private final Map<Double, Integer> percentagesToScores = new LinkedHashMap<Double, Integer>();
 
 		public XCLModelValueListener(D3webKnowledgeServiceSession kss,
 				Broker broker) {
@@ -174,49 +174,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 		}
 
-		/**
-		 * Returns the score assigned to the given percentage. The calculation
-		 * is based on the interpolation map. If the given percentage is not
-		 * defined in the map, an interpolated score will be calculated by
-		 * considering the two adjacent defined percentages (linear
-		 * interpolation).
-		 */
-		public int getInterpolatedScore(double percentage) {
-			double[] adjacentPs = getAdjacentPercentages(percentage);
-
-			if (adjacentPs[0] == adjacentPs[1]) {
-				return percentagesToScores.get(adjacentPs[0]);
-			}
-
-			int lowerValue = percentagesToScores.get(adjacentPs[0]);
-			int upperValue = percentagesToScores.get(adjacentPs[1]);
-
-			double interpolated = lowerValue
-					+ ((upperValue - lowerValue) * (percentage - adjacentPs[0]) / (adjacentPs[1] - adjacentPs[0]));
-
-			return (int) Math.round(interpolated);
-		}
-
-		/**
-		 * Returns two doubles: the first one is the percentage defined in the
-		 * interpolation map, which is less or equal to the given percentage;
-		 * the second one is the percentage defined in the interpolation map,
-		 * which is greater or equal to the given percentage.
-		 */
-		private double[] getAdjacentPercentages(double percentage) {
-			double[] ret = new double[2];
-			for (double p : percentagesToScores.keySet()) {
-				if (p <= percentage) {
-					ret[0] = p;
-				}
-				if (p >= percentage) {
-					ret[1] = p;
-					break;
-				}
-			}
-			return ret;
-		}
-
 	}
 
 	private final KnowledgeBase base;
@@ -224,7 +181,6 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private final String id;
 	private final Broker broker;
 	private Session session;
-	
 
 	private boolean instantly = true;
 	private final List<ValuedObject> toChange;
@@ -299,11 +255,13 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			value = getAnswers((QuestionChoice) object, info.getValues());
 			// values.addAll(getAnswers((QuestionChoice) object,
 			// info.getValues()));
-		} else if (object instanceof QuestionNum) {
+		}
+		else if (object instanceof QuestionNum) {
 			value = getAnswers((QuestionNum) object, info.getValues());
 			// values.addAll(getAnswers((QuestionNum) object,
 			// info.getValues()));
-		} else if (object instanceof Solution) {
+		}
+		else if (object instanceof Solution) {
 			PropertiesContainer pc = (PropertiesContainer) object;
 			Boolean external = (Boolean) pc.getProperties().getProperty(
 					Property.EXTERNAL);
@@ -312,7 +270,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				if (external != null && external) {
 					value = getStatesForDiagnosis(info.getValues());
 				}
-			} else {
+			}
+			else {
 				// see ClusterSolutionManager
 				// values.addAll(getValuesForDiagnosis(info.getValues()));
 			}
@@ -331,22 +290,24 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 						InformationType.SolutionInformation)) {
 					session.setValue(diag, value,
 							PSMethodHeuristic.class);
-				} else if (info.getInformationType().equals(
+				}
+				else if (info.getInformationType().equals(
 						InformationType.HeuristicInferenceInformation)) {
-					DiagnosisScore oldScore = diag.getScore(session,
-							PSMethodHeuristic.class);
-					DiagnosisScore newScore = oldScore
-							.add((DiagnosisScore) value);
 					session.setValue(diag, value,
 							PSMethodHeuristic.class);
 				}
 			}
-		} else {
+		}
+		else {
 			if (vo != null) {
 				toChange.add(vo);
 				session.setValue(vo, value);
-			}else {
-				Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "ValuedObject is null: "+object.getClass().getName()+" :"+object.toString());
+			}
+			else {
+				Logger.getLogger(this.getClass().getName()).log(
+						Level.WARNING,
+						"ValuedObject is null: " + object.getClass().getName() + " :"
+						+ object.toString());
 			}
 		}
 	}
@@ -358,7 +319,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			IDObject ido = base.search(info.getObjectID());
 			if (ido instanceof QASet) {
 				requestedFindings.add((QASet) ido);
-			} else if (ido instanceof Solution) {
+			}
+			else if (ido instanceof Solution) {
 				requestedDiagnoses.add((Solution) ido);
 			}
 		}
@@ -369,7 +331,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				session.getQASetManager().propagate(set, null,
 						PSMethodNextQASet.getInstance());
 			}
-		} else {
+		}
+		else {
 			for (QASet set : base.getInitQuestions()) {
 				session.getQASetManager().propagate(set, null,
 						PSMethodInit.getInstance());
@@ -426,15 +389,18 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(80);
 				return score;
-			} else if (state.equals(SolutionState.SUGGESTED)) {
+			}
+			else if (state.equals(SolutionState.SUGGESTED)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(20);
 				return score;
-			} else if (state.equals(SolutionState.EXCLUDED)) {
+			}
+			else if (state.equals(SolutionState.EXCLUDED)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(-80);
 				return score;
-			} else if (state.equals(SolutionState.UNCLEAR)) {
+			}
+			else if (state.equals(SolutionState.UNCLEAR)) {
 				DiagnosisScore score = new DiagnosisScore();
 				score.setScore(0);
 				return score;
@@ -458,48 +424,52 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			if (instantly) {
 				broker.update(new Information(id, question.getId(),
 						ConverterUtils.toValueList(question.getValue(session),
-								session), TerminologyType.symptom, infoType));
-			} else {
+						session), TerminologyType.symptom, infoType));
+			}
+			else {
 				// mag ich grad net
 			}
-		} else if (valuedObject instanceof Solution) {
+		}
+		else if (valuedObject instanceof Solution) {
 			Solution diagnosis = (Solution) valuedObject;
 			if (instantly) {
-				List solutionList = new ArrayList();
-				solutionList.add(getLocalSolutionState(diagnosis.getState(
-						session, PSMethodHeuristic.class)));
-				List inferenceList = new ArrayList();
-				inferenceList.add(diagnosis.getScore(session,
-						PSMethodHeuristic.class).getScore());
+				List<SolutionState> solutionList = new ArrayList<SolutionState>();
+				solutionList.add(getLocalSolutionState(session.getBlackboard().getState(
+						diagnosis)));
+				List<DiagnosisState> inferenceList = new ArrayList<DiagnosisState>();
+				inferenceList.add(session.getBlackboard().getState(diagnosis));
 				broker.update(new Information(id, diagnosis.getId(),
 						solutionList, TerminologyType.diagnosis,
 						InformationType.SolutionInformation));
 				broker.update(new Information(id, diagnosis.getId(),
 						inferenceList, TerminologyType.diagnosis,
 						InformationType.HeuristicInferenceInformation));
-			} else {
+			}
+			else {
 				// mag ich grad net
 			}
 		}
-		
+
 		if (isFinished()) {
 			broker.finished(this);
 		}
 	}
 
 	public boolean isFinished() {
-		return session.isFinished()
-				|| !session.getQASetManager().hasNextQASet();
+		return !session.getQASetManager().hasNextQASet();
 	}
 
 	private SolutionState getLocalSolutionState(DiagnosisState state) {
-		if (state.equals(DiagnosisState.ESTABLISHED)) {
+		if (state.equals(new DiagnosisState(DiagnosisState.State.ESTABLISHED))) {
 			return SolutionState.ESTABLISHED;
-		} else if (state.equals(DiagnosisState.SUGGESTED)) {
+		}
+		else if (state.equals(new DiagnosisState(DiagnosisState.State.SUGGESTED))) {
 			return SolutionState.SUGGESTED;
-		} else if (state.equals(DiagnosisState.EXCLUDED)) {
+		}
+		else if (state.equals(new DiagnosisState(DiagnosisState.State.EXCLUDED))) {
 			return SolutionState.EXCLUDED;
-		} else if (state.equals(DiagnosisState.UNCLEAR)) {
+		}
+		else if (state.equals(new DiagnosisState(DiagnosisState.State.UNCLEAR))) {
 			return SolutionState.UNCLEAR;
 		}
 		return SolutionState.CONFLICT;
@@ -509,7 +479,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		IDObject ido = base.search(id);
 		if (ido instanceof Solution) {
 			return TerminologyType.diagnosis;
-		} else if (ido instanceof QASet) {
+		}
+		else if (ido instanceof QASet) {
 			return TerminologyType.symptom;
 		}
 		return null;
@@ -520,7 +491,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		if (context.equals(Object.class)) {
 			// Dialog did it!
 			result = InformationType.OriginalUserInformation;
-		} else {
+		}
+		else {
 			// Kernel did it!
 			result = InformationType.HeuristicInferenceInformation;
 		}
@@ -541,7 +513,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 	@Override
 	public String toString() {
-		return base.getDiagnoses().toString();
+		return base.getSolutions().toString();
 	}
 
 	public String getNamespace() {
