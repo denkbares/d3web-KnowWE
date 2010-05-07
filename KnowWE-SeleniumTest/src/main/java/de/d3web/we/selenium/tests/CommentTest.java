@@ -20,10 +20,12 @@
 
 package de.d3web.we.selenium.tests;
 
+import de.d3web.we.selenium.main.KnowWETestCase;
+
 public class CommentTest extends KnowWETestCase{
 	
 	
-	public void testNewCommentEntry() throws Exception{
+	public void testNewCommentEntry() {
 		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Selenium-Test");
 		loadAndWait("//img[@title='Comments on this Test?']");
 		assertTrue(selenium.getTitle().contains("KnowWE: Selenium-Comment"));

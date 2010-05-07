@@ -20,18 +20,24 @@
 
 package de.d3web.we.selenium.tests;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.d3web.we.selenium.main.KnowledgeTestCase;
 
-public class CarDiagnosisDialogTest extends KnowWETestCase{
+/**
+ * Testing the dialog's functionality on the CarDiagnosis example.
+ * @author Max Diez
+ *
+ */
+public class CarDiagnosisDialogTest extends KnowledgeTestCase{
 	
-	boolean isDialog = true;
-	Map<String, Integer[]> map = new HashMap();
-	boolean result;
+	private boolean result;
 	
+	public CarDiagnosisDialogTest() {
+		super();
+		this.isDialog = true;
+	}	
 	
 	public void testCDDialog1(){
-		initializeCDDTest();
+		initKnowledgeTest();
 		map.put("Battery o.k.?", new Integer[] {2});
 		map.put("Ignition timing o.k.?", new Integer[] {2});
 		map.put("Air filter o.k.?", new Integer[] {2});	
@@ -40,67 +46,60 @@ public class CarDiagnosisDialogTest extends KnowWETestCase{
 		result = checkSolutions(new String[] {"Empty battery", "Bad ignition timing",
 				"Clogged air filter", "Leaking air intake system",
 				"Damaged idle speed system"}, map, isDialog);
-		assertEquals(comment, true, result);		
+		assertEquals(testResult, true, result);		
 	}
 		
 	public void testCDDialog2(){
-		initializeCDDTest();
+		initKnowledgeTest();
 		map.put("Engine noises", new Integer[] {2});
 		result = checkSolutions(new String[] {"Bad ignition timing"}, map, isDialog);
-		assertEquals(comment, true, result);
+		assertEquals(testResult, true, result);
 	}
 	
 	
 	public void testCDDialog3(){
-		initializeCDDTest();	
+		initKnowledgeTest();	
 		map.put("Engine start", new Integer[] {1});
 		map.put("Battery o.k.?", new Integer[] {1});
 		result = checkAndUncheckSolutions(new String[] {"Damaged idle speed system"},
 				new String[] {"Battery empty"}, map, isDialog);
-		assertEquals(comment, true, result);
+		assertEquals(testResult, true, result);
 	}
 
 	public void testCDDialog4(){
-		initializeCDDTest();
+		initKnowledgeTest();
 		map.put("What is the color of the exhaust pipe?", new Integer[] {2});
 		map.put("Driving", new Integer[] {1, 2, 3});
 		result = checkAndUncheckSolutions(new String[] {"Leaking air intake system"},
 				new String[] {"Clogged air filter"}, map, isDialog);
-		assertEquals(comment, true, result);
+		assertEquals(testResult, true, result);
 	}
 	
 		
 	public void testCDDialog5(){
-		initializeCDDTest();
+		initKnowledgeTest();
 		map.put("Exhaust fumes", new Integer[] {1});
 		map.put("Fuel", new Integer[] {2});
 		result = checkSolutions(new String[] {"Clogged air filter"}, map, isDialog);
-		assertEquals(comment, true, result);
+		assertEquals(testResult, true, result);
 	}
 	
 	public void testCDDialog6(){
-		initializeCDDTest();
+		initKnowledgeTest();
 		map.put("Exhaust fumes", new Integer[] {1});
 		map.put("Fuel", new Integer[] {2});
 		map.put("Battery o.k.?", new Integer[] {2});
 		result = checkSolutions(new String[] {"Clogged air filter", "Empty battery"}, map, isDialog);
-		assertEquals(comment, true, result);		
+		assertEquals(testResult, true, result);		
 	}
 	
 	public void testCDDialog7(){
-		initializeCDDTest();
+		initKnowledgeTest();
 		map.clear();
 		map.put("Exhaust pipe color", new Integer[] {4});
 		map.put("Fuel", new Integer[] {2});
 		result = checkSolutions(new String[] {"Clogged air filter"}, map, isDialog);
-		assertEquals("Covering-List not working:" + comment, true, result);		
+		assertEquals("Covering-List not working:" + testResult, true, result);		
 	}
 	
-	private void initializeCDDTest() {
-		open("Wiki.jsp?page=Car-Diagnosis-Test");
-		assertEquals("KnowWE: Car-Diagnosis-Test", selenium.getTitle());
-		assertTrue("Solutionstates nicht eingebunden",
-				selenium.isElementPresent("//div[@id='sstate-panel']/h3"));		
-		map.clear();
-	}
 }

@@ -23,21 +23,23 @@ package de.d3web.we.selenium.tests;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.d3web.we.selenium.main.KnowWETestCase;
+
 public class CalendarTest extends KnowWETestCase {
 	
 	
-	public void testNewCalendarEntry() throws Exception {
+	public void testNewCalendarEntry() {
 		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Selenium-Test");
 		loadAndWait("//img[@title='Add some appointments']");
 		verifyTrue(selenium.getTitle().contains("Selenium-Docu"));
-		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a/span");
+		loadAndWait(B_EDIT);
 		
 		Date d = new Date();
 		SimpleDateFormat fmt = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 		String today = fmt.format(d);
-		doSelActionAndWait("editorarea", "type", selenium.getValue("editorarea") + 
+		doSelActionAndWait(EA, "type", selenium.getValue(EA) + 
 				"\n\n<<" + today +  " MD Das ist der aktuelle Selenium-Test>>");
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		loadAndWait("link=<< back");
 		verifyEquals("KnowWE: Selenium-Test", selenium.getTitle());

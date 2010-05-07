@@ -20,6 +20,8 @@
 
 package de.d3web.we.selenium.tests;
 
+import de.d3web.we.selenium.main.KnowWETestCase;
+
 /**
  * This class creates all the pages being needed for the
  * Selenium-Test of KnowWE especially to test the car diagnosis.
@@ -35,11 +37,11 @@ public class SetUpWikiPages extends KnowWETestCase{
 		//Add Solutionstates if necessary 
 		if (!selenium.isElementPresent("sstate-panel")) {
 			open("/KnowWE/Wiki.jsp?page=LeftMenuFooter");
-			loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
-			doSelActionAndWait("editorarea", "type",
-					selenium.getValue("editorarea")
+			loadAndWait(B_EDIT);
+			doSelActionAndWait(EA, "type",
+					selenium.getValue(EA)
 					+ "\n\n[{KnowWEPlugin solutionstates}]");
-			loadAndWait("ok");
+			loadAndWait(B_SAVE);
 			open("/KnowWE/Wiki.jsp?page=Main");
 		}
 		
@@ -50,19 +52,19 @@ public class SetUpWikiPages extends KnowWETestCase{
 			return;
 		}
 		
-		loadAndWait("//div[@id='actionsTop']/ul/li[1]/a");
-		doSelActionAndWait("editorarea", "type", selenium.getValue("editorarea") 
+		loadAndWait(B_EDIT);
+		doSelActionAndWait(EA, "type", selenium.getValue(EA) 
 				+ "\n\n[Selenium-Test]");
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		loadAndWait("link=Selenium-Test");
-		doSelActionAndWait("editorarea", "type",  rb.getString("KnowWE.SeleniumTest.MainPage"));
-		loadAndWait("ok");
+		doSelActionAndWait(EA, "type",  rb.getString("KnowWE.SeleniumTest.MainPage"));
+		loadAndWait(B_SAVE);
 		
 		loadAndWait("link=Car-Diagnosis-Test");
-		doSelActionAndWait("editorarea", "type", 
+		doSelActionAndWait(EA, "type", 
 				rb.getString("KnowWE.SeleniumTest.Car-Diagnosis-Test-Page"));
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		loadAndWait("link=Selenium-Test");
 		loadAndWait("link=Car-Diagnosis-Test");
@@ -71,48 +73,48 @@ public class SetUpWikiPages extends KnowWETestCase{
 		
 		//Solutions-Pages, KB Page
 		loadAndWait("link=Damaged idle speed system");
-		doSelActionAndWait("editorarea", "type", 
+		doSelActionAndWait(EA, "type", 
 				rb.getString("KnowWE.SeleniumTest.Damaged"));
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Leaking air intake system");
-		doSelActionAndWait("editorarea", "type", 
+		doSelActionAndWait(EA, "type", 
 				rb.getString("KnowWE.SeleniumTest.Leaking"));
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Clogged air filter");
-		doSelActionAndWait("editorarea", "type", 
+		doSelActionAndWait(EA, "type", 
 				rb.getString("KnowWE.SeleniumTest.Clogged"));
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Bad ignition timing");
-		doSelActionAndWait("editorarea", "type", 
+		doSelActionAndWait(EA, "type", 
 				rb.getString("KnowWE.SeleniumTest.Bad"));
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Empty battery");
-		doSelActionAndWait("editorarea", "type", 
+		doSelActionAndWait(EA, "type", 
 				rb.getString("KnowWE.SeleniumTest.Empty"));
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		open(rb.getString("KnowWE.SeleniumTest.url") + "/Wiki.jsp?page=Selenium-Test");
 		loadAndWait("link=Quick-Edit-Test");
-		doSelActionAndWait("editorarea", "type",
+		doSelActionAndWait(EA, "type",
 				rb.getString("KnowWE.SeleniumTest.Quick-Edit-Test"));
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		loadAndWait("link=Car-Diagnosis-Test");
 		loadAndWait("link=Car Diagnosis Compiled KB");
-		doSelActionAndWait("editorarea", "type", 
+		doSelActionAndWait(EA, "type", 
 				rb.getString("KnowWE.SeleniumTest.KB"));
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		
 		open(rb.getString("KnowWE.SeleniumTest.url") + "/Edit.jsp?page=CD-compiled-KB");
-		loadAndWait("ok");
+		loadAndWait(B_SAVE);
 		loadAndWait("link=Car-Diagnosis-Test");		
 	}
 }
