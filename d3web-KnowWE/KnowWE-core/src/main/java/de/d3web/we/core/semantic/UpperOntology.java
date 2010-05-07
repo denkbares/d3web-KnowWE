@@ -23,6 +23,7 @@ package de.d3web.we.core.semantic;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,7 +85,7 @@ public class UpperOntology {
 		ontfile = path + File.separatorChar + ontfile;
 		settings.put("ontfile", ontfile);
 		reppath = System.getProperty("java.io.tmpdir") + File.separatorChar
-				+ "repository";
+				+ "repository"+(new Date()).toString().hashCode();
 
 		settings.put("reppath", reppath);
 		config_file = path + File.separatorChar + "owlim.ttl";
