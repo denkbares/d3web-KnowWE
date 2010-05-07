@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -105,8 +106,7 @@ public class SemanticCore {
 		defaultnamespaces = new HashMap<String, String>();
 		try {
 			uo.setLocaleNS(knowWEEnvironment.getWikiConnector().getBaseUrl());
-		}
-		catch (RepositoryException e1) {
+		} catch (RepositoryException e1) {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					e1.getMessage());
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
@@ -148,16 +148,14 @@ public class SemanticCore {
 			}
 			output += "[{KnowWEPlugin OwlImport}]";
 			wiki.createWikiPage("SemanticSettings", output, "semanticcore");
-		}
-		else {
+		} else {
 			for (String piece : settingspage.split(System
 					.getProperty("line.separator"))) {
 				if (piece.contains("=")) {
 					String[] s = piece.split("=");
 					try {
 						settings.put(s[0].trim(), s[1].trim());
-					}
-					catch (IndexOutOfBoundsException e) {
+					} catch (IndexOutOfBoundsException e) {
 						Logger.getLogger(this.getClass().getName()).log(
 								Level.WARNING, e.getMessage());
 					}
@@ -204,9 +202,11 @@ public class SemanticCore {
 			List<Statement> allStatements = io.getAllStatements();
 
 			HashMap<String, List<Statement>> semanticsettingsstatements = null;
-			if (statementcache.get("SemanticSettings") == null) semanticsettingsstatements = new HashMap<String, List<Statement>>();
-			else semanticsettingsstatements = statementcache
-					.get("SemanticSettings");
+			if (statementcache.get("SemanticSettings") == null)
+				semanticsettingsstatements = new HashMap<String, List<Statement>>();
+			else
+				semanticsettingsstatements = statementcache
+						.get("SemanticSettings");
 			semanticsettingsstatements.put("SemanticSettings", allStatements);
 			statementcache.put("SemanticSettings", semanticsettingsstatements);
 			try {
@@ -221,8 +221,7 @@ public class SemanticCore {
 				}
 
 				con.commit();
-			}
-			catch (RepositoryException e) {
+			} catch (RepositoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -283,7 +282,7 @@ public class SemanticCore {
 
 		Logger.getLogger(this.getClass().getName()).finer(
 				"semantic core updating " + sec.getId() + "  "
-				+ allStatements.size());
+						+ allStatements.size());
 
 		addStaticStatements(inputio, sec);
 
@@ -328,8 +327,7 @@ public class SemanticCore {
 			List<Statement> allStatements = inputio.getAllStatements();
 			con.add(allStatements, getContext(sec));
 			// con.commit();
-		}
-		catch (RepositoryException e) {
+		} catch (RepositoryException e) {
 			Logging.getInstance().severe(e.getMessage());
 		}
 
@@ -411,16 +409,13 @@ public class SemanticCore {
 			Section<? extends KnowWEObjectType> s) {
 		List<Statement> allstatements = new ArrayList<Statement>();
 
-		
+		if (getStatementsofSingleSection(s) != null) {
+			// add statements of this section
+			allstatements.addAll(getStatementsofSingleSection(s));
+		}
 
 		// walk over all children
 		for (Section<? extends KnowWEObjectType> current : s.getChildren()) {
-			// add statemts from the current child
-
-			if (getStatementsofSingleSection(current) != null) {
-				// add statements of this section
-				allstatements.addAll(getStatementsofSingleSection(current));
-			}
 			// collect statements of the the children's descendants
 			allstatements.addAll(getSectionStatementsRecursive(current));
 		}
@@ -473,8 +468,7 @@ public class SemanticCore {
 		try {
 			con.clear(key);
 			// con.commit();
-		}
-		catch (RepositoryException e) {
+		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -499,8 +493,7 @@ public class SemanticCore {
 		try {
 			con.remove(getSectionStatementsRecursive(sec));
 			con.commit();
-		}
-		catch (RepositoryException e) {
+		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -524,8 +517,7 @@ public class SemanticCore {
 				try {
 					con.remove(cur.getValue());
 					con.commit();
-				}
-				catch (RepositoryException e) {
+				} catch (RepositoryException e) {
 					e.printStackTrace();
 				}
 			}
@@ -566,12 +558,10 @@ public class SemanticCore {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		}
-		catch (RepositoryException e) {
+		} catch (RepositoryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
-		}
-		catch (MalformedQueryException e) {
+		} catch (MalformedQueryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
 		}
@@ -580,8 +570,7 @@ public class SemanticCore {
 			return resultlist;
 		try {
 			result = ((TupleQuery) query).evaluate();
-		}
-		catch (QueryEvaluationException e) {
+		} catch (QueryEvaluationException e) {
 			e.printStackTrace();
 		}
 
@@ -597,8 +586,7 @@ public class SemanticCore {
 						tag = tag.split("#")[1];
 					try {
 						tag = URLDecoder.decode(tag, "UTF-8");
-					}
-					catch (UnsupportedEncodingException e) {
+					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
 					if (tag.contains("=")) {
@@ -612,15 +600,12 @@ public class SemanticCore {
 					}
 					resultlist.add(tag.trim());
 				}
-			}
-			catch (QueryEvaluationException e) {
+			} catch (QueryEvaluationException e) {
 				return resultlist;
-			}
-			finally {
+			} finally {
 				try {
 					result.close();
-				}
-				catch (QueryEvaluationException e) {
+				} catch (QueryEvaluationException e) {
 					e.printStackTrace();
 				}
 			}
@@ -628,45 +613,36 @@ public class SemanticCore {
 		return resultlist;
 
 	}
-	
-	
+
 	/**
 	 * @param inquery
 	 * @param targetbinding
 	 * @return
 	 */
-	public boolean booleanQuery (String inquery
-			) {
+	public boolean booleanQuery(String inquery) {
 		String querystring = getSparqlNamespaceShorts();
-		querystring = querystring + "\n"+ inquery;
+		querystring = querystring + "\n" + inquery;
 		RepositoryConnection con = UpperOntology.getInstance().getConnection();
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		}
-		catch (RepositoryException e) {
+		} catch (RepositoryException e) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					e.getMessage());
+		} catch (MalformedQueryException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
 					e.getMessage());
 		}
-		catch (MalformedQueryException e) {
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
-					e.getMessage());
-		}
-	
-		
-		
+
 		try {
-			 return booleanQuery((BooleanQuery)query);
-		}
-		catch (QueryEvaluationException e) {
+			return booleanQuery((BooleanQuery) query);
+		} catch (QueryEvaluationException e) {
 			e.printStackTrace();
 		}
 		return false;
 
-
 	}
 
-	
 	/**
 	 * @return
 	 */
@@ -724,22 +700,40 @@ public class SemanticCore {
 	 * exist anymore -> they aren't found... so we check for statements in the
 	 * core from sections not existing anymore in the article
 	 * 
+	 * TODO: find faster way to do this
 	 * @param art
 	 */
 	public void cleanOrphans(KnowWEArticle art) {
 		HashMap<String, List<Statement>> temp = statementcache.get(art
 				.getTitle());
 		if (temp != null) {
+			List<Statement> activeStatements = getSectionStatementsRecursive(art
+					.getSection());
+
 			for (Entry<String, List<Statement>> cur : new LinkedList<Entry<String, List<Statement>>>(
 					temp.entrySet())) {
 				if (null == art.findSection(cur.getKey())) {
 					RepositoryConnection con = uo.getConnection();
-					try {
-						con.remove(cur.getValue());
-						con.commit();
-					}
-					catch (RepositoryException e) {
-						e.printStackTrace();
+					for (Statement curs : cur.getValue()) {
+						//make sure a statement that was created in an orphaned section, isn't present in any of the new valid ones ..
+						//TODO:: find better solution for this ... it's not very efficient
+						boolean exists=false;
+						Iterator<Statement> sit=activeStatements.iterator();					
+						while (!exists && sit.hasNext()){
+							Statement lookat=sit.next();
+							if (lookat.getObject().equals(curs.getObject())&&lookat.getSubject().equals(curs.getSubject())&&lookat.getPredicate().equals(curs.getPredicate())){
+								exists=true;
+							}
+						}
+						if (!exists) {
+							try {
+								con.remove(curs);
+								con.commit();
+							} catch (RepositoryException e) {
+								e.printStackTrace();
+							}
+						}
+						
 					}
 					temp.remove(cur.getKey());
 				}

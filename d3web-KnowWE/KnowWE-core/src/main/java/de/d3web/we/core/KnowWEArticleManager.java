@@ -259,15 +259,6 @@ public class KnowWEArticleManager {
 						+ (System.currentTimeMillis() - art.getStartTime())
 						+ "ms <<====");
 
-		// commit all changes to the triplestore the article updating has
-		// produced.
-		// moved back to sectionwise updates due to a heisenbug
-		// try {
-		// SemanticCore.getInstance().getUpper().getConnection().commit();
-		// } catch (RepositoryException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 		return art.getReport();
 	}
 

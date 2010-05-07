@@ -1,13 +1,19 @@
 package tests;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 
+import objectTypes.SplitObjectType;
+import objectTypes.WordObjectType;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import types.DefaultMarkupTestType;
 
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEArticleManager;
@@ -15,8 +21,13 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.TaggingMangler;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.RootType;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotation;
 import dummies.KnowWETestWikiConnector;
 
 public class SemanticCoreTest {
@@ -30,23 +41,57 @@ public class SemanticCoreTest {
 	@Before
 	public void setUp() throws Exception {
 		InitPluginManager.init();
-		/*
-		 * Initialise KnowWEEnvironment
-		 */
+		
+		RootType.getInstance().addChildType(new SemanticAnnotation());
+
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
 		ke = KnowWEEnvironment.getInstance();
-		am = KnowWEEnvironment.getInstance().getArticleManager("default_web");
-		type = ke.getRootType();
+		type=ke.getRootType();
+		am=ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
 
-		/*
-		 * Init first Article
-		 */
-		KnowWEArticle article1 = new KnowWEArticle("", "TagTest", type,
-				"default_web");
-
-		am.saveUpdatedArticle(article1);
+	
 		params = new KnowWEParameterMap("", "");
 		sc = SemanticCore.getInstance();
+	}
+
+	@Test
+	public void testStatementRemoval() {
+		String hades = "[ hades <=> hades type:: god ]";
+		String joe = "[ joe <=> joe type:: person ]";
+		String testtopic = "TestPage";
+//		ke.processAndUpdateArticleJunit(null,hades, testtopic,
+//				KnowWEEnvironment.DEFAULT_WEB, type);
+//
+		String hadesquery = "ask { lns:hades rdf:type lns:god }";
+		String joequery = "ask { lns:joe rdf:type lns:person }";
+//
+//		// check that the article was parsed and the statements are in the core
+//		assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
+//	
+//		// now change the article to just contain joe and no hades and make sure
+//		// this is updated in the core accordingly		
+//		ke.processAndUpdateArticleJunit(null,joe, testtopic,
+//				KnowWEEnvironment.DEFAULT_WEB, type);
+//		assertFalse(SemanticCore.getInstance().booleanQuery(hadesquery));
+//		assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
+
+		// now add hades and joe		
+		ke.processAndUpdateArticleJunit(null, hades + "\n" + joe, testtopic,
+				KnowWEEnvironment.DEFAULT_WEB, type);
+		assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
+		assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
+
+		// kill hades ;)
+		ke.processAndUpdateArticleJunit(null, joe, testtopic,
+				KnowWEEnvironment.DEFAULT_WEB, type);
+		assertFalse(SemanticCore.getInstance().booleanQuery(hadesquery));
+		assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
+
+		// kill the article and make sure all statements are gone
+		am.deleteArticle(am.getArticle(testtopic));
+		assertFalse(SemanticCore.getInstance().booleanQuery(hadesquery));
+		assertFalse(SemanticCore.getInstance().booleanQuery(joequery));
+
 	}
 
 	@Test

@@ -35,10 +35,6 @@ public class SemanticAnnotation extends DefaultAbstractKnowWEObjectType {
 	private static String ANNOTATIONBEGIN = "\\[";
 	private static String ANNOTATIONEND = "\\]";
 
-	public SemanticAnnotation() {
-
-	}
-
 	@Override
 	public SectionFinder getSectioner() {
 		return new AnnotationSectionFinder();

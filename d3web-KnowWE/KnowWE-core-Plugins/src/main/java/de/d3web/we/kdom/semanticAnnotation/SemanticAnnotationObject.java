@@ -52,8 +52,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author kazamatzuri
  * 
  */
-public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
-		{
+public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
@@ -83,6 +82,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 			List<Section> childs = s.getChildren();
 			URI prop = null;
 			URI stringa = null;
+			URI soluri = null;
 			boolean erronousproperty = false;
 			String badprop = "";
 			for (Section cur : childs) {
@@ -95,6 +95,10 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 					if (erronousproperty) {
 						badprop = tempio.getBadAttribute();
 					}
+				} else if (cur.getObjectType().getClass().equals(
+						SemanticAnnotationSubject.class)) {
+					String subj = cur.getOriginalText().trim();
+					soluri = uo.getHelper().createlocalURI(subj);
 				} else if (cur.getObjectType().getClass().equals(
 						SimpleAnnotation.class)) {
 					IntermediateOwlObject tempio = (IntermediateOwlObject) KnowWEUtils
@@ -126,7 +130,9 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 			if (prop != null && validprop && stringa != null) {
 				DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager
 						.getInstance().getContext(s, DefaultSubjectContext.CID);
-				URI soluri = sol.getSolutionURI();
+				if (soluri == null) {
+					soluri = sol.getSolutionURI();
+				}
 				Statement stmnt = null;
 				try {
 					if (PropertyManager.getInstance().isRDFS(prop)) {
@@ -168,7 +174,5 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType
 		}
 
 	}
-
-
 
 }
