@@ -133,7 +133,7 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 
 	@Override
 	public Choice findAnswerChoice(QuestionChoice qc, String name) {
-		Choice answer = kbm.findAnswerChoice(qc, name);
+		Choice answer = kbm.findChoice(qc, name);
 		if (answer == null && lazyAnswers) {
 			answer = AnswerFactory.createAnswerChoice(kbm.findNewIDForAnswerChoice(qc),
 					name);

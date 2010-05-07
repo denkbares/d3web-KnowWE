@@ -71,7 +71,7 @@ public class CreateScoresHandler implements SubtreeHandler {
 
 			}
 
-			Condition cond = createCondition(qc, new ChoiceValue(kbm.findAnswerChoice(
+			Condition cond = createCondition(qc, new ChoiceValue(kbm.findChoice(
 					qc, defaultValue)));
 
 			Score scoreV = getScore(score);

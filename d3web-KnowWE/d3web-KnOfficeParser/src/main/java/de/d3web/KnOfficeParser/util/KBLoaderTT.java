@@ -137,7 +137,7 @@ public class KBLoaderTT implements TerminologyTester{
 
 		Question q = kbm.findQuestion(question);
 		if (q != null && q instanceof QuestionChoice) {
-			Choice a = kbm.findAnswerChoice((QuestionChoice) q, answer);
+			Choice a = kbm.findChoice((QuestionChoice) q, answer);
 			if (a != null)
 				return true;
 		}

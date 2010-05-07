@@ -42,7 +42,7 @@ public abstract class AnswerRef extends D3webObjectRef<Choice> {
 
 			Question question = mgn.findQuestion(questionName);
 			if (question != null && question instanceof QuestionChoice) {
-				return (Choice) mgn.findAnswerChoice((QuestionChoice) question,
+				return (Choice) mgn.findChoice((QuestionChoice) question,
 						answerName);
 
 			}
