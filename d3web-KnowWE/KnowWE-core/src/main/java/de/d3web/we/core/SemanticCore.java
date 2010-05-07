@@ -411,10 +411,7 @@ public class SemanticCore {
 			Section<? extends KnowWEObjectType> s) {
 		List<Statement> allstatements = new ArrayList<Statement>();
 
-		if (getStatementsofSingleSection(s) != null) {
-			// add statements of this section
-			allstatements.addAll(getStatementsofSingleSection(s));
-		}
+		
 
 		// walk over all children
 		for (Section<? extends KnowWEObjectType> current : s.getChildren()) {
