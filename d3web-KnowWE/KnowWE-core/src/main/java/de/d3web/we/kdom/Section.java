@@ -484,7 +484,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public void getAllNodesPostOrder(List<Section<? extends KnowWEObjectType>> nodes) {	
 		if (this.getChildren() != null) {
 			for (Section<? extends KnowWEObjectType> child : this.getChildren()) {
-				child.getAllNodesPreOrder(nodes);
+				child.getAllNodesPostOrder(nodes);
 			}
 		}
 		nodes.add(this);
