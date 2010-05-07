@@ -628,7 +628,45 @@ public class SemanticCore {
 		return resultlist;
 
 	}
+	
+	
+	/**
+	 * @param inquery
+	 * @param targetbinding
+	 * @return
+	 */
+	public boolean booleanQuery (String inquery
+			) {
+		String querystring = getSparqlNamespaceShorts();
+		querystring = querystring + "\n"+ inquery;
+		RepositoryConnection con = UpperOntology.getInstance().getConnection();
+		Query query = null;
+		try {
+			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
+		}
+		catch (RepositoryException e) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					e.getMessage());
+		}
+		catch (MalformedQueryException e) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+					e.getMessage());
+		}
+	
+		
+		
+		try {
+			 return booleanQuery((BooleanQuery)query);
+		}
+		catch (QueryEvaluationException e) {
+			e.printStackTrace();
+		}
+		return false;
 
+
+	}
+
+	
 	/**
 	 * @return
 	 */
