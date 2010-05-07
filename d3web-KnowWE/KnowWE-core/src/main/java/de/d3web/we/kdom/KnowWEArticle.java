@@ -325,6 +325,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	// return report.getKopicParseResult();
 	// }
 
+	/**
+	 * Returns the title of this KnowWEArticle.
+	 */
 	public String getTitle() {
 		return title;
 	}
@@ -355,6 +358,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return null;
 	}
 
+	/**
+	 * Returns the simple name of this class, NOT THE NAME (Title) OF THIS ARTICLE!
+	 * For the articles title, use getTitle() instead!
+	 */
 	@Override
 	public String getName() {
 		return this.getClass().getSimpleName();
