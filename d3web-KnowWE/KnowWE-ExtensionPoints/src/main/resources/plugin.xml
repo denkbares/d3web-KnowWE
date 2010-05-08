@@ -2,9 +2,6 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="KnowWEExtensionPoints" version="0.0.1">
 <!-- This plugin only defines extension points for KnowWE. -->
-	<attributes>
-		<attribute id="placeholder" value="foobar" />
-	</attributes>
 	
 	<extension-point id="Instantiation">
 		<parameter-def id="class" />
