@@ -50,23 +50,23 @@ public class SemanticCoreTest {
 		String hades = "[ hades <=> hades type:: god ]";
 		String joe = "[ joe <=> joe type:: person ]";
 		String testtopic = "TestPage";
-		// ke.processAndUpdateArticleJunit(null,hades, testtopic,
-		// KnowWEEnvironment.DEFAULT_WEB, type);
-		//
+		ke.processAndUpdateArticleJunit(null, hades, testtopic,
+				KnowWEEnvironment.DEFAULT_WEB, type);
+
 		String hadesquery = "ask { lns:hades rdf:type lns:god }";
 		String joequery = "ask { lns:joe rdf:type lns:person }";
-		//
-		// // check that the article was parsed and the statements are in the
+
+		// check that the article was parsed and the statements are in the
 		// core
-		// assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
-		//	
-		// // now change the article to just contain joe and no hades and make
+		assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
+
+		// now change the article to just contain joe and no hades and make
 		// sure
-		// // this is updated in the core accordingly
-		// ke.processAndUpdateArticleJunit(null,joe, testtopic,
-		// KnowWEEnvironment.DEFAULT_WEB, type);
-		// assertFalse(SemanticCore.getInstance().booleanQuery(hadesquery));
-		// assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
+		// this is updated in the core accordingly
+		ke.processAndUpdateArticleJunit(null, joe, testtopic,
+				KnowWEEnvironment.DEFAULT_WEB, type);
+		assertFalse(SemanticCore.getInstance().booleanQuery(hadesquery));
+		assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
 
 		// now add hades and joe
 		ke.processAndUpdateArticleJunit(null, hades + "\n" + joe, testtopic,
