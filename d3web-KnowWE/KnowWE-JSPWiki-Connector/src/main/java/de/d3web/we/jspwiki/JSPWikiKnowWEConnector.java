@@ -409,6 +409,44 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 				context.getPage().getName(), context.getPage().getVersion());
 		return pagedata;
 	}
+	
+	@Override
+	public String getArticleSource(String name, int version) {
+
+		// Surrounded this because getPage()
+		// caused a Nullpointer on first KnowWE startup
+		try {
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
+				return null;
+		}
+		catch (NullPointerException e) {
+			return null;
+		}
+
+		WikiContext context = new WikiContext(this.engine, this.engine
+				.getPage(name));
+
+		String pagedata = null;
+		try {
+			if(context.getEngine().pageExists(context.getPage().getName(), version)) {
+				pagedata = context.getEngine().getPureText(
+						context.getPage().getName(), version);
+			}
+		} catch (ProviderException e) {
+			return null;
+		}
+		
+		return pagedata;
+	}	
+	
+	@Override
+	public int getVersion(String name) {
+		WikiContext context = new WikiContext(this.engine, this.engine
+				.getPage(name));		
+		return context.getPage().getVersion();
+	}
+	
+	
 
 	@Override
 	public String getBaseUrl() {

@@ -143,13 +143,30 @@ public interface KnowWEWikiConnector {
 	public String getBaseUrl();
 
 	/**
-	 * Returns the source text of the wiki page with the given name as one
+	 * Returns the most current version of the 
+	 * source text of the wiki page with the given name as one
 	 * string
 	 *
 	 * @param name
 	 * @return
 	 */
 	public String getArticleSource(String name);
+	
+	/**
+	 * Gets the most current version number of the article with the given name
+	 * @param name
+	 * @return
+	 */
+	public int getVersion(String name);
+	
+	/**
+	 * Returns the given version of the source text of the wiki page
+	 * 
+	 * @param name the name of the article
+	 * @param version the version number of the article source to be retrieved
+	 * @return the source of the article, or null if the given version does not exist
+	 */
+	public String getArticleSource(String name, int version);
 
 	/**
 	 * Returns a map of all wiki pages with page names as key and page sources

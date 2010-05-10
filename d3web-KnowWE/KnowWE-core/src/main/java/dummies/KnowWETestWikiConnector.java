@@ -114,6 +114,18 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public String getArticleSource(String name, int version) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getVersion(String name) {
+		// TODO Auto-generated method stub
+		return 0;
+	}	
 
 	@Override
 	public String getAttachmentPath(String JarName) {
@@ -258,5 +270,4 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 }
