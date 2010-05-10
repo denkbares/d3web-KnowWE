@@ -24,7 +24,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -33,7 +36,10 @@ import org.jdom.xpath.XPath;
 
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
-import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
+import de.d3web.we.ci4ke.build.CIBuildResultset;
+import de.d3web.we.ci4ke.build.CIBuilder;
+import de.d3web.we.ci4ke.handling.CITestResult;
+import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
 
 public class CIAction extends AbstractAction {
@@ -42,8 +48,13 @@ public class CIAction extends AbstractAction {
 	@Override
 	public void execute(ActionContext context) throws IOException {
 		
+		Logger.getLogger(this.getClass().getName()).info( 
+				">>> execute Action angekommen! >>>");		
+		
 		String task = String.valueOf(context.getParameter("task"));
 		String dashboardID = String.valueOf(context.getParameter("id"));
+		String topic = context.getKnowWEParameterMap().getTopic();
+		String web = context.getKnowWEParameterMap().getWeb();
 		
 		if(task.equals("null") || dashboardID.equals("null"))
 			throw new IOException("CIAction.execute(): Required parameters not set!");
@@ -52,6 +63,17 @@ public class CIAction extends AbstractAction {
 		
 		if(task.equals("executeNewBuild")){
 			
+			Logger.getLogger(this.getClass().getName()).log(Level.INFO, 
+			">>> executeNewBuild angekommen! >>>");
+			
+			CIBuilder builder = new CIBuilder(topic, dashboardID);
+			builder.executeBuild();
+			
+//			for(Map.Entry<String, CITestResult> testresult : 
+//				resultset.getResults().entrySet()) {
+//				context.getWriter().write(testresult.getKey() + 
+//						" - " + testresult.getValue().toString() + "<br/>");
+//			}
 			
 			
 		}//Changes in the wiki for the selected build

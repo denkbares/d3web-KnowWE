@@ -22,12 +22,7 @@ package de.d3web.we.ci4ke;
 
 import java.util.Map;
 
-import com.ecyrd.jspwiki.PageManager;
-import com.ecyrd.jspwiki.WikiContext;
-import com.ecyrd.jspwiki.WikiEngine;
-
-import de.d3web.we.ci4ke.handling.CIDashboard;
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.ci4ke.deprecated.DeprecatedCIDashboard;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -45,7 +40,7 @@ public class CI4KETagHandler extends AbstractTagHandler {
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		
-		CIDashboard board = new CIDashboard(values,topic);
+		DeprecatedCIDashboard board = new DeprecatedCIDashboard(values,topic);
 		return board.render();
 	}
 }

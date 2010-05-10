@@ -20,18 +20,46 @@
 
 package de.d3web.we.ci4ke.handling;
 
-import java.util.concurrent.Callable;
+public final class CITestResult implements Comparable<CITestResult>{
 
-import de.d3web.we.ci4ke.deprecated.DeprecatedCIConfiguration;
+	public enum TestResultType {
+		SUCCESSFUL,
+		FAILED,
+		ERROR
+	}
+	
+	private final TestResultType result;
+	
+	public TestResultType getResultType() {
+		return result;
+	}
 
-/**
- * Any implementing class has to implement the call() method
- * which results a TestResult.
- * @author Marc
- *
- */
-public interface CITest extends Callable<CITestResult> {
+	private final String testResultMessage;
+	
+	public CITestResult(TestResultType result){
+		this.result = result;
+		this.testResultMessage = "";
+	}
+	
+	public CITestResult(TestResultType result, String resultMessage){
+		this.result = result;
+		this.testResultMessage = resultMessage;
+	}	
+	
+	public boolean isSuccessful() { return result == TestResultType.SUCCESSFUL; }
+	
+	public String getTestResultMessage() { return testResultMessage; }
+	
+	@Override
+	public String toString(){
+		return result.toString() + " - " + testResultMessage;
+	}
 
-	public void init(CIConfig config);
-
+	/**
+	 * SUCCESSFUL < FAILED < ERROR
+	 */
+	@Override
+	public int compareTo(CITestResult tr) {
+		return result.compareTo(tr.getResultType());
+	}
 }

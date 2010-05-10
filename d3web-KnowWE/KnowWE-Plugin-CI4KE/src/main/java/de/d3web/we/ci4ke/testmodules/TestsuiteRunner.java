@@ -21,42 +21,43 @@
 package de.d3web.we.ci4ke.testmodules;
 
 import de.d3web.empiricalTesting.TestSuite;
-import de.d3web.we.ci4ke.handling.CIConfiguration;
-import de.d3web.we.ci4ke.handling.CITest;
-import de.d3web.we.ci4ke.handling.TestResult;
-import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
+import de.d3web.we.ci4ke.handling.AbstractCITest;
+import de.d3web.we.ci4ke.handling.CITestResult;
+import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.testsuite.TestsuiteSection;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class TestsuiteRunner implements CITest {
+public class TestsuiteRunner extends AbstractCITest {
 
 	@Override
-	public TestResult execute(CIConfiguration config) {
-		
-		KnowWEArticle article = config.getMonitoredArticle();
+	public CITestResult call() {
+
+		String monitoredArticleTitle = config.getMonitoredArticleTitle();
+		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticleManager(KnowWEEnvironment.
+					DEFAULT_WEB).getArticle(monitoredArticleTitle);
 		Section<TestsuiteSection> section = article.getSection().findSuccessor(TestsuiteSection.class);
 		
 		if(section != null){
-			TestSuite suite = (TestSuite)KnowWEUtils.getStoredObject(config.getWeb(), 
-					article.getTitle(), section.getId(), TestsuiteSection.TESTSUITEKEY);
+			TestSuite suite = (TestSuite)KnowWEUtils.getStoredObject(section, TestsuiteSection.TESTSUITEKEY);
 			if(suite != null){
 				if(!suite.isConsistent()){//testsuite is not consistent!
-					return new TestResult(TestResultType.FAILED, "Testsuite is not consistent!");
+					return new CITestResult(TestResultType.FAILED, "Testsuite is not consistent!");
 				}
 				else if(suite.totalRecall() == 1.0 && suite.totalPrecision() == 1.0){//testsuite passed!
-					return new TestResult(TestResultType.SUCCESSFUL, "Testsuite passed!");
+					return new CITestResult(TestResultType.SUCCESSFUL, "Testsuite passed!");
 				}
 				else {//testsuite failed
-					return new TestResult(TestResultType.FAILED, "Testsuite failed! (Total Precision: " + suite.totalPrecision() + 
+					return new CITestResult(TestResultType.FAILED, "Testsuite failed! (Total Precision: " + suite.totalPrecision() + 
 							", Total Recall: " + suite.totalRecall() + ")");
 				}
 			}
-			else return new TestResult(TestResultType.ERROR, "Error while retrieving Testsuite from Article '" + article.getTitle() + "' !");
+			else return new CITestResult(TestResultType.ERROR, "Error while retrieving Testsuite from Article '" + article.getTitle() + "' !");
 			
 		}
-		else return new TestResult(TestResultType.ERROR, "No Testsuite-Section found on Article '" + article.getTitle() + "' !");
+		else return new CITestResult(TestResultType.ERROR, "No Testsuite-Section found on Article '" + article.getTitle() + "' !");
 	}
 
 }

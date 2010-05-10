@@ -18,11 +18,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.ci4ke.handling;
+package de.d3web.we.ci4ke.deprecated;
 
-import groovy.lang.Script;
-
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,19 +27,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.we.ci4ke.groovy.GroovyCITestSubtreeHandler;
-import de.d3web.we.ci4ke.groovy.GroovyCITestType;
+import de.d3web.we.ci4ke.handling.CITest;
+import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Immutable configuration class for Continuous Integration Testing
  * @author Marc
  * 
  */
-public class CIConfiguration {
+@Deprecated
+public class DeprecatedCIConfiguration {
 	
 	//PUBLIC KEY CONSTANTS
 	public static final String WEB_KEY 					= "web";
@@ -79,19 +75,20 @@ public class CIConfiguration {
 	 * @param parameters
 	 * @param dashboardArticleTitle The title of the article on which this CI Dashboard resides.
 	 */
-	public CIConfiguration(Map<String, String> parameters, String dashboardArticleTitle){
+	public DeprecatedCIConfiguration(Map<String, String> parameters, String dashboardArticleTitle){
 		this.parameters = new HashMap<String, String>();
 		this.testsToExecute = new LinkedList<Class<? extends CITest>>();
 
 		//Add all default configuration parameters...
 		this.parameters.putAll(defaultParameters);
 		//...and amend them (and eventually overwrite them!) with the given parameters 
-		for(String key : parameters.keySet()){
-			if(key.equals(TESTS_KEY))//the tests need special treatment
-				this.testsToExecute = parseTestClasses(parameters.get(key));
-			else
-				this.parameters.put(key, parameters.get(key));
-		}
+//		for(String key : parameters.keySet()){
+//			if(key.equals(TESTS_KEY))//the tests need special treatment
+//				this.testsToExecute = CIUtilities.
+//					parseTestClasses(parameters.get(key));
+//			else
+//				this.parameters.put(key, parameters.get(key));
+//		}
 		//if no monitored Article was set: The article on which the Dashboard 
 		//resides will be monitored 
 		if(!this.parameters.containsKey(MONITORED_ARTICLE_KEY))
@@ -125,73 +122,5 @@ public class CIConfiguration {
 		return this.get(WEB_KEY);
 	}
 
-	private List<Class<? extends CITest>> parseTestClasses(String testClassNames){
-		//get all Sections containing a GroovyCITest
-		Map<String,Section<GroovyCITestType>> groovyTestSections = getAllGroovyCITestSections(this.getWeb());
-		//our return list
-		List<Class<? extends CITest>> classesList = new LinkedList<Class<? extends CITest>>();
-		//the test class names are separeted by colons... lets split() them!
-		String[] classes = testClassNames.split(":");
-		//the package prefix to find the
-		String packagePrefix = "de.d3web.we.ci4ke.testmodules.";
 
-		for(String c : classes){
-			
-			//a test can either be statically defined in a java class
-			//or dynamically defined in a grovvy test section
-			if(groovyTestSections.containsKey(c)){
-				//the current class name matches the name of a (groovy) test section
-				Section<GroovyCITestType> sec = groovyTestSections.get(c);
-				
-				Script script = GroovyCITestSubtreeHandler.parseGroovyCITestSection(sec);
-				
-				@SuppressWarnings("unchecked") Class<? extends CITest> testClass =
-					(Class<? extends CITest>) script.getClass();
-				
-				classesList.add(testClass);
-				
-			} else {
-				
-				//Try to load the class
-				Class<?> clazz = null;
-				try {
-					clazz = Class.forName(packagePrefix+c);
-					
-					//If our new class implements the ITest-interface...
-					if(CITest.class.isAssignableFrom(clazz)){
-						//this cast is legit due to the type-checking beforehand
-						@SuppressWarnings("unchecked") Class<? extends CITest> testClass =
-							(Class<? extends CITest>) clazz;
-						classesList.add(testClass);		
-					}
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					// e.printStackTrace();
-					
-				}
-			}
-		}
-		return classesList;
-	}
-	
-	public static Map<String,Section<GroovyCITestType>> getAllGroovyCITestSections(String web){
-		//return map
-		Map<String,Section<GroovyCITestType>> sectionsMap = new HashMap<String,Section<GroovyCITestType>>();
-		//a collection containing all wiki-articles
-		Collection<KnowWEArticle> allWikiArticles = KnowWEEnvironment.getInstance().
-						getArticleManager(web).getArticles();
-		//iterate over all articles
-		for(KnowWEArticle article : allWikiArticles){
-			List<Section<GroovyCITestType>> sectionsList = new LinkedList<Section<GroovyCITestType>>();
-			//find all GroovyCITestType sections on this article...
-			article.getSection().findSuccessorsOfType(GroovyCITestType.class, sectionsList);
-			//...and add them to our Map
-			for(Section<GroovyCITestType> section : sectionsList){
-				//a GroovyCITest is uniquely identified by its name-annotation
-				String testName = DefaultMarkupType.getAnnotation(section, "name");
-				sectionsMap.put(testName, section);
-			}
-		}
-		return sectionsMap;
-	}
 }

@@ -20,37 +20,30 @@
 
 package de.d3web.we.ci4ke.handling;
 
-public final class TestResult {
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.event.EventListener;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Section;
 
-	public enum TestResultType {
-		SUCCESSFUL,
-		ERROR,
-		FAILED
-	}
+public class CIEventForwarder implements EventListener {
+
+	public CIEventForwarder() {}
 	
-	private final TestResultType result;
-	
-	public TestResultType getResultType() {
-		return result;
+	@Override
+	public String[] getEvents() {
+		String[] ret = {KnowWEEnvironment.EVENT_ARTICLE_CREATED};
+		return ret;
 	}
 
-	private final String testResultMessage;
-	
-	public TestResult(TestResultType result){
-		this.result = result;
-		this.testResultMessage = "";
-	}
-	
-	public TestResult(TestResultType result, String resultMessage){
-		this.result = result;
-		this.testResultMessage = resultMessage;
-	}	
-	
-	public boolean isSuccessful() { return result == TestResultType.SUCCESSFUL; }
-	
-	public String getTestResultMessage() { return testResultMessage; }
-	
-	public String toString(){
-		return result.toString() + " - " + testResultMessage;
+	@Override
+	public void notify(String username, Section<? extends KnowWEObjectType> s,
+			String eventName) {
+		
+		if(eventName.equals(KnowWEEnvironment.EVENT_ARTICLE_CREATED)) {
+			if(s.getObjectType().getClass().equals(KnowWEArticle.class)) {
+				CIHookManager.getInstance().triggerHooks(s.getId());
+			}
+		}
 	}
 }

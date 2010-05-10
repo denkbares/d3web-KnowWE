@@ -23,29 +23,28 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.we.ci4ke.handling.CIConfiguration;
-import de.d3web.we.ci4ke.handling.CITest;
-import de.d3web.we.ci4ke.handling.TestResult;
-import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
-import de.d3web.we.ci4ke.util.CIUtilities;
+import de.d3web.we.ci4ke.deprecated.DeprecatedCIConfiguration;
+import de.d3web.we.ci4ke.handling.AbstractCITest;
+import de.d3web.we.ci4ke.handling.CITestResult;
+import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 
 
-public class TestArticleContainsTODO implements CITest {
+public class TestArticleContainsTODO extends AbstractCITest {
 
 	/**
 	 * This Test is successful, if and only if the given article does not contain 
 	 * the word "T O D O" (in upper-case, without spaces).
 	 */
 	@Override
-	public TestResult execute(CIConfiguration config) {
+	public CITestResult call() {
 		
 		List<String> namesOfArticlesWhichContainTODO = new LinkedList<String>();
 		
 		//iterate over all KnowWEArticles in the given web
 		for(KnowWEArticle article : KnowWEEnvironment.getInstance().
-				getArticleManager(config.get(CIConfiguration.WEB_KEY)).getArticles()){
+				getArticleManager(KnowWEEnvironment.DEFAULT_WEB).getArticles()){
 			//if an article contains the word "T O D O" (in upper-case, without spaces)...
 			if(article.toString().contains("TODO"))
 				//...add its name to the list
@@ -54,12 +53,12 @@ public class TestArticleContainsTODO implements CITest {
 		
 		//If at least one article was found, this test is FAILED
 		if(namesOfArticlesWhichContainTODO.size() > 0)
-			return new TestResult(TestResultType.FAILED,
+			return new CITestResult(TestResultType.FAILED,
 					"<b>The following Articles contain a 'TODO': "+
-					CIUtilities.implode(namesOfArticlesWhichContainTODO, ", ")+"</b>");
+					de.d3web.we.utils.Strings.concat(", ", 
+							namesOfArticlesWhichContainTODO)+"</b>");
 		else
-			return new TestResult(TestResultType.SUCCESSFUL);
+			return new CITestResult(TestResultType.SUCCESSFUL);
 		
 	}
-
 }

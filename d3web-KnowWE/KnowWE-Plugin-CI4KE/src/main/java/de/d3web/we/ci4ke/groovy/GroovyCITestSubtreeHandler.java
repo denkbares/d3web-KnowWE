@@ -28,9 +28,10 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import de.d3web.report.Message;
-import de.d3web.we.ci4ke.handling.CIConfiguration;
-import de.d3web.we.ci4ke.handling.TestResult;
-import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
+import de.d3web.we.ci4ke.deprecated.DeprecatedCIConfiguration;
+import de.d3web.we.ci4ke.handling.CITestResult;
+import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -49,8 +50,8 @@ public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITest
 	/**
 	 * Prepend the groovy-code with some import statements
 	 */
-	private static final String PREPEND = "import "+CIConfiguration.class.getName()+";\n"+
-    					"import "+TestResult.class.getName()+";\n"+
+	private static final String PREPEND = "import "+DeprecatedCIConfiguration.class.getName()+";\n"+
+    					"import "+CITestResult.class.getName()+";\n"+
     					"import static "+TestResultType.class.getName()+".*;\n";
 	
 	
@@ -58,12 +59,12 @@ public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITest
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section/*<GroovyCITestType>*/ s) {
 		
 		String testname = DefaultMarkupType.getAnnotation(s, "name");
-		Map<String,Section<GroovyCITestType>> map = CIConfiguration.getAllGroovyCITestSections(KnowWEEnvironment.DEFAULT_WEB);
+		Map<String,Section<GroovyCITestType>> map = CIUtilities.getAllGroovyCITestSections(KnowWEEnvironment.DEFAULT_WEB);
 		if(map.containsKey(testname)){
 			Section<GroovyCITestType> testSection = map.get(testname);
 			if(!testSection.getId().equals(s.getId()))
 				DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, 
-						"Test name '"+testname+"' is not unique!", null, -1, null));
+					"Test name '"+testname+"' is not unique!", null, -1, null));
 		}
 			
 		
@@ -95,7 +96,7 @@ public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITest
 		throws CompilationFailedException {
 		
 		CompilerConfiguration config = new CompilerConfiguration();
-		config.setScriptBaseClass("de.d3web.we.ci4ke.groovy.AbstractCITestScript");
+		config.setScriptBaseClass(GroovyCITestScript.class.getName());
 		GroovyShell shell = new GroovyShell(config);
 		
 		String groovycode = PREPEND+DefaultMarkupType.getContent(s);

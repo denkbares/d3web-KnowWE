@@ -20,44 +20,181 @@
 
 package de.d3web.we.ci4ke.util;
 
+import groovy.lang.Script;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.ecyrd.jspwiki.WikiEngine;
 
-import de.d3web.we.ci4ke.handling.TestResult.TestResultType;
+import de.d3web.we.ci4ke.groovy.GroovyCITestSubtreeHandler;
+import de.d3web.we.ci4ke.groovy.GroovyCITestType;
+import de.d3web.we.ci4ke.handling.CIDashboardType;
+import de.d3web.we.ci4ke.handling.CITest;
+import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIUtilities {
-
-	/**
-	 * Implodes the collection by concatenating all elements, 
-	 * separated by the specified string. 
-	 * @param collection The collection of objects
-	 * @param separator The separator which "glues" the objects together 
-	 * @return an imploded collection of objects
-	 */
-	public static <T> String implode(Collection<T> collection, String separator){
-		StringBuilder ret = new StringBuilder();
-		for(Iterator<T> i = collection.iterator(); i.hasNext(); ){
-			ret.append(i.next());
-			if(i.hasNext())
-				ret.append(separator);
-		}
-		return ret.toString();
-	}
 	
 	/**
-	 * 
+	 * Returns the savepath for ci-builds. If the path does not exist, 
+	 * it will instantly be created!
 	 * @return the save path for ci-build xml´s
 	 */
 	public static File getCIBuildDir(){
 		WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().
 				getWikiConnector().getServletContext(), null);
 		String wikiDir = we.getWikiProperties().getProperty("var.basedir");
-		return new File(wikiDir,"/ci-builds/");
+		File buildDir = new File(wikiDir,"/ci-builds/");
+		//check if the path exists
+		if(!buildDir.exists())
+			buildDir.mkdirs();
+		return buildDir;
 	}
+	
+	/**
+	 * This method finds a CIDashboard section only by its dashboard ID,
+	 * by iterating over all wiki articles.
+	 * @param dashboardID the dashboard ID to look for
+	 * @return the section where the dashboard with the given ID is defined, 
+	 * 		or null if no section with this ID can be found
+	 */
+	public static Section<CIDashboardType> findCIDashboardSection(String dashboardID) {
+		for(KnowWEArticle article : KnowWEEnvironment.getInstance().
+				getArticleManager(KnowWEEnvironment.DEFAULT_WEB).getArticles()) {
+				
+			List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();
+				
+			article.getSection().findSuccessorsOfType(CIDashboardType.class, list);
+				
+			for(Section<CIDashboardType> sec : list) {
+				if(CIDashboardType.getDashboardID(sec).equals(dashboardID))
+					return sec;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * This method finds a CIDashboard section by its dashboard ID,
+	 * searching on the article with the given title.
+	 * @param dashboardArticleTitle
+	 * @param dashboardID
+	 * @return
+	 */
+	public static Section<CIDashboardType> findCIDashboardSection(
+			String dashboardArticleTitle, String dashboardID) {
+		//get the article
+		KnowWEArticle article = KnowWEEnvironment.getInstance().
+			getArticleManager(KnowWEEnvironment.DEFAULT_WEB).
+				getArticle(dashboardArticleTitle);
+		//get all CIDashboardType-sections on this article
+		List<Section<CIDashboardType>> list = new ArrayList<Section<CIDashboardType>>();		
+		article.getSection().findSuccessorsOfType(CIDashboardType.class, list);
+		//iterate all sections and look for the given dashboard ID
+		for(Section<CIDashboardType> sec : list) {
+			if(CIDashboardType.getDashboardID(sec).equals(dashboardID))
+				return sec;
+		}
+		return null;
+	}
+
+	/**
+	 * TODO: Javadoc
+	 * @param testClassNames
+	 * @return
+	 */
+	public static Map<String, Class<? extends CITest>> parseTestClasses(String testClassNames){
+		//the test class names are separeted by colons... lets split() them!
+		List<String> list = Arrays.asList(testClassNames.split(":"));
+		return parseTestClasses(list);
+	}
+	
+	/**
+	 * TODO: Javadoc
+	 * @param testClassNames
+	 * @return
+	 */
+	public static Map<String, Class<? extends CITest>> parseTestClasses(
+			Collection<String> testClassNames){
+		//our returnMap
+		Map<String, Class<? extends CITest>> classesMap = 
+			new TreeMap<String, Class<? extends CITest>>(); 
+		
+		//get all Sections containing a GroovyCITest
+		Map<String,Section<GroovyCITestType>> groovyTestSections = 
+			getAllGroovyCITestSections(KnowWEEnvironment.DEFAULT_WEB);
+
+		//the package prefix to find the
+		String packagePrefix = "de.d3web.we.ci4ke.testmodules.";
+
+		for(String c : testClassNames){
+			
+			//a test can either be statically defined in a java class
+			//or dynamically defined in a grovvy test section
+			if(groovyTestSections.containsKey(c)){
+				//the current class name matches the name of a (groovy) test section
+				Section<GroovyCITestType> sec = groovyTestSections.get(c);
+				//parse the content of the section into a groovy-script
+				Script script = GroovyCITestSubtreeHandler.
+					parseGroovyCITestSection(sec);
+				@SuppressWarnings("unchecked") Class<? extends CITest> testClass =
+					(Class<? extends CITest>) script.getClass();
+				classesMap.put(c, testClass);
+				
+			} else {
+				
+				//c is a "ordinary" java class. Try to load the class!
+				Class<?> clazz = null;
+				try {
+					clazz = Class.forName(packagePrefix+c);
+					
+					//If our new class implements the CITest-interface...
+					if(CITest.class.isAssignableFrom(clazz)){
+						//this cast is legit due to the type-checking beforehand
+						@SuppressWarnings("unchecked") Class<? extends CITest> testClass =
+							(Class<? extends CITest>) clazz;
+						classesMap.put(c, testClass);
+					}
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					// e.printStackTrace();
+					
+				}
+			}
+		}
+		return classesMap;
+	}
+	
+	public static Map<String,Section<GroovyCITestType>> getAllGroovyCITestSections(String web){
+		//return map
+		Map<String,Section<GroovyCITestType>> sectionsMap = new HashMap<String,Section<GroovyCITestType>>();
+		//a collection containing all wiki-articles
+		Collection<KnowWEArticle> allWikiArticles = KnowWEEnvironment.getInstance().
+						getArticleManager(web).getArticles();
+		//iterate over all articles
+		for(KnowWEArticle article : allWikiArticles){
+			List<Section<GroovyCITestType>> sectionsList = new ArrayList<Section<GroovyCITestType>>();
+			//find all GroovyCITestType sections on this article...
+			article.getSection().findSuccessorsOfType(GroovyCITestType.class, sectionsList);
+			//...and add them to our Map
+			for(Section<GroovyCITestType> section : sectionsList){
+				//a GroovyCITest is uniquely identified by its name-annotation
+				String testName = DefaultMarkupType.getAnnotation(section, "name");
+				sectionsMap.put(testName, section);
+			}
+		}
+		return sectionsMap;
+	}	
 	
 	// RENDER - HELPERS
 	

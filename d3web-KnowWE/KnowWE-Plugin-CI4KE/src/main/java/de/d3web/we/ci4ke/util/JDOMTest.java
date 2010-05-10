@@ -21,7 +21,6 @@
 package de.d3web.we.ci4ke.util;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Date;
 
 import org.jdom.Document;

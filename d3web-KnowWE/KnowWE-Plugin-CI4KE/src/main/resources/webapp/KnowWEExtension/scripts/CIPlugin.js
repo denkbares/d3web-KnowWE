@@ -18,6 +18,21 @@ function fctGetBuildResults( dashboardID , buildNr ) {
     new _KA( options ).send();
 }
 
-function fctExecuteNewBuild( dashboardID, tests ) {
-	//Execute a new build for the dashboard with the ID DashboardID
+function fctExecuteNewBuild( dashboardID ) {
+
+	var params = {
+            action : 'CIAction',
+            task   : 'executeNewBuild',
+            id     : dashboardID
+        }
+    
+     var options = {
+            url : KNOWWE.core.util.getURL( params ),
+            response : {
+                ids : ['ci-column-right'],
+                action : 'insert'
+            }
+     }
+     
+     new _KA( options ).send();
 }
