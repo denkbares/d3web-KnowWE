@@ -24,8 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdom.Document;
@@ -36,9 +34,7 @@ import org.jdom.xpath.XPath;
 
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
-import de.d3web.we.ci4ke.build.CIBuildResultset;
 import de.d3web.we.ci4ke.build.CIBuilder;
-import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
 

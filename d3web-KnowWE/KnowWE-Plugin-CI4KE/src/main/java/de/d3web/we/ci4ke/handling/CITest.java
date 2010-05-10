@@ -22,8 +22,6 @@ package de.d3web.we.ci4ke.handling;
 
 import java.util.concurrent.Callable;
 
-import de.d3web.we.ci4ke.deprecated.DeprecatedCIConfiguration;
-
 /**
  * Any implementing class has to implement the call() method
  * which results a TestResult.

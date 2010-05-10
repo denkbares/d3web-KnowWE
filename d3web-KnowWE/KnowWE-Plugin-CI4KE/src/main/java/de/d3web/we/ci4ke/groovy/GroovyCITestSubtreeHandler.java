@@ -28,7 +28,7 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import de.d3web.report.Message;
-import de.d3web.we.ci4ke.deprecated.DeprecatedCIConfiguration;
+import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
@@ -50,7 +50,7 @@ public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITest
 	/**
 	 * Prepend the groovy-code with some import statements
 	 */
-	private static final String PREPEND = "import "+DeprecatedCIConfiguration.class.getName()+";\n"+
+	private static final String PREPEND = "import "+CIConfig.class.getName()+";\n"+
     					"import "+CITestResult.class.getName()+";\n"+
     					"import static "+TestResultType.class.getName()+".*;\n";
 	

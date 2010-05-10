@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Map;
 
 import org.jdom.Attribute;
@@ -59,7 +59,6 @@ public class CIBuildPersistenceHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	
 	private static File initXMLFile(String dashboardID) throws IOException{
@@ -112,10 +111,9 @@ public class CIBuildPersistenceHandler {
 			build.setAttribute("nr", String.valueOf(nextBuildNumber));
 			nextBuildNumber++;
 			
-			//find the "worst" testResult (as computed by its comparator)
+			//find the "worst" testResult
 			//which defines the overall result of this build
-			TestResultType overallResult = Collections.max(resultset.
-					getResults().values()).getResultType();
+			TestResultType overallResult = overallResult(resultset);
 			build.setAttribute(CIBuilder.BUILD_RESULT, overallResult.name());
 			xmlDocument.getRootElement().setAttribute(CIBuilder.
 					ACTUAL_BUILD_STATUS, overallResult.toString());		
@@ -147,5 +145,19 @@ public class CIBuildPersistenceHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private TestResultType overallResult(CIBuildResultset resultset) {
+		
+		TestResultType overallResult = TestResultType.SUCCESSFUL;
+		
+		Collection<CITestResult> results = resultset.getResults().values();
+		
+		for(CITestResult result : results) {
+			if(result.getResultType().compareTo(overallResult) > 0) {
+				overallResult = result.getResultType();
+			}
+		}
+		return overallResult;
 	}
 }

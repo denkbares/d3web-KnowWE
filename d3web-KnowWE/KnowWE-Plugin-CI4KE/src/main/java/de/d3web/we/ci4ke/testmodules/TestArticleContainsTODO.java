@@ -23,13 +23,11 @@ package de.d3web.we.ci4ke.testmodules;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.we.ci4ke.deprecated.DeprecatedCIConfiguration;
 import de.d3web.we.ci4ke.handling.AbstractCITest;
 import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
-
 
 public class TestArticleContainsTODO extends AbstractCITest {
 

@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.ecyrd.jspwiki.WikiEngine;
-
 import de.d3web.we.ci4ke.groovy.GroovyCITestSubtreeHandler;
 import de.d3web.we.ci4ke.groovy.GroovyCITestType;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
@@ -42,6 +40,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class CIUtilities {
 	
@@ -51,9 +50,8 @@ public class CIUtilities {
 	 * @return the save path for ci-build xml´s
 	 */
 	public static File getCIBuildDir(){
-		WikiEngine we = WikiEngine.getInstance(KnowWEEnvironment.getInstance().
-				getWikiConnector().getServletContext(), null);
-		String wikiDir = we.getWikiProperties().getProperty("var.basedir");
+		KnowWEWikiConnector con = KnowWEEnvironment.getInstance().getWikiConnector();
+		String wikiDir = con.getSavePath();
 		File buildDir = new File(wikiDir,"/ci-builds/");
 		//check if the path exists
 		if(!buildDir.exists())

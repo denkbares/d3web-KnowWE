@@ -21,7 +21,6 @@
 package de.d3web.we.ci4ke.build;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -154,13 +153,16 @@ public class CIBuilder {
 			Future<CITestResult> futureResult = entry.getValue();
 			
 			try {
-				if(futureResult.isDone()) {
+//				if(futureResult.isDone()) {
 					Logger.getLogger(this.getClass().getName()).log(Level.INFO, 
-					">>> CIBuilder: Test done!! >>>");
+						">> CI >> CIBuilder: Trying to get CITestResult of test " +testname+ "!! >>>");
 					
 					resultset.addTestResult(testname, 
 							futureResult.get());
-				}
+					
+					Logger.getLogger(this.getClass().getName()).log(Level.INFO, 
+							">> CI >> CIBuilder: Got Result of test " +testname+ "!! >>>");				
+//				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -21,16 +21,11 @@
 package de.d3web.we.ci4ke.handling;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.event.ListSelectionEvent;
 
 import de.d3web.we.ci4ke.build.CIBuilder;
 

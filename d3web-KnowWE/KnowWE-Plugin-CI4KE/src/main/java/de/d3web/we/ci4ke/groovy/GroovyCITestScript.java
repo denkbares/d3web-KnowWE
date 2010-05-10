@@ -3,10 +3,8 @@ package de.d3web.we.ci4ke.groovy;
 import groovy.lang.Script;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import de.d3web.we.ci4ke.deprecated.DeprecatedCIConfiguration;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CITest;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -34,10 +32,11 @@ public abstract class GroovyCITestScript extends Script implements CITest {
 //				getArticleManager(config.get(DeprecatedCIConfiguration.WEB_KEY)).getArticles();
 //	}
 //	
-//	//just for documentation purposes
-//	public KnowWEArticle getArticle(){
-//		return this.config.getMonitoredArticle();
-//	}
+	//just for documentation purposes
+	public KnowWEArticle getArticle(){
+		return KnowWEEnvironment.getInstance().getArticle(KnowWEEnvironment.DEFAULT_WEB, 
+				this.config.getMonitoredArticleTitle());
+	}
 	
 	public static List<String> findXCListsWithLessThenXRelations(KnowWEArticle article, int limitRelations){
 		
