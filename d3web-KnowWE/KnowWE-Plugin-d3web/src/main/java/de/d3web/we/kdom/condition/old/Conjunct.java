@@ -44,7 +44,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 @Deprecated
-public class Conjunct extends DefaultAbstractKnowWEObjectType  {
+public class Conjunct extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	public void init() {
@@ -56,11 +56,11 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType  {
 		this.addSubtreeHandler(new ConjunctSubTreeHandler());
 	}
 
-	private class ConjunctSubTreeHandler implements SubtreeHandler{
+	private class ConjunctSubTreeHandler implements SubtreeHandler {
 
 		@Override
 		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			KDOMReportMessage msg=null;
+			KDOMReportMessage msg = null;
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
 				UpperOntology uo = UpperOntology.getInstance();
@@ -72,10 +72,11 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType  {
 				List<Section> children = s.getChildren();
 				for (Section current : children) {
 					if (current.getObjectType() instanceof Finding) {
-						IntermediateOwlObject iohandler =(IntermediateOwlObject) KnowWEUtils.getStoredObject(current,OwlHelper.IOO);
+						IntermediateOwlObject iohandler = (IntermediateOwlObject) KnowWEUtils.getStoredObject(
+								current, OwlHelper.IOO);
 						for (URI curi : iohandler.getLiterals()) {
 							Statement state = uo.getHelper().createStatement(
-									compositeexpression,D3WebOWLVokab.HASCONJUNCTS
+									compositeexpression, D3WebOWLVokab.HASCONJUNCTS
 									, curi);
 							io.addStatement(state);
 							iohandler.removeLiteral(curi);
@@ -83,7 +84,8 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType  {
 						io.merge(iohandler);
 					}
 				}
-			} catch (RepositoryException e) {
+			}
+			catch (RepositoryException e) {
 				// TODO error management?
 			}
 			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
@@ -91,6 +93,5 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType  {
 		}
 
 	}
-
 
 }

@@ -46,12 +46,11 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class Finding extends DefaultAbstractKnowWEObjectType {
-
-	
 
 	@Override
 	public void init() {
@@ -62,7 +61,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new QuotedType(new FindingAnswer()));
 		this.childrenTypes.add(new FindingAnswer());
 		this.sectionFinder = new FindingSectionFinder();
-		this.addSubtreeHandler(new FindingSubTreeHandler());
+		this.addSubtreeHandler(Priority.HIGH, new FindingSubTreeHandler());
 	}
 
 	@Override
@@ -89,8 +88,8 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 			try {
 				Section csection = (Section) section
 						.getChildren(
-								new TypeSectionFilter(new FindingComparator()
-										.getName())).get(0);
+						new TypeSectionFilter(new FindingComparator()
+						.getName())).get(0);
 				String comparator = ((FindingComparator) csection
 						.getObjectType()).getComparator(csection);
 
@@ -107,7 +106,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				URI answeruri = uo.getHelper().createlocalURI(answer);
 				URI literalinstance = uo.getHelper().createlocalURI(
 						section.getTitle() + ".." + section.getId() + ".."
-								+ question + comparator + answer);
+						+ question + comparator + answer);
 
 				ArrayList<Statement> slist = new ArrayList<Statement>();
 				try {
@@ -119,20 +118,24 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 							D3WebOWLVokab.HASINPUT, questionuri));
 					slist
 							.add(uo.getHelper().createStatement(
-									literalinstance,D3WebOWLVokab.HASCOMPARATOR
-									,
-									compuri));
-					slist.add(uo.getHelper().createStatement(literalinstance,D3WebOWLVokab.HASVALUE
+							literalinstance, D3WebOWLVokab.HASCOMPARATOR
+							,
+							compuri));
+					slist.add(uo.getHelper().createStatement(literalinstance,
+							D3WebOWLVokab.HASVALUE
 							, answeruri));
-				} catch (RepositoryException e) {
+				}
+				catch (RepositoryException e) {
 
 					e.printStackTrace();
 				}
 				io.addAllStatements(slist);
 				io.addLiteral(literalinstance);
-			} catch (IndexOutOfBoundsException e) {
+			}
+			catch (IndexOutOfBoundsException e) {
 				msg = new SimpleMessageError("Finding without subsections");
-			} catch (NullPointerException e) {
+			}
+			catch (NullPointerException e) {
 				msg = new SimpleMessageError("Nullpointer");
 			}
 			KnowWEUtils.storeSectionInfo(section, OwlHelper.IOO, io);

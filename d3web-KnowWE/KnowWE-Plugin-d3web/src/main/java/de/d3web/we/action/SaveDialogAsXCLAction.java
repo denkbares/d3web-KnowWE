@@ -26,8 +26,8 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.Value;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -48,44 +48,49 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
-		
+
 		String topic = parameterMap.get(KnowWEAttributes.TOPIC);
 		String user = parameterMap.getUser();
 		String web = parameterMap.getWeb();
-		String solution = parameterMap.get( "XCLSolution" );
-		
+		String solution = parameterMap.get("XCLSolution");
+
 		Session c = getSession(web, topic, user);
-		
-		if( c != null ){
+
+		if (c != null) {
 			StringBuffer newXCL = new StringBuffer();
 			newXCL.append("\n\"" + solution + "\" {\n");
-			
+
 			List<? extends Question> answeredQuestions = c.getAnsweredQuestions();
 
 			Solution d = findDiagnosis(web, topic, solution);
-			if( isDiagnosisNew( d )){
-				d = getKBM( c.getKnowledgeBase() ).createSolution(solution, c.getKnowledgeBase().getRootDiagnosis());
-			} else {
+			if (isDiagnosisNew(d)) {
+				d = getKBM(c.getKnowledgeBase()).createSolution(solution,
+						c.getKnowledgeBase().getRootDiagnosis());
+			}
+			else {
 				return null;
 			}
-						
-			//build relations
+
+			// build relations
 			createXCLRelation(c, answeredQuestions, newXCL, d);
-			
+
 			newXCL.append("}\n");
-			
-			//insert new XCLRelation into article
-			KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(parameterMap.getWeb());
-			KnowWEArticle a = mgr.getArticle( topic );
+
+			// insert new XCLRelation into article
+			KnowWEArticleManager mgr = KnowWEEnvironment.getInstance().getArticleManager(
+					parameterMap.getWeb());
+			KnowWEArticle a = mgr.getArticle(topic);
 			String articleText = a.collectTextsFromLeaves();
-			
-			articleText = articleText.replace("</" + CoveringListSection.TAG + ">", newXCL + "\n</" + CoveringListSection.TAG + ">");
-			KnowWEEnvironment.getInstance().saveArticle(web, topic, articleText, parameterMap);
-		
+
+			articleText = articleText.replace("</" + CoveringListSection.TAG + ">",
+					newXCL + "\n</" + CoveringListSection.TAG + ">");
+			KnowWEEnvironment.getInstance().saveArticle(web, topic, articleText,
+					parameterMap);
+
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 
 	 * @param c
@@ -93,67 +98,74 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param content
 	 */
 	private void createXCLRelation(Session c, List<? extends Question> answeredQuestions, StringBuffer newXCL,
-			Solution d){
-		for( Question q : answeredQuestions ){
-			Value theanswer = q.getValue(c);
+			Solution d) {
+		for (Question q : answeredQuestions) {
+			Value theanswer = c.getValue(q);
 			if (theanswer != null) {
 				newXCL.append("\"" + q.getName() + "\" = \"" + theanswer.getValue()
 						+ "\",\n");
 			}
-//			for (Object o : answers) {
-//				if( o instanceof Answer ){
-//					Answer a = (Answer) o;
-//					newXCL.append("\"" + q.getText() + "\" = \"" + a.getValue( c ) + "\",\n");
-//				}
-//			}
+			// for (Object o : answers) {
+			// if( o instanceof Answer ){
+			// Answer a = (Answer) o;
+			// newXCL.append("\"" + q.getText() + "\" = \"" + a.getValue( c ) +
+			// "\",\n");
+			// }
+			// }
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param d
 	 * @return
 	 */
-	private boolean isDiagnosisNew(Solution d){
-		if(d == null) return true;
+	private boolean isDiagnosisNew(Solution d) {
+		if (d == null) return true;
 		return false;
 	}
-		
+
 	/**
 	 * @param web
 	 * @param topic
 	 * @param user
 	 * @return
 	 */
-	private Session getSession(String web, String topic, String user){
-		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
-		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
+	private Session getSession(String web, String topic, String user) {
+		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
+				web, topic);
+		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web,
+				topic);
 		service.getBase();
-		
-		if(knowledgeServiceInTopic == null) return null;
+
+		if (knowledgeServiceInTopic == null) return null;
 		String kbid = knowledgeServiceInTopic.getId();
-		
-		Broker broker = D3webModule.getBroker(user,web);
-		broker.activate(broker.getSession().getServiceSession(kbid), null, true, false, null);
+
+		Broker broker = D3webModule.getBroker(user, web);
+		broker.activate(broker.getSession().getServiceSession(kbid), null, true, false,
+				null);
 		broker.getDialogControl().showNextActiveDialog();
-		KnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(kbid);
+		KnowledgeServiceSession serviceSession = broker.getSession().getServiceSession(
+				kbid);
 		Session c = null;
-		
-		if(serviceSession instanceof D3webKnowledgeServiceSession) {
-			c = ((D3webKnowledgeServiceSession)serviceSession).getSession();
+
+		if (serviceSession instanceof D3webKnowledgeServiceSession) {
+			c = ((D3webKnowledgeServiceSession) serviceSession).getSession();
 		}
-		
-		if(serviceSession == null) {
-			kbid =  KnowWEEnvironment.WIKI_FINDINGS+".."+KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
-			 serviceSession = broker.getSession().getServiceSession(kbid);
-			 if(serviceSession instanceof D3webKnowledgeServiceSession) {
-					c = ((D3webKnowledgeServiceSession)serviceSession).getSession();
-				}
+
+		if (serviceSession == null) {
+			kbid = KnowWEEnvironment.WIKI_FINDINGS
+					+ ".."
+					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
+			serviceSession = broker.getSession().getServiceSession(kbid);
+			if (serviceSession instanceof D3webKnowledgeServiceSession) {
+				c = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+			}
 		}
-		
+
 		return c;
 	}
-	
+
 	/**
 	 * 
 	 * @param web
@@ -161,20 +173,21 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param solution
 	 * @return
 	 */
-	private Solution findDiagnosis(String web, String topic, String solution){
-		D3webKnowledgeService ks = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
-		
-		Solution d = getKBM( ks.getBase()).findSolution(solution);
+	private Solution findDiagnosis(String web, String topic, String solution) {
+		D3webKnowledgeService ks = D3webModule.getAD3webKnowledgeServiceInTopic(web,
+				topic);
+
+		Solution d = getKBM(ks.getBase()).findSolution(solution);
 		return d;
 	}
-	
+
 	/**
 	 * 
 	 * @param kb
 	 * @return
 	 */
-	private KnowledgeBaseManagement getKBM(KnowledgeBase kb){
-		return KnowledgeBaseManagement.createInstance( kb );
+	private KnowledgeBaseManagement getKBM(KnowledgeBase kb) {
+		return KnowledgeBaseManagement.createInstance(kb);
 	}
-	
+
 }

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.core.knowledgeService;
@@ -148,8 +148,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		}
 
 		public void notify(IEventSource source, Session theCase) {
-			if (theCase != session)
-				return;
+			if (theCase != session) return;
 
 			XCLModel model = (XCLModel) source;
 			List<Object> values = new ArrayList<Object>();
@@ -215,6 +214,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 	private void initConnection() {
 		session.addListener(new SessionEventListener() {
+
 			public void notify(Session source, ValuedObject o, Object context) {
 				maybeNotifyBroker(o, source, context);
 			}
@@ -423,7 +423,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			Question question = (Question) valuedObject;
 			if (instantly) {
 				broker.update(new Information(id, question.getId(),
-						ConverterUtils.toValueList(question.getValue(session),
+						ConverterUtils.toValueList(session.getValue(question),
 						session), TerminologyType.symptom, infoType));
 			}
 			else {
