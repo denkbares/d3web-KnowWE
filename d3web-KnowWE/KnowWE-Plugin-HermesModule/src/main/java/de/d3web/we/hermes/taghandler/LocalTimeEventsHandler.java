@@ -8,6 +8,8 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
 import de.d3web.we.taghandler.AbstractTagHandler;
@@ -28,10 +30,13 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
     public String render(String topic, KnowWEUserContext user,
 	    Map<String, String> values, String web) {
 
+		OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
+
 	String yearAfter = getIntAsString(-10000, values, TIME_AFTER);
 	String querystring = null;
 	try {
-			querystring = TIME_SPARQL.replaceAll("TOPIC", "lns:" + topic);
+			querystring = TIME_SPARQL.replaceAll("TOPIC",
+					"<" + helper.createlocalURI(topic).toString() + ">");
 	} catch (Exception e) {
 	    return "Illegal query String: " + querystring + "<br />"
 		    + " no valid parameter for: " + TIME_AFTER;
