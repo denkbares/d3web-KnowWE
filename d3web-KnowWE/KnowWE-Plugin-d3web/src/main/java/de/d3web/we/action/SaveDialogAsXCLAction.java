@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -28,6 +28,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -60,12 +61,12 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 			StringBuffer newXCL = new StringBuffer();
 			newXCL.append("\n\"" + solution + "\" {\n");
 
-			List<? extends Question> answeredQuestions = c.getAnsweredQuestions();
+			List<? extends Question> answeredQuestions = c.getBlackboard().getAnsweredQuestions();
 
 			Solution d = findDiagnosis(web, topic, solution);
 			if (isDiagnosisNew(d)) {
 				d = getKBM(c.getKnowledgeBase()).createSolution(solution,
-						c.getKnowledgeBase().getRootDiagnosis());
+						c.getKnowledgeBase().getRootSolution());
 			}
 			else {
 				return null;
@@ -101,7 +102,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 			Solution d) {
 		for (Question q : answeredQuestions) {
 			Value theanswer = c.getValue(q);
-			if (theanswer != null) {
+			if (UndefinedValue.isNotUndefinedValue(theanswer)) {
 				newXCL.append("\"" + q.getName() + "\" = \"" + theanswer.getValue()
 						+ "\",\n");
 			}

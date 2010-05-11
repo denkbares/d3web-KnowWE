@@ -18,16 +18,17 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.utils.D3webUtils;
 
 public class QuestionnaireValuesViewAction extends AbstractAction {
-	
+
 	@Override
 	public void execute(ActionContext context) throws IOException {
-		
+
 		String questionnaireName = context.getParameter("questionnaire");
 		String web = context.getParameter(KnowWEAttributes.WEB);
 		StringBuilder result = new StringBuilder();
-		
+
 		for (KnowWEArticle article : KnowWEEnvironment.getInstance().getArticleManager(web).getArticles()) {
-			Session theCase = D3webUtils.getSession(article.getTitle(), context.getWikiContext(), web);
+			Session theCase = D3webUtils.getSession(article.getTitle(), context.getWikiContext(),
+					web);
 			if (theCase != null) {
 				IDObject io = theCase.getKnowledgeBase().searchObjectForName(questionnaireName);
 				if (io instanceof QContainer) {
@@ -42,26 +43,27 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 				}
 			}
 		}
-		
+
 		context.getWriter().write("Unknown Questionnaire: " + questionnaireName);
 
 	}
 
 	private void renderQuestion(Question question, Session theCase,
 			StringBuilder result) {
-		
+
 		Value v = null;
-		
-		if (theCase.getAnsweredQuestions().contains(question))
-			v = theCase.getBlackboard().getValue(question);
+
+		if (theCase.getBlackboard().getAnsweredQuestions().contains(question)) v = theCase.getBlackboard().getValue(
+				question);
 
 		result.append("<p>");
 		result.append(question.getName());
-		
+
 		if (v instanceof ChoiceValue) {
 			result.append(": ");
 			result.append(v);
-		} else if (v instanceof MultipleChoiceValue) {
+		}
+		else if (v instanceof MultipleChoiceValue) {
 			result.append(": ");
 			List<ChoiceValue> cvs = (List<ChoiceValue>) ((MultipleChoiceValue) v.getValue()).getValue();
 			for (ChoiceValue cv : cvs) {
@@ -69,9 +71,10 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 				result.append(", ");
 			}
 			result.delete(result.length() - 2, result.length());
-		} else if (v instanceof NumValue) {
+		}
+		else if (v instanceof NumValue) {
 			result.append(": ");
-			result.append((Double) v.getValue());
+			result.append(v.getValue());
 		}
 		result.append("</p>");
 	}
