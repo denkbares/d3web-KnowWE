@@ -54,10 +54,10 @@ public class TimeLineEventRenderer {
 			+ te.getTitle()
 			+ " <a class=\"wikipage\" href=\"Wiki.jsp?page="
 			+ te.getTopic()+"&highlight="+encodedKDOMID+"#"+encodedKDOMID
-			+ "\"><img src=\"./images/goto.jpg\" alt=\"Zum Wiki\" title=\"Zum Wiki\"/></a>"
+			+ "\"><img src=\"./images/page_go.png\" alt=\"Zum Wiki\" title=\"Zum Wiki\"/></a>"
 			+ " <a class=\"wikipage\" href=\"Wiki.jsp?page="
 			+ te.getTopic()+"&edit="+encodedKDOMID+"#"+encodedKDOMID
-			+ "\"><img src=\"./images/edit.gif\" alt=\"Bearbeiten\" title=\"Bearbeiten\"/></a>"
+			+ "\"><img src=\"./images/page_edit.png\" alt=\"Bearbeiten\" title=\"Bearbeiten\"/></a>"
 			+ "</h3>");
 
 	sb.append("\n<div>" + te.getDescription() + "<br>");
