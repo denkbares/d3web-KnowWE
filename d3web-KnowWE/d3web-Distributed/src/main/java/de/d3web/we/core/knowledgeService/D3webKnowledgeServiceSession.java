@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.PSMethodInit;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -49,10 +50,11 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionEventListener;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.ValuedObject;
+import de.d3web.core.session.blackboard.DefaultFact;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.indication.inference.PSMethodNextQASet;
+import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.kernel.dialogControl.DistributedControllerFactory;
 import de.d3web.kernel.dialogControl.ExternalClient;
 import de.d3web.kernel.dialogControl.ExternalProxy;
@@ -182,7 +184,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private Session session;
 
 	private boolean instantly = true;
-	private final List<ValuedObject> toChange;
+	private final List<TerminologyObject> toChange;
 
 	public D3webKnowledgeServiceSession(KnowledgeBase base, Broker broker,
 			String id) {
@@ -191,7 +193,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		this.broker = broker;
 		this.id = id;
 		baseManagement = KnowledgeBaseManagement.createInstance(base);
-		toChange = new ArrayList<ValuedObject>();
+		toChange = new ArrayList<TerminologyObject>();
 		initCase();
 		initConnection();
 	}
@@ -215,7 +217,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private void initConnection() {
 		session.addListener(new SessionEventListener() {
 
-			public void notify(Session source, ValuedObject o, Object context) {
+			public void notify(Session source, TerminologyObject o, Object context) {
 				maybeNotifyBroker(o, source, context);
 			}
 		});
@@ -277,9 +279,9 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			}
 		}
 
-		ValuedObject vo = null;
-		if (object instanceof ValuedObject) {
-			vo = (ValuedObject) object;
+		TerminologyObject vo = null;
+		if (object instanceof TerminologyObject) {
+			vo = (TerminologyObject) object;
 		}
 
 		if (vo instanceof Solution) {
@@ -288,20 +290,24 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				toChange.add(diag);
 				if (info.getInformationType().equals(
 						InformationType.SolutionInformation)) {
-					session.setValue(diag, value,
-							PSMethodHeuristic.class);
+					session.getBlackboard().addValueFact(
+							new DefaultFact(diag, value, new Object(),
+							PSMethodHeuristic.getInstance()));
 				}
 				else if (info.getInformationType().equals(
 						InformationType.HeuristicInferenceInformation)) {
-					session.setValue(diag, value,
-							PSMethodHeuristic.class);
+					session.getBlackboard().addValueFact(
+							new DefaultFact(diag, value, new Object(),
+							PSMethodHeuristic.getInstance()));
 				}
 			}
 		}
 		else {
 			if (vo != null) {
 				toChange.add(vo);
-				session.setValue(vo, value);
+				session.getBlackboard().addValueFact(
+						new DefaultFact(vo, value, PSMethodUserSelected.getInstance(),
+								PSMethodUserSelected.getInstance()));
 			}
 			else {
 				Logger.getLogger(this.getClass().getName()).log(
@@ -409,7 +415,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return UndefinedValue.getInstance();
 	}
 
-	protected void maybeNotifyBroker(ValuedObject valuedObject,
+	protected void maybeNotifyBroker(TerminologyObject valuedObject,
 			Session session, Object context) {
 		// do not inform anyone about some things that were told you by the
 		// broker...
