@@ -1,27 +1,28 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package tests;
 
 import java.io.IOException;
 
+import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
@@ -32,37 +33,39 @@ import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.plugin.test.InitPluginManager;
-import junit.framework.TestCase;
 
 /**
- * This class tests whether the Objects
- * got the right MMInfo from the AttributeTable
+ * This class tests whether the Objects got the right MMInfo from the
+ * AttributeTable
  * 
  * @author Sebastian Furth
- *
+ * 
  */
 public class AttributeTableTest extends TestCase {
-	
+
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}
-	
+
 	public void testMMInfo() {
-		
+
 		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
-		
+
 		// Get Diagnosis with ID "P1": "Mechanical Problem"
-		Solution loadedDiag = loadedKB.searchDiagnosis("P1");
-		Solution createdDiag = createdKB.searchDiagnosis("P1");
-		
+		Solution loadedDiag = loadedKB.searchSolution("P1");
+		Solution createdDiag = createdKB.searchSolution("P1");
+
 		// Get MMInfoStorage of diagnoses
-		MMInfoStorage loadedStorage = (MMInfoStorage) loadedDiag.getProperties().getProperty(Property.MMINFO);
-		MMInfoStorage createdStorage = (MMInfoStorage) createdDiag.getProperties().getProperty(Property.MMINFO);
+		MMInfoStorage loadedStorage = (MMInfoStorage) loadedDiag.getProperties().getProperty(
+				Property.MMINFO);
+		MMInfoStorage createdStorage = (MMInfoStorage) createdDiag.getProperties().getProperty(
+				Property.MMINFO);
 		assertNotNull("Diagnosis " + loadedDiag.getName() + " has no MMInfoStorage.", loadedStorage);
-		assertNotNull("Diagnosis " + createdDiag.getName() + " has no MMInfoStorage.", createdStorage);
-		
+		assertNotNull("Diagnosis " + createdDiag.getName() + " has no MMInfoStorage.",
+				createdStorage);
+
 		// Create DCMarkup
 		DCMarkup markup = new DCMarkup();
 		markup.setContent(DCElement.SOURCE, loadedDiag.getId());
@@ -74,11 +77,11 @@ public class AttributeTableTest extends TestCase {
 		MMInfoObject createdMMInfo = (MMInfoObject) createdStorage.getMMInfo(markup).toArray()[0];
 		assertNotNull("Diagnosis " + loadedDiag.getName() + " has no MMInfo.", loadedMMInfo);
 		assertNotNull("Diagnosis " + createdDiag.getName() + " has no MMInfo.", createdMMInfo);
-				
+
 		// Compare content of MMInfoObject
-		assertEquals("Content of MMInfoObject of Diagnosis " + createdDiag.getName() + " differs.", 
-					  createdMMInfo.getContent(), loadedMMInfo.getContent());
-		
+		assertEquals("Content of MMInfoObject of Diagnosis " + createdDiag.getName() + " differs.",
+				createdMMInfo.getContent(), loadedMMInfo.getContent());
+
 	}
 
 }

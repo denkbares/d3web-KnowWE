@@ -33,8 +33,8 @@ public class CreateScoresHandler implements SubtreeHandler {
 				BulletScoring.class);
 		List<String> targets = BulletScoring
 				.getScoringTargets(scoringSection);
-		
-		if(targets == null) return null;
+
+		if (targets == null) return null;
 
 		String defaultValue = BulletScoring.getDefaultValue(scoringSection);
 
@@ -54,10 +54,10 @@ public class CreateScoresHandler implements SubtreeHandler {
 			KnowledgeBaseManagement kbm = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 
-			if(kbm == null) return; //dirty hack for testing
-			
+			if (kbm == null) return; // dirty hack for testing
+
 			boolean lazy = isLazy(s);
-			
+
 			Solution d = kbm.findSolution(solution);
 			if (d == null && lazy) {
 				d = createSolution(solution, kbm);
@@ -67,7 +67,7 @@ public class CreateScoresHandler implements SubtreeHandler {
 
 			QuestionOC qc = (QuestionOC) q;
 			if (q == null && lazy) {
-				qc = createQuestion(question, defaultValue, kbm,s);
+				qc = createQuestion(question, defaultValue, kbm, s);
 
 			}
 
@@ -82,8 +82,9 @@ public class CreateScoresHandler implements SubtreeHandler {
 				KnowWEUtils.storeSectionInfo(
 						s.getArticle().getWeb(), article.getTitle(), s.getId(),
 						de.d3web.we.kdom.rules.Rule.KBID_KEY, rule.getId());
-				
-			} else {
+
+			}
+			else {
 				// TODO ERRORHANDLING
 			}
 		}
@@ -112,7 +113,7 @@ public class CreateScoresHandler implements SubtreeHandler {
 		Solution d = mgn.findSolution(solution);
 		if (d == null) {
 			d = mgn.createSolution(solution, mgn.getKnowledgeBase()
-					.getRootDiagnosis());
+					.getRootSolution());
 		}
 		return d;
 	}
@@ -132,16 +133,15 @@ public class CreateScoresHandler implements SubtreeHandler {
 	private QuestionOC createQuestion(String question, String defaultValue,
 			KnowledgeBaseManagement kbm, Section s) {
 
-		Choice a1 = new Choice(s.getId()+defaultValue);
+		Choice a1 = new Choice(s.getId() + defaultValue);
 		a1.setText(defaultValue);
-		
-		Choice a2 = new Choice(s.getId()+"not " + defaultValue);
+
+		Choice a2 = new Choice(s.getId() + "not " + defaultValue);
 		a2.setText("not " + defaultValue);
-		
-		
 
 		QuestionOC q = kbm.createQuestionOC(question, kbm.getKnowledgeBase()
-				.getRootQASet(), new Choice[]{a1,a2});
+				.getRootQASet(), new Choice[] {
+				a1, a2 });
 
 		return q;
 	}

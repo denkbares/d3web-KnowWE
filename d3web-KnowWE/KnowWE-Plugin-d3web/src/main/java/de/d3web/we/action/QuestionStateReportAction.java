@@ -102,7 +102,7 @@ public class QuestionStateReportAction extends DeprecatedAbstractKnowWEAction {
 			de.d3web.core.session.Session case1 = d3kss.getSession();
 			List<? extends Question> answeredQuestions = case1.getBlackboard().getAnsweredQuestions();
 			if (answeredQuestions.contains(q)) {
-				Value theanswer = case1.getValue(q);
+				Value theanswer = case1.getBlackboard().getValue(q);
 				result = "#" + q.getName() + ":";
 				if (theanswer != null) {
 					result += theanswer.getValue().toString() + ";";

@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2010-04-06 16:16:19
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\Visio.g 2010-04-19 10:47:38
 
 package de.d3web.KnOfficeParser.visio;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -476,7 +476,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: shape, picture, textbox
+            // elements: shape, textbox, picture
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -595,7 +595,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: width, y, height, shapetext, x
+            // elements: x, height, width, shapetext, y
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -700,7 +700,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: height, y, width, x
+            // elements: width, height, y, x
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -813,7 +813,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: height, textboxtext, x, width, y
+            // elements: textboxtext, x, y, height, width
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1398,7 +1398,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: file, popup, questionid, INT, INT
+            // elements: INT, file, popup, questionid, INT
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1744,7 +1744,7 @@ public class VisioParser extends Parser {
 
 
             // AST REWRITE
-            // elements: DOT, name, name
+            // elements: name, name, DOT
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1865,12 +1865,12 @@ public class VisioParser extends Parser {
     // $ANTLR end "mydouble"
 
     // Delegated rules
-    public Visio_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
-    public Visio_BasicParser.type_return type() throws RecognitionException { return gBasicParser.type(); }
-    public Visio_BasicParser.eqncalc_return eqncalc() throws RecognitionException { return gBasicParser.eqncalc(); }
     public Visio_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
-    public Visio_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
+    public Visio_BasicParser.eqncalc_return eqncalc() throws RecognitionException { return gBasicParser.eqncalc(); }
+    public Visio_BasicParser.type_return type() throws RecognitionException { return gBasicParser.type(); }
+    public Visio_BasicParser.eq_return eq() throws RecognitionException { return gBasicParser.eq(); }
     public Visio_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
+    public Visio_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
 
 
     protected DFA2 dfa2 = new DFA2(this);

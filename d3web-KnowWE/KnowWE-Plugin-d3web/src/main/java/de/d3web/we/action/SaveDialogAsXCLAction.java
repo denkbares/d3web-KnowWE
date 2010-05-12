@@ -101,7 +101,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	private void createXCLRelation(Session c, List<? extends Question> answeredQuestions, StringBuffer newXCL,
 			Solution d) {
 		for (Question q : answeredQuestions) {
-			Value theanswer = c.getValue(q);
+			Value theanswer = c.getBlackboard().getValue(q);
 			if (UndefinedValue.isNotUndefinedValue(theanswer)) {
 				newXCL.append("\"" + q.getName() + "\" = \"" + theanswer.getValue()
 						+ "\",\n");

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.KnOfficeParser.table;
@@ -48,15 +48,17 @@ import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
+
 /**
  * Builder um d3web Wissen mithilfe des TableParsers zu generieren
+ * 
  * @author Markus Friedrich
- *
+ * 
  */
 public class D3webBuilder implements Builder, KnOfficeParser {
 
-	private boolean lazy=false;
-	private boolean lazydiag=false;
+	private boolean lazy = false;
+	private boolean lazydiag = false;
 	private final List<Message> errors = new ArrayList<Message>();
 	private QContainer currentqclass;
 	private final String file;
@@ -65,34 +67,34 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 	private final CellKnowledgeBuilder ckb;
 	private TableParser tb;
 	private int counter = 0;
-	private int errorcount =0;
+	private int errorcount = 0;
 	private IDObjectManagement idom;
-	
+
 	public D3webBuilder(String file, CellKnowledgeBuilder ckb, IDObjectManagement idom) {
 		this(file, ckb, 0, 0, idom);
 	}
-	
+
 	public D3webBuilder(String file, CellKnowledgeBuilder ckb, int startcolumn, int startrow, IDObjectManagement idom) {
 		this(file, ckb, startcolumn, startrow, null, idom);
-		tb=new TableParser(this, startcolumn, startrow);
+		tb = new TableParser(this, startcolumn, startrow);
 	}
-	
+
 	public D3webBuilder(String file, CellKnowledgeBuilder ckb, int startcolumn, int startrow, TableParser tbin, IDObjectManagement idom) {
-		this.file=file;
-		this.ckb=ckb;
-		this.idom=idom;
+		this.file = file;
+		this.ckb = ckb;
+		this.idom = idom;
 		tb = tbin;
-		tb.startcolumn=startcolumn;
-		tb.startrow=startrow;
-		tb.builder=this;
+		tb.startcolumn = startcolumn;
+		tb.startrow = startrow;
+		tb.builder = this;
 	}
-	
+
 	private void finish() {
-		if (errors.size()==0) {
+		if (errors.size() == 0) {
 			errors.add(MessageKnOfficeGenerator.createXLSFileParsed(file, counter));
 		}
 	}
-	
+
 	public boolean isLazy() {
 		return lazy;
 	}
@@ -100,59 +102,71 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 	public void setLazy(boolean lazy) {
 		this.lazy = lazy;
 	}
-	
+
 	public void setLazyDiag(boolean lazy) {
-		this.lazydiag=lazy;
+		this.lazydiag = lazy;
 	}
-	
+
 	@Override
 	public void addKnowledge(String question, String answer, String solution,
 			String value, int line, int column) {
 		counter++;
-		errorcount=errors.size();
-		if (answer!=null) answer = answer.trim();
-		boolean typedef=false;
-		String type ="";
+		errorcount = errors.size();
+		if (answer != null) answer = answer.trim();
+		boolean typedef = false;
+		String type = "";
 		if (question.endsWith("]")) {
-			type=question.substring(question.lastIndexOf('[')+1, question.length()-1);
+			type = question.substring(question.lastIndexOf('[') + 1, question.length() - 1);
 			if (type.equals("y/n")) {
-				type="yn";
+				type = "yn";
 			}
-			question=question.substring(0, question.lastIndexOf('[')).trim();
-			typedef=true;
+			question = question.substring(0, question.lastIndexOf('[')).trim();
+			typedef = true;
 		}
-		if (currentquestion==null||!currentquestion.getName().equals(question)) {
+		if (currentquestion == null || !currentquestion.getName().equals(question)) {
 			currentquestion = idom.findQuestion(question);
-			if (currentquestion==null) {
+			if (currentquestion == null) {
 				if (lazy) {
-					if (currentqclass==null) {
-						currentqclass=(QContainer) idom.getKnowledgeBase().getRootQASet();
+					if (currentqclass == null) {
+						currentqclass = (QContainer) idom.getKnowledgeBase().getRootQASet();
 					}
 					if (typedef) {
-						currentquestion=D3webQuestionFactory.createQuestion(idom, currentqclass, question, null, type);
-					} else if (answer==null) {
-						currentquestion=idom.createQuestionYN(question, currentqclass);
-					} else if (answer.startsWith("<")||answer.startsWith("[")||answer.startsWith(">")||answer.startsWith("=")) {
-						currentquestion=idom.createQuestionNum(question, currentqclass);
-					} else {
-						currentquestion=idom.createQuestionOC(question, currentqclass, new Choice[0]);
+						currentquestion = D3webQuestionFactory.createQuestion(idom, currentqclass,
+								question, null, type);
 					}
-				} else {
-					errors.add(MessageKnOfficeGenerator.createQuestionNotFoundException(file, line, column, "", question));
+					else if (answer == null) {
+						currentquestion = idom.createQuestionYN(question, currentqclass);
+					}
+					else if (answer.startsWith("<") || answer.startsWith("[")
+							|| answer.startsWith(">") || answer.startsWith("=")) {
+						currentquestion = idom.createQuestionNum(question, currentqclass);
+					}
+					else {
+						currentquestion = idom.createQuestionOC(question, currentqclass,
+								new Choice[0]);
+					}
+				}
+				else {
+					errors.add(MessageKnOfficeGenerator.createQuestionNotFoundException(file, line,
+							column, "", question));
 					return;
 				}
-			} else {
+			}
+			else {
 				if (!D3webQuestionFactory.checkType(currentquestion, type)) {
-					errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file, line, column, "", currentquestion.getName(), type));
+					errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(file, line,
+							column, "", currentquestion.getName(), type));
 				}
 			}
 		}
 		Solution diag = idom.findDiagnosis(solution);
-		if (diag==null) {
+		if (diag == null) {
 			if (lazydiag) {
-				diag=idom.createDiagnosis(solution, idom.getKnowledgeBase().getRootDiagnosis());
-			} else {
-				errors.add(MessageKnOfficeGenerator.createDiagnosisNotFoundException(file, line, column, "", solution));
+				diag = idom.createDiagnosis(solution, idom.getKnowledgeBase().getRootSolution());
+			}
+			else {
+				errors.add(MessageKnOfficeGenerator.createDiagnosisNotFoundException(file, line,
+						column, "", solution));
 				return;
 			}
 		}
@@ -161,85 +175,105 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 			QuestionNum qnum = (QuestionNum) currentquestion;
 			String s;
 			if (answer.startsWith("<=")) {
-				s=answer.substring(2).trim();
-				Double d=Double.parseDouble(s);
-				cond = new CondNumLessEqual(qnum,d);
-			} else if (answer.startsWith("<")) {
-				s=answer.substring(1).trim();
-				Double d=Double.parseDouble(s);
-				cond = new CondNumLess(qnum,d);
-			} else if (answer.startsWith("=")) {
-				s=answer.substring(1).trim();
-				Double d=Double.parseDouble(s);
-				cond = new CondNumEqual(qnum,d);
-			} else if (answer.startsWith(">=")) {
-				s=answer.substring(2).trim();
-				Double d=Double.parseDouble(s);
-				cond = new CondNumGreaterEqual(qnum,d);
-			} else if (answer.startsWith(">")) {
-				s=answer.substring(1).trim();
-				Double d=Double.parseDouble(s);
-				cond = new CondNumGreater(qnum,d);
-			} else if (answer.startsWith("[")) {
-				s=answer.substring(1, answer.length()-1).trim();
+				s = answer.substring(2).trim();
+				Double d = Double.parseDouble(s);
+				cond = new CondNumLessEqual(qnum, d);
+			}
+			else if (answer.startsWith("<")) {
+				s = answer.substring(1).trim();
+				Double d = Double.parseDouble(s);
+				cond = new CondNumLess(qnum, d);
+			}
+			else if (answer.startsWith("=")) {
+				s = answer.substring(1).trim();
+				Double d = Double.parseDouble(s);
+				cond = new CondNumEqual(qnum, d);
+			}
+			else if (answer.startsWith(">=")) {
+				s = answer.substring(2).trim();
+				Double d = Double.parseDouble(s);
+				cond = new CondNumGreaterEqual(qnum, d);
+			}
+			else if (answer.startsWith(">")) {
+				s = answer.substring(1).trim();
+				Double d = Double.parseDouble(s);
+				cond = new CondNumGreater(qnum, d);
+			}
+			else if (answer.startsWith("[")) {
+				s = answer.substring(1, answer.length() - 1).trim();
 				int i = s.lastIndexOf(' ');
 				Double d1;
 				Double d2;
 				try {
 					d1 = Double.parseDouble(s.substring(0, i));
-					d2 = Double.parseDouble(s.substring(i+1));
-				} catch (NumberFormatException e) {
-					errors.add(MessageKnOfficeGenerator.createAnswerNotNumericException(file, line, column, "", s));
+					d2 = Double.parseDouble(s.substring(i + 1));
+				}
+				catch (NumberFormatException e) {
+					errors.add(MessageKnOfficeGenerator.createAnswerNotNumericException(file, line,
+							column, "", s));
 					return;
 				}
 				cond = new CondNumIn(qnum, d1, d2);
-			} else {
-				cond=null;
-				errors.add(MessageKnOfficeGenerator.createAnswerNotNumericException(file, line, column, "", answer));
+			}
+			else {
+				cond = null;
+				errors.add(MessageKnOfficeGenerator.createAnswerNotNumericException(file, line,
+						column, "", answer));
 				return;
 			}
-		} else if (currentquestion instanceof QuestionYN) {
+		}
+		else if (currentquestion instanceof QuestionYN) {
 			QuestionYN qyn = (QuestionYN) currentquestion;
 			Choice ac;
-			if (answer==null||answer.equalsIgnoreCase("ja")||answer.equalsIgnoreCase("yes")) {
-				ac=qyn.yes;
-			} else if (answer.equalsIgnoreCase("nein")||answer.equalsIgnoreCase("no")){
-				ac=qyn.no;
-			} else {
-				errors.add(MessageKnOfficeGenerator.createAnswerNotYNException(file, line, column, "", answer));
+			if (answer == null || answer.equalsIgnoreCase("ja") || answer.equalsIgnoreCase("yes")) {
+				ac = qyn.yes;
+			}
+			else if (answer.equalsIgnoreCase("nein") || answer.equalsIgnoreCase("no")) {
+				ac = qyn.no;
+			}
+			else {
+				errors.add(MessageKnOfficeGenerator.createAnswerNotYNException(file, line, column,
+						"", answer));
 				return;
 			}
 			cond = new CondEqual(qyn, new ChoiceValue(ac));
-		} else  if (currentquestion instanceof QuestionChoice){
+		}
+		else if (currentquestion instanceof QuestionChoice) {
 			QuestionChoice qc = (QuestionChoice) currentquestion;
-			if (currentanswer==null||!currentanswer.getName().equals(answer)) {
+			if (currentanswer == null || !currentanswer.getName().equals(answer)) {
 				currentanswer = idom.findAnswerChoice(qc, answer);
-				if (currentanswer==null) {
+				if (currentanswer == null) {
 					if (lazy) {
-						if (answer==null) {
-							errors.add(MessageKnOfficeGenerator.createAnswerCreationUnambiguousException(file, line, column, "", answer));
+						if (answer == null) {
+							errors.add(MessageKnOfficeGenerator.createAnswerCreationUnambiguousException(
+									file, line, column, "", answer));
 							return;
-						} else {
-							currentanswer=(Choice) idom.addChoiceAnswer(qc, answer);
 						}
-					} else {
-						errors.add(MessageKnOfficeGenerator.createAnswerNotFoundException(file, line, column, "", answer, answer));
+						else {
+							currentanswer = (Choice) idom.addChoiceAnswer(qc, answer);
+						}
+					}
+					else {
+						errors.add(MessageKnOfficeGenerator.createAnswerNotFoundException(file,
+								line, column, "", answer, answer));
 						return;
 					}
 				}
 			}
 			cond = new CondEqual(qc, new ChoiceValue(currentanswer));
-		} else {
-			cond=null;
-			errors.add(MessageKnOfficeGenerator.createQuestionTypeNotSupportetException(file, line, column, "", question));
+		}
+		else {
+			cond = null;
+			errors.add(MessageKnOfficeGenerator.createQuestionTypeNotSupportetException(file, line,
+					column, "", question));
 			return;
 		}
 		boolean errorOccured = false;
-		if (errorcount!=errors.size()) {
+		if (errorcount != errors.size()) {
 			errorOccured = true;
 		}
-		Message msg= ckb.add(idom, line, column, file, cond, value, diag, errorOccured);
-		if (msg!=null) {
+		Message msg = ckb.add(idom, line, column, file, cond, value, diag, errorOccured);
+		if (msg != null) {
 			errors.add(msg);
 		}
 	}
@@ -255,8 +289,10 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 					tmp.add(currentqclass);
 					idom.getKnowledgeBase().setInitQuestions(tmp);
 				}
-			} else {
-				errors.add(MessageKnOfficeGenerator.createQuestionClassNotFoundException(file, line, column, "", name));
+			}
+			else {
+				errors.add(MessageKnOfficeGenerator.createQuestionClassNotFoundException(file,
+						line, column, "", name));
 			}
 		}
 	}
@@ -264,7 +300,7 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 	@Override
 	public List<Message> addKnowledge(Reader r,
 			IDObjectManagement idom, KnOfficeParameterSet s) {
-		this.idom=idom;
+		this.idom = idom;
 		tb.parse(new File(file));
 		finish();
 		return errors;

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
@@ -52,10 +52,11 @@ import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * Generates the HTML representation of a Question Object
- *
+ * 
  * @author Fabian Haupt
  */
 public class FindingHTMLWriter {
+
 	private static String MC = "MC";
 
 	private static String OC = "OC";
@@ -85,7 +86,7 @@ public class FindingHTMLWriter {
 			for (Choice choice : theQC.getAllAlternatives()) {
 				String choiceText = KnowWEUtils.convertUmlaut(choice.verbalizeValue(session));
 				Value choiceValue = new ChoiceValue(choice);
-				Value sessionValue = session.getValue(theQuestion);
+				Value sessionValue = session.getBlackboard().getValue(theQuestion);
 
 				buffy.append("<INPUT TYPE='radio' NAME='f" + timestampid + "id"
 						+ theQuestion.getId() + "' "
@@ -147,7 +148,7 @@ public class FindingHTMLWriter {
 				+ KnowWEAttributes.WEB + ": '" + webname + "',"
 				+ KnowWEAttributes.TOPIC + ": '" + topic + "',";
 
-		Value sessionValue = session.getValue(theQuestion);
+		Value sessionValue = session.getBlackboard().getValue(theQuestion);
 
 		if (session != null && sessionValue != UndefinedValue.getInstance()) {
 			if (sessionValue != UndefinedValue.getInstance()) {
@@ -207,7 +208,7 @@ public class FindingHTMLWriter {
 			buffy.append("<form action='#' name='semanomc' id='semanomc'>");
 			for (Choice choice : theMC.getAllAlternatives()) {
 				ChoiceValue choiceValue = new ChoiceValue(choice);
-				Value sessionValue = session.getValue(theQuestion);
+				Value sessionValue = session.getBlackboard().getValue(theQuestion);
 				// TODO: 04.2010 joba: insert Unknown alternative
 				// if (theAnswer instanceof AnswerUnknown) {
 				// answerText =
@@ -303,19 +304,19 @@ public class FindingHTMLWriter {
 			}
 			retVal = "<h3>" + KnowWEUtils.convertUmlaut(questionText) + "</h3>";
 			if (question instanceof QuestionYN) {
-				retVal += getHTMLString((QuestionChoice) question, "YN",
+				retVal += getHTMLString(question, "YN",
 						theCase, namespace, webname, topic, targetUrlPrefix);
 			}
 			else if (question instanceof QuestionOC) {
-				retVal += getHTMLString((QuestionChoice) question, "OC",
+				retVal += getHTMLString(question, "OC",
 						theCase, namespace, webname, topic, targetUrlPrefix);
 			}
 			else if (question instanceof QuestionMC) {
-				retVal += getHTMLString((QuestionChoice) question, "MC",
+				retVal += getHTMLString(question, "MC",
 						theCase, namespace, webname, topic, targetUrlPrefix);
 			}
 			else if (question instanceof QuestionNum) {
-				retVal += getHTMLString((Question) question, "Num", theCase,
+				retVal += getHTMLString(question, "Num", theCase,
 						namespace, webname, topic, targetUrlPrefix);
 			} /*
 			 * else if (question instanceof QuestionText) { retVal =

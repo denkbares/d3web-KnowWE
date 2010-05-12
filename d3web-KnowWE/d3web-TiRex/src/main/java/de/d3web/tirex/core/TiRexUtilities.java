@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.tirex.core;
@@ -35,9 +35,9 @@ import com.wcohen.ss.Levenstein;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.values.Choice;
 
 /**
@@ -76,19 +76,17 @@ public class TiRexUtilities {
 	}
 
 	/**
-	 * @param knowledge
-	 *            The knowledgebase, which the questions and answers are to be
-	 *            read from.
-	 * @param getAnswers
-	 *            If this argument is "false", then only the questions are read
-	 *            and returned, else the answers are extracted as well.
+	 * @param knowledge The knowledgebase, which the questions and answers are
+	 *        to be read from.
+	 * @param getAnswers If this argument is "false", then only the questions
+	 *        are read and returned, else the answers are extracted as well.
 	 * @return A textual representation of the knowledgebase.
 	 */
 	public String getAllQuestionsAnswersAndDiagnosesAsString(
 			KnowledgeBase knowledge, boolean getAnswers) {
 		StringBuffer buffer = new StringBuffer();
 
-		List<Solution> diagnoses = knowledge.getDiagnoses();
+		List<Solution> diagnoses = knowledge.getSolutions();
 		for (Solution diagnosis : diagnoses) {
 			buffer.append(" Diagnose: " + diagnosis.getName() + "(Typ: "
 					+ diagnosis.getClass() + " ID: " + diagnosis.getId() + ")\n");
@@ -116,8 +114,7 @@ public class TiRexUtilities {
 	}
 
 	/**
-	 * @param reader
-	 *            The Reader, which is to be returned as a String.
+	 * @param reader The Reader, which is to be returned as a String.
 	 * @return A textual representation of the Reader.
 	 * @throws IOException
 	 */
@@ -136,8 +133,7 @@ public class TiRexUtilities {
 	}
 
 	/**
-	 * @param kb
-	 *            The KnowledgeBase which the answers are to be extracted from.
+	 * @param kb The KnowledgeBase which the answers are to be extracted from.
 	 * @return All the predefined answers that could be found in the
 	 *         KnowledgeBase are in a Collection. Currently the only predefined
 	 *         Answers that I know of are Objects of the Class "AnswerChoice".
@@ -153,8 +149,7 @@ public class TiRexUtilities {
 	}
 
 	/**
-	 * @param q
-	 *            The Question which the answers are to be extracted from.
+	 * @param q The Question which the answers are to be extracted from.
 	 * @return All the predefined answers that could be found for the given
 	 *         Question are returned in a Collection.
 	 */
@@ -164,14 +159,12 @@ public class TiRexUtilities {
 	}
 
 	/**
-	 * @param expression
-	 *            The expression (figure of speech) which is usually an answer
-	 *            to a QuestionNum.
-	 * @param regex
-	 *            KnOfficePairs A Map that contains the regular expressions
-	 *            which are to be used to parse the given expression. The map
-	 *            also contains the KnOffice expressions, which are to be used,
-	 *            if the given expression is successfully parsed.
+	 * @param expression The expression (figure of speech) which is usually an
+	 *        answer to a QuestionNum.
+	 * @param regex KnOfficePairs A Map that contains the regular expressions
+	 *        which are to be used to parse the given expression. The map also
+	 *        contains the KnOffice expressions, which are to be used, if the
+	 *        given expression is successfully parsed.
 	 * @return The KnOffice shape of the given expression if it is successfully
 	 *         parsed, otherwise the expression is returned unchanged.
 	 */
@@ -179,9 +172,9 @@ public class TiRexUtilities {
 			Map<String, String> regexKnOfficePairs) {
 		String convertedExpression = expression;
 
-		if(regexKnOfficePairs == null) return null;
+		if (regexKnOfficePairs == null) return null;
 		Set<String> regexes = regexKnOfficePairs.keySet();
-		
+
 		for (String regex : regexes) {
 			Pattern p = Pattern.compile(regex);
 			Matcher m = p.matcher(expression);
@@ -191,14 +184,14 @@ public class TiRexUtilities {
 
 				int groups = m.groupCount();
 
-				
 				for (int i = 1; i <= groups; i++) {
-					if(i == groups) {
+					if (i == groups) {
 						// EDIT!
 						// last group gets deleted
 						// because later cannot be parsed by TextParser-system
 						knOffice = knOffice.replaceAll("\\$" + i, "");
-					}else {
+					}
+					else {
 						knOffice = knOffice.replaceAll("\\$" + i, m.group(i));
 					}
 				}
@@ -211,8 +204,7 @@ public class TiRexUtilities {
 	}
 
 	/**
-	 * @param array
-	 *            The array which is to be converted.
+	 * @param array The array which is to be converted.
 	 * @return A Collection of Objects, which were grouped in the given array.
 	 */
 	public <T> Collection<T> convertArrayToCollection(T[] array) {
@@ -226,10 +218,8 @@ public class TiRexUtilities {
 	}
 
 	/**
-	 * @param s1
-	 *            First String.
-	 * @param s2
-	 *            Second String.
+	 * @param s1 First String.
+	 * @param s2 Second String.
 	 * @return True is returned, if the Edit-Distance (Levenstein-Distance) of
 	 *         the two given Strings is within certain predefined boundaries.
 	 *         The boundaries are defined in the TiRexSettings ResourceBundle.

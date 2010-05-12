@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.KnOfficeParser.rule;
@@ -52,12 +52,12 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.DiagnosisState;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.DiagnosisState.State;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Value;
@@ -72,6 +72,7 @@ import de.d3web.scoring.Score;
  * 
  */
 public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
+
 	private final String file;
 	private final List<Message> errors = new ArrayList<Message>();
 	private Question currentquestion;
@@ -90,6 +91,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 	}
 
 	private class MyRule {
+
 		private final ruletype type;
 		private Question question;
 		private final Condition ifcond;
@@ -99,7 +101,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		private ArrayList<QASet> qcons;
 		private Score score;
 		private Solution diag;
-		
+
 		public MyRule(ruletype type, Question question,
 				Condition ifcond, Condition exceptcond,
 				Choice[] answers, FormulaExpression formula,
@@ -129,7 +131,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 	private void addRule(MyRule rule) {
 		if (buildonlywith0Errors) {
 			rules.add(rule);
-		} else {
+		}
+		else {
 			generateRule(rule);
 		}
 	}
@@ -141,54 +144,67 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			Condition cond = rule.ifcond;
 			if (cond instanceof CondDState) {
 				CondDState statecond = (CondDState) cond;
-				if (statecond.getStatus() == DiagnosisState.ESTABLISHED) {
+				if (statecond.getStatus().hasState(State.ESTABLISHED)) {
 					newRule = RuleFactory.createRefinementRule(newRuleID, rule.qcons,
 							statecond.getDiagnosis(), statecond,
 							rule.exceptcond);
-				} else if (statecond.getStatus() == DiagnosisState.SUGGESTED) {
+				}
+				else if (statecond.getStatus().hasState(State.SUGGESTED)) {
 					newRule = RuleFactory.createClarificationRule(newRuleID, rule.qcons,
 							statecond.getDiagnosis(), statecond,
 							rule.exceptcond);
-				} else {
+				}
+				else {
 					newRule = RuleFactory.createIndicationRule(newRuleID, rule.qcons,
 							cond, rule.exceptcond);
 				}
-			} else {
+			}
+			else {
 				newRule = RuleFactory.createIndicationRule(newRuleID, rule.qcons, cond,
 						rule.exceptcond);
 			}
-		} else if (rule.type == ruletype.instantindication) {
+		}
+		else if (rule.type == ruletype.instantindication) {
 			newRule = RuleFactory.createInstantIndicationRule(newRuleID, rule.qcons,
 					rule.ifcond, rule.exceptcond);
-		} else if (rule.type == ruletype.contraindication) {
+		}
+		else if (rule.type == ruletype.contraindication) {
 			newRule = RuleFactory.createContraIndicationRule(newRuleID, rule.qcons,
 					rule.ifcond, rule.exceptcond);
-		} else if (rule.type == ruletype.supress) {
+		}
+		else if (rule.type == ruletype.supress) {
 			newRule = RuleFactory.createSuppressAnswerRule(newRuleID,
 					(QuestionChoice) rule.question, rule.answers, rule.ifcond,
 					rule.exceptcond);
-		} else if (rule.type == ruletype.setvalue) {
+		}
+		else if (rule.type == ruletype.setvalue) {
 			if (rule.formula != null) {
 				newRule = RuleFactory.createSetValueRule(newRuleID, rule.question,
 						rule.formula, rule.ifcond, rule.exceptcond);
-			}else if(rule.answers != null && rule.answers.length > 0) {
+			}
+			else if (rule.answers != null && rule.answers.length > 0) {
 				newRule = RuleFactory.createSetValueRule(newRuleID, rule.question,
 						rule.answers, rule.ifcond, rule.exceptcond);
-			}else {
-				//TODO add error message
 			}
-		} else if (rule.type == ruletype.addvalue) {
+			else {
+				// TODO add error message
+			}
+		}
+		else if (rule.type == ruletype.addvalue) {
 			if (rule.formula != null) {
-				//TODO add factory method so support addValue for formulas
-//				RuleFactory.createAddValueRule(newRuleID, rule.question,
-//						rule.formula, rule.ifcond, rule.exceptcond);
-			}else if(rule.answers != null && rule.answers.length > 0) {
+				// TODO add factory method so support addValue for formulas
+				// RuleFactory.createAddValueRule(newRuleID, rule.question,
+				// rule.formula, rule.ifcond, rule.exceptcond);
+			}
+			else if (rule.answers != null && rule.answers.length > 0) {
 				newRule = RuleFactory.createAddValueRule(newRuleID, rule.question,
 						rule.answers, rule.ifcond, rule.exceptcond);
-			}else {
-				//TODO add error message
 			}
-		} else {
+			else {
+				// TODO add error message
+			}
+		}
+		else {
 			newRule = RuleFactory.createHeuristicPSRule(newRuleID, rule.diag, rule.score,
 					rule.ifcond, rule.exceptcond);
 		}
@@ -214,7 +230,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					rulecount));
 		}
 	}
-	
+
 	public List<String> getRuleIDs() {
 		return this.ruleIDs;
 	}
@@ -260,46 +276,53 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			QASet qcon = idom.findQContainer(s);
 			if (qcon != null) {
 				qcons.add(qcon);
-			} else if (!instant) {
+			}
+			else if (!instant) {
 				qcon = idom.findQuestion(s);
 				if (qcon != null) {
 					qcons.add(qcon);
 					if (!D3webQuestionFactory.checkType((Question) qcon, type)) {
 						errors.add(MessageKnOfficeGenerator
 								.createTypeMismatchWarning(file, line,
-										linetext, s, type));
+								linetext, s, type));
 					}
-				} else {
+				}
+				else {
 					if (lazy) {
 						if (type != null) {
 							qcon = D3webQuestionFactory.createQuestion(s, null, type,
 									idom);
 							if (qcon != null) {
 								qcons.add(qcon);
-							} else {
+							}
+							else {
 								errors.add(MessageKnOfficeGenerator
 										.createTypeRecognitionError(file, line,
-												linetext, s, type));
+										linetext, s, type));
 							}
-						} else {
+						}
+						else {
 							qcons.add(idom.createQContainer(s, idom
 									.getKnowledgeBase().getRootQASet()));
 						}
-					} else {
+					}
+					else {
 						errors
 								.add(MessageKnOfficeGenerator
-										.createQuestionClassorQuestionNotFoundException(
-												file, line, linetext, s));
+								.createQuestionClassorQuestionNotFoundException(
+								file, line, linetext, s));
 					}
 				}
-			} else {
+			}
+			else {
 				if (lazy) {
 					qcons.add(idom.createQContainer(s, idom.getKnowledgeBase()
 							.getRootQASet()));
-				} else {
+				}
+				else {
 					errors.add(MessageKnOfficeGenerator
 							.createQuestionClassNotFoundException(file, line,
-									linetext, s));
+							linetext, s));
 				}
 			}
 			i++;
@@ -310,25 +333,27 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (except) {
 				exceptcond = cb.pop();
 				ifcond = cb.pop();
-				if (exceptcond == null)
-					return;
-			} else {
+				if (exceptcond == null) return;
+			}
+			else {
 				ifcond = cb.pop();
 				exceptcond = null;
 			}
-			if (ifcond == null)
-				return;
+			if (ifcond == null) return;
 			ruletype rtype;
 			if (!instant && !not) {
 				rtype = ruletype.indication;
-			} else if (instant) {
+			}
+			else if (instant) {
 				rtype = ruletype.instantindication;
-			} else {
+			}
+			else {
 				rtype = ruletype.contraindication;
 			}
 			addRule(new MyRule(rtype, null, ifcond, exceptcond, null, null,
 					qcons));
-		} else {
+		}
+		else {
 			errors.add(MessageKnOfficeGenerator
 					.createNoValidQuestionsException(file, line, linetext));
 			finishCondstack(except);
@@ -347,17 +372,20 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (lazy) {
 				if (type != null) {
 					q = D3webQuestionFactory.createQuestion(qname, null, type, idom);
-				} else {
+				}
+				else {
 					q = idom.createQuestionOC(qname, idom.getKnowledgeBase()
 							.getRootQASet(), new Choice[0]);
 				}
-			} else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator
 						.createQuestionNotFoundException(file, line, linetext,
-								qname));
+						qname));
 				finishCondstack(except);
 			}
-		} else {
+		}
+		else {
 			if (q instanceof QuestionChoice) {
 				QuestionChoice qc = (QuestionChoice) q;
 				ArrayList<Choice> alist = new ArrayList<Choice>();
@@ -365,10 +393,11 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					Value a = idom.findValue(qc, s);
 					if (a != null) {
 						alist.add((Choice) a.getValue());
-					} else {
+					}
+					else {
 						errors.add(MessageKnOfficeGenerator
 								.createAnswerNotFoundException(file, line,
-										linetext, s, qc.getName()));
+								linetext, s, qc.getName()));
 					}
 				}
 				if (!alist.isEmpty()) {
@@ -377,25 +406,26 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					if (except) {
 						exceptcond = cb.pop();
 						ifcond = cb.pop();
-						if (exceptcond == null)
-							return;
-					} else {
+						if (exceptcond == null) return;
+					}
+					else {
 						ifcond = cb.pop();
 						exceptcond = null;
 					}
-					if (ifcond == null)
-						return;
+					if (ifcond == null) return;
 					Choice[] array = alist.toArray(new Choice[alist.size()]);
 					addRule(new MyRule(ruletype.supress, qc, ifcond,
 							exceptcond, array, null, null));
-				} else {
+				}
+				else {
 					errors
 							.add(MessageKnOfficeGenerator
-									.createNoValidAnswerException(file, line,
-											linetext));
+							.createNoValidAnswerException(file, line,
+							linetext));
 					finishCondstack(except);
 				}
-			} else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator.createSupressError(file,
 						line, linetext));
 				finishCondstack(except);
@@ -415,29 +445,30 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			FormulaExpression formula;
 			if (op.equals("=")) {
 				formula = new FormulaExpression(qnum, formulaStack.pop());
-			} else if (op.equals("+=")) {
+			}
+			else if (op.equals("+=")) {
 				FormulaNumberElement fne = new Add(new QNumWrapper(qnum),
 						formulaStack.pop());
 				formula = new FormulaExpression(qnum, fne);
-			} else {
+			}
+			else {
 				formula = null;
 				errors.add(MessageKnOfficeGenerator
 						.createWrongOperatorInAbstractionRule(file, line,
-								linetext));
+						linetext));
 			}
 			Condition ifcond;
 			Condition exceptcond;
 			if (except) {
 				exceptcond = cb.pop();
 				ifcond = cb.pop();
-				if (exceptcond == null)
-					return;
-			} else {
+				if (exceptcond == null) return;
+			}
+			else {
 				ifcond = cb.pop();
 				exceptcond = null;
 			}
-			if (ifcond == null)
-				return;
+			if (ifcond == null) return;
 			addRule(new MyRule(ruletype.setvalue, qnum, ifcond, exceptcond,
 					null, formula, null));
 		}
@@ -454,17 +485,20 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					if (type != null) {
 						currentquestion = D3webQuestionFactory.createQuestion(s, null,
 								type, idom);
-					} else {
+					}
+					else {
 						currentquestion = D3webQuestionFactory.createQuestion(s, null,
 								"oc", idom);
 					}
-				} else {
+				}
+				else {
 					errors.add(MessageKnOfficeGenerator
 							.createQuestionOrDiagnosisNotFoundException(file,
-									line, linetext, s));
+							line, linetext, s));
 				}
 			}
-		} else {
+		}
+		else {
 			currentdiag = null;
 			if (!D3webQuestionFactory.checkType(currentquestion, type)) {
 				errors.add(MessageKnOfficeGenerator.createTypeMismatchWarning(
@@ -473,8 +507,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (!((currentquestion instanceof QuestionNum) || (currentquestion instanceof QuestionChoice))) {
 				errors
 						.add(MessageKnOfficeGenerator
-								.createOnlyNumOrChoiceAllowedError(file, line,
-										linetext));
+						.createOnlyNumOrChoiceAllowedError(file, line,
+						linetext));
 			}
 		}
 	}
@@ -486,34 +520,36 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (currentdiag == null) {
 				finishCondstack(except);
 				return;
-			} else {
+			}
+			else {
 				if (!op.equals("=")) {
 					errors.add(MessageKnOfficeGenerator
 							.createWrongOperatorForDiag(file, line, linetext));
 					finishCondstack(except);
 					return;
-				} else {
+				}
+				else {
 					Score score = Scorefinder.getScore(value);
 					if (score == null) {
 						errors.add(MessageKnOfficeGenerator
 								.createScoreDoesntExistError(file, line,
-										linetext, value));
+								linetext, value));
 						finishCondstack(except);
 						return;
-					} else {
+					}
+					else {
 						Condition ifcond;
 						Condition exceptcond;
 						if (except) {
 							exceptcond = cb.pop();
 							ifcond = cb.pop();
-							if (exceptcond == null)
-								return;
-						} else {
+							if (exceptcond == null) return;
+						}
+						else {
 							ifcond = cb.pop();
 							exceptcond = null;
 						}
-						if (ifcond == null)
-							return;
+						if (ifcond == null) return;
 						addRule(new MyRule(currentdiag, score, ifcond,
 								exceptcond));
 					}
@@ -524,12 +560,14 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			boolean add = false;
 			if (op.equals("=")) {
 				add = false;
-			} else if (op.equals("+=")) {
+			}
+			else if (op.equals("+=")) {
 				add = true;
-			} else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator
 						.createWrongOperatorforChoiceQuestionsException(file,
-								line, linetext));
+						line, linetext));
 				finishCondstack(except);
 				return;
 			}
@@ -539,10 +577,11 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (a == null) {
 				if (lazy) {
 					a = idom.addChoiceAnswer(qc, value);
-				} else {
+				}
+				else {
 					errors.add(MessageKnOfficeGenerator
 							.createAnswerNotFoundException(file, line,
-									linetext, value, qc.getName()));
+							linetext, value, qc.getName()));
 					finishCondstack(except);
 					return;
 				}
@@ -552,19 +591,19 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (except) {
 				exceptcond = cb.pop();
 				ifcond = cb.pop();
-				if (exceptcond == null)
-					return;
-			} else {
+				if (exceptcond == null) return;
+			}
+			else {
 				ifcond = cb.pop();
 				exceptcond = null;
 			}
-			if (ifcond == null)
-				return;
+			if (ifcond == null) return;
 			if (add) {
 				addRule(new MyRule(ruletype.addvalue, currentquestion, ifcond,
 						exceptcond, new Choice[] { (Choice) a }, null, null));
 
-			} else {
+			}
+			else {
 				addRule(new MyRule(ruletype.setvalue, currentquestion, ifcond,
 						exceptcond, new Choice[] { (Choice) a }, null, null));
 			}
@@ -579,20 +618,24 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (q instanceof QuestionNum) {
 				QuestionNum qnumValue = (QuestionNum) q;
 				num = new QNumWrapper(qnumValue);
-			} else {
+			}
+			else {
 				num = null;
 				errors.add(MessageKnOfficeGenerator
 						.createOnlyNumInFormulaError(file, line, linetext));
 			}
-		} else {
+		}
+		else {
 			Double d = null;
 			try {
 				d = Double.parseDouble(value);
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				if (lazy) {
 					q = idom.createQuestionNum(value, idom.getKnowledgeBase()
 							.getRootQASet());
-				} else {
+				}
+				else {
 					errors.add(MessageKnOfficeGenerator
 							.createOnlyNumOrDoubleError(file, line, linetext));
 					formulaStack.push(null);
@@ -601,7 +644,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			}
 			if (d != null) {
 				num = new FormulaNumber(d);
-			} else {
+			}
+			else {
 				num = new QNumWrapper((QuestionNum) q);
 			}
 		}
@@ -645,7 +689,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		ANTLRInputStream istream = null;
 		try {
 			istream = new ANTLRInputStream(input);
-		} catch (IOException e1) {
+		}
+		catch (IOException e1) {
 			errors.add(MessageKnOfficeGenerator.createAntlrInputError(file, 0,
 					""));
 		}
@@ -657,7 +702,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				cb);
 		try {
 			parser.knowledge();
-		} catch (RecognitionException e) {
+		}
+		catch (RecognitionException e) {
 			e.printStackTrace();
 		}
 		finish();
@@ -672,7 +718,6 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 
 	private void finishCondstack(boolean except) {
 		cb.pop();
-		if (except)
-			cb.pop();
+		if (except) cb.pop();
 	}
 }

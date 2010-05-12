@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2010-04-06 16:16:27
+// $ANTLR 3.1.1 BasicParser.g 2010-04-19 10:47:48
 
 package de.d3web.KnOfficeParser.xcl;
 import de.d3web.KnOfficeParser.ConditionBuilder;

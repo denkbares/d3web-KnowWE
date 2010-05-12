@@ -261,7 +261,7 @@ public class XCLExplanationAction extends DeprecatedAbstractKnowWEAction {
 				}
 			}
 			cont.append("</td><td>");
-			Value theanswer = this.currentCase.getValue(cq);
+			Value theanswer = this.currentCase.getBlackboard().getValue(cq);
 			cont.append(theanswer.getValue());
 
 			// ListIterator iterator = answers.listIterator();

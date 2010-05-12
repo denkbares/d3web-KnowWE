@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.KnOfficeParser;
@@ -45,6 +45,7 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.DiagnosisState.State;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
@@ -57,6 +58,7 @@ import de.d3web.report.Message;
  * 
  */
 public class D3webConditionBuilder implements ConditionBuilder {
+
 	private String file;
 
 	public String getFile() {
@@ -91,14 +93,15 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	public void setLazy(boolean lazy) {
 		this.lazy = lazy;
 	}
-	
+
 	public boolean isLazyAnswers() {
 		return lazyAnswers;
 	}
 
 	/**
-	 * Sets the lazyAnswerFlag. If lazy is true, answers will be
-	 * created lazy, even if this flag is false
+	 * Sets the lazyAnswerFlag. If lazy is true, answers will be created lazy,
+	 * even if this flag is false
+	 * 
 	 * @param lazyAnswers Flag
 	 */
 	public void setLazyAnswers(boolean lazyAnswers) {
@@ -123,7 +126,8 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	public Condition pop() {
 		if (!condstack.isEmpty()) {
 			return condstack.pop();
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
@@ -141,13 +145,15 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		if (diag != null) {
 			if (value.equalsIgnoreCase("established")
 					|| value.equalsIgnoreCase("etabliert")) {
-				condstack.push(new CondDState(diag, DiagnosisState.ESTABLISHED));
-			} else if (value.equalsIgnoreCase("excluded")
+				condstack.push(new CondDState(diag, new DiagnosisState(State.ESTABLISHED)));
+			}
+			else if (value.equalsIgnoreCase("excluded")
 					|| value.equalsIgnoreCase("ausgeschlossen")) {
-				condstack.push(new CondDState(diag, DiagnosisState.EXCLUDED));
-			} else if (value.equalsIgnoreCase("suggested")
+				condstack.push(new CondDState(diag, new DiagnosisState(State.EXCLUDED)));
+			}
+			else if (value.equalsIgnoreCase("suggested")
 					|| value.equalsIgnoreCase("verdächtigt")) {
-				condstack.push(new CondDState(diag, DiagnosisState.SUGGESTED));
+				condstack.push(new CondDState(diag, new DiagnosisState(State.SUGGESTED)));
 			}
 			// else if
 			// (value.equalsIgnoreCase("unclear")||value.equalsIgnoreCase("unklar")){
@@ -162,8 +168,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			return;
 		}
 		Question question = null;
-		if (useQuestionmap)
-			question = this.questions.get(qname);
+		if (useQuestionmap) question = this.questions.get(qname);
 		if (question == null) {
 			question = idom.findQuestion(qname);
 			if (question != null) {
@@ -178,22 +183,25 @@ public class D3webConditionBuilder implements ConditionBuilder {
 					if (question == null) {
 						errors.add(MessageKnOfficeGenerator
 								.createTypeRecognitionError(file, line,
-										linetext, qname, type));
+								linetext, qname, type));
 						condstack.push(null);
 						return;
 					}
-				} else if (op.equals("=")) {
+				}
+				else if (op.equals("=")) {
 					question = idom.createQuestionOC(qname, idom
 							.getKnowledgeBase().getRootQASet(),
 							new Choice[0]);
-				} else {
+				}
+				else {
 					question = idom.createQuestionNum(qname, idom
 							.getKnowledgeBase().getRootQASet());
 				}
-			} else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator
 						.createQuestionNotFoundException(file, line, linetext,
-								qname));
+						qname));
 				condstack.push(null);
 				return;
 			}
@@ -208,7 +216,8 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			double d;
 			try {
 				d = Double.parseDouble(value);
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				errors.add(MessageKnOfficeGenerator.createNaNException(file,
 						line, linetext, value));
 				condstack.push(null);
@@ -216,36 +225,43 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			}
 			c = ConditionGenerator.condNum(qnum, op, d, errors, line, value,
 					file);
-		} else if (question instanceof QuestionChoice) {
+		}
+		else if (question instanceof QuestionChoice) {
 			Choice answer = null;
 			QuestionChoice qc = (QuestionChoice) question;
 			if (qc instanceof QuestionYN) {
 				QuestionYN qyn = (QuestionYN) qc;
 				if ((value.equalsIgnoreCase("ja")) || (value.equalsIgnoreCase("yes"))) {
 					answer = qyn.yes;
-				} else if ((value.equalsIgnoreCase("nein")) || (value.equalsIgnoreCase("no"))) {
+				}
+				else if ((value.equalsIgnoreCase("nein")) || (value.equalsIgnoreCase("no"))) {
 					answer = qyn.no;
-				} else {
+				}
+				else {
 					errors.add(MessageKnOfficeGenerator.createWrongYNAnswer(
 							file, line, linetext, qyn.getName()));
 				}
-			} else {
+			}
+			else {
 				answer = idom.findAnswerChoice(qc, value);
 			}
 			if (answer == null) {
 				if (lazy || lazyAnswers) {
 					answer = (Choice) idom.addChoiceAnswer(qc, value);
 					c = new CondEqual(qc, new ChoiceValue(answer));
-				} else {
+				}
+				else {
 					errors.add(MessageKnOfficeGenerator
 							.createAnswerNotFoundException(file, line,
-									linetext, value, qc.getName()));
+							linetext, value, qc.getName()));
 					c = null;
 				}
-			} else {
+			}
+			else {
 				c = new CondEqual(qc, new ChoiceValue(answer));
 			}
-		} else {
+		}
+		else {
 			errors.add(MessageKnOfficeGenerator.createNoAnswerAllowedException(
 					file, line, linetext));
 			c = null;
@@ -257,8 +273,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	public void condition(int line, String linetext, String qname, String type,
 			double left, double right, boolean in) {
 		Question question = null;
-		if (useQuestionmap)
-			question = this.questions.get(qname);
+		if (useQuestionmap) question = this.questions.get(qname);
 		if (question == null) {
 			question = idom.findQuestion(qname);
 			if (question != null) {
@@ -273,18 +288,20 @@ public class D3webConditionBuilder implements ConditionBuilder {
 					if (question == null) {
 						errors.add(MessageKnOfficeGenerator
 								.createTypeRecognitionError(file, line,
-										linetext, qname, type));
+								linetext, qname, type));
 						condstack.push(null);
 						return;
 					}
-				} else {
+				}
+				else {
 					question = idom.createQuestionNum(qname, idom
 							.getKnowledgeBase().getRootQASet());
 				}
-			} else {
+			}
+			else {
 				errors.add(MessageKnOfficeGenerator
 						.createQuestionNotFoundException(file, line, linetext,
-								qname));
+						qname));
 				condstack.push(null);
 				return;
 			}
@@ -298,7 +315,8 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			QuestionNum qnum = (QuestionNum) question;
 			c = ConditionGenerator.condNum(qnum, left, right, errors, line,
 					linetext, file);
-		} else {
+		}
+		else {
 			errors.add(MessageKnOfficeGenerator.createIntervallQuestionError(
 					file, line, linetext));
 			c = null;
@@ -310,7 +328,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 	public void knowncondition(int line, String linetext, String name,
 			String type, boolean unknown) {
 		Question q = idom.findQuestion(name);
-		
+
 		// create q if not exists and lazy enabled
 		if (q == null && lazy) {
 			if (type != null) {
@@ -318,22 +336,23 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				if (q == null) {
 					errors.add(MessageKnOfficeGenerator
 							.createTypeRecognitionError(file, line,
-									linetext, name, type));
+							linetext, name, type));
 					condstack.push(null);
 					return;
 				}
-			} else {
+			}
+			else {
 				q = idom.createQuestionOC(name, idom.getKnowledgeBase()
 						.getRootQASet(), new Choice[0]);
 			}
 		}
-		
+
 		// only add condition if question has been found or created lazy
 		if (q == null) {
 			// if q not exists, create an error
 			errors.add(MessageKnOfficeGenerator
 					.createQuestionNotFoundException(file, line, linetext,
-							name));
+					name));
 		}
 		else {
 			if (!D3webQuestionFactory.checkType(q, type)) {
@@ -343,7 +362,8 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			TerminalCondition c;
 			if (unknown) {
 				c = new CondUnknown(q);
-			} else {
+			}
+			else {
 				c = new CondKnown(q);
 			}
 			condstack.add(c);
@@ -356,7 +376,8 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			Condition cond = condstack.pop();
 			if (cond != null) {
 				condstack.push(new CondNot(cond));
-			} else {
+			}
+			else {
 				condstack.push(null);
 			}
 		}
@@ -372,7 +393,8 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				clist.add(cond);
 				clist.add(cond2);
 				condstack.push(new CondAnd(clist));
-			} else {
+			}
+			else {
 				condstack.push(null);
 			}
 		}
@@ -388,7 +410,8 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				clist.add(cond);
 				clist.add(cond2);
 				condstack.push(new CondOr(clist));
-			} else {
+			}
+			else {
 				condstack.push(null);
 			}
 		}
@@ -409,10 +432,12 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		if (!condlist.isEmpty()) {
 			if (failure) {
 				condstack.push(null);
-			} else {
+			}
+			else {
 				condstack.push(new CondMofN(condlist, min, max));
 			}
-		} else {
+		}
+		else {
 			errors.add(MessageKnOfficeGenerator.createNoValidCondsException(
 					file, line, linetext));
 			condstack.push(null);
@@ -426,7 +451,8 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				type, answers);
 		if (conds.contains(null)) {
 			condstack.push(null);
-		} else {
+		}
+		else {
 			condstack.push(new CondOr(conds));
 		}
 	}
@@ -438,7 +464,8 @@ public class D3webConditionBuilder implements ConditionBuilder {
 				type, answers);
 		if (conds.contains(null)) {
 			condstack.push(null);
-		} else {
+		}
+		else {
 			condstack.push(new CondAnd(conds));
 		}
 	}

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.KnOfficeParser.decisiontree;
@@ -59,6 +59,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.DiagnosisState.State;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -119,6 +120,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	 * @param <X>
 	 */
 	private class Tupel<T, X> {
+
 		private final T first;
 		private final X second;
 		boolean used = false;
@@ -130,6 +132,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	}
 
 	private class Tripel<T, X, U> extends Tupel<T, X> {
+
 		private final U third;
 
 		public Tripel(T t, X x, U u) {
@@ -667,13 +670,11 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			CondDState statecond = (CondDState) abscon;
 			List<QASet> action = new ArrayList<QASet>();
 			action.add(set);
-			if (statecond.getStatus().equals(
-					new DiagnosisState(DiagnosisState.State.ESTABLISHED))) {
+			if (statecond.getStatus().hasState(State.ESTABLISHED)) {
 				RuleFactory.createRefinementRule(newRuleID, action, statecond
 						.getDiagnosis(), statecond);
 			}
-			else if (statecond.getStatus().equals(
-					new DiagnosisState(DiagnosisState.State.SUGGESTED))) {
+			else if (statecond.getStatus().hasState(State.SUGGESTED)) {
 				RuleFactory.createClarificationRule(newRuleID, action,
 						statecond.getDiagnosis(), statecond);
 			}
@@ -763,10 +764,8 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	 */
 	private void addMMInfo(NamedObject o, String title, String subject,
 			String content, String language) {
-		if (o == null)
-			return;
-		if (content == null)
-			return;
+		if (o == null) return;
+		if (content == null) return;
 
 		if (content.startsWith("\"") && content.endsWith("\"")
 				&& content.length() > 1) {
@@ -778,8 +777,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		dcm.setContent(DCElement.TITLE, title);
 		dcm.setContent(DCElement.SUBJECT, subject);
 		dcm.setContent(DCElement.SOURCE, o.getId());
-		if (language != null)
-			dcm.setContent(DCElement.LANGUAGE, language);
+		if (language != null) dcm.setContent(DCElement.LANGUAGE, language);
 		MMInfoObject mmi = new MMInfoObject(dcm, content);
 		if (o.getProperties().getProperty(Property.MMINFO) == null) {
 			mmis = new MMInfoStorage();
@@ -822,8 +820,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 	}
 
 	private Double parseGerDouble(String s) {
-		if (s == null)
-			return null;
+		if (s == null) return null;
 		s = s.replace(',', '.');
 		Double d;
 		try {
@@ -849,8 +846,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		// prüfen ob noch nichtgesetzte Links zu Erklärungen vorhanden sind
 		for (Tripel<String, Object, Message> t : descriptionlinks) {
-			if (!t.used)
-				ret.add(t.third);
+			if (!t.used) ret.add(t.third);
 		}
 		if (ret.size() == 0) {
 			ret.add(MessageKnOfficeGenerator.createDTparsedNote(file, 0, "",

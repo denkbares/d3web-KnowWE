@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g 2010-04-06 16:16:08
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\TestsuiteLexer.g 2010-04-19 10:47:31
 
 package de.d3web.we.testsuite;
 import de.d3web.KnOfficeParser.LexerErrorHandler;

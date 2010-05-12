@@ -84,29 +84,26 @@ public class UpdateSolutions extends AbstractAction {
 		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, sec.getWeb());
 		String oldText = article.getSection().getOriginalText();
 
-
 		// get everything for the new solution
 		String[] surroundings = UpdateQuestions.getRightInsertPosition(oldText, "Solutions");
 		String firstPart = surroundings[0];
 		String lastPart = surroundings[1];
-		String currentSolutionsSection = UpdateQuestions.getCurrentSectionContent(oldText, "Solutions");
+		String currentSolutionsSection = UpdateQuestions.getCurrentSectionContent(oldText,
+				"Solutions");
 		String newSolutionsSection = this.addSolution(currentSolutionsSection, solutionText);
-		
 
 		// save the new article
 		String newText = firstPart + newSolutionsSection + lastPart;
 		instance.saveArticle(sec.getWeb(), sec.getTitle(), newText, map);
-		
-		
+
 		// remove leading and ending quotes
 		solutionText = UpdateQuestions.removeLeadingAndClosingQuotes(solutionText);
-		
-		
+
 		// get the right id for the nodemodel
 		KnowledgeBase kb = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
 				article, null, sec).getKnowledgeBase();
-		
-		List<Solution> diagnoses = kb.getDiagnoses();
+
+		List<Solution> diagnoses = kb.getSolutions();
 
 		String diagnosisID = null;
 		for (Solution diagnosis : diagnoses) {

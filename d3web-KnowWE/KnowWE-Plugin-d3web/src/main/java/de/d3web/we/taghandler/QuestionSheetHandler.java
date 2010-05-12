@@ -87,9 +87,9 @@ public class QuestionSheetHandler extends AbstractTagHandler {
 
 				String answerstring = "";
 
-				if (session != null && session.getValue(question) != null) {
+				if (session != null && session.getBlackboard().getValue(question) != null) {
 					answerstring += " : ";
-					answerstring += session.getValue(question).toString();
+					answerstring += session.getBlackboard().getValue(question).toString();
 					// for (Object object : answers) {
 					// answerstring += object.toString()+", ";
 					// }

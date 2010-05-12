@@ -307,7 +307,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				toChange.add(vo);
 				session.getBlackboard().addValueFact(
 						new DefaultFact(vo, value, PSMethodUserSelected.getInstance(),
-								PSMethodUserSelected.getInstance()));
+						PSMethodUserSelected.getInstance()));
 			}
 			else {
 				Logger.getLogger(this.getClass().getName()).log(
@@ -429,7 +429,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			Question question = (Question) valuedObject;
 			if (instantly) {
 				broker.update(new Information(id, question.getId(),
-						ConverterUtils.toValueList(session.getValue(question),
+						ConverterUtils.toValueList(session.getBlackboard().getValue(question),
 						session), TerminologyType.symptom, infoType));
 			}
 			else {

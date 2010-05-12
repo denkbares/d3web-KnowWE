@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2010-04-06 16:15:59
+// $ANTLR 3.1.1 BasicParser.g 2010-04-29 16:09:29
 
 package de.d3web.KnOfficeParser.dashtree;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -148,7 +148,7 @@ public class DashTree_BasicParser extends Parser {
                 if ( ((LA3_1>=String && LA3_1<=INT)||LA3_1==ID) ) {
                     alt3=1;
                 }
-                else if ( (LA3_1==EOF||LA3_1==DD||LA3_1==ORS||LA3_1==TILDE||LA3_1==RP||(LA3_1>=SBO && LA3_1<=SBC)||LA3_1==NL) ) {
+                else if ( (LA3_1==EOF||LA3_1==DD||(LA3_1>=ORS && LA3_1<=TILDE)||LA3_1==RP||(LA3_1>=SBO && LA3_1<=SBC)||LA3_1==NL) ) {
                     alt3=2;
                 }
                 else {

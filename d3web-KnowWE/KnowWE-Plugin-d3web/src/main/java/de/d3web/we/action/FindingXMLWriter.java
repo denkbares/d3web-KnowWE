@@ -1,24 +1,25 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.action;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ResourceBundle;
@@ -41,15 +42,15 @@ import de.d3web.we.d3webModule.D3webModule;
 
 /**
  * Generates the XML representation of a Question Object
+ * 
  * @author Michael Scharvogel
  */
 public class FindingXMLWriter {
-	
+
 	public static final String ID = FindingXMLWriter.class.getName();
 
 	private static ResourceBundle rb;
-	
-	
+
 	private void appendAnswers(Question theQuestion, StringBuffer sb, Session theCase) {
 		sb.append("<Answers>\n");
 		if (theQuestion instanceof QuestionChoice) {
@@ -62,12 +63,13 @@ public class FindingXMLWriter {
 			}
 		}
 		if (theQuestion instanceof QuestionNum) {
-			if(theCase != null) {
-				NumValue answer = (NumValue) theCase.getValue(theQuestion);
-				if(answer != null) {
+			if (theCase != null) {
+				NumValue answer = (NumValue) theCase.getBlackboard().getValue(theQuestion);
+				if (answer != null) {
 					appendAnswer(theQuestion, sb, answer, theCase);
 				}
-			} else {
+			}
+			else {
 				appendAnswer(theQuestion, sb, new NumValue(0), theCase);
 			}
 		}
@@ -82,7 +84,7 @@ public class FindingXMLWriter {
 		else if (theAnswer instanceof MultipleChoiceValue) {
 			theID = ((MultipleChoiceValue) theAnswer).getAnswerChoicesID();
 		}
-		
+
 		sb.append("<Answer ID='" + theID + "'");
 		// sb.append("<Answer ID='" + theAnswer.getId() + "'");
 		// joba, 04.2010, yes/no should be replaced by standard choice values
@@ -96,10 +98,11 @@ public class FindingXMLWriter {
 		}
 		else if (theAnswer instanceof NumValue) {
 			sb.append(" type='AnswerNum'");
-		} else {
+		}
+		else {
 			sb.append(" type='AnswerChoice'");
 		}
-		if (theCase != null && theCase.getValue(theQuestion).equals(theAnswer)) {
+		if (theCase != null && theCase.getBlackboard().getValue(theQuestion).equals(theAnswer)) {
 			sb.append(" active='true'");
 		}
 		sb.append(">\n");
@@ -110,7 +113,8 @@ public class FindingXMLWriter {
 		String text = "";
 		try {
 			text = URLEncoder.encode(answerText, "ISO-8859-1");
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 		}
 		sb.append("<Text><![CDATA[" + text + "]]></Text>\n");
 		sb.append("</Answer>\n");
@@ -120,43 +124,49 @@ public class FindingXMLWriter {
 		StringBuffer sb = new StringBuffer();
 		String questionID = theQuestion.getId();
 		sb.append(
-			"<Question ID='"
+				"<Question ID='"
 				+ questionID
 				+ "' type='"
-				+ type +"'");
-		sb.append( ">\n");
+				+ type + "'");
+		sb.append(">\n");
 		String text = "";
 		try {
 			text = URLEncoder.encode(theQuestion.getName(), "ISO-8859-1");
-		} catch (UnsupportedEncodingException e) {
 		}
-		sb.append("<Text><![CDATA["	+ text + "]]></Text>\n");
+		catch (UnsupportedEncodingException e) {
+		}
+		sb.append("<Text><![CDATA[" + text + "]]></Text>\n");
 		appendAnswers(theQuestion, sb, theCase);
-		
+
 		sb.append("</Question>\n");
 		return sb.toString();
 	}
 
 	public String getXMLString(Question question, Session theCase) {
-		
+
 		rb = D3webModule.getKwikiBundle_d3web();
 		String retVal = null;
 		if (question == null) {
 			Logger.getLogger(this.getClass().getName()).warning("null is no Question");
-		} else {
+		}
+		else {
 			if (question instanceof QuestionYN) {
 				retVal = getXMLString(question, "YN", theCase);
-			} else if (question instanceof QuestionOC) {
+			}
+			else if (question instanceof QuestionOC) {
 				retVal = getXMLString(question, "OC", theCase);
-			} else if (question instanceof QuestionMC) {
+			}
+			else if (question instanceof QuestionMC) {
 				retVal = getXMLString(question, "MC", theCase);
-			} else if (question instanceof QuestionNum) {
+			}
+			else if (question instanceof QuestionNum) {
 				retVal = getXMLString(question, "Num", theCase);
-			} /*else if (question instanceof QuestionText) {
-				retVal = getXMLString((Question) question, "Text", theCase);
-			} else if (question instanceof QuestionDate) {
-				retVal = getXMLString((Question) question, "Date", theCase);
-			}*/
+			} /*
+			 * else if (question instanceof QuestionText) { retVal =
+			 * getXMLString((Question) question, "Text", theCase); } else if
+			 * (question instanceof QuestionDate) { retVal =
+			 * getXMLString((Question) question, "Date", theCase); }
+			 */
 		}
 		return retVal;
 	}

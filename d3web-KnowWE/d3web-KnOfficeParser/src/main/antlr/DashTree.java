@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g 2010-04-06 16:15:58
+// $ANTLR 3.1.1 D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g 2010-04-29 16:09:29
 
 package de.d3web.KnOfficeParser.dashtree;
 import de.d3web.KnOfficeParser.ParserErrorHandler;
@@ -376,18 +376,20 @@ public class DashTree extends Parser {
 
 
     // $ANTLR start "node"
-    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:88:1: node[int Dashes] : a= name ( TILDE b= name )? ( SBO order SBC )? ;
+    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:88:1: node[int Dashes] : a= name ( TILDE b= name )? ( NS manualref )? ( SBO order SBC )? ;
     public final void node(int Dashes) throws RecognitionException {
         DashTree_BasicParser.name_return a = null;
 
         DashTree_BasicParser.name_return b = null;
 
-        int order2 = 0;
+        DashTree.manualref_return manualref2 = null;
+
+        int order3 = 0;
 
 
         try {
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:1: (a= name ( TILDE b= name )? ( SBO order SBC )? )
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:3: a= name ( TILDE b= name )? ( SBO order SBC )?
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:1: (a= name ( TILDE b= name )? ( NS manualref )? ( SBO order SBC )? )
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:3: a= name ( TILDE b= name )? ( NS manualref )? ( SBO order SBC )?
             {
             pushFollow(FOLLOW_name_in_node118);
             a=name();
@@ -417,24 +419,47 @@ public class DashTree extends Parser {
 
             }
 
-            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:26: ( SBO order SBC )?
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:26: ( NS manualref )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
-            if ( (LA7_0==SBO) ) {
+            if ( (LA7_0==NS) ) {
                 alt7=1;
             }
             switch (alt7) {
                 case 1 :
-                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:27: SBO order SBC
+                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:27: NS manualref
                     {
-                    match(input,SBO,FOLLOW_SBO_in_node130); if (state.failed) return ;
-                    pushFollow(FOLLOW_order_in_node132);
-                    order2=order();
+                    match(input,NS,FOLLOW_NS_in_node130); if (state.failed) return ;
+                    pushFollow(FOLLOW_manualref_in_node132);
+                    manualref2=manualref();
 
                     state._fsp--;
                     if (state.failed) return ;
-                    match(input,SBC,FOLLOW_SBC_in_node134); if (state.failed) return ;
+
+                    }
+                    break;
+
+            }
+
+            // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:42: ( SBO order SBC )?
+            int alt8=2;
+            int LA8_0 = input.LA(1);
+
+            if ( (LA8_0==SBO) ) {
+                alt8=1;
+            }
+            switch (alt8) {
+                case 1 :
+                    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:89:43: SBO order SBC
+                    {
+                    match(input,SBO,FOLLOW_SBO_in_node137); if (state.failed) return ;
+                    pushFollow(FOLLOW_order_in_node139);
+                    order3=order();
+
+                    state._fsp--;
+                    if (state.failed) return ;
+                    match(input,SBC,FOLLOW_SBC_in_node141); if (state.failed) return ;
 
                     }
                     break;
@@ -442,7 +467,7 @@ public class DashTree extends Parser {
             }
 
             if ( state.backtracking==0 ) {
-              dashcount = Dashes; builder.addNode(Dashes, (a!=null?a.value:null), (a!=null?((Token)a.start):null).getLine(), (b!=null?b.value:null), order2);
+              dashcount = Dashes; builder.addNode(Dashes, (a!=null?a.value:null), (manualref2!=null?input.toString(manualref2.start,manualref2.stop):null), (a!=null?((Token)a.start):null).getLine(), (b!=null?b.value:null), order3);
             }
 
             }
@@ -467,18 +492,18 @@ public class DashTree extends Parser {
         DashTree.include_return retval = new DashTree.include_return();
         retval.start = input.LT(1);
 
-        Token String3=null;
+        Token String4=null;
 
         try {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:92:1: ( INCLUDE EQ String G )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:92:3: INCLUDE EQ String G
             {
-            match(input,INCLUDE,FOLLOW_INCLUDE_in_include146); if (state.failed) return retval;
-            match(input,EQ,FOLLOW_EQ_in_include148); if (state.failed) return retval;
-            String3=(Token)match(input,String,FOLLOW_String_in_include150); if (state.failed) return retval;
-            match(input,G,FOLLOW_G_in_include152); if (state.failed) return retval;
+            match(input,INCLUDE,FOLLOW_INCLUDE_in_include153); if (state.failed) return retval;
+            match(input,EQ,FOLLOW_EQ_in_include155); if (state.failed) return retval;
+            String4=(Token)match(input,String,FOLLOW_String_in_include157); if (state.failed) return retval;
+            match(input,G,FOLLOW_G_in_include159); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-              builder.addInclude(delQuotes((String3!=null?String3.getText():null)), String3.getLine(), input.toString(retval.start,input.LT(-1)));
+              builder.addInclude(delQuotes((String4!=null?String4.getText():null)), String4.getLine(), input.toString(retval.start,input.LT(-1)));
             }
 
             }
@@ -515,19 +540,19 @@ public class DashTree extends Parser {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:96:1: ( ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:96:3: ALLOWEDNAMES EQ CBO (a= ids COMMA )* b= ids CBC NL
             {
-            match(input,ALLOWEDNAMES,FOLLOW_ALLOWEDNAMES_in_deslimit167); if (state.failed) return retval;
-            match(input,EQ,FOLLOW_EQ_in_deslimit169); if (state.failed) return retval;
-            match(input,CBO,FOLLOW_CBO_in_deslimit171); if (state.failed) return retval;
+            match(input,ALLOWEDNAMES,FOLLOW_ALLOWEDNAMES_in_deslimit174); if (state.failed) return retval;
+            match(input,EQ,FOLLOW_EQ_in_deslimit176); if (state.failed) return retval;
+            match(input,CBO,FOLLOW_CBO_in_deslimit178); if (state.failed) return retval;
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:96:23: (a= ids COMMA )*
-            loop8:
+            loop9:
             do {
-                int alt8=2;
-                alt8 = dfa8.predict(input);
-                switch (alt8) {
+                int alt9=2;
+                alt9 = dfa9.predict(input);
+                switch (alt9) {
             	case 1 :
             	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:96:24: a= ids COMMA
             	    {
-            	    pushFollow(FOLLOW_ids_in_deslimit176);
+            	    pushFollow(FOLLOW_ids_in_deslimit183);
             	    a=ids();
 
             	    state._fsp--;
@@ -535,17 +560,17 @@ public class DashTree extends Parser {
             	    if ( state.backtracking==0 ) {
             	      allowedNames.add((a!=null?input.toString(a.start,a.stop):null));
             	    }
-            	    match(input,COMMA,FOLLOW_COMMA_in_deslimit179); if (state.failed) return retval;
+            	    match(input,COMMA,FOLLOW_COMMA_in_deslimit186); if (state.failed) return retval;
 
             	    }
             	    break;
 
             	default :
-            	    break loop8;
+            	    break loop9;
                 }
             } while (true);
 
-            pushFollow(FOLLOW_ids_in_deslimit185);
+            pushFollow(FOLLOW_ids_in_deslimit192);
             b=ids();
 
             state._fsp--;
@@ -553,8 +578,8 @@ public class DashTree extends Parser {
             if ( state.backtracking==0 ) {
               allowedNames.add((b!=null?input.toString(b.start,b.stop):null));
             }
-            match(input,CBC,FOLLOW_CBC_in_deslimit188); if (state.failed) return retval;
-            match(input,NL,FOLLOW_NL_in_deslimit190); if (state.failed) return retval;
+            match(input,CBC,FOLLOW_CBC_in_deslimit195); if (state.failed) return retval;
+            match(input,NL,FOLLOW_NL_in_deslimit197); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
               builder.setallowedNames(allowedNames, ((Token)retval.start).getLine(), input.toString(retval.start,input.LT(-1)));
             }
@@ -580,15 +605,15 @@ public class DashTree extends Parser {
     public final int order() throws RecognitionException {
         int o = 0;
 
-        Token INT4=null;
+        Token INT5=null;
 
         try {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:99:1: ( INT )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:99:3: INT
             {
-            INT4=(Token)match(input,INT,FOLLOW_INT_in_order204); if (state.failed) return o;
+            INT5=(Token)match(input,INT,FOLLOW_INT_in_order211); if (state.failed) return o;
             if ( state.backtracking==0 ) {
-              o =Integer.parseInt((INT4!=null?INT4.getText():null));
+              o =Integer.parseInt((INT5!=null?INT5.getText():null));
             }
 
             }
@@ -618,34 +643,34 @@ public class DashTree extends Parser {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:102:3: ( ID )+
             {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:102:3: ( ID )+
-            int cnt9=0;
-            loop9:
+            int cnt10=0;
+            loop10:
             do {
-                int alt9=2;
-                int LA9_0 = input.LA(1);
+                int alt10=2;
+                int LA10_0 = input.LA(1);
 
-                if ( (LA9_0==ID) ) {
-                    alt9=1;
+                if ( (LA10_0==ID) ) {
+                    alt10=1;
                 }
 
 
-                switch (alt9) {
+                switch (alt10) {
             	case 1 :
             	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:102:3: ID
             	    {
-            	    match(input,ID,FOLLOW_ID_in_ids214); if (state.failed) return retval;
+            	    match(input,ID,FOLLOW_ID_in_ids221); if (state.failed) return retval;
 
             	    }
             	    break;
 
             	default :
-            	    if ( cnt9 >= 1 ) break loop9;
+            	    if ( cnt10 >= 1 ) break loop10;
             	    if (state.backtracking>0) {state.failed=true; return retval;}
                         EarlyExitException eee =
-                            new EarlyExitException(9, input);
+                            new EarlyExitException(10, input);
                         throw eee;
                 }
-                cnt9++;
+                cnt10++;
             } while (true);
 
 
@@ -679,41 +704,41 @@ public class DashTree extends Parser {
 
         DashTree_BasicParser.name_return b = null;
 
-        DashTree.destext_return destext5 = null;
+        DashTree.destext_return destext6 = null;
 
 
         try {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:105:1: ( ORS AT a= name ORS c= name ORS b= name ORS destext ORS )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:105:3: ORS AT a= name ORS c= name ORS b= name ORS destext ORS
             {
-            match(input,ORS,FOLLOW_ORS_in_description223); if (state.failed) return retval;
-            match(input,AT,FOLLOW_AT_in_description225); if (state.failed) return retval;
-            pushFollow(FOLLOW_name_in_description229);
+            match(input,ORS,FOLLOW_ORS_in_description230); if (state.failed) return retval;
+            match(input,AT,FOLLOW_AT_in_description232); if (state.failed) return retval;
+            pushFollow(FOLLOW_name_in_description236);
             a=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,ORS,FOLLOW_ORS_in_description231); if (state.failed) return retval;
-            pushFollow(FOLLOW_name_in_description235);
+            match(input,ORS,FOLLOW_ORS_in_description238); if (state.failed) return retval;
+            pushFollow(FOLLOW_name_in_description242);
             c=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,ORS,FOLLOW_ORS_in_description237); if (state.failed) return retval;
-            pushFollow(FOLLOW_name_in_description241);
+            match(input,ORS,FOLLOW_ORS_in_description244); if (state.failed) return retval;
+            pushFollow(FOLLOW_name_in_description248);
             b=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,ORS,FOLLOW_ORS_in_description243); if (state.failed) return retval;
-            pushFollow(FOLLOW_destext_in_description245);
-            destext5=destext();
+            match(input,ORS,FOLLOW_ORS_in_description250); if (state.failed) return retval;
+            pushFollow(FOLLOW_destext_in_description252);
+            destext6=destext();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,ORS,FOLLOW_ORS_in_description247); if (state.failed) return retval;
+            match(input,ORS,FOLLOW_ORS_in_description254); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-              builder.addDescription((a!=null?a.value:null), (c!=null?input.toString(c.start,c.stop):null), (b!=null?b.value:null), (destext5!=null?input.toString(destext5.start,destext5.stop):null), (a!=null?((Token)a.start):null).getLine(), input.toString(retval.start,input.LT(-1)));
+              builder.addDescription((a!=null?a.value:null), (c!=null?input.toString(c.start,c.stop):null), (b!=null?b.value:null), (destext6!=null?input.toString(destext6.start,destext6.stop):null), (a!=null?((Token)a.start):null).getLine(), input.toString(retval.start,input.LT(-1)));
             }
 
             }
@@ -737,64 +762,64 @@ public class DashTree extends Parser {
     public final String diagvalue() throws RecognitionException {
         String value = null;
 
-        DashTree_BasicParser.d3double_return d3double6 = null;
+        DashTree_BasicParser.d3double_return d3double7 = null;
 
-        DashTree_BasicParser.name_return name7 = null;
+        DashTree_BasicParser.name_return name8 = null;
 
 
         try {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:108:1: ( LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:108:3: LP ( ( MINUS INT | INT DOT )=> d3double | name | EX ) RP
             {
-            match(input,LP,FOLLOW_LP_in_diagvalue261); if (state.failed) return value;
+            match(input,LP,FOLLOW_LP_in_diagvalue268); if (state.failed) return value;
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:108:6: ( ( MINUS INT | INT DOT )=> d3double | name | EX )
-            int alt10=3;
-            int LA10_0 = input.LA(1);
+            int alt11=3;
+            int LA11_0 = input.LA(1);
 
-            if ( (LA10_0==MINUS) && (synpred1_DashTree())) {
-                alt10=1;
+            if ( (LA11_0==MINUS) && (synpred1_DashTree())) {
+                alt11=1;
             }
-            else if ( (LA10_0==INT) ) {
-                int LA10_2 = input.LA(2);
+            else if ( (LA11_0==INT) ) {
+                int LA11_2 = input.LA(2);
 
                 if ( (synpred1_DashTree()) ) {
-                    alt10=1;
+                    alt11=1;
                 }
                 else if ( (true) ) {
-                    alt10=2;
+                    alt11=2;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return value;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 10, 2, input);
+                        new NoViableAltException("", 11, 2, input);
 
                     throw nvae;
                 }
             }
-            else if ( (LA10_0==String||LA10_0==ID) ) {
-                alt10=2;
+            else if ( (LA11_0==String||LA11_0==ID) ) {
+                alt11=2;
             }
-            else if ( (LA10_0==EX) ) {
-                alt10=3;
+            else if ( (LA11_0==EX) ) {
+                alt11=3;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return value;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 10, 0, input);
+                    new NoViableAltException("", 11, 0, input);
 
                 throw nvae;
             }
-            switch (alt10) {
+            switch (alt11) {
                 case 1 :
                     // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:108:7: ( MINUS INT | INT DOT )=> d3double
                     {
-                    pushFollow(FOLLOW_d3double_in_diagvalue277);
-                    d3double6=d3double();
+                    pushFollow(FOLLOW_d3double_in_diagvalue284);
+                    d3double7=d3double();
 
                     state._fsp--;
                     if (state.failed) return value;
                     if ( state.backtracking==0 ) {
-                      value =(d3double6!=null?d3double6.value:null).toString();
+                      value =(d3double7!=null?d3double7.value:null).toString();
                     }
 
                     }
@@ -802,13 +827,13 @@ public class DashTree extends Parser {
                 case 2 :
                     // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:108:78: name
                     {
-                    pushFollow(FOLLOW_name_in_diagvalue282);
-                    name7=name();
+                    pushFollow(FOLLOW_name_in_diagvalue289);
+                    name8=name();
 
                     state._fsp--;
                     if (state.failed) return value;
                     if ( state.backtracking==0 ) {
-                      value =(name7!=null?name7.value:null);
+                      value =(name8!=null?name8.value:null);
                     }
 
                     }
@@ -816,7 +841,7 @@ public class DashTree extends Parser {
                 case 3 :
                     // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:108:107: EX
                     {
-                    match(input,EX,FOLLOW_EX_in_diagvalue288); if (state.failed) return value;
+                    match(input,EX,FOLLOW_EX_in_diagvalue295); if (state.failed) return value;
                     if ( state.backtracking==0 ) {
                       value ="!";
                     }
@@ -826,7 +851,7 @@ public class DashTree extends Parser {
 
             }
 
-            match(input,RP,FOLLOW_RP_in_diagvalue294); if (state.failed) return value;
+            match(input,RP,FOLLOW_RP_in_diagvalue301); if (state.failed) return value;
 
             }
 
@@ -855,20 +880,20 @@ public class DashTree extends Parser {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:111:3: ( options {greedy=false; } : ~ ORS )*
             {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:111:3: ( options {greedy=false; } : ~ ORS )*
-            loop11:
+            loop12:
             do {
-                int alt11=2;
-                int LA11_0 = input.LA(1);
+                int alt12=2;
+                int LA12_0 = input.LA(1);
 
-                if ( ((LA11_0>=String && LA11_0<=AT)||(LA11_0>=NS && LA11_0<=74)) ) {
-                    alt11=1;
+                if ( ((LA12_0>=String && LA12_0<=AT)||(LA12_0>=NS && LA12_0<=74)) ) {
+                    alt12=1;
                 }
-                else if ( (LA11_0==ORS) ) {
-                    alt11=2;
+                else if ( (LA12_0==ORS) ) {
+                    alt12=2;
                 }
 
 
-                switch (alt11) {
+                switch (alt12) {
             	case 1 :
             	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:111:31: ~ ORS
             	    {
@@ -887,7 +912,7 @@ public class DashTree extends Parser {
             	    break;
 
             	default :
-            	    break loop11;
+            	    break loop12;
                 }
             } while (true);
 
@@ -927,39 +952,39 @@ public class DashTree extends Parser {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:114:1: ( SBO SBO a= name SBC ( SBO b= name SBC )? SBC )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:114:3: SBO SBO a= name SBC ( SBO b= name SBC )? SBC
             {
-            match(input,SBO,FOLLOW_SBO_in_link329); if (state.failed) return retval;
-            match(input,SBO,FOLLOW_SBO_in_link331); if (state.failed) return retval;
-            pushFollow(FOLLOW_name_in_link335);
+            match(input,SBO,FOLLOW_SBO_in_link336); if (state.failed) return retval;
+            match(input,SBO,FOLLOW_SBO_in_link338); if (state.failed) return retval;
+            pushFollow(FOLLOW_name_in_link342);
             a=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,SBC,FOLLOW_SBC_in_link337); if (state.failed) return retval;
+            match(input,SBC,FOLLOW_SBC_in_link344); if (state.failed) return retval;
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:114:22: ( SBO b= name SBC )?
-            int alt12=2;
-            int LA12_0 = input.LA(1);
+            int alt13=2;
+            int LA13_0 = input.LA(1);
 
-            if ( (LA12_0==SBO) ) {
-                alt12=1;
+            if ( (LA13_0==SBO) ) {
+                alt13=1;
             }
-            switch (alt12) {
+            switch (alt13) {
                 case 1 :
                     // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:114:23: SBO b= name SBC
                     {
-                    match(input,SBO,FOLLOW_SBO_in_link340); if (state.failed) return retval;
-                    pushFollow(FOLLOW_name_in_link344);
+                    match(input,SBO,FOLLOW_SBO_in_link347); if (state.failed) return retval;
+                    pushFollow(FOLLOW_name_in_link351);
                     b=name();
 
                     state._fsp--;
                     if (state.failed) return retval;
-                    match(input,SBC,FOLLOW_SBC_in_link346); if (state.failed) return retval;
+                    match(input,SBC,FOLLOW_SBC_in_link353); if (state.failed) return retval;
 
                     }
                     break;
 
             }
 
-            match(input,SBC,FOLLOW_SBC_in_link350); if (state.failed) return retval;
+            match(input,SBC,FOLLOW_SBC_in_link357); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
               retval.s1 =(a!=null?input.toString(a.start,a.stop):null); retval.s2 =(b!=null?input.toString(b.start,b.stop):null);
             }
@@ -987,9 +1012,9 @@ public class DashTree extends Parser {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:117:1: ( SBO ID SBC )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:117:3: SBO ID SBC
             {
-            match(input,SBO,FOLLOW_SBO_in_type360); if (state.failed) return ;
-            match(input,ID,FOLLOW_ID_in_type362); if (state.failed) return ;
-            match(input,SBC,FOLLOW_SBC_in_type364); if (state.failed) return ;
+            match(input,SBO,FOLLOW_SBO_in_type367); if (state.failed) return ;
+            match(input,ID,FOLLOW_ID_in_type369); if (state.failed) return ;
+            match(input,SBC,FOLLOW_SBC_in_type371); if (state.failed) return ;
 
             }
 
@@ -1018,22 +1043,22 @@ public class DashTree extends Parser {
               i=0;
             }
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:120:10: ( MINUS )+
-            int cnt13=0;
-            loop13:
+            int cnt14=0;
+            loop14:
             do {
-                int alt13=2;
-                int LA13_0 = input.LA(1);
+                int alt14=2;
+                int LA14_0 = input.LA(1);
 
-                if ( (LA13_0==MINUS) ) {
-                    alt13=1;
+                if ( (LA14_0==MINUS) ) {
+                    alt14=1;
                 }
 
 
-                switch (alt13) {
+                switch (alt14) {
             	case 1 :
             	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:120:11: MINUS
             	    {
-            	    match(input,MINUS,FOLLOW_MINUS_in_dashes379); if (state.failed) return i;
+            	    match(input,MINUS,FOLLOW_MINUS_in_dashes386); if (state.failed) return i;
             	    if ( state.backtracking==0 ) {
             	      i++;
             	    }
@@ -1042,13 +1067,13 @@ public class DashTree extends Parser {
             	    break;
 
             	default :
-            	    if ( cnt13 >= 1 ) break loop13;
+            	    if ( cnt14 >= 1 ) break loop14;
             	    if (state.backtracking>0) {state.failed=true; return i;}
                         EarlyExitException eee =
-                            new EarlyExitException(13, input);
+                            new EarlyExitException(14, input);
                         throw eee;
                 }
-                cnt13++;
+                cnt14++;
             } while (true);
 
 
@@ -1065,26 +1090,31 @@ public class DashTree extends Parser {
     }
     // $ANTLR end "dashes"
 
+    public static class manualref_return extends ParserRuleReturnScope {
+    };
 
     // $ANTLR start "manualref"
     // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:122:1: manualref : ( ID | INT )* ;
-    public final void manualref() throws RecognitionException {
+    public final DashTree.manualref_return manualref() throws RecognitionException {
+        DashTree.manualref_return retval = new DashTree.manualref_return();
+        retval.start = input.LT(1);
+
         try {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:122:10: ( ( ID | INT )* )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:123:1: ( ID | INT )*
             {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:123:1: ( ID | INT )*
-            loop14:
+            loop15:
             do {
-                int alt14=2;
-                int LA14_0 = input.LA(1);
+                int alt15=2;
+                int LA15_0 = input.LA(1);
 
-                if ( (LA14_0==INT||LA14_0==ID) ) {
-                    alt14=1;
+                if ( (LA15_0==INT||LA15_0==ID) ) {
+                    alt15=1;
                 }
 
 
-                switch (alt14) {
+                switch (alt15) {
             	case 1 :
             	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:
             	    {
@@ -1093,7 +1123,7 @@ public class DashTree extends Parser {
             	        state.errorRecovery=false;state.failed=false;
             	    }
             	    else {
-            	        if (state.backtracking>0) {state.failed=true; return ;}
+            	        if (state.backtracking>0) {state.failed=true; return retval;}
             	        MismatchedSetException mse = new MismatchedSetException(null,input);
             	        throw mse;
             	    }
@@ -1103,12 +1133,14 @@ public class DashTree extends Parser {
             	    break;
 
             	default :
-            	    break loop14;
+            	    break loop15;
                 }
             } while (true);
 
 
             }
+
+            retval.stop = input.LT(-1);
 
         }
         catch (RecognitionException re) {
@@ -1117,7 +1149,7 @@ public class DashTree extends Parser {
         }
         finally {
         }
-        return ;
+        return retval;
     }
     // $ANTLR end "manualref"
 
@@ -1127,21 +1159,21 @@ public class DashTree extends Parser {
     public final String idlink() throws RecognitionException {
         String s = null;
 
-        DashTree_BasicParser.name_return name8 = null;
+        DashTree_BasicParser.name_return name9 = null;
 
 
         try {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:125:26: ( AT name )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:126:1: AT name
             {
-            match(input,AT,FOLLOW_AT_in_idlink407); if (state.failed) return s;
-            pushFollow(FOLLOW_name_in_idlink409);
-            name8=name();
+            match(input,AT,FOLLOW_AT_in_idlink414); if (state.failed) return s;
+            pushFollow(FOLLOW_name_in_idlink416);
+            name9=name();
 
             state._fsp--;
             if (state.failed) return s;
             if ( state.backtracking==0 ) {
-              s =(name8!=null?input.toString(name8.start,name8.stop):null);
+              s =(name9!=null?input.toString(name9.start,name9.stop):null);
             }
 
             }
@@ -1177,25 +1209,25 @@ public class DashTree extends Parser {
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:130:1: ( LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP )
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:130:3: LP ( AT a= name DD b= String SEMI )* AT a= name DD b= String ( SEMI )? RP
             {
-            match(input,LP,FOLLOW_LP_in_dialogannotations428); if (state.failed) return retval;
+            match(input,LP,FOLLOW_LP_in_dialogannotations435); if (state.failed) return retval;
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:130:6: ( AT a= name DD b= String SEMI )*
-            loop15:
+            loop16:
             do {
-                int alt15=2;
-                alt15 = dfa15.predict(input);
-                switch (alt15) {
+                int alt16=2;
+                alt16 = dfa16.predict(input);
+                switch (alt16) {
             	case 1 :
             	    // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:130:7: AT a= name DD b= String SEMI
             	    {
-            	    match(input,AT,FOLLOW_AT_in_dialogannotations431); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_name_in_dialogannotations435);
+            	    match(input,AT,FOLLOW_AT_in_dialogannotations438); if (state.failed) return retval;
+            	    pushFollow(FOLLOW_name_in_dialogannotations442);
             	    a=name();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
-            	    match(input,DD,FOLLOW_DD_in_dialogannotations437); if (state.failed) return retval;
-            	    b=(Token)match(input,String,FOLLOW_String_in_dialogannotations441); if (state.failed) return retval;
-            	    match(input,SEMI,FOLLOW_SEMI_in_dialogannotations443); if (state.failed) return retval;
+            	    match(input,DD,FOLLOW_DD_in_dialogannotations444); if (state.failed) return retval;
+            	    b=(Token)match(input,String,FOLLOW_String_in_dialogannotations448); if (state.failed) return retval;
+            	    match(input,SEMI,FOLLOW_SEMI_in_dialogannotations450); if (state.failed) return retval;
             	    if ( state.backtracking==0 ) {
             	      retval.attribute.add((a!=null?input.toString(a.start,a.stop):null)); retval.value.add(delQuotes((b!=null?b.getText():null)));
             	    }
@@ -1204,37 +1236,37 @@ public class DashTree extends Parser {
             	    break;
 
             	default :
-            	    break loop15;
+            	    break loop16;
                 }
             } while (true);
 
-            match(input,AT,FOLLOW_AT_in_dialogannotations449); if (state.failed) return retval;
-            pushFollow(FOLLOW_name_in_dialogannotations453);
+            match(input,AT,FOLLOW_AT_in_dialogannotations456); if (state.failed) return retval;
+            pushFollow(FOLLOW_name_in_dialogannotations460);
             a=name();
 
             state._fsp--;
             if (state.failed) return retval;
-            match(input,DD,FOLLOW_DD_in_dialogannotations455); if (state.failed) return retval;
-            b=(Token)match(input,String,FOLLOW_String_in_dialogannotations459); if (state.failed) return retval;
+            match(input,DD,FOLLOW_DD_in_dialogannotations462); if (state.failed) return retval;
+            b=(Token)match(input,String,FOLLOW_String_in_dialogannotations466); if (state.failed) return retval;
             // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:130:117: ( SEMI )?
-            int alt16=2;
-            int LA16_0 = input.LA(1);
+            int alt17=2;
+            int LA17_0 = input.LA(1);
 
-            if ( (LA16_0==SEMI) ) {
-                alt16=1;
+            if ( (LA17_0==SEMI) ) {
+                alt17=1;
             }
-            switch (alt16) {
+            switch (alt17) {
                 case 1 :
                     // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:130:117: SEMI
                     {
-                    match(input,SEMI,FOLLOW_SEMI_in_dialogannotations461); if (state.failed) return retval;
+                    match(input,SEMI,FOLLOW_SEMI_in_dialogannotations468); if (state.failed) return retval;
 
                     }
                     break;
 
             }
 
-            match(input,RP,FOLLOW_RP_in_dialogannotations464); if (state.failed) return retval;
+            match(input,RP,FOLLOW_RP_in_dialogannotations471); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
               retval.attribute.add((a!=null?input.toString(a.start,a.stop):null)); retval.value.add(delQuotes((b!=null?b.getText():null)));
             }
@@ -1257,36 +1289,36 @@ public class DashTree extends Parser {
     // $ANTLR start synpred1_DashTree
     public final void synpred1_DashTree_fragment() throws RecognitionException {   
         // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:108:7: ( MINUS INT | INT DOT )
-        int alt17=2;
-        int LA17_0 = input.LA(1);
+        int alt18=2;
+        int LA18_0 = input.LA(1);
 
-        if ( (LA17_0==MINUS) ) {
-            alt17=1;
+        if ( (LA18_0==MINUS) ) {
+            alt18=1;
         }
-        else if ( (LA17_0==INT) ) {
-            alt17=2;
+        else if ( (LA18_0==INT) ) {
+            alt18=2;
         }
         else {
             if (state.backtracking>0) {state.failed=true; return ;}
             NoViableAltException nvae =
-                new NoViableAltException("", 17, 0, input);
+                new NoViableAltException("", 18, 0, input);
 
             throw nvae;
         }
-        switch (alt17) {
+        switch (alt18) {
             case 1 :
                 // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:108:8: MINUS INT
                 {
-                match(input,MINUS,FOLLOW_MINUS_in_synpred1_DashTree265); if (state.failed) return ;
-                match(input,INT,FOLLOW_INT_in_synpred1_DashTree267); if (state.failed) return ;
+                match(input,MINUS,FOLLOW_MINUS_in_synpred1_DashTree272); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_DashTree274); if (state.failed) return ;
 
                 }
                 break;
             case 2 :
                 // D:\\eclipse workspaces\\Uni SVN 64bit\\d3web-KnowWE\\d3web-KnOfficeParser\\src\\main\\antlr\\DashTree.g:108:20: INT DOT
                 {
-                match(input,INT,FOLLOW_INT_in_synpred1_DashTree271); if (state.failed) return ;
-                match(input,DOT,FOLLOW_DOT_in_synpred1_DashTree273); if (state.failed) return ;
+                match(input,INT,FOLLOW_INT_in_synpred1_DashTree278); if (state.failed) return ;
+                match(input,DOT,FOLLOW_DOT_in_synpred1_DashTree280); if (state.failed) return ;
 
                 }
                 break;
@@ -1296,10 +1328,10 @@ public class DashTree extends Parser {
 
     // Delegated rules
     public void eqncalc() throws RecognitionException { gBasicParser.eqncalc(); }
-    public DashTree_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
-    public void eq() throws RecognitionException { gBasicParser.eq(); }
     public DashTree_BasicParser.nameOrDouble_return nameOrDouble() throws RecognitionException { return gBasicParser.nameOrDouble(); }
     public DashTree_BasicParser.name_return name() throws RecognitionException { return gBasicParser.name(); }
+    public void eq() throws RecognitionException { gBasicParser.eq(); }
+    public DashTree_BasicParser.d3double_return d3double() throws RecognitionException { return gBasicParser.d3double(); }
 
     public final boolean synpred1_DashTree() {
         state.backtracking++;
@@ -1318,8 +1350,8 @@ public class DashTree extends Parser {
 
 
     protected DFA3 dfa3 = new DFA3(this);
-    protected DFA8 dfa8 = new DFA8(this);
-    protected DFA15 dfa15 = new DFA15(this);
+    protected DFA9 dfa9 = new DFA9(this);
+    protected DFA16 dfa16 = new DFA16(this);
     static final String DFA3_eotS =
         "\26\uffff";
     static final String DFA3_eofS =
@@ -1337,11 +1369,11 @@ public class DashTree extends Parser {
             "\1\3",
             "",
             "\1\4\1\5\63\uffff\1\5",
-            "\1\7\1\5\6\uffff\1\6\54\uffff\1\5",
-            "\2\10\6\uffff\1\6\54\uffff\1\10",
+            "\1\6\1\5\6\uffff\1\7\54\uffff\1\5",
+            "\2\10\6\uffff\1\7\54\uffff\1\10",
+            "\1\6\1\5\63\uffff\1\5",
             "\1\11\1\12\63\uffff\1\12",
-            "\1\7\1\5\63\uffff\1\5",
-            "\2\10\6\uffff\1\6\54\uffff\1\10",
+            "\2\10\6\uffff\1\7\54\uffff\1\10",
             "\1\14\1\12\6\uffff\1\13\54\uffff\1\12",
             "\2\15\6\uffff\1\13\54\uffff\1\15",
             "\1\16\1\17\63\uffff\1\17",
@@ -1390,112 +1422,112 @@ public class DashTree extends Parser {
             return "()* loopback of 80:45: ( description NL )*";
         }
     }
-    static final String DFA8_eotS =
+    static final String DFA9_eotS =
         "\4\uffff";
-    static final String DFA8_eofS =
+    static final String DFA9_eofS =
         "\4\uffff";
-    static final String DFA8_minS =
+    static final String DFA9_minS =
         "\1\71\1\10\2\uffff";
-    static final String DFA8_maxS =
+    static final String DFA9_maxS =
         "\2\71\2\uffff";
-    static final String DFA8_acceptS =
+    static final String DFA9_acceptS =
         "\2\uffff\1\1\1\2";
-    static final String DFA8_specialS =
+    static final String DFA9_specialS =
         "\4\uffff}>";
-    static final String[] DFA8_transitionS = {
+    static final String[] DFA9_transitionS = {
             "\1\1",
             "\1\2\11\uffff\1\3\46\uffff\1\1",
             "",
             ""
     };
 
-    static final short[] DFA8_eot = DFA.unpackEncodedString(DFA8_eotS);
-    static final short[] DFA8_eof = DFA.unpackEncodedString(DFA8_eofS);
-    static final char[] DFA8_min = DFA.unpackEncodedStringToUnsignedChars(DFA8_minS);
-    static final char[] DFA8_max = DFA.unpackEncodedStringToUnsignedChars(DFA8_maxS);
-    static final short[] DFA8_accept = DFA.unpackEncodedString(DFA8_acceptS);
-    static final short[] DFA8_special = DFA.unpackEncodedString(DFA8_specialS);
-    static final short[][] DFA8_transition;
+    static final short[] DFA9_eot = DFA.unpackEncodedString(DFA9_eotS);
+    static final short[] DFA9_eof = DFA.unpackEncodedString(DFA9_eofS);
+    static final char[] DFA9_min = DFA.unpackEncodedStringToUnsignedChars(DFA9_minS);
+    static final char[] DFA9_max = DFA.unpackEncodedStringToUnsignedChars(DFA9_maxS);
+    static final short[] DFA9_accept = DFA.unpackEncodedString(DFA9_acceptS);
+    static final short[] DFA9_special = DFA.unpackEncodedString(DFA9_specialS);
+    static final short[][] DFA9_transition;
 
     static {
-        int numStates = DFA8_transitionS.length;
-        DFA8_transition = new short[numStates][];
+        int numStates = DFA9_transitionS.length;
+        DFA9_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA8_transition[i] = DFA.unpackEncodedString(DFA8_transitionS[i]);
+            DFA9_transition[i] = DFA.unpackEncodedString(DFA9_transitionS[i]);
         }
     }
 
-    class DFA8 extends DFA {
+    class DFA9 extends DFA {
 
-        public DFA8(BaseRecognizer recognizer) {
+        public DFA9(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 8;
-            this.eot = DFA8_eot;
-            this.eof = DFA8_eof;
-            this.min = DFA8_min;
-            this.max = DFA8_max;
-            this.accept = DFA8_accept;
-            this.special = DFA8_special;
-            this.transition = DFA8_transition;
+            this.decisionNumber = 9;
+            this.eot = DFA9_eot;
+            this.eof = DFA9_eof;
+            this.min = DFA9_min;
+            this.max = DFA9_max;
+            this.accept = DFA9_accept;
+            this.special = DFA9_special;
+            this.transition = DFA9_transition;
         }
         public String getDescription() {
             return "()* loopback of 96:23: (a= ids COMMA )*";
         }
     }
-    static final String DFA15_eotS =
+    static final String DFA16_eotS =
         "\13\uffff";
-    static final String DFA15_eofS =
+    static final String DFA16_eofS =
         "\13\uffff";
-    static final String DFA15_minS =
+    static final String DFA16_minS =
         "\1\13\6\4\1\11\1\13\2\uffff";
-    static final String DFA15_maxS =
-        "\1\13\4\71\1\4\1\71\2\20\2\uffff";
-    static final String DFA15_acceptS =
+    static final String DFA16_maxS =
+        "\1\13\3\71\1\4\2\71\2\20\2\uffff";
+    static final String DFA16_acceptS =
         "\11\uffff\1\2\1\1";
-    static final String DFA15_specialS =
+    static final String DFA16_specialS =
         "\13\uffff}>";
-    static final String[] DFA15_transitionS = {
+    static final String[] DFA16_transitionS = {
             "\1\1",
             "\1\2\1\3\63\uffff\1\3",
-            "\1\4\1\3\1\uffff\1\5\61\uffff\1\3",
-            "\2\6\1\uffff\1\5\61\uffff\1\6",
-            "\1\4\1\3\63\uffff\1\3",
+            "\1\5\1\3\1\uffff\1\4\61\uffff\1\3",
+            "\2\6\1\uffff\1\4\61\uffff\1\6",
             "\1\7",
-            "\2\6\1\uffff\1\5\61\uffff\1\6",
+            "\1\5\1\3\63\uffff\1\3",
+            "\2\6\1\uffff\1\4\61\uffff\1\6",
             "\1\10\6\uffff\1\11",
             "\1\12\4\uffff\1\11",
             "",
             ""
     };
 
-    static final short[] DFA15_eot = DFA.unpackEncodedString(DFA15_eotS);
-    static final short[] DFA15_eof = DFA.unpackEncodedString(DFA15_eofS);
-    static final char[] DFA15_min = DFA.unpackEncodedStringToUnsignedChars(DFA15_minS);
-    static final char[] DFA15_max = DFA.unpackEncodedStringToUnsignedChars(DFA15_maxS);
-    static final short[] DFA15_accept = DFA.unpackEncodedString(DFA15_acceptS);
-    static final short[] DFA15_special = DFA.unpackEncodedString(DFA15_specialS);
-    static final short[][] DFA15_transition;
+    static final short[] DFA16_eot = DFA.unpackEncodedString(DFA16_eotS);
+    static final short[] DFA16_eof = DFA.unpackEncodedString(DFA16_eofS);
+    static final char[] DFA16_min = DFA.unpackEncodedStringToUnsignedChars(DFA16_minS);
+    static final char[] DFA16_max = DFA.unpackEncodedStringToUnsignedChars(DFA16_maxS);
+    static final short[] DFA16_accept = DFA.unpackEncodedString(DFA16_acceptS);
+    static final short[] DFA16_special = DFA.unpackEncodedString(DFA16_specialS);
+    static final short[][] DFA16_transition;
 
     static {
-        int numStates = DFA15_transitionS.length;
-        DFA15_transition = new short[numStates][];
+        int numStates = DFA16_transitionS.length;
+        DFA16_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA15_transition[i] = DFA.unpackEncodedString(DFA15_transitionS[i]);
+            DFA16_transition[i] = DFA.unpackEncodedString(DFA16_transitionS[i]);
         }
     }
 
-    class DFA15 extends DFA {
+    class DFA16 extends DFA {
 
-        public DFA15(BaseRecognizer recognizer) {
+        public DFA16(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 15;
-            this.eot = DFA15_eot;
-            this.eof = DFA15_eof;
-            this.min = DFA15_min;
-            this.max = DFA15_max;
-            this.accept = DFA15_accept;
-            this.special = DFA15_special;
-            this.transition = DFA15_transition;
+            this.decisionNumber = 16;
+            this.eot = DFA16_eot;
+            this.eof = DFA16_eof;
+            this.min = DFA16_min;
+            this.max = DFA16_max;
+            this.accept = DFA16_accept;
+            this.special = DFA16_special;
+            this.transition = DFA16_transition;
         }
         public String getDescription() {
             return "()* loopback of 130:6: ( AT a= name DD b= String SEMI )*";
@@ -1514,72 +1546,74 @@ public class DashTree extends Parser {
     public static final BitSet FOLLOW_dashes_in_line96 = new BitSet(new long[]{0x0200000000000030L});
     public static final BitSet FOLLOW_node_in_line100 = new BitSet(new long[]{0x0000000100000000L});
     public static final BitSet FOLLOW_NL_in_line105 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_node118 = new BitSet(new long[]{0x0000000000084002L});
+    public static final BitSet FOLLOW_name_in_node118 = new BitSet(new long[]{0x0000000000086002L});
     public static final BitSet FOLLOW_TILDE_in_node121 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_node125 = new BitSet(new long[]{0x0000000000080002L});
-    public static final BitSet FOLLOW_SBO_in_node130 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_order_in_node132 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_node134 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INCLUDE_in_include146 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_EQ_in_include148 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_String_in_include150 = new BitSet(new long[]{0x0000000001000000L});
-    public static final BitSet FOLLOW_G_in_include152 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ALLOWEDNAMES_in_deslimit167 = new BitSet(new long[]{0x0000000002000000L});
-    public static final BitSet FOLLOW_EQ_in_deslimit169 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_CBO_in_deslimit171 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_ids_in_deslimit176 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_COMMA_in_deslimit179 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_ids_in_deslimit185 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_CBC_in_deslimit188 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_NL_in_deslimit190 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_order204 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_ids214 = new BitSet(new long[]{0x0200000000000002L});
-    public static final BitSet FOLLOW_ORS_in_description223 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_AT_in_description225 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_description229 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_ORS_in_description231 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_description235 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_ORS_in_description237 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_description241 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_ORS_in_description243 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00000000000007FFL});
-    public static final BitSet FOLLOW_destext_in_description245 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_ORS_in_description247 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LP_in_diagvalue261 = new BitSet(new long[]{0x0200000008000430L});
-    public static final BitSet FOLLOW_d3double_in_diagvalue277 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_name_in_diagvalue282 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_EX_in_diagvalue288 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_RP_in_diagvalue294 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_destext314 = new BitSet(new long[]{0xFFFFFFFFFFFFEFF2L,0x00000000000007FFL});
-    public static final BitSet FOLLOW_SBO_in_link329 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_SBO_in_link331 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_link335 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_link337 = new BitSet(new long[]{0x0000000000180000L});
-    public static final BitSet FOLLOW_SBO_in_link340 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_link344 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_link346 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_link350 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SBO_in_type360 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_ID_in_type362 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_SBC_in_type364 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_dashes379 = new BitSet(new long[]{0x0000000008000002L});
-    public static final BitSet FOLLOW_set_in_manualref391 = new BitSet(new long[]{0x0200000000000022L});
-    public static final BitSet FOLLOW_AT_in_idlink407 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_idlink409 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LP_in_dialogannotations428 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_AT_in_dialogannotations431 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_dialogannotations435 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DD_in_dialogannotations437 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_String_in_dialogannotations441 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_SEMI_in_dialogannotations443 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_AT_in_dialogannotations449 = new BitSet(new long[]{0x0200000000000030L});
-    public static final BitSet FOLLOW_name_in_dialogannotations453 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DD_in_dialogannotations455 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_String_in_dialogannotations459 = new BitSet(new long[]{0x0000000000010200L});
-    public static final BitSet FOLLOW_SEMI_in_dialogannotations461 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_RP_in_dialogannotations464 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_synpred1_DashTree265 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_INT_in_synpred1_DashTree267 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_synpred1_DashTree271 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_DOT_in_synpred1_DashTree273 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_node125 = new BitSet(new long[]{0x0000000000082002L});
+    public static final BitSet FOLLOW_NS_in_node130 = new BitSet(new long[]{0x0200000000080020L});
+    public static final BitSet FOLLOW_manualref_in_node132 = new BitSet(new long[]{0x0000000000080002L});
+    public static final BitSet FOLLOW_SBO_in_node137 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_order_in_node139 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_node141 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INCLUDE_in_include153 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_EQ_in_include155 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_String_in_include157 = new BitSet(new long[]{0x0000000001000000L});
+    public static final BitSet FOLLOW_G_in_include159 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ALLOWEDNAMES_in_deslimit174 = new BitSet(new long[]{0x0000000002000000L});
+    public static final BitSet FOLLOW_EQ_in_deslimit176 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_CBO_in_deslimit178 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_ids_in_deslimit183 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_COMMA_in_deslimit186 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_ids_in_deslimit192 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_CBC_in_deslimit195 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_NL_in_deslimit197 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_order211 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_ids221 = new BitSet(new long[]{0x0200000000000002L});
+    public static final BitSet FOLLOW_ORS_in_description230 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_AT_in_description232 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_description236 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_ORS_in_description238 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_description242 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_ORS_in_description244 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_description248 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_ORS_in_description250 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x00000000000007FFL});
+    public static final BitSet FOLLOW_destext_in_description252 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_ORS_in_description254 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LP_in_diagvalue268 = new BitSet(new long[]{0x0200000008000430L});
+    public static final BitSet FOLLOW_d3double_in_diagvalue284 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_name_in_diagvalue289 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_EX_in_diagvalue295 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_RP_in_diagvalue301 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_destext321 = new BitSet(new long[]{0xFFFFFFFFFFFFEFF2L,0x00000000000007FFL});
+    public static final BitSet FOLLOW_SBO_in_link336 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_SBO_in_link338 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_link342 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_link344 = new BitSet(new long[]{0x0000000000180000L});
+    public static final BitSet FOLLOW_SBO_in_link347 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_link351 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_link353 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_link357 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SBO_in_type367 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_ID_in_type369 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_SBC_in_type371 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_dashes386 = new BitSet(new long[]{0x0000000008000002L});
+    public static final BitSet FOLLOW_set_in_manualref398 = new BitSet(new long[]{0x0200000000000022L});
+    public static final BitSet FOLLOW_AT_in_idlink414 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_idlink416 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LP_in_dialogannotations435 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_AT_in_dialogannotations438 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_dialogannotations442 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DD_in_dialogannotations444 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_String_in_dialogannotations448 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_SEMI_in_dialogannotations450 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_AT_in_dialogannotations456 = new BitSet(new long[]{0x0200000000000030L});
+    public static final BitSet FOLLOW_name_in_dialogannotations460 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DD_in_dialogannotations462 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_String_in_dialogannotations466 = new BitSet(new long[]{0x0000000000010200L});
+    public static final BitSet FOLLOW_SEMI_in_dialogannotations468 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_RP_in_dialogannotations471 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_synpred1_DashTree272 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_INT_in_synpred1_DashTree274 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_synpred1_DashTree278 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_DOT_in_synpred1_DashTree280 = new BitSet(new long[]{0x0000000000000002L});
 
 }

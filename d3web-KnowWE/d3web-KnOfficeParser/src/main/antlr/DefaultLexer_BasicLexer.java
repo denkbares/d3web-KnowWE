@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicLexer.g 2010-04-06 16:16:24
+// $ANTLR 3.1.1 BasicLexer.g 2010-04-19 10:47:46
 
 package de.d3web.KnOfficeParser;
 

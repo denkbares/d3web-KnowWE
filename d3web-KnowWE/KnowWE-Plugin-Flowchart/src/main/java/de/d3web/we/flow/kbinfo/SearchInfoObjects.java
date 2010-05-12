@@ -130,7 +130,7 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 
 				// add Diagnosis
 				if (classes.contains("solution")) {
-					allKBObjects.addAll(base.getDiagnoses());
+					allKBObjects.addAll(base.getSolutions());
 				}
 				// add QContainers (QSet)
 				if (classes.contains("qset")) {

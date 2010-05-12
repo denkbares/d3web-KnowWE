@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package utils;
@@ -49,6 +49,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.DiagnosisState.State;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -80,89 +81,85 @@ import de.d3web.xcl.XCLRelationType;
 import dummies.KnowWETestWikiConnector;
 
 /**
- * This Class loads the KnowledgeBase which will be
- * tested.
+ * This Class loads the KnowledgeBase which will be tested.
  * 
- * Furthermore in this class the KnowledgeBase
- * against which the loaded KnowledgeBase is compared
- * is created.
+ * Furthermore in this class the KnowledgeBase against which the loaded
+ * KnowledgeBase is compared is created.
  * 
- * This class is a Singleton class because this
- * insures that the KnowledgeBase is loaded only
- * once.
+ * This class is a Singleton class because this insures that the KnowledgeBase
+ * is loaded only once.
  * 
- * Please be careful when editing anything in here because
- * the order of the elements does matter in the tests!
- * (especially the IDs)
+ * Please be careful when editing anything in here because the order of the
+ * elements does matter in the tests! (especially the IDs)
  * 
  * @author Sebastian Furth
  * @see KnowledgeBaseCreationTest
- *
+ * 
  */
 public class KBCreationTestUtil {
-	
+
 	private static KBCreationTestUtil instance = new KBCreationTestUtil();
 	private KnowledgeBase loadedKB;
 	private KnowledgeBase createdKB;
 	private TestSuite loadedTS;
 	private TestSuite createdTS;
 	private KnowledgeBaseManagement createdKBM;
-	
+
 	/**
 	 * Private Constructor insures noninstantiabilty.
 	 */
 	private KBCreationTestUtil() {
-		
+
 		loadKnowledge();
 		createKnowledge();
-		
+
 	}
-	
-	
+
 	/**
 	 * Returns an instance of KBCreationTestKBStorage.
+	 * 
 	 * @return KBCreationTestKBStorage
 	 */
 	public static KBCreationTestUtil getInstance() {
 		return instance;
 	}
-	
-	
+
 	/**
 	 * Returns the KnowledgeBase loaded from the KnowWEArticle.
+	 * 
 	 * @return KnowledgeBase
 	 */
 	public KnowledgeBase getLoadedKB() {
 		return loadedKB;
 	}
-	
-	
+
 	/**
 	 * Returns the KnowledgeBase which was created manually.
+	 * 
 	 * @return KnowledgeBase
 	 */
 	public KnowledgeBase getCreatedKB() {
 		return createdKB;
 	}
-	
+
 	/**
 	 * Returns the TestSuite loaded from the KnowWEArticle.
+	 * 
 	 * @return TestSuite
 	 */
 	public TestSuite getLoadedTS() {
 		return loadedTS;
 	}
-	
-	
+
 	/**
 	 * Returns the TestSuite which was created manually.
+	 * 
 	 * @return TestSuite
 	 */
 	public TestSuite getCreatedTS() {
 		return createdTS;
 	}
-	
-	
+
 	/**
 	 * Creates a KnowWEArticle and loads the created Knowledge.
 	 */
@@ -170,33 +167,35 @@ public class KBCreationTestUtil {
 
 		// Read File containing content
 		String content = Utils.readTxtFile("src/test/resources/KBCreationTest.txt");
-		
+
 		// Initialize KnowWE
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
 		D3webTerminologyHandler d3Handler = D3webModule.getKnowledgeRepresentationHandler("default_web");
-		
+
 		// Create Article
 		KnowWEArticle article = new KnowWEArticle(content, "KBCreationTest",
-					KnowWEEnvironment.getInstance().getRootType(), "default_web");
+				KnowWEEnvironment.getInstance().getRootType(), "default_web");
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article);
-		
+
 		// Load KnowledgeBase
-		loadedKB =  d3Handler.getKBM(article, null, article.getSection()).getKnowledgeBase();
-		
+		loadedKB = d3Handler.getKBM(article, null, article.getSection()).getKnowledgeBase();
+
 		// Load TestSuite
-		// TODO: HOTFIX!! I don't think this is the proper way to get the TestsuiteSection...
-		Section<?> s = article.getSection().getChildren().get(0).findChildOfType(TestsuiteSection.class);
-		loadedTS = (TestSuite) KnowWEUtils.getStoredObject("default_web", "KBCreationTest", s.getId(), "TestsuiteSection_Testsuite");
-		
+		// TODO: HOTFIX!! I don't think this is the proper way to get the
+		// TestsuiteSection...
+		Section<?> s = article.getSection().getChildren().get(0).findChildOfType(
+				TestsuiteSection.class);
+		loadedTS = (TestSuite) KnowWEUtils.getStoredObject("default_web", "KBCreationTest",
+				s.getId(), "TestsuiteSection_Testsuite");
+
 	}
-	
-	
+
 	/**
-	 * Creates the Knowledge against which the loaded KnowledgeBase
-	 * will be tested.
+	 * Creates the Knowledge against which the loaded KnowledgeBase will be
+	 * tested.
 	 */
 	private void createKnowledge() {
-		
+
 		createdKB = new KnowledgeBase();
 		createdKBM = KnowledgeBaseManagement.createInstance(createdKB);
 		createDiagnoses();
@@ -206,142 +205,143 @@ public class KBCreationTestUtil {
 		createRules();
 		createXCLModels();
 		createTestSuite();
-		
+
 	}
-		
-	
 
 	/**
 	 * Creates the Diagnoses for the KnowledgeBase.
 	 */
 	private void createDiagnoses() {
-		
+
 		Solution p0 = new Solution("P000");
-			p0.setName("P000");
-			createdKB.add(p0);
-		
+		p0.setName("P000");
+		createdKB.add(p0);
+
 		Solution p1 = new Solution("P1");
-			p1.setName("Mechanical problem");
-			createdKB.getRootDiagnosis().addChild(p1);
-			createdKB.add(p1);
-		
+		p1.setName("Mechanical problem");
+		createdKB.getRootSolution().addChild(p1);
+		createdKB.add(p1);
+
 		Solution p2 = new Solution("P2");
-			p2.setName("Damaged idle speed system");
-			p1.addChild(p2);
-			createdKB.add(p2);
-		
+		p2.setName("Damaged idle speed system");
+		p1.addChild(p2);
+		createdKB.add(p2);
+
 		Solution p3 = new Solution("P3");
-			p3.setName("Leaking air intake system");
-			p3.getProperties().setProperty(Property.EXPLANATION,
-					"The air intake system is leaking.");
-			p1.addChild(p3);
-			createdKB.add(p3);
-		
+		p3.setName("Leaking air intake system");
+		p3.getProperties().setProperty(Property.EXPLANATION,
+				"The air intake system is leaking.");
+		p1.addChild(p3);
+		createdKB.add(p3);
+
 		Solution p4 = new Solution("P4");
-			p4.setName("Other problem");
-			createdKB.getRootDiagnosis().addChild(p4);
-			createdKB.add(p4);
-						
+		p4.setName("Other problem");
+		createdKB.getRootSolution().addChild(p4);
+		createdKB.add(p4);
+
 	}
-	
 
 	/**
 	 * Creates the Questionnaires for the KnowledgeBase.
 	 */
 	private void createQuestionnaires() {
-		
+
 		QContainer qc0 = new QContainer("Q000");
-			qc0.setName("Q000");
-			createdKB.add(qc0);
-		
+		qc0.setName("Q000");
+		createdKB.add(qc0);
+
 		QContainer qc1 = new QContainer("QC1");
-			qc1.setName("Observations");
-			createdKB.getRootQASet().addChild(qc1);
-			createdKB.add(qc1);
-		
+		qc1.setName("Observations");
+		createdKB.getRootQASet().addChild(qc1);
+		createdKB.add(qc1);
+
 		QContainer qc2 = new QContainer("QC2");
-			qc2.setName("Idle speed system");
-			qc1.addChild(qc2);
-			createdKB.add(qc2);
-		
+		qc2.setName("Idle speed system");
+		qc1.addChild(qc2);
+		createdKB.add(qc2);
+
 		QContainer qc3 = new QContainer("QC3");
-			qc3.setName("Air filter");
-			qc3.getProperties().setProperty(Property.EXPLANATION,
-					"Here you can enter your observations concerning the air filter.");
-			qc1.addChild(qc3);
-			createdKB.add(qc3);
-		
+		qc3.setName("Air filter");
+		qc3.getProperties().setProperty(Property.EXPLANATION,
+				"Here you can enter your observations concerning the air filter.");
+		qc1.addChild(qc3);
+		createdKB.add(qc3);
+
 		QContainer qc4 = new QContainer("QC4");
-			qc4.setName("Ignition timing");
-			qc1.addChild(qc4);
-			createdKB.add(qc4);
-		
+		qc4.setName("Ignition timing");
+		qc1.addChild(qc4);
+		createdKB.add(qc4);
+
 		QContainer qc5 = new QContainer("QC5");
-			qc5.setName("Technical Examinations");
-			createdKB.getRootQASet().addChild(qc5);
-			createdKB.add(qc5);
-		
+		qc5.setName("Technical Examinations");
+		createdKB.getRootQASet().addChild(qc5);
+		createdKB.add(qc5);
+
 		// Set Init-Questions
 		List<QContainer> initQuestions = new ArrayList<QContainer>();
 		initQuestions.add(qc1);
 		createdKB.setInitQuestions(initQuestions);
-		
+
 	}
-	
-	
+
 	/**
 	 * Creates the Question for the KnowledgeBase.
 	 */
 	private void createQuestions() {
-		
+
 		// Get QContainer
 		// Observations
 		QContainer qc1 = createdKBM.findQContainer("Observations");
-		
+
 		// Add Question:
 		// - Exhaust fumes ~ "What is the color of the exhaust fumes?" [oc]
 		// -- black
 		// -- blue
 		// -- invisible
 		Question q0 = createdKBM.createQuestionOC("Exhaust fumes", qc1,
-				new String[] {"black", "blue", "invisible"});
-		
-		// Add MMInfo to Question "Exhaust fumes": "What is the color of the exhaust fumes?"
-		addMMInfo(q0, "LT", MMInfoSubject.PROMPT.getName(), "What is the color of the exhaust fumes?");
-		
+				new String[] {
+				"black", "blue", "invisible" });
+
+		// Add MMInfo to Question "Exhaust fumes":
+		// "What is the color of the exhaust fumes?"
+		addMMInfo(q0, "LT", MMInfoSubject.PROMPT.getName(),
+				"What is the color of the exhaust fumes?");
+
 		// Add question:
 		// --- Fuel [oc]
 		// ---- diesel
 		// ---- unleaded gasoline
-		createdKBM.createQuestionOC("Fuel", q0, new String[] {"diesel", "unleaded gasoline"});
-						
+		createdKBM.createQuestionOC("Fuel", q0, new String[] {
+				"diesel", "unleaded gasoline" });
+
 		// Add question:
 		// - "Average mileage /100km" [num] {liter} (0 30) #Q1337
 		Question q1 = new QuestionNum("Q1337");
-			q1.setName("Average mileage /100km");
-			q1.getProperties().setProperty(Property.UNIT, "liter");
-			q1.getProperties().setProperty(Property.QUESTION_NUM_RANGE,
-					new NumericalInterval(0, 30));
-			createdKB.add(q1);
-			qc1.addChild(q1);
-		
+		q1.setName("Average mileage /100km");
+		q1.getProperties().setProperty(Property.UNIT, "liter");
+		q1.getProperties().setProperty(Property.QUESTION_NUM_RANGE,
+				new NumericalInterval(0, 30));
+		createdKB.add(q1);
+		qc1.addChild(q1);
+
 		// Add question:
 		// -- "Num. Mileage evaluation" [num] <abstract>
 		Question q2 = createdKBM.createQuestionNum("Num. Mileage evaluation", q1);
-			q2.getProperties().setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
-			
+		q2.getProperties().setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
+
 		// Add question:
 		// --- Mileage evaluation [oc] <abstract>
 		// ---- normal
 		// ---- increased
 		Question q3 = createdKBM.createQuestionOC("Mileage evaluation", q2,
-				new String[] {"normal", "increased"});
-			q3.getProperties().setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
+				new String[] {
+				"normal", "increased" });
+		q3.getProperties().setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
 		// - "Real mileage  /100km" [num]
 		createdKBM.createQuestionNum("Real mileage  /100km", qc1);
-		
+
 		// Add question:
 		// - Driving [mc]
 		// -- insufficient power on partial load
@@ -349,37 +349,38 @@ public class KBCreationTestUtil {
 		// -- unsteady idle speed
 		// -- everything is fine
 		Question q4 = createdKBM.createQuestionMC("Driving", qc1,
-				new String[] {"insufficient power on partial load",
-							  "insufficient power on full load",
-							  "unsteady idle speed",
-							  "everything is fine"});
-		
+				new String[] {
+				"insufficient power on partial load",
+				"insufficient power on full load",
+				"unsteady idle speed",
+				"everything is fine" });
+
 		// Add question:
 		// ---- Other [text]
 		createdKBM.createQuestionText("Other", q4);
-		
+
 		// Get second QContainer and add Question
 		// Technical Examinations
 		QContainer qc2 = createdKBM.findQContainer("Technical Examinations");
 		// - "Idle speed system o.k.?" [yn]
 		createdKBM.createQuestionYN("Idle speed system o.k.?", qc2);
-		
+
 	}
 
 	/**
 	 * Creates MMInfo similar to the info from an AttributeTable
 	 */
 	private void createAttributeTable() {
-		
+
 		// Get the Diagnosis which will get the MMInfo
 		Solution d = createdKBM.findSolution("Mechanical problem");
-		
-		// Add MMInfo which is similar to the MMInfo created from the AttributeTable
+
+		// Add MMInfo which is similar to the MMInfo created from the
+		// AttributeTable
 		// | Mechanical problem | info | description | some problem description
 		addMMInfo(d, "description", MMInfoSubject.INFO.getName(), "some problem description");
-		
+
 	}
-	
 
 	/**
 	 * Creates the Rules for the KnowledgeBase
@@ -393,19 +394,18 @@ public class KBCreationTestUtil {
 		createHeuristicRules();
 		createIndicationRules();
 	}
-	
-	
+
 	/**
 	 * Creates the Indication-Rules
 	 */
 	private void createDTIndicationRules() {
-		
+
 		Answer answer;
 		CondEqual condition;
 		String ruleID;
 		QuestionChoice condQuestion = (QuestionChoice) createdKBM.findQuestion("Exhaust fumes");
 		QuestionChoice actionQuestion = (QuestionChoice) createdKBM.findQuestion("Fuel");
-		
+
 		// Create Rule R1:
 		// - Exhaust fumes [oc]
 		// -- black
@@ -414,7 +414,7 @@ public class KBCreationTestUtil {
 		condition = new CondEqual(condQuestion, new ChoiceValue((Choice) answer));
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
-		
+
 		// Create Rule R2:
 		// - Exhaust fumes [oc]
 		// -- blue
@@ -423,7 +423,7 @@ public class KBCreationTestUtil {
 		condition = new CondEqual(condQuestion, new ChoiceValue((Choice) answer));
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
-		
+
 		// Create Rule R3:
 		// - Exhaust fumes [oc]
 		// -- invisible
@@ -432,19 +432,18 @@ public class KBCreationTestUtil {
 		condition = new CondEqual(condQuestion, new ChoiceValue((Choice) answer));
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
-		
+
 	}
-	
-	
+
 	/**
 	 * Creates the SetValue Rules from the DecisionTree
 	 */
 	private void createDTSetValueRules() {
-		
+
 		// Create Rule R4:
 		// - Driving [mc]
-        // -- insufficient power on partial load
-        // --- "Num. Mileage evaluation" SET (110)
+		// -- insufficient power on partial load
+		// --- "Num. Mileage evaluation" SET (110)
 		QuestionChoice q1 = (QuestionChoice) createdKBM.findQuestion("Driving");
 		Answer a1 = createdKBM.findAnswer(q1, "insufficient power on partial load");
 		CondEqual c1 = new CondEqual(q1, new ChoiceValue((Choice) a1));
@@ -453,11 +452,11 @@ public class KBCreationTestUtil {
 		FormulaNumber fn1 = new FormulaNumber(110.0);
 		FormulaExpression f1 = new FormulaExpression(q2, fn1);
 		RuleFactory.createSetValueRule(ruleID, q2, f1, c1);
-		
+
 		// Create Rule R5:
 		// - Driving [mc]
-        // -- insufficient power on full load
-        // --- "Num. Mileage evaluation" (20)
+		// -- insufficient power on full load
+		// --- "Num. Mileage evaluation" (20)
 		Answer a2 = createdKBM.findAnswer(q1, "insufficient power on full load");
 		CondEqual c2 = new CondEqual(q1, new ChoiceValue((Choice) a2));
 		ruleID = createdKBM.createRuleID();
@@ -467,12 +466,11 @@ public class KBCreationTestUtil {
 		RuleFactory.createAddValueRule(ruleID, q3, new Object[] { f2 }, c2);
 	}
 
-
 	/**
 	 * Creates the Heuristic Rules from the DecisionTree
 	 */
 	private void createDTHeuristicRules() {
-		
+
 		// Create Rule R6:
 		// - Driving [mc]
 		// -- everything is fine
@@ -484,14 +482,14 @@ public class KBCreationTestUtil {
 		String ruleID = createdKBM.createRuleID();
 		Solution diag = createdKBM.findSolution("Other problem");
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, condition);
-		
+
 	}
-	
+
 	/**
 	 * Creates the Refinement Rules from the DecisionTree
 	 */
 	private void createDTRefinementRules() {
-		
+
 		// Create Rule R7:
 		// --- Other problem (P7)
 		// ---- Other [text]
@@ -501,38 +499,38 @@ public class KBCreationTestUtil {
 		String ruleID = createdKBM.createRuleID();
 		Solution diag = createdKBM.findSolution("Other problem");
 		CondDState condition = new CondDState(diag,
-				DiagnosisState.ESTABLISHED);
+				new DiagnosisState(State.ESTABLISHED));
 		RuleFactory.createRefinementRule(ruleID, action, diag, condition);
-		
+
 	}
 
-	
 	/**
-	 * Creates the Set-Value Rules corresponding to
-	 * the rules of the Rules-section
+	 * Creates the Set-Value Rules corresponding to the rules of the
+	 * Rules-section
 	 */
 	private void createSetValueRules() {
-			
+
 		// Create first Condition:
 		// KNOWN["Real mileage  /100km"]
 		QuestionNum q11 = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
 		CondKnown c11 = new CondKnown(q11);
-		
+
 		// Create second Condition:
 		// "Average mileage /100km" > 0
 		QuestionNum q12 = (QuestionNum) createdKBM.findQuestion("Average mileage /100km");
 		CondNumGreater c12 = new CondNumGreater(q12, 0.0);
-		
+
 		// Create AND Condition:
 		// "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
 		List<Condition> conditions = new LinkedList<Condition>();
 		conditions.add(c11);
 		conditions.add(c12);
 		CondAnd c1 = new CondAnd(conditions);
-		
+
 		// Create Rule R8:
 		// IF "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
-		// THEN "Num. Mileage evaluation" = (("Real mileage  /100km" / "Average mileage /100km") * 100.0)
+		// THEN "Num. Mileage evaluation" = (("Real mileage  /100km" /
+		// "Average mileage /100km") * 100.0)
 		String ruleID = createdKBM.createRuleID();
 		QuestionNum q3 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
 		Div d = new Div(new QNumWrapper(q11), new QNumWrapper(q12));
@@ -540,7 +538,7 @@ public class KBCreationTestUtil {
 		Mult m = new Mult(d, fn);
 		FormulaExpression f = new FormulaExpression(q3, m);
 		RuleFactory.createSetValueRule(ruleID, q3, f, c1);
-		
+
 		// Create Rule R9:
 		// IF "Num. Mileage evaluation" > 130
 		// THEN Mileage evaluation = increased
@@ -549,7 +547,7 @@ public class KBCreationTestUtil {
 		Question q4 = createdKBM.findQuestion("Mileage evaluation");
 		Choice a = (Choice) createdKBM.findAnswer(q4, "increased");
 		RuleFactory.createSetValueRule(ruleID, q4, new Choice[] { a }, c2);
-		
+
 		// Create rule R10:
 		// IF Driving = unsteady idle speed
 		// THEN "Real mileage  /100km" += ( 2 )
@@ -563,7 +561,7 @@ public class KBCreationTestUtil {
 		Add add = new Add(new QNumWrapper(qnum), fn2);
 		FormulaExpression f2 = new FormulaExpression(qnum, add);
 		RuleFactory.createSetValueRule(ruleID, qnum, f2, conditionIf4);
-		
+
 		// Create Rule R11:
 		// IF Driving = insufficient power on full load
 		// THEN "Real mileage  /100km" = ("Average mileage /100km" + 2)
@@ -578,7 +576,7 @@ public class KBCreationTestUtil {
 		FormulaExpression f3 = new FormulaExpression(questionThen, addition);
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createSetValueRule(ruleID, questionThen, f3, conditionIf5);
-		
+
 		// Create Rule R12:
 		// IF Driving = insufficient power on partial load
 		// THEN "Real mileage  /100km" = ("Average mileage /100km" - 1)
@@ -593,15 +591,15 @@ public class KBCreationTestUtil {
 		FormulaExpression f4 = new FormulaExpression(questionThen2, subtraction);
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createSetValueRule(ruleID, questionThen2, f4, conditionIf6);
-		
+
 	}
-	
+
 	/**
-	 * Creates the Heuristic Rules corresponding to
-	 * the rules of the Rules-section
+	 * Creates the Heuristic Rules corresponding to the rules of the
+	 * Rules-section
 	 */
 	private void createHeuristicRules() {
-		
+
 		// Create rule R13:
 		// IF Exhaust fumes = black EXCEPT Fuel = diesel
 		// THEN Air filter (P7)
@@ -609,17 +607,16 @@ public class KBCreationTestUtil {
 		Answer answerIf = createdKBM.findAnswer(questionIf, "black");
 		CondEqual conditionIf = new CondEqual(questionIf, new ChoiceValue(
 				(Choice) answerIf));
-		
+
 		QuestionChoice questionExc = (QuestionChoice) createdKBM.findQuestion("Fuel");
 		Answer answerExc = createdKBM.findAnswer(questionExc, "diesel");
 		CondEqual conditionExc = new CondEqual(questionExc, new ChoiceValue(
 				(Choice) answerExc));
-		
+
 		String ruleID = createdKBM.createRuleID();
 		Solution diag = createdKBM.findSolution("Mechanical problem");
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.P7, conditionIf, conditionExc);
-		
-		
+
 		// Create rule R14:
 		// IF NOT Fuel = unleaded gasoline OR NOT Exhaust fumes = black
 		// THEN Mechanical problem = N7
@@ -628,30 +625,30 @@ public class KBCreationTestUtil {
 		CondEqual conditionIf2 = new CondEqual(questionIf2, new ChoiceValue(
 				(Choice) answerIf2));
 		CondNot condNot1 = new CondNot(conditionIf2);
-		
+
 		QuestionChoice questionIf3 = (QuestionChoice) createdKBM.findQuestion("Exhaust fumes");
 		Answer answerIf3 = createdKBM.findAnswer(questionIf3, "black");
 		CondEqual conditionIf3 = new CondEqual(questionIf3, new ChoiceValue(
 				(Choice) answerIf3));
 		CondNot condNot2 = new CondNot(conditionIf3);
-		
+
 		List<Condition> conditions = new LinkedList<Condition>();
 		conditions.add(condNot2);
 		conditions.add(condNot1);
 		CondOr condOr = new CondOr(conditions);
-		
+
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createHeuristicPSRule(ruleID, diag, Score.N7, condOr);
-		
+
 	}
 
 	/**
 	 * Creates the Indication-Rules
 	 */
 	private void createIndicationRules() {
-		
+
 		String ruleID;
-		
+
 		// Create Rule R15:
 		// IF Driving = unsteady idle speed
 		// THEN Technical Examinations
@@ -662,7 +659,7 @@ public class KBCreationTestUtil {
 				(Choice) answer));
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, actionQuestion, condition);
-		
+
 		// Create Rule R16:
 		// IF Mileage evaluation = increased
 		// THEN "Idle speed system o.k.?"; Driving
@@ -677,7 +674,7 @@ public class KBCreationTestUtil {
 		nextQuestions.add(actionQuestion3);
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, nextQuestions, condition2);
-		
+
 		// Create Rule R17:
 		// IF KNOWN[Other]
 		// THEN Technical Examinations
@@ -686,92 +683,93 @@ public class KBCreationTestUtil {
 		CondKnown condition3 = new CondKnown(condQuestion3);
 		ruleID = createdKBM.createRuleID();
 		RuleFactory.createIndicationRule(ruleID, actionQuestion4, condition3);
-		
+
 	}
-	
+
 	/**
-	 * Creats a XCLModel similar to the one which is created
-	 * in the KnowWEArticle
+	 * Creats a XCLModel similar to the one which is created in the
+	 * KnowWEArticle
 	 */
 	private void createXCLModels() {
-			
+
 		Solution d = createdKBM.findSolution("Damaged idle speed system");
 
-	    // "Idle speed system o.k.?" = Yes [--]
+		// "Idle speed system o.k.?" = Yes [--]
 		Question q1 = createdKBM.findQuestion("Idle speed system o.k.?");
-		Answer  a1 = createdKBM.findAnswer(q1, "Yes");
+		Answer a1 = createdKBM.findAnswer(q1, "Yes");
 		CondEqual c1 = new CondEqual(q1, new ChoiceValue((Choice) a1));
 		XCLModel.insertXCLRelation(createdKB, c1, d, XCLRelationType.contradicted);
-		
-	    // Driving = unsteady idle speed [!]
+
+		// Driving = unsteady idle speed [!]
 		Question q2 = createdKBM.findQuestion("Driving");
-		Answer  a2 = createdKBM.findAnswer(q2, "unsteady idle speed");
+		Answer a2 = createdKBM.findAnswer(q2, "unsteady idle speed");
 		CondEqual c2 = new CondEqual(q2, new ChoiceValue((Choice) a2));
-	    XCLModel.insertXCLRelation(createdKB, c2, d, XCLRelationType.requires);
-		
-	    // "Idle speed system o.k.?" = no [++]
+		XCLModel.insertXCLRelation(createdKB, c2, d, XCLRelationType.requires);
+
+		// "Idle speed system o.k.?" = no [++]
 		Question q3 = createdKBM.findQuestion("Idle speed system o.k.?");
-		Answer  a3 = createdKBM.findAnswer(q3, "No");
+		Answer a3 = createdKBM.findAnswer(q3, "No");
 		CondEqual c3 = new CondEqual(q3, new ChoiceValue((Choice) a3));
 		XCLModel.insertXCLRelation(createdKB, c3, d, XCLRelationType.sufficiently);
-		
+
 		// Mileage evaluation = increased [3]
 		Question q4 = createdKBM.findQuestion("Mileage evaluation");
-		Answer  a4 = createdKBM.findAnswer(q4, "increased");
+		Answer a4 = createdKBM.findAnswer(q4, "increased");
 		CondEqual c4 = new CondEqual(q4, new ChoiceValue((Choice) a4));
 		XCLModel.insertXCLRelation(createdKB, c4, d, XCLRelationType.explains, 3.0);
-		
+
 		// Exhaust fumes = black
 		Question q5 = createdKBM.findQuestion("Exhaust fumes");
-		Answer  a5 = createdKBM.findAnswer(q5, "black");
+		Answer a5 = createdKBM.findAnswer(q5, "black");
 		CondEqual c5 = new CondEqual(q5, new ChoiceValue((Choice) a5));
 		XCLModel.insertXCLRelation(createdKB, c5, d, XCLRelationType.explains);
-		
+
 	}
-	
+
 	/**
-	 * Creats a TestSuite similar to the one which is created
-	 * in the KnowWEArticle
+	 * Creats a TestSuite similar to the one which is created in the
+	 * KnowWEArticle
 	 */
 	private void createTestSuite() {
-		
+
 		// Create Finding
 		Question q = createdKBM.findQuestion("Driving");
 		Answer a = createdKBM.findAnswer(q, "everything is fine");
 		List<ChoiceValue> answers = new LinkedList<ChoiceValue>();
 		answers.add(new ChoiceValue((Choice) a));
 		Finding f = new Finding(q, new MultipleChoiceValue(answers));
-		
+
 		// Create RatedSolution
 		Solution d = createdKBM.findSolution("Other problem");
-		StateRating sr = new StateRating(DiagnosisState.ESTABLISHED);
+		StateRating sr = new StateRating(new DiagnosisState(State.ESTABLISHED));
 		RatedSolution rs = new RatedSolution(d, sr);
-		
+
 		// Add Finding and RatedSolution to RatedTestCase
 		RatedTestCase rtc = new RatedTestCase();
 		rtc.add(f);
 		rtc.addExpected(rs);
 		rtc.setName("STC1_RTC1");
-		
+
 		// Add RatedTestCase to SequentialTestCase
 		SequentialTestCase stc = new SequentialTestCase();
 		stc.add(rtc);
 		stc.setName("STC1");
-		
+
 		// Add SequentialTestCase to the repository
 		List<SequentialTestCase> repository = new ArrayList<SequentialTestCase>();
 		repository.add(stc);
-		
+
 		// Create testSuite
 		TestSuite t = new TestSuite();
 		t.setKb(createdKB);
 		t.setRepository(repository);
 		createdTS = t;
-		
+
 	}
-	
+
 	/**
 	 * Adds a MMInfo to the NamedObject
+	 * 
 	 * @param o NamedObject
 	 * @param title String
 	 * @param subject String
@@ -789,7 +787,7 @@ public class KBCreationTestUtil {
 		mmis = new MMInfoStorage();
 		o.getProperties().setProperty(Property.MMINFO, mmis);
 		mmis.addMMInfo(mmi);
-		
+
 	}
 
 }

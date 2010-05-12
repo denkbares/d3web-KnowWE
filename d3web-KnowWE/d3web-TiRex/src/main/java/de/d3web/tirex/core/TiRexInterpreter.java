@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.tirex.core;
@@ -28,8 +28,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.values.Choice;
 import de.d3web.tirex.core.extractionStrategies.ExtractionStrategy;
 
@@ -63,8 +63,7 @@ public class TiRexInterpreter {
 	}
 
 	/**
-	 * @param wikiPage
-	 *            The wiki page that is to be parsed.
+	 * @param wikiPage The wiki page that is to be parsed.
 	 * @return The part that contains the knowledge is returned, if the parse
 	 *         was successful.
 	 */
@@ -80,8 +79,7 @@ public class TiRexInterpreter {
 	}
 
 	/**
-	 * @param wikiPage
-	 *            The wiki page that is to be parsed.
+	 * @param wikiPage The wiki page that is to be parsed.
 	 * @return The parts that contain the knowledge are returned, if the parse
 	 *         was successful. It is possible to recognize the "important" parts
 	 *         of the wiki page by using a certain regular expression, which is
@@ -108,21 +106,18 @@ public class TiRexInterpreter {
 	}
 
 	/**
-	 * @param kb
-	 *            The knowledgebase, which TiRex works with.
-	 * @param knowledge
-	 *            The line of knowledge, which all the ExtractionStrategies are
-	 *            to be tested on.
-	 * @param strategies
-	 *            A Collection of different ExtractionStrategies, which are to
-	 *            be applied to "knowledge".
+	 * @param kb The knowledgebase, which TiRex works with.
+	 * @param knowledge The line of knowledge, which all the
+	 *        ExtractionStrategies are to be tested on.
+	 * @param strategies A Collection of different ExtractionStrategies, which
+	 *        are to be applied to "knowledge".
 	 * @return The extracted Diagnosis wrapped into an
 	 *         "OriginalMatchAndStrategy" object along with other useful data.
 	 */
 	public OriginalMatchAndStrategy extractDiagnosis(KnowledgeBase kb,
 			String knowledge, Collection<ExtractionStrategy> strategies) {
 		for (ExtractionStrategy strategy : strategies) {
-			for (Solution d : kb.getDiagnoses()) {
+			for (Solution d : kb.getSolutions()) {
 				OriginalMatchAndStrategy match = null;
 
 				match = strategy.extract(d, knowledge);
@@ -136,14 +131,11 @@ public class TiRexInterpreter {
 	}
 
 	/**
-	 * @param kb
-	 *            The knowledgebase, which TiRex works with.
-	 * @param knowledge
-	 *            The line of knowledge, which all the ExtractionStrategies are
-	 *            to be tested on.
-	 * @param strategies
-	 *            A Collection of different ExtractionStrategies, which are to
-	 *            be applied to "knowledge".
+	 * @param kb The knowledgebase, which TiRex works with.
+	 * @param knowledge The line of knowledge, which all the
+	 *        ExtractionStrategies are to be tested on.
+	 * @param strategies A Collection of different ExtractionStrategies, which
+	 *        are to be applied to "knowledge".
 	 * @return The extracted Question wrapped into an "OriginalMatchAndStrategy"
 	 *         object along with other useful data.
 	 */
@@ -184,16 +176,12 @@ public class TiRexInterpreter {
 	}
 
 	/**
-	 * @param q
-	 *            The Question, that we're trying to get the Answer for.
-	 * @param knowledge
-	 *            The line of knowledge, which all the ExtractionStrategies are
-	 *            to be tested on.
-	 * @param kb
-	 *            The knowledgebase, which TiRex works with.
-	 * @param strategies
-	 *            A Collection of different ExtractionStrategies, which are to
-	 *            be applied to "knowledge".
+	 * @param q The Question, that we're trying to get the Answer for.
+	 * @param knowledge The line of knowledge, which all the
+	 *        ExtractionStrategies are to be tested on.
+	 * @param kb The knowledgebase, which TiRex works with.
+	 * @param strategies A Collection of different ExtractionStrategies, which
+	 *        are to be applied to "knowledge".
 	 * @return The extracted Answer wrapped into an "OriginalMatchAndStrategy"
 	 *         object along with other useful data.
 	 */
@@ -203,7 +191,8 @@ public class TiRexInterpreter {
 		Collection<Choice> answers = null;
 		if (q != null) {
 			answers = TiRexUtilities.getInstance().getAllPossibleAnswers(q);
-		} else {
+		}
+		else {
 			answers = TiRexUtilities.getInstance().getAllPossibleAnswers(kb);
 		}
 
@@ -220,7 +209,8 @@ public class TiRexInterpreter {
 					return match;
 				}
 			}
-		} else {
+		}
+		else {
 			for (ExtractionStrategy strategy : strategies) {
 				for (Choice answer : answers) {
 					OriginalMatchAndStrategy match = null;
@@ -244,7 +234,8 @@ public class TiRexInterpreter {
 		Collection<Choice> answers = null;
 		if (q != null) {
 			answers = TiRexUtilities.getInstance().getAllPossibleAnswers(q);
-		} else {
+		}
+		else {
 			answers = TiRexUtilities.getInstance().getAllPossibleAnswers(kb);
 		}
 
@@ -261,7 +252,8 @@ public class TiRexInterpreter {
 					returnList.add(match);
 				}
 			}
-		} else {
+		}
+		else {
 			for (ExtractionStrategy strategy : strategies) {
 				for (Choice answer : answers) {
 					OriginalMatchAndStrategy match = null;
@@ -278,17 +270,13 @@ public class TiRexInterpreter {
 	}
 
 	/**
-	 * @param kb
-	 *            The knowledgebase, which TiRex works with.
-	 * @param knowledge
-	 *            The line of knowledge, which all the ExtractionStrategies are
-	 *            to be tested on.
-	 * @param questionStrategies
-	 *            A Collection of different ExtractionStrategies, which are to
-	 *            be applied to "knowledge" to extract questions.
-	 * @param answerStrategies
-	 *            A Collection of different ExtractionStrategies, which are to
-	 *            be applied to "knowledge" to extract answers.
+	 * @param kb The knowledgebase, which TiRex works with.
+	 * @param knowledge The line of knowledge, which all the
+	 *        ExtractionStrategies are to be tested on.
+	 * @param questionStrategies A Collection of different ExtractionStrategies,
+	 *        which are to be applied to "knowledge" to extract questions.
+	 * @param answerStrategies A Collection of different ExtractionStrategies,
+	 *        which are to be applied to "knowledge" to extract answers.
 	 * @return Set of rated question answer pairs, sorted by rating
 	 */
 	public TreeSet<QuestionAndAnswerWithRating> extractQuestionsAndAnswers(
@@ -316,7 +304,8 @@ public class TiRexInterpreter {
 					Question q = null;
 					if (question != null) {
 						q = (Question) question.getIDObject();
-					} else {
+					}
+					else {
 						searchedAnswersOnly = true;
 					}
 
@@ -334,17 +323,19 @@ public class TiRexInterpreter {
 						// answer.toString());
 						if ((answer.getMatch()).equals(question.getMatch())
 								|| (answer.getMatch()).contains(question
-										.getMatch())
+								.getMatch())
 								|| (question.getMatch()).contains(answer
-										.getMatch())) {
+								.getMatch())) {
 							if (question.getRating() > answer.getRating()) {
 								resultSet.add(new QuestionAndAnswerWithRating(
 										question, null));
-							} else {
+							}
+							else {
 								resultSet.add(new QuestionAndAnswerWithRating(
 										null, answer));
 							}
-						} else {
+						}
+						else {
 							resultSet.add(new QuestionAndAnswerWithRating(
 									question, answer));
 						}

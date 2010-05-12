@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 BasicParser.g 2010-04-06 16:16:07
+// $ANTLR 3.1.1 BasicParser.g 2010-04-29 15:39:33
 
 package de.d3web.KnOfficeParser.decisiontree;
 import de.d3web.KnOfficeParser.ParserErrorHandler;

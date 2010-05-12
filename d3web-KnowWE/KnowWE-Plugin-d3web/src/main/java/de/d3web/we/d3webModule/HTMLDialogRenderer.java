@@ -103,7 +103,7 @@ public class HTMLDialogRenderer {
 				Question q = null;
 				if (namedObject instanceof Question) {
 					q = (Question) namedObject; // cast element to Question of
-												// possible
+					// possible
 				}
 				else {
 					continue; // otherwise jump to next element in list
@@ -281,8 +281,8 @@ public class HTMLDialogRenderer {
 	private static void renderNumAnswers(Session c, StringBuffer buffi,
 			Question q, String web, String namespace) {
 		String value = "";
-		if (UndefinedValue.isNotUndefinedValue(c.getValue(q))) {
-			Value answer = c.getValue(q);
+		if (UndefinedValue.isNotUndefinedValue(c.getBlackboard().getValue(q))) {
+			Value answer = c.getBlackboard().getValue(q);
 			if (answer != null && answer instanceof NumValue) {
 				value = answer.getValue().toString();
 			}
@@ -317,7 +317,7 @@ public class HTMLDialogRenderer {
 					+ "qid: '" + question.getId() + "'"
 					+ "}\" ";
 
-			Value value = session.getValue(question);
+			Value value = session.getBlackboard().getValue(question);
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
 				cssclass = "fieldcell answerTextActive";
