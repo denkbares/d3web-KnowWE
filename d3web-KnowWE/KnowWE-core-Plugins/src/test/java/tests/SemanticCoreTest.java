@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.Before;
@@ -142,4 +143,26 @@ public class SemanticCoreTest {
 		am.saveUpdatedArticle(article1);
 	}
 
+	@Test
+	public void testInferencing(){
+		String hades = "[ hades type:: god ]";
+		hades += " [ god subClassOf:: entity ]";
+		String testtopic = "TestPage";
+		ke.processAndUpdateArticleJunit(null, hades, testtopic,
+				KnowWEEnvironment.DEFAULT_WEB, type);
+
+		String hadesquery = "ask { lns:hades rdf:type lns:god }";
+		String hadesentityquery = "ask { lns:hades rdf:type lns:entity }";
+
+		// check that the article was parsed and the statements are in the
+		// core
+		assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
+		//check that inferencing works
+		assertTrue(SemanticCore.getInstance().booleanQuery(hadesentityquery));
+		
+		ArrayList<String> erg=SemanticCore.getInstance().simpleQueryToList("SELECT ?x WHERE { ?x rdf:type lns:entity .}", "x");
+		//make sure that hades is returned on query for entities
+		assertTrue(erg.contains("hades"));
+		
+	}
 }
