@@ -1214,7 +1214,7 @@ KNOWWE.plugin.d3web.qcvalues = function(){
                 for (j = 0; j < _KS(panelID).childNodes.length; j++) {
                     if(_KS(panelID).childNodes[j].className == 'qcname') {
                         
-                        var questionnaireName = _KS(panelID).childNodes[j].innerHTML;
+                        var questionnaireName = _KS(panelID).childNodes[j].value;
                         
                         var params = {
                                 action : 'QuestionnaireValuesViewAction',
