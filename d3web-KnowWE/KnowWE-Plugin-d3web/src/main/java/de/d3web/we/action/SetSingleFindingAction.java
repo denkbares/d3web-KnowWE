@@ -29,8 +29,12 @@ import java.util.List;
 
 import common.Logger;
 
+import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.core.session.values.AnswerNum;
+import de.d3web.core.session.values.Choice;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
@@ -43,6 +47,8 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
+import de.d3web.we.event.EventManager;
+import de.d3web.we.event.FindingSetEvent;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.utils.D3webUtils;
 
@@ -150,8 +156,22 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 		if (qid == null) 
 			qid = objectid;
 
+		// Necessary for FindingSetEvent
+		Question question = D3webUtils.getQuestion(kss, qid);
+		Answer answer = null;
+		
+		// We need the Answer (Choice) Object for the FindingSetEvent
+		if (question instanceof QuestionChoice) {
+			for (Choice choice : ((QuestionChoice) question).getAllAlternatives()) {
+				if (choice.getId().equals(valueid)) {
+					answer = choice;
+					break;
+				}
+			}
+		}
+		
 		boolean contains = false;
-		boolean mc = (D3webUtils.getQuestion(kss, qid) instanceof QuestionMC);
+		boolean mc = (question instanceof QuestionMC);
 		for (String a : answers) {
 			if (a.equals(valueid)) {
 				contains = true;
@@ -173,9 +193,13 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 
 		} else {
 			if (valuenum != null) {
-				
 				try {
-					valuesAfterClick.add(Double.valueOf(valuenum));
+					Double doubleValue = Double.valueOf(valuenum);
+					valuesAfterClick.add(doubleValue);
+					// Necessary for FindingSetEvent
+					answer = new AnswerNum();
+					((AnswerNum) answer).setValue(doubleValue);
+					
 				} catch (NumberFormatException e) {
 				}
 				
@@ -183,6 +207,8 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 				valuesAfterClick.add(valueid.trim());
 			}
 		}
+		
+		EventManager.getInstance().fireEvent(user, null, new FindingSetEvent(question, answer));
 
 		Information info = new Information(namespace, objectid,
 				valuesAfterClick, TerminologyType.symptom,

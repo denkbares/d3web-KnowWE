@@ -30,7 +30,8 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
 /**
- * A very simple EventManager Events are represented by Strings
+ * A very simple EventManager.
+ * Events are represented by Classes
  *
  * @author Jochen
  *
@@ -46,14 +47,14 @@ public class EventManager {
 		return instance;
 	}
 
-	private final Map<String, List<EventListener>> listenerMap = new HashMap<String, List<EventListener>>();
+	@SuppressWarnings("unchecked")
+	private final Map<Class<? extends Event>, List<EventListener>> listenerMap = new HashMap<Class<? extends Event>, List<EventListener>>();
 
 	/**
 	 * Creates the listener map by fetching all EventListener extensions from
 	 * the PluginManager
-	 *
-	 *
 	 */
+	@SuppressWarnings("unchecked")
 	public EventManager() {
 		// get all EventListeners
 		Extension[] exts = PluginManager.getInstance().getExtensions(
@@ -63,19 +64,19 @@ public class EventManager {
 			Object o = extension.getSingleton();
 			if (o instanceof EventListener) {
 				EventListener listener = ((EventListener) o);
-				for (String event : listener.getEvents()) {
-					List<EventListener> list = null;
-
-					if (listenerMap.containsKey(event)) {
-						list = listenerMap.get(event);
-					}
-					else {
-						list = new ArrayList<EventListener>();
-						listenerMap.put(event,list);
-					}
-					list.add(listener);
+				
+				// Get the class of the event
+				Class<? extends Event> eventClass = listener.getEvent();
+				
+				// Register the listener for the event's class
+				List<EventListener> list = null;
+				if (listenerMap.containsKey(eventClass)) 
+					list = listenerMap.get(eventClass);
+				else {
+					list = new ArrayList<EventListener>();
+					listenerMap.put(eventClass,list);
 				}
-
+				list.add(listener);
 			}
 		}
 	}
@@ -83,19 +84,18 @@ public class EventManager {
 	/**
 	 * Fires events; the calls are distributed in the system where the
 	 * corresponding events should be fired (also plugin may fire events)
-	 *
-	 * NOTE: unique names in event-names not guaranteed!
-	 *
+	 * 
 	 * @param username
 	 * @param s
-	 * @param eventName
+	 * @param event
 	 */
-	public void fireEvent(String username, Section<? extends KnowWEObjectType> s, String eventName) {
+	@SuppressWarnings("unchecked")
+	public void fireEvent(String username, Section<? extends KnowWEObjectType> s, Event e) {
 
-		List<EventListener> listeners = this.listenerMap.get(eventName);
+		List<EventListener> listeners = this.listenerMap.get(e.getClass());
 		if (listeners != null) {
 			for (EventListener eventListener : listeners) {
-				eventListener.notify(username, s, eventName);
+				eventListener.notify(username, s, e);
 			}
 		}
 

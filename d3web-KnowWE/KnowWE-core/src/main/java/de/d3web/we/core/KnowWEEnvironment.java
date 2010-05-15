@@ -42,7 +42,9 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.d3web.we.action.KnowWEActionDispatcher;
+import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
+import de.d3web.we.event.InitEvent;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
@@ -244,7 +246,7 @@ public class KnowWEEnvironment {
 		instance.initModules(wiki.getServletContext(), DEFAULT_WEB);
 
 		// firing the init event
-		EventManager.getInstance().fireEvent("system init", null, EVENT_INIT);
+		EventManager.getInstance().fireEvent("system init", null, InitEvent.getInstance());
 
 	}
 
@@ -608,7 +610,7 @@ public class KnowWEEnvironment {
 
 		// fire 'article-created' event
 		EventManager.getInstance().fireEvent(username, article.getSection(),
-				EVENT_ARTICLE_CREATED);
+				ArticleCreatedEvent.getInstance());
 
 		return this.getArticleManager(web).saveUpdatedArticle(
 				article).getHTML();
