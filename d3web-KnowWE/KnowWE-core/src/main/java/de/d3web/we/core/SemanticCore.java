@@ -306,7 +306,7 @@ public class SemanticCore {
 				.getArticle().getTitle());
 		if (temp != null)
 			return temp.get(sec.getId());
-		return null;
+		return new ArrayList<Statement>();
 	}
 
 	/**
@@ -325,8 +325,8 @@ public class SemanticCore {
 		try {
 			// con.setAutoCommit(false);
 			List<Statement> allStatements = inputio.getAllStatements();
-			con.add(allStatements, getContext(sec));
-			// con.commit();
+			con.add(allStatements);
+			//con.commit();
 		} catch (RepositoryException e) {
 			Logging.getInstance().severe(e.getMessage());
 		}
@@ -492,6 +492,7 @@ public class SemanticCore {
 		RepositoryConnection con = uo.getConnection();
 		try {
 			con.remove(getSectionStatementsRecursive(sec));
+			//con.remove(getStatementsofSingleSection(sec));
 			con.commit();
 		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block

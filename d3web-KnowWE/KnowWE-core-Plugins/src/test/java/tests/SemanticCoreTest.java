@@ -60,7 +60,8 @@ public class SemanticCoreTest {
 		// check that the article was parsed and the statements are in the
 		// core
 		assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
-
+		//shouldn't know anything about joe
+		assertFalse(SemanticCore.getInstance().booleanQuery(joequery));
 		// now change the article to just contain joe and no hades and make
 		// sure
 		// this is updated in the core accordingly
@@ -70,7 +71,7 @@ public class SemanticCoreTest {
 		assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
 
 		// now add hades and joe
-		ke.processAndUpdateArticleJunit(null, hades + "\n" + joe, testtopic,
+		ke.processAndUpdateArticleJunit(null, hades + "\n " + joe, testtopic,
 				KnowWEEnvironment.DEFAULT_WEB, type);
 		assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
 		assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
