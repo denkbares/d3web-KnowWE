@@ -1,18 +1,18 @@
 package de.d3web.we.event;
 
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionText;
-import de.d3web.core.session.values.AnswerDate;
-import de.d3web.core.session.values.AnswerNum;
-import de.d3web.core.session.values.AnswerText;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.values.DateValue;
+import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.TextValue;
 
 /**
  * The Finding Set Event. Which will be fired each time 
- * a finding is set.
+ * a finding is set in the embedded dialog.
  * 
  * @author Sebastian Furth
  *
@@ -20,34 +20,34 @@ import de.d3web.core.session.values.AnswerText;
 public class FindingSetEvent extends Event {
 	
 	private Question question;
-	private Answer answer;
+	private Value value;
 	
-	public FindingSetEvent(Question question, Answer answer) {
+	public FindingSetEvent(Question question, Value value) {
 		
 		// Check parameters for validity
-		if (question == null || answer == null) 
+		if (question == null || value == null) 
 			throw new IllegalArgumentException("Paramters mustn't be null!");
 		if (question instanceof QuestionChoice)
-			if (!(((QuestionChoice) question).getAllAlternatives().contains(answer)))
-				throw new IllegalArgumentException(answer + " is not an allowed answer for " + question.getName());
-		if (question instanceof QuestionNum && !(answer instanceof AnswerNum))
-			throw new IllegalArgumentException("The committed answer must be an AnswerNum!");
-		if (question instanceof QuestionDate && !(answer instanceof AnswerDate))
-			throw new IllegalArgumentException("The committed answer must be an AnswerDate!");
-		if (question instanceof QuestionText && !(answer instanceof AnswerText))
-			throw new IllegalArgumentException("The committed answer must be an AnswerText!");
+			if (!(((QuestionChoice) question).getAllAlternatives().contains(value.getValue())))
+				throw new IllegalArgumentException(value + " is not an allowed value for " + question.getName());
+		if (question instanceof QuestionNum && !(value instanceof NumValue))
+			throw new IllegalArgumentException("The committed value must be a NumValue!");
+		if (question instanceof QuestionDate && !(value instanceof DateValue))
+			throw new IllegalArgumentException("The committed value must be an DateValue!");
+		if (question instanceof QuestionText && !(value instanceof TextValue))
+			throw new IllegalArgumentException("The committed value must be an TextValue!");
 		
 		// Set parameters
 		this.question = question;
-		this.answer = answer;
+		this.value = value;
 	}
 
 	public Question getQuestion() {
 		return question;
 	}
 
-	public Answer getAnswer() {
-		return answer;
+	public Value getValue() {
+		return value;
 	}
 	
 	
