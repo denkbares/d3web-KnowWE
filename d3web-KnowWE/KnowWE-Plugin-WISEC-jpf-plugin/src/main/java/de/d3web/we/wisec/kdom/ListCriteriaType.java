@@ -18,27 +18,25 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.wisec;
+package de.d3web.we.wisec.kdom;
 
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.wisec.kdom.subtreehandler.ListCriteriaD3SubtreeHandler;
+import de.d3web.we.wisec.kdom.subtreehandler.ListCriteriaOWLSubtreeHandler;
 
 /**
- * The root type of the ListSubstances section
+ * Content type for the ListCriteria section.
  * 
  * @author Sebastian Furth
  */
-public class ListSubstancesRootType extends DefaultMarkupType {
+public class ListCriteriaType extends DefaultAbstractKnowWEObjectType {
 
-	private static DefaultMarkup m = null;
-	
-	static {
-		m = new DefaultMarkup("ListSubstances");
-		m.addContentType(new ListSubstancesType());
-		m.addAnnotation("ListID", true);
+	public ListCriteriaType() {
+		setSectionFinder(new AllTextSectionFinder());
+		addSubtreeHandler(new ListCriteriaOWLSubtreeHandler());
+		addSubtreeHandler(new ListCriteriaD3SubtreeHandler());
+		addChildType(new WISECTable());
 	}
-	
-	public ListSubstancesRootType() {
-		super(m);
-	}	
+		
 }

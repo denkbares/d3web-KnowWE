@@ -18,27 +18,24 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.wisec;
+package de.d3web.we.wisec.kdom;
 
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.wisec.kdom.subtreehandler.ListSubstancesD3SubtreeHandler;
+import de.d3web.we.wisec.kdom.subtreehandler.ListSubstancesOWLSubtreeHandler;
 
 /**
- * The root type of the UpperListCategories section
+ * Content type for the ListSubstances section.
  * 
  * @author Sebastian Furth
  */
-public class UpperListCategoriesRootType extends DefaultMarkupType {
+public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
 
-	private static DefaultMarkup m = null;
-	
-	static {
-		m = new DefaultMarkup("UpperListCategorization");
-		m.addContentType(new UpperListCategoriesType());
-		m.addAnnotation("ListID", true);
+	public ListSubstancesType() {
+		setSectionFinder(new AllTextSectionFinder());
+		addSubtreeHandler(new ListSubstancesOWLSubtreeHandler());	
+		addSubtreeHandler(new ListSubstancesD3SubtreeHandler());
+		addChildType(new WISECTable());
 	}
-	
-	public UpperListCategoriesRootType() {
-		super(m);
-	}	
 }

@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.wisec;
+package de.d3web.we.wisec.kdom;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.table.Table;

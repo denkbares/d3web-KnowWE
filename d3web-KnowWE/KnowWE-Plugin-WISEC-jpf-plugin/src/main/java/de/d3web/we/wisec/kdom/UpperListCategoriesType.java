@@ -18,23 +18,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.wisec;
+package de.d3web.we.wisec.kdom;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.wisec.kdom.subtreehandler.UpperListCategoriesOWLSubtreeHandler;
 
 /**
- * Content type for the ListCriteria section.
+ * Content type for the ListCategorization section.
  * 
  * @author Sebastian Furth
  */
-public class ListCriteriaType extends DefaultAbstractKnowWEObjectType {
+public class UpperListCategoriesType extends DefaultAbstractKnowWEObjectType {
 
-	public ListCriteriaType() {
+	public UpperListCategoriesType() {
 		setSectionFinder(new AllTextSectionFinder());
-		addSubtreeHandler(new ListCriteriaOWLSubtreeHandler());
-		addSubtreeHandler(new ListCriteriaD3SubtreeHandler());
+		addSubtreeHandler(new UpperListCategoriesOWLSubtreeHandler());	
 		addChildType(new WISECTable());
 	}
-		
+	
 }

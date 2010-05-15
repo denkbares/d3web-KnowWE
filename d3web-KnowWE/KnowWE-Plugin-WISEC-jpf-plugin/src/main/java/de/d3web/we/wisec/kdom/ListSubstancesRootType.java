@@ -18,22 +18,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.wisec;
+package de.d3web.we.wisec.kdom;
 
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * Content type for the ListSubstances section.
+ * The root type of the ListSubstances section
  * 
  * @author Sebastian Furth
  */
-public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
+public class ListSubstancesRootType extends DefaultMarkupType {
 
-	public ListSubstancesType() {
-		setSectionFinder(new AllTextSectionFinder());
-		addSubtreeHandler(new ListSubstancesOWLSubtreeHandler());	
-		addSubtreeHandler(new ListSubstancesD3SubtreeHandler());
-		addChildType(new WISECTable());
+	private static DefaultMarkup m = null;
+	
+	static {
+		m = new DefaultMarkup("ListSubstances");
+		m.addContentType(new ListSubstancesType());
+		m.addAnnotation("ListID", true);
 	}
+	
+	public ListSubstancesRootType() {
+		super(m);
+	}	
 }

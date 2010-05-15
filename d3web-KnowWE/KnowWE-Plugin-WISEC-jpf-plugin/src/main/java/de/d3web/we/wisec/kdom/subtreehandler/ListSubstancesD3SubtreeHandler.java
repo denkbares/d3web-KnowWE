@@ -1,4 +1,4 @@
-package de.d3web.we.wisec;
+package de.d3web.we.wisec.kdom.subtreehandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,9 @@ import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.logging.Logging;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.wisec.kdom.ListSubstancesRootType;
+import de.d3web.we.wisec.kdom.ListSubstancesType;
+import de.d3web.we.wisec.kdom.WISECTable;
 
 public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 	
