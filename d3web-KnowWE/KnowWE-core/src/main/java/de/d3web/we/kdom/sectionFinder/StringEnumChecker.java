@@ -21,22 +21,23 @@
 package de.d3web.we.kdom.sectionFinder;
 
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 
-public class StringEnumChecker implements SubtreeHandler{
+public class StringEnumChecker<T extends KnowWEObjectType> implements SubtreeHandler<T> {
 
-	private String [] values;
-	private KDOMError error;
-	
+	private final String [] values;
+	private final KDOMError error;
+
 	public StringEnumChecker(String [] values, KDOMError error ) {
 		this.values = values;
 		this.error = error;
 	}
-	
+
 	@Override
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
 		boolean found = false;
@@ -45,13 +46,13 @@ public class StringEnumChecker implements SubtreeHandler{
 				found = true;
 			}
 		}
-		
+
 		if(!found) {
 			return error;
 		}
 		return null;
-		
-		
+
+
 	}
 
 }
