@@ -316,8 +316,6 @@ public class KnowWEEnvironment {
 		return mgr;
 	}
 
-	public static final String EVENT_INIT = "KnowWE initialization";
-
 	/**
 	 * private contructor
 	 *
@@ -588,8 +586,6 @@ public class KnowWEEnvironment {
 	// return this.articleManagers.get(web).getArticle(topic).getSections();
 	//
 	// }
-
-	public static final String EVENT_ARTICLE_CREATED = "article-created";
 
 	/**
 	 * Called from the Wikiplugin when article is saved. Parses and updates

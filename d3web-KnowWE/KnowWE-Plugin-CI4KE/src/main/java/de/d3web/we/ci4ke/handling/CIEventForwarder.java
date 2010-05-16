@@ -20,30 +20,30 @@
 
 package de.d3web.we.ci4ke.handling;
 
-import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.event.ArticleCreatedEvent;
+import de.d3web.we.event.Event;
 import de.d3web.we.event.EventListener;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
-public class CIEventForwarder implements EventListener {
+public class CIEventForwarder implements EventListener<ArticleCreatedEvent> {
 
 	public CIEventForwarder() {}
 	
 	@Override
-	public String[] getEvents() {
-		String[] ret = {KnowWEEnvironment.EVENT_ARTICLE_CREATED};
-		return ret;
+	public Class<? extends Event> getEvent() {
+		return ArticleCreatedEvent.class;
 	}
 
 	@Override
 	public void notify(String username, Section<? extends KnowWEObjectType> s,
-			String eventName) {
-		
-		if(eventName.equals(KnowWEEnvironment.EVENT_ARTICLE_CREATED)) {
-			if(s.getObjectType().getClass().equals(KnowWEArticle.class)) {
-				CIHookManager.getInstance().triggerHooks(s.getId());
-			}
+			ArticleCreatedEvent event) {
+		if(s.getObjectType().getClass().equals(KnowWEArticle.class)) {
+			CIHookManager.getInstance().triggerHooks(s.getId());
 		}
+		
 	}
+
+
 }
