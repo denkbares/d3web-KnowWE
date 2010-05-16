@@ -6,7 +6,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 
-public abstract class QuestionRef extends D3webObjectRef<Question> {
+public class QuestionRef extends D3webObjectRef<Question> {
 
 	public QuestionRef() {
 		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));

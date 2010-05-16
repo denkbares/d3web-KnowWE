@@ -21,7 +21,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionRef;
-import de.d3web.we.kdom.objects.QuestionRefImpl;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -62,7 +61,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	private KnowWEObjectType createObjectRefTypeBefore(
 			KnowWEObjectType typeAfter) {
-		QuestionRef qid = new QuestionRefImpl<Question>();
+		QuestionRef qid = new QuestionRef();
 		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
 		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
 		qid.addSubtreeHandler(new CreateSetValueRuleHandler());
@@ -105,10 +104,10 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	static class CreateSetValueRuleHandler implements SubtreeHandler {
+	static class CreateSetValueRuleHandler implements SubtreeHandler<QuestionRef> {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<QuestionRef> s) {
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils
@@ -189,7 +188,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 		}
 
-		private String getArgumentString(Section s) {
+		private String getArgumentString(Section<QuestionRef> s) {
 			String argument = null;
 			List<Section<AnonymousType>> children = new ArrayList<Section<AnonymousType>>();
 			s.getFather().findSuccessorsOfType(AnonymousType.class, children);
@@ -205,7 +204,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	public static String trimQuotes(Section s) {
+	public static String trimQuotes(Section<?> s) {
 		String content = s.getOriginalText();
 
 		String trimmed = content.trim();

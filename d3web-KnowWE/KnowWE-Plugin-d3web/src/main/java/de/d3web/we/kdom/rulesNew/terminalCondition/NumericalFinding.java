@@ -14,7 +14,6 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.QuestionRef;
-import de.d3web.we.kdom.objects.QuestionRefImpl;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -59,8 +58,8 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 	class NumericalFindingFinder extends SectionFinder {
 
-		private AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
-		
+		private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
+
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			for (String comp : comparators) {
@@ -80,7 +79,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 	}
 
-	class NumQuestionRefImpl extends QuestionRefImpl {
+	class NumQuestionRefImpl extends QuestionRef {
 
 
 	}

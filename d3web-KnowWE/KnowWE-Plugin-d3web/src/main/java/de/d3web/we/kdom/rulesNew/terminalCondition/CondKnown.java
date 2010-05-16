@@ -6,7 +6,6 @@ import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.QuestionRef;
-import de.d3web.we.kdom.objects.QuestionRefImpl;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -31,7 +30,7 @@ public class CondKnown extends D3webTerminalCondition<CondKnown> {
 		this.sectionFinder = new CondKnownFinder();
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR7));
 
-		QuestionRef question = new QuestionRefImpl<Question>();
+		QuestionRef question = new QuestionRef();
 		question.setSectionFinder(new SectionFinder() {
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section father) {

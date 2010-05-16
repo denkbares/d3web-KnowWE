@@ -1,7 +1,9 @@
-package de.d3web.we.kdom.objects;
+package de.d3web.we.kdom.questionTreeNew;
 
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.objects.AnswerDef;
+import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
 public class QuestionTreeAnswerDef extends AnswerDef {

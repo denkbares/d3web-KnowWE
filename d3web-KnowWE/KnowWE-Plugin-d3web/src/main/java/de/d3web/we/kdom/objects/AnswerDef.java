@@ -34,13 +34,11 @@ public abstract class AnswerDef extends D3webObjectDef<Answer> {
 
 	}
 
-	static class createAnswerHandler implements SubtreeHandler {
+	static class createAnswerHandler implements SubtreeHandler<AnswerDef> {
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<AnswerDef> s) {
 
-			if (s.getObjectType() instanceof QuestionTreeAnswerDef) {
 
 				KnowledgeBaseManagement mgn = D3webModule
 						.getKnowledgeRepresentationHandler(article.getWeb())
@@ -49,7 +47,7 @@ public abstract class AnswerDef extends D3webObjectDef<Answer> {
 				if (mgn == null) return null;
 
 				// "safe unsafe cast"
-				Section<QuestionTreeAnswerDef> answer = s;
+				Section<AnswerDef> answer = s;
 				String name = answer.get().getTermName(answer);
 				Section<? extends QuestionDef> questionID = answer.get().getQuestionSection(
 						answer);
@@ -66,8 +64,6 @@ public abstract class AnswerDef extends D3webObjectDef<Answer> {
 				}
 				return new ObjectCreationError("no choice question - " + name,
 						this.getClass());
-			}
-			return new ObjectCreationError(null, this.getClass());
 		}
 	}
 

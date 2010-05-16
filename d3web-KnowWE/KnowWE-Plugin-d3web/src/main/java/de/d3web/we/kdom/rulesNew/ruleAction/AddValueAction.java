@@ -10,7 +10,6 @@ import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.objects.AnswerRef;
 import de.d3web.we.kdom.objects.AnswerRefImpl;
 import de.d3web.we.kdom.objects.QuestionRef;
-import de.d3web.we.kdom.objects.QuestionRefImpl;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
@@ -39,7 +38,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			AnonymousType equals = new AnonymousType("plus-equal");
 			equals.setSectionFinder(new StringSectionFinderUnquoted(ADD_VALUE_SIGN));
 
-			QuestionRef qr = new QuestionRefImpl<Question>();
+			QuestionRef qr = new QuestionRef();
 			qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
 			this.childrenTypes.add(equals);
 			this.childrenTypes.add(qr);
@@ -88,7 +87,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			AnonymousType equals = new AnonymousType("plus-equal");
 			equals.setSectionFinder(new StringSectionFinderUnquoted(ADD_VALUE_SIGN));
 
-			QuestionRef qr = new QuestionRefImpl<Question>();
+			QuestionRef qr = new QuestionRef();
 			qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
 			this.childrenTypes.add(equals);
 			this.childrenTypes.add(qr);

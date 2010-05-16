@@ -16,7 +16,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.FindingToConditionBuilder;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
-import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
 
 public class Utils {
 

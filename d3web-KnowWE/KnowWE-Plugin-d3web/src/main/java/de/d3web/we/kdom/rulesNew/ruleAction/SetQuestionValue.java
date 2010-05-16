@@ -31,7 +31,6 @@ import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
 import de.d3web.we.kdom.objects.AnswerRef;
 import de.d3web.we.kdom.objects.AnswerRefImpl;
 import de.d3web.we.kdom.objects.QuestionRef;
-import de.d3web.we.kdom.objects.QuestionRefImpl;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -48,7 +47,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	public void init() {
 		this.sectionFinder = new SetQuestionValueSectionFinder();
 		Equals equals = new Equals();
-		QuestionRef qr = new QuestionRefImpl<Question>();
+		QuestionRef qr = new QuestionRef();
 		qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
 		this.childrenTypes.add(equals);
 		this.childrenTypes.add(qr);

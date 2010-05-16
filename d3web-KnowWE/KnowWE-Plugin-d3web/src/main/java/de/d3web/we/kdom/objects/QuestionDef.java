@@ -10,7 +10,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
-import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
@@ -33,11 +32,11 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 
 
 
-static class CreateQuestionHandler implements SubtreeHandler {
+	static class CreateQuestionHandler implements SubtreeHandler<QuestionDef> {
 
 	@Override
 	public KDOMReportMessage reviseSubtree(KnowWEArticle article,
-			Section sec) {
+				Section<QuestionDef> sec) {
 
 		Section<QuestionDef> qidSection = (sec);
 
@@ -50,17 +49,18 @@ static class CreateQuestionHandler implements SubtreeHandler {
 
 		IDObject o = mgn.findQuestion(name);
 
-		if (o != null) {
-				// TODO: quick fix - remove when Question is exceptionally
-				// created in this handler
-				if (o instanceof Question) {
-					qidSection.get().storeObject(qidSection, (Question) o);
-				}
-
-			return new ObjectAlreadyDefinedWarning(o.getClass()
-					.getSimpleName());
-		}
-		else {
+			// if (o != null) {
+			// // TODO: quick fix - remove when Question is exceptionally
+			// // created in this handler
+			// if (o instanceof Question) {
+			// qidSection.get().storeObject(qidSection, (Question) o);
+			// }
+			//
+			// return new ObjectAlreadyDefinedWarning(o.getClass()
+			// .getSimpleName());
+			// }
+			// else
+			{
 				QASet parent = D3webUtils.findParent(qidSection, mgn);
 
 			de.d3web.we.kdom.objects.QuestionDef.QuestionType questionType = qidSection.get().getQuestionType(

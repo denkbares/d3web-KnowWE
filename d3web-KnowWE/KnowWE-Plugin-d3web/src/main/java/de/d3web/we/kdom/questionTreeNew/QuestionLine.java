@@ -4,24 +4,20 @@ import java.util.List;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.IDObject;
-import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
-import de.d3web.we.kdom.objects.QuestionTreeAnswerDef;
 import de.d3web.we.kdom.objects.QuestionDef.QuestionType;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
@@ -30,6 +26,7 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
+import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
@@ -37,14 +34,11 @@ import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
-import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	protected void init() {
+	public QuestionLine() {
 
 		// every line containing [...] (unquoted) is recognized as QuestionLine
 		this.sectionFinder = new ConditionalAllTextFinder() {
@@ -56,9 +50,14 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			}
 		};
 
-		QuestionTypeDeclaration typeDeclarationType = new QuestionTypeDeclaration();
-		this.childrenTypes.add(typeDeclarationType);
+		//type of the question '[oc]'
+		this.childrenTypes.add(new QuestionTypeDeclaration());
+		// abstract flag: '<abstract>'
+		this.childrenTypes.add(new AbstractFlag());
+		 // questiontext - startet by '~'
 		this.childrenTypes.add(new QuestionText());
+
+		// finally the name of the question
 		this.childrenTypes
 				.add(new QuestionDefQTree());
 	}
@@ -82,27 +81,16 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	static <T extends KnowWEObjectType> Section<T> badCast(T t, Section o) {
-		return o;
-	}
 
-	static <T extends KnowWEObjectType> Section<T> badCast(Class<T> c, Section o) {
-		return o;
-	}
-
-	static class CreateIndicationHandler implements SubtreeHandler {
+	static class CreateIndicationHandler implements SubtreeHandler<QuestionDefQTree> {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			//Section<QuestionID> qidSection = ((Section<QuestionID>) s);
+		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<QuestionDefQTree> qidSection) {
 
-			Section<QuestionDef> qidSection = badCast(QuestionDef.class, s);
-
-			String name = qidSection.get().getTermName(qidSection);
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils
-					.getAncestorOfType(s, new DashTreeElement());
+					.getAncestorOfType(qidSection, new DashTreeElement());
 			// get dashTree-father
 			Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
 					.getDashTreeFather(element);
@@ -139,40 +127,35 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	}
 
 
+	static class AbstractFlag extends DefaultAbstractKnowWEObjectType {
 
-	static class TypeDeclarationRenderer extends KnowWEDomRenderer<QuestionTypeDeclaration> {
+		public AbstractFlag() {
+			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
+					"<abstract>", "<abstrakt>" });
+			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 
-		@Override
-		public void render(KnowWEArticle article, Section sec,
-				KnowWEUserContext user, StringBuilder string) {
+			this.addSubtreeHandler(new SubtreeHandler<AbstractFlag>() {
 
-			String imgTagPrefix = "<img src='KnowWEExtension/images/";
-			QuestionType questionType = QuestionTypeDeclaration
-					.getQuestionType(sec);
-			if (questionType.equals(QuestionType.OC)) {
-				string.append(KnowWEUtils.maskHTML(imgTagPrefix
-						+ "questionChoice.gif'>"));
-			} else if (questionType.equals(QuestionType.MC)) {
-				string.append(KnowWEUtils.maskHTML(imgTagPrefix
-						+ "questionMC.gif'>"));
-			} else if (questionType.equals(QuestionType.NUM)) {
-				string.append(KnowWEUtils.maskHTML(imgTagPrefix
-						+ "questionNum.gif'>"));
-			} else if (questionType.equals(QuestionType.YN)) {
-				string.append(KnowWEUtils.maskHTML(imgTagPrefix
-						+ "questionYesNo.gif'>"));
-			} else if (questionType.equals(QuestionType.DATE)) {
-				string.append(KnowWEUtils.maskHTML(imgTagPrefix
-						+ "questionDate.gif'>"));
-			} else if (questionType.equals(QuestionType.TEXT)) {
-				string.append(KnowWEUtils.maskHTML(imgTagPrefix
-						+ "questionText.gif'>"));
-			} else {
-				string.append(sec.getOriginalText());
-			}
+				@Override
+				public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<AbstractFlag> s) {
 
+
+					Section<QuestionDef> qDef = s.getFather().findSuccessor(
+							QuestionDef.class);
+
+					if (qDef != null) {
+
+						Question question = qDef.get().getObject(qDef);
+						question.getProperties().setProperty(
+								Property.ABSTRACTION_QUESTION, true);
+						return new ObjectCreatedMessage("abstract question");
+
+					}
+					return new ObjectCreationError("QuestionText",
+							this.getClass());
+				}
+			});
 		}
-
 	}
 
 	static class QuestionText extends DefaultAbstractKnowWEObjectType {
@@ -185,12 +168,11 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 					QTEXT_START_SYMBOL));
 
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR8));
-			this.addSubtreeHandler( new SubtreeHandler() {
+			this.addSubtreeHandler(new SubtreeHandler<QuestionText>() {
 
 				@Override
-				public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+				public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<QuestionText> sec) {
 
-					Section<QuestionText> sec = (Section<QuestionText>) s;
 
 					Section<QuestionDef> qDef = sec.getFather().findSuccessor(
 							QuestionDef.class);
@@ -198,52 +180,6 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 					if (qDef != null) {
 
 						Question question = qDef.get().getObject(qDef);
-
-						// TODO - quick-fix: delete this part when reviseHandler
-						// priority is solved
-						// this part does itself created the actual question
-						// (which in principle shouldnt happen here!)
-						if(question == null) {
-
-							String name = qDef.get().getTermName(qDef);
-
-							KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
-									article.getWeb())
-									.getKBM(article, this, sec);
-							if (mgn == null) return null;
-
-							IDObject o = mgn.findQuestion(name);
-
-							if (o == null) {
-								QASet parent = D3webUtils.findParent(qDef, mgn);
-
-								de.d3web.we.kdom.objects.QuestionDef.QuestionType questionType = qDef.get().getQuestionType(
-										qDef);
-
-								if (questionType.equals(QuestionType.OC)) {
-									question = mgn.createQuestionOC(name, parent, new String[] {});
-								}
-								else if (questionType.equals(QuestionType.MC)) {
-									question = mgn.createQuestionMC(name, parent, new String[] {});
-								}
-								else if (questionType.equals(QuestionType.NUM)) {
-									question = mgn.createQuestionNum(name, parent);
-								}
-								else if (questionType.equals(QuestionType.YN)) {
-									question = mgn.createQuestionYN(name, parent);
-								}
-								else if (questionType.equals(QuestionType.DATE)) {
-									question = mgn.createQuestionDate(name, parent);
-								}
-								else if (questionType.equals(QuestionType.TEXT)) {
-									question = mgn.createQuestionText(name, parent);
-								}
-								else {
-									// no valid type...
-								}
-
-						}}
-
 
 						if (question != null) {
 							D3webUtils.addMMInfo(question, "LT",
@@ -268,6 +204,13 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
+	/**
+	 * @author Jochen
+	 *
+	 *         A KnowWEType for the question-type declaration keys
+	 *         "[oc],[mc],[num],..."
+	 * 
+	 */
 	static class QuestionTypeDeclaration extends
 			DefaultAbstractKnowWEObjectType {
 
@@ -316,7 +259,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			};
 			this.setSectionFinder(typeFinder);
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
-			this.addSubtreeHandler(new StringEnumChecker(
+			this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(
 					QUESTION_DECLARATIONS, new SimpleMessageError(
 							"Invalid Question type - allowing only: "
 									+ QUESTION_DECLARATIONS.toString())));

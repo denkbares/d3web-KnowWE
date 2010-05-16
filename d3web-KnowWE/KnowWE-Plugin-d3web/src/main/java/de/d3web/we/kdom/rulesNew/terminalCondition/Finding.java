@@ -24,7 +24,6 @@ import java.util.List;
 
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -33,7 +32,6 @@ import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.AnswerRef;
 import de.d3web.we.kdom.objects.AnswerRefImpl;
 import de.d3web.we.kdom.objects.QuestionRef;
-import de.d3web.we.kdom.objects.QuestionRefImpl;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -63,7 +61,7 @@ public class Finding extends D3webTerminalCondition<Finding> {
 		this.childrenTypes.add(comparator);
 
 		// question
-		QuestionRef question = new QuestionRefImpl<Question>();
+		QuestionRef question = new QuestionRef();
 		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
@@ -96,7 +94,7 @@ public class Finding extends D3webTerminalCondition<Finding> {
 
 class FindingFinder extends SectionFinder {
 
-	private AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
+	private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
