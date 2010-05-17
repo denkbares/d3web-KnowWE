@@ -1,6 +1,8 @@
 package de.d3web.we.wisec.kdom.subtreehandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -32,7 +34,7 @@ import de.d3web.we.wisec.kdom.WISECTable;
 public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 	
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 
 		// Just to have fewer warnings :-)
 		Section<ListSubstancesType> section = s;
@@ -58,11 +60,11 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 				createD3Objects(section.getOriginalText().trim(), kbm, listID, article.getWeb());
 			}
 						
-			return new NewObjectCreated("Successfully created D3Web Objects");
+			return Arrays.asList((KDOMReportMessage) new NewObjectCreated("Successfully created D3Web Objects"));
 			
 		} else
-			return new ObjectCreationError("Unable to create d3web Objects. KBM was null!",
-					this.getClass());
+			return Arrays.asList((KDOMReportMessage) new ObjectCreationError("Unable to create d3web Objects. KBM was null!",
+					this.getClass()));
 	}
 
 	private void createD3ObjectsUsingKDom(Section<ListSubstancesType> section,

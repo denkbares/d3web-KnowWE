@@ -1,6 +1,7 @@
 package de.d3web.we.wisec.kdom.subtreehandler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -26,7 +27,7 @@ import de.d3web.we.wisec.kdom.WISECTable;
 public class ListSubstancesOWLSubtreeHandler implements SubtreeHandler {
 	
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 
 		// Just to have fewer warnings :-)
 		Section<ListSubstancesType> section = s;
