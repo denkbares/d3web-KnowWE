@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.table;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,7 +83,7 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 	private class TableLineHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			Section<TableCell> colHeaderCell = s.findSuccessor(TableCell.class);
 			if (colHeaderCell != null) {
 

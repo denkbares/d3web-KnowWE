@@ -22,6 +22,7 @@ package de.d3web.we.testsuite;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
@@ -68,7 +69,7 @@ public class TestsuiteSection extends AbstractKopicSection{
 	private class TestsuiteSectionSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 	
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
@@ -87,7 +88,7 @@ public class TestsuiteSection extends AbstractKopicSection{
 					List<de.d3web.report.Message> messages = builder.addKnowledge(r, idom, null);
 					
 					// Reporting
-					storeMessages(article, s,messages);
+					storeMessages(article, s, this.getClass(), messages);
 					Report testsuiteRep = new Report();
 					
 					for (Message messageKnOffice : messages) {

@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.table.xcl;
 
+
+import java.util.Collection;
+
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -102,7 +105,7 @@ class SolutionCellHandler implements SubtreeHandler {
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 		KnowledgeBaseManagement mgn = D3webModule
 				.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 

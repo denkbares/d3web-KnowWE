@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.dashTree.solutions;
 
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
@@ -29,6 +30,7 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEParseResult;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
@@ -53,7 +55,7 @@ public class SolutionsSection extends AbstractKopicSection {
 	private class SolutionsSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 	
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
@@ -67,7 +69,7 @@ public class SolutionsSection extends AbstractKopicSection {
 							.parse(new StringReader(content.getOriginalText()), kbm, new SingleKBMIDObjectManager(kbm));
 	
 					
-					storeMessages(article, s,messages);
+					AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), messages);
 					
 					
 					Report ruleRep = new Report();

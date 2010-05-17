@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.xcl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -41,7 +42,6 @@ import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.decisionTree.SolutionID;
-import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -69,7 +69,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	private class XCLHeadSubtreeHandler extends D3webReviseSubTreeHandler {
 		
 
-		public KDOMError reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			
 			Section father = s.getFather();
 			
@@ -125,7 +125,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	private class XCLHeadOWLSubTreeHandler implements SubtreeHandler{
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section section) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section section) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager.getInstance()
 					.getContext(section, DefaultSubjectContext.CID);

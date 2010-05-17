@@ -23,6 +23,9 @@
  */
 package de.d3web.we.kdom.owlextension;
 
+
+import java.util.Collection;
+
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.UpperOntology;
@@ -53,7 +56,7 @@ public class OwlPropertiesContent extends XMLContent{
 	private class OwlPropertiesContentOWLSubTreeHandler implements SubtreeHandler{
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			  IntermediateOwlObject io=new IntermediateOwlObject();
 			    String text=s.getOriginalText();	    
 			    for (String cur:text.split("\r\n|\r|\n")){

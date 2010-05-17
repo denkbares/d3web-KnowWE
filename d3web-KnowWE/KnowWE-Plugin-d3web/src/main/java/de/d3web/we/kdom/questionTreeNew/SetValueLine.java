@@ -1,6 +1,8 @@
 package de.d3web.we.kdom.questionTreeNew;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.Rule;
@@ -107,7 +109,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 	static class CreateSetValueRuleHandler implements SubtreeHandler<QuestionRef> {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<QuestionRef> s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<QuestionRef> s) {
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils
@@ -140,8 +142,8 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 						Rule r = RuleFactory.createSetValueRule(newRuleID, qc, new Object[]{a}, cond, null);
 						if (r != null) {
-							return new ObjectCreatedMessage(r.getClass() + " : "
-									+ r.getId());
+							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass() + " : "
+									+ r.getId()));
 						}
 
 					}
@@ -151,7 +153,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 					try {
 						d = Double.parseDouble(argument);
 					} catch (NumberFormatException e) {
-						return new InvalidNumberError(argument);
+						return Arrays.asList((KDOMReportMessage) new InvalidNumberError(argument));
 					}
 
 					if(d != null) {
@@ -159,8 +161,8 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 						Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
 						Rule r  = RuleFactory.createAddValueRule(newRuleID, q, new Object[]{d},cond);
 						if (r != null) {
-							return new ObjectCreatedMessage(r.getClass() + " : "
-									+ r.getId());
+							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass() 
+									+ " : " + r.getId()));
 						}
 					}
 
@@ -178,13 +180,13 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, d, score, cond);
 					if (r != null) {
-						return new ObjectCreatedMessage(r.getClass() + " : "
-								+ r.getId());
+						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass() 
+								+ " : " + r.getId()));
 					}
 				}
 			}
 
-			return new CreateRelationFailed(Rule.class.getSimpleName());
+			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()));
 
 		}
 

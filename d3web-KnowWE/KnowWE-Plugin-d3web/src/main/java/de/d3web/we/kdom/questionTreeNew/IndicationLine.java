@@ -1,5 +1,11 @@
 package de.d3web.we.kdom.questionTreeNew;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -10,7 +16,6 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.objects.QuestionnaireDef;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -37,7 +42,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 	static class CreateIndication implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, this, s);
@@ -59,18 +64,18 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 					Rule r = RuleFactory.createIndicationRule(newRuleID, qc,
 							cond);
 					if (r != null) {
-						return new ObjectCreatedMessage(r.getClass() + " : "
-								+ r.getId());
+						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass() 
+								+ " : " + r.getId()));
 					}
 					
 				}
-				return new CreateRelationFailed(Rule.class
-						.getSimpleName());
+				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class
+						.getSimpleName()));
 			} else {
 
-				KDOMError.storeError(s, this.getClass(), new NoSuchObjectError(name));
+				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(name));
 			}
-			return null;
+			
 		}
 
 	}

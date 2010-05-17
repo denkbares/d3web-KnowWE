@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom.xcl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -62,8 +64,8 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 	private class XCLRelationOWLSubTreeHandler implements SubtreeHandler{
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			KDOMReportMessage msg =null;
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
 				UpperOntology uo = UpperOntology.getInstance();
@@ -102,10 +104,10 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 
 				}
 			} catch (RepositoryException e) {
-				msg = new SimpleMessageError(e.getMessage());
+				msgs.add(new SimpleMessageError(e.getMessage()));
 			}
 			SemanticCore.getInstance().addStatements(io, s);
-			return msg;
+			return msgs;
 
 		}
 		

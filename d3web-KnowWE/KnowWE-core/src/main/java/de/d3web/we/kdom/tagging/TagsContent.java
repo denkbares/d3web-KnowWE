@@ -22,6 +22,7 @@ package de.d3web.we.kdom.tagging;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
 
 import org.openrdf.model.URI;
 
@@ -47,7 +48,7 @@ public class TagsContent extends XMLContent {
 	private class TagsContentOWLSubTreeHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			String text = s.getOriginalText();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			for (String cur : text.split(" |,")) {

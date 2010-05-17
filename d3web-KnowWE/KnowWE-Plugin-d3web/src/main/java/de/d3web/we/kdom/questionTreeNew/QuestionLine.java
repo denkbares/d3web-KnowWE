@@ -1,5 +1,8 @@
 package de.d3web.we.kdom.questionTreeNew;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.Rule;
@@ -85,7 +88,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	static class CreateIndicationHandler implements SubtreeHandler<QuestionDefQTree> {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<QuestionDefQTree> qidSection) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<QuestionDefQTree> qidSection) {
 
 
 			// current DashTreeElement
@@ -98,7 +101,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			Section<QuestionTreeAnswerDef> answerSec = dashTreeFather
 					.findSuccessor(QuestionTreeAnswerDef.class);
 			Section<NumericCondLine> numCondSec = dashTreeFather
-			.findSuccessor(NumericCondLine.class);
+				.findSuccessor(NumericCondLine.class);
 
 
 			if (answerSec != null || numCondSec != null) {
@@ -113,15 +116,15 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				Rule r = RuleFactory.createIndicationRule(newRuleID, qidSection
 						.get().getObject(qidSection), cond);
 				if (r != null) {
-					return new ObjectCreatedMessage(r.getClass() + " : "
-							+ r.getId());
+					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass() + " : "
+							+ r.getId()));
 				} else {
-					return new CreateRelationFailed(Rule.class.getSimpleName());
+					return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()));
 				}
 			}
 
 
-			return null;
+			return new ArrayList<KDOMReportMessage>(0);
 		}
 
 	}
@@ -137,7 +140,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			this.addSubtreeHandler(new SubtreeHandler<AbstractFlag>() {
 
 				@Override
-				public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<AbstractFlag> s) {
+				public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<AbstractFlag> s) {
 
 
 					Section<QuestionDef> qDef = s.getFather().findSuccessor(
@@ -148,11 +151,11 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 						Question question = qDef.get().getObject(qDef);
 						question.getProperties().setProperty(
 								Property.ABSTRACTION_QUESTION, true);
-						return new ObjectCreatedMessage("abstract question");
+						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage("abstract question"));
 
 					}
-					return new ObjectCreationError("QuestionText",
-							this.getClass());
+					return Arrays.asList((KDOMReportMessage) new ObjectCreationError("QuestionText",
+							this.getClass()));
 				}
 			});
 		}
@@ -171,7 +174,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			this.addSubtreeHandler(new SubtreeHandler<QuestionText>() {
 
 				@Override
-				public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<QuestionText> sec) {
+				public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<QuestionText> sec) {
 
 
 					Section<QuestionDef> qDef = sec.getFather().findSuccessor(
@@ -185,11 +188,11 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 							D3webUtils.addMMInfo(question, "LT",
 									MMInfoSubject.PROMPT.getName(),
 									QuestionText.getQuestionText(sec), null);
-							return new ObjectCreatedMessage("QuestionText created");
+							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage("QuestionText created"));
 						}
 					}
-					return new ObjectCreationError("QuestionText",
-							this.getClass());
+					return Arrays.asList((KDOMReportMessage) new ObjectCreationError("QuestionText",
+							this.getClass()));
 				}
 			});
 		}

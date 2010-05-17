@@ -19,6 +19,9 @@
  */
 package de.d3web.we.hermes.maps;
 
+
+import java.util.Collection;
+
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -49,7 +52,7 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType
 			SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			IntermediateOwlObject ioo = new IntermediateOwlObject();
 			Placemark placem = extractPlacemark(s.getOriginalText());
 			MapType.addPlacemarkToOwlObject(placem, ioo);

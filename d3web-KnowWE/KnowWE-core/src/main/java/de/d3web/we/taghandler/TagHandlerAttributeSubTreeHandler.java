@@ -20,6 +20,7 @@
 
 package de.d3web.we.taghandler;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class TagHandlerAttributeSubTreeHandler implements SubtreeHandler {
 
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 	
-	public KDOMReportMessage reviseSubtree(KnowWEArticle art, Section sec) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle art, Section sec) {
 				
 		String text = sec.getOriginalText();
 		

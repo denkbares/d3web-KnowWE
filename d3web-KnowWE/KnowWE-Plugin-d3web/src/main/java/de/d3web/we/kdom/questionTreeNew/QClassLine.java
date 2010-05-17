@@ -1,5 +1,11 @@
 package de.d3web.we.kdom.questionTreeNew;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -63,7 +69,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 	static class CreateQuestionnaireHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			
 			Section<QuestionnaireDef> qcSec = (s);
 			
@@ -78,8 +84,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 			IDObject o = mgn.findQContainer(name);
 
 			if (o != null) {
-				return new ObjectAlreadyDefinedWarning(o.getClass()
-						.getSimpleName());
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(o.getClass()
+						.getSimpleName()));
 			} else {
 				Section<DashTreeElement> element = KnowWEObjectTypeUtils
 						.getAncestorOfType(s, new DashTreeElement());
@@ -102,10 +108,10 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 				QContainer qc = mgn.createQContainer(name, parent);
 				if (qc != null) {
 					qcSec.get().storeObject(qcSec, qc);
-					return new NewObjectCreated(qc.getClass().getSimpleName()
-							+ " " + qc.getName());
+					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(qc.getClass().getSimpleName()
+							+ " " + qc.getName()));
 				} else {
-					return new ObjectCreationError(name, this.getClass());
+					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name, this.getClass()));
 				}
 			}
 		}

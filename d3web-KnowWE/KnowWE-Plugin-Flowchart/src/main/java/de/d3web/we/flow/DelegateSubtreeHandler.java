@@ -20,6 +20,7 @@
 package de.d3web.we.flow;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -45,7 +46,7 @@ public class DelegateSubtreeHandler implements SubtreeHandler {
 	}
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 
 		List<Section> found = new ArrayList();
 		s.findSuccessorsOfType(sectionType, found);
@@ -54,8 +55,8 @@ public class DelegateSubtreeHandler implements SubtreeHandler {
 		for (Section child : found) {
 			
 			
-			KDOMReportMessage message = handler.reviseSubtree(article, child);
-			KDOMReportMessage.storeMessage(child, this.getClass(), message);
+			Collection<KDOMReportMessage> messages = handler.reviseSubtree(article, child);
+			KDOMReportMessage.storeMessages(article, child, this.getClass(), messages);
 			
 		}
 		

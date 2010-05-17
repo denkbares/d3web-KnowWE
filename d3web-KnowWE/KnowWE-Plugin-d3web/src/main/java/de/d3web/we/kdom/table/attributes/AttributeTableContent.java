@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.table.attributes;
 
 import java.io.StringReader;
+import java.util.Collection;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.txttable.TxtAttributeTableBuilder;
@@ -53,12 +54,16 @@ public class AttributeTableContent extends XMLContent {
 		}
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
 			if (kbm != null) {			
-				AbstractKnowWEObjectType.storeMessages(article, s.getFather(), 
+				AbstractKnowWEObjectType.storeMessages(article, s.getFather(), this.getClass(), 
+						builder.addKnowledge(new StringReader(s.getOriginalText()), 
+								new SingleKBMIDObjectManager(kbm), null));
+			} else {
+				AbstractKnowWEObjectType.storeMessages(article, s.getFather(), this.getClass(), 
 						builder.addKnowledge(new StringReader(s.getOriginalText()), 
 								new SingleKBMIDObjectManager(kbm), null));
 			}

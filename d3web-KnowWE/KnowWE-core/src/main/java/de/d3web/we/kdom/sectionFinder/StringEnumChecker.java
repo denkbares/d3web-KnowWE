@@ -20,6 +20,10 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -39,18 +43,18 @@ public class StringEnumChecker<T extends KnowWEObjectType> implements SubtreeHan
 	}
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 		boolean found = false;
 		for (String string : values) {
 			if(s.getOriginalText().contains(string)) {
 				found = true;
 			}
 		}
-
+		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 		if(!found) {
-			return error;
+			msgs.add(error);
 		}
-		return null;
+		return msgs;
 
 
 	}

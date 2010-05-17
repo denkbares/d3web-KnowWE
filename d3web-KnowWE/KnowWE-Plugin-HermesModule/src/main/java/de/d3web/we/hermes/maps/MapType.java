@@ -2,6 +2,7 @@ package de.d3web.we.hermes.maps;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class MapType extends AbstractXMLObjectType {
 	private class MapTypeOWLSubTreeHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			IntermediateOwlObject ioo = new IntermediateOwlObject();
 			String url = getIFrameSrcURL(s);
 			KMLLoader kmlLoader = new KMLLoader(url);

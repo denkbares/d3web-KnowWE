@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.table.xcl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -57,7 +58,7 @@ public class QuestionLine extends TableLine {
 	class QuestionLineHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			
 			Section<TableColumnHeaderCellContent> headerCell = s.findSuccessor(TableColumnHeaderCellContent.class);
 			headerCell.setType(QuestionCell.getInstance());

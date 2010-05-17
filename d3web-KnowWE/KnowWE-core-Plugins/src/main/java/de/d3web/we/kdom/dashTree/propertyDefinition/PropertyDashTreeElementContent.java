@@ -20,6 +20,11 @@
 
 package de.d3web.we.kdom.dashTree.propertyDefinition;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.OWL;
 import org.openrdf.model.vocabulary.RDF;
@@ -64,7 +69,10 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 	{
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+			
+			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+			
 			Section<PropertyDashTreeElementContent> sec = s;
 			if (s.getObjectType() instanceof PropertyDashTreeElementContent) {
 				Section<PropertyIDDefinition> propIDSection = sec.findSuccessor(PropertyIDDefinition.class);
@@ -133,12 +141,12 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 						}
 						SemanticCore.getInstance().addStatements(io, s);						
 					} catch (RepositoryException e) {						
-						return new SimpleMessageError(e.getMessage());
+						msgs.add(new SimpleMessageError(e.getMessage()));
 					}
 
 				}
 			}
-			return null;
+			return msgs;
 		}
 		
 	}

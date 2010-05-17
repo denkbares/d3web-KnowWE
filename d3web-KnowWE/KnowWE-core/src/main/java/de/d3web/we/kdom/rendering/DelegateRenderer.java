@@ -20,9 +20,9 @@
 
 package de.d3web.we.kdom.rendering;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -150,20 +150,20 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 
 		// any messageRenderer has pre- and post rendering hook
 		// first call pre-rendering for all messages of this subsection
-		renderMessagesPre(subSection, user, builder);
+		renderMessagesPre(subSection, user, builder, article);
 
 		// use subSection's renderer
 		KnowWEDomRenderer renderer = getRenderer(subSection, user);
 		renderer.render(article, subSection, user, builder);
 
 		// then call post rendering for all messages of this subsection
-		renderMessagesPost(subSection, user, builder);
+		renderMessagesPost(article, subSection, user, builder);
 	}
 
-	private void renderMessagesPost(Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
+	private void renderMessagesPost(KnowWEArticle article, Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
 		// Render errors post
-		Set<KDOMError> errors = KDOMReportMessage
-				.getErrors(subSection);
+		Collection<KDOMError> errors = KDOMReportMessage
+				.getErrors(article, subSection);
 		if (errors != null && errors.size() > 0) {
 			for (KDOMError kdomNotice : errors) {
 				MessageRenderer errorRenderer = subSection.get()
@@ -175,8 +175,8 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 
 		// Render notices post
-		Set<KDOMNotice> notices = KDOMReportMessage
-				.getNotices(subSection);
+		Collection<KDOMNotice> notices = KDOMReportMessage
+				.getNotices(article, subSection);
 		if (notices != null && notices.size() > 0) {
 			for (KDOMNotice kdomNotice : notices) {
 				MessageRenderer noticeRenderer = subSection.get()
@@ -188,7 +188,7 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 
 		// Render warnings post
-		Set<KDOMWarning> warnings = KDOMReportMessage.getWarnings(subSection);
+		Collection<KDOMWarning> warnings = KDOMReportMessage.getWarnings(article, subSection);
 		if (warnings != null && warnings.size() > 0) {
 			for (KDOMWarning kdomWarning : warnings) {
 				MessageRenderer warningRenderer = subSection.get()
@@ -201,9 +201,9 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 	}
 
-	private void renderMessagesPre(Section<?> subSection, KnowWEUserContext user, StringBuilder builder) {
+	private void renderMessagesPre(Section<?> subSection, KnowWEUserContext user, StringBuilder builder, KnowWEArticle article) {
 		// Render warnings pre
-		Set<KDOMWarning> warnings = KDOMReportMessage.getWarnings(subSection);
+		Collection<KDOMWarning> warnings = KDOMReportMessage.getWarnings(article, subSection);
 		if (warnings != null && warnings.size() > 0) {
 			for (KDOMWarning kdomWarning : warnings) {
 				MessageRenderer warningRenderer = subSection.get()
@@ -216,8 +216,8 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 
 		// Render notices pre
-		Set<KDOMNotice> notices = KDOMReportMessage
-				.getNotices(subSection);
+		Collection<KDOMNotice> notices = KDOMReportMessage
+				.getNotices(article, subSection);
 		if (notices != null && notices.size() > 0) {
 			for (KDOMNotice kdomNotice : notices) {
 				MessageRenderer noticeRenderer = subSection.get()
@@ -229,8 +229,8 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 		}
 
 		// Render errors pre
-		Set<KDOMError> errors = KDOMReportMessage
-				.getErrors(subSection);
+		Collection<KDOMError> errors = KDOMReportMessage
+				.getErrors(article, subSection);
 		if (errors != null && errors.size() > 0) {
 			for (KDOMError kdomNotice : errors) {
 				MessageRenderer errorRenderer = subSection.get()

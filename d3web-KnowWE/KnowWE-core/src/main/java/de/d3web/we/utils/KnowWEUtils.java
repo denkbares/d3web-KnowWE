@@ -23,6 +23,12 @@ package de.d3web.we.utils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.servlet.ServletContext;
@@ -30,10 +36,15 @@ import javax.servlet.ServletContext;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.store.SectionStore;
 
 public class KnowWEUtils {
+	
+	private static final String createMsgMapKey(Class<?> msgType) {
+		return "message_map_key_" + msgType.getName();
+	}
 
 	// public static URL getKbUrl(String web,String id) {
 	// String varPath = getWebEnvironmentPath(web);
@@ -79,6 +90,161 @@ public class KnowWEUtils {
 				+ section.getArticle().getTitle().replace(' ', '+') + "-"
 				+ Math.abs(section.getId().hashCode());
 	}
+	
+	/**
+	 * Clears all Messages for the given article, section, source and msgType.
+	 * 
+	 * @param article is the article you want to clear the message for
+	 * @param sec is the section you want to clear the message for
+	 * @param source is the Class the message you want to clear originate from
+	 * @param msgType is the Class of the message you want to clear
+	 */
+	public static <MSGType> void clearMessages(KnowWEArticle article, Section<?> sec,
+			Class<?> source, Class<MSGType> msgType) {
+		storeMessages(article, sec, source, msgType, new ArrayList<MSGType>(0));
+	}
+	
+	/**
+	 * Stores a single Message for the given Section and source. <p/>
+	 * <b>ATTENTION: For this method applies the same as for the method
+	 * KnowWEUtils#storeMessages(Section, Class, Class, Collection) .
+	 * It can only be used once for the given set of parameters. If you use this method
+	 * a second time with the same parameters, the first Message gets overwritten!</b>
+	 * 
+	 * @param article is the article you want to store the message for
+	 * @param sec is the section you want to store the message for
+	 * @param source is the Class the message originate from
+	 * @param msgType is the Class of the message you want to store
+	 * @param msgs is the message you want so store
+	 */
+	public static <MSGType> void storeSingleMessage(KnowWEArticle article, Section<?> sec,
+			Class<?> source, Class<MSGType> msgType, MSGType msg) {
+		if (msg != null) {
+			List<MSGType> msgList = new ArrayList<MSGType>(1);
+			msgList.add(msg);
+			storeMessages(article, sec, source, msgType, msgList);
+		}
+	}
+	
+	/**
+	 * Stores the given Collection of Messages <tt>m</tt> with the type <tt>MSGType</tt> 
+	 * from the Class <tt>source</tt> for the KnowWEArticle <tt>article</tt> and 
+	 * the Section <tt>s</tt>. <p/>
+	 * <b>ATTENTION: This method can only be used once for each article, section,
+	 * source and msgType. If you use this Method a second time with the same parameters, the 
+	 * first Collection gets overwritten!</b>
+	 * 
+	 * @param article is the article you want to store the messages for
+	 * @param sec is the section you want to store the messages for
+	 * @param source is the Class the messages originate from
+	 * @param msgType is the Class of the messages you want to store
+	 * @param msgs is the Collection of messages you want so store
+	 */
+
+	public static <MSGType> void storeMessages(KnowWEArticle article, Section<?> sec,
+			Class<?> source, Class<MSGType> msgType, Collection<MSGType> msgs) {
+		if (msgs != null) {
+			Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec, msgType);
+			if (msgsMap == null) {
+				msgsMap = new HashMap<String, Collection<MSGType>>();
+				KnowWEUtils.storeSectionInfo(article.getWeb(), article.getTitle(), sec.getId(), 
+						createMsgMapKey(msgType), msgsMap);
+			}
+			msgsMap.put(source.getName(), Collections.unmodifiableCollection(msgs));
+		}
+	}
+	
+	/**
+	 * Returns an unmodifiable Collection containing all Messages of the KDOM subtree
+	 * with the given Section as root.
+	 * 
+	 * @param article is the article you want the message from (not necessarily the same
+	 * 		as <tt>sec.getArticle()</tt> because the Section could be included in another
+	 * 		article)
+	 * @param sec is the root of the KDOM subtree you want the messages from
+	 * @param msgType is the Class of the Messages you want
+	 * @return an unmodifiable Collection of Messages
+	 */
+	public static <MSGType> Collection<MSGType> getMessagesFromSubtree(KnowWEArticle article, 
+			Section<?> sec, Class<MSGType> msgType) {
+		Collection<MSGType> msgsList = new ArrayList<MSGType>();
+		List<Section<?>> nodes = new ArrayList<Section<?>>();
+		sec.getAllNodesPreOrder(nodes);
+		for (Section<?> n:nodes) {
+			msgsList.addAll(getMessages(article, n, msgType));
+		}
+		return Collections.unmodifiableCollection(msgsList);
+	}
+	
+	/**
+	 * Returns an unmodifiable Collection containing all Messages of the Type <tt>MSGType</tt>.
+	 * 
+	 * @param article is the article you want the message from (not necessarily the same
+	 * 		as <tt>sec.getArticle()</tt> because the Section could be included in another
+	 * 		article)
+	 * @param sec is the Section you want the messages from
+	 * @param msgType is the Class of the Messages you want
+	 * @return an unmodifiable Collection of Messages
+	 */
+	public static <MSGType> Collection<MSGType> getMessages(KnowWEArticle article, Section<?> sec,
+			Class<MSGType> msgType) {
+		Map<String, Collection<MSGType>> msgsMap =  getMessagesMapModifiable(article, sec, msgType);
+		Collection<MSGType> msgsList = new ArrayList<MSGType>();
+		if (msgsMap != null) {
+			for (Collection<MSGType> coll:msgsMap.values()) {
+				msgsList.addAll(coll);
+			}
+		}
+		return Collections.unmodifiableCollection(msgsList);
+	}
+	
+	/**
+	 * Returns an unmodifiable Collection containing all Messages of the Type <tt>MSGType</tt> 
+	 * stored for the Class <tt>source</tt>.
+	 * 
+	 * @param article is the article you want the message from (not necessarily the same
+	 * 		as <tt>sec.getArticle()</tt> because the Section could be included in another
+	 * 		article)
+	 * @param sec is the Section you want the messages from
+	 * @param source is the Class of the source of the messages you want
+	 * @param msgType is the Class of the Messages you want
+	 * @return an unmodifiable Collection of Messages
+	 */
+	public static <MSGType> Collection<MSGType> getMessages(KnowWEArticle article, Section<?> sec, 
+			Class<?> source, Class<MSGType> msgType) {
+		Map<String, Collection<MSGType>> msgsMap =  getMessagesMapModifiable(article, sec, msgType);
+		if (msgsMap != null && msgsMap.containsKey(source.getName())) {
+			return Collections.unmodifiableCollection(msgsMap.get(source.getName()));
+		}
+		return Collections.unmodifiableCollection(new ArrayList<MSGType>(0));
+	}
+	
+	/**
+	 * Returns the an unmodifiable Map containing all Messages of the Type <tt>MSGType</tt>.
+	 * The Collections are mapped after the String <tt>source.getName()</tt>.
+	 * 
+	 * @param article is the article you want the message from (not necessarily the same
+	 * 		as <tt>sec.getArticle()</tt> because the Section could be included in another
+	 * 		article)
+	 * @param sec is the Section you want the messages from
+	 * @param msgType is the Class of the Messages you want
+	 * @return an unmodifiable Map with the Messages, mapped after <tt>source.getName()</tt>
+	 */
+	public static <MSGType> Map<String, Collection<MSGType>> getMessagesMap(KnowWEArticle article, 
+			Section<?> sec, Class<MSGType> msgType) {
+		return Collections.unmodifiableMap(getMessagesMapModifiable(article, sec, msgType));
+	}
+	
+	/**
+	 * This method is private to avoid misuse (this map is modifiable).
+	 */
+	@SuppressWarnings("unchecked")
+	private static <MSGType> Map<String, Collection<MSGType>> getMessagesMapModifiable(KnowWEArticle article, 
+			Section<?> sec, Class<MSGType> msgType) {
+		return (Map<String, Collection<MSGType>>) KnowWEUtils.getStoredObject(article.getWeb(), 
+				article.getTitle(), sec.getId(), createMsgMapKey(msgType));
+	}
+
 
 	public static void storeSectionInfo(String web, String article, String kdomid, String key, Object o) {
 		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().storeObject(
@@ -407,5 +573,6 @@ public class KnowWEUtils {
 	// }
 	// return u;
 	// }
+	
 
 }

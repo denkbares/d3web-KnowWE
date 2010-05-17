@@ -1,6 +1,7 @@
 package de.d3web.we.hermes.kdom.conceptMining;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,8 +47,8 @@ public class AnnotationObjectInTimeEvent extends SemanticAnnotationObject {
 			SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			KDOMReportMessage msg = null;
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			UpperOntology uo = UpperOntology.getInstance();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			List<Section> childs = s.getChildren();
@@ -85,7 +86,7 @@ public class AnnotationObjectInTimeEvent extends SemanticAnnotationObject {
 				URI TEURI = null;
 				if (tURI == null) {
 					KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
-					return msg;
+					return msgs;
 				} else {
 					TEURI = tURI.getTimeEventURI();
 				}
@@ -98,11 +99,11 @@ public class AnnotationObjectInTimeEvent extends SemanticAnnotationObject {
 
 					io.addAllStatements(slist);
 				} catch (RepositoryException e) {
-					msg = new SimpleMessageError(e.getMessage());
+					msgs.add(new SimpleMessageError(e.getMessage()));
 				}
 			}
 			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
-			return msg;
+			return msgs;
 		}
 
 	}

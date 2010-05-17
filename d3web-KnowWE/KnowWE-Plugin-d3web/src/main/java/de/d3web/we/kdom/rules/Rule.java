@@ -164,7 +164,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	class RuleSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 
 			boolean lazy = false;
 			Section xml = KnowWEObjectTypeUtils.getAncestorOfType(s,
@@ -201,7 +201,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 								.getRuleIDs().get(0));
 					}
 
-					AbstractKnowWEObjectType.storeMessages(article, s, bm);
+					AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), bm);
 					List<Message> errors = new ArrayList<Message>();
 					for (Message message : bm) {
 						if (message.getMessageType().equals(Message.ERROR)

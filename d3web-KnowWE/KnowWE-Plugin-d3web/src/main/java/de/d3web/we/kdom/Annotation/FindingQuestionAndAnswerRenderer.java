@@ -19,7 +19,7 @@
  */
 package de.d3web.we.kdom.Annotation;
 
-import java.util.List;
+import java.util.Collection;
 
 import de.d3web.report.Message;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
@@ -52,14 +52,14 @@ public class FindingQuestionAndAnswerRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 
-		List<Message> messages = AbstractKnowWEObjectType.getMessages(article, sec);
+		Collection<Message> messages = AbstractKnowWEObjectType.getMessages(article, sec);
 		
-		if (messages.isEmpty() || messages.get(0).getMessageText().equals("")) {
+		if (messages.isEmpty() || messages.iterator().next().getMessageText().equals("")) {
 			delegate.render(article, sec, user, string);
 		} else {
 			
 			//TODO: atm just the first is used, rest ignored
-			Message message = messages.get(0);
+			Message message = messages.iterator().next();
 			
 			
 			

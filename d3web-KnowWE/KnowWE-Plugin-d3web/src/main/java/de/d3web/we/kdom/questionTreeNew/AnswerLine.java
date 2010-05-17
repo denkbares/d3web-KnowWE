@@ -1,5 +1,11 @@
 package de.d3web.we.kdom.questionTreeNew;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -50,8 +56,8 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+			
 			if(s.getObjectType() instanceof QuestionTreeAnswerDef) {
 
 				KnowledgeBaseManagement mgn = D3webModule
@@ -72,12 +78,13 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 				if(q instanceof QuestionChoice) {
 					Answer a = mgn.addChoiceAnswer((QuestionChoice)q, name);
 					answer.get().storeObject(answer, a);
-					return new NewObjectCreated(a.getClass().getSimpleName()+"  "+a.getName());
+					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(a.getClass().getSimpleName()
+							+"  "+a.getName()));
 				}
-				return new ObjectCreationError("no choice question - " + name,
-						this.getClass());
+				return Arrays.asList((KDOMReportMessage) new ObjectCreationError("no choice question - " + name,
+						this.getClass()));
 			}
-			return new ObjectCreationError(null, this.getClass());
+			return Arrays.asList((KDOMReportMessage) new ObjectCreationError(null, this.getClass()));
 		}
 	}
 }

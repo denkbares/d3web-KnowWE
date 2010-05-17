@@ -1,8 +1,11 @@
 package de.d3web.we.kdom.defaultMarkup;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.report.Message;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
@@ -18,7 +21,10 @@ public class DefaultMarkupSubtreeHandler implements SubtreeHandler {
 	}
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section markupSection) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section markupSection) {
+		
+		List<Message> msgs = new ArrayList<Message>();
+		
 		// check defined annotations
 		for (Annotation annotation : this.markup.getAnnotations()) {
 			String name = annotation.getName();
@@ -28,7 +34,7 @@ public class DefaultMarkupSubtreeHandler implements SubtreeHandler {
 			// check existence of mandatory annotation
 			if (annotationSection == null && annotation.isMandatory()) {
 				Message message = new Message(Message.ERROR, "The annotation @"+name+" is mandatory, but missing. Please specify that annotation.", "", -1, "");
-				DefaultMarkupType.addErrorMessage(markupSection, message);
+				msgs.add(message);
 			}
 		}
 
@@ -37,7 +43,7 @@ public class DefaultMarkupSubtreeHandler implements SubtreeHandler {
 		for (Section<?> annotationSection : unknownSections) {
 			String name = UnknownAnnotationType.getName(annotationSection);
 			Message message = new Message(Message.WARNING, "The annotation @"+name+" is not known to KnowWE. It will be ignored.", "", -1, "");
-			DefaultMarkupType.addErrorMessage(markupSection, message);
+			msgs.add(message);
 		}
 		
 		// check annotated sections
@@ -49,9 +55,11 @@ public class DefaultMarkupSubtreeHandler implements SubtreeHandler {
 			if (!annotation.matches(text)) {
 				String name = annotation.getName();
 				Message message = new Message(Message.ERROR, "The value of annotation @"+name+" is invalid: "+text, "", -1, "");
-				DefaultMarkupType.addErrorMessage(markupSection, message);
+				msgs.add(message);
 			}
 		}
+		if (!msgs.isEmpty())
+			AbstractKnowWEObjectType.storeMessages(article, markupSection, this.getClass(), msgs);
 		
 		return null;
 	}

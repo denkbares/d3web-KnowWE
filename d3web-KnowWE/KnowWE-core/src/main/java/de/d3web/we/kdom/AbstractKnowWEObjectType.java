@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.internal.compiler.util.Messages;
+
 import de.d3web.report.Message;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.DefaultErrorRenderer;
@@ -196,50 +198,95 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 			}
 		}
 	}
+	
+	/**
+	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
+	 */
+	public static void storeSingleMessage(KnowWEArticle article, Section<?> sec, Class<?> source, Message msg) {
+		KnowWEUtils.storeSingleMessage(article, sec, source, Message.class, msg);
+	}
+	
+	/**
+	 * @see KnowWEUtils#clearMessages(KnowWEArticle, Section, Class, Class)
+	 */
+	public static void cleanMessages(KnowWEArticle article, Section<?> section, Class<?> source) {
+		KnowWEUtils.clearMessages(article, section, source, Messages.class);
+	}
+	
+	/**
+	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Class, Collection)
+	 */
+	public static void storeMessages(KnowWEArticle article, Section<?> section, 
+			Class<?> source, Collection<Message> messages) {
+		KnowWEUtils.storeMessages(article, section, source, Message.class, messages);
+	}
+	
+	/**
+	 * @see KnowWEUtils#getMessages(KnowWEArticle, Section, Class)
+	 */
+	public static Collection<Message> getMessages(KnowWEArticle article, Section<?> section) {
+		return KnowWEUtils.getMessages(article, section, Message.class);
+	}
+	
+	/**
+	 * @see KnowWEUtils#getMessages(KnowWEArticle, Section, Class, Class)
+	 */
+	public static Collection<Message> getMessages(KnowWEArticle article, Section<?> section, Class<?> source) {
+		return KnowWEUtils.getMessages(article, section, source, Message.class);
+	}
 
 	/**
-	 * Returns all the messages stored for this section put doesn't create a new
-	 * empty MessageList in the SectionStore if no MessageList is there yet.
-	 * Returns <tt>null</tt> in this case.
-	 *
-	 * @param s
-	 * @return
+	 * @see KnowWEUtils#getMessagesFromSubtree(KnowWEArticle, Section, Class)
 	 */
-	public static List<Message> getMessagesPassively(KnowWEArticle article, Section s) {
-		Object o = KnowWEUtils.getStoredObject(
-				article.getWeb(), article.getTitle(), s.getId(),
-				MESSAGES_STORE_KEY);
-		if (o == null) {
-			return null;
-		}
-		else {
-			return toMessages(o, article, s);
-		}
+	public static Collection<Message> getMessagesFromSubtree(KnowWEArticle article, Section<?> section) {
+		return KnowWEUtils.getMessagesFromSubtree(article, section, Message.class);
 	}
 
-	/**
-	 * Returns all the messages stored for this section.
-	 *
-	 * @param s
-	 * @return
-	 */
-	public static List<Message> getMessages(KnowWEArticle article, Section s) {
-		return toMessages(KnowWEUtils.getStoredObject(
-				article.getWeb(), article.getTitle(), s.getId(),
-				MESSAGES_STORE_KEY), article, s);
-	}
 
-	private static List<Message> toMessages(Object o, KnowWEArticle article, Section s) {
-		if (o instanceof List) {
-			return (List<Message>) o;
-		}
-		if (o == null) {
-			List<Message> msg = new ArrayList<Message>();
-			storeMessages(article, s, msg);
-			return msg;
-		}
-		return null;
-	}
+
+//	/**
+//	 * Returns all the messages stored for this section put doesn't create a new
+//	 * empty MessageList in the SectionStore if no MessageList is there yet.
+//	 * Returns <tt>null</tt> in this case.
+//	 *
+//	 * @param s
+//	 * @return
+//	 */
+//	public static List<Message> getMessagesPassively(KnowWEArticle article, Section s) {
+//		Object o = KnowWEUtils.getStoredObject(
+//				article.getWeb(), article.getTitle(), s.getId(),
+//				MESSAGES_STORE_KEY);
+//		if (o == null) {
+//			return null;
+//		}
+//		else {
+//			return toMessages(o, article, s);
+//		}
+//	}
+//
+//	/**
+//	 * Returns all the messages stored for this section.
+//	 *
+//	 * @param s
+//	 * @return
+//	 */
+//	public static List<Message> getMessages(KnowWEArticle article, Section s) {
+//		return toMessages(KnowWEUtils.getStoredObject(
+//				article.getWeb(), article.getTitle(), s.getId(),
+//				MESSAGES_STORE_KEY), article, s);
+//	}
+//
+//	private static List<Message> toMessages(Object o, KnowWEArticle article, Section s) {
+//		if (o instanceof List) {
+//			return (List<Message>) o;
+//		}
+//		if (o == null) {
+//			List<Message> msg = new ArrayList<Message>();
+//			storeMessages(article, s, msg);
+//			return msg;
+//		}
+//		return null;
+//	}
 
 	public void replaceChildType(KnowWEObjectType type,
 			Class<? extends KnowWEObjectType> c)
@@ -262,22 +309,22 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		}
 
 	}
-
-	/**
-	 * Stores a list of messages under to message-store-key
-	 *
-	 * @param article is the article, the message is getting stored for. Be
-	 *        aware, that this is not automatically the article the section is
-	 *        directly linked to (because this Section might be included), but
-	 *        the article that is calling this for example while revising.
-	 * @param s
-	 * @param messages
-	 */
-	public static void storeMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
-			List<Message> messages) {
-		KnowWEUtils.storeSectionInfo(article.getWeb(), article
-				.getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
-	}
+//
+//	/**
+//	 * Stores a list of messages under to message-store-key
+//	 *
+//	 * @param article is the article, the message is getting stored for. Be
+//	 *        aware, that this is not automatically the article the section is
+//	 *        directly linked to (because this Section might be included), but
+//	 *        the article that is calling this, for example while revising.
+//	 * @param s
+//	 * @param messages
+//	 */
+//	public static void storeMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
+//			List<Message> messages) {
+//		KnowWEUtils.storeSectionInfo(article.getWeb(), article
+//				.getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -472,4 +519,5 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		}
 
 	}
+
 }

@@ -21,6 +21,7 @@ package de.d3web.we.kdom.owlextension;
 
 import java.io.IOException;
 import java.io.StringBufferInputStream;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +56,7 @@ public class ExtensionContent extends XMLContent{
 	private class ExtensionContentOWLSubTreeHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			String text=s.getOriginalText();
 			
 			IntermediateOwlObject io = extend(text,s);;

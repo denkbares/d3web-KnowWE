@@ -1,6 +1,7 @@
 package de.d3web.we.kdom.table.xcl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -37,7 +38,7 @@ public class QuestionnaireCellContent extends
 		public static final String KEY_REPORT = "report_message";
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<QuestionnaireCellContent> s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<QuestionnaireCellContent> s) {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, this, s);

@@ -24,6 +24,7 @@
 package de.d3web.we.kdom.semanticAnnotation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,9 +81,9 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType
 			SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			Section name = s
-					.findChildOfType(SemanticAnnotationPropertyName.class);
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+			
+			Section name = s.findChildOfType(SemanticAnnotationPropertyName.class);
 			KDOMReportMessage msg = null;
 
 			IntermediateOwlObject io = new IntermediateOwlObject();
@@ -110,7 +111,7 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType
 			}
 			io.addLiteral(property);
 			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
-			return msg;
+			return null;
 		}
 
 	}

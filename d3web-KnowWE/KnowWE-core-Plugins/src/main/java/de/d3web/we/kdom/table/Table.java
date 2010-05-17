@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.table;
 
+
+import java.util.Collection;
+
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -95,7 +98,7 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType implements T
 	private class TableSubTreeHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section sec) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section sec) {
 			Section<?> s = sec;
 			Section<TableLine> headerLine = s.findSuccessor(TableLine.class);
 			AbstractKnowWEObjectType solutionHeaderType = new TableHeaderLine();

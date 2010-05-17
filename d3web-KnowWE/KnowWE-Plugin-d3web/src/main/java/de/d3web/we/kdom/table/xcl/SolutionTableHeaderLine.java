@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.table.xcl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -28,9 +29,9 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellContent;
-import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableHeaderLine;
 import de.d3web.we.kdom.table.TableUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
@@ -57,7 +58,7 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 		 * 
 		 */
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 
 
 			List<Section<TableCell>> cells = new ArrayList<Section<TableCell>>();

@@ -23,6 +23,9 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
+
+import java.util.Collection;
+
 import org.openrdf.model.URI;
 
 import de.d3web.we.core.SemanticCore;
@@ -53,8 +56,7 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 			SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			KDOMReportMessage msg = null;
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			UpperOntology uo = UpperOntology.getInstance();
 			String annos = s.getOriginalText().trim().replaceAll(" ", "_");
@@ -80,7 +82,7 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 				io.addLiteral(anno);
 			}
 			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
-			return msg;
+			return null;
 		}
 
 	}

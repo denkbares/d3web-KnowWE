@@ -21,6 +21,9 @@
  */
 package de.d3web.we.kdom.defaultMarkup;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,7 +81,9 @@ public class DefaultMarkupOwlHandler implements SubtreeHandler {
 
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section section) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section section) {
+		
+		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 		
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
@@ -126,11 +131,12 @@ public class DefaultMarkupOwlHandler implements SubtreeHandler {
 			Logger.getLogger("DefaultMarkup").log(Level.SEVERE,
 					"cannot create concept for default markup '" +
 					getMarkupName() + "'", e);
-			return new SimpleMessageError(e.getMessage());
+			msgs.add(new SimpleMessageError(e.getMessage()));
+			return msgs;
 		}
 
 		SemanticCore.getInstance().addStatements(io, section);
-		return null;
+		return msgs;
 
 	}
 

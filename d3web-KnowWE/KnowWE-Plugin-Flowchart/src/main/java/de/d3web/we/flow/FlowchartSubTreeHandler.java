@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +94,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		
 		KnowledgeBaseManagement kbm = getKBM(article, s);
 
 		if (kbm == null) return null;
@@ -102,6 +103,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		Section content = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
 		if (content == null) return null;
+		
+		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 
 		final List<Message> errors = new ArrayList<Message>();
 
@@ -132,24 +135,27 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		FluxSolver.addFlow(flow, knowledgeBase, article.getTitle());
 
-		if (!errors.isEmpty()) System.out.println(errors.size() + " errors in FlowTerminology '"
-				+ name + "': " + errors);
+		if (!errors.isEmpty()) {
+			System.out.println(errors.size() + " errors in FlowTerminology '"
+						+ name + "': " + errors);
 
-		if (errors.isEmpty()) return null;
-		else return new KDOMWarning() {
+			msgs.add(new KDOMWarning() {
 
-			@Override
-			public String getVerbalization(KnowWEUserContext usercontext) {
-				StringBuffer buffer = new StringBuffer();
-
-				for (Message message : errors) {
-					buffer.append(KnowWEUtils.maskHTML(message.getLineNo() + ": "
-							+ message.getMessageText() + "\r\n"));
+				@Override
+				public String getVerbalization(KnowWEUserContext usercontext) {
+					StringBuffer buffer = new StringBuffer();
+	
+					for (Message message : errors) {
+						buffer.append(KnowWEUtils.maskHTML(message.getLineNo() + ": "
+								+ message.getMessageText() + "\r\n"));
+					}
+	
+					return buffer.toString();
 				}
-
-				return buffer.toString();
-			}
-		};
+			});
+		}
+		
+		return msgs;
 	}
 
 	private List<IEdge> createEdges(KnowWEArticle article, List<Section> edgeSections, List<INode> nodes, List<Message> errors) {

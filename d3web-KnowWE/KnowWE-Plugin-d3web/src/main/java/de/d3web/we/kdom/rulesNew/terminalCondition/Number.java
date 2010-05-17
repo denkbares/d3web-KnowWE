@@ -1,5 +1,10 @@
 package de.d3web.we.kdom.rulesNew.terminalCondition;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -29,16 +34,15 @@ public class Number extends DefaultAbstractKnowWEObjectType {
 	class NumberChecker implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			try {
 				Double.parseDouble(s.getOriginalText().trim());
 			}
 			catch (Exception e) {
-				KDOMReportMessage.storeError(s, this.getClass(), new
-						InvalidNumberError(
-						s.getOriginalText().trim()));
+				msgs.add(new InvalidNumberError(s.getOriginalText().trim()));
 			}
-			return null;
+			return msgs;
 		}
 
 	}

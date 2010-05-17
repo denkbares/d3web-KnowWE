@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.subtreeHandler;
 
+
+import java.util.Collection;
+
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -43,7 +46,7 @@ public interface SubtreeHandler<T extends KnowWEObjectType> {
 	 * 		article the Section is hooked into directly, since Sections can also be included!
 	 * @param s is the root section of the subtree to revise
 	 */
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<T> s);
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<T> s);
 	
 
 }

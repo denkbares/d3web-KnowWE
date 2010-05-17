@@ -21,13 +21,13 @@
 package de.d3web.we.kdom.include;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -83,7 +83,7 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 			sec.getAllNodesPreOrder(successors);
 			boolean errors = false;
 			for (Section suc:successors) {
-				List<Message> messages = AbstractKnowWEObjectType.getMessagesPassively(article, suc);
+				Collection<Message> messages = AbstractKnowWEObjectType.getMessages(article, suc);
 				if (messages != null) {
 					for (Message msg:messages) {
 						if (msg.getMessageType().equals(Message.WARNING) 

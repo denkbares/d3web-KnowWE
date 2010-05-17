@@ -1,5 +1,8 @@
 package de.d3web.we.kdom.objects;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -37,7 +40,7 @@ public abstract class AnswerDef extends D3webObjectDef<Answer> {
 	static class createAnswerHandler implements SubtreeHandler<AnswerDef> {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<AnswerDef> s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<AnswerDef> s) {
 
 
 				KnowledgeBaseManagement mgn = D3webModule
@@ -59,11 +62,11 @@ public abstract class AnswerDef extends D3webObjectDef<Answer> {
 				if (q instanceof QuestionChoice) {
 					Answer a = mgn.addChoiceAnswer((QuestionChoice) q, name);
 					answer.get().storeObject(answer, a);
-					return new NewObjectCreated(a.getClass().getSimpleName() + "  "
-							+ a.getName());
+					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(a.getClass().getSimpleName() + "  "
+							+ a.getName()));
 				}
-				return new ObjectCreationError("no choice question - " + name,
-						this.getClass());
+				return Arrays.asList((KDOMReportMessage) new ObjectCreationError("no choice question - " + name,
+						this.getClass()));
 		}
 	}
 

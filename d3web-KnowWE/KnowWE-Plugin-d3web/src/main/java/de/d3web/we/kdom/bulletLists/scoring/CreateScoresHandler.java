@@ -1,5 +1,6 @@
 package de.d3web.we.kdom.bulletLists.scoring;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public class CreateScoresHandler implements SubtreeHandler {
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 
 		Section scoringSection = KnowWEObjectTypeUtils.getAncestorOfType(s,
 				BulletScoring.class);
@@ -82,9 +83,8 @@ public class CreateScoresHandler implements SubtreeHandler {
 				KnowWEUtils.storeSectionInfo(
 						s.getArticle().getWeb(), article.getTitle(), s.getId(),
 						de.d3web.we.kdom.rules.Rule.KBID_KEY, rule.getId());
-
-			}
-			else {
+				
+			} else {
 				// TODO ERRORHANDLING
 			}
 		}

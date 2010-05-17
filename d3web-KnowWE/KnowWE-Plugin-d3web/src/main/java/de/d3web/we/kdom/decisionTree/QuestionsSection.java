@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.decisionTree;
 
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
@@ -54,7 +55,7 @@ public class QuestionsSection extends AbstractKopicSection {
 	private class QuestionsSectionSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 	
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			
@@ -66,7 +67,7 @@ public class QuestionsSection extends AbstractKopicSection {
 					List<de.d3web.report.Message> messages = D3DTBuilder
 							.parse(new StringReader(content.getOriginalText()), new SingleKBMIDObjectManager(kbm));
 	
-					storeMessages(article, s,messages);
+					storeMessages(article, s, this.getClass(), messages);
 					Report ruleRep = new Report();
 					for (Message messageKnOffice : messages) {
 						ruleRep.add(messageKnOffice);

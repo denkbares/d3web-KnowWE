@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.kopic.renderer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
@@ -59,7 +60,7 @@ public class RuleSectionRenderer extends KnowWEDomRenderer {
 				String rulesParsed = MessageKnOfficeGenerator.getResourceBundle().getString("rule");
 				int rnum = 1;
 				for (Section r:rules) {
-					List<Message> rmsgs = AbstractKnowWEObjectType.getMessages(article, r);
+					Collection<Message> rmsgs = AbstractKnowWEObjectType.getMessages(article, r);
 					boolean foundWarning = false;
 					boolean foundError = false;
 					for (Message msg:rmsgs) {

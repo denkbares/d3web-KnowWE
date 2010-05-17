@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import de.d3web.report.Message;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -15,6 +16,7 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> {
+	
 	@Override
 	public void render(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
 
@@ -27,7 +29,7 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 		string.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
 
 		// render messages and content
-		renderMessages(section, string);
+		renderMessages(article, section, string);
 		DelegateRenderer.getInstance().render(article, section, user, string);
 
 		// and close the box
@@ -35,8 +37,8 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 		string.append(KnowWEUtils.maskHTML("</div>\n"));
 	}
 
-	public static void renderMessages(Section<? extends DefaultMarkupType> section, StringBuilder string) {
-		Collection<Message> messages = DefaultMarkupType.getAllErrorMessages(section);
+	public static void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, StringBuilder string) {
+		Collection<Message> messages = AbstractKnowWEObjectType.getMessagesFromSubtree(article, section);
 		renderMessageBlock(getMessagesOfType(messages, Message.ERROR), string);
 		renderMessageBlock(getMessagesOfType(messages, Message.WARNING), string);
 		renderMessageBlock(getMessagesOfType(messages, Message.NOTE), string);

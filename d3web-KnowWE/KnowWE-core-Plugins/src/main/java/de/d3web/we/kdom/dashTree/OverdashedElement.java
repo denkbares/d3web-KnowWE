@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.dashTree;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,8 +80,8 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 	class OverDashedErrorHandler implements SubtreeHandler<OverdashedElement> {
 		
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<OverdashedElement> s) {
-			return new SyntaxError("to many dashes; remove \"-\"");
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<OverdashedElement> s) {
+			return Arrays.asList((KDOMReportMessage) new SyntaxError("to many dashes; remove \"-\""));
 		}
 	}
 

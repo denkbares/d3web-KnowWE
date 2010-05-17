@@ -23,6 +23,9 @@
  */
 package de.d3web.we.kdom.semanticFactSheet;
 
+
+import java.util.Collection;
+
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
@@ -51,7 +54,7 @@ public class InfoContent extends XMLContent {
 
 	private class InfoContentOWLSubTreeHandler implements SubtreeHandler {
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			String text = s.getOriginalText();
 			PropertyManager pm = PropertyManager.getInstance();

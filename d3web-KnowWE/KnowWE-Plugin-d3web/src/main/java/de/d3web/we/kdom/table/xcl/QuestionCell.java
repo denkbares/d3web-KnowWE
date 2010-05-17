@@ -20,8 +20,11 @@
 
 package de.d3web.we.kdom.table.xcl;
 
-import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
+
+import java.util.Collection;
+
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
+import de.d3web.KnOfficeParser.util.D3webQuestionFactory;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -36,8 +39,8 @@ import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.kdom.table.Table;
+import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -118,7 +121,7 @@ class QuestionCellHandler implements SubtreeHandler {
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 		KnowledgeBaseManagement mgn = D3webModule
 				.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
 						article, this, s);

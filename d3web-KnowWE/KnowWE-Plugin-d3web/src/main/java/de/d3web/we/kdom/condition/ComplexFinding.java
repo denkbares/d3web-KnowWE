@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.antlr.runtime.ANTLRInputStream;
@@ -80,9 +81,9 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 	private class ComplexFindingSubtreeHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
-			KDOMReportMessage msg= null;
+			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			try {
 				UpperOntology uo = UpperOntology.getInstance();
 				URI complexfinding = uo.getHelper().createChildOf(D3WebOWLVokab.COMPLEXFINDING
@@ -105,12 +106,12 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 					}
 				}
 			} catch (RepositoryException e) {
-				msg=new SimpleMessageError(e.getMessage());
+				msgs.add(new SimpleMessageError(e.getMessage()));
 			}
 			//return io;
 			//SemanticCore.getInstance().addStatements(io, s);
 			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
-			return msg;
+			return msgs;
 		}
 		
 	}

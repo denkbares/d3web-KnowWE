@@ -19,6 +19,9 @@
  */
 package de.d3web.we.kdom.dashTree.subclassing;
 
+
+import java.util.Collection;
+
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.repository.RepositoryException;
@@ -45,7 +48,7 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 			SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			Section<DashTreeElement> element = s; // warning
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {

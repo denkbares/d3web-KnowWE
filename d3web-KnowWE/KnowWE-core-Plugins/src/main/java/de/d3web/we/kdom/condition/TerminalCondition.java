@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.condition;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -56,11 +59,11 @@ public class TerminalCondition extends DefaultAbstractKnowWEObjectType {
 		AnonymousType unrecognizedCond = new AnonymousType(
 				"UnrecognizedTerminalCondition");
 		unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
-		unrecognizedCond.addSubtreeHandler(new SubtreeHandler() {
+		unrecognizedCond.addSubtreeHandler(new SubtreeHandler<TerminalCondition>() {
 			@Override
-			public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-				return new UnexpectedSequence("no valid TerminalCondition: "
-						+ s.getOriginalText());
+			public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+				return Arrays.asList((KDOMReportMessage) new UnexpectedSequence("no valid TerminalCondition: "
+						+ s.getOriginalText()));
 			}
 		});
 

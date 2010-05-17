@@ -20,11 +20,13 @@
 
 package de.d3web.we.kdom.report;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -50,149 +52,114 @@ public abstract class KDOMReportMessage {
 	 * @return
 	 */
 	public abstract String getVerbalization(KnowWEUserContext usercontext);
-
-	private static final String ERROR_STORE_KEY = "ERROR-SET";
-
-	private static final String WARNING_STORE_KEY = "WARNING-SET";
-
-	private static final String NOTICE_STORE_KEY = "NOTICE-SET";
+	
+	/**
+	 * @param article TODO
+	 * @see KnowWEUtils#clearMessages(KnowWEArticle, Section, Class, Class)
+	 */
+	public static void clearMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s, Class<?> source) {
+		storeMessages(article, s, source, new ArrayList<KDOMReportMessage>(0));
+	}
+	
+	/**
+	 * @param article TODO
+	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
+	 */
+	public static void storeSingleError(KnowWEArticle article,
+			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMError msg) {
+		KnowWEUtils.storeSingleMessage(article, s, source, KDOMError.class, msg);
+	}
+	
+	/**
+	 * @param article TODO
+	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
+	 */
+	public static void storeSingleWarning(KnowWEArticle article,
+			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMWarning msg) {
+		KnowWEUtils.storeSingleMessage(article, s, source, KDOMWarning.class, msg);
+	}
+	
+	
+	/**
+	 * @param article TODO
+	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
+	 */
+	public static void storeSingleNotice(KnowWEArticle article,
+			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMNotice msg) {
+		KnowWEUtils.storeSingleMessage(article, s, source, KDOMNotice.class, msg);
+	}
 
 	/**
-	 * Cleans all KDOMReportMessages from the given ReviseSubTreeHandler <tt>h</tt>
-	 * for the Section <tt>s</tt>.
+	 * @param article TODO
+	 * @see KnowWEUtils#storeMessages(Section, Class, Collection)
 	 */
-	public static void cleanMessages(Section s, Class<?> source) {
-		cleanErrors(s, source);
-		cleanNotices(s, source);
-		cleanWarnings(s, source);
-	}
-
-	public static void cleanErrors(Section s, Class<?> source) {
-		Map<String, Set<KDOMError>> errors = getErrorsMap(s);
-		if (errors != null) {
-			errors.remove(source.getName());
+	public static void storeMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
+			Class<?> source, Collection<KDOMReportMessage> msgs) {
+		
+		Collection<KDOMError> errors = new ArrayList<KDOMError>(msgs.size());
+		Collection<KDOMWarning> warnings = new ArrayList<KDOMWarning>(msgs.size());
+		Collection<KDOMNotice> notices = new ArrayList<KDOMNotice>(msgs.size());
+		
+		for (KDOMReportMessage msg:msgs) {
+			if (msg instanceof KDOMError) {
+				errors.add((KDOMError) msg);
+			} else if (msg instanceof KDOMWarning) {
+				warnings.add((KDOMWarning) msg);
+			} else if (msg instanceof KDOMNotice){
+				notices.add((KDOMNotice) msg);
+			}
 		}
+		
+		storeErrors(article, s, source, errors);
+		storeWarnings(article, s, source, warnings);
+		storeNotices(article, s, source, notices);
 	}
-
-	public static void cleanNotices(Section s, Class<?> source) {
-		Map<String, Set<KDOMNotice>> notices = getNoticesMap(s);
-		if (notices != null) {
-			notices.remove(source.getName());
-		}
-	}
-
-	public static void cleanWarnings(Section s, Class<?> source) {
-		Map<String, Set<KDOMWarning>> warnings = getWarningsMap(s);
-		if (warnings != null) {
-			warnings.remove(source.getName());
-		}
-	}
-
+	
 	/**
-	 * Stores the given KDOMReportMessage <tt>m</tt> from the ReviseSubTreeHandler <tt>h</tt>
-	 * for Section <tt>s</tt>.
+	 * @param article TODO
+	 * @see KnowWEUtils#storeMessages(Section, Class, Collection)
 	 */
-	public static void storeMessage(Section s, Class<?> source, KDOMReportMessage m) {
-		if (m instanceof KDOMError) {
-			storeError(s, source, (KDOMError) m);
-		} else if (m instanceof KDOMNotice) {
-			storeNotice(s, source, (KDOMNotice) m);
-		} else if (m instanceof KDOMWarning) {
-			storeWarning(s, source, (KDOMWarning) m);
-		}
+	public static void storeErrors(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
+			Class<?> source, Collection<KDOMError> msgs) {
+		KnowWEUtils.storeMessages(article, s, source, KDOMError.class, msgs);
+	}
+	
+	/**
+	 * @param article TODO
+	 * @see KnowWEUtils#storeMessages(Section, Class, Collection)
+	 */
+	public static void storeNotices(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
+			Class<?> source, Collection<KDOMNotice> msgs) {
+		KnowWEUtils.storeMessages(article, s, source, KDOMNotice.class, msgs);
+	}
+	
+	/**
+	 * @param article TODO
+	 * @see KnowWEUtils#storeMessages(Section, Class, Collection)
+	 */
+	public static void storeWarnings(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
+			Class<?> source, Collection<KDOMWarning> msgs) {
+		KnowWEUtils.storeMessages(article, s, source, KDOMWarning.class, msgs);
+	}
+	
+	public static Collection<KDOMReportMessage> getMessages(Section<? extends KnowWEObjectType> s, KnowWEArticle article) {
+		Collection<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
+		msgs.addAll(KnowWEUtils.getMessages(article, s, KDOMError.class));
+		msgs.addAll(KnowWEUtils.getMessages(article, s, KDOMWarning.class));
+		msgs.addAll(KnowWEUtils.getMessages(article, s, KDOMNotice.class));
+		return Collections.unmodifiableCollection(msgs);
 	}
 
-	public static void storeWarning(Section s, Class<?> source, KDOMWarning e) {
-		Map<String, Set<KDOMWarning>> warnings = getWarningsMap(s);
-		if (warnings == null) {
-			warnings = new HashMap<String, Set<KDOMWarning>>();
-			KnowWEUtils.storeSectionInfo(s, WARNING_STORE_KEY, warnings);
-		}
-		Set<KDOMWarning> ws = warnings.get(source.getName());
-		if (ws == null) {
-			ws = new HashSet<KDOMWarning>();
-			warnings.put(source.getName(), ws);
-		}
-		ws.add(e);
+	public static Collection<KDOMError> getErrors(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
+		return KnowWEUtils.getMessages(article, s, KDOMError.class);
 	}
-
-	public static void storeNotice(Section s, Class<?> source, KDOMNotice e) {
-		Map<String, Set<KDOMNotice>> notices = getNoticesMap(s);
-		if (notices == null) {
-			notices = new HashMap<String, Set<KDOMNotice>>();
-			KnowWEUtils.storeSectionInfo(s, NOTICE_STORE_KEY, notices);
-		}
-		Set<KDOMNotice> ns = notices.get(source.getName());
-		if (ns == null) {
-			ns = new HashSet<KDOMNotice>();
-			notices.put(source.getName(), ns);
-		}
-		ns.add(e);
+	
+	public static Collection<KDOMNotice> getNotices(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
+		return KnowWEUtils.getMessages(article, s, KDOMNotice.class);
 	}
-
-	public static void storeError(Section s, Class<?> source, KDOMError e) {
-		Map<String, Set<KDOMError>> errors = getErrorsMap(s);
-		if (errors == null) {
-			errors = new HashMap<String, Set<KDOMError>>();
-			KnowWEUtils.storeSectionInfo(s, ERROR_STORE_KEY, errors);
-		}
-		Set<KDOMError> es = errors.get(source.getName());
-		if (es == null) {
-			es = new HashSet<KDOMError>();
-			errors.put(source.getName(), es);
-		}
-		es.add(e);
-	}
-
-	public static Map<String, Set<KDOMWarning>> getWarningsMap(Section s) {
-		return (Map<String, Set<KDOMWarning>>) KnowWEUtils
-				.getStoredObject(s, WARNING_STORE_KEY);
-	}
-
-	public static Map<String, Set<KDOMNotice>> getNoticesMap(Section s) {
-		return (Map<String, Set<KDOMNotice>>) KnowWEUtils
-				.getStoredObject(s, NOTICE_STORE_KEY);
-	}
-
-	public static Map<String, Set<KDOMError>> getErrorsMap(Section s) {
-		return (Map<String, Set<KDOMError>>) KnowWEUtils
-			.getStoredObject(s,ERROR_STORE_KEY);
-	}
-
-	public static Set<KDOMWarning> getWarnings(Section s) {
-		Map<String, Set<KDOMWarning>> warnings = getWarningsMap(s);
-		if (warnings == null) {
-			return null;
-		}
-		Set<KDOMWarning> allSets = new HashSet<KDOMWarning>();
-		for (Set<KDOMWarning> revSet:warnings.values()) {
-			allSets.addAll(revSet);
-		}
-		return allSets;
-	}
-
-	public static Set<KDOMNotice> getNotices(Section s) {
-		Map<String, Set<KDOMNotice>> notices = getNoticesMap(s);
-		if (notices == null) {
-			return null;
-		}
-		Set<KDOMNotice> allSets = new HashSet<KDOMNotice>();
-		for (Set<KDOMNotice> revSet:notices.values()) {
-			allSets.addAll(revSet);
-		}
-		return allSets;
-	}
-
-	public static Set<KDOMError> getErrors(Section s) {
-		Map<String, Set<KDOMError>> errors = getErrorsMap(s);
-		if (errors == null) {
-			return null;
-		}
-		Set<KDOMError> allSets = new HashSet<KDOMError>();
-		for (Set<KDOMError> revSet:errors.values()) {
-			allSets.addAll(revSet);
-		}
-		return allSets;
+	
+	public static Collection<KDOMWarning> getWarnings(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
+		return KnowWEUtils.getMessages(article, s, KDOMWarning.class);
 	}
 
 	@Override

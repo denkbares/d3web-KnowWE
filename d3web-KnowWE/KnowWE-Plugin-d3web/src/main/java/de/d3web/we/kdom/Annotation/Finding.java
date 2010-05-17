@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.Annotation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.openrdf.model.Statement;
@@ -80,9 +81,9 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	private class FindingSubTreeHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article,
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
 				Section section) {
-			KDOMReportMessage msg = null;
+			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			UpperOntology uo = UpperOntology.getInstance();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
@@ -131,15 +132,13 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				}
 				io.addAllStatements(slist);
 				io.addLiteral(literalinstance);
-			}
-			catch (IndexOutOfBoundsException e) {
-				msg = new SimpleMessageError("Finding without subsections");
-			}
-			catch (NullPointerException e) {
-				msg = new SimpleMessageError("Nullpointer");
+			} catch (IndexOutOfBoundsException e) {
+				msgs.add(new SimpleMessageError("Finding without subsections"));
+			} catch (NullPointerException e) {
+				msgs.add(new SimpleMessageError("Nullpointer"));
 			}
 			KnowWEUtils.storeSectionInfo(section, OwlHelper.IOO, io);
-			return msg;
+			return msgs;
 		}
 
 	}

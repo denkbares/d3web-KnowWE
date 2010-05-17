@@ -23,6 +23,8 @@
  */
 package de.d3web.we.kdom.semanticAnnotation;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +45,7 @@ import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
+import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
@@ -75,8 +78,8 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 			SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			KDOMReportMessage msg = null;
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			UpperOntology uo = UpperOntology.getInstance();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			List<Section> childs = s.getChildren();
@@ -166,11 +169,11 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 					}
 
 				} catch (RepositoryException e) {
-					msg = new SimpleMessageError(e.getMessage());
+					msgs.add(new SimpleMessageError(e.getMessage()));
 				}
 			}
 			SemanticCore.getInstance().addStatements(io, s);
-			return msg;
+			return msgs;
 		}
 
 	}

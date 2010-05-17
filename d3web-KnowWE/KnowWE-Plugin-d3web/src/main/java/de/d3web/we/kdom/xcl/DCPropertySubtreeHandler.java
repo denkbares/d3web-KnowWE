@@ -19,6 +19,7 @@
  */
 package de.d3web.we.kdom.xcl;
 
+import java.util.Collection;
 import java.util.logging.Level;
 
 import de.d3web.core.knowledge.terminology.NamedObject;
@@ -50,7 +51,7 @@ import de.d3web.we.terminology.D3webReviseSubTreeHandler;
  */
 public class DCPropertySubtreeHandler extends D3webReviseSubTreeHandler {
 
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 
 		KnowledgeBaseManagement kbm = getKBM(article, s);
 

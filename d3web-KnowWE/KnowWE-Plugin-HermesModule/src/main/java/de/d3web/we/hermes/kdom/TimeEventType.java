@@ -21,6 +21,8 @@
 package de.d3web.we.hermes.kdom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.openrdf.model.Literal;
@@ -72,7 +74,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article,
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
 				Section section) {
 
 			UpperOntology uo = UpperOntology.getInstance();
@@ -92,13 +94,13 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 								sources);
 
 				if (descriptionSection == null) {
-					return new SimpleMessageError("descriptionSection was null");
+					return Arrays.asList((KDOMReportMessage) new SimpleMessageError("descriptionSection was null"));
 				}
 				if (importanceSection == null) {
-					return new SimpleMessageError("importanceSection was null");
+					return Arrays.asList((KDOMReportMessage) new SimpleMessageError("importanceSection was null"));
 				}
 				if (dateSection == null) {
-					return new SimpleMessageError("dateSection was null");
+					return Arrays.asList((KDOMReportMessage) new SimpleMessageError("dateSection was null"));
 				}
 
 				/* Getting all the strings from the sections */
@@ -192,7 +194,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 			}
 
 			SemanticCore.getInstance().addStatements(io, section);
-			return null;
+			return new ArrayList<KDOMReportMessage>(0);
 		}
 
 	}

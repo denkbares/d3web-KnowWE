@@ -1,5 +1,11 @@
 package de.d3web.we.kdom.objects;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -22,7 +28,7 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 	static class CreateSolutionHandler implements SubtreeHandler<SolutionDef> {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article,
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
 				Section<SolutionDef> qidSection) {
 
 
@@ -36,21 +42,19 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 			IDObject o = mgn.findSolution(name);
 
 			if (o != null) {
-				return new ObjectAlreadyDefinedWarning(o.getClass()
-						.getSimpleName());
-			}
-			else {
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(o.getClass()
+						.getSimpleName()));
+			} else {
 
 
 				Solution s = mgn.createSolution(name);
 
 				if (s != null) {
 					qidSection.get().storeObject(qidSection, s);
-					return new NewObjectCreated(s.getClass().getSimpleName()
-							+ " " + s.getName());
-				}
-				else {
-					return new ObjectCreationError(name, this.getClass());
+					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(s.getClass().getSimpleName()
+							+ " " + s.getName()));
+				} else {
+					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name, this.getClass()));
 				}
 
 			}

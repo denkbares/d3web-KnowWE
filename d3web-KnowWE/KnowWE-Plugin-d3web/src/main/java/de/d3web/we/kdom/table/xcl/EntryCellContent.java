@@ -184,7 +184,7 @@ class EntryCellContentSubtreeHandler implements SubtreeHandler {
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 		if (s.getOriginalText().trim().length() > 0) {
 
 			KnowledgeBaseManagement mgn = D3webModule

@@ -1229,7 +1229,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @return
 	 */
 	public boolean hasErrorInSubtree() {
-		Set<KDOMError> s = KDOMReportMessage.getErrors(this);
+		Collection<KDOMError> s = KDOMReportMessage.getErrors(article, this);
 		if (s != null && s.size() > 0) return true;
 		for (Section<?> child : children) {
 			boolean err = child.hasErrorInSubtree();
@@ -1286,16 +1286,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	@SuppressWarnings("unchecked")
 	public final void runSubtreeHandler(KnowWEArticle article, SubtreeHandler handler) {
 		try {
-			KDOMReportMessage message = handler.reviseSubtree(article, this);
-			if (message != null) {
-				KDOMReportMessage.cleanMessages(this, handler.getClass());
-				KDOMReportMessage.storeMessage(this, handler.getClass(), message);
-			}
+			KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.reviseSubtree(article, this));
 		}
 		catch (Throwable e) {
 			String text = "unexpected internal error in subtree handler '" + handler + "'";
 			Message msg = new Message(text + ": " + e);
-			AbstractKnowWEObjectType.storeMessages(article, this, Arrays.asList(msg));
+			AbstractKnowWEObjectType.storeMessages(article, this, this.getClass(), Arrays.asList(msg));
 			// TODO: vb: store the error also in the article. (see below for
 			// more details)
 			//

@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.condition.old;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openrdf.model.Statement;
@@ -59,8 +60,7 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType {
 	private class ConjunctSubTreeHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
-			KDOMReportMessage msg = null;
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
 				UpperOntology uo = UpperOntology.getInstance();
@@ -89,7 +89,7 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType {
 				// TODO error management?
 			}
 			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
-			return msg;
+			return null;
 		}
 
 	}

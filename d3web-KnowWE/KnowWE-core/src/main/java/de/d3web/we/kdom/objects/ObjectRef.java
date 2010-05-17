@@ -1,5 +1,10 @@
 package de.d3web.we.kdom.objects;
 
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -42,13 +47,13 @@ public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType imple
 	class ObjectChecker implements SubtreeHandler<ObjectRef<T>> {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<ObjectRef<T>> s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<ObjectRef<T>> s) {
+			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			if (!objectExisting(s)) {
-				KDOMReportMessage.storeError(s, this.getClass(),
-						new NoSuchObjectError(s.get().getName() + ": "
+				msgs.add(new NoSuchObjectError(s.get().getName() + ": "
 								+ s.getOriginalText()));
 			}
-			return null;
+			return msgs;
 		}
 
 	}

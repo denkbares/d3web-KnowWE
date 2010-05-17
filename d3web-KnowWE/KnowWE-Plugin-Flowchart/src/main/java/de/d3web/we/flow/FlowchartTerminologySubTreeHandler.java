@@ -21,6 +21,7 @@
 package de.d3web.we.flow;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 	//TODO clean up: Just quick&dirty copied from original subtreehandler
 	
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 		
 		KnowledgeBaseManagement kbm = getKBM(article, s);
 		

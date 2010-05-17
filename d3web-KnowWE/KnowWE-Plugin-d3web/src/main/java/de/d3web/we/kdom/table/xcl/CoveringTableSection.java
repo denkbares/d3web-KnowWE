@@ -21,17 +21,19 @@
 package de.d3web.we.kdom.table.xcl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.kopic.renderer.KopicTableSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableAttributesProvider;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
-import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
@@ -57,7 +59,7 @@ public class CoveringTableSection extends AbstractKopicSection implements TableA
 	private class CoveringTableSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 			
 			
 			// Set the headerline of the table as type SolutionHeaderLine

@@ -19,7 +19,7 @@
  */
 package de.d3web.we.kdom;
 
-import java.util.List;
+import java.util.Collection;
 
 import de.d3web.report.Message;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -55,7 +55,7 @@ public class RootType extends DefaultAbstractKnowWEObjectType {
 		return new KnowWEDomRenderer<RootType>() {
 			@Override
 			public void render(KnowWEArticle article, Section<RootType> section, KnowWEUserContext user, StringBuilder string) {
-				List<Message> messages = KnowWEArticle.getMessages(article, section);
+				Collection<Message> messages = KnowWEArticle.getMessages(article, section);
 				for (Message message : messages) {
 					String type = message.getMessageType();
 					String tag = Message.ERROR.equals(type)

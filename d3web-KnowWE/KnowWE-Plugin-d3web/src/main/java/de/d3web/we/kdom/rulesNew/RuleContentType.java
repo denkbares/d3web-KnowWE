@@ -21,6 +21,8 @@
 package de.d3web.we.kdom.rulesNew;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.PSAction;
@@ -73,10 +75,10 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 	class RuleCompiler implements SubtreeHandler<ConditionActionRule> {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section<ConditionActionRule> s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<ConditionActionRule> s) {
 
 			if (s.hasErrorInSubtree()) {
-				return new CreateRelationFailed("Rule");
+				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
 
 			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
@@ -96,14 +98,14 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 						null,
 						null);
 				if (r != null) {
-					return new ObjectCreatedMessage("Rule");
+					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage("Rule"));
 				}
 
 			}
 
 			// should not happen
-			return new ObjectCreationError("error creating rule",
-					this.getClass());
+			return Arrays.asList((KDOMReportMessage) new ObjectCreationError("error creating rule",
+					this.getClass()));
 		}
 
 	}

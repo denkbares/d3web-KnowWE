@@ -20,6 +20,8 @@ package de.knowwe.d3web.kdom.knowledgereader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.tools.ant.filters.StringInputStream;
@@ -33,6 +35,7 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.report.Message;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -47,9 +50,10 @@ public class KnowledgeReaderReviseSubtreeHandler implements SubtreeHandler {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 		if (kbm==null) return null;
+		
 		KnowledgeBase kb = kbm.getKnowledgeBase();
 		String readerID = DefaultMarkupType.getAnnotation(s, "KnowledgeReader");
 		String toRead = DefaultMarkupType.getContent(s);
@@ -61,10 +65,14 @@ public class KnowledgeReaderReviseSubtreeHandler implements SubtreeHandler {
 			}
 		}
 		if (extensions.size()==0) {
-			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, "KnowledgeReader "+readerID+ " not found.", null, -1, null));
+			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), 
+					Arrays.asList(new Message(Message.ERROR,
+							"KnowledgeReader "+readerID+ " not found.", null, -1, null)));
 			return null;
 		} else if (extensions.size()>1) {
-			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, "KnowledgeReaderID "+readerID+ " is not unique.", null, -1, null));
+			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), 
+					Arrays.asList(new Message(Message.ERROR,
+							"KnowledgeReaderID "+readerID+ " is not unique.", null, -1, null)));
 			return null;
 		}
 		KnowledgeReader reader = (KnowledgeReader) extensions.get(0).getSingleton();
@@ -72,7 +80,9 @@ public class KnowledgeReaderReviseSubtreeHandler implements SubtreeHandler {
 			reader.read(kb, new StringInputStream(toRead), new DummyProgressListener());
 		}
 		catch (IOException e1) {
-			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, e1.getMessage(), null, -1, null));
+			AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), 
+					Arrays.asList(new Message(Message.ERROR, 
+							e1.getMessage(), null, -1, null)));
 			return null;
 		}
 		return null;

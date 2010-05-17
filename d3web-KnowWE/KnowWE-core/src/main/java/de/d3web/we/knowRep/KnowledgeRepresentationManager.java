@@ -20,6 +20,7 @@
 
 package de.d3web.we.knowRep;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.report.Message;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 
 public class KnowledgeRepresentationManager {
@@ -75,12 +77,12 @@ public class KnowledgeRepresentationManager {
 				handler.finishArticle(art);
 			}
 			catch (Throwable e) {
-				List<Message> messages = KnowWEArticle.getMessages(art, art.getSection());
+				List<Message> messages = new ArrayList<Message>();
 				messages.add(new Message(Message.ERROR,
 						"This page's content caused a serious initialitation error:\n" +
 						e.getLocalizedMessage(),
 						null, 0, 0, ""));
-				KnowWEArticle.storeMessages(art, art.getSection(), messages);
+				AbstractKnowWEObjectType.storeMessages(art, art.getSection(), this.getClass(), messages);
 				Logger.getLogger("KnowWE-core").log(Level.SEVERE,
 						"Page content of page '" +
 						art.getTitle() +

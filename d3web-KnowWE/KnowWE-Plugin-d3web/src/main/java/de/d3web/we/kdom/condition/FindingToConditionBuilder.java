@@ -52,7 +52,6 @@ import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.report.Message;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.Finding;
@@ -60,6 +59,7 @@ import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingComparator;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.filter.TypeSectionFilter;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * Supplies a method for creating a condition from a
@@ -96,7 +96,14 @@ public class FindingToConditionBuilder {
 		// CondEqual and CondNumEqual have same Comparator
 		
 		if (kbQuest instanceof QuestionNum) {
-			Double valueOf = parseNumAnswer(article, answerText, answer);
+			Double valueOf = new Double(-1);
+			try {
+				valueOf = Double.valueOf(answerText);
+			} catch (NumberFormatException e) {
+				KnowWEUtils.storeSingleMessage(article, answer, 
+						FindingToConditionBuilder.class, Message.class, new Message("Numerical value expected, got: '" + answerText +"'."));
+			}
+			
 			QuestionNum questionNum = (QuestionNum) kbQuest;
 			return createCondNum(article, comp, comparator, valueOf,
 					questionNum);
@@ -104,7 +111,8 @@ public class FindingToConditionBuilder {
 			if (comparator.equals("="))
 				return new CondEqual(kbQuest, kbAns);
 			else {
-				storeMessage(article, "Unkown comparator '" + comparator +"'.", comp);
+				KnowWEUtils.storeSingleMessage(article, comp, 
+						FindingToConditionBuilder.class, Message.class, new Message("Unkown comparator '" + comparator +"'."));
 				return null;
 			}
 		}
@@ -115,6 +123,7 @@ public class FindingToConditionBuilder {
 	public static Condition createCondNum(KnowWEArticle article,
 			Section comp, String comparator, Double valueOf,
 			QuestionNum questionNum) {
+		KnowWEUtils.clearMessages(article, comp, FindingToConditionBuilder.class, Message.class);
 		if (comparator.equals("="))
 			return new CondNumEqual(questionNum, valueOf);
 		else if (comparator.equals(">"))
@@ -126,20 +135,21 @@ public class FindingToConditionBuilder {
 		else if (comparator.equals("<="))
 			return new CondNumLessEqual(questionNum, valueOf);
 		else {
-			storeMessage(article, "Unkown comparator '" + comparator +"'.", comp);
+			KnowWEUtils.storeSingleMessage(article, comp, 
+					FindingToConditionBuilder.class, Message.class, new Message("Unkown comparator '" + comparator +"'."));
 			return null;
 		}
 	}
 
-	private static Double parseNumAnswer(KnowWEArticle article, String value, Section answer) {
-		try {
-			return Double.valueOf(value);
-		} catch (NumberFormatException e) {
-			storeMessage(article, "Numerical value expected, got: '" + value +"'.", answer);
-			return new Double(-1);
-		}
-		
-	}
+//	private static Double parseNumAnswer(KnowWEArticle article, String value, Section answer) {
+//		try {
+//			return Double.valueOf(value);
+//		} catch (NumberFormatException e) {
+//			storeMessage(article, "Numerical value expected, got: '" + value +"'.", answer);
+//			return new Double(-1);
+//		}
+//		
+//	}
 	
 	
 	/**
@@ -179,13 +189,17 @@ public class FindingToConditionBuilder {
 		Section comp = f.findChildOfType(FindingComparator.class);
 		Section question = f.findSuccessor(FindingQuestion.class);
 		Section answer = f.findSuccessor(FindingAnswer.class);
-
-		storeMessage(article, "", question);
-		storeMessage(article, "", answer);
+		
+		// clean out all old Messages from a previous run of this builder...
+		KnowWEUtils.clearMessages(article, comp, FindingToConditionBuilder.class, Message.class);
+		KnowWEUtils.clearMessages(article, question, FindingToConditionBuilder.class, Message.class);
+		KnowWEUtils.clearMessages(article, answer, FindingToConditionBuilder.class, Message.class);
 		
 		String questiontext = question.getOriginalText().replaceAll(p.toString(), "").trim();
 		if (answer == null) {
-			storeMessage(article, "No answer-section found for finding: '" + f.getOriginalText() + "'.", f);
+			KnowWEUtils.storeSingleMessage(article, f, 
+					FindingToConditionBuilder.class, Message.class, new Message("No answer-section found for finding: '" 
+							+ f.getOriginalText() + "'."));
 			return null;
 		}
 		String answertext = answer.getOriginalText().replaceAll(p.toString(), "").trim();
@@ -219,16 +233,19 @@ public class FindingToConditionBuilder {
 			//TODO: errors when answer is not found for certain question types (YN, OC)
 			
 			if (kbQuest instanceof QuestionOC && kbAns == null) {
-				storeMessage(article, "Not a valid answer for question: '" + answertext + "'.", answer);
+				KnowWEUtils.storeSingleMessage(article, answer, 
+						FindingToConditionBuilder.class, Message.class, new Message("Not a valid answer for question: '" + answertext + "'."));
 				return null;
+			} else {
+				Condition condition = createCondition(article, kbQuest, kbValue, comp,
+						question, answer);
+				return negated ? new CondNot(condition) : condition;
 			}
-			
-			Condition condition = createCondition(article, kbQuest, kbValue, comp,
-					question, answer);
-			return negated ? new CondNot(condition) : condition;
 		} else {
-			storeMessage(article, "Question '" + question.getOriginalText() +"' not found.", question);
-			storeMessage(article, "Question '" + question.getOriginalText() +"' not found.", answer);
+			KnowWEUtils.storeSingleMessage(article, question, 
+					FindingToConditionBuilder.class, Message.class, new Message("Question '" + question.getOriginalText() +"' not found."));
+			KnowWEUtils.storeSingleMessage(article, answer, 
+					FindingToConditionBuilder.class, Message.class, new Message("Question '" + question.getOriginalText() +"' not found."));
 			return null;
 			
 		}
@@ -236,18 +253,18 @@ public class FindingToConditionBuilder {
 		
 	}
 
-	private static void storeMessage(KnowWEArticle article, String messageText, Section section) {
-		
-		Message message = new Message(messageText);
-		
-		List<Message> messages = new ArrayList<Message>(1);
-		messages.add(message);
-		
-		AbstractKnowWEObjectType.storeMessages(article, section, messages);
-		
-
-		
-	}
+//	private static void storeMessage(KnowWEArticle article, String messageText, Section section) {
+//		
+//		Message message = new Message(messageText);
+//		
+//		List<Message> messages = new ArrayList<Message>(1);
+//		messages.add(message);
+//		
+//		AbstractKnowWEObjectType.storeMessages(article, section, messages);
+//		
+//
+//		
+//	}
 
 	/**
 	 * Creates a Condition from a ComplexFinding

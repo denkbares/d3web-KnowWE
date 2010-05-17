@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.table.xcl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
@@ -120,7 +121,7 @@ class AnswerCellHandler implements SubtreeHandler {
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
 		
 		KnowledgeBaseManagement mgn = D3webModule
 			.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);

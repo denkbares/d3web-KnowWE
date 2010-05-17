@@ -1,10 +1,10 @@
 package de.d3web.we.kdom.defaultMarkup;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -14,7 +14,6 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * This class represents a section of the top-level default markup. That markup
@@ -79,8 +78,6 @@ import de.d3web.we.utils.KnowWEUtils;
  * 
  */
 public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
-
-	private static final String ERROR_MESSAGE_STORE_KEY = "error-message-list";
 
 	private final static int FLAGS =
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
@@ -267,59 +264,6 @@ public class DefaultMarkupType extends DefaultAbstractKnowWEObjectType {
 	public static Pattern getPattern(String name) {
 		String regexp = SECTION_REGEXP.replace("$NAME$", name);
 		return Pattern.compile(regexp, FLAGS);
-	}
-
-	/**
-	 * Stores a message for the specified default mark-up section.
-	 * 
-	 * @param section
-	 *            the section to store the message for
-	 * @param message
-	 *            the message to be stored
-	 */
-	public static void addErrorMessage(Section<?> section, Message message) {
-		Collection<Message> messages = getErrorMessages(section);
-		if (messages.size() == 0) {
-			// messages is lazy created, needs to be inserted
-			KnowWEUtils.storeSectionInfo(section, ERROR_MESSAGE_STORE_KEY, messages);
-		}
-		messages.add(message);
-	}
-
-	/**
-	 * Returns all stored message for the specified default mark-up section.
-	 * 
-	 * @param section
-	 *            the section to read the messages from
-	 * @return the messages
-	 */
-	@SuppressWarnings("unchecked")
-	public static Collection<Message> getErrorMessages(Section<?> section) {
-		Collection<Message> storedObject = (Collection<Message>) KnowWEUtils.getStoredObject(
-				section,
-				ERROR_MESSAGE_STORE_KEY);
-		if (storedObject != null) {
-			return storedObject;
-		}
-		else {
-			return new LinkedList<Message>();
-		}
-	}
-
-	/**
-	 * Returns all Messages including messages of children, grandchildren...
-	 * 
-	 * @param section
-	 * @return
-	 */
-	public static Collection<Message> getAllErrorMessages(Section<? extends DefaultMarkupType> section) {
-		Set<Message> errorMessages = new HashSet<Message>(getErrorMessages(section));
-		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
-		section.getAllNodesPreOrder(nodes);
-		for (Section<?> child : nodes) {
-			errorMessages.addAll(getErrorMessages(child));
-		}
-		return errorMessages;
 	}
 
 }
