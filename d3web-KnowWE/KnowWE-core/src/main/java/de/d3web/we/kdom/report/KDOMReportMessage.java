@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.report;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -54,7 +53,6 @@ public abstract class KDOMReportMessage {
 	public abstract String getVerbalization(KnowWEUserContext usercontext);
 	
 	/**
-	 * @param article TODO
 	 * @see KnowWEUtils#clearMessages(KnowWEArticle, Section, Class, Class)
 	 */
 	public static void clearMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s, Class<?> source) {
@@ -62,7 +60,6 @@ public abstract class KDOMReportMessage {
 	}
 	
 	/**
-	 * @param article TODO
 	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
 	 */
 	public static void storeSingleError(KnowWEArticle article,
@@ -71,7 +68,6 @@ public abstract class KDOMReportMessage {
 	}
 	
 	/**
-	 * @param article TODO
 	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
 	 */
 	public static void storeSingleWarning(KnowWEArticle article,
@@ -81,7 +77,6 @@ public abstract class KDOMReportMessage {
 	
 	
 	/**
-	 * @param article TODO
 	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
 	 */
 	public static void storeSingleNotice(KnowWEArticle article,
@@ -90,8 +85,7 @@ public abstract class KDOMReportMessage {
 	}
 
 	/**
-	 * @param article TODO
-	 * @see KnowWEUtils#storeMessages(Section, Class, Collection)
+	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
 	public static void storeMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
 			Class<?> source, Collection<KDOMReportMessage> msgs) {
@@ -116,8 +110,7 @@ public abstract class KDOMReportMessage {
 	}
 	
 	/**
-	 * @param article TODO
-	 * @see KnowWEUtils#storeMessages(Section, Class, Collection)
+	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
 	public static void storeErrors(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
 			Class<?> source, Collection<KDOMError> msgs) {
@@ -125,8 +118,7 @@ public abstract class KDOMReportMessage {
 	}
 	
 	/**
-	 * @param article TODO
-	 * @see KnowWEUtils#storeMessages(Section, Class, Collection)
+	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
 	public static void storeNotices(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
 			Class<?> source, Collection<KDOMNotice> msgs) {
@@ -134,8 +126,7 @@ public abstract class KDOMReportMessage {
 	}
 	
 	/**
-	 * @param article TODO
-	 * @see KnowWEUtils#storeMessages(Section, Class, Collection)
+	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
 	public static void storeWarnings(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
 			Class<?> source, Collection<KDOMWarning> msgs) {
