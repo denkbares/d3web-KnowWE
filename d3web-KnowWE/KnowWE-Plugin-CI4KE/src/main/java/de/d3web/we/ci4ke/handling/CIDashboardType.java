@@ -1,13 +1,14 @@
 package de.d3web.we.ci4ke.handling;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
@@ -54,7 +55,9 @@ public class CIDashboardType extends DefaultMarkupType {
 	private class DashboardSubtreeHandler implements SubtreeHandler {
 
 		@Override
-		public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+			
+			AbstractKnowWEObjectType.cleanMessages(article, s, this.getClass());
 			
 			String monitoredArticle = 
 				DefaultMarkupType.getAnnotation(s, MONITORED_ARTICLE_KEY);
@@ -69,7 +72,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			if(art==null) {
 				Message message = new Message(Message.ERROR, 
 						"Monitored article does not exist!", "", -1, "");
-				DefaultMarkupType.addErrorMessage(s, message);
+				DefaultMarkupType.storeSingleMessage(article, s, this.getClass(), message);
 				return null;
 			}
 			
@@ -85,7 +88,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					//and it's ID was not overridden. Post a warning message!
 					Message message = new Message(Message.ERROR, "This dashboard can't be "+
 							"uniquely identified! Please add the 'id' annotation!", "", -1, "");
-					DefaultMarkupType.addErrorMessage(s, message);
+					DefaultMarkupType.storeSingleMessage(article, s, this.getClass(), message);
 					return null;
 				} else {
 					//the dashboard can't be uniquely identified, but a override-id
@@ -95,7 +98,7 @@ public class CIDashboardType extends DefaultMarkupType {
 						Message message = new Message(Message.ERROR, "This dashboard can't be "+
 								"uniquely identified! Please check the id-annotation "+
 								"(must be unique in the whole wiki)", "", -1, "");
-						DefaultMarkupType.addErrorMessage(s, message);
+						DefaultMarkupType.storeSingleMessage(article, s, this.getClass(), message);
 						return null;				
 					}
 				}
@@ -137,9 +140,9 @@ public class CIDashboardType extends DefaultMarkupType {
 		public void render(KnowWEArticle article, Section<CIDashboardType> sec,
 				KnowWEUserContext user, StringBuilder string) {
 					
-			if(DefaultMarkupType.getErrorMessages(sec).size() > 0) {
+			if(DefaultMarkupType.getMessages(article, sec).size() > 0) {
 				// Render Error-Messages!
-				DefaultMarkupRenderer.renderMessages(sec, string);
+				DefaultMarkupRenderer.renderMessages(article, sec, string);
 				return;
 			}		
 			

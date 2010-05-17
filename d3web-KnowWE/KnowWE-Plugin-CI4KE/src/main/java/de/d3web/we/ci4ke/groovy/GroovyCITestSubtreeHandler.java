@@ -20,13 +20,18 @@
 
 package de.d3web.we.ci4ke.groovy;
 
+import groovy.lang.GroovyShell;
+import groovy.lang.Script;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
 import de.d3web.report.Message;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CITestResult;
@@ -56,14 +61,15 @@ public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITest
 	
 	
 	@Override
-	public KDOMReportMessage reviseSubtree(KnowWEArticle article, Section/*<GroovyCITestType>*/ s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section/*<GroovyCITestType>*/ s) {
 		
+		List<Message> msgs = new ArrayList<Message>();
 		String testname = DefaultMarkupType.getAnnotation(s, "name");
 		Map<String,Section<GroovyCITestType>> map = CIUtilities.getAllGroovyCITestSections(KnowWEEnvironment.DEFAULT_WEB);
 		if(map.containsKey(testname)){
 			Section<GroovyCITestType> testSection = map.get(testname);
 			if(!testSection.getId().equals(s.getId()))
-				DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, 
+			msgs.add(new Message(Message.ERROR, 
 					"Test name '"+testname+"' is not unique!", null, -1, null));
 		}
 			
@@ -74,11 +80,12 @@ public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITest
 			//th.printStackTrace();
 			//System.out.println(th.getMessage());
 			String errorMessageMasked = KnowWEUtils.maskHTML(KnowWEUtils.maskNewline(th.getLocalizedMessage()));
-			DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, errorMessageMasked, null, -1, null));
+			msgs.add(new Message(Message.ERROR, errorMessageMasked, null, -1, null));
+			DefaultMarkupType.storeMessages(article, s, this.getClass(), msgs);
 			return null;//new TestCouldNotBeCreated(testname, errorMessageMasked);
 		}
-		
-		return new TestCreatedSuccessfully(testname);		
+		DefaultMarkupType.storeMessages(article, s, this.getClass(), msgs);
+		return Arrays.asList((KDOMReportMessage) new TestCreatedSuccessfully(testname));		
 		
 		//Script script = shell.parse(groovycode);
 		//Object o = shell.evaluate(groovycode);
@@ -105,7 +112,7 @@ public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITest
 	}
 	
 	
-	public class TestCreatedSuccessfully extends KDOMNotice{
+	public class TestCreatedSuccessfully extends KDOMNotice {
 
 		private String s;
 		
