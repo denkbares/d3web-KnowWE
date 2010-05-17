@@ -34,6 +34,9 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.values.Choice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.alignment.AlignmentUtilRepository;
 import de.d3web.we.alignment.D3webAlignUtils;
@@ -98,7 +101,7 @@ public class CompleteGlobalAligner implements GlobalAligner<NamedObject>{
 				Term valueTerm = new Term(TerminologyType.symptom);
 				valueTerm.setInfo(TermInfoType.TERM_NAME, term.getInfo(TermInfoType.TERM_NAME));
 				valueTerm.setInfo(TermInfoType.TERM_VALUE, D3webAlignUtils.getText(a1));
-				GlobalAlignment newGA = new GlobalAlignment(valueTerm, getII(idString, a1), type);
+				GlobalAlignment newGA = new GlobalAlignment(valueTerm, getII(choice, idString, a1), type);
 				result.add(newGA);
 			}
 		}
@@ -119,15 +122,22 @@ public class CompleteGlobalAligner implements GlobalAligner<NamedObject>{
 		Term valueTerm = new Term(TerminologyType.symptom);
 		valueTerm.setInfo(TermInfoType.TERM_NAME, term.getInfo(TermInfoType.TERM_NAME));
 		valueTerm.setInfo(TermInfoType.TERM_VALUE, D3webAlignUtils.getText(Unknown.getInstance()));
-		return new GlobalAlignment(valueTerm, getII(idString, Unknown.getInstance()), type);
+		return new GlobalAlignment(valueTerm, getII(question, idString, Unknown.getInstance()), type);
 	}
 	
-	private IdentifiableInstance getII(String idString, IDObject object) {
+	private IdentifiableInstance getII(Question question, String idString, IDObject object) {
 		if(object instanceof NamedObject) {
 			return new IdentifiableInstance(idString, object.getId(), null);
-		} else if(object instanceof Answer) {
-			Answer answer = (Answer) object;
-			return new IdentifiableInstance(idString, answer.getQuestion().getId(), answer.getId());
+		} else if (object instanceof Choice) {
+			Choice answer = (Choice) object;
+			return new IdentifiableInstance(idString, question.getId(), answer.getId());
+		} else if (object instanceof Value) {
+			if (object instanceof ChoiceValue) {
+				return new IdentifiableInstance(idString, question.getId(), ((ChoiceValue)object).getAnswerChoiceID());
+			}
+			else {
+				return new IdentifiableInstance(idString, question.getId(), ((Value)object).getValue());
+			}
 		}
 		return null;
 	}
