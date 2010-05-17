@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.report;
@@ -31,53 +31,55 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- *
+ * 
  * Abstract class for a KnowWEMessage
- *
+ * 
  * Also contains the management of the messages with resprect to the
  * corresponding sections
- *
- *
+ * 
+ * 
  * @author Jochen
- *
+ * 
  */
 public abstract class KDOMReportMessage {
 
 	/**
 	 * return the verbalization of this message. Will be rendered into the wiki
 	 * page by the given MessageRenderer of the KnowWEObjectType of the section
-	 *
+	 * 
 	 * @param usercontext
 	 * @return
 	 */
 	public abstract String getVerbalization(KnowWEUserContext usercontext);
-	
+
 	/**
 	 * @see KnowWEUtils#clearMessages(KnowWEArticle, Section, Class, Class)
 	 */
 	public static void clearMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s, Class<?> source) {
 		storeMessages(article, s, source, new ArrayList<KDOMReportMessage>(0));
 	}
-	
+
 	/**
-	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
+	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class,
+	 *      Object)
 	 */
 	public static void storeSingleError(KnowWEArticle article,
 			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMError msg) {
 		KnowWEUtils.storeSingleMessage(article, s, source, KDOMError.class, msg);
 	}
-	
+
 	/**
-	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
+	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class,
+	 *      Object)
 	 */
 	public static void storeSingleWarning(KnowWEArticle article,
 			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMWarning msg) {
 		KnowWEUtils.storeSingleMessage(article, s, source, KDOMWarning.class, msg);
 	}
-	
-	
+
 	/**
-	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
+	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class,
+	 *      Object)
 	 */
 	public static void storeSingleNotice(KnowWEArticle article,
 			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMNotice msg) {
@@ -89,26 +91,28 @@ public abstract class KDOMReportMessage {
 	 */
 	public static void storeMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
 			Class<?> source, Collection<KDOMReportMessage> msgs) {
-		
+		if (msgs == null) return;
 		Collection<KDOMError> errors = new ArrayList<KDOMError>(msgs.size());
 		Collection<KDOMWarning> warnings = new ArrayList<KDOMWarning>(msgs.size());
 		Collection<KDOMNotice> notices = new ArrayList<KDOMNotice>(msgs.size());
-		
-		for (KDOMReportMessage msg:msgs) {
+
+		for (KDOMReportMessage msg : msgs) {
 			if (msg instanceof KDOMError) {
 				errors.add((KDOMError) msg);
-			} else if (msg instanceof KDOMWarning) {
+			}
+			else if (msg instanceof KDOMWarning) {
 				warnings.add((KDOMWarning) msg);
-			} else if (msg instanceof KDOMNotice){
+			}
+			else if (msg instanceof KDOMNotice) {
 				notices.add((KDOMNotice) msg);
 			}
 		}
-		
+
 		storeErrors(article, s, source, errors);
 		storeWarnings(article, s, source, warnings);
 		storeNotices(article, s, source, notices);
 	}
-	
+
 	/**
 	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
@@ -116,7 +120,7 @@ public abstract class KDOMReportMessage {
 			Class<?> source, Collection<KDOMError> msgs) {
 		KnowWEUtils.storeMessages(article, s, source, KDOMError.class, msgs);
 	}
-	
+
 	/**
 	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
@@ -124,7 +128,7 @@ public abstract class KDOMReportMessage {
 			Class<?> source, Collection<KDOMNotice> msgs) {
 		KnowWEUtils.storeMessages(article, s, source, KDOMNotice.class, msgs);
 	}
-	
+
 	/**
 	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Collection)
 	 */
@@ -132,7 +136,7 @@ public abstract class KDOMReportMessage {
 			Class<?> source, Collection<KDOMWarning> msgs) {
 		KnowWEUtils.storeMessages(article, s, source, KDOMWarning.class, msgs);
 	}
-	
+
 	public static Collection<KDOMReportMessage> getMessages(Section<? extends KnowWEObjectType> s, KnowWEArticle article) {
 		Collection<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 		msgs.addAll(KnowWEUtils.getMessages(article, s, KDOMError.class));
@@ -144,11 +148,11 @@ public abstract class KDOMReportMessage {
 	public static Collection<KDOMError> getErrors(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
 		return KnowWEUtils.getMessages(article, s, KDOMError.class);
 	}
-	
+
 	public static Collection<KDOMNotice> getNotices(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
 		return KnowWEUtils.getMessages(article, s, KDOMNotice.class);
 	}
-	
+
 	public static Collection<KDOMWarning> getWarnings(KnowWEArticle article, Section<? extends KnowWEObjectType> s) {
 		return KnowWEUtils.getMessages(article, s, KDOMWarning.class);
 	}
@@ -161,9 +165,10 @@ public abstract class KDOMReportMessage {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof KDOMReportMessage) {
+		if (obj instanceof KDOMReportMessage) {
 			// TODO better implementation possible
-			return ((KDOMReportMessage)obj).getVerbalization(null).equals(this.getVerbalization(null));
+			return ((KDOMReportMessage) obj).getVerbalization(null).equals(
+					this.getVerbalization(null));
 		}
 		return false;
 	}
