@@ -26,14 +26,15 @@ import java.util.Collections;
 import java.util.List;
 
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.we.alignment.AlignmentUtilRepository;
 import de.d3web.we.alignment.D3webAlignUtils;
 import de.d3web.we.alignment.GlobalAlignment;
@@ -117,8 +118,8 @@ public class CompleteGlobalAligner implements GlobalAligner<NamedObject>{
 	private GlobalAlignment alignQuestionValueUnknown(Term term, Question question, String idString, AbstractAlignType type) {
 		Term valueTerm = new Term(TerminologyType.symptom);
 		valueTerm.setInfo(TermInfoType.TERM_NAME, term.getInfo(TermInfoType.TERM_NAME));
-		valueTerm.setInfo(TermInfoType.TERM_VALUE, D3webAlignUtils.getText(question.getUnknownAlternative()));
-		return new GlobalAlignment(valueTerm, getII(idString, question.getUnknownAlternative()), type);
+		valueTerm.setInfo(TermInfoType.TERM_VALUE, D3webAlignUtils.getText(Unknown.getInstance()));
+		return new GlobalAlignment(valueTerm, getII(idString, Unknown.getInstance()), type);
 	}
 	
 	private IdentifiableInstance getII(String idString, IDObject object) {

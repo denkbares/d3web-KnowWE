@@ -25,6 +25,7 @@ import java.util.Collection;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.alignment.AlignmentUtilRepository;
 
@@ -46,8 +47,8 @@ public class D3webLocalSymptomTerminology implements LocalTerminologyAccess<IDOb
 		if(valueId == null) {
 			return result;
 		} else {
-			if(result instanceof Question) {
-				return kbm.findAnswer((Question) result, valueId);
+			if(result instanceof QuestionChoice) {
+				return kbm.findChoice((QuestionChoice) result, valueId);
 			}
 		}
 		return result;

@@ -21,6 +21,7 @@
 package de.d3web.we.core.knowledgeService;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -198,8 +199,8 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	}
 
 	private void initCase() {
-		DistributedControllerFactory factory = getControllerFactory();
-		session = SessionFactory.createSession(base, factory);
+		//DistributedControllerFactory factory = getControllerFactory();
+		session = SessionFactory.createSession(base);
 		((DefaultSession) session).addUsedPSMethod(PSMethodDelegate.getInstance());
 
 	}
