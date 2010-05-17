@@ -39,13 +39,13 @@ import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.DiagnosisState;
+import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.DiagnosisState.State;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
@@ -145,15 +145,15 @@ public class D3webConditionBuilder implements ConditionBuilder {
 		if (diag != null) {
 			if (value.equalsIgnoreCase("established")
 					|| value.equalsIgnoreCase("etabliert")) {
-				condstack.push(new CondDState(diag, new DiagnosisState(State.ESTABLISHED)));
+				condstack.push(new CondDState(diag, new Rating(State.ESTABLISHED)));
 			}
 			else if (value.equalsIgnoreCase("excluded")
 					|| value.equalsIgnoreCase("ausgeschlossen")) {
-				condstack.push(new CondDState(diag, new DiagnosisState(State.EXCLUDED)));
+				condstack.push(new CondDState(diag, new Rating(State.EXCLUDED)));
 			}
 			else if (value.equalsIgnoreCase("suggested")
 					|| value.equalsIgnoreCase("verdächtigt")) {
-				condstack.push(new CondDState(diag, new DiagnosisState(State.SUGGESTED)));
+				condstack.push(new CondDState(diag, new Rating(State.SUGGESTED)));
 			}
 			// else if
 			// (value.equalsIgnoreCase("unclear")||value.equalsIgnoreCase("unklar")){

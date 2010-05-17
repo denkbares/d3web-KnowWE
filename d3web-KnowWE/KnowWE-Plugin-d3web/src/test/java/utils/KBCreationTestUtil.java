@@ -41,7 +41,7 @@ import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.DiagnosisState;
+import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -49,7 +49,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.DiagnosisState.State;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -499,7 +499,7 @@ public class KBCreationTestUtil {
 		String ruleID = createdKBM.createRuleID();
 		Solution diag = createdKBM.findSolution("Other problem");
 		CondDState condition = new CondDState(diag,
-				new DiagnosisState(State.ESTABLISHED));
+				new Rating(State.ESTABLISHED));
 		RuleFactory.createRefinementRule(ruleID, action, diag, condition);
 
 	}
@@ -741,7 +741,7 @@ public class KBCreationTestUtil {
 
 		// Create RatedSolution
 		Solution d = createdKBM.findSolution("Other problem");
-		StateRating sr = new StateRating(new DiagnosisState(State.ESTABLISHED));
+		StateRating sr = new StateRating(new Rating(State.ESTABLISHED));
 		RatedSolution rs = new RatedSolution(d, sr);
 
 		// Add Finding and RatedSolution to RatedTestCase

@@ -21,7 +21,6 @@
 package de.d3web.we.core.knowledgeService;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.PSMethodInit;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.DiagnosisState;
+import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
@@ -40,10 +39,11 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.info.PropertiesContainer;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.session.D3WebSession;
+import de.d3web.core.session.DefaultSession;
 import de.d3web.core.session.IEventSource;
 import de.d3web.core.session.KBOEventListener;
 import de.d3web.core.session.Session;
@@ -59,7 +59,6 @@ import de.d3web.kernel.dialogControl.DistributedControllerFactory;
 import de.d3web.kernel.dialogControl.ExternalClient;
 import de.d3web.kernel.dialogControl.ExternalProxy;
 import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
-import de.d3web.scoring.DiagnosisScore;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
@@ -155,7 +154,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			XCLModel model = (XCLModel) source;
 			List<Object> values = new ArrayList<Object>();
 			List<Object> xclInferenceValues = new ArrayList<Object>();
-			DiagnosisState xclstate = model.getState(theCase);
+			Rating xclstate = model.getState(theCase);
 			Double precision = model.getInferenceTrace(theCase).getScore();
 			Double support = model.getInferenceTrace(theCase).getSupport();
 			xclInferenceValues.add(precision);
@@ -201,7 +200,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 	private void initCase() {
 		DistributedControllerFactory factory = getControllerFactory();
 		session = SessionFactory.createSession(base, factory);
-		((D3WebSession) session).addUsedPSMethod(PSMethodDelegate.getInstance());
+		((DefaultSession) session).addUsedPSMethod(PSMethodDelegate.getInstance());
 
 	}
 
@@ -376,40 +375,20 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return UndefinedValue.getInstance();
 	}
 
-	private Collection<DiagnosisScore> getValuesForDiagnosis(List values) {
-		Collection<DiagnosisScore> result = new ArrayList<DiagnosisScore>();
-		for (Object obj : values) {
-			if (obj instanceof Double) {
-				DiagnosisScore score = new DiagnosisScore();
-				score.setScore((Double) obj);
-				result.add(score);
-			}
-		}
-		return result;
-	}
-
-	private Value getStatesForDiagnosis(List values) {
+	private Value getStatesForDiagnosis(List<?> values) {
 		if (values.size() == 1) {
 			SolutionState state = (SolutionState) values.get(0);
 			if (state.equals(SolutionState.ESTABLISHED)) {
-				DiagnosisScore score = new DiagnosisScore();
-				score.setScore(80);
-				return score;
+				return new Rating(State.ESTABLISHED);
 			}
 			else if (state.equals(SolutionState.SUGGESTED)) {
-				DiagnosisScore score = new DiagnosisScore();
-				score.setScore(20);
-				return score;
+				return new Rating(State.SUGGESTED);
 			}
 			else if (state.equals(SolutionState.EXCLUDED)) {
-				DiagnosisScore score = new DiagnosisScore();
-				score.setScore(-80);
-				return score;
+				return new Rating(State.EXCLUDED);
 			}
 			else if (state.equals(SolutionState.UNCLEAR)) {
-				DiagnosisScore score = new DiagnosisScore();
-				score.setScore(0);
-				return score;
+				return new Rating(State.UNCLEAR);
 			}
 		}
 		return UndefinedValue.getInstance();
@@ -442,7 +421,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 				List<SolutionState> solutionList = new ArrayList<SolutionState>();
 				solutionList.add(getLocalSolutionState(session.getBlackboard().getState(
 						diagnosis)));
-				List<DiagnosisState> inferenceList = new ArrayList<DiagnosisState>();
+				List<Rating> inferenceList = new ArrayList<Rating>();
 				inferenceList.add(session.getBlackboard().getState(diagnosis));
 				broker.update(new Information(id, diagnosis.getId(),
 						solutionList, TerminologyType.diagnosis,
@@ -465,17 +444,17 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return !session.getQASetManager().hasNextQASet();
 	}
 
-	private SolutionState getLocalSolutionState(DiagnosisState state) {
-		if (state.equals(new DiagnosisState(DiagnosisState.State.ESTABLISHED))) {
+	private SolutionState getLocalSolutionState(Rating state) {
+		if (state.equals(new Rating(Rating.State.ESTABLISHED))) {
 			return SolutionState.ESTABLISHED;
 		}
-		else if (state.equals(new DiagnosisState(DiagnosisState.State.SUGGESTED))) {
+		else if (state.equals(new Rating(Rating.State.SUGGESTED))) {
 			return SolutionState.SUGGESTED;
 		}
-		else if (state.equals(new DiagnosisState(DiagnosisState.State.EXCLUDED))) {
+		else if (state.equals(new Rating(Rating.State.EXCLUDED))) {
 			return SolutionState.EXCLUDED;
 		}
-		else if (state.equals(new DiagnosisState(DiagnosisState.State.UNCLEAR))) {
+		else if (state.equals(new Rating(Rating.State.UNCLEAR))) {
 			return SolutionState.UNCLEAR;
 		}
 		return SolutionState.CONFLICT;

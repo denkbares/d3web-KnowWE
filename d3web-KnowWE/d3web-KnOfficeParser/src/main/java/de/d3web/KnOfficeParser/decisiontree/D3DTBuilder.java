@@ -48,7 +48,7 @@ import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.DiagnosisState;
+import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -59,7 +59,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.DiagnosisState.State;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
@@ -465,16 +465,16 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 				}
 				// Condition falls Frageklassenindikationen als Kinder
 				// existieren
-				DiagnosisState state;
+				Rating state;
 				if (score == Score.P7 || score == Score.P6) {
-					state = new DiagnosisState(DiagnosisState.State.ESTABLISHED);
+					state = new Rating(Rating.State.ESTABLISHED);
 				}
 				else if (score == Score.P5 || score == Score.P4
 						|| score == Score.P3) {
-					state = new DiagnosisState(DiagnosisState.State.SUGGESTED);
+					state = new Rating(Rating.State.SUGGESTED);
 				}
 				else {
-					state = new DiagnosisState(DiagnosisState.State.UNCLEAR);
+					state = new Rating(Rating.State.UNCLEAR);
 				}
 				TerminalCondition c = new CondDState(diag, state);
 				conditionStack.push(c);

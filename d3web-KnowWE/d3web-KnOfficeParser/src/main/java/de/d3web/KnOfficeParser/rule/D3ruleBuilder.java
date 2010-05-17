@@ -57,7 +57,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.DiagnosisState.State;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Value;

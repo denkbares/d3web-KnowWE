@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.knowledge.terminology.DiagnosisState;
+import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.DiagnosisState.State;
+import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.session.Session;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -70,10 +70,10 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 			for (Solution d : diags) {
 
 				if (d.getName().equals(solution)) {
-					DiagnosisState state;
+					Rating state;
 					XCLModel diagModel = this.findModel(solution, slices);
 
-					if (diagModel == null) state = new DiagnosisState(State.UNCLEAR);
+					if (diagModel == null) state = new Rating(State.UNCLEAR);
 					else state = diagModel.getState(session);
 
 					if (state.hasState(State.ESTABLISHED)) {
