@@ -20,17 +20,17 @@
 
 package de.d3web.we.kdom.include;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -78,26 +78,22 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 		if (render != null && render.equalsIgnoreCase("false")
 				&& !(includedChildren != null && includedChildren.size() == 1 
 						&& includedChildren.get(0).getObjectType() instanceof IncludeError)) {
-
-			List<Section> successors = new ArrayList<Section>();
-			sec.getAllNodesPreOrder(successors);
+			
 			boolean errors = false;
-			for (Section suc:successors) {
-				Collection<Message> messages = AbstractKnowWEObjectType.getMessages(article, suc);
-				if (messages != null) {
-					for (Message msg:messages) {
-						if (msg.getMessageType().equals(Message.WARNING) 
-								|| msg.getMessageType().equals(Message.ERROR)) {
-							errors = true;
-							break;
-						}
-					}
-				}
-				if (errors) {
+			
+			Collection<Message> msgsType1 = KnowWEUtils.getMessagesFromSubtree(article, sec, Message.class);
+			Collection<KDOMWarning> msgsType2 = KnowWEUtils.getMessagesFromSubtree(article, sec, KDOMWarning.class);
+			Collection<KDOMError> msgsType3 = KnowWEUtils.getMessagesFromSubtree(article, sec, KDOMError.class);
+			
+			for (Message msg:msgsType1) {
+				if (msg.getMessageType().equals(Message.WARNING) 
+						|| msg.getMessageType().equals(Message.ERROR)) {
+					errors = true;
 					break;
 				}
 			}
-			if (errors) {
+			
+			if (errors || !msgsType2.isEmpty() || !msgsType3.isEmpty()) {
 				renderNormally(article, sec, user, srclink, content, string);
 			} else {
 				string.append(KnowWEUtils.maskHTML("<div style=\"padding-left: 2px;\">" 

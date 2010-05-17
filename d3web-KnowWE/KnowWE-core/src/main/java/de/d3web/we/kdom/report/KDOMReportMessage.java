@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.report;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -65,7 +66,8 @@ public abstract class KDOMReportMessage {
 	 */
 	public static void storeSingleError(KnowWEArticle article,
 			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMError msg) {
-		KnowWEUtils.storeSingleMessage(article, s, source, KDOMError.class, msg);
+		if (msg != null)
+			storeMessages(article, s, source,  Arrays.asList((KDOMReportMessage) msg));
 	}
 
 	/**
@@ -74,7 +76,8 @@ public abstract class KDOMReportMessage {
 	 */
 	public static void storeSingleWarning(KnowWEArticle article,
 			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMWarning msg) {
-		KnowWEUtils.storeSingleMessage(article, s, source, KDOMWarning.class, msg);
+		if (msg != null)
+			storeMessages(article, s, source,  Arrays.asList((KDOMReportMessage) msg));
 	}
 
 	/**
@@ -83,7 +86,8 @@ public abstract class KDOMReportMessage {
 	 */
 	public static void storeSingleNotice(KnowWEArticle article,
 			Section<? extends KnowWEObjectType> s, Class<?> source, KDOMNotice msg) {
-		KnowWEUtils.storeSingleMessage(article, s, source, KDOMNotice.class, msg);
+		if (msg != null)
+			storeMessages(article, s, source,  Arrays.asList((KDOMReportMessage) msg));
 	}
 
 	/**
