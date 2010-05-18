@@ -47,8 +47,6 @@ import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -58,6 +56,7 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.info.DCElement;
@@ -409,7 +408,7 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 					}
 				}
 				else {
-					Answer a = (Answer) idom.findValue(q, value).getValue();
+					Choice a = (Choice) idom.findValue(q, value).getValue();
 					if (set) {
 						RuleFactory.createSetValueRule(newRuleID, q,
 								new Object[] { a }, cond);

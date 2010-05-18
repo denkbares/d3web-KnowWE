@@ -6,7 +6,6 @@ import java.util.List;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
@@ -43,9 +42,11 @@ public class Utils {
 
 		if (simpleConds.isEmpty()) {
 			return null;
-		} else if (simpleConds.size() == 1) {
+		}
+		else if (simpleConds.size() == 1) {
 			return simpleConds.get(0);
-		} else {
+		}
+		else {
 			return new CondAnd(simpleConds);
 		}
 
@@ -67,10 +68,10 @@ public class Utils {
 		Question q = qSec.get().getObject(qSec);
 
 		if (answerSec != null && q instanceof QuestionChoice) {
-			Answer a = answerSec.get().getObject(answerSec);
+			Choice a = answerSec.get().getObject(answerSec);
 			if (a != null) {
-				CondEqual c = new CondEqual((QuestionChoice) q, new ChoiceValue(
-						(Choice) a));
+				CondEqual c = new CondEqual(q, new ChoiceValue(
+						a));
 				return c;
 			}
 		}
@@ -83,7 +84,7 @@ public class Utils {
 			String comp = NumericCondLine.getComparator(numCondSec);
 			Condition condNum = FindingToConditionBuilder
 					.createCondNum(father.getArticle(), numCondSec, comp, d,
-							(QuestionNum) q);
+					(QuestionNum) q);
 			return condNum;
 		}
 

@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 import com.wcohen.ss.Levenstein;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.Solution;
@@ -100,10 +99,8 @@ public class TiRexUtilities {
 			if (getAnswers) {
 				Collection<Choice> answers = getAllPossibleAnswers(question);
 
-				for (Answer answer : answers) {
-					if (answer instanceof Choice) {
-						buffer.append(((Choice) answer).getName() + "\n");
-					}
+				for (Choice answer : answers) {
+					buffer.append((answer).getName() + "\n");
 				}
 			}
 

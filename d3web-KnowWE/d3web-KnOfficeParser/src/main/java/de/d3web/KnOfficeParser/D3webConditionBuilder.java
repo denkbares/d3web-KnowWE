@@ -39,11 +39,11 @@ import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.manage.IDObjectManagement;
@@ -247,7 +247,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			}
 			if (answer == null) {
 				if (lazy || lazyAnswers) {
-					answer = (Choice) idom.addChoiceAnswer(qc, value);
+					answer = idom.addChoiceAnswer(qc, value);
 					c = new CondEqual(qc, new ChoiceValue(answer));
 				}
 				else {

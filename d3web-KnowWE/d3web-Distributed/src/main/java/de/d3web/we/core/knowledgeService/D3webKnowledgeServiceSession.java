@@ -420,10 +420,10 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			Solution diagnosis = (Solution) valuedObject;
 			if (instantly) {
 				List<SolutionState> solutionList = new ArrayList<SolutionState>();
-				solutionList.add(getLocalSolutionState(session.getBlackboard().getState(
+				solutionList.add(getLocalSolutionState(session.getBlackboard().getRating(
 						diagnosis)));
 				List<Rating> inferenceList = new ArrayList<Rating>();
-				inferenceList.add(session.getBlackboard().getState(diagnosis));
+				inferenceList.add(session.getBlackboard().getRating(diagnosis));
 				broker.update(new Information(id, diagnosis.getId(),
 						solutionList, TerminologyType.diagnosis,
 						InformationType.SolutionInformation));

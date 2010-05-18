@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
@@ -144,10 +143,10 @@ public class D3webLocalAligner implements LocalAligner<NamedObject> {
 								getII(firstId, a1),
 								getII(secondId, a2),
 								type);
-						if (a1 instanceof Answer && a2 instanceof Answer) {
-							Object obj1 = ((Answer) a1).getProperties().getProperty(
+						if (a1 instanceof Choice && a2 instanceof Choice) {
+							Object obj1 = ((Choice) a1).getProperties().getProperty(
 									Property.FOREIGN);
-							Object obj2 = ((Answer) a2).getProperties().getProperty(
+							Object obj2 = ((Choice) a2).getProperties().getProperty(
 									Property.FOREIGN);
 							if ((obj1 != null && obj1 instanceof Boolean && ((Boolean) obj1).booleanValue())
 									|| (obj2 != null && obj2 instanceof Boolean && ((Boolean) obj2).booleanValue())) {
@@ -176,8 +175,8 @@ public class D3webLocalAligner implements LocalAligner<NamedObject> {
 		if (object instanceof NamedObject) {
 			return new IdentifiableInstance(idString, object.getId(), null);
 		}
-		else if (object instanceof Answer) {
-			Answer answer = (Answer) object;
+		else if (object instanceof Choice) {
+			Choice answer = (Choice) object;
 			return new IdentifiableInstance(idString, answer.getQuestion().getId(), answer.getId());
 		}
 		return null;

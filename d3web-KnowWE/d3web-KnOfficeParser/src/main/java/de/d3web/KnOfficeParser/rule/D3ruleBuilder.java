@@ -51,7 +51,6 @@ import de.d3web.abstraction.formula.Sub;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -572,7 +571,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				return;
 			}
 			QuestionChoice qc = (QuestionChoice) currentquestion;
-			Answer a = (Answer) idom.findValue(qc, value).getValue();
+			Choice a = (Choice) idom.findValue(qc, value).getValue();
 
 			if (a == null) {
 				if (lazy) {
@@ -600,12 +599,12 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (ifcond == null) return;
 			if (add) {
 				addRule(new MyRule(ruletype.addvalue, currentquestion, ifcond,
-						exceptcond, new Choice[] { (Choice) a }, null, null));
+						exceptcond, new Choice[] { a }, null, null));
 
 			}
 			else {
 				addRule(new MyRule(ruletype.setvalue, currentquestion, ifcond,
-						exceptcond, new Choice[] { (Choice) a }, null, null));
+						exceptcond, new Choice[] { a }, null, null));
 			}
 		}
 	}

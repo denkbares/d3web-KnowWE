@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.knowledgeExporter.txtWriters;
@@ -33,18 +33,16 @@ import java.util.Set;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.MethodKind;
+import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.RuleSet;
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondNum;
 import de.d3web.core.inference.condition.CondNumIn;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.NonTerminalCondition;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Answer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -55,6 +53,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.values.Choice;
@@ -70,22 +69,22 @@ import de.d3web.scoring.Score;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 
 public class DecisionTreeWriter extends TxtKnowledgeWriter {
-	
-//	private KnowledgeBaseManagement kbm;
+
+	// private KnowledgeBaseManagement kbm;
 
 	private Set<QASet> qContainerSet;
-	
+
 	private Set<Question> processedQuestions = new HashSet<Question>();
 
 	private int level = 0;
 
-	private boolean exportDecisionTreeID;	
+	private boolean exportDecisionTreeID;
 
 	public DecisionTreeWriter(KnowledgeManager manager) {
 		super(manager);
 		qContainerSet = manager.getQClasses();
 	}
-	
+
 	@Override
 	public String writeText() {
 
@@ -93,14 +92,15 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 
 		QASet qaset = manager.getKB().getRootQASet();
 		processSubQASets(qaset, s);
-		
+
 		if (s.length() > 0 && s.substring(0, 1).equals("\n")) {
 			return s.substring(1);
-		} else {
+		}
+		else {
 			return s.toString();
 		}
 	}
-	
+
 	private String quote(String s) {
 		return VerbalizationManager.quoteIfNecessary(s);
 	}
@@ -151,7 +151,7 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		boolean qasetIsWritten = false;
 		TerminologyObject[] children = qaset.getChildren();
 		List<QContainer> remainingQContainers = new LinkedList<QContainer>();
-		for (TerminologyObject element: children) {
+		for (TerminologyObject element : children) {
 			if (element instanceof Question) {
 				if (!qasetIsWritten) {
 					s.append(quote(qaset.toString()));
@@ -160,12 +160,13 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 				}
 				Question q = (Question) element;
 				processQuestion(q, s);
-			} else if (element instanceof QContainer && qContainerSet.contains(element)) {
-				remainingQContainers.add((QContainer)element);
+			}
+			else if (element instanceof QContainer && qContainerSet.contains(element)) {
+				remainingQContainers.add((QContainer) element);
 				qContainerSet.remove(element);
 			}
 		}
-		for (QContainer qc: remainingQContainers) {
+		for (QContainer qc : remainingQContainers) {
 			s.append("\n");
 			processSubQASets(qc, s);
 		}
@@ -210,12 +211,12 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		}
 		s.append("\n");
 		writeAnswers(q, s);
-		for (Object o: q.getChildren()) {
+		for (Object o : q.getChildren()) {
 			if (o instanceof Question && !processedQuestions.contains(o)) {
-				processQuestion((Question)o, s);
+				processQuestion((Question) o, s);
 			}
 		}
-		
+
 		level--;
 	}
 
@@ -224,12 +225,13 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 				psMethod, MethodKind.FORWARD);
 		if (slices != null) {
 			if (slices instanceof RuleSet) {
-				for (Rule rule: ((RuleSet) slices).getRules()) {
+				for (Rule rule : ((RuleSet) slices).getRules()) {
 					Condition condition = rule.getCondition();
-					if(mergedRules.containsKey(condition)) {
+					if (mergedRules.containsKey(condition)) {
 						List<Rule> rules = mergedRules.get(condition);
 						rules.add(rule);
-					} else {
+					}
+					else {
 						List<Rule> rules = new LinkedList<Rule>();
 						rules.add(rule);
 						mergedRules.put(condition, rules);
@@ -238,22 +240,21 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 			}
 		}
 	}
-	
-	private void writeAnswers(Question q, StringBuffer s) {
 
+	private void writeAnswers(Question q, StringBuffer s) {
 
 		level++;
 		Map<Condition, List<Rule>> mergedRules = new HashMap<Condition, List<Rule>>();
 		addChildren(q, PSMethodNextQASet.class, mergedRules);
 		addChildren(q, PSMethodHeuristic.class, mergedRules);
-		
+
 		Set<Condition> conditions = mergedRules.keySet();
 		Map<String, Condition> answerConds = new HashMap<String, Condition>();
-		Map<Condition, CondVerbalization> condCondVerbs = new HashMap<Condition, 
-			CondVerbalization>();
+		Map<Condition, CondVerbalization> condCondVerbs = new HashMap<Condition,
+				CondVerbalization>();
 		List<Condition> sortedConditions = new ArrayList<Condition>();
-		
-		for (Condition cond:conditions) {
+
+		for (Condition cond : conditions) {
 			if (cond instanceof NonTerminalCondition) {
 				continue;
 			}
@@ -261,14 +262,13 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 			answerConds.put(tCondVerb.getAnswer(), cond);
 			condCondVerbs.put(cond, tCondVerb);
 		}
-		
-	
+
 		AnswerList answerList = new AnswerList();
 		if (q instanceof QuestionChoice) {
 			answerList.addAll(((QuestionChoice) q).getAllAlternatives());
 		}
-		
-		for (Choice ac:answerList) {
+
+		for (Choice ac : answerList) {
 			if (answerConds.containsKey(ac.toString())) {
 				sortedConditions.add(answerConds.remove(ac.toString()));
 			}
@@ -277,22 +277,22 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		condNums.addAll(answerConds.values());
 		Collections.sort(condNums, new CondNumComparator());
 		sortedConditions.addAll(condNums);
-		
+
 		String dashes = dashes(level);
 		boolean foundYesNo = false;
-		for (Condition cond:sortedConditions) {
+		for (Condition cond : sortedConditions) {
 			if (cond instanceof NonTerminalCondition) {
 				continue;
 			}
-			
+
 			TerminalCondVerbalization tCondVerb = (TerminalCondVerbalization) condCondVerbs.get(cond);
-			
+
 			String operator = "";
 			if (!tCondVerb.getOperator().equals("=") && !tCondVerb.getOriginalClass()
 					.equals(CondNumIn.class.getSimpleName())) {
 				operator = tCondVerb.getOperator() + " ";
 			}
-			
+
 			String answer = tCondVerb.getAnswer();
 			if (isYes(answer) || isNo(answer)) {
 				foundYesNo = true;
@@ -309,15 +309,17 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 			s.append(dashes + operator + answer + "\n");
 			processActions(mergedRules, cond, s);
 		}
-		
+
 		if (!foundYesNo) {
-			for (Answer remainingAnswer:answerList) {
+			for (Choice remainingAnswer : answerList) {
 				String sTemp = "";
 				if (isYes(remainingAnswer.toString())) {
 					sTemp = KnowledgeManager.getResourceBundle().getString("datamanager.answerYes");
-				} else if (isNo(remainingAnswer.toString())) {
+				}
+				else if (isNo(remainingAnswer.toString())) {
 					sTemp = KnowledgeManager.getResourceBundle().getString("datamanager.answerNo");
-				} else {
+				}
+				else {
 					sTemp = remainingAnswer.toString();
 				}
 				s.append(dashes + quote(sTemp));
@@ -327,46 +329,49 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 				s.append("\n");
 			}
 		}
-		
+
 		level--;
 	}
-	
+
 	private boolean isYes(String a) {
-		if (a.compareToIgnoreCase("yes") == 0 
-			|| a.compareToIgnoreCase("ja") == 0) {
+		if (a.compareToIgnoreCase("yes") == 0
+				|| a.compareToIgnoreCase("ja") == 0) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
-	
+
 	private boolean isNo(String a) {
-		if (a.compareToIgnoreCase("no") == 0 
-			|| a.compareToIgnoreCase("nein") == 0) {
+		if (a.compareToIgnoreCase("no") == 0
+				|| a.compareToIgnoreCase("nein") == 0) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
-	
-	
+
 	private void processActions(Map<Condition, List<Rule>> mergedRules, Condition condition, StringBuffer s) {
-		for (Rule rule: mergedRules.get(condition)) {
+		for (Rule rule : mergedRules.get(condition)) {
 			PSAction action = rule.getAction();
 			if (action instanceof ActionIndication) {
 				ActionIndication ai = (ActionIndication) action;
 				List<QASet> qasets = ai.getQASets();
-				for (QASet qaset: qasets) {
+				for (QASet qaset : qasets) {
 					if (qaset instanceof Question && !manager.isDone(rule)) {
 						processQuestion((Question) qaset, s);
 						manager.ruleDone(rule);
-					} else if (qaset instanceof QContainer && !manager.isDone(rule)) {
+					}
+					else if (qaset instanceof QContainer && !manager.isDone(rule)) {
 						s.append(dashes(level + 1)
 								+ quote(qaset.toString()) + "\n");
 						manager.ruleDone(rule);
 					}
 				}
-			} else if (action instanceof ActionHeuristicPS && !manager.isDone(rule)) {
+			}
+			else if (action instanceof ActionHeuristicPS && !manager.isDone(rule)) {
 				ActionHeuristicPS ah = (ActionHeuristicPS) action;
 				Solution diagnosis = ah.getDiagnosis();
 				String dt = diagnosis.getName();
@@ -382,21 +387,21 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	private void processDiagnosis(Solution diagnosis, StringBuffer s) {
 		Map<Condition, List<Rule>> mergedRules = new HashMap<Condition, List<Rule>>();
 		addChildren(diagnosis, PSMethodNextQASet.class, mergedRules);
-		for (Condition diagCondition: mergedRules.keySet()) {
+		for (Condition diagCondition : mergedRules.keySet()) {
 			if (diagCondition instanceof CondDState) {
-				for (Rule diagRule: mergedRules.get(diagCondition)) {
+				for (Rule diagRule : mergedRules.get(diagCondition)) {
 					PSAction diagRuleAction = diagRule.getAction();
 					if (diagRuleAction instanceof ActionNextQASet && !manager.isDone(diagRule)) {
 						List<QASet> nextQASets = ((ActionNextQASet) diagRuleAction).getQASets();
 						for (QASet next : nextQASets) {
 							if (next instanceof Question) {
 								processQuestion((Question) next, s);
-							} else if (next instanceof QContainer) {
+							}
+							else if (next instanceof QContainer) {
 								String suff = dashes(level + 1)
-								+ quote(next.getName())
-								+ "\n";
-								if (!s.toString().endsWith(suff))
-								s.append(suff);
+										+ quote(next.getName())
+										+ "\n";
+								if (!s.toString().endsWith(suff)) s.append(suff);
 								// dürfte gar nicht vorkommen
 								// laut Konvention:
 							}
@@ -408,26 +413,32 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		}
 	}
 
-//	private void addNumAnswer(CondNum cn, StringBuffer s) {
-//		if (cn instanceof CondNumEqual) {
-//			s.append(dashes(level) + "= " + trimNum(cn.getAnswerValue().toString()) + "\n");
-//		} else if (cn instanceof CondNumGreater) {
-//			s.append(dashes(level) + "> " + trimNum(cn.getAnswerValue().toString()) + "\n");
-//		} else if (cn instanceof CondNumGreaterEqual) {
-//			s.append(dashes(level) + ">= " + trimNum(cn.getAnswerValue().toString()) + "\n");
-//		} else if (cn instanceof CondNumIn) {
-//			CondNumIn cni = (CondNumIn) cn;
-//			s.append(dashes(level) + "[" + trimNum(cni.getMinValue().toString()) + " "
-//					+ trimNum(cni.getMaxValue().toString()) + "]\n");
-//		} else if (cn instanceof CondNumLess) {
-//			s.append(dashes(level) + "< " + trimNum(cn.getAnswerValue().toString()) + "\n");
-//		} else if (cn instanceof CondNumLessEqual) {
-//			s.append(dashes(level) + "<= " + trimNum(cn.getAnswerValue().toString()) + "\n");
-//		}
-//	}
+	// private void addNumAnswer(CondNum cn, StringBuffer s) {
+	// if (cn instanceof CondNumEqual) {
+	// s.append(dashes(level) + "= " + trimNum(cn.getAnswerValue().toString()) +
+	// "\n");
+	// } else if (cn instanceof CondNumGreater) {
+	// s.append(dashes(level) + "> " + trimNum(cn.getAnswerValue().toString()) +
+	// "\n");
+	// } else if (cn instanceof CondNumGreaterEqual) {
+	// s.append(dashes(level) + ">= " + trimNum(cn.getAnswerValue().toString())
+	// + "\n");
+	// } else if (cn instanceof CondNumIn) {
+	// CondNumIn cni = (CondNumIn) cn;
+	// s.append(dashes(level) + "[" + trimNum(cni.getMinValue().toString()) +
+	// " "
+	// + trimNum(cni.getMaxValue().toString()) + "]\n");
+	// } else if (cn instanceof CondNumLess) {
+	// s.append(dashes(level) + "< " + trimNum(cn.getAnswerValue().toString()) +
+	// "\n");
+	// } else if (cn instanceof CondNumLessEqual) {
+	// s.append(dashes(level) + "<= " + trimNum(cn.getAnswerValue().toString())
+	// + "\n");
+	// }
+	// }
 
 	private boolean isAbstractionQuestion(Question q) {
-		Boolean b =  (Boolean) q.getProperties().getProperty(
+		Boolean b = (Boolean) q.getProperties().getProperty(
 				Property.ABSTRACTION_QUESTION);
 		return (b != null) ? b : false;
 	}
@@ -436,21 +447,22 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 		String s = "";
 		if (q instanceof QuestionYN) {
 			s = KnowledgeManager.getResourceBundle().getString("decisionTreeWriter.yn");
-		} else if (q instanceof QuestionOC) {
+		}
+		else if (q instanceof QuestionOC) {
 			s = "[oc]";
-		} else if (q instanceof QuestionMC) {
+		}
+		else if (q instanceof QuestionMC) {
 			s = "[mc]";
-		} else if (q instanceof QuestionNum) {
+		}
+		else if (q instanceof QuestionNum) {
 			s = "[num]";
-		} else if (q instanceof QuestionText) {
+		}
+		else if (q instanceof QuestionText) {
 			s = "[text]";
 		}
 
 		return s;
 	}
-	
-
-
 
 	public boolean isExportDecisionTreeID() {
 		return exportDecisionTreeID;
@@ -459,29 +471,29 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 	public void setExportDecisionTreeID(boolean exportDecisionTreeID) {
 		this.exportDecisionTreeID = exportDecisionTreeID;
 	}
-	
+
 	private class AnswerList extends ArrayList<Choice> {
 
 		private static final long serialVersionUID = -7218215076349663635L;
 
 		public void remove(String answer) {
-	    	for (int i = 0; i < this.size(); i++) {
-	    		if (this.get(i).toString().equals(answer)) {
-	    			this.remove(i);
-	    		}
-	    	}
-	    }
-	    
-	    public Choice get(String answer) {
-	    	for (int i = 0; i < this.size(); i++) {
-	    		if (this.get(i).toString().equals(answer)) {
-	    			return this.get(i);
-	    		}
-	    	}
-	    	return null;
-	    }
+			for (int i = 0; i < this.size(); i++) {
+				if (this.get(i).toString().equals(answer)) {
+					this.remove(i);
+				}
+			}
+		}
+
+		public Choice get(String answer) {
+			for (int i = 0; i < this.size(); i++) {
+				if (this.get(i).toString().equals(answer)) {
+					return this.get(i);
+				}
+			}
+			return null;
+		}
 	}
-	
+
 	private class CondNumComparator implements Comparator<Condition> {
 
 		@Override
@@ -491,24 +503,33 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 				CondNum n2 = (CondNum) o2;
 				if (n1 instanceof CondNumIn || n2 instanceof CondNumIn) {
 					if (n1 instanceof CondNumIn && n2 instanceof CondNumIn) {
-						if (Double.compare(((CondNumIn) n1).getMaxValue(), ((CondNumIn) n2).getMaxValue()) != 0) {
-							return Double.compare(((CondNumIn) n1).getMaxValue(), ((CondNumIn) n2).getMaxValue());
-						} else {
-							return Double.compare(((CondNumIn) n1).getMinValue(), ((CondNumIn) n2).getMinValue());
+						if (Double.compare(((CondNumIn) n1).getMaxValue(),
+								((CondNumIn) n2).getMaxValue()) != 0) {
+							return Double.compare(((CondNumIn) n1).getMaxValue(),
+									((CondNumIn) n2).getMaxValue());
 						}
-					} else if (n1 instanceof CondNumIn) {
-						return Double.compare(((CondNumIn) n1).getMaxValue(), n2.getConditionValue());
-					} else {
-						return Double.compare(n1.getConditionValue(), ((CondNumIn) n2).getMinValue());
+						else {
+							return Double.compare(((CondNumIn) n1).getMinValue(),
+									((CondNumIn) n2).getMinValue());
+						}
 					}
-				} else {
+					else if (n1 instanceof CondNumIn) {
+						return Double.compare(((CondNumIn) n1).getMaxValue(),
+								n2.getConditionValue());
+					}
+					else {
+						return Double.compare(n1.getConditionValue(),
+								((CondNumIn) n2).getMinValue());
+					}
+				}
+				else {
 					return Double.compare(n1.getConditionValue(), n2.getConditionValue());
-					
+
 				}
 			}
 			return 0;
 		}
-		
+
 	}
 
 }

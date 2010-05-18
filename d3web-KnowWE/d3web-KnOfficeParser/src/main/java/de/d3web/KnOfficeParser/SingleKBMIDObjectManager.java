@@ -1,27 +1,26 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.KnOfficeParser;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
@@ -41,14 +40,15 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.values.Choice;
 
 /**
- * Default implementation for the IDObjectManagement, searches and creates objects in a single kbm
+ * Default implementation for the IDObjectManagement, searches and creates
+ * objects in a single kbm
  * 
  * @author Markus Friedrich (denkbares GmbH)
  */
 public class SingleKBMIDObjectManager implements IDObjectManagement {
 
 	protected KnowledgeBaseManagement kbm;
-	
+
 	public SingleKBMIDObjectManager(KnowledgeBaseManagement kbm) {
 		super();
 		this.kbm = kbm;
@@ -153,7 +153,7 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	}
 
 	@Override
-	public Answer addChoiceAnswer(QuestionChoice qc, String value) {
+	public Choice addChoiceAnswer(QuestionChoice qc, String value) {
 		return kbm.addChoiceAnswer(qc, value);
 	}
 
@@ -177,60 +177,50 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 		return kbm.createQContainer(id, name, parent);
 	}
 
-
 	@Override
 	public QuestionDate createQuestionDate(String id, String name, QASet parent) {
 		return kbm.createQuestionDate(id, name, parent);
 	}
-
 
 	@Override
 	public QuestionMC createQuestionMC(String id, String name, QASet parent, Choice[] answers) {
 		return kbm.createQuestionMC(id, name, parent, answers);
 	}
 
-
 	@Override
 	public QuestionMC createQuestionMC(String id, String name, QASet parent, String[] answers) {
 		return kbm.createQuestionMC(id, name, parent, answers);
 	}
-
 
 	@Override
 	public QuestionNum createQuestionNum(String id, String name, QASet parent) {
 		return kbm.createQuestionNum(id, name, parent);
 	}
 
-
 	@Override
 	public QuestionOC createQuestionOC(String id, String name, QASet parent, Choice[] answers) {
 		return kbm.createQuestionOC(id, name, parent, answers);
 	}
-
 
 	@Override
 	public QuestionOC createQuestionOC(String id, String name, QASet parent, String[] answers) {
 		return kbm.createQuestionOC(id, name, parent, answers);
 	}
 
-
 	@Override
 	public QuestionText createQuestionText(String id, String name, QASet parent) {
 		return kbm.createQuestionText(id, name, parent);
 	}
-
 
 	@Override
 	public QuestionYN createQuestionYN(String id, String name, QASet parent) {
 		return kbm.createQuestionYN(id, name, parent);
 	}
 
-
 	@Override
 	public QuestionYN createQuestionYN(String id, String name, String yesAlternativeText, String noAlternativeText, QASet parent) {
 		return kbm.createQuestionYN(id, name, yesAlternativeText, noAlternativeText, parent);
 	}
-
 
 	@Override
 	public QuestionZC createQuestionZC(String id, String name, QASet parent) {
@@ -246,5 +236,5 @@ public class SingleKBMIDObjectManager implements IDObjectManagement {
 	public String createRuleID() {
 		return kbm.createRuleID();
 	}
-	
+
 }

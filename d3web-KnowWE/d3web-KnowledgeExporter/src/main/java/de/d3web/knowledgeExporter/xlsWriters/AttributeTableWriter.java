@@ -31,7 +31,6 @@ import jxl.write.WritableSheet;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.knowledge.terminology.Answer;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
@@ -231,8 +230,8 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		if (o instanceof NamedObject) {
 			properties = ((NamedObject) o).getProperties();
 		}
-		else if (o instanceof Answer) {
-			properties = ((Answer) o).getProperties();
+		else if (o instanceof Choice) {
+			properties = ((Choice) o).getProperties();
 		}
 		for (Property p : properties.getKeys()) {
 			if (p.equals(Property.MMINFO)) {
@@ -304,8 +303,8 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		if (object instanceof NamedObject) {
 			props = ((NamedObject) object).getProperties();
 		}
-		else if (object instanceof Answer) {
-			props = ((Answer) object).getProperties();
+		else if (object instanceof Choice) {
+			props = ((Choice) object).getProperties();
 		}
 		for (Property p : props.getKeys()) {
 			if (p.equals(Property.MMINFO)) {
