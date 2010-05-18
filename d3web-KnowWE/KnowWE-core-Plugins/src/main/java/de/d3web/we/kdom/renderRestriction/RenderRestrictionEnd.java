@@ -30,9 +30,9 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Endmarker for the group rendering restriction
- *
+ * 
  * @author Jochen
- *
+ * 
  */
 public class RenderRestrictionEnd extends DefaultMarkupType {
 
@@ -65,17 +65,19 @@ public class RenderRestrictionEnd extends DefaultMarkupType {
 				// hide content (i.e., remove from rendered StringBuffer)
 				if (group != null
 						&& !KnowWEEnvironment.getInstance().getWikiConnector().userIsMemberOfGroup(
-						user.getUsername(), group, user.getHttpRequest())) {
+								user.getUsername(), group, user.getHttpRequest())) {
 					String toFind = RenderRestrictionStart.createString(group);
 					int index = string.indexOf(toFind);
 					if (index > -1) {
-					string.delete(index, string.length());
+						string.delete(index, string.length());
 					}
 				}
 				else { // only remove/hide the start tag
 					String toFind = RenderRestrictionStart.createString(group);
 					int index = string.indexOf(toFind);
-					string.delete(index, index + toFind.length());
+					if (index > -1) {
+						string.delete(index, index + toFind.length());
+					}
 				}
 			}
 
