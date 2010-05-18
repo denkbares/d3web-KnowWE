@@ -68,7 +68,9 @@ public class RenderRestrictionEnd extends DefaultMarkupType {
 						user.getUsername(), group, user.getHttpRequest())) {
 					String toFind = RenderRestrictionStart.createString(group);
 					int index = string.indexOf(toFind);
+					if (index > -1) {
 					string.delete(index, string.length());
+					}
 				}
 				else { // only remove/hide the start tag
 					String toFind = RenderRestrictionStart.createString(group);
