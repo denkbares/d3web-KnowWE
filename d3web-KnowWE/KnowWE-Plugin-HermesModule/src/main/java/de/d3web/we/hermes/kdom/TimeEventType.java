@@ -41,6 +41,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -65,17 +66,18 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new TimeEventSourceType());
 		this.childrenTypes.add(new TimeEventDescriptionType());
 
-		this.setCustomRenderer(TimeEventTypeRenderer.getInstance());
+		this.setCustomRenderer(new EditSectionRenderer(
+				TimeEventTypeRenderer.getInstance()));
 		this.addSubtreeHandler(new TimeEventTypeOWLSubTreeHandler());
 
 	}
 
 	private class TimeEventTypeOWLSubTreeHandler implements
-			SubtreeHandler {
+			SubtreeHandler<TimeEventType> {
 
 		@Override
 		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
-				Section section) {
+				Section<TimeEventType> section) {
 
 			UpperOntology uo = UpperOntology.getInstance();
 			IntermediateOwlObject io = new IntermediateOwlObject();
