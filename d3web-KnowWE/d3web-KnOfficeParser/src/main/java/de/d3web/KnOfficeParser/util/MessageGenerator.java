@@ -6,13 +6,13 @@ import java.util.ResourceBundle;
 import de.d3web.report.Message;
 
 public class MessageGenerator {
-	
-	private ResourceBundle rb;
-	
+
+	private final ResourceBundle rb;
+
 	public MessageGenerator(ResourceBundle rb) {
 		this.rb = rb;
 	}
-	
+
 	/**
 	 * Eigentliche Methode um Fehler zu generieren
 	 * @param key Schlüssel in der properties Datei
@@ -25,11 +25,11 @@ public class MessageGenerator {
 	public Message createErrorMSG(String key, String file, int line, String linetext, Object... adds ) {
 		return Message.createError(generateText(key, adds), file, line, linetext);
 	}
-	
+
 	public Message createErrorMSG(String key, String file, int line, int column, String linetext, Object... adds ) {
 		return Message.createError(generateText(key, adds), file, line, column, linetext);
 	}
-	
+
 	/**
 	 * Eigentliche Methode um Warnungen zu generieren
 	 * @param key Schlüssel in der properties Datei
@@ -42,15 +42,15 @@ public class MessageGenerator {
 	public Message createWarningMSG(String key, String file, int line, String linetext, Object... adds ) {
 		return Message.createWarning(generateText(key, adds), file, line, linetext);
 	}
-	
+
 	public Message createWarningMSG(String key, String file, int line, int column, String linetext, Object... adds ) {
 		return Message.createWarning(generateText(key, adds), file, line, column, linetext);
 	}
-	
+
 	public Message createNoteMSG(String key, String file, int line, String linetext, Object... adds ) {
 		return Message.createNote(generateText(key, adds), file, line, linetext);
 	}
-	
+
 	public Message createNoteMSGWithCount(String key, String file, int line, String linetext, Object... adds) {
 		int count = 0;
 		if (adds.length == 1 && adds[0] instanceof Integer) {
@@ -63,7 +63,8 @@ public class MessageGenerator {
 		String result = rb.getString("unknownError") + ": " + key;
 		try {
 			result = MessageFormat.format(rb.getString(key), adds);
-		} catch (IllegalArgumentException e) {
+		}
+		catch (Exception e) {
 			//nothing to do, an unknown error will be generated
 		}
 		return result;
