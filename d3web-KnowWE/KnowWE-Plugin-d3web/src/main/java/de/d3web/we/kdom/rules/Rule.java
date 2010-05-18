@@ -75,20 +75,20 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 	@Override
 	public void cleanKnowledge(KnowWEArticle article, KnowledgeBaseManagement kbm) {
-		
+
 		if (kbm != null) {
 
 			// get new Rules if necessary
 			List<Section<Rule>> newRules = new ArrayList<Section<Rule>>();
 			article.getSection().findSuccessorsOfType(Rule.class, newRules);
-			
+
 			Set<String> kbIDs = new HashSet<String>();
 			for (Section<Rule> r:newRules) {
 				kbIDs.add((String) KnowWEUtils.getStoredObject(article.getWeb(), article
 						.getTitle(), r.getId(), Rule.KBID_KEY));
 			}
 
-			
+
 			// delete the rules from the KnowledgeBase
 			Collection<KnowledgeSlice> ruleComplexes = kbm.getKnowledgeBase().getAllKnowledgeSlices();
 			for (KnowledgeSlice rc:ruleComplexes) {
@@ -104,10 +104,10 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 					}
 				}
 			}
-			
+
 			//System.out.println("Cleaned Rules in " + (System.currentTimeMillis() - startTime) + "ms");
 			//System.out.println("Deleted old Rules in " + (System.nanoTime() - start) + "ns");
-			
+
 		}
 	}
 
@@ -137,9 +137,9 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 												Message.NOTE) ? " "
 												+ error.getCount() : " Line: "
 												+ error.getLineNo())));
-						
+
 						string.append(KnowWEUtils.maskHTML("</span>"));
-		
+
 					}
 				}
 			}
@@ -161,10 +161,10 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 	}
 
-	class RuleSubTreeHandler extends D3webReviseSubTreeHandler {
+	class RuleSubTreeHandler extends D3webReviseSubTreeHandler<Rule> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<Rule> s) {
 
 			boolean lazy = false;
 			Section xml = KnowWEObjectTypeUtils.getAncestorOfType(s,
@@ -180,7 +180,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 					}
 				}
 			}
-			
+
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 
 			if (kbm != null) {
@@ -236,7 +236,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 	/**
 	 * Stores a message under to rule-error-store-key
-	 * 
+	 *
 	 * @param s
 	 * @param message
 	 */
@@ -247,7 +247,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 	/**
 	 * Stores a message under to rule-error-store-key
-	 * 
+	 *
 	 * @param s
 	 * @param message
 	 */

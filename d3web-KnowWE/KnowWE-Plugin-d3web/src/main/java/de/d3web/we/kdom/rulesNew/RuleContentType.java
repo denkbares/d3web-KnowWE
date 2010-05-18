@@ -39,7 +39,6 @@ import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
-import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.rule.ConditionActionRule;
 import de.d3web.we.kdom.rulesNew.ruleAction.D3webRuleAction;
 import de.d3web.we.kdom.rulesNew.ruleAction.RuleAction;
@@ -104,8 +103,8 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			}
 
 			// should not happen
-			return Arrays.asList((KDOMReportMessage) new ObjectCreationError("error creating rule",
-					this.getClass()));
+			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+					"rule not created"));
 		}
 
 	}

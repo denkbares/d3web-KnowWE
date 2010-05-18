@@ -23,22 +23,22 @@ package de.d3web.we.terminology;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public abstract class D3webReviseSubTreeHandler implements SubtreeHandler {
-	
+public abstract class D3webReviseSubTreeHandler<T extends KnowWEObjectType> implements SubtreeHandler<T> {
+
 	/**
 	 * @param article is the article you need the KBM from
-	 * @param sec is the knowledge containing section you need the KBM for 
-	 * @returns the KBM or <tt>null</tt> for article <tt>article</tt>. <tt>null</tt> 
+	 * @param sec is the knowledge containing section you need the KBM for
+	 * @returns the KBM or <tt>null</tt> for article <tt>article</tt>. <tt>null</tt>
 	 * is returned if the Knowledge of the given section doesn't need to be rebuild.
 	 */
 	protected KnowledgeBaseManagement getKBM(KnowWEArticle article, Section sec) {
 		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, sec);
 	}
-	
+
 //	/**
 //	 * Just uses the old Knowledge for this section from this article
 //	 */

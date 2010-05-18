@@ -33,14 +33,17 @@ public class AnswerRefImpl extends AnswerRef {
 
 			KnowledgeBaseManagement mgn =
 					D3webModule.getKnowledgeRepresentationHandler(s.getArticle().getWeb())
-					.getKBM(s.getArticle(), null, s);
+							.getKBM(s.getArticle(), null, s);
 
 			Question o = mgn.findQuestion(name);
 
-			Choice answer = mgn.findChoice((QuestionChoice) o,
-					a.get().getTermName(a));
+			if (o instanceof QuestionChoice) {
 
-			return answer != null;
+				Choice answer = mgn.findChoice((QuestionChoice) o,
+						a.get().getTermName(a));
+
+				return answer != null;
+			}
 		}
 
 		return false;
