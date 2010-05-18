@@ -84,7 +84,7 @@ public class FindingHTMLWriter {
 			buffy.append("<form action='#' name='semanooc'>");
 
 			for (Choice choice : theQC.getAllAlternatives()) {
-				String choiceText = KnowWEUtils.convertUmlaut(choice.getValue(session).toString());
+				String choiceText = KnowWEUtils.convertUmlaut(choice.getName().toString());
 				Value choiceValue = new ChoiceValue(choice);
 				Value sessionValue = session.getBlackboard().getValue(theQuestion);
 
