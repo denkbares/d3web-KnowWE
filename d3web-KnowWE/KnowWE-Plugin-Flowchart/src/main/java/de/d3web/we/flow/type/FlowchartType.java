@@ -24,13 +24,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.we.flow.DelegateSubtreeHandler;
 import de.d3web.we.flow.FlowchartSectionRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.FlowchartTerminologySubTreeHandler;
-import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**
@@ -48,10 +47,10 @@ public class FlowchartType extends AbstractXMLObjectType {
 	protected void init() {
 
 		this.childrenTypes.add(FlowchartContentType.getInstance());
-		addSubtreeHandler(new FlowchartTerminologySubTreeHandler());
+		addSubtreeHandler(Priority.HIGHER,
+				new FlowchartTerminologySubTreeHandler());
+		addSubtreeHandler(Priority.DEFAULT, new FlowchartSubTreeHandler());
 
-		RootType.getInstance().addSubtreeHandler(
-				new DelegateSubtreeHandler(new FlowchartSubTreeHandler(), FlowchartType.class));
 		// setNotRecyclable(true);
 
 	}
@@ -62,31 +61,35 @@ public class FlowchartType extends AbstractXMLObjectType {
 	}
 
 	public static String getFlowchartName(Section sec) {
-		Map<String, String> mapFor = AbstractXMLObjectType.getAttributeMapFor(sec);
+		Map<String, String> mapFor = AbstractXMLObjectType
+				.getAttributeMapFor(sec);
 		return mapFor.get("name");
 	}
 
 	public String getFlowchartID(Section sec) {
-		Map<String, String> mapFor = AbstractXMLObjectType.getAttributeMapFor(sec);
+		Map<String, String> mapFor = AbstractXMLObjectType
+				.getAttributeMapFor(sec);
 		String id = mapFor.get("id");
-		if (id == null) id = mapFor.get("name");
-		if (id == null) id = "sheet_01";
+		if (id == null)
+			id = mapFor.get("name");
+		if (id == null)
+			id = "sheet_01";
 		return id;
 	}
 
 	public String[] getStartNames(Section sec) {
-		List<Section> startSections = new LinkedList<Section>();
+		List<Section<?>> startSections = new LinkedList<Section<?>>();
 		sec.findSuccessorsOfType(StartType.class, startSections);
 		return getSectionsContents(startSections);
 	}
 
 	public String[] getExitNames(Section sec) {
-		List<Section> exitSections = new LinkedList<Section>();
+		List<Section<?>> exitSections = new LinkedList<Section<?>>();
 		sec.findSuccessorsOfType(ExitType.class, exitSections);
 		return getSectionsContents(exitSections);
 	}
 
-	private static String[] getSectionsContents(List<Section> sections) {
+	private static String[] getSectionsContents(List<Section<?>> sections) {
 		List<String> result = new LinkedList<String>();
 		for (Section start : sections) {
 			String content = getSectionContent(start);
@@ -97,13 +100,13 @@ public class FlowchartType extends AbstractXMLObjectType {
 		return result.toArray(new String[result.size()]);
 	}
 
-	private static String getSectionContent(Section sec) {
+	private static String getSectionContent(Section<AbstractXMLObjectType> sec) {
 		String result = null;
 
-		List<Section> children = sec.getChildren();
+		List<Section<?>> children = sec.getChildren();
 		if (children.size() == 3) // HOTFIX for parser section returning
 									// enclosing xml-tags
-		return children.get(1).getOriginalText();
+			return children.get(1).getOriginalText();
 
 		// Old mechanism
 		for (Section child : children) {
