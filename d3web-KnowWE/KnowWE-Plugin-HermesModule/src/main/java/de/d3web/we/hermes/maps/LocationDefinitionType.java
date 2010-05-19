@@ -19,7 +19,6 @@
  */
 package de.d3web.we.hermes.maps;
 
-
 import java.util.Collection;
 
 import de.d3web.we.core.SemanticCore;
@@ -32,10 +31,10 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType
-		{
+public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
 	private static final String START_TAG = "<<ORT:";
 	private static final String END_TAG = ">>";
 
@@ -54,7 +53,7 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType
 		@Override
 		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<LocationDefinitionType> s) {
 			IntermediateOwlObject ioo = new IntermediateOwlObject();
-			Placemark placem = extractPlacemark(s.getOriginalText());
+			Placemark placem = extractPlacemark(s);
 			MapType.addPlacemarkToOwlObject(placem, ioo);
 			SemanticCore.getInstance().addStatements(ioo, s);
 			return null;
@@ -62,35 +61,54 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType
 
 	}
 
-
-	private static Placemark extractPlacemark(String sectionText) {
+	private static Placemark extractPlacemark(Section<LocationDefinitionType> section) {
+		String sectionText = section.getOriginalText();
 		sectionText = sectionText.substring(START_TAG.length(), sectionText
 				.length()
 				- END_TAG.length());
 
 		String locationName = null;
-		double latitude = Double.NaN;
-		double longitude = Double.NaN;
+		Double latitude = null;
+		Double longitude = null;
 		String description = null;
 		if (sectionText == null) {
 			return null;
 		}
 		String[] splittedSecText = sectionText.split(";");
+
+		//  location name omitted
+		if(splittedSecText.length == 2) {
+			locationName = section.getTitle();
+			try {
+				latitude = Double.parseDouble(splittedSecText[0]);
+				longitude = Double.parseDouble(splittedSecText[1]);
+				}
+				catch (NumberFormatException e) {
+					return null;
+				}
+		}
 		if (splittedSecText.length > 2 && splittedSecText.length < 5) {
-			locationName = splittedSecText[0];
+			locationName = splittedSecText[0].trim();
+			try {
 			latitude = Double.parseDouble(splittedSecText[1]);
 			longitude = Double.parseDouble(splittedSecText[2]);
+			}
+			catch (NumberFormatException e) {
+				return null;
+			}
 			if (splittedSecText.length == 4) {
 				description = splittedSecText[3];
 			}
-		} else {
+		}
+
+		if (locationName == null || latitude == null || longitude == null) {
 			return null;
 		}
 
 		return new Placemark(locationName, latitude, longitude, description);
 	}
 
-	public static class LocationRenderer extends KnowWEDomRenderer {
+	public static class LocationRenderer extends KnowWEDomRenderer<LocationDefinitionType> {
 
 		private static LocationRenderer instance;
 
@@ -102,10 +120,19 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType
 		}
 
 		@Override
-		public void render(KnowWEArticle article, Section sec,
+		public void render(KnowWEArticle article, Section<LocationDefinitionType> sec,
 				KnowWEUserContext user, StringBuilder string) {
-			string.append(extractPlacemark(sec.getOriginalText())
-					.toHTMLString());
+			String originalText = sec.getOriginalText();
+			Placemark extractPlacemark = extractPlacemark(sec);
+			if (extractPlacemark == null) {
+				string.append(KnowWEUtils.maskHTML("<span class='error' title='invalid syntax'>")
+						+ originalText + KnowWEUtils.maskHTML("</span>"));
+			}
+			else {
+				String htmlString = extractPlacemark
+							.toHTMLString();
+				string.append(KnowWEUtils.maskHTML(htmlString));
+			}
 		}
 	}
 

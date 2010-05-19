@@ -75,8 +75,8 @@ public class Placemark {
 
     public String toHTMLString() {
 	String s = "<pre>";
-	s += "<h5>" + title + "</h5>";
-	s += "<div>" + latitude + ";" + longitude + "</div>";
+		s += "<b>" + title + ": </b>";
+		s += "<span>" + latitude + "°N ; " + longitude + "°E</span>";
 	if (description != null) {
 	    s += "<div>" + description + "</div>";
 	}
