@@ -35,13 +35,10 @@ public class MapType extends AbstractXMLObjectType {
 	@Override
 	public List<KnowWEObjectType> getAllowedChildrenTypes() {
 		childrenTypes.add(new AbstractXMLObjectType("iframe"));
+		this.setCustomRenderer(new MapRenderer());
 		return childrenTypes;
 	}
 
-	@Override
-	public KnowWEDomRenderer getRenderer() {
-		return new MapRenderer();
-	}
 
 	private class MapTypeOWLSubTreeHandler implements SubtreeHandler {
 
@@ -100,9 +97,9 @@ public class MapType extends AbstractXMLObjectType {
 
 	}
 
-	private class MapRenderer extends KnowWEDomRenderer {
+	private class MapRenderer extends KnowWEDomRenderer<MapType> {
 		@Override
-		public void render(KnowWEArticle article, Section sec,
+		public void render(KnowWEArticle article, Section<MapType> sec,
 				KnowWEUserContext user, StringBuilder string) {
 			string.append("<div id=\"map\" class=\"panel\">");
 			string.append("<h3>Karte</h3>");

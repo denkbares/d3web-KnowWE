@@ -49,10 +49,10 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType
 	}
 
 	private class LocationDefinitionTypeOWLSubTreeHandler implements
-			SubtreeHandler {
+			SubtreeHandler<LocationDefinitionType> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<LocationDefinitionType> s) {
 			IntermediateOwlObject ioo = new IntermediateOwlObject();
 			Placemark placem = extractPlacemark(s.getOriginalText());
 			MapType.addPlacemarkToOwlObject(placem, ioo);
