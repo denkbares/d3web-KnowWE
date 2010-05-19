@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -27,10 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.eclipse.jdt.internal.compiler.util.Messages;
-
 import de.d3web.report.Message;
-import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.DefaultErrorRenderer;
@@ -47,16 +44,16 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/**
 	 * This is just a (conventional) key under which messages can be stored (and
 	 * then be found again) in the sectionStore
-	 *
+	 * 
 	 */
 	public static final String MESSAGES_STORE_KEY = "messages";
 
 	/**
 	 * the children types of the type. Used to serve the getAllowedChildrenTypes
 	 * of the KnowWEObjectType interface
-	 *
+	 * 
 	 * @see KnowWEObjectType#getAllowedChildrenTypes()
-	 *
+	 * 
 	 */
 	protected List<KnowWEObjectType> childrenTypes = new ArrayList<KnowWEObjectType>();
 
@@ -65,11 +62,10 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
-	 *
+	 * 
 	 * @see SubtreeHandler
 	 */
-	protected TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> subtreeHandler 
-			= new TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>>();
+	protected TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> subtreeHandler = new TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>>();
 
 	/**
 	 * types can be activated and deactivated in KnowWE this field is holding
@@ -78,8 +74,8 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	protected boolean isActivated = true;
 
 	/**
-	 * a flag for the updating mechanism, which manages translations to
-	 * explicit knowledge formats
+	 * a flag for the updating mechanism, which manages translations to explicit
+	 * knowledge formats
 	 */
 	private boolean isNotRecyclable = false;
 
@@ -100,14 +96,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/**
 	 * The sectionFinder of this type, used to serve the getSectionFinder-method
 	 * of the KnowWEObjectType interface
-	 *
+	 * 
 	 * @see KnowWEObjectType#getSectioner()
 	 */
 	protected SectionFinder sectionFinder;
 
 	/**
 	 * Allows to set a specific sectionFinder for this type
-	 *
+	 * 
 	 * @param sectionFinder
 	 */
 	public void setSectionFinder(SectionFinder sectionFinder) {
@@ -123,7 +119,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * constructor calling init() which is abstract
-	 *
+	 * 
 	 */
 	public AbstractKnowWEObjectType() {
 		// TODO: vb: this is dangerous behavior. Should be replaced. The objects
@@ -139,14 +135,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Returns the list of the registered ReviseSubtreeHandlers
-	 *
+	 * 
 	 * @return list of handlers
 	 */
 	@Override
 	public final TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> getSubtreeHandlers() {
 		return subtreeHandler;
 	}
-	
+
 	public final List<SubtreeHandler<? extends KnowWEObjectType>> getSubtreeHandlers(Priority p) {
 		List<SubtreeHandler<? extends KnowWEObjectType>> handlers = subtreeHandler.get(p);
 		if (handlers == null) {
@@ -162,15 +158,15 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	public final void addSubtreeHandler(Priority p, SubtreeHandler<? extends KnowWEObjectType> handler) {
 		getSubtreeHandlers(p).add(handler);
 	}
-	
+
 	/**
-	 * Registers the given SubtreeHandlers at position <tt>pos</tt>
-	 * in the List of SubtreeHandlers of the given Priority.
+	 * Registers the given SubtreeHandlers at position <tt>pos</tt> in the List
+	 * of SubtreeHandlers of the given Priority.
 	 */
 	public final void addSubtreeHandler(int pos, Priority p, SubtreeHandler<? extends KnowWEObjectType> handler) {
 		getSubtreeHandlers(p).add(pos, handler);
 	}
-	
+
 	/**
 	 * Registers the given SubtreeHandlers with Priority.DEFAULT.
 	 */
@@ -181,7 +177,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	/**
 	 * A mechanism to help clean up old information, when a new version of a
 	 * page is saved
-	 *
+	 * 
 	 * @param articleName
 	 * @param clearedTypes
 	 */
@@ -198,36 +194,38 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 			}
 		}
 	}
-	
+
 	/**
-	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class, Object)
+	 * @see KnowWEUtils#storeSingleMessage(KnowWEArticle, Section, Class, Class,
+	 *      Object)
 	 */
 	public static void storeSingleMessage(KnowWEArticle article, Section<?> sec, Class<?> source, Message msg) {
 		KnowWEUtils.storeSingleMessage(article, sec, source, Message.class, msg);
 	}
-	
+
 	/**
 	 * @see KnowWEUtils#clearMessages(KnowWEArticle, Section, Class, Class)
 	 */
 	public static void cleanMessages(KnowWEArticle article, Section<?> section, Class<?> source) {
-		KnowWEUtils.clearMessages(article, section, source, Messages.class);
+		KnowWEUtils.clearMessages(article, section, source, Message.class);
 	}
-	
+
 	/**
-	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Class, Collection)
+	 * @see KnowWEUtils#storeMessages(KnowWEArticle, Section, Class, Class,
+	 *      Collection)
 	 */
-	public static void storeMessages(KnowWEArticle article, Section<?> section, 
+	public static void storeMessages(KnowWEArticle article, Section<?> section,
 			Class<?> source, Collection<Message> messages) {
 		KnowWEUtils.storeMessages(article, section, source, Message.class, messages);
 	}
-	
+
 	/**
 	 * @see KnowWEUtils#getMessages(KnowWEArticle, Section, Class)
 	 */
 	public static Collection<Message> getMessages(KnowWEArticle article, Section<?> section) {
 		return KnowWEUtils.getMessages(article, section, Message.class);
 	}
-	
+
 	/**
 	 * @see KnowWEUtils#getMessages(KnowWEArticle, Section, Class, Class)
 	 */
@@ -242,51 +240,53 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return KnowWEUtils.getMessagesFromSubtree(article, section, Message.class);
 	}
 
-
-
-//	/**
-//	 * Returns all the messages stored for this section put doesn't create a new
-//	 * empty MessageList in the SectionStore if no MessageList is there yet.
-//	 * Returns <tt>null</tt> in this case.
-//	 *
-//	 * @param s
-//	 * @return
-//	 */
-//	public static List<Message> getMessagesPassively(KnowWEArticle article, Section s) {
-//		Object o = KnowWEUtils.getStoredObject(
-//				article.getWeb(), article.getTitle(), s.getId(),
-//				MESSAGES_STORE_KEY);
-//		if (o == null) {
-//			return null;
-//		}
-//		else {
-//			return toMessages(o, article, s);
-//		}
-//	}
-//
-//	/**
-//	 * Returns all the messages stored for this section.
-//	 *
-//	 * @param s
-//	 * @return
-//	 */
-//	public static List<Message> getMessages(KnowWEArticle article, Section s) {
-//		return toMessages(KnowWEUtils.getStoredObject(
-//				article.getWeb(), article.getTitle(), s.getId(),
-//				MESSAGES_STORE_KEY), article, s);
-//	}
-//
-//	private static List<Message> toMessages(Object o, KnowWEArticle article, Section s) {
-//		if (o instanceof List) {
-//			return (List<Message>) o;
-//		}
-//		if (o == null) {
-//			List<Message> msg = new ArrayList<Message>();
-//			storeMessages(article, s, msg);
-//			return msg;
-//		}
-//		return null;
-//	}
+	// /**
+	// * Returns all the messages stored for this section put doesn't create a
+	// new
+	// * empty MessageList in the SectionStore if no MessageList is there yet.
+	// * Returns <tt>null</tt> in this case.
+	// *
+	// * @param s
+	// * @return
+	// */
+	// public static List<Message> getMessagesPassively(KnowWEArticle article,
+	// Section s) {
+	// Object o = KnowWEUtils.getStoredObject(
+	// article.getWeb(), article.getTitle(), s.getId(),
+	// MESSAGES_STORE_KEY);
+	// if (o == null) {
+	// return null;
+	// }
+	// else {
+	// return toMessages(o, article, s);
+	// }
+	// }
+	//
+	// /**
+	// * Returns all the messages stored for this section.
+	// *
+	// * @param s
+	// * @return
+	// */
+	// public static List<Message> getMessages(KnowWEArticle article, Section s)
+	// {
+	// return toMessages(KnowWEUtils.getStoredObject(
+	// article.getWeb(), article.getTitle(), s.getId(),
+	// MESSAGES_STORE_KEY), article, s);
+	// }
+	//
+	// private static List<Message> toMessages(Object o, KnowWEArticle article,
+	// Section s) {
+	// if (o instanceof List) {
+	// return (List<Message>) o;
+	// }
+	// if (o == null) {
+	// List<Message> msg = new ArrayList<Message>();
+	// storeMessages(article, s, msg);
+	// return msg;
+	// }
+	// return null;
+	// }
 
 	public void replaceChildType(KnowWEObjectType type,
 			Class<? extends KnowWEObjectType> c)
@@ -309,26 +309,28 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		}
 
 	}
-//
-//	/**
-//	 * Stores a list of messages under to message-store-key
-//	 *
-//	 * @param article is the article, the message is getting stored for. Be
-//	 *        aware, that this is not automatically the article the section is
-//	 *        directly linked to (because this Section might be included), but
-//	 *        the article that is calling this, for example while revising.
-//	 * @param s
-//	 * @param messages
-//	 */
-//	public static void storeMessages(KnowWEArticle article, Section<? extends KnowWEObjectType> s,
-//			List<Message> messages) {
-//		KnowWEUtils.storeSectionInfo(article.getWeb(), article
-//				.getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
-//	}
+
+	//
+	// /**
+	// * Stores a list of messages under to message-store-key
+	// *
+	// * @param article is the article, the message is getting stored for. Be
+	// * aware, that this is not automatically the article the section is
+	// * directly linked to (because this Section might be included), but
+	// * the article that is calling this, for example while revising.
+	// * @param s
+	// * @param messages
+	// */
+	// public static void storeMessages(KnowWEArticle article, Section<? extends
+	// KnowWEObjectType> s,
+	// List<Message> messages) {
+	// KnowWEUtils.storeSectionInfo(article.getWeb(), article
+	// .getTitle(), s.getId(), MESSAGES_STORE_KEY, messages);
+	// }
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#deactivateType()
 	 */
 	public void deactivateType() {
@@ -337,7 +339,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#activateType()
 	 */
 	public void activateType() {
@@ -346,7 +348,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getActivationStatus()
 	 */
 	public boolean getActivationStatus() {
@@ -368,7 +370,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getName()
 	 */
 	@Override
@@ -380,7 +382,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getSectioner()
 	 */
 	@Override
@@ -393,7 +395,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getAllowedChildrenTypes()
 	 */
 	@Override
@@ -427,10 +429,9 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	// + "/span" + KnowWEEnvironment.HTML_GT;
 	// }
 
-
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEType#getRenderer()
 	 */
 	@Override
@@ -458,7 +459,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
 	 * Allows to set a custom renderer for this type
-	 *
+	 * 
 	 * @param renderer
 	 */
 	public void setCustomRenderer(KnowWEDomRenderer renderer) {
@@ -467,7 +468,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEType#isAssignableFromType(java.lang.Class)
 	 */
 	@Override
@@ -477,7 +478,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEType#isType(java.lang.Class)
 	 */
 	@Override
@@ -487,7 +488,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#isLeafType()
 	 */
 	@Override
@@ -498,7 +499,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#isNotRecyclable()
 	 */
 	@Override
@@ -508,7 +509,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see de.d3web.we.kdom.KnowWEObjectType#setNotRecyclable(boolean)
 	 */
 	@Override
