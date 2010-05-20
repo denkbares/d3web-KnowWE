@@ -44,8 +44,8 @@ public class WISECExcelConverter {
 	// Include semantic annotations etc. in the generation process
 	public static boolean GENERATE_WITH_KNOWLEDGE = false;
 	// Minimum number of occurrences of a substance, that is required before it is considered for the model
-	//public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes 9min
-	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes 35min
+	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes 9min
+	//public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes 30min
 	// The generation of lists is limited by the maxListsToConvert threshold 
 	public static final int maxListsToConvert = 1000000;
 	

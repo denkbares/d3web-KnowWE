@@ -40,7 +40,19 @@ public class SubstanceWriter extends WISECWriter {
 
 	private void write(Substance substance, Writer writer) throws IOException {
 		StringBuffer b = new StringBuffer();
-		b.append("!!! " + substance.getName() + "\n\n");
+		Map<String, List<SubstanceList>> differentNames = computeUsesOfAttribute(substance, "Chemical");
+		String substanceName = substance.get(substance.getName());
+		if (differentNames.keySet().size() == 1) {
+			substanceName = differentNames.keySet().toArray()[0].toString();
+		}
+		b.append("!!! " + substanceName + "\n\n");
+		if (differentNames.keySet().size() > 1) {
+			for (String key : differentNames.keySet()) {
+				b.append(key + "\n");
+			}
+			b.append("\n");
+		}
+		
 
 		writeUsesOfCAS(substance,b);
 		writeCriteriaScoring(substance, b);
@@ -112,25 +124,10 @@ public class SubstanceWriter extends WISECWriter {
 	}
 
 	private void writeUsesOfCAS(Substance substance, StringBuffer b) {
-		// b.append("!! CAS Uses \n");
+		b.append("* SGN: "+substance.getName()+"\n");
 		
-		// Compute: Which CAS names are used in which lists
-		Map<String, List<SubstanceList>> casUses = new HashMap<String, List<SubstanceList>>();
-		for (SubstanceList list : model.getSubstanceLists()) {
-			if (list.hasSubstanceWithName(substance.getName())) {
-				String casName = substance.getCAS();
-				List<SubstanceList> listNames = casUses.get(casName);
-				if (listNames == null) {
-					List<SubstanceList> l = new ArrayList<SubstanceList>();
-					l.add(list);
-					casUses.put(casName, l);
-				}
-				else {
-					listNames.add(list);
-					casUses.put(casName, listNames);
-				}
-			}
-		}
+		// Compute: Which CAS names are used in which lists - "CAS"
+		Map<String, List<SubstanceList>> casUses = computeUsesOfAttribute(substance, "CAS");
 		
 		if (casUses.keySet().size() == 1) {
 			b.append("* Unique CAS used: " + casUses.keySet().iterator().next() + "\n");
@@ -144,6 +141,27 @@ public class SubstanceWriter extends WISECWriter {
 			}
 		}
 		b.append("\n");
+	}
+
+	private Map<String, List<SubstanceList>> computeUsesOfAttribute(
+			Substance substance, String attributeName) {
+		Map<String, List<SubstanceList>> casUses = new HashMap<String, List<SubstanceList>>();
+		for (SubstanceList list : model.getSubstanceLists()) {
+			if (list.hasSubstanceWithName(substance.getName())) {
+				String casName = substance.get(attributeName);
+				List<SubstanceList> listNames = casUses.get(casName);
+				if (listNames == null) {
+					List<SubstanceList> l = new ArrayList<SubstanceList>();
+					l.add(list);
+					casUses.put(casName, l);
+				}
+				else {
+					listNames.add(list);
+					casUses.put(casName, listNames);
+				}
+			}
+		}
+		return casUses;
 	}
 
 	private void writeOnListsRelation(Substance substance, StringBuffer b) {

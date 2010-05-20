@@ -38,7 +38,9 @@ public class SubstanceRatingListWriter extends WISECWriter {
 		FileWriter writer = new FileWriter(new File(this.outputDirectory+getFileNameFor(configuration.getName())+".txt"));
 		List<SubstanceWithRating> substances = computeRating();
 		Collections.sort(substances);
-		substances = substances.subList(0, configuration.MAX_SUBSTANCES_IN_RATING);
+		if (substances.size() > configuration.MAX_SUBSTANCES_IN_RATING) {
+			substances = substances.subList(0, configuration.MAX_SUBSTANCES_IN_RATING);
+		}
 		
 		StringBuffer b = new StringBuffer();
 		b.append("!!! Rating: "+configuration.getName()+" \n\n");

@@ -56,7 +56,7 @@ public class SubstanceListsReader extends WISECReader {
 			for (int col = 0; col < sheet.getColumns(); col++) {
 				String name  = sheet.getCell(col, HEADER_ROW).getContents();
 				String value = sheet.getCell(col, row).getContents();
-				substance.values.put(name, value);
+				substance.add(name, value);
 			}
 			list.add(substance);
 		}
