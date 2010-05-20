@@ -13,10 +13,10 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
+import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
-
 
 public abstract class QuestionDef extends D3webObjectDef<Question> {
 
@@ -33,80 +33,68 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 
 	public abstract QuestionType getQuestionType(Section<QuestionDef> s);
 
-
-
 	static class CreateQuestionHandler implements SubtreeHandler<QuestionDef> {
 
-	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
+		@Override
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
 				Section<QuestionDef> sec) {
 
-		Section<QuestionDef> qidSection = (sec);
+			Section<QuestionDef> qidSection = (sec);
 
-		String name = qidSection.get().getTermName(qidSection);
+			String name = qidSection.get().getTermName(qidSection);
 
-		KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
-				article.getWeb())
-				.getKBM(article, this, sec);
-		if (mgn == null) return null;
+			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
+					article.getWeb())
+					.getKBM(article, this, sec);
+			if (mgn == null) return null;
 
-		IDObject o = mgn.findQuestion(name);
+			IDObject o = mgn.findQuestion(name);
 
-		// if (o != null) {
-		// // TODO: quick fix - remove when Question is exceptionally
-		// // created in this handler
-		// if (o instanceof Question) {
-		// qidSection.get().storeObject(qidSection, (Question) o);
-		// }
-		//
-		// return new ObjectAlreadyDefinedWarning(o.getClass()
-		// .getSimpleName());
-		// }
-		// else
+			if (o != null) {
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
+						o.getClass().getSimpleName()));
+			}
 
 			QASet parent = D3webUtils.findParent(qidSection, mgn);
 
-		de.d3web.we.kdom.objects.QuestionDef.QuestionType questionType = qidSection.get().getQuestionType(
-				qidSection);
+			de.d3web.we.kdom.objects.QuestionDef.QuestionType questionType = qidSection.get().getQuestionType(
+					qidSection);
 
+			Question q = null;
+			if (questionType.equals(QuestionType.OC)) {
+				q = mgn.createQuestionOC(name, parent, new String[] {});
+			}
+			else if (questionType.equals(QuestionType.MC)) {
+				q = mgn.createQuestionMC(name, parent, new String[] {});
+			}
+			else if (questionType.equals(QuestionType.NUM)) {
+				q = mgn.createQuestionNum(name, parent);
+			}
+			else if (questionType.equals(QuestionType.YN)) {
+				q = mgn.createQuestionYN(name, parent);
+			}
+			else if (questionType.equals(QuestionType.DATE)) {
+				q = mgn.createQuestionDate(name, parent);
+			}
+			else if (questionType.equals(QuestionType.TEXT)) {
+				q = mgn.createQuestionText(name, parent);
+			}
+			else {
+				// no valid type...
+			}
 
+			if (q != null) {
+				qidSection.get().storeObject(qidSection, q);
+				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
+						q.getClass().getSimpleName()
+								+ " " + q.getName()));
+			}
+			else {
+				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name,
+						this.getClass()));
+			}
 
-		Question q = null;
-		if (questionType.equals(QuestionType.OC)) {
-			q = mgn.createQuestionOC(name, parent, new String[] {});
-		}
-		else if (questionType.equals(QuestionType.MC)) {
-			q = mgn.createQuestionMC(name, parent, new String[] {});
-		}
-		else if (questionType.equals(QuestionType.NUM)) {
-			q = mgn.createQuestionNum(name, parent);
-		}
-		else if (questionType.equals(QuestionType.YN)) {
-			q = mgn.createQuestionYN(name, parent);
-		}
-		else if (questionType.equals(QuestionType.DATE)) {
-			q = mgn.createQuestionDate(name, parent);
-		}
-		else if (questionType.equals(QuestionType.TEXT)) {
-			q = mgn.createQuestionText(name, parent);
-		}
-		else {
-			// no valid type...
-		}
-
-		
-		if (q != null) {
-			qidSection.get().storeObject(qidSection, q);
-			return Arrays.asList((KDOMReportMessage) new NewObjectCreated(q.getClass().getSimpleName()
-					+ " " + q.getName()));
-		}
-		else {
-			return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name, this.getClass()));
 		}
 
 	}
-
-
-
-}
 }
