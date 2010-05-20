@@ -36,6 +36,7 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
@@ -206,6 +207,10 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			} else {
 				valuesAfterClick.add(valueid.trim());
 			}
+		}
+		
+		if (value == null && valueid.equals(Unknown.getInstance().getId())) {
+			value = Unknown.getInstance();
 		}
 		
 		EventManager.getInstance().fireEvent(user, null, new FindingSetEvent(question, value));

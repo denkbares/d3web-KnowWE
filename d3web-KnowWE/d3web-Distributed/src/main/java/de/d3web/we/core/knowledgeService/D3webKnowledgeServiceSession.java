@@ -54,6 +54,7 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.DefaultFact;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.UndefinedValue;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.indication.inference.PSMethodNextQASet;
 import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.kernel.dialogControl.DistributedControllerFactory;
@@ -253,13 +254,17 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 
 		// List<Object> values = new ArrayList<Object>();
 		Value value = null;
-		if (object instanceof QuestionChoice) {
-			value = getAnswers((QuestionChoice) object, info.getValues());
+		List theValues = info.getValues();
+		if (theValues.size() > 0 && theValues.get(0).equals(Unknown.getInstance().getId())) {
+			value = Unknown.getInstance();
+		}
+		else if (object instanceof QuestionChoice) {
+			value = getAnswers((QuestionChoice) object, theValues);
 			// values.addAll(getAnswers((QuestionChoice) object,
 			// info.getValues()));
 		}
 		else if (object instanceof QuestionNum) {
-			value = getAnswers((QuestionNum) object, info.getValues());
+			value = getAnswers((QuestionNum) object,theValues);
 			// values.addAll(getAnswers((QuestionNum) object,
 			// info.getValues()));
 		}

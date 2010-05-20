@@ -9,6 +9,7 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
+import de.d3web.core.session.values.Unknown;
 
 /**
  * The Finding Set Event. Which will be fired each time 
@@ -27,14 +28,15 @@ public class FindingSetEvent extends Event {
 		// Check parameters for validity
 		if (question == null || value == null) 
 			throw new IllegalArgumentException("Paramters mustn't be null!");
-		if (question instanceof QuestionChoice)
+		else if (value instanceof Unknown) this.value = Unknown.getInstance();
+		else if (question instanceof QuestionChoice)
 			if (!(((QuestionChoice) question).getAllAlternatives().contains(value.getValue())))
 				throw new IllegalArgumentException(value + " is not an allowed value for " + question.getName());
-		if (question instanceof QuestionNum && !(value instanceof NumValue))
+		else if (question instanceof QuestionNum && !(value instanceof NumValue))
 			throw new IllegalArgumentException("The committed value must be a NumValue!");
-		if (question instanceof QuestionDate && !(value instanceof DateValue))
+		else if (question instanceof QuestionDate && !(value instanceof DateValue))
 			throw new IllegalArgumentException("The committed value must be an DateValue!");
-		if (question instanceof QuestionText && !(value instanceof TextValue))
+		else if (question instanceof QuestionText && !(value instanceof TextValue))
 			throw new IllegalArgumentException("The committed value must be an TextValue!");
 		
 		// Set parameters
