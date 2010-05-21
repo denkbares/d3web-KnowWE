@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ScoringWeightsConfiguration {
-	public int MAX_SUBSTANCES_IN_RATING = 20;
+	public int MAX_SUBSTANCES_IN_RATING = 10000; // means no cutting 
 	private String name = "NONAME";
 	// the weights for the particular criteria
 	private Map<String, Double> weights = new LinkedHashMap<String, Double>();
