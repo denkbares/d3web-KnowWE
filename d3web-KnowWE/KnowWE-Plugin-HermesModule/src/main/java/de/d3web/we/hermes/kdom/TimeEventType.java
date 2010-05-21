@@ -123,6 +123,8 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 
 				// Putting the TimeEventURI in a context, so it can be found by
 				// subtypes
+				// NOTE currently revise of OWL is bottom up => context are set
+				// too late
 				TimeEventContext c = new TimeEventContext();
 				c.setTimeEventURI(localURI);
 				ContextManager.getInstance().attachContext(section, c);

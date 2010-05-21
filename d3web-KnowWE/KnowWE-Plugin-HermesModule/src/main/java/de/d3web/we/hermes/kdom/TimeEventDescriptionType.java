@@ -37,24 +37,26 @@ public class TimeEventDescriptionType extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
-		
+
 		SemanticAnnotation semanticAnnotation = new SemanticAnnotation();
-		//insertCustomAnnotationObjectType(semanticAnnotation);
-		
+
+
 		// first grab annotated concepts
 		this.childrenTypes.add(semanticAnnotation);
-		
+
 		// then search for un-annotated concepts
 		this.childrenTypes.add(new PersonOccurrence());
 		this.childrenTypes.add(new LocationOccurrence());
-		
+
 		sectionFinder = new AllTextSectionFinder();
 	}
 
+	// should not be necessary any more, should work with standard annotations
+	// with using contexts or something
 	private void insertCustomAnnotationObjectType(
 			SemanticAnnotation semanticAnnotation) {
 		AbstractKnowWEObjectType content = (AbstractKnowWEObjectType)findContentType(semanticAnnotation);;
-		
+
 		if(content != null) {
 			List<KnowWEObjectType> allowedChildrenTypes = content.getAllowedChildrenTypes();
 			//removing usual annotationObjectType-object
@@ -75,7 +77,7 @@ public class TimeEventDescriptionType extends DefaultAbstractKnowWEObjectType {
 			}
 		}
 		return null;
-	
+
 	}
 
 }

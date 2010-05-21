@@ -11,6 +11,8 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
+import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.hermes.kdom.TimeEventType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -32,9 +34,9 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 	public void render(KnowWEArticle article, Section arg0, KnowWEUserContext arg1, StringBuilder arg2) {
 
 		Section<PersonOccurrence> personSection = arg0;
-		
+
 		//TableUtils.getRow(arg0);
-		
+
 		String conceptName = arg0.getOriginalText();
 
 		Context subjectContext = ContextManager.getInstance().getContext(arg0,
@@ -42,7 +44,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		String subjectString = "error: subject not found!";
 		URI subjectURI = null;
-		
+
 		if (subjectContext != null) {
 			 subjectURI =((DefaultSubjectContext) subjectContext)
 					.getSolutionURI();
@@ -87,9 +89,9 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				+ "_popupcontent' style='visibility:hidden;position:fixed' >";
 
 		String popupContent = generatePopupContent(arg0, subjectURI, subjectString);
-		
+
 		if(popupContent == null) {
-			arg2.append("__"+conceptName+"__"); 
+			arg2.append("__"+conceptName+"__");
 			return;
 		}
 
@@ -105,36 +107,36 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 	"?x rdfs:domain <SUBJECT> .		   " +
 	"?x rdfs:range <OBJECT>." +
 	"} ";
-	
+
 	protected String[] getPossibleProperties(URI subject, String object) {
-		
+
 		TupleQueryResult subjectClasses = SPARQLUtil.findClassesOfEntity(subject);
-		
+
 		TupleQueryResult objectClasses = SPARQLUtil.findClassesOfEntity(UpperOntology.getInstance().getHelper().createlocalURI(object));
-		
+
 		try {
 			while(subjectClasses.hasNext()) {
 				BindingSet subjectClass = subjectClasses.next();
 				String subjectClazzString = subjectClass.getBinding("x").getValue().stringValue();
-				
+
 				while(objectClasses.hasNext()){
 					BindingSet objectClass = objectClasses.next();
 					String objectClassString = objectClass.getBinding("x").getValue().toString();
-					
-					
+
+
 					String q = PROP_SPARQL.replaceAll("SUBJECT", subjectClazzString);
 					q = q.replaceAll("OBJECT", objectClassString);
 					TupleQueryResult result = SPARQLUtil.executeTupleQuery(q);
-					
+
 					List<String> propList = new ArrayList<String>();
-					
+
 					if (result != null) {
 						try {
 							while (result.hasNext()) {
 								BindingSet binding = result.next();
 								Binding propB = binding.getBinding("x");
 								String propName = propB.getValue().toString();
-								
+
 								try {
 									propName = URLDecoder.decode(propName, "UTF-8");
 								} catch (UnsupportedEncodingException e) {
@@ -150,7 +152,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 						return propList.toArray(new String[propList.size()]);
 					}
 				}
-				
+
 			}
 		} catch (QueryEvaluationException e1) {
 			// TODO Auto-generated catch block
@@ -171,20 +173,20 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		String[] opts = getPossibleProperties(subject, originalText);
 
 		String[] newOpts = filterOpts(subject, originalText, opts);
-		
+
 		if(newOpts.length == 0) return null;
 
 		String[] defaultOpts = { "concept missmatch", "dont ask again" };
 
 		Section ancestor = KnowWEObjectTypeUtils.getAncestorOfType( arg0, TimeEventType.class.getName() );
-		
+
 		for (String string : newOpts) {
-			
-			String options =  "kdomid='" + arg0.getId() + "' subject='" + subject 
-				+ "' rel='"	+ string + "' object='" + originalText 
+
+			String options =  "kdomid='" + arg0.getId() + "' subject='" + subject
+				+ "' rel='"	+ string + "' object='" + originalText
 				+ "' name='" + string + "' " + "ancestor='" + ancestor.getId() + "'";
-			
-			
+
+
 			buffy.append("<li><div class=\"confirmOption pointer\" " + options + ">");
 			buffy.append("" + string + "  " + "");
 			buffy.append("<span style='font-style:italic' class='confirmobject' "+options+">" + originalText + " </span>");
@@ -204,18 +206,19 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		return buffy.toString();
 	}
 
-	private static final String RELATION_QUERY = "ASK { SUBJECT lns:RELATION lns:OBJECT .}";
+	private static final String RELATION_QUERY = "ASK { SUBJECT lns:RELATION OBJECT .}";
 
 	private String[] filterOpts(URI subject, String originalText,
 			String[] opts) {
-		
+		OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
 		List<String> goodOpts = new ArrayList<String>();
-		
+
 		for (String relation : opts) {
 
 			String q = RELATION_QUERY.replaceAll("SUBJECT", "<"+subject.stringValue()+">");
 			q = q.replaceAll("RELATION", relation);
-			q = q.replaceAll("OBJECT", originalText);
+			q = q.replaceAll("OBJECT", "<"
+					+ helper.createlocalURI(originalText).toString() + ">");
 			Boolean result = SPARQLUtil.executeBooleanQuery(q);
 			if(result != null && !result.booleanValue()) {
 				goodOpts.add(relation);
