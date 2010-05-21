@@ -46,7 +46,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * @author Jochen
- * 
+ *
  * This DashTreeElementContent generates the property-definitions in OWL.
  * For spefification of range and domain restrictions it contains (in round brackets)
  * a PropertyDetails type in addition to the PropertyIDDefinition containing the name
@@ -55,9 +55,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  */
 public class PropertyDashTreeElementContent extends DashTreeElementContent{
 
-	@Override
-	protected void init() {
-		super.init();
+	public PropertyDashTreeElementContent() {
 		RoundBracedType e = new RoundBracedType(new PropertyDetails());
 		e.setSteal(true);
 		this.childrenTypes.add(e);
@@ -65,14 +63,14 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 		this.addSubtreeHandler(new PropertyDashTreeElementContentOWLSubTreeHandler());
 	}
 
-	private class PropertyDashTreeElementContentOWLSubTreeHandler implements SubtreeHandler
+	private class PropertyDashTreeElementContentOWLSubTreeHandler implements SubtreeHandler<PropertyDashTreeElementContent>
 	{
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
-			
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<PropertyDashTreeElementContent> s) {
+
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
-			
+
 			Section<PropertyDashTreeElementContent> sec = s;
 			if (s.getObjectType() instanceof PropertyDashTreeElementContent) {
 				Section<PropertyIDDefinition> propIDSection = sec.findSuccessor(PropertyIDDefinition.class);
@@ -96,12 +94,12 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 					OwlHelper helper = uo.getHelper();
 					URI propURI = helper.createlocalURI(propertyName.trim());
 					try {
-						
+
 						// creates an Object-Property (in any case)
 						io.addStatement(helper.createStatement(propURI, RDF.TYPE,
 								OWL.OBJECTPROPERTY));
-						
-						
+
+
 						// creates a Subproperty relation IF father exists
 						Section<? extends DashTreeElement> fatherElement = DashTreeElement.getDashTreeFather((Section<DashTreeElement>)sec.getFather());
 						if(fatherElement != null) {
@@ -113,7 +111,7 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 														.trim())));
 							}
 						}
-						
+
 						//creates Domain restriction if defined
 						if (domainDef != null) {
 							String[] classes = domainDef.split(",");
@@ -139,8 +137,8 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 								}
 							}
 						}
-						SemanticCore.getInstance().addStatements(io, s);						
-					} catch (RepositoryException e) {						
+						SemanticCore.getInstance().addStatements(io, s);
+					} catch (RepositoryException e) {
 						msgs.add(new SimpleMessageError(e.getMessage()));
 					}
 
@@ -148,9 +146,9 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 			}
 			return msgs;
 		}
-		
+
 	}
-	
+
 
 
 }
