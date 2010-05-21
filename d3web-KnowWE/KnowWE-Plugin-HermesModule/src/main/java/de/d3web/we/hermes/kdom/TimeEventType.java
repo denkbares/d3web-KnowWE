@@ -47,6 +47,7 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class TimeEventType extends DefaultAbstractKnowWEObjectType {
@@ -68,7 +69,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 
 		this.setCustomRenderer(new EditSectionRenderer(
 				TimeEventTypeRenderer.getInstance()));
-		this.addSubtreeHandler(new TimeEventTypeOWLSubTreeHandler());
+		this.addSubtreeHandler(Priority.HIGH, new TimeEventTypeOWLSubTreeHandler());
 
 	}
 
@@ -125,9 +126,6 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 				// subtypes
 				// NOTE currently revise of OWL is bottom up => context are set
 				// too late
-				TimeEventContext c = new TimeEventContext();
-				c.setTimeEventURI(localURI);
-				ContextManager.getInstance().attachContext(section, c);
 
 				DefaultSubjectContext sc = new DefaultSubjectContext();
 				sc.setSubjectURI(localURI);
