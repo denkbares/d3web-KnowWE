@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 import utils.KBCreationTestUtil;
 import de.d3web.abstraction.ActionQuestionSetter;
 import de.d3web.abstraction.formula.FormulaExpression;
-import de.d3web.abstraction.inference.PSMethodQuestionSetter;
+import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.Rule;
@@ -212,9 +212,9 @@ public class RulesTest extends TestCase {
 			
 		// load Rules in HashMaps (necessary because they are unsorted)
 		HashMap<String, Rule> loadedRules =
-			getRulesInHashMap(loadedKB, PSMethodQuestionSetter.class);
+			getRulesInHashMap(loadedKB, PSMethodAbstraction.class);
 		HashMap<String, Rule> createdRules =
-			getRulesInHashMap(createdKB, PSMethodQuestionSetter.class);
+			getRulesInHashMap(createdKB, PSMethodAbstraction.class);
 		
 		// Check number of rules
 		assertEquals("Wrong number of rules for PSMethodQuestionSetter.",
