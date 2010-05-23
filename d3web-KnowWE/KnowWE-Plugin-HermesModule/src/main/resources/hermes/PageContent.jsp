@@ -31,15 +31,19 @@
   <wiki:PageExists>
 
   <wiki:PageType type="page">
-  <wiki:Tab id="attach" title="<%= attTitle %>" accesskey="a">
-    <wiki:Include page="AttachmentTab.jsp"/>
-  </wiki:Tab>
+  <wiki:Permission permission="edit"> 
+    <wiki:Tab id="attach" title="<%= attTitle %>" accesskey="a">
+      <wiki:Include page="AttachmentTab.jsp"/>
+    </wiki:Tab>
+  </wiki:Permission>
   </wiki:PageType>
     
-  <wiki:Tab id="info" title='<%=LocaleSupport.getLocalizedMessage(pageContext, "info.tab")%>'
-           url="<%=c.getURL(WikiContext.INFO, c.getPage().getName())%>"
-           accesskey="i" >
-  </wiki:Tab>
+  <wiki:Permission permission="edit"> 
+    <wiki:Tab id="info" title='<%=LocaleSupport.getLocalizedMessage(pageContext, "info.tab")%>'
+             url="<%=c.getURL(WikiContext.INFO, c.getPage().getName())%>"
+             accesskey="i" >
+    </wiki:Tab>
+  </wiki:Permission>
     
   </wiki:PageExists>
 

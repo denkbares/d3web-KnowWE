@@ -16,6 +16,7 @@
       class="action quick2top" 
       title="<fmt:message key='actions.gototop'/>" >&laquo;</a>
 
+  <wiki:Permission permission="edit">
     <wiki:CheckVersion mode="latest">
        <fmt:message key="info.lastmodified">
           <fmt:param><wiki:PageVersion /></fmt:param>
@@ -30,6 +31,7 @@
          <fmt:param><wiki:Author /></fmt:param>
       </fmt:message>
     </wiki:CheckVersion>
+  </wiki:Permission>
 
    <wiki:RSSImageLink/>
 

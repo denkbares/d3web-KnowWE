@@ -23,9 +23,11 @@
     </wiki:CheckRequestContext>
 
     <%-- converted to popup menu by jspwiki-common.js--%>
+  <wiki:Permission permission="edit">
     <li id="morebutton">
       <a href="<wiki:Link format='url' page='MoreMenu' />" class="action more"><fmt:message key="actions.more"/></a>
     </li>
+  </wiki:Permission>
 
   </ul>
 </div>
