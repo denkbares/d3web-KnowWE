@@ -59,5 +59,5 @@ public class CIConfig {
 
 	public CIBuildTriggers getTrigger() {
 		return trigger;
-	}		
+	}
 }

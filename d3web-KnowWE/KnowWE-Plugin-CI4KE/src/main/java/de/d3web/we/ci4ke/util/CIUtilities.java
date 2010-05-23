@@ -211,5 +211,56 @@ public class CIUtilities {
 		}
 		
 		return imgBulb;
-	}	
+	}
+	
+    /**
+     *  Replaces the relevant entities inside the String.
+     *  All &amp; &gt;, &lt;, and &quot; are replaced by their
+     *  respective names.
+     *
+     *  @since 1.6.1
+     *  @param src The source string.
+     *  @return The encoded string.
+     */
+    public static String replaceEntities( String src )
+    {
+        src = replaceString( src, "&", "&amp;" );
+        src = replaceString( src, "<", "&lt;" );
+        src = replaceString( src, ">", "&gt;" );
+        src = replaceString( src, "\"", "&quot;" );
+
+        return src;
+    }
+    
+    /**
+     *  Replaces a string with an other string.
+     *
+     *  @param orig Original string.  Null is safe.
+     *  @param src  The string to find.
+     *  @param dest The string to replace <I>src</I> with.
+     *  @return A string with the replacement done.
+     */
+    public static final String replaceString( String orig, String src, String dest )
+    {
+        if ( orig == null ) return null;
+        if ( src == null || dest == null ) throw new NullPointerException();
+        if ( src.length() == 0 ) return orig;
+
+        StringBuffer res = new StringBuffer(orig.length()+20); // Pure guesswork
+        int start = 0;
+        int end = 0;
+        int last = 0;
+
+        while ( (start = orig.indexOf(src,end)) != -1 )
+        {
+            res.append( orig.substring( last, start ) );
+            res.append( dest );
+            end  = start+src.length();
+            last = start+src.length();
+        }
+
+        res.append( orig.substring( end ) );
+
+        return res.toString();
+    }    
 }

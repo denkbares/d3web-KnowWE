@@ -36,6 +36,8 @@ import de.d3web.we.ci4ke.handling.CITest;
 import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CIHookManager.CIHook;
 import de.d3web.we.ci4ke.util.CIUtilities;
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -140,11 +142,15 @@ public class CIBuilder {
 			}
 		}
 		
+		int monitoredArticleVersion = KnowWEEnvironment.getInstance().
+			getWikiConnector().getVersion(this.config.getMonitoredArticleTitle());
+
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO, 
 		">>> CIBuilder: testclasses parsed! >>>");
 		
 		//Now collect the results
 		CIBuildResultset resultset = new CIBuildResultset();
+		resultset.setArticleVersion(monitoredArticleVersion);
 		
 		for(Map.Entry<String, Future<CITestResult>> entry :
 			futureResults.entrySet()) {
@@ -175,7 +181,7 @@ public class CIBuilder {
 		//write the resultset to XML
 		CIBuildPersistenceHandler persi = new 
 			CIBuildPersistenceHandler(this.config.getDashboardID());
-		persi.write(resultset);
+		persi.write(resultset, this.config.getMonitoredArticleTitle());
 		
 	}
 	

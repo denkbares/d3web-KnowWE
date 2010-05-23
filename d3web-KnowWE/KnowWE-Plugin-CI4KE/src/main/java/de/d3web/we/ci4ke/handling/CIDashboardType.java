@@ -67,14 +67,19 @@ public class CIDashboardType extends DefaultMarkupType {
 				CIBuildTriggers.valueOf(DefaultMarkupType.getAnnotation(s, TRIGGER_KEY));	
 			
 			//Check if monitored Article exists
-			KnowWEArticle art = KnowWEEnvironment.getInstance().
-				getArticle(s.getWeb(), monitoredArticle);
-			if(art==null) {
-				Message message = new Message(Message.ERROR, 
-						"Monitored article does not exist!", "", -1, "");
-				DefaultMarkupType.storeSingleMessage(article, s, this.getClass(), message);
-				return null;
-			}
+//			KnowWEArticle art = KnowWEEnvironment.getInstance().
+//				getArticle(s.getWeb(), monitoredArticle);
+//			if(art==null) {
+//				
+//				KnowWEEnvironment.getInstance().getArticleManager(s.getWeb()).
+//					saveUpdatedArticle(art);
+//				if(art==null) {
+//					Message message = new Message(Message.ERROR, 
+//							"Monitored article does not exist!", "", -1, "");
+//					DefaultMarkupType.storeSingleMessage(article, s, this.getClass(), message);
+//					return null;					
+//				}
+//			}
 			
 			
 			if(!dashboardIDisUnique(s)) {

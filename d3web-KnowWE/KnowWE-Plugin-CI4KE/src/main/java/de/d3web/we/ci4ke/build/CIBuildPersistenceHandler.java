@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.jdom.Attribute;
@@ -78,6 +79,7 @@ public class CIBuildPersistenceHandler {
 	
 	private static void writeBasicXMLStructure(File xmlFile) throws IOException {
 		Element root = new Element("builds");
+		root.setAttribute("monitoredArticle", "");//stub
 		//create the JDOM Tree for the new xml file and print it out
 		Document xmlDocument = new Document(root);
 		XMLOutputter out = new XMLOutputter( Format.getPrettyFormat() );
@@ -99,16 +101,23 @@ public class CIBuildPersistenceHandler {
 		return longBuildNum;
 	}
 	
-	public void write(CIBuildResultset resultset){
+	/**
+	 * Writes a test-resultset to the XML Build-File
+	 * @param resultset
+	 */
+	public void write(CIBuildResultset resultset, String monitoredArticleTitle){
 		
 		try {
 			Document xmlDocument = new SAXBuilder().build(xmlBuildFile);
-						
+			xmlDocument.getRootElement().setAttribute(
+					"monitoredArticle", monitoredArticleTitle);
 			//Start building the new <build>...</build> element
 			Element build = new Element("build");
 			build.setAttribute("executed",DATE_FORMAT.format(
 					resultset.getBuildExecutionDate()));
 			build.setAttribute("nr", String.valueOf(nextBuildNumber));
+			build.setAttribute("articleVersion",String.
+					valueOf(resultset.getArticleVersion()));
 			nextBuildNumber++;
 			
 			//find the "worst" testResult
@@ -147,10 +156,41 @@ public class CIBuildPersistenceHandler {
 		}
 	}
 	
+	/**
+	 * Selects some elements in this XML Build Tree
+	 * @param xpath
+	 * @return
+	 */
+	public List<?> selectNodes(String xpath) {
+		List<?> ret = null;
+		try {
+			ret = XPath.selectNodes(xmlJDomTree, xpath);
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
+	/**
+	 * Selects one single node (element or attribute) in this XML Build Tree
+	 * @param xpath
+	 * @return
+	 */
+	public Object selectSingleNode(String xpath) {
+		Object ret = null;
+		try {
+			ret = XPath.selectSingleNode(xmlJDomTree, xpath);
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
+	}	
+	
 	private TestResultType overallResult(CIBuildResultset resultset) {
 		
 		TestResultType overallResult = TestResultType.SUCCESSFUL;
-		
 		Collection<CITestResult> results = resultset.getResults().values();
 		
 		for(CITestResult result : results) {

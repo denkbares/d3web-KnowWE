@@ -43,12 +43,18 @@ public final class CIBuildResultset {
 	private Date buildExecutionDate;
 	
 	/**
+	 * the version number of the article which was testet
+	 */
+	private int articleVersion;
+	
+	/**
 	 * A Map of the names and results of the executed Tests.
 	 */
 	private Map<String,CITestResult> results;
 	
 	public CIBuildResultset() {
 		super();
+		this.articleVersion = -1;
 		this.buildExecutionDate = new Date();
 		this.results = new TreeMap<String, CITestResult>();
 	}
@@ -92,5 +98,13 @@ public final class CIBuildResultset {
 	
 	public void addTestResult(String testname, CITestResult testResult) {
 		this.results.put(testname, testResult);
+	}
+
+	public int getArticleVersion() {
+		return articleVersion;
+	}
+
+	public void setArticleVersion(int articleVersion) {
+		this.articleVersion = articleVersion;
 	}
 }
