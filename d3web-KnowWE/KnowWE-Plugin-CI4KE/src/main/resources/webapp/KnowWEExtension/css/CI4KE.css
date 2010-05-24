@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 .ci-column-left
 	{ 
 	border: thin solid #000000;
@@ -16,7 +36,7 @@
 	float: left; 
 	width: 33%;
 	}
-.ci-changes-panel h4 
+.ci-panel h4 
 	{
 	background-color:#96BBD9;
 	color:#000000;
@@ -25,6 +45,12 @@
 	margin:3px 0;
 	padding:3px 15px;
 	}	
+
+#buildList a:hover
+	{
+	cursor:pointer;
+	text-decoration:underline;
+	}
 
 /* easy clearing */
 #ci-content-wrapper:after

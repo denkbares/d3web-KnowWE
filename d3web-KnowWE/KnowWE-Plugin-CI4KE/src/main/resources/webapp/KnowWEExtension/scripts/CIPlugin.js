@@ -1,8 +1,28 @@
-function fctGetBuildResults( dashboardID , buildNr ) {
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+function fctGetBuildDetails( dashboardID , buildNr ) {
 
     var params = {
            action : 'CIAction',
-           task   : 'getBuildResults',
+           task   : 'getBuildDetails',
            id     : dashboardID,
            nr     : buildNr
        }
@@ -10,8 +30,9 @@ function fctGetBuildResults( dashboardID , buildNr ) {
     var options = {
            url : KNOWWE.core.util.getURL( params ),
            response : {
-               ids : [ dashboardID + '-column-right'],
-               action : 'insert'
+               ids : [ dashboardID + '-build-details-wrapper'],
+               action : 'insert',
+               fn : makeCIPanelsCollapsible
            }
     }
     
@@ -37,6 +58,7 @@ function fctExecuteNewBuild( dashboardID ) {
      new _KA( options ).send();
 }
 
+/*
 function fctGetWikiChanges( dashboardID , buildNr ) {
 
     var params = {
@@ -51,19 +73,19 @@ function fctGetWikiChanges( dashboardID , buildNr ) {
            response : {
                ids : [ dashboardID + '-column-middle'],
                action : 'insert',
-               fn : makeCIChangesCollapsible
+               fn : makeCIPanelsCollapsible
            }
     }
     
     new _KA( options ).send();
 }
-
+*/
 
 /*
  * 
  */
-function makeCIChangesCollapsible(){
-    var selector = "div .ci-changes-panel";
+function makeCIPanelsCollapsible(){
+    var selector = "div .ci-panel";
     
     var panels = _KS( selector );
     if( panels.length < 1 ) return;

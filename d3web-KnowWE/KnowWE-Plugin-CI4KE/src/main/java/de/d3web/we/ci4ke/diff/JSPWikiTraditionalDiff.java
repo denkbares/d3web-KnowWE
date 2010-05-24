@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.ci4ke.diff;
 
 import java.text.ChoiceFormat;
@@ -25,16 +45,14 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 
     private static final String CSS_DIFF_ADDED = "<tr><td class=\"diffadd\">";
     private static final String CSS_DIFF_REMOVED = "<tr><td class=\"diffrem\">";
-    private static final String CSS_DIFF_UNCHANGED = "<tr><td class=\"diff\">";
+//    private static final String CSS_DIFF_UNCHANGED = "<tr><td class=\"diff\">";
     private static final String CSS_DIFF_CLOSE = "</td></tr>" + Diff.NL;
 
 
     /**
      *  Constructs the provider.
      */
-    public JSPWikiTraditionalDiff()
-    {
-    }
+    public JSPWikiTraditionalDiff(){}
 
     /**
      * Makes a diff using the BMSI utility package. We use our own diff printer,
@@ -104,13 +122,12 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
         {
         	Chunk changed = delta.getOriginal();
         	//opening a div
-        	m_result.append("<div class='ci-changes-panel'><h4>");
+        	m_result.append("<div class='ci-panel'><h4>");
         	print(changed, "At line {0} added {1}" );
         	m_result.append("</h4>\n");
         	//opening the table
         	m_result.append("<table class=\"diff\" border=\"0\" cellspacing=\"0\" "+
         			"cellpadding=\"0\" style=\"display: none;\">\n");
-        	System.out.println(changed);
         	changed.toString(m_result, CSS_DIFF_ADDED, CSS_DIFF_CLOSE);
             
             m_result.append("</table>\n</div>\n");  
@@ -121,7 +138,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
         	Chunk changed = delta.getOriginal();
         	
         	//opening a div
-        	m_result.append("<div class='ci-changes-panel'><h4>");
+        	m_result.append("<div class='ci-panel'><h4>");
         	print(changed, "At line {0} changed {1}" );
         	m_result.append("</h4>\n");
         	//opening the table
@@ -138,7 +155,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
         {
         	Chunk changed = delta.getOriginal();
         	//opening a div
-        	m_result.append("<div class='ci-changes-panel'><h4>");
+        	m_result.append("<div class='ci-panel'><h4>");
         	print(changed, "At line {0} removed {1}" );
         	m_result.append("</h4>\n");
         	//opening the table
@@ -151,9 +168,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 
         private void print(Chunk changed, String type)
         {
-        	//Starting the first line
-//            m_result.append(CSS_DIFF_UNCHANGED);
-            
+        	//Starting the first line           
             String[] choiceString = 
             {
                "one line",
@@ -173,9 +188,6 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
                                 changed.size(),
                                 changed.size() };
             m_result.append( fmt.format(params) );
-            
-            
-//            m_result.append(CSS_DIFF_CLOSE);
         }
     }
 
