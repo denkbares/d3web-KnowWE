@@ -85,7 +85,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				+ "'}\" class=\"conceptLink pointer\" id='"
 				+ arg0.getId()
 				+ "' src='KnowWEExtension/images/question.gif' width='12' /> "
-				+ "<div id='" + arg0.getId()
+				+ "<span id='" + arg0.getId()
 				+ "_popupcontent' style='visibility:hidden;position:fixed' >";
 
 		String popupContent = generatePopupContent(arg0, subjectURI, subjectString);
@@ -95,7 +95,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 			return;
 		}
 
-		String htmlContentTail = "</div>";
+		String htmlContentTail = "</span>";
 		arg2.append(KnowWEUtils.maskHTML(htmlContent1));
 		arg2.append(KnowWEUtils.maskHTML(popupContent));
 		arg2.append(KnowWEUtils.maskHTML(htmlContentTail));

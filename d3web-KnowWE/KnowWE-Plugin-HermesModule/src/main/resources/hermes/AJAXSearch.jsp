@@ -91,7 +91,7 @@
        target="_blank">Google</a><img class="outlink" src="images/out.png" alt="" />
     |     
     <a class="external" 
-        href="http://en.wikipedia.org/wiki/Special:Search?search=<c:out value='${param.query}'/>" 
+        href="http://de.wikipedia.org/wiki/Special:Search?search=<c:out value='${param.query}'/>" 
         title="Wikipedia Search '<c:out value='${param.query}'/>'"
        target="_blank">Wikipedia</a><img class="outlink" src="images/out.png" alt="" />
   </p>
