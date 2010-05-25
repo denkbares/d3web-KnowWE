@@ -32,6 +32,7 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.values.Choice;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.we.alignment.AlignmentUtilRepository;
 import de.d3web.we.alignment.LocalAlignment;
 import de.d3web.we.alignment.NumericalIdentity;
@@ -76,8 +77,8 @@ public class D3webLocalAligner implements LocalAligner<NamedObject> {
 									Question q1 = (Question) object;
 									Question q2 = (Question) no;
 									LocalAlignment localAlignmentMaU = new LocalAlignment(
-											getII(id, q1.getUnknownAlternative()),
-											getII(idString, q2.getUnknownAlternative()),
+											getII(id, Unknown.getInstance()),
+											getII(idString, Unknown.getInstance()),
 											type);
 									if ((obj1 != null && obj1 instanceof Boolean && ((Boolean) obj1).booleanValue())
 											|| (obj2 != null && obj2 instanceof Boolean && ((Boolean) obj2).booleanValue())) {
