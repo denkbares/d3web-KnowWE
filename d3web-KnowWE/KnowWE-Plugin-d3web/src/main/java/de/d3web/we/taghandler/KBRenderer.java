@@ -32,6 +32,8 @@ import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
@@ -74,6 +76,13 @@ public class KBRenderer extends AbstractTagHandler {
 			// text.append("<h4>Knowledge of article:</h4>";
 			KnowledgeBase kb = service.getBase();
 
+			// kb.getAllKnowledgeSlices(); // Actions in Verbalizer schmeißen
+			// (nach
+			// // ProblemSolverMethod sortieren)
+			// kb.getQContainers(); // Durchlaufen und schaun ob weiterer
+			// Container
+
+			// Solutions
 			List<Solution> diagnosis = kb.getSolutions();
 
 			boolean appendedSolutionsHeadline = false;
@@ -88,6 +97,8 @@ public class KBRenderer extends AbstractTagHandler {
 							diagnosis2, RenderingFormat.HTML) + "<br/>");
 				}
 			}
+			text.append("<p/>");
+
 			// text.append("<br /><b>SCRelations: </b><br />");
 			//
 			// Collection<KnowledgeSlice> scRels = kb
@@ -109,6 +120,7 @@ public class KBRenderer extends AbstractTagHandler {
 			// }
 			// }
 
+			// Rules
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 			Collection<KnowledgeSlice> rules = kb
@@ -126,13 +138,14 @@ public class KBRenderer extends AbstractTagHandler {
 							}
 							text.append("<strong>" + rb.getString("KnowWE.KBRenderer.rules")
 									+ ":</strong><p/>");
+							text.append("Slices:<br />");
 							appendedRulesHeadline = true;
 							List<Section<Rule>> allRules = new ArrayList<Section<de.d3web.we.kdom.rules.Rule>>();
 							List<Section<BulletContentType>> allBulletContentTypes = new ArrayList<Section<BulletContentType>>();
 
 							KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
 									.getSection().findSuccessorsOfType(BulletContentType.class,
-									allBulletContentTypes);
+											allBulletContentTypes);
 							KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
 									.getSection().findSuccessorsOfType(Rule.class, allRules);
 							for (Section<Rule> rule : allRules) {
@@ -149,9 +162,7 @@ public class KBRenderer extends AbstractTagHandler {
 								idMap.put(kbRuleId, bullet.getId());
 							}
 						}
-
 						String kdomid = idMap.get(r.getId());
-
 						if (kdomid != null) {
 							String button = ("<img src=KnowWEExtension/images/page_white_find.png "
 									+ "class=\"highlight-rule\" "
@@ -167,19 +178,43 @@ public class KBRenderer extends AbstractTagHandler {
 						text.append(VerbalizationManager.getInstance().verbalize(
 								r.getAction(), RenderingFormat.HTML, parameterMap));
 						text.append("\n <br />"); // \n only to avoid hmtl-code
-													// being cut by JspWiki
-													// (String.length > 10000)
+						// being cut by JspWiki
+						// (String.length > 10000)
 					}
+					text.append("Slices:<br />");
 				}
 			}
+			text.append("<p/>");
 
+			// Questions
+			List<QContainer> questions = kb.getQContainers();
+			boolean appendedQuestionHeadline = false;
+			for (QContainer q1 : questions) {
+				if (!q1.getName().equals("Q000")) {
+					if (!appendedQuestionHeadline) {
+						if (appendedSolutionsHeadline || appendedRulesHeadline) {
+							text.append("<br/>");
+						}
+						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.questions")
+								+ ":</strong><p/>");
+						appendedQuestionHeadline = true;
+					}
+					text.append(VerbalizationManager.getInstance().verbalize(
+							q1, RenderingFormat.PLAIN_TEXT));
+					text.append("<br />" + getAll(q1.getChildren()) + "<br />");
+				}
+			}
+			text.append("<p/>");
+
+			// Covering List
 			Collection<KnowledgeSlice> xclRels = kb
 					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
 			boolean appendedXCLHeadline = false;
 			for (KnowledgeSlice slice : xclRels) {
 				if (slice instanceof de.d3web.xcl.XCLModel) {
 					if (!appendedXCLHeadline) {
-						if (appendedSolutionsHeadline || appendedRulesHeadline) {
+						if (appendedSolutionsHeadline || appendedRulesHeadline
+								|| appendedQuestionHeadline) {
 							text.append("<br/>");
 						}
 						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.xclModels")
@@ -232,28 +267,28 @@ public class KBRenderer extends AbstractTagHandler {
 							text.append(type.getName() + weight + ": ");
 							text.append("&nbsp;&nbsp;&nbsp;"
 									+ VerbalizationManager.getInstance()
-									.verbalize(cond,
-									RenderingFormat.PLAIN_TEXT, parameterMap));
+											.verbalize(cond,
+													RenderingFormat.PLAIN_TEXT, parameterMap));
 
 							boolean id = false;
 							if (id) {
 								text.append(" (ID: " + rel.getId() + ")");
 							}
 
-							// if(kdomid != null) {
+							// if (kdomid != null) {
 							// String button = ("<input type='button' value='"
 							// + "XCL-Generieren"
 							// + "'"
 							// +
 							// " name='TiRexToXCL' class='button' onclick='highlightNode(\""
-							// + kdomid + "\",\""+topic+"\");'/>");
+							// + kdomid + "\",\"" + topic + "\");'/>");
 							// text += button;
 							// }
 							text.append(" \n <br />"); // \n only to avoid
-														// hmtl-code being cut
-														// by JspWiki
-														// (String.length >
-														// 10000)
+							// hmtl-code being cut
+							// by JspWiki
+							// (String.length >
+							// 10000)
 
 						}
 					}
@@ -265,5 +300,24 @@ public class KBRenderer extends AbstractTagHandler {
 					+ "</p>");
 		}
 		return text.append("</p></div></div>").toString();
+	}
+
+	private static int j = 0;
+
+	private String getAll(TerminologyObject[] nodes) {
+		StringBuffer test = new StringBuffer();
+		for (TerminologyObject t1 : nodes) {
+			test.append("-" + VerbalizationManager.getInstance().verbalize(
+					t1, RenderingFormat.PLAIN_TEXT) + " <br />");
+			if (t1.getChildren().length > 0) {
+				j++;
+				for (int i = 0; i < j; i++) {
+					test.append("-");
+				}
+				test.append(getAll(t1.getChildren()));
+			}
+		}
+		j = 0;
+		return test.toString();
 	}
 }
