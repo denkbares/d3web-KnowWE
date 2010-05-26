@@ -246,7 +246,7 @@ public class KnowWEEnvironment {
 		instance.initModules(wiki.getServletContext(), DEFAULT_WEB);
 
 		// firing the init event
-		EventManager.getInstance().fireEvent("system init", null, InitEvent.getInstance());
+		EventManager.getInstance().fireEvent(InitEvent.getInstance(), DEFAULT_WEB, "system init", null);
 
 	}
 
@@ -605,8 +605,8 @@ public class KnowWEEnvironment {
 				.getInstance().getRootType(), web);
 
 		// fire 'article-created' event
-		EventManager.getInstance().fireEvent(username, article.getSection(),
-				ArticleCreatedEvent.getInstance());
+		EventManager.getInstance().fireEvent(ArticleCreatedEvent.getInstance(), web, 
+				username, article.getSection());
 
 		return this.getArticleManager(web).saveUpdatedArticle(
 				article).getHTML();

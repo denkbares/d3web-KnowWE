@@ -22,8 +22,15 @@ public class FindingSetEvent extends Event {
 	
 	private Question question;
 	private Value value;
+	private String namespace;
 	
-	public FindingSetEvent(Question question, Value value) {
+	/**
+	 * Standard Constructor which encapsulates a question and the applied value.
+	 * @param question the underlying question
+	 * @param value the applied value
+	 * @param namespace defines in which session the value was set (optional!)
+	 */
+	public FindingSetEvent(Question question, Value value, String namespace) {
 		
 		// Check parameters for validity
 		if (question == null || value == null) 
@@ -42,6 +49,7 @@ public class FindingSetEvent extends Event {
 		// Set parameters
 		this.question = question;
 		this.value = value;
+		this.namespace = namespace;
 	}
 
 	public Question getQuestion() {
@@ -50,6 +58,10 @@ public class FindingSetEvent extends Event {
 
 	public Value getValue() {
 		return value;
+	}
+	
+	public String getNamespace() {
+		return namespace;
 	}
 	
 	

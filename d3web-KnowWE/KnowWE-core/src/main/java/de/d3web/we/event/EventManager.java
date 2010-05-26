@@ -90,12 +90,12 @@ public class EventManager {
 	 * @param event
 	 */
 	@SuppressWarnings("unchecked")
-	public void fireEvent(String username, Section<? extends KnowWEObjectType> s, Event e) {
+	public void fireEvent(Event e, String web, String username, Section<? extends KnowWEObjectType> s) {
 
 		List<EventListener> listeners = this.listenerMap.get(e.getClass());
 		if (listeners != null) {
 			for (EventListener eventListener : listeners) {
-				eventListener.notify(username, s, e);
+				eventListener.notify(e, web, username, s);
 			}
 		}
 

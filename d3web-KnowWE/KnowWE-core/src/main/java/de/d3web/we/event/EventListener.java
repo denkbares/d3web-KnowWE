@@ -51,7 +51,8 @@ public interface EventListener<T extends Event> {
 	 * @param username
 	 * @param s
 	 * @param eventName
+	 * @param web
 	 */
-	public void notify(String username, Section<? extends KnowWEObjectType> s, T event);
+	public void notify(T event, String web, String username, Section<? extends KnowWEObjectType> s);
 
 }

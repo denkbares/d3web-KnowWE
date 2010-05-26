@@ -213,7 +213,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 			value = Unknown.getInstance();
 		}
 		
-		EventManager.getInstance().fireEvent(user, null, new FindingSetEvent(question, value));
+		EventManager.getInstance().fireEvent(new FindingSetEvent(question, value, namespace), web, user, null);
 
 		Information info = new Information(namespace, objectid,
 				valuesAfterClick, TerminologyType.symptom,
