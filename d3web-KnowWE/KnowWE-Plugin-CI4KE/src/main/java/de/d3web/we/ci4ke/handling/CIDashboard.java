@@ -131,7 +131,7 @@ public class CIDashboard {
 		Object o = persistenceHandler.selectSingleNode("builds/@actualBuildStatus");
 		if (o instanceof Attribute) {
 			String actualStatus = ((Attribute) o).getValue();
-			return CIUtilities.renderResultType(TestResultType.valueOf(actualStatus), 24);
+			return CIUtilities.renderResultType(TestResultType.valueOf(actualStatus), 22);
 		}
 		return "";
 	}

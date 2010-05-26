@@ -207,7 +207,7 @@ public class CIUtilities {
 	public static String renderResultType(TestResultType resultType, int pixelSize) {
 
 		String imgBulb = "<img src='KnowWEExtension/images/" +
-				pixelSize + "x" + pixelSize + "/%s.gif' alt='$s'>";
+				pixelSize + "x" + pixelSize + "/%s.png' alt='$s'>";
 
 		switch (resultType) {
 		case SUCCESSFUL:
