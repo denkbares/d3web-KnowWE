@@ -21,7 +21,6 @@ import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SPARQLUtil;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -160,6 +159,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		}
 		return new String[]{};
 	}
+
 	private String generatePopupContent(Section arg0, URI subject, String subjectTitle) {
 		StringBuffer buffy = new StringBuffer();
 
@@ -178,17 +178,19 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		String[] defaultOpts = { "concept missmatch", "dont ask again" };
 
-		Section ancestor = KnowWEObjectTypeUtils.getAncestorOfType( arg0, TimeEventType.class.getName() );
+		Section<? extends TimeEventType> eventSection = arg0.findAncestor(TimeEventType.class);
+		// Section ancestor = KnowWEObjectTypeUtils.getAncestorOfType( arg0,
+		// TimeEventType.class.getName() );
 
-		for (String string : newOpts) {
+		for (String relationName : newOpts) {
 
 			String options =  "kdomid='" + arg0.getId() + "' subject='" + subject
-				+ "' rel='"	+ string + "' object='" + originalText
-				+ "' name='" + string + "' " + "ancestor='" + ancestor.getId() + "'";
+				+ "' rel='"	+ relationName + "' object='" + originalText
+				+ "' name='" + relationName + "' " + "ancestor='" + eventSection.getId() + "'";
 
 
 			buffy.append("<li><div class=\"confirmOption pointer\" " + options + ">");
-			buffy.append("" + string + "  " + "");
+			buffy.append("" + relationName + "  " + "");
 			buffy.append("<span style='font-style:italic' class='confirmobject' "+options+">" + originalText + " </span>");
 			buffy.append("<span style='font-style:italic'> ? </span>");
 			buffy.append("</div></li>");
@@ -202,7 +204,9 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		}
 
 		buffy.append("</div>");
-		buffy.append("</div>");
+		buffy.append("</div>\n"); // add some \n from time to time to satisfy
+									// jspwiki's paragraph length
+									// restriction.... :p
 		return buffy.toString();
 	}
 
