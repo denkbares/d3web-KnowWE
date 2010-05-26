@@ -23,15 +23,9 @@ package de.d3web.we.ci4ke.handling;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.d3web.we.ci4ke.handling.CIDashboardType.CIBuildTriggers;
+import de.d3web.we.ci4ke.build.CIBuilder.CIBuildTriggers;
 
 public class CIConfig {
-	
-//	public enum BUILD_TRIGGER_MODE {
-//		ON_DEMAND,
-//		ON_SAVE,
-//		ON_TIME
-//	}
 
 	public static String CICONFIG_STORE_KEY = "CIConfig_Section_Store";
 	

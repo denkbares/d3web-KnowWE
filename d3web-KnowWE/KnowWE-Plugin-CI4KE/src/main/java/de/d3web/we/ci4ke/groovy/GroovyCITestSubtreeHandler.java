@@ -48,7 +48,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITestType>*/ {
+public class GroovyCITestSubtreeHandler implements SubtreeHandler<GroovyCITestType> {
 
 //	private static Logger log = Logger.getLogger(CITestReviseSubtreeHandler.class.getName());
 	
@@ -61,7 +61,7 @@ public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITest
 	
 	
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section/*<GroovyCITestType>*/ s) {
+	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<GroovyCITestType> s) {
 		
 		List<Message> msgs = new ArrayList<Message>();
 		String testname = DefaultMarkupType.getAnnotation(s, "name");
@@ -82,17 +82,10 @@ public class GroovyCITestSubtreeHandler implements SubtreeHandler/*<GroovyCITest
 			String errorMessageMasked = KnowWEUtils.maskHTML(KnowWEUtils.maskNewline(th.getLocalizedMessage()));
 			msgs.add(new Message(Message.ERROR, errorMessageMasked, null, -1, null));
 			DefaultMarkupType.storeMessages(article, s, this.getClass(), msgs);
-			return null;//new TestCouldNotBeCreated(testname, errorMessageMasked);
+			return null;
 		}
 		DefaultMarkupType.storeMessages(article, s, this.getClass(), msgs);
 		return Arrays.asList((KDOMReportMessage) new TestCreatedSuccessfully(testname));		
-		
-		//Script script = shell.parse(groovycode);
-		//Object o = shell.evaluate(groovycode);
-		
-		//log.log(Level.INFO, "Nummer 5 lebt!");
-		//System.out.println("Nummer 5 lebt!");
-		//DefaultMarkupType.addErrorMessage(s, new Message(Message.ERROR, "NUMMER 5 STIRBT.", null, -1, null));
 	}
 
 

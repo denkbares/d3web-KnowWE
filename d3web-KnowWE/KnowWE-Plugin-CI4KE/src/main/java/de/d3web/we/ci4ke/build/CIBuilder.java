@@ -37,7 +37,6 @@ import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CIHookManager.CIHook;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -45,6 +44,12 @@ public class CIBuilder {
 
 	public static final String ACTUAL_BUILD_STATUS 	= "actualBuildStatus";
 	public static final String BUILD_RESULT 		= "result";
+
+	public static enum CIBuildTriggers {
+		onDemand,
+		onSave,
+		onNight
+	}	
 	
 	private CIConfig config;
 	

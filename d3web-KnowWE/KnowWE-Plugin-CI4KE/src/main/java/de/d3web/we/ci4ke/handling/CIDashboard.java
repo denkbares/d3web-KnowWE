@@ -25,7 +25,7 @@ import java.util.List;
 import org.jdom.Element;
 
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
-import de.d3web.we.ci4ke.handling.CIDashboardType.CIBuildTriggers;
+import de.d3web.we.ci4ke.build.CIBuilder.CIBuildTriggers;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWERessourceLoader;

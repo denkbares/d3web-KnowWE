@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.d3web.report.Message;
+import de.d3web.we.ci4ke.build.CIBuilder.CIBuildTriggers;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -49,13 +50,6 @@ public class CIDashboardType extends DefaultMarkupType {
 	public static final String TRIGGER_KEY 				= "trigger";
 	public static final String OVERRIDDEN_ID			= "id";
 	
-	//shoud be moved to CIBuilder
-	public static enum CIBuildTriggers {
-		onDemand,
-		onSave,
-		onNight
-	}
-	
 	private static final DefaultMarkup MARKUP;
 
 	static {
@@ -72,10 +66,10 @@ public class CIDashboardType extends DefaultMarkupType {
 		this.setCustomRenderer(new DashboardRenderer());
 	}
 	
-	private class DashboardSubtreeHandler implements SubtreeHandler {
+	private class DashboardSubtreeHandler implements SubtreeHandler<CIDashboardType> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<CIDashboardType> s) {
 			
 			AbstractKnowWEObjectType.cleanMessages(article, s, this.getClass());
 			
