@@ -110,3 +110,5 @@ function makeCIPanelsCollapsible(){
     }
 }
 
+KNOWWE.helper.observer.subscribe( 'onload', makeCIPanelsCollapsible );
+

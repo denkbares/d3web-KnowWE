@@ -1,27 +1,29 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.ci4ke.handling;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
@@ -36,9 +38,13 @@ public class CIDashboard {
 
 	private CIConfig config;
 
+	private CIBuildPersistenceHandler persistenceHandler;
+
 	public CIDashboard(Section<CIDashboardType> section) {
 		this.config = (CIConfig) KnowWEUtils.getStoredObject(section,
 				CIConfig.CICONFIG_STORE_KEY);
+		persistenceHandler = new CIBuildPersistenceHandler(
+				this.config.getDashboardID());
 	}
 
 	public String render() {
@@ -51,22 +57,17 @@ public class CIDashboard {
 		StringBuffer html = new StringBuffer();
 
 		String title = config.getMonitoredArticleTitle();
-		html
-				.append("<div id='ci-panel' class='panel'><h3>Continuous Integration Dashboard - "
-						+ title + " - Status: " + /*
-												 * CIUtilities.renderResultType(builder
-												 * .getCurrentBuildStatus(),24)
-												 * +
-												 */"</h3>\n");
+		html.append("<div id='ci-panel' class='panel'><h3>Continuous Integration Dashboard - "
+						+ title + " - Status: " + renderCurrentBuildStatus() + "</h3>\n");
 
 		html.append("<div id='ci-content-wrapper'>");// Main content wrapper
 
 		// Left Column: Lists all the knowledge-base Builds of the targeted
 		// article
-		html.append("<div id='"+config.getDashboardID()+"-column-left' class='ci-column-left'>");
+		html.append("<div id='" + config.getDashboardID() + "-column-left' class='ci-column-left'>");
 
-		html.append("<h3 style=\"background-color: #CCCCCC;\">CurrentBuilds</h3>");			
-		
+		html.append("<h3 style=\"background-color: #CCCCCC;\">Build-Progression</h3>");
+
 		if (config.getTrigger().equals(CIBuildTriggers.onDemand)) {
 			html.append("<div style=\"text-align: center;\"><form name=\"CIExecuteBuildForm\">");
 			html.append("<input type=\"button\" value=\"Neuen Build Starten!\" "
@@ -77,18 +78,11 @@ public class CIDashboard {
 
 		// render Builds
 		html.append(renderTenNewestBuilds());
-		
+
 		html.append("</div>");
-		
-		html.append("<div id='"+config.getDashboardID()+"-build-details-wrapper' class='ci-build-details-wrapper'>");
 
-//		html.append("<div id='"+config.getDashboardID()+"-column-middle' class='ci-column-middle'>");
-
-//		html.append("</div>");
-
-//		html.append("<div id='"+config.getDashboardID()+"-column-right' class='ci-column-right'>");
-
-//		html.append("</div>");
+		html.append("<div id='" + config.getDashboardID()
+				+ "-build-details-wrapper' class='ci-build-details-wrapper'>");
 
 		html.append("</div></div></div>");
 
@@ -96,12 +90,10 @@ public class CIDashboard {
 	}
 
 	private String renderTenNewestBuilds() {
-		CIBuildPersistenceHandler persi = new CIBuildPersistenceHandler(
-				this.config.getDashboardID());
-		StringBuffer sb = new StringBuffer(
-				"<table id=\"buildList\" width=\"100%\">\n");
-		List<?> builds = persi
-				.selectNodes("builds/build[position() > last() - 10]");
+
+		StringBuffer sb = new StringBuffer("<table id=\"buildList\" width=\"100%\">\n");
+		List<?> builds = persistenceHandler.selectNodes("builds/build[position() > last() - 10]");
+		Collections.reverse(builds);// most current builds at top!
 		String s;
 		for (Object o : builds) {
 			if (o instanceof Element) {
@@ -122,13 +114,11 @@ public class CIDashboard {
 				}
 				sb.append("</td><td>");
 				// followed by the Build Number...
-				if (buildNr != null && !buildNr.equals(""))
-					sb.append("#" + buildNr);
+				if (buildNr != null && !buildNr.equals("")) sb.append("#" + buildNr);
 				sb.append("</td><td>");
 				// and the build date/time
 				s = e.getAttributeValue("executed");
-				if (s != null && !s.equals(""))
-					sb.append(s);
+				if (s != null && !s.equals("")) sb.append(s);
 				// close table-cell
 				sb.append("</td></tr>\n");
 			}
@@ -137,4 +127,12 @@ public class CIDashboard {
 		return sb.toString();
 	}
 
+	private String renderCurrentBuildStatus() {
+		Object o = persistenceHandler.selectSingleNode("builds/@actualBuildStatus");
+		if (o instanceof Attribute) {
+			String actualStatus = ((Attribute) o).getValue();
+			return CIUtilities.renderResultType(TestResultType.valueOf(actualStatus), 24);
+		}
+		return "";
+	}
 }
