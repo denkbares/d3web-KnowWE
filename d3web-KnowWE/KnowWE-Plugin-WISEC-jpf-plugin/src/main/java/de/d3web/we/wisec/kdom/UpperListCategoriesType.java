@@ -22,6 +22,7 @@ package de.d3web.we.wisec.kdom;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.wisec.kdom.subtreehandler.UpperListCategoriesOWLSubtreeHandler;
 
 /**
@@ -33,7 +34,7 @@ public class UpperListCategoriesType extends DefaultAbstractKnowWEObjectType {
 
 	public UpperListCategoriesType() {
 		setSectionFinder(new AllTextSectionFinder());
-		addSubtreeHandler(new UpperListCategoriesOWLSubtreeHandler());	
+		addSubtreeHandler(Priority.LOWEST, new UpperListCategoriesOWLSubtreeHandler());	
 		addChildType(new WISECTable());
 	}
 	

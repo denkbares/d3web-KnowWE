@@ -22,6 +22,7 @@ package de.d3web.we.wisec.kdom;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.wisec.kdom.subtreehandler.ListCriteriaD3SubtreeHandler;
 import de.d3web.we.wisec.kdom.subtreehandler.ListCriteriaOWLSubtreeHandler;
 
@@ -34,7 +35,7 @@ public class ListCriteriaType extends DefaultAbstractKnowWEObjectType {
 
 	public ListCriteriaType() {
 		setSectionFinder(new AllTextSectionFinder());
-		addSubtreeHandler(new ListCriteriaOWLSubtreeHandler());
+		addSubtreeHandler(Priority.LOWEST, new ListCriteriaOWLSubtreeHandler());
 		addSubtreeHandler(new ListCriteriaD3SubtreeHandler());
 		addChildType(new WISECTable());
 	}

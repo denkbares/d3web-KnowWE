@@ -107,9 +107,9 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 					String value = contents.get(1).getOriginalText().trim();
 					if (criteria.matches("\\w+") && value.matches("\\d")) {
 						QuestionNum counterQ =
-								kbm.createQuestionNum(criteria + "_counter",
+								kbm.createQuestionNum(criteria,
 								kbm.findQContainer("Counter"));
-						createCounterRule(kbm, listID, counterQ, value);
+//						createCounterRule(kbm, listID, counterQ, value);
 					}
 				}
 			}
@@ -136,29 +136,32 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			String value = cells[i + 1].trim();
 			if (criteria.matches("\\w+") && value.matches("\\d")) {
 				QuestionNum counterQ =
-						kbm.createQuestionNum(criteria + "_counter", kbm.findQContainer("Counter"));
-				createCounterRule(kbm, listID, counterQ, value);
+						kbm.createQuestionNum(criteria, kbm.findQContainer("Counter"));
+//				createCounterRule(kbm, listID, counterQ, value);
 			}
 		}
 	}
 
-	private void createCounterRule(KnowledgeBaseManagement kbm, String listID,
-			QuestionNum counterQuestion, String value) {
-
-		// Get abstract List-Question
-		QuestionChoice listQuestion = (QuestionChoice) kbm.findQuestion(listID);
-		Choice activeAnswer = kbm.findChoice(listQuestion, "active");
-
-		// Create condition
-		CondEqual condition = new CondEqual(listQuestion, new ChoiceValue(activeAnswer));
-
-		// Create rule action (here it is a FormulaExpression)
-		FormulaNumber valueFN = new FormulaNumber(Double.valueOf(value));
-		Add add = new Add(new QNumWrapper(counterQuestion), valueFN);
-		FormulaExpression addition = new FormulaExpression(counterQuestion, add);
-
-		// Create Rule
-		RuleFactory.createSetValueRule(kbm.createRuleID(), counterQuestion, addition, condition);
-	}
+	/*
+	* Replaced by OWL + SPARQL => {@link WISECFindingSetEventListener}!
+	*/
+//	private void createCounterRule(KnowledgeBaseManagement kbm, String listID,
+//			QuestionNum counterQuestion, String value) {
+//
+//		// Get abstract List-Question
+//		QuestionChoice listQuestion = (QuestionChoice) kbm.findQuestion(listID);
+//		Choice activeAnswer = kbm.findChoice(listQuestion, "active");
+//
+//		// Create condition
+//		CondEqual condition = new CondEqual(listQuestion, new ChoiceValue(activeAnswer));
+//
+//		// Create rule action (here it is a FormulaExpression)
+//		FormulaNumber valueFN = new FormulaNumber(Double.valueOf(value));
+//		Add add = new Add(new QNumWrapper(counterQuestion), valueFN);
+//		FormulaExpression addition = new FormulaExpression(counterQuestion, add);
+//
+//		// Create Rule
+//		RuleFactory.createSetValueRule(kbm.createRuleID(), counterQuestion, addition, condition);
+//	}
 
 }
