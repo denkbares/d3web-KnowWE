@@ -122,7 +122,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 		}
 
 		public void visit(AddDelta delta) {
-			Chunk changed = delta.getOriginal();
+			Chunk changed = delta.getRevised();
 			// opening a div
 			m_result.append("<div class='ci-collapsible-box'><h4>");
 			print(changed, "At line {0} added {1}");

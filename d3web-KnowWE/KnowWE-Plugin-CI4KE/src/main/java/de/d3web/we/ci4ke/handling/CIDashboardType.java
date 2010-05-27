@@ -82,7 +82,12 @@ public class CIDashboardType extends DefaultMarkupType {
 					CIBuildTriggers.valueOf(DefaultMarkupType.getAnnotation(s, TRIGGER_KEY));
 
 			// Check if monitored Article exists
-
+			/*
+			 * This is commented out, because the existence-check of the
+			 * monitored article resulted in a lot of error messages on KnowWE
+			 * Startup... When the startup procedure gets improved, this check
+			 * can probably be activated again!
+			 */
 			// KnowWEArticle art = KnowWEEnvironment.getInstance().
 			// getArticle(s.getWeb(), monitoredArticle);
 			// if(art==null) {
