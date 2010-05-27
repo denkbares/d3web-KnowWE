@@ -72,7 +72,11 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 			}
 			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user, topic);
 			String result = this.rerenderKDOMElement(web, topic, new KnowWEUserContextImpl(user, parameterMap),nodeID);
-			return "@replace@" + result;
+			
+			//Pushing the result through the JSPWiki rendering pipeline
+			result = KnowWEUtils.maskHTML(result);
+			result = KnowWEEnvironment.getInstance().getWikiConnector().renderWikiSyntax(result, parameterMap);
+			return "@replace@" + KnowWEUtils.unmaskHTML(result);
 		} else {
 			return getMessage(topic);
 		}
