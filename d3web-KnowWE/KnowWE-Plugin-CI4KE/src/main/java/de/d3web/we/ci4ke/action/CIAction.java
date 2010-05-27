@@ -62,6 +62,9 @@ public class CIAction extends AbstractAction {
 			CIBuilder builder = new CIBuilder(topic, dashboardID);
 			builder.executeBuild();
 
+			CIBuildPersistenceHandler handler = new CIBuildPersistenceHandler(dashboardID);
+			buffy.append(handler.renderNewestBuilds(10));
+
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {
 
@@ -162,7 +165,7 @@ public class CIAction extends AbstractAction {
 			if (o instanceof Element) {
 				Element e = (Element) o;
 
-				buffy.append("<div class='ci-panel'><h4>");
+				buffy.append("<div class='ci-collapsible-box'><h4>");
 
 				// Render Test Result
 				String s = e.getAttributeValue("result");
@@ -179,8 +182,10 @@ public class CIAction extends AbstractAction {
 				// Render Test Message (if existent)
 				buffy.append("<table style=\"display: none;\">\n");
 				s = e.getAttributeValue("message");
-				if (s != null && !s.isEmpty()) buffy.append("<tr><td>Result Message: " + s
-						+ "</td></tr>");
+				if (s != null && !s.isEmpty()) {
+					buffy.append("<tr><td>Result Message: " + s + "</td></tr>");
+				}
+
 				buffy.append("</table>\n");
 
 				buffy.append("</div>\n");

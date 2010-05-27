@@ -37,7 +37,7 @@ public class GroovySectionRenderer extends KnowWEDomRenderer<GroovyCITestType> {
 
 		KnowWERessourceLoader.getInstance().add("syntaxhighlighter_2.1.364/shCore.css",
 				KnowWERessourceLoader.RESOURCE_STYLESHEET);
-		KnowWERessourceLoader.getInstance().add("syntaxhighlighter_2.1.364/shThemeDefault.css",
+		KnowWERessourceLoader.getInstance().add("syntaxhighlighter_2.1.364/shThemeEclipse.css",
 				KnowWERessourceLoader.RESOURCE_STYLESHEET);
 
 		KnowWERessourceLoader.getInstance().add("syntaxhighlighter_2.1.364/shCore.js",

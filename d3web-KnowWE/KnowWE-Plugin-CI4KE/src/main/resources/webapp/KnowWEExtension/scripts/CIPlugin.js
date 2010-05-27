@@ -32,7 +32,9 @@ function fctGetBuildDetails( dashboardID , buildNr ) {
            response : {
                ids : [ dashboardID + '-build-details-wrapper'],
                action : 'insert',
-               fn : makeCIPanelsCollapsible
+               fn : function(){
+    				makeCIBoxesCollapsible( dashboardID );
+    		   }
            }
     }
     
@@ -50,7 +52,7 @@ function fctExecuteNewBuild( dashboardID ) {
      var options = {
             url : KNOWWE.core.util.getURL( params ),
             response : {
-                ids : [ dashboardID + '-column-right'],
+                ids : [ dashboardID + '-build-table'],
                 action : 'insert'
             }
      }
@@ -59,33 +61,13 @@ function fctExecuteNewBuild( dashboardID ) {
 }
 
 /*
-function fctGetWikiChanges( dashboardID , buildNr ) {
-
-    var params = {
-           action : 'CIAction',
-           task   : 'getWikiChanges',
-           id     : dashboardID,
-           nr     : buildNr
-       }
-   
-    var options = {
-           url : KNOWWE.core.util.getURL( params ),
-           response : {
-               ids : [ dashboardID + '-column-middle'],
-               action : 'insert',
-               fn : makeCIPanelsCollapsible
-           }
-    }
-    
-    new _KA( options ).send();
-}
-*/
-
-/*
  * 
  */
-function makeCIPanelsCollapsible(){
-    var selector = "div .ci-panel";
+function makeCIBoxesCollapsible( dashboardID ){
+    var selector = "div .ci-collapsible-box";
+    if ( dashboardID ) {
+    	selector = "#" + dashboardID + "-ci-dashboard " + selector;
+    }    	
     
     var panels = _KS( selector );
     if( panels.length < 1 ) return;
@@ -110,5 +92,5 @@ function makeCIPanelsCollapsible(){
     }
 }
 
-KNOWWE.helper.observer.subscribe( 'onload', makeCIPanelsCollapsible );
+KNOWWE.helper.observer.subscribe( 'onload', makeCIBoxesCollapsible );
 

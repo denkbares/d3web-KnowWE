@@ -69,6 +69,10 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 	public String makeDiffHtml(String p1, String p2) {
 		String diffResult = "";
 
+		if (p1 == null || p2 == null) {
+			return "";
+		}
+
 		try {
 			String[] first = Diff.stringToArray(CIUtilities.replaceEntities(p1));
 			String[] second = Diff.stringToArray(CIUtilities.replaceEntities(p2));
@@ -120,7 +124,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 		public void visit(AddDelta delta) {
 			Chunk changed = delta.getOriginal();
 			// opening a div
-			m_result.append("<div class='ci-panel'><h4>");
+			m_result.append("<div class='ci-collapsible-box'><h4>");
 			print(changed, "At line {0} added {1}");
 			m_result.append("</h4>\n");
 			// opening the table
@@ -135,7 +139,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 			Chunk changed = delta.getOriginal();
 
 			// opening a div
-			m_result.append("<div class='ci-panel'><h4>");
+			m_result.append("<div class='ci-collapsible-box'><h4>");
 			print(changed, "At line {0} changed {1}");
 			m_result.append("</h4>\n");
 			// opening the table
@@ -151,7 +155,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 		public void visit(DeleteDelta delta) {
 			Chunk changed = delta.getOriginal();
 			// opening a div
-			m_result.append("<div class='ci-panel'><h4>");
+			m_result.append("<div class='ci-collapsible-box'><h4>");
 			print(changed, "At line {0} removed {1}");
 			m_result.append("</h4>\n");
 			// opening the table

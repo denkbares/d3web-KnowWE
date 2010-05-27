@@ -36,7 +36,7 @@
 	float: left; 
 	width: 33%;
 	}
-.ci-panel h4 
+.ci-collapsible-box h4 
 	{
 	background-color:#96BBD9;
 	color:#000000;
@@ -46,7 +46,7 @@
 	padding:3px 15px;
 	}	
 
-#buildList a:hover
+.build-table a:hover
 	{
 	cursor:pointer;
 	text-decoration:underline;

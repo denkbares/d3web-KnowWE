@@ -25,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +63,9 @@ public class CIBuildPersistenceHandler {
 	 * A Date formatter ;-)
 	 */
 	private static SimpleDateFormat DATE_FORMAT =
-			new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	
+	private String dashboardID;
 
 	/**
 	 * Creates a new CI-Build Result-Writer for a CIDashboard
@@ -71,6 +74,7 @@ public class CIBuildPersistenceHandler {
 	 */
 	public CIBuildPersistenceHandler(String dashboardID) {
 		try {
+			this.dashboardID = dashboardID;
 			this.xmlBuildFile = initXMLFile(dashboardID);
 			this.xmlJDomTree = new SAXBuilder().build(xmlBuildFile);
 			this.nextBuildNumber = getCurrentBuildNumber() + 1;
@@ -108,18 +112,19 @@ public class CIBuildPersistenceHandler {
 		out.output(xmlDocument, new FileWriter(xmlFile));
 	}
 
-	private long getCurrentBuildNumber() throws JDOMException {
+	public int getCurrentBuildNumber() {
 
-		long longBuildNum = 0;
+		int intBuildNum = 0;
 		// try to parse the most current build NR
-		Object o = XPath.selectSingleNode(xmlJDomTree,
-				"/builds/build[last()]/@nr");
+		Object o = selectSingleNode("/builds/build[last()]/@nr");
 		if (o instanceof Attribute) {
 			Attribute attr = (Attribute) o;
 			String attrValue = attr.getValue();
-			if (attrValue != null && !attrValue.isEmpty()) longBuildNum = Long.parseLong(attrValue);
+			if (attrValue != null && !attrValue.isEmpty()) {
+				intBuildNum = Integer.parseInt(attrValue);
+			}
 		}
-		return longBuildNum;
+		return intBuildNum;
 	}
 
 	/**
@@ -227,5 +232,66 @@ public class CIBuildPersistenceHandler {
 			}
 		}
 		return overallResult;
+	}
+	
+	// ------------ RENDERING ----------------
+	
+
+	/**
+	 * Renders out a list of the newest builds in descending order
+	 */
+	public String renderNewestBuilds(int numberOfBuilds) {
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("<div id=\"" + dashboardID
+				+ "-build-table\"><table width=\"100%\" class=\"build-table\">\n");
+		List<?> builds = selectNodes("builds/build[position() > last() - " +
+				numberOfBuilds + "]");
+		Collections.reverse(builds);// most current builds at top!
+		String s;
+		for (Object o : builds) {
+			if (o instanceof Element) {
+				Element e = (Element) o;
+
+				// TODO Check for null
+				String buildNr = e.getAttributeValue("nr");
+				
+				sb.append("<tr><td>");
+				// starting with a nice image...
+				s = e.getAttributeValue("result");
+				if (s != null && !s.isEmpty()) {
+					TestResultType buildResult = TestResultType.valueOf(s);
+					sb.append(CIUtilities.renderResultType(buildResult, 16));
+				}
+				sb.append("</td><td>");
+				// followed by the Build Number...
+				if (buildNr != null && !buildNr.equals("")) sb.append("#" + buildNr);
+				sb.append("<td><a onclick=\"");
+				sb.append("fctGetBuildDetails('" +
+						dashboardID + "','" + buildNr + "');\">");
+				// and the build date/time
+				s = e.getAttributeValue("executed");
+				if (s != null && !s.equals("")) sb.append(s);
+				// close table-cell
+				sb.append("</a></td></tr>\n");
+			}
+		}
+		sb.append("</table></div>\n");
+		return sb.toString();
+	}
+
+	/**
+	 * Renders the current build status (status of the last build)
+	 * 
+	 * @created 27.05.2010
+	 * @return
+	 */
+	public String renderCurrentBuildStatus() {
+		Object o = selectSingleNode("builds/@actualBuildStatus");
+		if (o instanceof Attribute) {
+			String actualStatus = ((Attribute) o).getValue();
+			return CIUtilities.renderResultType(TestResultType.valueOf(actualStatus), 22);
+		}
+		return "";
 	}
 }

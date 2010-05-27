@@ -20,25 +20,18 @@
 
 package de.d3web.we.ci4ke.handling;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.jdom.Attribute;
-import org.jdom.Element;
-
+import de.d3web.we.ci4ke.action.CIAction;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.build.CIBuilder.CIBuildTriggers;
-import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
-import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class CIDashboard {
 
-	private CIConfig config;
+	private final CIConfig config;
 
-	private CIBuildPersistenceHandler persistenceHandler;
+	private final CIBuildPersistenceHandler persistenceHandler;
 
 	public CIDashboard(Section<CIDashboardType> section) {
 		this.config = (CIConfig) KnowWEUtils.getStoredObject(section,
@@ -57,8 +50,10 @@ public class CIDashboard {
 		StringBuffer html = new StringBuffer();
 
 		String title = config.getMonitoredArticleTitle();
-		html.append("<div id='ci-panel' class='panel'><h3>Continuous Integration Dashboard - "
-						+ title + " - Status: " + renderCurrentBuildStatus() + "</h3>\n");
+		html.append("<div id='" + config.getDashboardID()
+				+ "-ci-dashboard' class='panel'><h3>Continuous Integration Dashboard - "
+						+ title + " - Status: " + persistenceHandler.renderCurrentBuildStatus()
+				+ "</h3>\n");
 
 		html.append("<div id='ci-content-wrapper'>");// Main content wrapper
 
@@ -77,62 +72,18 @@ public class CIDashboard {
 		}
 
 		// render Builds
-		html.append(renderTenNewestBuilds());
+		html.append(persistenceHandler.renderNewestBuilds(10));
 
 		html.append("</div>");
 
 		html.append("<div id='" + config.getDashboardID()
 				+ "-build-details-wrapper' class='ci-build-details-wrapper'>");
 
+		html.append(CIAction.renderBuildDetails(this.config.getDashboardID(),
+				persistenceHandler.getCurrentBuildNumber()));
+
 		html.append("</div></div></div>");
 
 		return html.toString();
-	}
-
-	private String renderTenNewestBuilds() {
-
-		StringBuffer sb = new StringBuffer("<table id=\"buildList\" width=\"100%\">\n");
-		List<?> builds = persistenceHandler.selectNodes("builds/build[position() > last() - 10]");
-		Collections.reverse(builds);// most current builds at top!
-		String s;
-		for (Object o : builds) {
-			if (o instanceof Element) {
-				Element e = (Element) o;
-
-				// TODO Check for null
-				String buildNr = e.getAttributeValue("nr");
-				sb.append("<tr onclick=\"");
-				sb.append("fctGetBuildDetails('" + this.config.getDashboardID()
-						+ "','" + buildNr + "');");
-				sb.append("\"><td>");
-
-				// starting with a nice image...
-				s = e.getAttributeValue("result");
-				if (s != null && !s.equals("")) {
-					TestResultType buildResult = TestResultType.valueOf(s);
-					sb.append(CIUtilities.renderResultType(buildResult, 16));
-				}
-				sb.append("</td><td>");
-				// followed by the Build Number...
-				if (buildNr != null && !buildNr.equals("")) sb.append("#" + buildNr);
-				sb.append("</td><td>");
-				// and the build date/time
-				s = e.getAttributeValue("executed");
-				if (s != null && !s.equals("")) sb.append(s);
-				// close table-cell
-				sb.append("</td></tr>\n");
-			}
-		}
-		sb.append("</table>\n");
-		return sb.toString();
-	}
-
-	private String renderCurrentBuildStatus() {
-		Object o = persistenceHandler.selectSingleNode("builds/@actualBuildStatus");
-		if (o instanceof Attribute) {
-			String actualStatus = ((Attribute) o).getValue();
-			return CIUtilities.renderResultType(TestResultType.valueOf(actualStatus), 22);
-		}
-		return "";
 	}
 }
