@@ -42,26 +42,12 @@ import de.d3web.we.ci4ke.build.CIBuilder;
  */
 public class CIHookManager {
 
-	private Map<String, List<CIHook>> hooks;
+	private final Map<String, List<CIHook>> hooks;
 
 	private static final CIHookManager INSTANCE = new CIHookManager();
 
 	private CIHookManager() {
 		hooks = new TreeMap<String, List<CIHook>>();
-
-		// NUR ZUM TEST!!!
-		// registerHook("BLA", new Runnable(){
-		// @Override
-		// public void run() {
-		// Logger.getLogger(CIEventForwarder.class.getName()).log(
-		// Level.INFO, " ===START==== HelloWorld from a Thread!!! ======= ");
-		// for(int i = 0; i<10; i++)
-		// Logger.getLogger(CIEventForwarder.class.getName()).log(
-		// Level.INFO, " === "+i+" ==== HelloWorld from a Thread!!! ======= ");
-		// Logger.getLogger(CIEventForwarder.class.getName()).log(
-		// Level.INFO, " === END ==== HelloWorld from a Thread!!! ======= ");
-		// }
-		// });
 	}
 
 	public static CIHookManager getInstance() {
@@ -108,8 +94,25 @@ public class CIHookManager {
 		return true;
 	}
 
-	public boolean deRegisterHook(String monitoredArticleTitle, CIHook hook) {
-		return false;
+	public void deRegisterHook(String monitoredArticleTitle,
+			String dashboardArticleTitle, String dashboardID) {
+
+		CIHook hook = new CIHook(dashboardArticleTitle,
+				dashboardID);
+		deRegisterHook(monitoredArticleTitle, hook);
+	}
+
+	public void deRegisterHook(String monitoredArticleTitle, CIHook hook) {
+		// some serious paramteter checking first!
+		if (monitoredArticleTitle == null || monitoredArticleTitle.isEmpty()) {
+			throw new IllegalArgumentException("monitoredArticleTitle is null or empty!");
+		}
+
+		if (containedInAHook(monitoredArticleTitle, hook.getDashboardID())) {
+			List<CIHook> hookList = hooks.get(monitoredArticleTitle);
+			hookList.remove(hook);
+			hooks.put(monitoredArticleTitle, hookList);
+		}
 	}
 
 	public boolean deRegisterAllHooks(String monitoredArticleTitle) {
@@ -127,6 +130,8 @@ public class CIHookManager {
 			String dashboardID) {
 
 		List<CIHook> hookList = hooks.get(monitoredArticleTitle);
+		if (hookList == null) return false;
+
 		for (CIHook hook : hookList)
 			if (hook.getDashboardID().equals(dashboardID)) return true;
 
@@ -144,7 +149,7 @@ public class CIHookManager {
 
 		for (Map.Entry<String, List<CIHook>> entry : hooks.entrySet()) {
 			String monitoredArticleTitle = entry.getKey();
-			if (containedInAHook(monitoredArticleTitle, dashboardID) == true) {
+			if (containedInAHook(monitoredArticleTitle, dashboardID)) {
 				return true;
 			}
 		}
@@ -176,8 +181,8 @@ public class CIHookManager {
 
 	public static class CIHook implements Comparable<CIHook> {
 
-		private String dashboardArticleTitle;
-		private String dashboardID;
+		private final String dashboardArticleTitle;
+		private final String dashboardID;
 
 		public String getDashboardArticleTitle() {
 			return dashboardArticleTitle;

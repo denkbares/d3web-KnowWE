@@ -141,9 +141,8 @@ public class CIDashboardType extends DefaultMarkupType {
 				// the tests of this dashboard should (currently!) be build
 				// only on Demand. Lets check, if there is a hook registered
 				// for this dashboard, then deregister it.
-				if (CIHookManager.getInstance().containedInAHook(id)) {
-					// TODO: Hook entfernen!
-				}
+				CIHookManager.getInstance().deRegisterHook(monitoredArticle,
+						s.getArticle().getTitle(), id);
 			}
 			else if (trigger.equals(CIBuildTriggers.onSave)) {
 				Logger.getLogger(this.getClass().getName()).log(
