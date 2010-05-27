@@ -52,8 +52,9 @@ public class CIDashboard {
 		String title = config.getMonitoredArticleTitle();
 		html.append("<div id='" + config.getDashboardID()
 				+ "-ci-dashboard' class='panel'><h3>Continuous Integration Dashboard - "
-						+ title + " - Status: " + persistenceHandler.renderCurrentBuildStatus()
-				+ "</h3>\n");
+				+ title + " - Current Status: " + persistenceHandler.
+						renderCurrentBuildStatus() + " - Weather Forecast: " +
+				persistenceHandler.renderWeatherForecast() + "</h3>\n");
 
 		html.append("<div id='ci-content-wrapper'>");// Main content wrapper
 

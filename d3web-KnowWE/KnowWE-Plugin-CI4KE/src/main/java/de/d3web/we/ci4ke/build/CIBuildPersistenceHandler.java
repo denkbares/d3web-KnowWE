@@ -294,4 +294,29 @@ public class CIBuildPersistenceHandler {
 		}
 		return "";
 	}
+
+	public String renderWeatherForecast() {
+
+		String xPathCountLastBuilds = "count(builds/build[position() > last() - 10])";
+		Object o = selectSingleNode(xPathCountLastBuilds);
+		double lastBuilds = 0d;
+		if (o instanceof Double) {
+			lastBuilds = ((Double) o).doubleValue();
+		}
+		o = null;
+
+		String xPathCountSuccessfulBuilds = "count(builds/build[position() > last() - 10]"
+				+ "[@result='SUCCESSFUL'])";
+		double lastSuccessfulBuilds = 0d;
+		o = selectSingleNode(xPathCountSuccessfulBuilds);
+		if (o instanceof Double) {
+			lastSuccessfulBuilds = ((Double) o).doubleValue();
+		}
+		o = null;
+
+		double ratio = 0;
+		if (lastBuilds > 0) ratio = lastSuccessfulBuilds / lastBuilds;
+
+		return CIUtilities.renderForecastIcon(ratio);
+	}
 }

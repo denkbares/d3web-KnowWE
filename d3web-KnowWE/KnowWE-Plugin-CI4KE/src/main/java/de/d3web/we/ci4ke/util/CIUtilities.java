@@ -206,7 +206,7 @@ public class CIUtilities {
 
 	public static String renderResultType(TestResultType resultType, int pixelSize) {
 
-		String imgBulb = "<img src='KnowWEExtension/images/" +
+		String imgBulb = "<img src='KnowWEExtension/ci4ke/images/" +
 				pixelSize + "x" + pixelSize + "/%s.png' alt='$s'>";
 
 		switch (resultType) {
@@ -219,6 +219,33 @@ public class CIUtilities {
 		}
 
 		return imgBulb;
+	}
+
+	public static String renderForecastIcon(double ratio) {
+
+		String imgForecast = "<img src='KnowWEExtension/ci4ke/images/" +
+				"22x22/%s.png' alt='%s'>";
+
+		if (ratio <= 0.2) {
+			imgForecast = String.format(imgForecast, "health-00to19", "health-00to19");
+		}
+		else if (ratio <= 0.4) {
+			imgForecast = String.format(imgForecast, "health-20to39", "health-20to39");
+		}
+		else if (ratio <= 0.6) {
+			imgForecast = String.format(imgForecast, "health-40to59", "health-40to59");
+		}
+		else if (ratio <= 0.8) {
+			imgForecast = String.format(imgForecast, "health-60to79", "health-60to79");
+		}
+		else if (ratio <= 1.0) {
+			imgForecast = String.format(imgForecast, "health-80plus", "health-80plus");
+		}
+		else {
+			imgForecast = "";
+		}
+
+		return imgForecast;
 	}
 
 	/**
