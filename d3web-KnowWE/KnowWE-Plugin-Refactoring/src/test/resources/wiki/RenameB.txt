@@ -1,3 +1,0 @@
-<Questionnaires-section>
-Questionnaire [1]
-</Questionnaires-section>

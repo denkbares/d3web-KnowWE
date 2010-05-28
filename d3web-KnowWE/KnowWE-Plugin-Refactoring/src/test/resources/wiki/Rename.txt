@@ -1,2 +1,0 @@
-<include src="RenameA/QuestionsSection" />
-<include src="RenameB/QuestionnairesSection" />

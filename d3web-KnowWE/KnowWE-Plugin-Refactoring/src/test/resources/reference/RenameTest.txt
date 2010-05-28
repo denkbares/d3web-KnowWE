@@ -1,7 +1,0 @@
-<Questions-section>
-Questionnaire
-- Question [oc]
--- Answer1
--- Answer2
-</Questions-section>
-
