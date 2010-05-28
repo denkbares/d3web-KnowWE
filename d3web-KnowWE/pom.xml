@@ -4,7 +4,7 @@
 	<artifactId>d3web-KnowWE</artifactId>
 	<packaging>pom</packaging>
 	<name>d3web-KnowWE</name>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 	<url>http://www.d3web.de/</url>
 	<issueManagement>
 		<system>Trac</system>
@@ -141,9 +141,9 @@
 		</developer>
 	</developers>
         <scm>
-            <connection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/tags/0.1</connection>
-            <developerConnection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/tags/0.1</developerConnection>
-            <url>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/tags/0.1</url>
+            <connection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/d3web-KnowWE</connection>
+            <developerConnection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/d3web-KnowWE</developerConnection>
+            <url>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/d3web-KnowWE</url>
         </scm>
 	<organization>
 		<name>Universität Würzburg</name>

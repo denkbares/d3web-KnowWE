@@ -2,24 +2,24 @@
 	<parent>
 		<artifactId>d3web-KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0.1</version>
+		<version>0.2-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-Comment-jpf-plugin</artifactId>
 	<name>KnowWE Plugin: Comment</name>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-JSPWiki-Connector</artifactId>
-			<version>0.1</version>
+			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>0.1</version>
+			<version>0.2-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

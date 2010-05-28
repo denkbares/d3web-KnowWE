@@ -3,12 +3,12 @@
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>d3web-TiRex</artifactId>
 	<name>d3web-TiRex</name>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 
 	<parent>
 		<artifactId>d3web-KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0.1</version>
+		<version>0.2-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>

@@ -2,14 +2,14 @@
 	<parent>
 		<artifactId>d3web-KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>0.1</version>
+		<version>0.2-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-core</artifactId>
 	<packaging>jar</packaging>
 	<name>KnowWE-core</name>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 	<build>
 		<plugins>
 			<plugin>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Report</artifactId>
-			<version>0.1</version>
+			<version>0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -208,7 +208,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-ExtensionPoints-jpf-plugin</artifactId>
-			<version>0.1</version>
+			<version>0.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
