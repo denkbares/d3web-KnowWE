@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Report</artifactId>
-			<version>${project.version}</version>
+			<version>0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -196,7 +196,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-PluginManager</artifactId>
-			<version>${project.version}</version>
+			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -209,7 +209,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-ExtensionPoints-jpf-plugin</artifactId>
-			<version>${project.version}</version>
+			<version>0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
