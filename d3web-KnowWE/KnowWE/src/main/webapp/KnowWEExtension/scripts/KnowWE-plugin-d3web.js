@@ -1308,12 +1308,14 @@ KNOWWE.plugin.d3web.rerenderquestionsheet = function() {
  */
 KNOWWE.plugin.d3web.dt = function(){
     
+    var isQuestion = false;
+    
     /**
      * Shows a ul element containing the answer possibilities of the question.
      */
     function showUL( ul ){
         ul = new _KN( ul );
-        //ul._show();
+        ul._show();
         
         var c = ul.childNodes;
         if(!c || !c.length) return;
@@ -1363,8 +1365,9 @@ KNOWWE.plugin.d3web.dt = function(){
             if(!father) return;
             if(father.id.indexOf('QuestionTree')){
                 var div = new _KN('div', {'style' : 'float:right'})
-                div._setHTML("<span class=\"dt-ajax pointer\" rel=\"{dt : '', KdomNodeId : '"+father.id+"'}\">default</span> | "
-                        + "<span class=\"dt-ajax pointer\" rel=\"{dt : 'custom', KdomNodeId : '"+father.id+"'}\">dialog</span>");
+                div._setHTML("<span class=\"dt-ajax pointer\" rel=\"{dt : '', KdomNodeId : '"+father.id+"'}\"><img src='KnowWEExtension/images/dt_icon_explanation2.png' alt='Default decision tree view' title='Default decision tree view'/></span> "
+                        + "<span class=\"dt-ajax pointer\" rel=\"{dt : 'question', KdomNodeId : '"+father.id+"'}\"><img src='KnowWEExtension/images/icon_question_small.gif' alt='Show decision tree in question mode' title='Show decision tree in question mode'/></span> "
+                        + "<span class=\"dt-ajax pointer\" rel=\"{dt : 'answer', KdomNodeId : '"+father.id+"'}\"><img src='KnowWEExtension/images/icon_diagnosis.gif' alt='Show decision tree in anwser mode' title='Show decision tree in anwser mode'/></span>");
                 
                 pres = divs[i].getElementsByTagName('pre');
                 if( pres.length != 0) {
@@ -1383,7 +1386,7 @@ KNOWWE.plugin.d3web.dt = function(){
          * Initialises the additional DT features like menu etc.
          */
         init : function( node ){        
-            createMenu();
+            //createMenu();
             var el = _KS('.dt-ajax');
             if(el.length != 0){
               el.each(function( element ){
@@ -1396,6 +1399,7 @@ KNOWWE.plugin.d3web.dt = function(){
             }
             if(node) return;
             var trees = _KS('.collapsible-questiontree');
+
             for(var i = 0; i < trees.length; i++){
                 _KS('li', trees[i]).each(function(element){
                     element._hide();
@@ -1414,7 +1418,7 @@ KNOWWE.plugin.d3web.dt = function(){
          initView : function( root ){
             var c = null, pos = 0, head = null;
             c = root.childNodes; //document.getElementsByTagName('pre')[0].childNodes;
-            
+
             for(var i = 0; i < c.length; i++){
                 if( c[i].nodeName.toLowerCase() == 'ul'){
                     var li = c[i].childNodes;            
@@ -1425,8 +1429,13 @@ KNOWWE.plugin.d3web.dt = function(){
                             break;
                         }
                     }
-                   //head._next()._show(); not needed when in answer mode
-                   showUL( getCertainChild( head, 'ul' )); //head.next() when question should be visible
+                    if(isQuestion) {
+                       head._next()._show();
+                       showUL( getCertainChild( head._next(), 'ul' )); //head.next() when question should be visible
+                    } else {
+                       //head._next()._show(); not needed when in answer mode
+                       showUL( getCertainChild( head, 'ul' )); //head.next() when question should be visible
+                    }
                 }
             }
             var infos = _KS('.collapsible-info');
@@ -1443,18 +1452,29 @@ KNOWWE.plugin.d3web.dt = function(){
           *     custom - Sets if the renderer are set or removed.
           */         
          setCustomRenderer : function( custom, element ){
-              var params = { rm : custom,  
-                  types : {
-                      'de.d3web.we.kdom.questionTreeNew.dialog.QuestionDashTreeOnlyAnswersRenderer'     : 'de.d3web.we.kdom.questionTreeNew.QuestionDashTree',
-                      'de.d3web.we.kdom.questionTreeNew.dialog.QuestionTreeRootTypeRenderer'     : 'de.d3web.we.kdom.questionTreeNew.QuestionTreeRootType',
-                      'de.d3web.we.kdom.questionTreeNew.dialog.DashesPrefixRenderer'             : 'de.d3web.we.kdom.dashTree.DashesPrefix',
-                      'de.d3web.we.kdom.questionTreeNew.dialog.QuestionTreeAnswerDefRenderer'    : 'de.d3web.we.kdom.objects.QuestionTreeAnswerDef'
-                  }
-             };
+            var questionTypes = {
+                'de.d3web.we.kdom.questionTreeNew.dialog.QuestionDashTreeRenderer'     : 'de.d3web.we.kdom.questionTreeNew.QuestionDashTree',
+                'de.d3web.we.kdom.questionTreeNew.dialog.QuestionTreeRootTypeRenderer'     : 'de.d3web.we.kdom.questionTreeNew.QuestionTreeRootType',
+                'de.d3web.we.kdom.questionTreeNew.dialog.DashesPrefixRenderer'             : 'de.d3web.we.kdom.dashTree.DashesPrefix',
+                'de.d3web.we.kdom.questionTreeNew.dialog.QuestionTreeAnswerDefRenderer'    : 'de.d3web.we.kdom.objects.QuestionTreeAnswerDef',
+                'de.d3web.we.kdom.questionTreeNew.dialog.QuestionLineRenderer'    : 'de.d3web.we.kdom.questionTreeNew.QuestionLine'
+            }
+            var answerTypes = {
+                'de.d3web.we.kdom.questionTreeNew.dialog.QuestionDashTreeOnlyAnswersRenderer'     : 'de.d3web.we.kdom.questionTreeNew.QuestionDashTree',
+                'de.d3web.we.kdom.questionTreeNew.dialog.QuestionTreeRootTypeRenderer'     : 'de.d3web.we.kdom.questionTreeNew.QuestionTreeRootType',
+                'de.d3web.we.kdom.questionTreeNew.dialog.DashesPrefixRenderer'             : 'de.d3web.we.kdom.dashTree.DashesPrefix',
+                'de.d3web.we.kdom.questionTreeNew.dialog.QuestionTreeAnswerDefRenderer'    : 'de.d3web.we.kdom.objects.QuestionTreeAnswerDef'
+            }           
+            
+            isQuestion = (custom == 'question') ? true : false; 
+            
+            var params = { rm : custom,  
+                types : (custom == 'question') ? questionTypes : answerTypes
+            };
              
-             params.action =  'RenderManagerAction';
+            params.action =  'RenderManagerAction';
              
-             var options = {
+            var options = {
                 url : KNOWWE.core.util.getURL( params ),
                 response : {
                     action : 'none',
@@ -1520,7 +1540,8 @@ KNOWWE.plugin.d3web.dt = function(){
             if( next.className === "head" ){ 
                 next = new _KN( next )._next();
             } else if(KNOWWE.plugin.d3web.dt.alreadyChoosen(next)){
-                next = next.parentNode.parentNode; //only node in question mode
+                next = (isQuestion) ? ((next.className.toLowerCase() === 'qline') ? next : next.parentNode) : next.parentNode.parentNode;
+                //next = next.parentNode.parentNode; //only node in question mode
             } else {
                 KNOWWE.plugin.d3web.dt.hideAnswers( next );
                 next = KNOWWE.plugin.d3web.dt.getNextQuestion( next );
@@ -1544,12 +1565,16 @@ KNOWWE.plugin.d3web.dt = function(){
                 q = answer.parentNode;
                 if( !q ) return answer;
                 if( q = q.parentNode ) {
+                    
+                    if(isQuestion) {
+                        while( !q._next().nodeName ){   //used in question mode
+                            q = new _KN( q.parentNode.parentNode );
+                        }                
+                        return q._next();
+                    }
+                    
                     q = new _KN( q );
                     return q.parentNode.parentNode;
-                    //while( !q._next().nodeName ){   //used in question mode
-                    //    q = new _KN( q.parentNode.parentNode );
-                    //}                
-                    //return q._next();
                 } else {
                     q = answer;
                     do {
@@ -1576,8 +1601,8 @@ KNOWWE.plugin.d3web.dt = function(){
                 showUL( getCertainChild( question, 'ul' ));
             } else if (tagName = 'ul'){ //does not occur in answer mode
                 showUL( question );
-                try { question = question.getElementsByTagName('li')[0].getElementsByTagName('ul')[0];
-                showUL( question ); } catch(e){ };
+                //try { question = question.getElementsByTagName('li')[0].getElementsByTagName('ul')[0];
+                //showUL( question ); } catch(e){ };
             }
         },
         /**
@@ -1596,7 +1621,7 @@ KNOWWE.plugin.d3web.dt = function(){
         },
         /**
          * Function: alreadyChoosen
-         * Checks if the user hag already selcted the question.
+         * Checks if the user has already selcted the question.
          */
         alreadyChoosen : function( question ){
             question = getCertainChild(question, 'ul');
@@ -1625,8 +1650,6 @@ KNOWWE.plugin.d3web.dt = function(){
             _KE.cancel( e );
             e = _KE.target( e );
             
-            //get stored information from element, element has token rel:info
-            //add showHint event to root QuestionTreeDiv
             o = e.getAttribute('rel');
             if( !o ) return;
             i = eval( "(" + o + ")");

@@ -26,6 +26,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.RenderingMode;
@@ -45,27 +46,37 @@ public class QuestionTreeRootTypeRenderer extends CustomRenderer{
 	public void render(KnowWEArticle article, Section sec,
 			KnowWEUserContext user, StringBuilder string) {
 		
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getId() + "\" class=\"collapsible-questiontree\" >\n"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getId() + "\" class=\"collapsible-questiontree\">\n"));
 		
-		//string.append(KnowWEUtils.maskHTML("<div style=\"position:absolute; right:5%; top: 25%;\" id=\"collapsible-questiontree-info\"></div>"));
-		string.append(KnowWEUtils.maskHTML("<div id=\"collapsible-questiontree-info\"></div>"));
-		
+
+		string.append(KnowWEUtils.maskHTML("<div id=\"\" style=\"float:right;\">\n"));
+			
+		string.append(KnowWEUtils.maskHTML("<span class=\"dt-ajax pointer\" rel=\"{dt : '', KdomNodeId : '"+sec.getId()+"'}\"><img src='KnowWEExtension/images/dt_icon_explanation2.png' alt='Default decision tree view' title='Default decision tree view'/></span> "
+				+ "<span class=\"dt-ajax pointer\" rel=\"{dt : 'question', KdomNodeId : '"+sec.getId()+"'}\"><img src='KnowWEExtension/images/icon_question_small.gif' alt='Show decision tree in question mode' title='Show decision tree in question mode'/></span> "
+				+ "<span class=\"dt-ajax pointer\" rel=\"{dt : 'answer', KdomNodeId : '"+sec.getId()+"'}\"><img src='KnowWEExtension/images/icon_diagnosis.gif' alt='Show decision tree in anwser mode' title='Show decision tree in anwser mode'/></span>"
+	        ));
+		string.append(KnowWEUtils.maskHTML("</div>\n"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"collapsible-questiontree-info\" style=\"display:none\"></div>\n"));
+			
 		// add an anchor to enable direct link to the section
 		String anchorName = KnowWEUtils.getAnchor(sec);
-		string.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>"));
+		string.append(KnowWEUtils.maskHTML("<a name='" + anchorName + "'></a>\n"));
 
-		//exclude DefaultMarkupType markup from the view
+		// render messages and content
+		//renderMessages(article, sec, string);
+
 		List<Section<? extends KnowWEObjectType>> sections = sec.getChildren();
 		for (Section<? extends KnowWEObjectType> section : sections) {
-			if( !(section.getObjectType() instanceof PlainText )){
+			if( !(section.getObjectType() instanceof PlainText || section.getObjectType() instanceof AnnotationType)){
 				DelegateRenderer.getInstance().render(article, section, user, string);
 			}	
 		}
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		// and close the box
+		string.append(KnowWEUtils.maskHTML("</div>\n"));
 	}
 
 	@Override
 	public boolean doesApply(String user, String topic, RenderingMode type) {
 		return true;
-	}	
+	}
 }
