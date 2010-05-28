@@ -115,41 +115,12 @@
 
 		</plugins>
 	</build>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	<repositories>
-		<repository>
-			<id>infovi-artifactory</id>
-			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/repo/
-			</url>
-		</repository>
-		<repository>
-			<id>knowwe-snapshots</id>
-			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/knowwe-snapshots/
-			</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>ignore</checksumPolicy>
-			</snapshots>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>contrib</id>
-			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/infovi-contrib/
-			</url>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>0-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -170,23 +141,15 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
-			<version>0-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
-			<version>0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-	<distributionManagement>
-		<snapshotRepository>
-			<id>knowwe-snapshots</id>
-			<name>d3web Snapshots</name>
-			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/knowwe-snapshots/
-			</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<organization>
 		<name>Universität Würzburg</name>
