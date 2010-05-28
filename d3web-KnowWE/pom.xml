@@ -141,9 +141,9 @@
 		</developer>
 	</developers>
         <scm>
-            <connection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/d3web-KnowWE</connection>
-            <developerConnection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/d3web-KnowWE</developerConnection>
-            <url>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/d3web-KnowWE</url>
+            <connection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/branches/0.x</connection>
+            <developerConnection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/branches/0.x</developerConnection>
+            <url>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/branches/0.x</url>
         </scm>
 	<organization>
 		<name>Universität Würzburg</name>
