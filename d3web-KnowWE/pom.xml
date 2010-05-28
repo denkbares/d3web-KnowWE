@@ -88,15 +88,15 @@
 		<module>KnowWE</module>
 		<module>KnowWE-core</module>
 		<module>KnowWE-JSPWiki-Connector</module>
-		<module>KnowWE-Plugin-d3web</module>
-		<module>KnowWE-Plugin-Comment</module>
-		<module>KnowWE-Plugin-Calendar</module>
-		<module>KnowWE-Plugin-HermesModule</module>
-		<module>KnowWE-Plugin-Flowchart</module>
-		<module>KnowWE-ExtensionPoints</module>
-		<module>KnowWE-core-Plugins</module>
+		<module>KnowWE-Plugin-d3web-jpf-plugin</module>
+		<module>KnowWE-Plugin-Comment-jpf-plugin</module>
+		<module>KnowWE-Plugin-Calendar-jpf-plugin</module>
+		<module>KnowWE-Plugin-HermesModule-jpf-plugin</module>
+		<module>KnowWE-Plugin-Flowchart-jpf-plugin</module>
+		<module>KnowWE-ExtensionPoints-jpf-plugin</module>
+		<module>KnowWE-core-Plugins-jpf-plugin</module>
 		<module>KnowWE-Plugin-WISEC-jpf-plugin</module>
-		<module>KnowWE-Plugin-CI4KE</module>
+		<module>KnowWE-Plugin-CI4KE-jpf-plugin</module>
 	</modules>
 	<repositories>
 		<repository>
