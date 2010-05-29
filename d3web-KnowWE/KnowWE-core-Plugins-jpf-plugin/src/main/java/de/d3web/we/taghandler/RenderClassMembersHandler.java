@@ -25,7 +25,7 @@ public class RenderClassMembersHandler extends AbstractTagHandler {
 		super("listClassMembers");
 	}
 
-	private static final String TIME_SPARQL = "SELECT ?x WHERE { ?x rdf:type lns:CLASS .}";
+	private static final String TIME_SPARQL = "SELECT ?x WHERE { ?x rdf:type lns:CLASS .} ORDER BY ASC(?x)";
 
 	@Override
 	public String render(String topic, KnowWEUserContext user,
