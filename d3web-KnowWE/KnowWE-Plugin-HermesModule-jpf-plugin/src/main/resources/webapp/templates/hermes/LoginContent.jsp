@@ -78,6 +78,13 @@
     </tr>
     </table>
 
+<!-- Dirty hardcoding -->
+    <div>
+	<i><b>Probleme mit dem Login?</b> Kontaktieren Sie uns per E-Mail an <a href="mailto:hermeswiki@efzwo.de">hermeswiki@efzwo.de</a></i>
+	<br/><br/><br/>
+    </div>
+<!-- End of hardcoding -->
+
     <div class="formhelp">
       <fmt:message key="login.lostpw"/>
       <a href="#" onclick="$('menu-lostpassword').fireEvent('click');"
@@ -85,6 +92,7 @@
         <fmt:message key="login.lostpw.getnew"/>
       </a>
     </div>
+
     <div class="formhelp">
       <fmt:message key="login.nopassword"/>
       <a href="#" onclick="$('menu-profile').fireEvent('click');"
