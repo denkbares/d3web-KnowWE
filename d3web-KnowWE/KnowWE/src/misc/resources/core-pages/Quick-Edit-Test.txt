@@ -49,6 +49,18 @@ should not be quick-edited.
 
 </SetCoveringTable-section>
 
+!!Attribute Table
+
+<AttributeTable-section>
+| Exhaust pipe color | info | Model | New Modelinfo
+| Fuel | info | description | some empty battery description
+</AttributeTable-section>
+
+!!Hermes TimeEvent
+
+<<Wiederaufbau Athens (2)
+478v
+>>
 
 !! Knowledge
 

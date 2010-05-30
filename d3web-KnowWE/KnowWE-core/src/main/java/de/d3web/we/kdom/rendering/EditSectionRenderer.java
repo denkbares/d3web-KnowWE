@@ -94,15 +94,9 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 
 		if ( isEditable ) {
 			String str = sec.getOriginalText();
-			if(!user.getUrlParameterMap().containsKey("action")) {  // is not ajax action add verbatim for jspwiki render pipeline
-				string.append("{{{");
-			}
 			string.append( KnowWEUtils.maskHTML( "<textarea name=\"default-edit-area\" id=\"" + sec.getId() + "/default-edit-area\" style=\"width:92%; height:"+this.getHeight(str)+"px;\">" ));
 			string.append( str );
 			string.append( KnowWEUtils.maskHTML( "</textarea>" ));
-			if(!user.getUrlParameterMap().containsKey("action")) {// is not ajax action add verbatim for jspwiki render pipeline
-				string.append("}}}");
-			}
 			string.append( KnowWEUtils.maskHTML( "<div class=\"default-edit-handle\"></div>" ));
 		} else {
 			// here the normal rendered content of the subtree is appended
