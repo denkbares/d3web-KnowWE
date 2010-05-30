@@ -22,7 +22,6 @@ package de.d3web.we.ci4ke.groovy;
 
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.rendering.EditSectionRenderer;
 
 public class GroovyCITestType extends DefaultMarkupType {
 
@@ -36,7 +35,7 @@ public class GroovyCITestType extends DefaultMarkupType {
 	public GroovyCITestType() {
 		super(MARKUP);
 		this.addSubtreeHandler(new GroovyCITestSubtreeHandler());
-		this.setCustomRenderer(new EditSectionRenderer(new GroovySectionRenderer()));
+		this.setCustomRenderer(new GroovySectionRenderer());
 	}
 
 }

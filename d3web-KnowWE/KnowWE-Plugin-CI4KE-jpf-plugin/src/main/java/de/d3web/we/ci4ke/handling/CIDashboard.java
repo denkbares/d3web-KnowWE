@@ -64,6 +64,12 @@ public class CIDashboard {
 
 		html.append("<h3 style=\"background-color: #CCCCCC;\">Build-Progression</h3>");
 
+		// render Builds
+
+		html.append("<div id=\"" + config.getDashboardID() + "-build-table\">\n");
+		html.append(persistenceHandler.renderNewestBuilds(5));
+		html.append("</div>");
+
 		if (config.getTrigger().equals(CIBuildTriggers.onDemand)) {
 			html.append("<div style=\"text-align: center;\"><form name=\"CIExecuteBuildForm\">");
 			html.append("<input type=\"button\" value=\"Neuen Build Starten!\" "
@@ -71,10 +77,6 @@ public class CIDashboard {
 							+ config.getDashboardID() + "');\"/>");
 			html.append("</form></div>");
 		}
-
-		// render Builds
-		html.append(persistenceHandler.renderNewestBuilds(10));
-
 		html.append("</div>");
 
 		html.append("<div id='" + config.getDashboardID()

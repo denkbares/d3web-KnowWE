@@ -179,10 +179,6 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			CIDashboard board = new CIDashboard(sec);
 			string.append(KnowWEUtils.maskHTML(board.render()));
-
-			// string.append(KnowWEUtils.maskHTML(sec.verbalize()+"<br>"));
-			// string.append(KnowWEUtils.maskHTML(dashboardIDisUnique(sec)+"<br>"));
-
 		}
 	}
 

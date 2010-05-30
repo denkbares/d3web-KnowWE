@@ -60,6 +60,28 @@ function fctExecuteNewBuild( dashboardID ) {
      new _KA( options ).send();
 }
 
+function fctRefreshBuildList( dashboardID, indexFromBack, numberOfBuilds ) {
+
+	var params = {
+            action 			: 'CIAction',
+            task			: 'refreshBuildList',
+            id				: dashboardID,
+            indexFromBack	: indexFromBack,
+            numberOfBuilds	: numberOfBuilds
+        }
+    
+     var options = {
+            url : KNOWWE.core.util.getURL( params ),
+            response : {
+                ids : [ dashboardID + '-build-table'],
+                action : 'insert'
+            }
+     }
+     
+     new _KA( options ).send();
+}
+
+
 /*
  * 
  */

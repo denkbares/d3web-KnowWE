@@ -220,6 +220,17 @@ public class CIBuildPersistenceHandler {
 		return ret;
 	}
 
+	private int countNodes(String xpathSelectNodes) {
+
+		Object o = selectSingleNode("count(" + xpathSelectNodes + ")");
+		int nodeCount = 0;
+		if (o instanceof Double) {
+			nodeCount = (int) ((Double) o).doubleValue();
+		}
+		o = null;
+		return nodeCount;
+	}
+
 	private TestResultType overallResult(CIBuildResultset resultset) {
 
 		TestResultType overallResult = TestResultType.SUCCESSFUL;
@@ -241,12 +252,26 @@ public class CIBuildPersistenceHandler {
 	 * Renders out a list of the newest builds in descending order
 	 */
 	public String renderNewestBuilds(int numberOfBuilds) {
+		return renderBuildList(0, numberOfBuilds);
+	}
+
+	/**
+	 * 
+	 * 
+	 * @created 30.05.2010
+	 * @param indexFromBack
+	 * @param numberOfBuilds
+	 * @return
+	 */
+	public String renderBuildList(int indexFromBack, int numberOfBuilds) {
+
+		String xpath = "builds/build[position() <= last() - " + indexFromBack +
+				" and position() > last() - " + (indexFromBack + numberOfBuilds) + "]";
+		List<?> builds = selectNodes(xpath);
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("<div id=\"" + dashboardID
-				+ "-build-table\"><table width=\"100%\" class=\"build-table\">\n");
-		List<?> builds = selectNodes("builds/build[position() > last() - " +
-				numberOfBuilds + "]");
+		sb.append("<table width=\"100%\" class=\"build-table\">\n");
+
 		Collections.reverse(builds);// most current builds at top!
 		String s;
 		for (Object o : builds) {
@@ -276,7 +301,29 @@ public class CIBuildPersistenceHandler {
 				sb.append("</a></td></tr>\n");
 			}
 		}
-		sb.append("</table></div>\n");
+		sb.append("</table>\n");
+
+		int allNodes = countNodes("builds/build");
+
+		// wenn man noch weiter zurückblättern kann, rendere einen Button
+		if ((allNodes - indexFromBack) > numberOfBuilds) {
+			sb.append("<div style=\"float: left;\"><form name=\"ci-show-older-builds\">");
+			sb.append("<input type=\"button\" value=\"<--\" "
+					+ "name=\"submit\" class=\"button\" onclick=\"fctRefreshBuildList('"
+					+ dashboardID + "','" + (indexFromBack + numberOfBuilds) + "','"
+					+ numberOfBuilds + "');\"/>");
+			sb.append("</form></div>");
+		}
+
+		// wenn man noch weiter vorblättern kann, rendere einen Button
+		if ((allNodes - indexFromBack) < allNodes) {
+			sb.append("<div style=\"float: right;\"><form name=\"ci-show-newer-builds\">");
+			sb.append("<input type=\"button\" value=\"-->\" "
+					+ "name=\"submit\" class=\"button\" onclick=\"fctRefreshBuildList('"
+					+ dashboardID + "','" + (indexFromBack - numberOfBuilds) + "','"
+					+ numberOfBuilds + "');\"/>");
+			sb.append("</form></div>");
+		}
 		return sb.toString();
 	}
 
@@ -295,28 +342,19 @@ public class CIBuildPersistenceHandler {
 		return "";
 	}
 
+	/**
+	 * Calculates a "quality forecast", based on the ten last builds
+	 * 
+	 * @created 27.05.2010
+	 * @return
+	 */
 	public String renderWeatherForecast() {
 
-		String xPathCountLastBuilds = "count(builds/build[position() > last() - 10])";
-		Object o = selectSingleNode(xPathCountLastBuilds);
-		double lastBuilds = 0d;
-		if (o instanceof Double) {
-			lastBuilds = ((Double) o).doubleValue();
-		}
-		o = null;
-
-		String xPathCountSuccessfulBuilds = "count(builds/build[position() > last() - 10]"
-				+ "[@result='SUCCESSFUL'])";
-		double lastSuccessfulBuilds = 0d;
-		o = selectSingleNode(xPathCountSuccessfulBuilds);
-		if (o instanceof Double) {
-			lastSuccessfulBuilds = ((Double) o).doubleValue();
-		}
-		o = null;
-
-		double ratio = 0;
-		if (lastBuilds > 0) ratio = lastSuccessfulBuilds / lastBuilds;
-
+		int lastBuilds = countNodes("builds/build[position() > last() - 10]");
+		int lastSuccessfulBuilds = countNodes("builds/build[position() > last() - 10]"
+				+ "[@result='SUCCESSFUL']");
+		double ratio = 0d;
+		if (lastBuilds > 0) ratio = (double) lastSuccessfulBuilds / lastBuilds;
 		return CIUtilities.renderForecastIcon(ratio);
 	}
 }

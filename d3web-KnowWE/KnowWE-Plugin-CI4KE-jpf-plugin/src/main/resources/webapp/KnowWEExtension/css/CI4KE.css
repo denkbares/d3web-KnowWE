@@ -22,19 +22,24 @@
 	{ 
 	border: thin solid #000000;
 	float: left; 
-	width: 28%;
+	width: 24%;
+	}
+.ci-build-details-wrapper
+	{ 
+	float: left; 
+	width: 75%;
 	}
 .ci-column-middle
 	{ 
 	border: thin solid #ff0000; 
 	float: left; 
-	width: 38%;
+	width: 52%;
 	}
 .ci-column-right
 	{ 
 	border: thin solid #0000ff; 
 	float: left; 
-	width: 33%;
+	width: 47%;
 	}
 .ci-collapsible-box h4 
 	{

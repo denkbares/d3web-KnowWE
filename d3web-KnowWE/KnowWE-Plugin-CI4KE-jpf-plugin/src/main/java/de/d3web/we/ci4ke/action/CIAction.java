@@ -22,7 +22,6 @@ package de.d3web.we.ci4ke.action;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -42,8 +41,8 @@ public class CIAction extends AbstractAction {
 	@Override
 	public void execute(ActionContext context) throws IOException {
 
-		Logger.getLogger(this.getClass().getName()).info(
-				">>> execute Action angekommen! >>>");
+		// Logger.getLogger(this.getClass().getName()).info(
+		// ">>> execute Action angekommen! >>>");
 
 		String task = String.valueOf(context.getParameter("task"));
 		String dashboardID = String.valueOf(context.getParameter("id"));
@@ -63,7 +62,7 @@ public class CIAction extends AbstractAction {
 			builder.executeBuild();
 
 			CIBuildPersistenceHandler handler = new CIBuildPersistenceHandler(dashboardID);
-			buffy.append(handler.renderNewestBuilds(10));
+			buffy.append(handler.renderNewestBuilds(5));
 
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {
@@ -71,6 +70,14 @@ public class CIAction extends AbstractAction {
 			int selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
 			buffy.append(renderBuildDetails(dashboardID, selectedBuildNumber));
 
+		}
+		else if (task.equals("refreshBuildList")) {
+
+			int indexFromBack = Integer.parseInt(context.getParameter("indexFromBack"));
+			int numberOfBuilds = Integer.parseInt(context.getParameter("numberOfBuilds"));
+
+			CIBuildPersistenceHandler handler = new CIBuildPersistenceHandler(dashboardID);
+			context.getWriter().write(handler.renderBuildList(indexFromBack, numberOfBuilds));
 		}
 		else {
 			buffy.append("@info@CIAction says: Hello World!");
