@@ -80,7 +80,8 @@ public class SemanticCore {
 	private static ResourceBundle settingsbundle;
 	private final HashMap<String, Resource> contextmap;
 	private final HashMap<String, String> settings;
-	private final HashMap<String, HashMap<String, List<Statement>>> statementcache;
+	private final HashMap<String, HashMap<Section, List<Statement>>> statementcache;
+	private final HashMap<String,List<Statement>> semsettings;
 	private HashMap<String, String> namespaces;
 	private HashMap<String, String> defaultnamespaces;
 
@@ -88,7 +89,8 @@ public class SemanticCore {
 		this.knowWEEnvironment = ke;
 		me = this;
 		contextmap = new HashMap<String, Resource>();
-		statementcache = new HashMap<String, HashMap<String, List<Statement>>>();
+		statementcache = new HashMap<String, HashMap<Section, List<Statement>>>();
+		semsettings=new HashMap<String, List<Statement>>();
 		String path = ke.getKnowWEExtensionPath();
 		settingsbundle = ResourceBundle.getBundle("semanticdefaults");
 		settings = new HashMap<String, String>();
@@ -201,14 +203,9 @@ public class SemanticCore {
 					.createlocalProperty(props);
 			List<Statement> allStatements = io.getAllStatements();
 
-			HashMap<String, List<Statement>> semanticsettingsstatements = null;
-			if (statementcache.get("SemanticSettings") == null)
-				semanticsettingsstatements = new HashMap<String, List<Statement>>();
-			else
-				semanticsettingsstatements = statementcache
-						.get("SemanticSettings");
-			semanticsettingsstatements.put("SemanticSettings", allStatements);
-			statementcache.put("SemanticSettings", semanticsettingsstatements);
+			
+			semsettings.put("SemanticSettings", allStatements);
+			
 			try {
 				for (Statement current : allStatements) {
 					if (current != null) {
@@ -290,22 +287,22 @@ public class SemanticCore {
 
 	// centralizing statementcache management ... for better understanding
 	private void addToStatementcache(Section sec, List<Statement> allStatements) {
-		HashMap<String, List<Statement>> temp = statementcache.get(sec
+		HashMap<Section, List<Statement>> temp = statementcache.get(sec
 				.getArticle().getTitle());
 		if (temp == null) {
-			temp = new HashMap<String, List<Statement>>();
+			temp = new HashMap<Section, List<Statement>>();
 
 		}
-		temp.put(sec.getId(), allStatements);
+		temp.put(sec, allStatements);
 		statementcache.put(sec.getArticle().getTitle(), temp);
 	}
 
 	private List<Statement> getStatementsofSingleSection(
 			Section<? extends KnowWEObjectType> sec) {
-		HashMap<String, List<Statement>> temp = statementcache.get(sec
+		HashMap<Section, List<Statement>> temp = statementcache.get(sec
 				.getArticle().getTitle());
 		if (temp != null)
-			return temp.get(sec.getId());
+			return temp.get(sec);
 		return new ArrayList<Statement>();
 	}
 
@@ -510,10 +507,10 @@ public class SemanticCore {
 	 * @param sec
 	 */
 	public void clearContext(KnowWEArticle art) {
-		HashMap<String, List<Statement>> temp = statementcache.get(art
+		HashMap<Section, List<Statement>> temp = statementcache.get(art
 				.getTitle());
 		if (temp != null) {
-			for (Entry<String, List<Statement>> cur : temp.entrySet()) {
+			for (Entry<Section, List<Statement>> cur : temp.entrySet()) {
 				RepositoryConnection con = uo.getConnection();
 				try {
 					con.remove(cur.getValue());
@@ -693,55 +690,6 @@ public class SemanticCore {
 		return s;
 	}
 
-	/**
-	 * this method clears out any orphaned statements left in the core. those
-	 * are created after updating an article without completely rebuilding it.
-	 * when a section gets deleted which had formerly created statements for the
-	 * core, the statements aren't cleand out because the old section doesn't
-	 * exist anymore -> they aren't found... so we check for statements in the
-	 * core from sections not existing anymore in the article
-	 * 
-	 * TODO: find faster way to do this
-	 * @param art
-	 */
-	public void cleanOrphans(KnowWEArticle art) {
-		HashMap<String, List<Statement>> temp = statementcache.get(art
-				.getTitle());
-		if (temp != null) {
-			List<Statement> activeStatements = getSectionStatementsRecursive(art
-					.getSection());
-
-			for (Entry<String, List<Statement>> cur : new LinkedList<Entry<String, List<Statement>>>(
-					temp.entrySet())) {
-				if (null == art.findSection(cur.getKey())) {
-					RepositoryConnection con = uo.getConnection();
-					for (Statement curs : cur.getValue()) {
-						//make sure a statement that was created in an orphaned section, isn't present in any of the new valid ones ..
-						//TODO:: find better solution for this ... it's not very efficient
-						boolean exists=false;
-						Iterator<Statement> sit=activeStatements.iterator();					
-						while (!exists && sit.hasNext()){
-							Statement lookat=sit.next();
-							if (lookat.getObject().equals(curs.getObject())&&lookat.getSubject().equals(curs.getSubject())&&lookat.getPredicate().equals(curs.getPredicate())){
-								exists=true;
-							}
-						}
-						if (!exists) {
-							try {
-								con.remove(curs);
-								con.commit();
-							} catch (RepositoryException e) {
-								e.printStackTrace();
-							}
-						}
-						
-					}
-					temp.remove(cur.getKey());
-				}
-			}
-			statementcache.put(art.getTitle(), temp);
-		}
-
-	}
+	
 
 }

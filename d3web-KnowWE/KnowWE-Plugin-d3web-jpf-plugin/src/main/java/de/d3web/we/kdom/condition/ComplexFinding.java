@@ -55,6 +55,8 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationObject;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -78,7 +80,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 	}
 
 	
-	private class ComplexFindingSubtreeHandler extends SubtreeHandler {
+	private class ComplexFindingSubtreeHandler extends OwlSubtreeHandler {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {

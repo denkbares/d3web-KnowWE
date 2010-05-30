@@ -34,7 +34,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.NothingRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.kdom.xml.XMLContent;
 
 public class TagsContent extends XMLContent {
@@ -45,7 +45,7 @@ public class TagsContent extends XMLContent {
 		this.addSubtreeHandler(new TagsContentOWLSubTreeHandler());
 	}
 
-	private class TagsContentOWLSubTreeHandler extends SubtreeHandler {
+	private class TagsContentOWLSubTreeHandler extends OwlSubtreeHandler {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {

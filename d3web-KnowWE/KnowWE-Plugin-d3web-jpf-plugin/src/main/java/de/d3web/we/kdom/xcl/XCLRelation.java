@@ -45,7 +45,7 @@ import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.Patterns;
 
@@ -61,7 +61,7 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 		this.addSubtreeHandler(new XCLRelationOWLSubTreeHandler());
 	}
 
-	private class XCLRelationOWLSubTreeHandler extends SubtreeHandler{
+	private class XCLRelationOWLSubTreeHandler extends OwlSubtreeHandler{
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {

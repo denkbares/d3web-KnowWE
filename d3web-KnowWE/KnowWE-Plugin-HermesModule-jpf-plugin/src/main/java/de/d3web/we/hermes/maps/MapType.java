@@ -20,7 +20,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -40,7 +40,7 @@ public class MapType extends AbstractXMLObjectType {
 	}
 
 
-	private class MapTypeOWLSubTreeHandler extends SubtreeHandler {
+	private class MapTypeOWLSubTreeHandler extends OwlSubtreeHandler {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {

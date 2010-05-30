@@ -48,6 +48,7 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -75,7 +76,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 	}
 
 	private class SemanticAnnotationObjectSubTreeHandler extends
-			SubtreeHandler {
+			OwlSubtreeHandler<SemanticAnnotationObject> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
@@ -175,6 +176,8 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 			SemanticCore.getInstance().addStatements(io, s);
 			return msgs;
 		}
+			
+
 
 	}
 

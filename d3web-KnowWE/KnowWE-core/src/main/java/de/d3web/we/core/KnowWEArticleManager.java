@@ -229,9 +229,6 @@ public class KnowWEArticleManager {
 	 */
 	public KnowWEDomParseReport saveUpdatedArticle(KnowWEArticle art) {
 
-		// clear the semantic core of all statements from the article to clear
-		// out remaining statements which don't have a section anymore
-		SemanticCore.getInstance().cleanOrphans(art);
 		// store new article
 		articleMap.put(art.getTitle(), art);
 		long startTime = System.currentTimeMillis();

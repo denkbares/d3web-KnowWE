@@ -83,6 +83,7 @@ public class TaggingManglerTest extends TestCase {
 		tm = TaggingMangler.getInstance();
 		sc = SemanticCore.getInstance();
 	}
+	
 
 	/**
 	 * Test method for {@link de.d3web.we.core.TaggingMangler#clone()}.
@@ -181,12 +182,12 @@ public class TaggingManglerTest extends TestCase {
 		am.saveUpdatedArticle(article2);
 		am.saveUpdatedArticle(article3);
 		am.saveUpdatedArticle(article4);
-		tm.addTag("Tag1", "tag", params);
-		tm.addTag("Tag2", "tag", params);
+		tm.addTag("Tag1", "live", params);
+		tm.addTag("Tag2", "live", params);
 		tm.addTag("Tag3", "tod", params);
-		tm.addTag("Tag4", "tag", params);
+		tm.addTag("Tag4", "live", params);
 		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
-		ArrayList<String> pages = tm.getPages("tag");
+		ArrayList<String> pages = tm.getPages("live");
 		assertNotNull(pages);
 		assertEquals(3, pages.size());
 		assertTrue("not found page Tag1", pages.contains("Tag1"));

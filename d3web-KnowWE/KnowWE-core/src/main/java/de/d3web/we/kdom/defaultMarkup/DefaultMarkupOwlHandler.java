@@ -42,6 +42,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -65,7 +66,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * 
  * @author Volker Belli (denkbares GmbH)
  */
-public class DefaultMarkupOwlHandler extends SubtreeHandler {
+public class DefaultMarkupOwlHandler extends OwlSubtreeHandler {
 
 	private final DefaultMarkupType defaultMarkupType;
 	private URI conceptURI = null;

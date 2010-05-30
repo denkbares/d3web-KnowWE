@@ -36,7 +36,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -52,7 +52,7 @@ public class InfoContent extends XMLContent {
 		this.addSubtreeHandler(new InfoContentOWLSubTreeHandler());
 	}
 
-	private class InfoContentOWLSubTreeHandler extends SubtreeHandler {
+	private class InfoContentOWLSubTreeHandler extends OwlSubtreeHandler {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();

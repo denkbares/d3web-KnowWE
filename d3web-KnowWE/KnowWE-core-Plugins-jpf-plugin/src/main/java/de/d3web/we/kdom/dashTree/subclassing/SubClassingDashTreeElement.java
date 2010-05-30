@@ -34,7 +34,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 
 public class SubClassingDashTreeElement extends DashTreeElement {
 
@@ -45,7 +45,7 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 	}
 	
 	private class SubClassingDashTreeElementOWLSubTreeHandler extends
-			SubtreeHandler {
+	OwlSubtreeHandler {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {

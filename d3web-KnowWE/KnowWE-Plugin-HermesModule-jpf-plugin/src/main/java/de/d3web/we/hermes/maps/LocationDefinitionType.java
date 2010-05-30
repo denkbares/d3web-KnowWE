@@ -30,7 +30,7 @@ import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -48,7 +48,7 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	private class LocationDefinitionTypeOWLSubTreeHandler extends
-			SubtreeHandler<LocationDefinitionType> {
+	OwlSubtreeHandler<LocationDefinitionType> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<LocationDefinitionType> s) {

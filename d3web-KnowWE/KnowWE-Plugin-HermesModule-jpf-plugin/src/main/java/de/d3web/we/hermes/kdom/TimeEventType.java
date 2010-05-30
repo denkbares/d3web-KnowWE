@@ -47,8 +47,8 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 
@@ -74,7 +74,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 	}
 
 	private class TimeEventTypeOWLSubTreeHandler extends
-			SubtreeHandler<TimeEventType> {
+	OwlSubtreeHandler<TimeEventType> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,

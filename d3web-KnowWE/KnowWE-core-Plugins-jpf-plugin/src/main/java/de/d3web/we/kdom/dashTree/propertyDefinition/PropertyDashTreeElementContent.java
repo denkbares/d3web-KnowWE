@@ -42,7 +42,7 @@ import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 
 /**
  * @author Jochen
@@ -63,7 +63,7 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 		this.addSubtreeHandler(new PropertyDashTreeElementContentOWLSubTreeHandler());
 	}
 
-	private class PropertyDashTreeElementContentOWLSubTreeHandler extends SubtreeHandler<PropertyDashTreeElementContent>
+	private class PropertyDashTreeElementContentOWLSubTreeHandler extends OwlSubtreeHandler<PropertyDashTreeElementContent>
 	{
 
 		@Override

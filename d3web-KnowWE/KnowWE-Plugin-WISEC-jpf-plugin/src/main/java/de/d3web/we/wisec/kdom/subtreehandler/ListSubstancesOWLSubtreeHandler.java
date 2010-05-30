@@ -16,7 +16,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.logging.Logging;
@@ -24,7 +24,7 @@ import de.d3web.we.wisec.kdom.ListSubstancesRootType;
 import de.d3web.we.wisec.kdom.ListSubstancesType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class ListSubstancesOWLSubtreeHandler extends SubtreeHandler {
+public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler {
 	
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
