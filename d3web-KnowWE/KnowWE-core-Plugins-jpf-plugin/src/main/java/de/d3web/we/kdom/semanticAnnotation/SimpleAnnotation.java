@@ -52,11 +52,11 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 		this.addSubtreeHandler(new SimpleAnnotationSubTreeHandler());
 	}
 
-	private class SimpleAnnotationSubTreeHandler implements
+	private class SimpleAnnotationSubTreeHandler extends
 			SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			UpperOntology uo = UpperOntology.getInstance();
 			String annos = s.getOriginalText().trim().replaceAll(" ", "_");

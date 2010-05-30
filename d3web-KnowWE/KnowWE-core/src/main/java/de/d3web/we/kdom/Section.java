@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEDomParseReport;
@@ -42,6 +41,7 @@ import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeAddress;
+import de.d3web.we.kdom.include.IncludeError;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.Priority;
@@ -490,6 +490,36 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		nodes.add(this);
 	}
 
+	/**
+	 * For now this only works correctly, if all include targets are from the
+	 * same article.
+	 * 
+	 * @created 30.05.2010
+	 * @param article is the article calling this method
+	 * @param nodes is the list of nodes to store the collected nodes in
+	 */
+	@SuppressWarnings("unchecked")
+	public void getAllNotReusedNodesPostOrder(KnowWEArticle article, List<Section<? extends KnowWEObjectType>> nodes) {
+		if (this.getChildren() != null) {
+			List<Section<?>> children = this.getChildren();
+
+			if (article.isUpdatingIncludes()
+					&& objectType instanceof Include
+					&& !(children.get(0).getObjectType() instanceof IncludeError)
+					&& children.get(0).getTitle().equals(
+							article.getArticleUpdatingIncludesOfThisArticle())) {
+
+				children = KnowWEEnvironment.getInstance().getIncludeManager(getWeb())
+						.getLastChildrenForSection((Section<Include>) this);
+			}
+
+			for (Section<? extends KnowWEObjectType> child : children) {
+				child.getAllNotReusedNodesPostOrder(article, nodes);
+			}
+		}
+		if (!this.isReusedBy(article.getTitle())) nodes.add(this);
+	}
+
 
 	/**
 	 * returns father node
@@ -931,7 +961,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public void findSuccessorsOfTypeUntyped(Class class1, List<Section> found) {
 
 		if (class1.isAssignableFrom(this.getObjectType().getClass())) {
-			found.add((Section) this);
+			found.add(this);
 		}
 		for (Section<? extends KnowWEObjectType> sec : getChildren()) {
 			sec.findSuccessorsOfTypeUntyped(class1, found);
@@ -1265,63 +1295,91 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * de.d3web.we.kdom.KnowWEObjectType#reviseSubtree(de.d3web.we.kdom.KnowWErticle
-	 * , de.d3web.we.kdom.Section)
+	 * @see SubtreeHandler#create(KnowWEArticle, Section)
 	 */
 	// Templates aren't working for us here, since getSubtreeHandlers() can not have
 	// any knowledge of the template T specified by the Section -> SuppressWarning...
 	@SuppressWarnings("unchecked")
-	public final void runSubtreeHandlers(KnowWEArticle article, Priority p) {
+	public final void letSubtreeHandlersCreate(KnowWEArticle article, Priority p) {
 		List<SubtreeHandler<? extends KnowWEObjectType>> handlerList 
 				= objectType.getSubtreeHandlers().get(p);
 		if (handlerList != null) {
-			for (SubtreeHandler handler : objectType.getSubtreeHandlers().get(p)) {
-					runSubtreeHandler(article, handler);
+			for (SubtreeHandler handler : handlerList) {
+					letSubtreeHandlerCreate(article, handler);
 			}
 		}
 
 	}
 	
 	@SuppressWarnings("unchecked")
-	public final void runSubtreeHandler(KnowWEArticle article, SubtreeHandler handler) {
-		try {
-			KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.reviseSubtree(article, this));
+	public final void letSubtreeHandlerCreate(KnowWEArticle article, SubtreeHandler handler) {
+		if (handler.needsToCreate(article, this)) {
+			try {
+				KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.create(article, this));
+			}
+			catch (Throwable e) {
+				String text = "unexpected internal error in subtree handler '" + handler + "'";
+				Message msg = new Message(text + ": " + e);
+				AbstractKnowWEObjectType.storeMessages(article, this, this.getClass(), Arrays.asList(msg));
+				// TODO: vb: store the error also in the article. (see below for
+				// more details)
+				//
+				// Idea 1:
+				// Any unexpected error (and therefore catched here) of the
+				// ReviseSubtreeHandlers
+				// shall be remarked at the "article" object. When rendering the
+				// article page,
+				// the error should be placed at the top level. A KnowWEPlugin
+				// to list all
+				// erroneous articles as links with its errors shall be
+				// introduced. A call to this
+				// plugin should be placed in the LeftMenu-page.
+				//
+				// Idea 2:
+				// The errors are not marked at the article, but as a special
+				// message
+				// type is added to this section. When rendering the page, the
+				// error
+				// message should be placed right before the section and the
+				// content
+				// of the section as original text in pre-formatted style (no
+				// renderer
+				// used!):
+				// {{{ <div class=error>EXCEPTION WITH MESSAGE</div> ORIGINAL
+				// TEXT }}}
+			}
+			
+			// This flag is set for the case that another article, than the article
+			// this section is directly hooked in, revises this Section...
+			// This is important for the incremental update to work with includes!
+			this.setReusedBy(article.getTitle(), true);
 		}
-		catch (Throwable e) {
-			String text = "unexpected internal error in subtree handler '" + handler + "'";
-			Message msg = new Message(text + ": " + e);
-			AbstractKnowWEObjectType.storeMessages(article, this, this.getClass(), Arrays.asList(msg));
-			// TODO: vb: store the error also in the article. (see below for
-			// more details)
-			//
-			// Idea 1:
-			// Any unexpected error (and therefore catched here) of the
-			// ReviseSubtreeHandlers
-			// shall be remarked at the "article" object. When rendering the
-			// article page,
-			// the error should be placed at the top level. A KnowWEPlugin
-			// to list all
-			// erroneous articles as links with its errors shall be
-			// introduced. A call to this
-			// plugin should be placed in the LeftMenu-page.
-			//
-			// Idea 2:
-			// The errors are not marked at the article, but as a special
-			// message
-			// type is added to this section. When rendering the page, the
-			// error
-			// message should be placed right before the section and the
-			// content
-			// of the section as original text in pre-formatted style (no
-			// renderer
-			// used!):
-			// {{{ <div class=error>EXCEPTION WITH MESSAGE</div> ORIGINAL
-			// TEXT }}}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see SubtreeHandler#destroy(KnowWEArticle, Section)
+	 */
+	// Templates aren't working for us here, since getSubtreeHandlers() can not have
+	// any knowledge of the template T specified by the Section -> SuppressWarning...
+	@SuppressWarnings("unchecked")
+	public final void letSubtreeHandlersDestroy(KnowWEArticle article, Priority p) {
+		List<SubtreeHandler<? extends KnowWEObjectType>> handlerList 
+				= objectType.getSubtreeHandlers().get(p);
+		if (handlerList != null) {
+			for (SubtreeHandler handler : handlerList) {
+					letSubtreeHandlerDestroy(article, handler);
+			}
 		}
-		// This flag is set for the case that another article than the article, 
-		// this section is directly hooked in revises this Section
-		this.setReusedBy(article.getTitle(), true);
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	public final void letSubtreeHandlerDestroy(KnowWEArticle article, SubtreeHandler handler) {
+		if (handler.needsToDestroy(article, this)) {
+			handler.destroy(article, this);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -1330,7 +1388,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			this.objectType = (T) newType;
 			this.reviseAgain = new HashMap<SubtreeHandler<? extends KnowWEObjectType>, Boolean>();
 			for (Priority p:objectType.getSubtreeHandlers().descendingKeySet()) {
-				runSubtreeHandlers(getArticle(), p);
+				letSubtreeHandlersCreate(getArticle(), p);
 			}
 			
 			return true;

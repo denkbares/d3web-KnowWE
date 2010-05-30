@@ -45,10 +45,10 @@ public class TagsContent extends XMLContent {
 		this.addSubtreeHandler(new TagsContentOWLSubTreeHandler());
 	}
 
-	private class TagsContentOWLSubTreeHandler implements SubtreeHandler {
+	private class TagsContentOWLSubTreeHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			String text = s.getOriginalText();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			for (String cur : text.split(" |,")) {

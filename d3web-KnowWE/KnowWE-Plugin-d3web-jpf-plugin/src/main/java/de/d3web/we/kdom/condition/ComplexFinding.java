@@ -78,10 +78,10 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 	}
 
 	
-	private class ComplexFindingSubtreeHandler implements SubtreeHandler {
+	private class ComplexFindingSubtreeHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			try {

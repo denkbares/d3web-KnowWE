@@ -66,10 +66,10 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		};
 	}
 
-	static class CreateQuestionnaireHandler implements SubtreeHandler {
+	static class CreateQuestionnaireHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			
 			Section<QuestionnaireDef> qcSec = (s);
 			

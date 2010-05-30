@@ -176,7 +176,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		KnowWEEnvironment.getInstance().getArticleManager(
 				KnowWEEnvironment.DEFAULT_WEB).saveUpdatedArticle(
 				new KnowWEArticle(text, name, KnowWEEnvironment.getInstance()
-				.getRootType(), KnowWEEnvironment.DEFAULT_WEB, fullParse));
+						.getRootType(), KnowWEEnvironment.DEFAULT_WEB, null, fullParse));
 		return true;
 	}
 

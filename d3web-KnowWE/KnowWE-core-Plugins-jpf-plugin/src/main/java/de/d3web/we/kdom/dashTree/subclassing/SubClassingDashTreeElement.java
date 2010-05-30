@@ -44,11 +44,11 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 		this.addSubtreeHandler(new SubClassingDashTreeElementOWLSubTreeHandler());
 	}
 	
-	private class SubClassingDashTreeElementOWLSubTreeHandler implements
+	private class SubClassingDashTreeElementOWLSubTreeHandler extends
 			SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			Section<DashTreeElement> element = s; // warning
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {

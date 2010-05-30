@@ -24,10 +24,10 @@ import de.d3web.we.wisec.kdom.ListCriteriaRootType;
 import de.d3web.we.wisec.kdom.ListCriteriaType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class ListCriteriaOWLSubtreeHandler implements SubtreeHandler {
+public class ListCriteriaOWLSubtreeHandler extends SubtreeHandler {
 	
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
 		// Just to have fewer warnings :-)
 		Section<ListCriteriaType> section = s;

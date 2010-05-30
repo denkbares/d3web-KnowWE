@@ -80,10 +80,10 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private class TableLineHandler implements SubtreeHandler {
+	private class TableLineHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			Section<TableCell> colHeaderCell = s.findSuccessor(TableCell.class);
 			if (colHeaderCell != null) {
 

@@ -74,11 +74,11 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 		return this.getClass().getName();
 	}
 
-	private class SemanticAnnotationObjectSubTreeHandler implements
+	private class SemanticAnnotationObjectSubTreeHandler extends
 			SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			UpperOntology uo = UpperOntology.getInstance();
 			IntermediateOwlObject io = new IntermediateOwlObject();

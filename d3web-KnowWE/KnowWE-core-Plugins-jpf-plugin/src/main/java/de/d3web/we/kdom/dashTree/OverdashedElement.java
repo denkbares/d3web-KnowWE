@@ -77,10 +77,10 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 		};
 	}
 
-	class OverDashedErrorHandler implements SubtreeHandler<OverdashedElement> {
+	class OverDashedErrorHandler extends SubtreeHandler<OverdashedElement> {
 		
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<OverdashedElement> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<OverdashedElement> s) {
 			return Arrays.asList((KDOMReportMessage) new SyntaxError("to many dashes; remove \"-\""));
 		}
 	}

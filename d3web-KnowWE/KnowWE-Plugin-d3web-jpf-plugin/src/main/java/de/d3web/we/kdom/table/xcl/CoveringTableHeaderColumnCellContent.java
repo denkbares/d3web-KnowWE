@@ -53,11 +53,11 @@ public class CoveringTableHeaderColumnCellContent extends
 		this.addSubtreeHandler(new CoveringTableHeaderColumnCellContentHandler());
 	}
 
-	class CoveringTableHeaderColumnCellContentHandler implements
+	class CoveringTableHeaderColumnCellContentHandler extends
 			SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 			

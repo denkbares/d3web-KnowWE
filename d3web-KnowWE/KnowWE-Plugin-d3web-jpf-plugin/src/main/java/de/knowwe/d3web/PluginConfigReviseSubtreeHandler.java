@@ -37,11 +37,11 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public class PluginConfigReviseSubtreeHandler implements SubtreeHandler {
+public class PluginConfigReviseSubtreeHandler extends SubtreeHandler {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 		String xmlText = "<settings><plugins /><psmethods>"+s.getOriginalText()+"</psmethods></settings>";
 		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 		if (kbm==null) return null;

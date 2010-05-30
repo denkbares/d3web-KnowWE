@@ -69,7 +69,7 @@ public class TestsuiteSection extends AbstractKopicSection{
 	private class TestsuiteSectionSubTreeHandler extends D3webReviseSubTreeHandler {
 		
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 	
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			

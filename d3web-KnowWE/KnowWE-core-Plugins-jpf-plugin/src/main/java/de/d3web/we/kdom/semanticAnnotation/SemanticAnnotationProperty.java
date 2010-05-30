@@ -77,11 +77,11 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType
 
 	}
 
-	private class SemanticAnnotationPropertySubTreeHandler implements
+	private class SemanticAnnotationPropertySubTreeHandler extends
 			SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			
 			Section name = s.findChildOfType(SemanticAnnotationPropertyName.class);
 			KDOMReportMessage msg = null;

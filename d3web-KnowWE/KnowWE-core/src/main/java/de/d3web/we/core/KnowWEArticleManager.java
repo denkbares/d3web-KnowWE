@@ -250,6 +250,9 @@ public class KnowWEArticleManager {
 						+ "' in " + (System.currentTimeMillis() - startTime)
 						+ "ms <-");
 
+		// reset the reused state of the Sections of this article for this
+		// article to don't interfere with the next incremental update of this
+		// article
 		art.getSection().setReusedStateRecursively(art.getTitle(), false);
 
 		Logger.getLogger(this.getClass().getName()).log(

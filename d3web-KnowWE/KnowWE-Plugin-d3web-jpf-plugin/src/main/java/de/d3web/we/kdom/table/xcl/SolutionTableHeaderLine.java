@@ -50,7 +50,7 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 
 	}
 	
-	class SolutionHeaderLineSubtreeHandler implements SubtreeHandler {
+	class SolutionHeaderLineSubtreeHandler extends SubtreeHandler {
 
 		/* creates the solution contexts
 		 * allowing the EntryCells (@see EntryCellContent) to
@@ -58,7 +58,7 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 		 * 
 		 */
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
 
 			List<Section<TableCell>> cells = new ArrayList<Section<TableCell>>();

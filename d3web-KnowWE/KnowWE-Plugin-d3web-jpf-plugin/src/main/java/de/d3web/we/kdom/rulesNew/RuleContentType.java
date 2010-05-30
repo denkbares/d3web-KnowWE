@@ -71,10 +71,10 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	class RuleCompiler implements SubtreeHandler<ConditionActionRule> {
+	class RuleCompiler extends SubtreeHandler<ConditionActionRule> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<ConditionActionRule> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ConditionActionRule> s) {
 
 			if (s.hasErrorInSubtree()) {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));

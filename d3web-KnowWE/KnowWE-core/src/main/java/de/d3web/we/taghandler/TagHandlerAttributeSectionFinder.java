@@ -30,11 +30,11 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class TagHandlerAttributeSectionFinder implements SubtreeHandler {
+public class TagHandlerAttributeSectionFinder extends SubtreeHandler {
 
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 	
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle art, Section sec) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle art, Section sec) {
 				
 		String text = sec.getOriginalText();
 		

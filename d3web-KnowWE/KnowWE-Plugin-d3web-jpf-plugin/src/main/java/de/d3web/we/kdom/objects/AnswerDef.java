@@ -34,10 +34,10 @@ public abstract class AnswerDef extends D3webObjectDef<Choice> {
 
 	}
 
-	static class createAnswerHandler implements SubtreeHandler<AnswerDef> {
+	static class createAnswerHandler extends SubtreeHandler<AnswerDef> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<AnswerDef> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnswerDef> s) {
 
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())

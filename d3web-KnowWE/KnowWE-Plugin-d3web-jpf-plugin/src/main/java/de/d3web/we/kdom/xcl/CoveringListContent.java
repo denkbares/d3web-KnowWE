@@ -70,7 +70,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		// private Diagnosis currentdiag;
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			
 			// Set currentWeb
 			String currentWeb = s.getWeb();

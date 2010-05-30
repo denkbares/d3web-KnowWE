@@ -53,10 +53,10 @@ public class OwlPropertiesContent extends XMLContent{
 	}
 	
 
-	private class OwlPropertiesContentOWLSubTreeHandler implements SubtreeHandler{
+	private class OwlPropertiesContentOWLSubTreeHandler extends SubtreeHandler{
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			  IntermediateOwlObject io=new IntermediateOwlObject();
 			    String text=s.getOriginalText();	    
 			    for (String cur:text.split("\r\n|\r|\n")){

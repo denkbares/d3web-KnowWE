@@ -61,10 +61,10 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 		this.addSubtreeHandler(new XCLRelationOWLSubTreeHandler());
 	}
 
-	private class XCLRelationOWLSubTreeHandler implements SubtreeHandler{
+	private class XCLRelationOWLSubTreeHandler extends SubtreeHandler{
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {

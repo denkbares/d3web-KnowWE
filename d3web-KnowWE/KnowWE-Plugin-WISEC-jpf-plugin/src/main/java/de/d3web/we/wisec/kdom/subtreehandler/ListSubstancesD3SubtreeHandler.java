@@ -33,7 +33,7 @@ import de.d3web.we.wisec.kdom.WISECTable;
 public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
 		// Just to have fewer warnings :-)
 		Section<ListSubstancesType> section = s;

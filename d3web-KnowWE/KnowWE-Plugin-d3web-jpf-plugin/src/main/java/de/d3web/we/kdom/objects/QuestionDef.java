@@ -33,10 +33,10 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 
 	public abstract QuestionType getQuestionType(Section<QuestionDef> s);
 
-	static class CreateQuestionHandler implements SubtreeHandler<QuestionDef> {
+	static class CreateQuestionHandler extends SubtreeHandler<QuestionDef> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
+		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<QuestionDef> sec) {
 
 			Section<QuestionDef> qidSection = (sec);

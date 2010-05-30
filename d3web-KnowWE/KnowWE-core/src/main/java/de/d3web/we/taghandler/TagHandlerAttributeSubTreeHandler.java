@@ -34,11 +34,11 @@ import de.d3web.we.utils.KnowWEUtils;
  * Reads out the attributes of TagHandlerTypeContent and stores
  * them in KnowWESectionStore.
  */
-public class TagHandlerAttributeSubTreeHandler implements SubtreeHandler {
+public class TagHandlerAttributeSubTreeHandler extends SubtreeHandler {
 
 	public static final String ATTRIBUTE_MAP = "TagHandler.attributeMap";
 	
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle art, Section sec) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle art, Section sec) {
 				
 		String text = sec.getOriginalText();
 		

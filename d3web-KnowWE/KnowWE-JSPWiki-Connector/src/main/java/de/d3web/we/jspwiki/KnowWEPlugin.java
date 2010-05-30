@@ -288,7 +288,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						|| !originalText.equals(content)) {
 					article = new KnowWEArticle(content, topicName,
 							KnowWEEnvironment.getInstance().getRootType(),
-							KnowWEEnvironment.DEFAULT_WEB, fullParse);
+							KnowWEEnvironment.DEFAULT_WEB, null, fullParse);
 					KnowWEEnvironment.getInstance().getArticleManager(
 							"default_web").saveUpdatedArticle(article);
 				}

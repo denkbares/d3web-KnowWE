@@ -53,10 +53,10 @@ public class ExtensionContent extends XMLContent{
 		this.addSubtreeHandler(new ExtensionContentOWLSubTreeHandler());
 	}
 	
-	private class ExtensionContentOWLSubTreeHandler implements SubtreeHandler {
+	private class ExtensionContentOWLSubTreeHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			String text=s.getOriginalText();
 			
 			IntermediateOwlObject io = extend(text,s);;

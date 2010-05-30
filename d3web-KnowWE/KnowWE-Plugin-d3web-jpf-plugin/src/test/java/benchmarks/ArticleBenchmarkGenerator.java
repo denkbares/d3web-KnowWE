@@ -9,6 +9,7 @@ public class ArticleBenchmarkGenerator {
 		
 		List<KnowledgeModule> modules = new ArrayList<KnowledgeModule>();
 		modules.add(new QuestionTreeModule());
+		modules.add(new RulesModule());
 		
 		for (KnowledgeModule module:modules) {
 			System.out.println(module.generateModuleText(50, 0));

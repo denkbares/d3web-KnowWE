@@ -178,13 +178,13 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 
 }
 
-class EntryCellContentSubtreeHandler implements SubtreeHandler {
+class EntryCellContentSubtreeHandler extends SubtreeHandler {
 
 	public static final String XCLRELATION_ID = "xclid";
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 		if (s.getOriginalText().trim().length() > 0) {
 
 			KnowledgeBaseManagement mgn = D3webModule

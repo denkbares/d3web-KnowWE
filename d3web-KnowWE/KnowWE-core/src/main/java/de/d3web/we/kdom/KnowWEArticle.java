@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.core.KnowWEIncludeManager;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.include.Include;
@@ -57,36 +58,35 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	/**
 	 * Name of this article (topic-name)
 	 */
-	private String title;
+	private final String title;
 
-	private String web;
+	private final String web;
 
 	/**
 	 * the complete report generated during parsing-process
 	 */
-	private KnowWEDomParseReport report;
+	private final KnowWEDomParseReport report;
 
 	/**
 	 * The section representing the root-node of the KDOM-tree
 	 */
-	private Section<KnowWEArticle> sec;
+	private final Section<KnowWEArticle> sec;
 
-	private Map<String, Integer> idMap = new HashMap<String, Integer>();
+	private final Map<String, Integer> idMap = new HashMap<String, Integer>();
 
-	// private Map<String, Section> changedSections = new HashMap<String,
-	// Section>();
-
-	private Set<Section<Include>> includeSections = new HashSet<Section<Include>>();
+	private final Set<Section<Include>> activeIncludes = new HashSet<Section<Include>>();
 
 	private KnowWEArticle lastVersion;
 
-	private long startTimeOverall;
+	private final long startTimeOverall;
 
-	private boolean fullParse;
+	private final boolean fullParse;
+
+	private final String updateIncludesTo;
 
 	public KnowWEArticle(String text, String title, KnowWEObjectType rootType,
 			String web) {
-		this(text, title, rootType, web, false);
+		this(text, title, rootType, web, null, false);
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * @param allowedObjects
 	 */
 	public KnowWEArticle(String text, String title, KnowWEObjectType rootType,
-			String web, boolean fullParse) {
+			String web, String updateIncludesTo, boolean fullParse) {
 
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
 				"====>> Starting to build article '" + title + "' ====>>");
@@ -105,13 +105,17 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		long startTime = System.currentTimeMillis();
 		startTimeOverall = System.currentTimeMillis();
 
-		this.fullParse = fullParse;
-
 		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
+		
+		KnowWEIncludeManager includeManager = instance.getIncludeManager(web);
+		
+		includeManager.addSectionizingArticle(title);
 
-		KnowWEArticleManager articleManager = instance.getArticleManager(web);
+		lastVersion = instance.getArticle(web, title);
+		
+		this.fullParse = fullParse || lastVersion == null;
 
-		instance.getIncludeManager(web).addSectionizingArticle(title);
+		this.updateIncludesTo = updateIncludesTo;
 
 		this.title = title;
 		this.web = web;
@@ -119,17 +123,15 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 		this.childrenTypes.add(rootType);
 
-		lastVersion = articleManager.getArticle(title);
-
 		// run initHooks at TerminologyManager
-		KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web)
+		instance.getKnowledgeRepresentationManager(web)
 				.initArticle(this);
 
 		// clear KnowWETypeStorage before re-parsing data
 		clearTypeStore(rootType, title);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINER,
+				Level.INFO,
 				"<- Initialized article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -143,12 +145,21 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
 
-		instance.getIncludeManager(web).removeInactiveIncludesForArticle(
-				getTitle(), includeSections);
-		instance.getIncludeManager(web).getSectionizingArticles().remove(title);
+		List<Section<Include>> inactiveIncludes = includeManager.getInactiveIncludesForArticle(
+				title, activeIncludes);
+
+		includeManager.resetReusedStateOfInactiveIncludeTargets(title, inactiveIncludes,
+				activeIncludes);
+
+		// destroy no longer used knowledge and stuff from the last article
+		reviseLastArticleToDestroy();
+		
+		includeManager.unregisterIncludes(inactiveIncludes);
+
+		includeManager.removeSectionizingArticles(title);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINER,
+				Level.INFO,
 				"<- Built KDOM for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -161,8 +172,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			ContextManager.getInstance().attachContext(sec, con);
 		}
 
-		// call SubTreeHandler for all Sections
-		reviseArticle();
+		// call SubTreeHandler for all Sections to create
+		reviseCurrentArticleToCreate();
 
 		// try {
 		// SemanticCore.getInstance().getUpper().getConnection().commit();
@@ -172,7 +183,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// }
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINER,
+				Level.INFO,
 				"<- Built Knowledge for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -199,7 +210,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				.finishArticle(this);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINER,
+				Level.INFO,
 				"<- Registered Knowledge for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -379,7 +390,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return sec.findSmallestNodeContaining(start, end);
 	}
 
-	private Map<String, Map<String, Section<? extends KnowWEObjectType>>> knownResults 
+	private final Map<String, Map<String, Section<? extends KnowWEObjectType>>> knownResults 
 			= new HashMap<String, Map<String, Section<? extends KnowWEObjectType>>>();
 
 	/**
@@ -428,15 +439,15 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return nodes;
 	}
 
-//	public List<Section<? extends KnowWEObjectType>> getAllNodesParsingPostOrder() {
-//		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
-//		sec.getAllNodesParsingPostOrder(nodes);
-//		return nodes;
-//	}
-
 	public List<Section<? extends KnowWEObjectType>> getAllNodesPostOrder() {
 		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
 		sec.getAllNodesPostOrder(nodes);
+		return nodes;
+	}
+	
+	public List<Section<? extends KnowWEObjectType>> getAllNotReusedNodesPostOrder() {
+		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
+		if (lastVersion != null) lastVersion.sec.getAllNotReusedNodesPostOrder(this, nodes);
 		return nodes;
 	}
 	
@@ -445,11 +456,26 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		return sec.getOriginalText();
 	}
 
+	
 	public Set<Section<Include>> getIncludeSections() {
-		return this.includeSections;
+		return this.activeIncludes;
+	}
+	
+	private void reviseLastArticleToDestroy() {
+
+		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
+				Priority.createPrioritySortedList(getAllNotReusedNodesPostOrder());
+		
+		for (Priority priority : prioMap.descendingKeySet()) {
+			List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
+			for (Section<? extends KnowWEObjectType> section : prioList) {
+				section.letSubtreeHandlersDestroy(this, priority);
+			}
+			
+		}
 	}
 
-	public void reviseArticle() {
+	private void reviseCurrentArticleToCreate() {
 		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap = 
 				Priority.createPrioritySortedList(getAllNodesPostOrder());
 		
@@ -457,7 +483,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			List<Section<? extends KnowWEObjectType>> prioList = prioMap.get(priority);
 			for (Section<? extends KnowWEObjectType> section:prioList) {
 				section.setReviseAgain(false);
-				section.runSubtreeHandlers(this, priority);
+				section.letSubtreeHandlersCreate(this, priority);
 			}
 			
 		}
@@ -478,6 +504,14 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	public boolean isFullParse() {
 		return this.fullParse;
+	}
+
+	public boolean isUpdatingIncludes() {
+		return this.updateIncludesTo != null;
+	}
+
+	public String getArticleUpdatingIncludesOfThisArticle() {
+		return this.updateIncludesTo;
 	}
 
 	public KnowWEObjectType getRootType() {

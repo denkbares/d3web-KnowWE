@@ -61,7 +61,7 @@ public class TerminalCondition extends DefaultAbstractKnowWEObjectType {
 		unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
 		unrecognizedCond.addSubtreeHandler(new SubtreeHandler<TerminalCondition>() {
 			@Override
-			public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 				return Arrays.asList((KDOMReportMessage) new UnexpectedSequence("no valid TerminalCondition: "
 						+ s.getOriginalText()));
 			}

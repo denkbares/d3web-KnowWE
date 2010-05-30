@@ -105,10 +105,10 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * 
 	 */
-	static class CreateIndicationHandler implements SubtreeHandler<QuestionDefQTree> {
+	static class CreateIndicationHandler extends SubtreeHandler<QuestionDefQTree> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<QuestionDefQTree> qidSection) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionDefQTree> qidSection) {
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils
@@ -179,7 +179,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				 * @return
 				 */
 				@Override
-				public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<NumBounds> s) {
+				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumBounds> s) {
 
 					Double lower = s.get().getLowerBound(s);
 					Double upper = s.get().getUpperBound(s);
@@ -318,7 +318,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				 * @return
 				 */
 				@Override
-				public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<NumUnit> s) {
+				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumUnit> s) {
 					Section<QuestionDef> qDef = s.getFather().findSuccessor(
 							QuestionDef.class);
 
@@ -366,7 +366,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			this.addSubtreeHandler(new SubtreeHandler<AbstractFlag>() {
 
 				@Override
-				public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<AbstractFlag> s) {
+				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractFlag> s) {
 
 					Section<QuestionDef> qDef = s.getFather().findSuccessor(
 							QuestionDef.class);
@@ -411,7 +411,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			this.addSubtreeHandler(new SubtreeHandler<QuestionText>() {
 
 				@Override
-				public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<QuestionText> sec) {
+				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionText> sec) {
 
 					Section<QuestionDef> qDef = sec.getFather().findSuccessor(
 							QuestionDef.class);

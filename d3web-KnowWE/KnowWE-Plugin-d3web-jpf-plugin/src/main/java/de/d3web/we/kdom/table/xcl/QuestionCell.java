@@ -116,12 +116,12 @@ class QuestionCellRenderer extends TableCellContentRenderer {
 
 }
 
-class QuestionCellHandler implements SubtreeHandler {
+class QuestionCellHandler extends SubtreeHandler {
 
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 		KnowledgeBaseManagement mgn = D3webModule
 				.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
 						article, this, s);

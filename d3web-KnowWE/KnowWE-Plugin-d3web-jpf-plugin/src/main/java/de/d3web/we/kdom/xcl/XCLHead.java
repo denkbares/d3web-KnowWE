@@ -69,7 +69,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	private class XCLHeadSubtreeHandler extends D3webReviseSubTreeHandler {
 		
 
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			
 			Section father = s.getFather();
 			
@@ -122,10 +122,10 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	private class XCLHeadOWLSubTreeHandler implements SubtreeHandler{
+	private class XCLHeadOWLSubTreeHandler extends SubtreeHandler{
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section section) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section section) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			DefaultSubjectContext sol = (DefaultSubjectContext) ContextManager.getInstance()
 					.getContext(section, DefaultSubjectContext.CID);

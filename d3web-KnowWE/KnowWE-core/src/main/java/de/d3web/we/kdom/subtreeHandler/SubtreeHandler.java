@@ -28,25 +28,111 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 
-
 /**
- * Abstract class for a ReviseSubtreeHandler. This handler has to be registered to a type and then,
- * after the KDOM is build, this handler is called with that section and
- * the subtree can be processed (e.g. translated to a target representation)
- *
- * @author Jochen
- *
+ * Abstract class for a SubtreeHandler. This handler has to be registered to a
+ * type and then, after the KDOM is build, this handler is called with that
+ * section and the subtree can be processed (e.g. translated to a target
+ * representation).
+ * 
+ * @author Jochen, Albrecht
+ * 
  */
-public interface SubtreeHandler<T extends KnowWEObjectType> {
+public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 
 	/**
-	 * Revises the subtree of this section.
-	 *
-	 * @param article is the article that called this method... not necessarily the
-	 * 		article the Section is hooked into directly, since Sections can also be included!
-	 * @param s is the root section of the subtree to revise
+	 * If this method returns false, the method
+	 * <tt>create(KnowWEArticle, Section)</tt> in this handler will not be
+	 * called in the revising of the article.
+	 * <p/>
+	 * If you are implementing an incremental SubtreeHandler, you can overwrite
+	 * this method and replace it with an algorithm to decide, if this handler
+	 * needs to create, for example in a full build, or doesn't need to create,
+	 * for example if the Section got reused by the update mechanism because it
+	 * hasn't changed (<tt>s.isReusedBy(article.getTitle()) == true</tt>).
+	 * 
+	 * @param article is the article that calls this method... not necessarily
+	 *        the article the Section is hooked into directly, since Sections
+	 *        can also be included!
+	 * @param s is the Section from which you want to create something
+	 * @return true if this handler needs to create, false if not.
 	 */
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<T> s);
+	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
+		return true;
+	}
+
+	/**
+	 * Revises this section or subtree and creates whatever needs to be created,
+	 * if the method <tt>needsToCreate(KnowWEArticle, Section)</tt> of this
+	 * handler returns true.
+	 * 
+	 * @param article is the article that calls this method... not necessarily
+	 *        the article the Section is hooked into directly, since Sections
+	 *        can also be included!
+	 * @param s is the Section from which you want to create something
+	 */
+	public abstract Collection<KDOMReportMessage> create(KnowWEArticle article, Section<T> s);
+
+	/**
+	 * If this method returns false, the method<tt>destroy(KnowWEArticle,
+	 * Section)</tt> in this handler will not be called for the not reused
+	 * Sections of the last version of the KDOM.
+	 * <p/>
+	 * If you are implementing an incremental SubtreeHandler, you can overwrite
+	 * this method and replace it with an algorithm to decide, if this handler
+	 * needs or doesn't need to destroy the old stuff, depending on the
+	 * constraints there might be.
+	 * 
+	 * @param article is the last version of the article that calls this
+	 *        method... not necessarily the article the Section is hooked into
+	 *        directly, since Sections can also be included!
+	 * @param s is the old, not reused Section whose stuff you want to destroy
+	 * @return true if this handler needs to destroy, false if not.
+	 */
+	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
+		return true;
+	}
+
+	/**
+	 * After editing an article, this method is called for every Section that,
+	 * because of changes, couldn't be reused by the update mechanism (
+	 * <tt>s.isReusedBy(article.getTitle()) == false</tt>), if the method
+	 * <tt>needsToDestroy(KnowWEArticle, Section)</tt> of this handler returns
+	 * true.
+	 * <p/>
+	 * This method is called after the creation of the new KDOM (but prior to
+	 * the revising of the new KDOM) on the Sections of the last KDOM. If you
+	 * are implementing an incremental SubtreeHandler, you can overwrite this
+	 * method to implement one, that removes everything the Section created in
+	 * the last version of the article. This way you can, later on in the
+	 * revise-step, simply add the stuff from the newly created Sections in the
+	 * new KDOM to the remaining stuff from the last version of the article to
+	 * get a consistent result.
+	 * <p/>
+	 * 
+	 * <b>Attention:</b> Be aware, that the not reused Sections of the last KDOM
+	 * may point to reused children that are now hooked in the new KDOM and
+	 * themselves only point to Sections inside the new KDOM. So be careful if
+	 * you navigate through the KDOM you have access to with the given Section!
+	 * <p/>
+	 * 
+	 * <b>Attention:</b> In case of a full parse (<tt>article.isFullParse() == 
+	 * true</tt>), this method will not be executed! Your handler needs to act
+	 * like after the restart of the Wiki. However, it is not the duty of the
+	 * handler to restore the clean state by destroying everything old by
+	 * iterating over all Section and remove their stuff piece by piece. This
+	 * restoring of the clean state has to be done somewhere else, e.g. in the
+	 * constructor of the KnowWEArticle by checking <tt>isFullParse()</tt>.
+	 * 
+	 * 
+	 * 
+	 * @param article is the last version of the article that calls this
+	 *        method... not necessarily the article the Section is hooked into
+	 *        directly, since Sections can also be included!
+	 * @param s is the old, not reused Section whose stuff you want to destroy
+	 */
+	public void destroy(KnowWEArticle article, Section<T> s) {
+		return;
+	}
 	
 
 }

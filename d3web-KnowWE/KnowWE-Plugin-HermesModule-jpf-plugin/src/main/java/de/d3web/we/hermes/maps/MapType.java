@@ -40,10 +40,10 @@ public class MapType extends AbstractXMLObjectType {
 	}
 
 
-	private class MapTypeOWLSubTreeHandler implements SubtreeHandler {
+	private class MapTypeOWLSubTreeHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			IntermediateOwlObject ioo = new IntermediateOwlObject();
 			String url = getIFrameSrcURL(s);
 			KMLLoader kmlLoader = new KMLLoader(url);

@@ -55,10 +55,10 @@ public class QuestionLine extends TableLine {
 	}
 
 	
-	class QuestionLineHandler implements SubtreeHandler {
+	class QuestionLineHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			
 			Section<TableColumnHeaderCellContent> headerCell = s.findSuccessor(TableColumnHeaderCellContent.class);
 			headerCell.setType(QuestionCell.getInstance());

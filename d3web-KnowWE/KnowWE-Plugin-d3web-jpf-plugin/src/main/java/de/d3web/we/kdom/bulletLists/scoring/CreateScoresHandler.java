@@ -25,10 +25,10 @@ import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class CreateScoresHandler implements SubtreeHandler {
+public class CreateScoresHandler extends SubtreeHandler {
 
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
 		Section scoringSection = KnowWEObjectTypeUtils.getAncestorOfType(s,
 				BulletScoring.class);

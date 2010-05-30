@@ -31,10 +31,10 @@ public class Number extends DefaultAbstractKnowWEObjectType {
 		return null;
 	}
 
-	class NumberChecker implements SubtreeHandler {
+	class NumberChecker extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			try {
 				Double.parseDouble(s.getOriginalText().trim());

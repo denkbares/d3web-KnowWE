@@ -65,7 +65,7 @@ import de.d3web.we.utils.KnowWEUtils;
  * 
  * @author Volker Belli (denkbares GmbH)
  */
-public class DefaultMarkupOwlHandler implements SubtreeHandler {
+public class DefaultMarkupOwlHandler extends SubtreeHandler {
 
 	private final DefaultMarkupType defaultMarkupType;
 	private URI conceptURI = null;
@@ -79,7 +79,7 @@ public class DefaultMarkupOwlHandler implements SubtreeHandler {
 	}
 
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section section) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section section) {
 
 		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 

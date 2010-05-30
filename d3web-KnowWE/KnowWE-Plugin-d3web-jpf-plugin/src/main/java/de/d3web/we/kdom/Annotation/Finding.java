@@ -78,10 +78,10 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				FontColorRenderer.COLOR5, color);
 	}
 
-	private class FindingSubTreeHandler implements SubtreeHandler {
+	private class FindingSubTreeHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
+		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section section) {
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			UpperOntology uo = UpperOntology.getInstance();

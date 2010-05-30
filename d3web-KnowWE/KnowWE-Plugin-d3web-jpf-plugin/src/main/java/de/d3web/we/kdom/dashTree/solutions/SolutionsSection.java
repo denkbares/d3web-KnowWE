@@ -55,7 +55,7 @@ public class SolutionsSection extends AbstractKopicSection {
 	private class SolutionsSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 	
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			

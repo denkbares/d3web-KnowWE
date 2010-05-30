@@ -57,10 +57,10 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType {
 		this.addSubtreeHandler(new ConjunctSubTreeHandler());
 	}
 
-	private class ConjunctSubTreeHandler implements SubtreeHandler {
+	private class ConjunctSubTreeHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			try {
 				UpperOntology uo = UpperOntology.getInstance();

@@ -51,7 +51,7 @@ import de.d3web.we.terminology.D3webReviseSubTreeHandler;
  */
 public class DCPropertySubtreeHandler extends D3webReviseSubTreeHandler {
 
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
 		KnowledgeBaseManagement kbm = getKBM(article, s);
 

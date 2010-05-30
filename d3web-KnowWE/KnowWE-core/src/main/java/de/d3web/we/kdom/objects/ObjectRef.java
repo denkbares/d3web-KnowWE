@@ -44,10 +44,10 @@ public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType imple
 
 
 
-	class ObjectChecker implements SubtreeHandler<ObjectRef<T>> {
+	class ObjectChecker extends SubtreeHandler<ObjectRef<T>> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<ObjectRef<T>> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ObjectRef<T>> s) {
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			if (!objectExisting(s)) {
 				msgs.add(new NoSuchObjectError(s.get().getName() + ": "

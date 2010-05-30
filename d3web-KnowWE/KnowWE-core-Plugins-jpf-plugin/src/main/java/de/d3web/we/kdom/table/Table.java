@@ -95,10 +95,10 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType implements T
 		this.addSubtreeHandler(new TableSubTreeHandler());
 	}
 
-	private class TableSubTreeHandler implements SubtreeHandler {
+	private class TableSubTreeHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section sec) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section sec) {
 			Section<?> s = sec;
 			Section<TableLine> headerLine = s.findSuccessor(TableLine.class);
 			AbstractKnowWEObjectType solutionHeaderType = new TableHeaderLine();

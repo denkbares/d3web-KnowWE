@@ -11,7 +11,7 @@ public class QuestionTreeModule extends KnowledgeModule {
 		
 		for (int i = 0; i < size; i++) {
 			
-			int mod = i % 6;
+			int mod = i % 3;
 			
 			switch (mod) {
 			case 0: {
@@ -30,26 +30,22 @@ public class QuestionTreeModule extends KnowledgeModule {
 			case 2:{
 				text.append("- Question" + i + " [num]\n");
 				text.append("-- < 1\n");
-				text.append("--- Diag1\n");
+				text.append("--- QPage1\n");
 				text.append("-- [2 4]\n");
-				text.append("--- Diag2\n");
+				text.append("--- QPage2\n");
 				text.append("-- > 5\n");
-				text.append("--- Diag3\n");
-				break;
-			}
-			case 3: {
-				break;
-			}
-			case 4: {
-				break;
-			}
-			case 5: {
+				text.append("--- QPage3\n");
 				break;
 			}
 			}
 			
 		}
 		
+		text.append("\n");
+		text.append("QPage1\n");
+		text.append("QPage2\n");
+		text.append("QPage3\n");
+
 		text.append("%");
 		return text.toString();
 	}

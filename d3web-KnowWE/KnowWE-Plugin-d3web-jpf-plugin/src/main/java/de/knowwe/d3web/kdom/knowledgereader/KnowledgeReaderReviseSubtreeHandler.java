@@ -46,11 +46,11 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  *
  * @author Markus Friedrich (denkbares GmbH)
  */
-public class KnowledgeReaderReviseSubtreeHandler implements SubtreeHandler {
+public class KnowledgeReaderReviseSubtreeHandler extends SubtreeHandler {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
 		if (kbm==null) return null;
 		

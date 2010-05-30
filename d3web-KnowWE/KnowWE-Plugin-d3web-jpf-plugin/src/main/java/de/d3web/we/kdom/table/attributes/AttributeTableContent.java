@@ -54,7 +54,7 @@ public class AttributeTableContent extends XMLContent {
 		}
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			
 			KnowledgeBaseManagement kbm = getKBM(article, s);
 			

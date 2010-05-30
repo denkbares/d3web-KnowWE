@@ -12,7 +12,7 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public class DefaultMarkupSubtreeHandler implements SubtreeHandler {
+public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 
 	private final DefaultMarkup markup;
 
@@ -21,7 +21,7 @@ public class DefaultMarkupSubtreeHandler implements SubtreeHandler {
 	}
 
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section markupSection) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section markupSection) {
 		
 		List<Message> msgs = new ArrayList<Message>();
 		

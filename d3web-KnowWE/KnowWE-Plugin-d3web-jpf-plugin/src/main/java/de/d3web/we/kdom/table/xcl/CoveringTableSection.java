@@ -59,7 +59,7 @@ public class CoveringTableSection extends AbstractKopicSection implements TableA
 	private class CoveringTableSubTreeHandler extends D3webReviseSubTreeHandler {
 	
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			
 			
 			// Set the headerline of the table as type SolutionHeaderLine

@@ -106,10 +106,10 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	static class CreateSetValueRuleHandler implements SubtreeHandler<QuestionRef> {
+	static class CreateSetValueRuleHandler extends SubtreeHandler<QuestionRef> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<QuestionRef> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionRef> s) {
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils

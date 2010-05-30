@@ -164,7 +164,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	class RuleSubTreeHandler extends D3webReviseSubTreeHandler<Rule> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<Rule> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Rule> s) {
 
 			boolean lazy = false;
 			Section xml = KnowWEObjectTypeUtils.getAncestorOfType(s,

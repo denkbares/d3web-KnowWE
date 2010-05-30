@@ -52,9 +52,9 @@ public class InfoContent extends XMLContent {
 		this.addSubtreeHandler(new InfoContentOWLSubTreeHandler());
 	}
 
-	private class InfoContentOWLSubTreeHandler implements SubtreeHandler {
+	private class InfoContentOWLSubTreeHandler extends SubtreeHandler {
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			String text = s.getOriginalText();
 			PropertyManager pm = PropertyManager.getInstance();

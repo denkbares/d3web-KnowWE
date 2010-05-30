@@ -67,10 +67,10 @@ public class CIDashboardType extends DefaultMarkupType {
 		this.setCustomRenderer(new DashboardRenderer());
 	}
 
-	private class DashboardSubtreeHandler implements SubtreeHandler<CIDashboardType> {
+	private class DashboardSubtreeHandler extends SubtreeHandler<CIDashboardType> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<CIDashboardType> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CIDashboardType> s) {
 
 			AbstractKnowWEObjectType.cleanMessages(article, s, this.getClass());
 

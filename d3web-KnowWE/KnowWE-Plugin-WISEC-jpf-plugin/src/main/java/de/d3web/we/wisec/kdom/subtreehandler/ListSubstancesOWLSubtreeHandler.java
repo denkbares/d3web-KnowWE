@@ -24,10 +24,10 @@ import de.d3web.we.wisec.kdom.ListSubstancesRootType;
 import de.d3web.we.wisec.kdom.ListSubstancesType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class ListSubstancesOWLSubtreeHandler implements SubtreeHandler {
+public class ListSubstancesOWLSubtreeHandler extends SubtreeHandler {
 	
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
 		// Just to have fewer warnings :-)
 		Section<ListSubstancesType> section = s;

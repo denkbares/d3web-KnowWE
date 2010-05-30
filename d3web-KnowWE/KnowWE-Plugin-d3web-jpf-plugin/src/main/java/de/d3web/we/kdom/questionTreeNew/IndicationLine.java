@@ -39,10 +39,10 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(qc);
 	}
 
-	static class CreateIndication implements SubtreeHandler {
+	static class CreateIndication extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, this, s);

@@ -32,7 +32,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 
-public class StringEnumChecker<T extends KnowWEObjectType> implements SubtreeHandler<T> {
+public class StringEnumChecker<T extends KnowWEObjectType> extends SubtreeHandler<T> {
 
 	private final String [] values;
 	private final KDOMError error;
@@ -43,7 +43,7 @@ public class StringEnumChecker<T extends KnowWEObjectType> implements SubtreeHan
 	}
 
 	@Override
-	public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 		boolean found = false;
 		for (String string : values) {
 			if(s.getOriginalText().contains(string)) {

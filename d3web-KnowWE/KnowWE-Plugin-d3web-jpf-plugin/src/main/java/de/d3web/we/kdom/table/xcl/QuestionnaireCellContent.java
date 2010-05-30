@@ -33,12 +33,12 @@ public class QuestionnaireCellContent extends
 		this.addSubtreeHandler(new QuestionnaireCellHandler());
 	}
 
-	class QuestionnaireCellHandler implements SubtreeHandler<QuestionnaireCellContent> {
+	class QuestionnaireCellHandler extends SubtreeHandler<QuestionnaireCellContent> {
 
 		public static final String KEY_REPORT = "report_message";
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<QuestionnaireCellContent> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionnaireCellContent> s) {
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, this, s);

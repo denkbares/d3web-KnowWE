@@ -28,10 +28,10 @@ public class QuestionnaireLine extends TableLine{
 	}
 	
 	
-	static class QuestionnaireLineHandler implements SubtreeHandler {
+	static class QuestionnaireLineHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			Section<TableColumnHeaderCellContent> headerCellContent = s.findSuccessor(TableColumnHeaderCellContent.class);
 			headerCellContent.setType(QuestionnaireCellContent.getInstance());
 			

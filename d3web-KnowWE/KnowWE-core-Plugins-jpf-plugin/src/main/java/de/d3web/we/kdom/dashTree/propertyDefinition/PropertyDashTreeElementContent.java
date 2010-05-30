@@ -63,11 +63,11 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 		this.addSubtreeHandler(new PropertyDashTreeElementContentOWLSubTreeHandler());
 	}
 
-	private class PropertyDashTreeElementContentOWLSubTreeHandler implements SubtreeHandler<PropertyDashTreeElementContent>
+	private class PropertyDashTreeElementContentOWLSubTreeHandler extends SubtreeHandler<PropertyDashTreeElementContent>
 	{
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section<PropertyDashTreeElementContent> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<PropertyDashTreeElementContent> s) {
 
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 

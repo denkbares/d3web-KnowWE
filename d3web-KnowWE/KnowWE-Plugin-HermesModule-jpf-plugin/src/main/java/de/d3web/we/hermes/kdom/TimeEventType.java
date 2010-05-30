@@ -73,11 +73,11 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	private class TimeEventTypeOWLSubTreeHandler implements
+	private class TimeEventTypeOWLSubTreeHandler extends
 			SubtreeHandler<TimeEventType> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
+		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<TimeEventType> section) {
 
 			UpperOntology uo = UpperOntology.getInstance();

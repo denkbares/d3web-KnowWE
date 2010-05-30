@@ -55,10 +55,10 @@ public class Disjunct extends DefaultAbstractKnowWEObjectType {
 		this.addSubtreeHandler(new DisjunctSubTreeHandler());
 	}
 
-	private class DisjunctSubTreeHandler implements SubtreeHandler {
+	private class DisjunctSubTreeHandler extends SubtreeHandler {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article, Section s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			
 			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 			IntermediateOwlObject io = new IntermediateOwlObject();

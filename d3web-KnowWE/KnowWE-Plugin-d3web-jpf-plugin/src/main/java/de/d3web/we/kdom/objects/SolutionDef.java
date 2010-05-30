@@ -25,10 +25,10 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 		this.addSubtreeHandler(new CreateSolutionHandler());
 	}
 
-	static class CreateSolutionHandler implements SubtreeHandler<SolutionDef> {
+	static class CreateSolutionHandler extends SubtreeHandler<SolutionDef> {
 
 		@Override
-		public Collection<KDOMReportMessage> reviseSubtree(KnowWEArticle article,
+		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<SolutionDef> qidSection) {
 
 

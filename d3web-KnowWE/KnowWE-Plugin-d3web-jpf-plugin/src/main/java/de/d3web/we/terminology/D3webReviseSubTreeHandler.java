@@ -27,7 +27,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
-public abstract class D3webReviseSubTreeHandler<T extends KnowWEObjectType> implements SubtreeHandler<T> {
+public abstract class D3webReviseSubTreeHandler<T extends KnowWEObjectType> extends SubtreeHandler<T> {
 
 	/**
 	 * @param article is the article you need the KBM from
