@@ -250,7 +250,7 @@ public class KnowWEArticleManager {
 		// reset the reused state of the Sections of this article for this
 		// article to don't interfere with the next incremental update of this
 		// article
-		art.getSection().setReusedStateRecursively(art.getTitle(), false);
+		art.getSection().setReusedStateOfThisArticleRecursively(art.getTitle(), false);
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.INFO,

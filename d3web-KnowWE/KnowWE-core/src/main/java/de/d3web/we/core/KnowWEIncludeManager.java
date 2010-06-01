@@ -310,30 +310,30 @@ public class KnowWEIncludeManager {
 		Set<Section<Include>> includes = new HashSet<Section<Include>>(getIncludingSectionsForArticle(article.getTitle()));
 		for (Section<Include> inc:includes) {
 			// check if the target of the Include Section has changed
-			List<Section<? extends KnowWEObjectType>> targets = findTargets(article, inc);
-			List<Section<? extends KnowWEObjectType>> lastTargets = src2targets.get(inc);
-			
-			// if the target of an Include changes, the article needs to be
-			// rebuild
-			// if the target stays the same but contains an Include,
-			// it is possible, that the target of that Include has changed and
-			// therefore the article also needs to be rebuild
-			boolean includeSuccessor = false;
-			for (Section<? extends KnowWEObjectType> tar : targets) {
-				if (tar.findSuccessor(Include.class) != null) {
-					includeSuccessor = true;
-					break;
-				}
-			}
-			if (!targets.equals(lastTargets) || includeSuccessor) {
+			List<Section<?>> targets = findTargets(article, inc);
+			List<Section<?>> lastTargets = src2targets.get(inc);
+
+			if (!targets.equals(lastTargets)) {
 				if (lastTargets != null) {
-					// since the target has changed, the including article doesn't 
-					// reuse the last target
-					for (Section<? extends KnowWEObjectType> lastTar:lastTargets) {
-						lastTar.setReusedStateRecursively(inc.getTitle(), false);
+					// since the targets have changed, the including article
+					// doesn't reuse some or all of the last targets
+					Set<Section<?>> diff = new HashSet<Section<?>>(lastTargets);
+					diff.removeAll(targets);
+					for (Section<? extends KnowWEObjectType> unusedLastTar : diff) {
+						unusedLastTar.setReusedStateRecursively(inc.getTitle(), false);
+					}
+					// articles that reuse the include besides the owner of the
+					// include also do not reuse these last targets
+					Map<String, Boolean> reusedBy = inc.isReusedBy();
+					for (String title : reusedBy.keySet()) {
+						if (reusedBy.get(title)) {
+							for (Section<? extends KnowWEObjectType> unusedLastTar : diff) {
+								unusedLastTar.setReusedStateRecursively(title, false);
+							}
+						}
 					}
 				}
-				// overwrite the last target
+				// overwrite the last target with the new
 				src2targets.put(inc, targets);
 				// put the last target in the according map to make it available
 				// for destruction of the stuff produced by its SubtreeHandlers
@@ -353,6 +353,23 @@ public class KnowWEIncludeManager {
 						}
 					} else {
 						reviseArticles.add(inc.getArticle());
+					}
+				}
+			}
+			else {
+				// if there are last targets for the given Include from a
+				// previous update, they are not longer up to date and need to
+				// be removed
+				src2lastTargets.remove(inc);
+				
+				// if the targets are the same, but because of an update of the
+				// targets article, there are some new, not reused successors
+				// because of changes to the Includes of the target article, the
+				// article of this Include also needs to be updated
+				for (Section<?> tar : targets) {
+					if (tar.isOrHasSuccessorNotReusedBy(inc.getTitle())) {
+						reviseArticles.add(inc.getArticle());
+						break;
 					}
 				}
 			}
@@ -392,18 +409,12 @@ public class KnowWEIncludeManager {
 	}
 
 	/**
+	 * <b>IF THERE IS NO LAST SECTION, THIS RETUNS NULL... CHECK FOR NULL!</b>
+	 * 
 	 * @returns the last children respectively the last target of the Include
 	 */
 	public List<Section<? extends KnowWEObjectType>> getLastChildrenForSection(Section<Include> src) {
-		List<Section<? extends KnowWEObjectType>> children = src2lastTargets.get(src);
-		if (children == null) {
-			children = new ArrayList<Section<? extends KnowWEObjectType>>();
-		}
-		if (children.isEmpty()) {
-			children.add(new IncludeErrorSection("Section " + src.toString()
-					+ " is not registered as an including Section", src, src.getArticle()));
-		}
-		return children;
+		return src2lastTargets.get(src);
 	}
 
 	/**

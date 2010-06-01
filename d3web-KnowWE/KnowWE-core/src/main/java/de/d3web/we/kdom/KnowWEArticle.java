@@ -131,7 +131,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		clearTypeStore(rootType, title);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINER,
 				"<- Initialized article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -159,7 +159,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		includeManager.removeSectionizingArticles(title);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINER,
 				"<- Built KDOM for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -183,7 +183,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// }
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINER,
 				"<- Built Knowledge for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -210,7 +210,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				.finishArticle(this);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.INFO,
+				Level.FINER,
 				"<- Registered Knowledge for article '" + title + "' in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -485,8 +485,9 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				section.setReviseAgain(false);
 				section.letSubtreeHandlersCreate(this, priority);
 			}
-			
 		}
+
+		sec.setReusedStateRecursively(title, true);
 	}
 	
 //	// This method is needed for the case that Sections get reused and are flagged

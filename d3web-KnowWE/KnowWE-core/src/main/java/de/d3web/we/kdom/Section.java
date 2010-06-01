@@ -41,7 +41,6 @@ import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeAddress;
-import de.d3web.we.kdom.include.IncludeError;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.Priority;
@@ -68,8 +67,6 @@ import de.d3web.we.utils.PairOfInts;
  */
 // TODO: vb: Section causes hundreds/thousands of compile warnings ==> use it consequent or remove Template declaration!
 public class Section<T extends KnowWEObjectType> implements Visitable, Comparable<Section<KnowWEObjectType>> {
-
-//	private boolean reused = false;
 
 	private final Map<String, Boolean> reusedBy = new HashMap<String, Boolean>();
 
@@ -112,7 +109,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
-	protected List<Section<? extends KnowWEObjectType>> children = new ArrayList<Section<? extends KnowWEObjectType>>();
+	protected final List<Section<? extends KnowWEObjectType>> children = new ArrayList<Section<? extends KnowWEObjectType>>();
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through
@@ -399,7 +396,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			return;
 		}
 		List<Section<?>> children = this.getChildren();
-		if (children == null || children.isEmpty() || this.getObjectType().getClass() == Include.class) {
+		if (children.isEmpty() || this.getObjectType().getClass() == Include.class) {
 			return;
 		}
 		for (Section<?> section : children) {
@@ -408,8 +405,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	public void removeAllChildren() {
-		this.children = new LinkedList<Section<? extends KnowWEObjectType>>();
-		//this.childrenParsingOrder = new LinkedList<Section<? extends KnowWEObjectType>>();
+		this.children.clear();
 	}
 
 	/**
@@ -421,9 +417,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			return KnowWEEnvironment.getInstance().getIncludeManager(getWeb())
 					.getChildrenForSection((Section<Include>) this);
 		}
-		else {
-			return children;
-		}
+		else return children;
 
 	}
 
@@ -464,7 +458,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public void getAllNodesPreOrderToDepth(List<Section<? extends KnowWEObjectType>> nodes, 
 			int depth) {
 		nodes.add(this);
-		if (this.getChildren() != null && depth > 0) {
+		if (depth > 0) {
 			for (Section<? extends KnowWEObjectType> child : this.getChildren()) {
 				child.getAllNodesPreOrderToDepth(nodes, 
 						child.getObjectType() instanceof Include ? depth : --depth);
@@ -474,25 +468,21 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public void getAllNodesPreOrder(List<Section<? extends KnowWEObjectType>> nodes) {
 		nodes.add(this);
-		if (this.getChildren() != null) {
-			for (Section<? extends KnowWEObjectType> child : this.getChildren()) {
-				child.getAllNodesPreOrder(nodes);
-			}
+		for (Section<? extends KnowWEObjectType> child : this.getChildren()) {
+			child.getAllNodesPreOrder(nodes);
 		}
 	}
 	
 	public void getAllNodesPostOrder(List<Section<? extends KnowWEObjectType>> nodes) {	
-		if (this.getChildren() != null) {
-			for (Section<? extends KnowWEObjectType> child : this.getChildren()) {
-				child.getAllNodesPostOrder(nodes);
-			}
+		for (Section<? extends KnowWEObjectType> child : this.getChildren()) {
+			child.getAllNodesPostOrder(nodes);
 		}
 		nodes.add(this);
 	}
 
 	/**
-	 * For now this only works correctly, if all include targets are from the
-	 * same article.
+	 * Collects all Sections that were not reused by the given article in the
+	 * incremental update.
 	 * 
 	 * @created 30.05.2010
 	 * @param article is the article calling this method
@@ -500,23 +490,22 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	@SuppressWarnings("unchecked")
 	public void getAllNotReusedNodesPostOrder(KnowWEArticle article, List<Section<? extends KnowWEObjectType>> nodes) {
-		if (this.getChildren() != null) {
-			List<Section<?>> children = this.getChildren();
 
-			if (article.isUpdatingIncludes()
-					&& objectType instanceof Include
-					&& !(children.get(0).getObjectType() instanceof IncludeError)
-					&& children.get(0).getTitle().equals(
-							article.getArticleUpdatingIncludesOfThisArticle())) {
+		List<Section<?>> children = this.getChildren();
 
-				children = KnowWEEnvironment.getInstance().getIncludeManager(getWeb())
-						.getLastChildrenForSection((Section<Include>) this);
-			}
+		if (article.isUpdatingIncludes()
+				&& objectType instanceof Include) {
 
-			for (Section<? extends KnowWEObjectType> child : children) {
-				child.getAllNotReusedNodesPostOrder(article, nodes);
-			}
+			List<Section<?>> lastChildren = KnowWEEnvironment.getInstance().getIncludeManager(
+					getWeb()).getLastChildrenForSection((Section<Include>) this);
+
+			if (lastChildren != null) children = lastChildren;
 		}
+
+		for (Section<? extends KnowWEObjectType> child : children) {
+			child.getAllNotReusedNodesPostOrder(article, nodes);
+		}
+
 		if (!this.isReusedBy(article.getTitle())) nodes.add(this);
 	}
 
@@ -1172,7 +1161,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * the text of a wikipage having generated.
 	 */
 	public void collectTextsFromLeaves(StringBuilder buffi, boolean followIncludes) {
-		if (this.getChildren() != null && this.getChildren().size() > 0
+		if (!this.getChildren().isEmpty()
 				&& (followIncludes || !(this.getObjectType().getClass() == Include.class))) {
 			for (Section<?> s : this.getChildren()) {
 				if(s != null) {
@@ -1216,16 +1205,47 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return reused;
 	}
 
+	public Map<String, Boolean> isReusedBy() {
+		return reusedBy;
+	}
+
+	public boolean isOrHasSuccessorNotReusedBy(String title) {
+		if (!isReusedBy(title)) {
+			return true;
+		}
+		else {
+			for (Section<?> child : this.getChildren()) {
+				if (child.isOrHasSuccessorNotReusedBy(title)) return true;
+			}
+			return false;
+		}
+	}
+
 	public void setReusedBy(String title, boolean reused) {
 		reusedBy.put(title, reused);
 	}
 
-	public void setReusedStateRecursively(String title, boolean reused) {
+	/**
+	 * Only affects Sections of the article this Section is hooked in (no
+	 * included Sections).
+	 */
+	public void setReusedStateOfThisArticleRecursively(String title, boolean reused) {
 		setReusedBy(title, reused);
 		if (!(objectType instanceof Include)) {
 			for (Section<? extends KnowWEObjectType> child:getChildren()) {
-				child.setReusedStateRecursively(title, reused);
+				child.setReusedStateOfThisArticleRecursively(title, reused);
 			}
+		}
+	}
+
+	/**
+	 * Affects all Sections this Section is connected to (also included
+	 * Sections).
+	 */
+	public void setReusedStateRecursively(String title, boolean reused) {
+		setReusedBy(title, reused);
+		for (Section<? extends KnowWEObjectType> child : getChildren()) {
+			child.setReusedStateRecursively(title, reused);
 		}
 	}
 
@@ -1291,14 +1311,16 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			setReviseAgain(sth, notYetRevised);
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
+	 * Templates aren't working for us here, since getSubtreeHandlers() can not
+	 * have any knowledge of the template T specified by the Section =>
+	 * SuppressWarning...
+	 * 
 	 * @see SubtreeHandler#create(KnowWEArticle, Section)
 	 */
-	// Templates aren't working for us here, since getSubtreeHandlers() can not have
-	// any knowledge of the template T specified by the Section -> SuppressWarning...
 	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlersCreate(KnowWEArticle article, Priority p) {
 		List<SubtreeHandler<? extends KnowWEObjectType>> handlerList 
@@ -1326,43 +1348,40 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				//
 				// Idea 1:
 				// Any unexpected error (and therefore catched here) of the
-				// ReviseSubtreeHandlers
-				// shall be remarked at the "article" object. When rendering the
-				// article page,
-				// the error should be placed at the top level. A KnowWEPlugin
-				// to list all
-				// erroneous articles as links with its errors shall be
-				// introduced. A call to this
-				// plugin should be placed in the LeftMenu-page.
+				// ReviseSubtreeHandlers shall be remarked at the "article"
+				// object. When rendering the article page, the error should be
+				// placed at the top level. A KnowWEPlugin to list all erroneous
+				// articles as links with its errors shall be introduced. A call
+				// to this plugin should be placed in the LeftMenu-page.
 				//
 				// Idea 2:
 				// The errors are not marked at the article, but as a special
-				// message
-				// type is added to this section. When rendering the page, the
-				// error
-				// message should be placed right before the section and the
-				// content
-				// of the section as original text in pre-formatted style (no
-				// renderer
-				// used!):
+				// message type is added to this section. When rendering the
+				// page, the error message should be placed right before the
+				// section and the content of the section as original text in
+				// pre-formatted style (no renderer used!):
 				// {{{ <div class=error>EXCEPTION WITH MESSAGE</div> ORIGINAL
 				// TEXT }}}
 			}
-			
-			// This flag is set for the case that another article, than the article
-			// this section is directly hooked in, revises this Section...
-			// This is important for the incremental update to work with includes!
-			this.setReusedBy(article.getTitle(), true);
+			// This flag is set for the case that another article, than the
+			// article this section is directly hooked in, revises this
+			// Section... This is important for the incremental update to work
+			// with includes!
+			// It simply marks, that the stuff created by this handler is
+			// present the current article.
+			// this.setReusedBy(article.getTitle(), true);
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
+	 * Templates aren't working for us here, since getSubtreeHandlers() can not
+	 * have any knowledge of the template T specified by the Section =>
+	 * SuppressWarning...
+	 * 
 	 * @see SubtreeHandler#destroy(KnowWEArticle, Section)
 	 */
-	// Templates aren't working for us here, since getSubtreeHandlers() can not have
-	// any knowledge of the template T specified by the Section -> SuppressWarning...
 	@SuppressWarnings("unchecked")
 	public final void letSubtreeHandlersDestroy(KnowWEArticle article, Priority p) {
 		List<SubtreeHandler<? extends KnowWEObjectType>> handlerList 
