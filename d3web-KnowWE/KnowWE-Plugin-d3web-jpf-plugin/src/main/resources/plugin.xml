@@ -267,6 +267,18 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="SessionValuesViewHandler">
+		<parameter id="class"
+			value="de.d3web.we.taghandler.SessionValuesViewHandler" />
+		<parameter id="name" value="SessionValuesViewHandler" />
+		<parameter id="description" value="TagHandler SessionValuesViewHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-plugin-d3web.js" />
+		<parameter id="script" value="silveripe.0.2.js" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="WikiSolutionsTagHandler">
 		<parameter id="class"
 			value="de.d3web.we.taghandler.WikiSolutionsTagHandler" />
@@ -320,6 +332,16 @@
 			value="de.d3web.we.action.QuestionnaireValuesViewAction" />
 		<parameter id="name" value="QuestionnaireValuesViewAction" />
 		<parameter id="description" value="Action QuestionnaireValuesViewAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="SessionValuesViewAction">
+		<parameter id="class"
+			value="de.d3web.we.action.SessionValuesViewAction" />
+		<parameter id="name" value="SessionValuesViewAction" />
+		<parameter id="description" value="Action SessionValuesViewAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

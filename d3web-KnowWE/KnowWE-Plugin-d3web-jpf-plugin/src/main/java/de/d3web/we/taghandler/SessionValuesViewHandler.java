@@ -19,57 +19,49 @@
  */
 package de.d3web.we.taghandler;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import de.d3web.we.action.QuestionnaireValuesViewAction;
+import de.d3web.we.action.SessionValuesViewAction;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * Displays the values of the questions in a specified questionnaire. The magic
- * is done with AJAX {@link QuestionnaireValuesViewAction}
+ * Displays the values of the article's d3web-Session. The magic is done with
+ * AJAX {@link SessionValuesViewAction}
  * 
  * @author Sebastian Furth
  * @created 06.06.2010
  */
-public class QuestionnaireValuesViewHandler extends AbstractTagHandler {
+public class SessionValuesViewHandler extends AbstractTagHandler {
 
-	private final List<String> questionnaires = new ArrayList<String>();
-	
-	public QuestionnaireValuesViewHandler() {
-		super("questionnaireValues");
+	public SessionValuesViewHandler() {
+		super("sessionvalues");
 	}
 	
 	@Override
 	public String getExampleString() {
-		return "[{KnowWEPlugin questionnaireValues = &lt;questionnaireName&gt;" + "}]";
+		return "[{KnowWEPlugin sessionValues}]";
 	}
 	
 	@Override
 	public String getDescription(KnowWEUserContext user) {
-		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.Questionnaire.description");
+		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.SessionValues.description");
 	}
 
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-		
-		String questionnaireName = values.get("questionnaireValues");
-		if (!questionnaires.contains(questionnaireName))
-			questionnaires.add(questionnaireName);
-		
-		int i = questionnaires.indexOf(questionnaireName);
-		
+
 		return "<div class='panel'>"
-				+ "<h3>"
-				+ 	questionnaireName
-				+ "</h3><div id='qcvalues-panel" + i + "'>"
-				+ "<input type='hidden' class='qcname' value='"
-				+ 	questionnaireName
+				+ "<h3>Values</h3><div id='sessionvalues-panel'>"
+				+ "<input type='hidden' id='sessionvalues-user' value='"
+				+ user.getUsername()
 				+ "'/>"
-				+ "<div id='qcvalues-result" + i + "'>" 
+				+ "<input type='hidden' id='sessionvalues-topic' value='"
+				+ topic
+				+ "'/>"
+				+ "<div id='sessionvalues-result'>"
+				+ "No values set in this article's d3web-Session."
 			    + "</div>"
 			  + "</div></div>";
 	}

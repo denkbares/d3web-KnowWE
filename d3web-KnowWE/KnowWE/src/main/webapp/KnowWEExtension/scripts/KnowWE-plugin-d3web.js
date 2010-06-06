@@ -1182,6 +1182,57 @@ KNOWWE.plugin.d3web.solutionstate = function(){
 }();
 
 /**
+ * Namespace: KNOWWE.plugin.d3web.sessionvalues
+ * The sessionvalues namespace.
+ */
+KNOWWE.plugin.d3web.sessionvalues = function(){
+    return {
+        /**
+         * Function: init
+         * Initializes the SessionValues functionality. 
+         */
+        init : function(){
+            KNOWWE.helper.observer.subscribe( 'update', this.updateSessionValues );
+        },
+        /**
+         * Function: updateSessionValues
+         * Updates the values of the questions in the session values panel.
+         */
+        updateSessionValues : function(){
+
+            // Check the existence of the panel
+            if(!_KS('#sessionvalues-panel')) return;
+            
+            // Necessary attributes for the action
+            var user = _KS('#sessionvalues-user').value;
+            var topic = _KS('#sessionvalues-topic').value;
+
+            var params = {
+                    action : 'SessionValuesViewAction',
+                    KWikiUser: user,
+                    KWiki_Topic: topic,
+                    KWikiWeb : 'default_web'
+            }
+
+            // Check existence of result div
+            var resultID = 'sessionvalues-result';
+            if (!_KS('#' + resultID)) return;
+            
+            var options = {
+                url : KNOWWE.core.util.getURL( params ),
+                response : {
+                    action : 'insert',
+                    ids : [ resultID ]
+                }
+            }
+            
+            new _KA( options ).send(); 
+              
+        }
+    }   
+}();
+
+/**
  * Namespace: KNOWWE.plugin.d3web.qcvalues
  * The qcvalues namespace.
  */
