@@ -20,11 +20,13 @@
 
 package de.d3web.we.ci4ke.build;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
 import de.d3web.we.ci4ke.handling.CITestResult;
+import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 
 /**
  * An instance of this class holds the result of a ci build
@@ -41,7 +43,7 @@ public final class CIBuildResultset {
 	/**
 	 * time/date of build execution
 	 */
-	private Date buildExecutionDate;
+	private final Date buildExecutionDate;
 
 	/**
 	 * the version number of the article which was testet
@@ -51,7 +53,7 @@ public final class CIBuildResultset {
 	/**
 	 * A Map of the names and results of the executed Tests.
 	 */
-	private Map<String, CITestResult> results;
+	private final Map<String, CITestResult> results;
 
 	public CIBuildResultset() {
 		super();
@@ -95,10 +97,52 @@ public final class CIBuildResultset {
 		return results;
 	}
 
+	/**
+	 * Computes the overall TestResultType of this resultset, determined by the
+	 * "worst" Testresult
+	 * 
+	 * @created 03.06.2010
+	 * @return
+	 */
+	public TestResultType getOverallResult() {
+
+		TestResultType overallResult = TestResultType.SUCCESSFUL;
+		Collection<CITestResult> resultValues = results.values();
+
+		if (results != null) {
+			for (CITestResult result : resultValues) {
+				if (result != null && result.getResultType().
+						compareTo(overallResult) > 0) {
+					overallResult = result.getResultType();
+				}
+			}
+		}
+		return overallResult;
+	}
+
+	public String getTestresultMessages() {
+		StringBuffer sb = new StringBuffer();
+		for (Map.Entry<String, CITestResult> entry : results.entrySet()) {
+			String testname = entry.getKey();
+			CITestResult testresult = entry.getValue();
+
+			sb.append(testname + ": ");
+			if (testresult.getTestResultMessage().length() > 0) {
+				sb.append(testresult.getTestResultMessage());
+			}
+			else sb.append("(no resultmessage)");
+			sb.append("\n<br/><br/>\n");
+		}
+		return sb.toString();
+	}
+
 	// MODIFIERS
 
 	public void addTestResult(String testname, CITestResult testResult) {
-		this.results.put(testname, testResult);
+		if (testname != null && !testname.isEmpty() && testResult != null) {
+			this.results.put(testname, testResult);
+		}
+		else throw new IllegalArgumentException("addTestResult() received illegal arguments!");
 	}
 
 	public int getArticleVersion() {
@@ -108,4 +152,5 @@ public final class CIBuildResultset {
 	public void setArticleVersion(int articleVersion) {
 		this.articleVersion = articleVersion;
 	}
+
 }

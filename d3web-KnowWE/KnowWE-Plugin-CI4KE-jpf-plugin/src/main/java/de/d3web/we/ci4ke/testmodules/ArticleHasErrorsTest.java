@@ -38,14 +38,12 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 
 	@Override
 	public CITestResult call() throws Exception {
-
 		boolean hasError = false;
 		StringBuffer buffy = new StringBuffer();
 
 		String monitoredArticleTitle = config.getMonitoredArticleTitle();
 		KnowWEArticle moni = KnowWEEnvironment.getInstance().getArticle(
 				KnowWEEnvironment.DEFAULT_WEB, monitoredArticleTitle);
-
 		Collection<Message> messages = AbstractKnowWEObjectType.
 				getMessagesFromSubtree(moni, moni.getSection());
 
@@ -57,7 +55,6 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 				buffy.append("<br/><br/>");
 			}
 		}
-
 		if (hasError) {
 			return new CITestResult(TestResultType.ERROR, buffy.toString());
 		}
@@ -66,5 +63,4 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 					"No error on monitored Article!");
 		}
 	}
-
 }

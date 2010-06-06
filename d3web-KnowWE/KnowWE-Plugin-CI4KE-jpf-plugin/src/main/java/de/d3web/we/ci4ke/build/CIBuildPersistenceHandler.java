@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +148,7 @@ public class CIBuildPersistenceHandler {
 
 			// find the "worst" testResult
 			// which defines the overall result of this build
-			TestResultType overallResult = overallResult(resultset);
+			TestResultType overallResult = resultset.getOverallResult();
 			build.setAttribute(CIBuilder.BUILD_RESULT, overallResult.name());
 			xmlDocument.getRootElement().setAttribute(CIBuilder.
 					ACTUAL_BUILD_STATUS, overallResult.toString());
@@ -231,19 +230,7 @@ public class CIBuildPersistenceHandler {
 		return nodeCount;
 	}
 
-	private TestResultType overallResult(CIBuildResultset resultset) {
 
-		TestResultType overallResult = TestResultType.SUCCESSFUL;
-		Collection<CITestResult> results = resultset.getResults().values();
-
-		for (CITestResult result : results) {
-			// TODO: NPE HANDLING!
-			if (result.getResultType().compareTo(overallResult) > 0) {
-				overallResult = result.getResultType();
-			}
-		}
-		return overallResult;
-	}
 	
 	// ------------ RENDERING ----------------
 	

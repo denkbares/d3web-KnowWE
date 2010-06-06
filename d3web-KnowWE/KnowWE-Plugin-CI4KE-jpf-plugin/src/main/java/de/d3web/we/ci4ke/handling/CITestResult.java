@@ -51,12 +51,16 @@ public final class CITestResult implements Comparable<CITestResult> {
 	}
 
 	public String getTestResultMessage() {
-		return testResultMessage;
+		if (testResultMessage != null && !testResultMessage.isEmpty()) {
+			return testResultMessage;
+		}
+		else return "";
+
 	}
 
 	@Override
 	public String toString() {
-		return result.toString() + " - " + testResultMessage;
+		return result.toString() + " - " + getTestResultMessage();
 	}
 
 	/**

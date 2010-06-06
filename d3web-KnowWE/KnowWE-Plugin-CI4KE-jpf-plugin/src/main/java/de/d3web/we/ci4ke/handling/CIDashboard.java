@@ -66,10 +66,6 @@ public class CIDashboard {
 
 		// render Builds
 
-		html.append("<div id=\"" + config.getDashboardID() + "-build-table\">\n");
-		html.append(persistenceHandler.renderNewestBuilds(5));
-		html.append("</div>");
-
 		if (config.getTrigger().equals(CIBuildTriggers.onDemand)) {
 			html.append("<div style=\"text-align: center;\"><form name=\"CIExecuteBuildForm\">");
 			html.append("<input type=\"button\" value=\"Neuen Build Starten!\" "
@@ -77,6 +73,11 @@ public class CIDashboard {
 							+ config.getDashboardID() + "');\"/>");
 			html.append("</form></div>");
 		}
+
+		html.append("<div id=\"" + config.getDashboardID() + "-build-table\">\n");
+		html.append(persistenceHandler.renderNewestBuilds(5));
+		html.append("</div>");
+
 		html.append("</div>");
 
 		html.append("<div id='" + config.getDashboardID()

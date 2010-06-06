@@ -23,6 +23,7 @@ package de.d3web.we.ci4ke.groovy;
 import groovy.lang.Script;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.ci4ke.handling.CIConfig;
@@ -46,13 +47,11 @@ public abstract class GroovyCITestScript extends Script implements CITest {
 		this.config = config;
 	}
 
-	// TODO: Reactivate! ;-)
-	// public Collection<KnowWEArticle> getAllArticles(){
-	// return KnowWEEnvironment.getInstance().
-	// getArticleManager(config.get(DeprecatedCIConfiguration.WEB_KEY)).getArticles();
-	// }
-	//	
-	// just for documentation purposes
+	 public Collection<KnowWEArticle> getAllArticles(){
+		return KnowWEEnvironment.getInstance().getArticleManager(
+				KnowWEEnvironment.DEFAULT_WEB).getArticles();
+	}
+
 	public KnowWEArticle getArticle() {
 		return KnowWEEnvironment.getInstance().getArticle(KnowWEEnvironment.DEFAULT_WEB,
 				this.config.getMonitoredArticleTitle());

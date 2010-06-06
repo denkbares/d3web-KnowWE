@@ -252,7 +252,6 @@ public class CIUtilities {
 	 * Replaces the relevant entities inside the String. All &amp; &gt;, &lt;,
 	 * and &quot; are replaced by their respective names.
 	 * 
-	 * @since 1.6.1
 	 * @param src The source string.
 	 * @return The encoded string.
 	 */

@@ -20,6 +20,7 @@
 
 package de.d3web.we.ci4ke.handling;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -73,5 +74,16 @@ public class CIConfig {
 
 	public CIBuildTriggers getTrigger() {
 		return trigger;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		
+		CIConfig c = new CIConfig(this.dashboardID,
+				this.monitoredArticleTitle,
+				this.dashboardArticleTitle,
+				new ArrayList<String>(testNames),
+				this.trigger);
+		return c;
 	}
 }

@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,7 +50,7 @@ public class CIBuilder {
 		onNight
 	}
 
-	private CIConfig config;
+	private final CIConfig config;
 
 	/**
 	 * This constructor searches only the given dashboardArticle for dashboard
@@ -165,16 +164,18 @@ public class CIBuilder {
 
 			try {
 				// if(futureResult.isDone()) {
-				Logger.getLogger(this.getClass().getName()).log(
-						Level.INFO,
-						">> CI >> CIBuilder: Trying to get CITestResult of test " + testname
-								+ "!! >>>");
+				// Logger.getLogger(this.getClass().getName()).log(
+				// Level.INFO,
+				// ">> CI >> CIBuilder: Trying to get CITestResult of test " +
+				// testname
+				// + "!! >>>");
 
 				resultset.addTestResult(testname,
 							futureResult.get());
 
-				Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-							">> CI >> CIBuilder: Got Result of test " + testname + "!! >>>");
+				// Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+				// ">> CI >> CIBuilder: Got Result of test " + testname +
+				// "!! >>>");
 				// }
 			}
 			catch (InterruptedException e) {
