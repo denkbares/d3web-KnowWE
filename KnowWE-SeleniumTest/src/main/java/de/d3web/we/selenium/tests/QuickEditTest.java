@@ -142,15 +142,18 @@ public class QuickEditTest extends KnowledgeTestCase{
 		// Adding new solution
 		sectionID = kopicID + "/Solutions-section/Solutions-section_content";
 		quickEditAdd(sectionID, "\nMissing wheel");
-		waitForElement("//div[@id='" + sectionID + "']");
+		assertTrue("//div[@id='" + sectionID + "'] isn't present (yet)",
+				waitForElement("//div[@id='" + sectionID + "']"));
 		assertTrue("New solution \"Missing wheel\" wasn't saved.", selenium.getText(
 				"//div[@id='" + sectionID + "']").contains("Missing wheel"));
 
 		// Adding new question
 		sectionID = kopicID + "/Questions-section/Questions-section_content";
 		quickEditAdd(sectionID,
-		"\n-How many wheels do you have? [oc]\n-- \"< 4\"\n-- 4\n-- \"> 4\"\n");
-		waitForElement("//div[@id='questionsheet']//span[text()='How many wheels do you have?']");
+				"\n-How many wheels do you have? [oc]\n-- \"< 4\"\n-- 4\n-- \"> 4\"\n");
+		assertTrue(
+				"Question 'How many wheels do you have?' isn't present (yet)",
+				waitForElement("//div[@id='questionsheet']//span[text()='How many wheels do you have?']"));
 		assertTrue(
 				"Adding new question failed",
 				selenium.isElementPresent("//div[@id='questionsheet']//span[text()='How many wheels do you have?']"));
@@ -159,7 +162,7 @@ public class QuickEditTest extends KnowledgeTestCase{
 		sectionID = kopicID + "/Rules-section/Rules-section_content";
 		openQuickEdit(sectionID);
 		quickEditAdd(sectionID,
-		"\nIF \"How many wheels do you have?\" = \"< 4\"\nTHEN \"Missing wheel\" = P7");
+				"\nIF \"How many wheels do you have?\" = \"< 4\"\nTHEN \"Missing wheel\" = P7");
 
 		// //Again questionsheet test (still working?)
 		// map.put("Exhaust pipe color", new Integer[] {4});
@@ -186,28 +189,35 @@ public class QuickEditTest extends KnowledgeTestCase{
 		openQuickEdit(attTableID);
 		doSelActionAndWait(attTableID + "/AttributeTableLine/AttributeTableCell2", "type", "Newinfo");
 		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell3", "type", "Beschreibung");
-		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell", "type", "Lehre Batterie");
+		doSelActionAndWait(attTableID + "/AttributeTableLine2/AttributeTableCell", "type",
+				"Leere Batterie");
 		doSelActionAndWait(attTableID + ACCEPT, "click");
-		waitForElement("//div[@id='" + attTableID + "']");
+		assertTrue("//div[@id='" + attTableID + "'] isn't present (yet)",
+				waitForElement("//div[@id='" + attTableID + "']"));
 		String attTableText = selenium.getText("//div[@id='" + attTableID + "']");
-		assertTrue("New attribute wasn't saved", attTableText.contains("Lehre Batterie"));
+		assertTrue("New attribute wasn't saved", attTableText.contains("Leere Batterie"));
 		assertTrue("New attribute wasn't saved", attTableText.contains("Newinfo"));
 		assertTrue("New attribute wasn't saved", attTableText.contains("Beschreibung"));
 	}
 
-	public void testHermesTimeEventEditing() {
-		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Quick-Edit-Test");
-		openQuickEdit(eventID);
-		doSelActionAndWait("//div[@id='" + eventID + "']//textarea[@id='" + eventID
-				+ "/default-edit-area']", "type",
-		"<<Wiederaufbau Uni Wuerzburg(2)\n478v\n\nRenovierung der UniBib\n>>");
-		doSelActionAndWait(eventID + ACCEPT, "click");
-		waitForElement("//div[@id='" + eventID + "']");
-		String eventText = selenium.getText("//div[@id='" + eventID + "']");
-		assertTrue("New content wasn't saved", eventText.contains("Wiederaufbau Uni Wuerzburg"));
-		assertTrue("New content wasn't saved", eventText.contains("478 v. Chr."));
-		assertTrue("New content wasn't saved", eventText.contains("Renovierung der UniBib"));
-	}
+	// public void testHermesTimeEventEditing() {
+	// open(rb.getString("KnowWE.SeleniumTest.url") +
+	// "Wiki.jsp?page=Quick-Edit-Test");
+	// openQuickEdit(eventID);
+	// doSelActionAndWait("//div[@id='" + eventID + "']//textarea[@id='" +
+	// eventID
+	// + "/default-edit-area']", "type",
+	// "<<Wiederaufbau Uni Wuerzburg(2)\n478v\n\nRenovierung der UniBib\n>>");
+	// doSelActionAndWait(eventID + ACCEPT, "click");
+	// assertTrue(waitForElement("//div[@id='" + eventID + "']"));
+	// String eventText = selenium.getText("//div[@id='" + eventID + "']");
+	// assertTrue("New content wasn't saved",
+	// eventText.contains("Wiederaufbau Uni Wuerzburg"));
+	// assertTrue("New content wasn't saved",
+	// eventText.contains("478 v. Chr."));
+	// assertTrue("New content wasn't saved",
+	// eventText.contains("Renovierung der UniBib"));
+	// }
 
 	public void testQuickCoveringTableEditing() {
 		//TODO write test
@@ -268,7 +278,7 @@ public class QuickEditTest extends KnowledgeTestCase{
 		}
 		//Selects the new values for the given tablecells (=key)
 		for (String key : input.keySet()) {
-			assertTrue(divLocator + key + "does not exists",
+			assertTrue(divLocator + key + " does not exists",
 					waitForElement(divLocator + key));
 			output.put(key, selenium.getText(divLocator + key + "/option[@selected='selected']"));
 			doSelActionAndWait(divLocator + key, "select", "label=" + input.get(key));
