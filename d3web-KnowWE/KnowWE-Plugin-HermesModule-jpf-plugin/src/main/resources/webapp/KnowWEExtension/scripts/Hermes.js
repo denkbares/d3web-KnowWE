@@ -79,11 +79,12 @@ function sendFilterLevel(level, user) {
 /**
  * starts the hermes quiz.
  */
-function startQuiz(user) {
+function startQuiz(user, kdomid) {
 
     var params = {
         action : 'StartQuizAction',
         user : user,
+        kdomid: kdomid,
     }
 
     var options = {
@@ -102,12 +103,13 @@ function startQuiz(user) {
 /**
  * starts the hermes quiz.
  */
-function quizAnswer(user, answer) {
+function quizAnswer(user, answer, kdomid) {
 
     var params = {
         action : 'SetAnswerAction',
         user : user,
         answer : answer,
+        kdomid : kdomid,
     }
 
     var options = {
@@ -125,11 +127,12 @@ function quizAnswer(user, answer) {
 /**
  * stops the hermes quiz.
  */
-function stopQuiz(user) {
+function stopQuiz(user, kdomid) {
 
     var params = {
         action : 'StopQuizAction',
         user : user,
+        kdomid : kdomid,
     }
 
     var options = {
