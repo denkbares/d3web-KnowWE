@@ -16,6 +16,7 @@ import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.TerminologyManager;
 import de.d3web.we.utils.D3webUtils;
 
 public abstract class QuestionDef extends D3webObjectDef<Question> {
@@ -84,7 +85,15 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 			}
 
 			if (q != null) {
+				// ok everything went well
+				// 1. register term
+				TerminologyManager.getInstance().registerNewTerm(
+						sec.get().getTermName(sec), sec);
+
+				// 2. store object in section
 				qidSection.get().storeObject(qidSection, q);
+
+				// 3. return success message
 				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
 						q.getClass().getSimpleName()
 								+ " " + q.getName()));
