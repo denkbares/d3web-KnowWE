@@ -39,9 +39,9 @@ import dummies.KnowWETestWikiConnector;
 
 /**
  * @author Jochen
- * 
+ *
  *         Manages all the articles of one web in a HashMap
- * 
+ *
  */
 public class KnowWEArticleManager {
 
@@ -93,7 +93,7 @@ public class KnowWEArticleManager {
 
 	/**
 	 * Servs the KnowWEArticle for a given article name
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -114,7 +114,7 @@ public class KnowWEArticleManager {
 	 * collects the originalTexts deep through the KDOM and appends the new text
 	 * (instead of the originalText) for the nodes with an ID in the nodesMap.
 	 * Finally the article is saved with this new content.
-	 * 
+	 *
 	 * @param map
 	 * @param articleName
 	 * @param nodesMap
@@ -145,7 +145,7 @@ public class KnowWEArticleManager {
 	 * Replaces KDOM-nodes with the given texts, but not in the KDOM itself. It
 	 * collects the originalTexts deep through the KDOM and appends the new text
 	 * (instead of the originalText) for the nodes with an ID in the nodesMap.
-	 * 
+	 *
 	 * @param map
 	 * @param articleName
 	 * @param nodesMap
@@ -171,13 +171,15 @@ public class KnowWEArticleManager {
 
 	/**
 	 * Looks in KDOM of given article for the Section object with given nodeID
-	 * 
+	 *
 	 * @param articleName
 	 * @param nodeID
 	 * @return null if article or node not found
 	 * @see findNode(String nodeID)
 	 */
 	public Section findNode(String articleName, String nodeID) {
+		if (nodeID == null || articleName == null) return null;
+
 		KnowWEArticle art = this.getArticle(articleName);
 		if (art == null)
 			return null;
@@ -187,7 +189,7 @@ public class KnowWEArticleManager {
 	/**
 	 * Looks in KDOM for the Section object with given nodeID The article name
 	 * is not needed because it is part of the nodeID
-	 * 
+	 *
 	 * @param nodeID
 	 * @return null if article or node not found
 	 */
@@ -220,8 +222,8 @@ public class KnowWEArticleManager {
 
 	/**
 	 * updates an article that has changed
-	 * 
-	 * 
+	 *
+	 *
 	 * @param user
 	 * @param text
 	 * @param topic
@@ -269,7 +271,7 @@ public class KnowWEArticleManager {
 	/**
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
-	 * 
+	 *
 	 * @param art
 	 *            The article to delete
 	 */
