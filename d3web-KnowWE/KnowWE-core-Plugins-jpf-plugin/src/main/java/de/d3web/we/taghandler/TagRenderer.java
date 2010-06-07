@@ -37,9 +37,9 @@ public class TagRenderer extends KnowWEDomRenderer{
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		Section attrContent = sec.findChildOfType(TagHandlerTypeContent.class);
 		KnowWEObjectType type = attrContent.getObjectType();
-		
+
 		StringBuilder buffi = new StringBuilder();
-		
+
 		if(type instanceof TagHandlerTypeContent) {
 			Map<String,String> attValues = null; //((TagHandlerTypeContent)type).getValuesForSections().get(attrContent);
 			Object storedValues = KnowWEEnvironment.getInstance().getArticleManager(sec.getWeb()).getTypeStore().getStoredObject(sec.getTitle(), sec.getId(), TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
@@ -50,9 +50,10 @@ public class TagRenderer extends KnowWEDomRenderer{
 			}
 
 			if (attValues != null) {
+				attValues.put("kdomid", sec.getId());
 				for (String elem: attValues.keySet()) {
 					HashMap<String, TagHandler> defaultTagHandlers = KnowWEEnvironment.getInstance().getDefaultTagHandlers();
-					if (defaultTagHandlers.containsKey(elem.toLowerCase())) {		
+					if (defaultTagHandlers.containsKey(elem.toLowerCase())) {
 						buffi.append(KnowWEUtils.maskHTML("<div id=\""+elem.toLowerCase()+"\">"));
 						buffi.append(defaultTagHandlers.get(elem.toLowerCase()).render(sec.getTitle(), user, attValues, sec.getWeb()) + " \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
 						buffi.append(KnowWEUtils.maskHTML("</div>"));
