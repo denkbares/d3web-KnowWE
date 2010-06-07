@@ -44,7 +44,7 @@ import de.d3web.we.utils.KnowWEUtils;
 
 public class AllSolutionsRenderer extends DeprecatedAbstractKnowWEAction {
 
-private String iconURL;
+private final String iconURL;
 	
 	private static ResourceBundle rb;
 
@@ -214,7 +214,8 @@ private String iconURL;
 			sb.append(getAssumptionsLink(parameterMap, term, assumptionMap));
 			
 			StringBuffer inner = new StringBuffer();
-			inner.append(KnowWERenderUtils.getTopicLink(web, term, iconURL, "dps", true, true));
+			inner.append(KnowWERenderUtils.getTopicLink(web,
+					(String) term.getInfo(TermInfoType.TERM_NAME), iconURL, "dps", true, true));
 			inner.append(KnowWERenderUtils.getKopicLinks( web, term, iconURL, "dps", true, true));
 			inner.append(KnowWERenderUtils.getExplanationLinks(user, web, term, iconURL, "dps", true, true));
 			inner.append(KnowWERenderUtils.getClarificationLinks(user, web, term, iconURL, "dps", true, true));

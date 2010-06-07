@@ -20,6 +20,8 @@
 
 package de.d3web.we.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -38,7 +40,6 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
@@ -146,6 +147,23 @@ public class D3webUtils {
 			session = d3webKSS.getSession();
 		}
 		return session;
+	}
+
+	public static Collection<Session> getSessions(String user, String web) {
+
+		Broker broker = D3webModule.getBroker(user, web);
+		Collection<KnowledgeServiceSession> ksss = broker.getSession().getServiceSessions();
+
+		Collection<Session> sessions = new ArrayList<Session>();
+
+		for (KnowledgeServiceSession kss : ksss) {
+
+			if (kss instanceof D3webKnowledgeServiceSession) {
+
+				sessions.add(((D3webKnowledgeServiceSession) kss).getSession());
+			}
+		}
+		return sessions;
 	}
 
 	/**

@@ -37,14 +37,12 @@ import de.d3web.utilities.ISetMap;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.SolutionState;
-import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.taghandler.SolutionStateViewHandler;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
@@ -52,7 +50,7 @@ import de.d3web.we.utils.KnowWEUtils;
 
 public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 
-	private String iconURL;
+	private final String iconURL;
 
 	private static ResourceBundle rb;
 
@@ -224,7 +222,9 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			sb.append(getAssumptionsLink(user, web, term, assumptionMap));
 
 			StringBuffer inner = new StringBuffer();
-			inner.append(KnowWERenderUtils.getTopicLink(web, term, iconURL, "dps", true, true));
+			inner.append(KnowWERenderUtils.getTopicLink(web,
+					(String) term.getInfo(TermInfoType.TERM_NAME),
+					iconURL, "dps", true, true));
 			// inner.append(KnowWERenderUtils.getKopicLinks(web, term, iconURL,
 			// "dps", true, true));
 			// inner.append(KnowWERenderUtils.getExplanationLinks(user, web,
@@ -341,18 +341,22 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 		// KnowWEAttributes.WEB, String.class, true);
 		String link = "";
 		try {
-			
-			link = " rel=\"{term : '"+URLEncoder.encode((String) term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
-					+ "', web : '"+web+"', user: '"+user+"'}\"";
-			
-//			link = "javascript:kwiki_window('KnowWE.jsp?renderer=KWiki_solutionLog&KWikiUser="
-//					+ user
-//					+ "&KWikiWeb="
-//					+ web
-//					+ "&KWikiTerm="
-//					+ URLEncoder.encode((String) term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
-//					+ "')";
-		} catch (UnsupportedEncodingException e) {
+
+			link = " rel=\"{term : '"
+					+ URLEncoder.encode((String) term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
+					+ "', web : '" + web + "', user: '" + user + "'}\"";
+
+			// link =
+			// "javascript:kwiki_window('KnowWE.jsp?renderer=KWiki_solutionLog&KWikiUser="
+			// + user
+			// + "&KWikiWeb="
+			// + web
+			// + "&KWikiTerm="
+			// + URLEncoder.encode((String)
+			// term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
+			// + "')";
+		}
+		catch (UnsupportedEncodingException e) {
 
 		}
 
@@ -431,15 +435,14 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			index = "0";
 		}
 		int i = Integer.parseInt(index);
-		SolutionStateViewHandler.setSelected(user, web, i);
+		SolutionStateViewHandler.setSelected(web, user, i);
 		return renderSolutionStates(web, user, topic, i);
 	}
 
-	public String renderSolutionStates(String web, String user, String topic, int index) {
+	private String renderSolutionStates(String web, String user, String topic, int index) {
 		StringBuffer sb = new StringBuffer();
-		DPSEnvironment dpse = DPSEnvironmentManager.getInstance()
-				.getEnvironments(web);
-		Broker broker = dpse.getBroker(user);
+		Broker broker = D3webModule.getBroker(user, web);
+
 		Map<Term, SolutionState> globalSolutions = broker.getSession()
 				.getBlackboard().getGlobalSolutions();
 		final ISetMap<Term, Information> assumptionMap = broker.getSession()
@@ -457,7 +460,8 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				for (Information info : assumptionMap.get(term)) {
 					if (info.getNamespace().substring(0, info.getNamespace().indexOf(".."))
 							.equals(index == 1 ? topic 
-									: SolutionStateViewHandler.getArticleNames(web).get(index - 2))) {
+											: SolutionStateViewHandler.getArticleNames(web, user).get(
+													index - 2))) {
 						skip = false;
 						continue;
 					}

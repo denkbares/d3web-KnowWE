@@ -53,11 +53,11 @@ public class KnowWERenderUtils {
 	};
 	
 	
-	public static StringBuffer getTopicLink(String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
+	public static StringBuffer getTopicLink(String web, String name, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
 		StringBuffer sb = new StringBuffer();
 		//String web = (String) BasicUtils.getModelAttribute(model, KnowWEAttributes.WEB, String.class, true);
-		String link = getLinkToTopic(term, web);
+		String link = getLinkToTopic(name, web);
 		if(asButton) {
 			sb.append("<tr>");
 			sb.append("<td>");
@@ -82,13 +82,10 @@ public class KnowWERenderUtils {
 	}
 
 	
-
-	public static String getLinkToTopic(Term term, String web) {
-		String link = "Wiki.jsp?page=" + term.getInfo(TermInfoType.TERM_NAME);
+	public static String getLinkToTopic(String name, String web) {
+		String link = "Wiki.jsp?page=" + name;
 		return link;
 	}
-
-	
 	
 	public static StringBuffer getKopicLinks(String web, Term term, String iconURL, String usagePrefix, boolean withTitle, boolean asButton) {
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web();
