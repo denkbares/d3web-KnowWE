@@ -33,8 +33,14 @@ import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.QuestionDate;
+import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.session.values.Choice;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
@@ -187,9 +193,9 @@ public class KBRenderer extends AbstractTagHandler {
 			text.append("<p/>");
 
 			// Questions
-			List<QContainer> questions = kb.getQContainers();
+			List<QASet> questions = kb.getQASets();
 			boolean appendedQuestionHeadline = false;
-			for (QContainer q1 : questions) {
+			for (QASet q1 : questions) {
 				if (!q1.getName().equals("Q000")) {
 					if (!appendedQuestionHeadline) {
 						if (appendedSolutionsHeadline || appendedRulesHeadline) {
@@ -199,9 +205,12 @@ public class KBRenderer extends AbstractTagHandler {
 								+ ":</strong><p/>");
 						appendedQuestionHeadline = true;
 					}
-					text.append(VerbalizationManager.getInstance().verbalize(
-							q1, RenderingFormat.PLAIN_TEXT));
-					text.append("<br />" + getAll(q1.getChildren()) + "<br />");
+					if (q1 instanceof QContainer) {
+						text.append("<span style=\"color: rgb(128, 128, 0);\">" + q1.getName()
+								+ "</span><br/>");
+						text.append(getAll(q1.getChildren()));
+						text.append("<br/>");
+					}
 				}
 			}
 			text.append("<p/>");
@@ -306,10 +315,32 @@ public class KBRenderer extends AbstractTagHandler {
 
 	private String getAll(TerminologyObject[] nodes) {
 		StringBuffer test = new StringBuffer();
+
 		for (TerminologyObject t1 : nodes) {
-			test.append("-" + VerbalizationManager.getInstance().verbalize(
-					t1, RenderingFormat.PLAIN_TEXT) + " <br />");
-			if (t1.getChildren().length > 0) {
+			if (t1 instanceof QuestionChoice) {
+				test.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.toString()
+						+ " [oc]</span><br/>");
+				for (Choice c1 : ((QuestionChoice) t1).getAllAlternatives()) {
+					for (int i = 0; i < j; i++) {
+						test.append("-");
+					}
+					test.append("-- <span style=\"color: rgb(0, 0, 255);\">" + c1.toString()
+							+ "</span><br/>");
+				}
+			}
+			else if (t1 instanceof QuestionText) {
+				test.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
+						+ " [text]</span><br/>");
+			}
+			else if (t1 instanceof QuestionNum) {
+				test.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
+						+ " [num]</span><br/>");
+			}
+			else if (t1 instanceof QuestionDate) {
+				test.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
+						+ " [date]</span><br/>");
+			}
+			else if (t1.getChildren().length > 0) {
 				j++;
 				for (int i = 0; i < j; i++) {
 					test.append("-");
