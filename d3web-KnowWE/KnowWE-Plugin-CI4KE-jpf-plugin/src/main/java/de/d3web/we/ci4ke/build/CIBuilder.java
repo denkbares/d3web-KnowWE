@@ -102,8 +102,8 @@ public class CIBuilder {
 	 */
 	public void executeBuild() {
 
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-				">>> starting to execute a new build! >>>");
+		// Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+		// ">>> starting to execute a new build! >>>");
 
 		Map<String, Class<? extends CITest>> testClasses =
 				CIUtilities.parseTestClasses(this.config.getTestNames());
@@ -163,20 +163,10 @@ public class CIBuilder {
 			Future<CITestResult> futureResult = entry.getValue();
 
 			try {
-				// if(futureResult.isDone()) {
-				// Logger.getLogger(this.getClass().getName()).log(
-				// Level.INFO,
-				// ">> CI >> CIBuilder: Trying to get CITestResult of test " +
-				// testname
-				// + "!! >>>");
 
 				resultset.addTestResult(testname,
 							futureResult.get());
 
-				// Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-				// ">> CI >> CIBuilder: Got Result of test " + testname +
-				// "!! >>>");
-				// }
 			}
 			catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -194,81 +184,4 @@ public class CIBuilder {
 		persi.write(resultset, this.config.getMonitoredArticleTitle());
 
 	}
-
-	/**
-	 * <build executed="NOW()"> <test .../> <test .../> </build>
-	 * 
-	 * @throws IOException
-	 */
-	// public void createNewBuild() throws IOException{
-	//		
-	// TestResultType overallResult = TestResultType.SUCCESSFUL;
-	// Element build = new Element("build");
-	//		
-	// Date now = new Date();
-	// build.setAttribute("executed",DATE_FORMAT.format(now));
-	//		
-	// build.setAttribute("nr", String.valueOf(nextBuildNumber));
-	// nextBuildNumber++;
-	//		
-	// String testname;
-	// CITestResult result;
-	// for(Class<? extends CITest> testClass : config.getTestsToExecute()){
-	// try {
-	// testname = testClass.getSimpleName();
-	// CITest t = testClass.newInstance();
-	// t.init(config);
-	// result = t.call();
-	//				
-	// //the "worst" result of the executed tests determines
-	// //the result of the build
-	// if(overallResult.compareTo(result.getResultType())<0)
-	// overallResult = result.getResultType();
-	//				
-	// Element test = new Element("test");
-	// test.setAttribute("name", testname);
-	// test.setAttribute("result", result.getResultType().toString());
-	//				
-	// if(result.getTestResultMessage().length()>0)
-	// test.setAttribute("message",result.getTestResultMessage());
-	//				
-	// build.addContent(test);
-	// // ret.append("<p>"+testClass.getSimpleName() + ": " +
-	// // testClass.newInstance().execute(config)+"</p>");
-	// } catch (InstantiationException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (IllegalAccessException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (Exception e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-	// //the "worst" result of the executed tests determines the result of the
-	// build
-	// this.currentBuildStatus = overallResult;
-	// xmlDocument.getRootElement().setAttribute(ACTUAL_BUILD_STATUS,
-	// overallResult.toString());
-	// //...also, save the result of the current build as attribute
-	// //in the <build .../> Tag
-	// build.setAttribute("result", overallResult.toString());
-	// //add the build-element to the JDOM Tree
-	// xmlDocument.getRootElement().addContent(build);
-	// //and print it to file
-	// XMLOutputter out = new XMLOutputter( Format.getPrettyFormat() );
-	// out.output(xmlDocument, new FileWriter(xmlFile));
-	// }
-
-	// public List<?> selectNodes(String xPathQuery){
-	// List<?> ret = null;
-	// try {
-	// ret = XPath.selectNodes(xmlDocument, xPathQuery);
-	// } catch (JDOMException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// return ret;
-	// }
 }
