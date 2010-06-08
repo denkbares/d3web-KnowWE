@@ -26,8 +26,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
@@ -80,8 +78,8 @@ public class CIBuilder {
 		this.config = (CIConfig) KnowWEUtils.getStoredObject(sec,
 				CIConfig.CICONFIG_STORE_KEY);
 
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-				">>> constructed a new CIBuilder >>>");
+		// Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+		// ">>> constructed a new CIBuilder >>>");
 	}
 
 	/**
@@ -150,8 +148,8 @@ public class CIBuilder {
 		int monitoredArticleVersion = KnowWEEnvironment.getInstance().
 				getWikiConnector().getVersion(this.config.getMonitoredArticleTitle());
 
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-				">>> CIBuilder: testclasses parsed! >>>");
+		// Logger.getLogger(this.getClass().getName()).log(Level.INFO,
+		// ">>> CIBuilder: testclasses parsed! >>>");
 
 		// Now collect the results
 		CIBuildResultset resultset = new CIBuildResultset();

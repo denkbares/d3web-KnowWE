@@ -330,18 +330,22 @@ public class CIBuildPersistenceHandler {
 	}
 
 	/**
-	 * Calculates a "quality forecast", based on the ten last builds
+	 * Calculates a "quality forecast", based on the 5 last builds
 	 * 
 	 * @created 27.05.2010
 	 * @return
 	 */
-	public String renderWeatherForecast() {
+	public String renderBuildHealthReport() {
 
-		int lastBuilds = countNodes("builds/build[position() > last() - 10]");
-		int lastSuccessfulBuilds = countNodes("builds/build[position() > last() - 10]"
+		int lastBuilds = countNodes("builds/build[position() > last() - 5]");
+		int lastSuccessfulBuilds = countNodes("builds/build[position() > last() - 5]"
 				+ "[@result='SUCCESSFUL']");
-		double ratio = 0d;
-		if (lastBuilds > 0) ratio = (double) lastSuccessfulBuilds / lastBuilds;
-		return CIUtilities.renderForecastIcon(ratio);
+		int lastFailedBuilds = lastBuilds - lastSuccessfulBuilds;
+		int score = 0;
+		if (lastBuilds > 0) {
+			score = (100 * lastSuccessfulBuilds) / lastBuilds;
+		}
+
+		return CIUtilities.renderForecastIcon(score, lastBuilds, lastFailedBuilds);
 	}
 }

@@ -39,7 +39,7 @@ import org.apache.commons.jrcs.diff.myers.MyersDiff;
 
 import de.d3web.we.ci4ke.util.CIUtilities;
 
-public class JSPWikiTraditionalDiff implements DiffInterface {
+public class JSPWikiTraditionalDiff implements DiffEngine {
 
 	// private static Logger logger =
 	// Logger.getLogger(JSPWikiTraditionalDiff.class.getName());
@@ -125,7 +125,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 			Chunk changed = delta.getRevised();
 			// opening a div
 			m_result.append("<div class='ci-collapsible-box'><h4>");
-			print(changed, "At line {0} added {1}");
+			print(changed, "Line {0}: added {1}");
 			m_result.append("</h4>\n");
 			// opening the table
 			m_result.append("<table class=\"diff\" border=\"0\" cellspacing=\"0\" " +
@@ -140,7 +140,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 
 			// opening a div
 			m_result.append("<div class='ci-collapsible-box'><h4>");
-			print(changed, "At line {0} changed {1}");
+			print(changed, "Line {0}: changed {1}");
 			m_result.append("</h4>\n");
 			// opening the table
 			m_result.append("<table class=\"diff\" border=\"0\" cellspacing=\"0\" " +
@@ -156,7 +156,7 @@ public class JSPWikiTraditionalDiff implements DiffInterface {
 			Chunk changed = delta.getOriginal();
 			// opening a div
 			m_result.append("<div class='ci-collapsible-box'><h4>");
-			print(changed, "At line {0} removed {1}");
+			print(changed, "Line {0}: removed {1}");
 			m_result.append("</h4>\n");
 			// opening the table
 			m_result.append("<table class=\"diff\" border=\"0\" cellspacing=\"0\" " +

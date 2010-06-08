@@ -49,12 +49,12 @@ public class CIDashboard {
 
 		StringBuffer html = new StringBuffer();
 
-		String title = config.getMonitoredArticleTitle();
-		html.append("<div id='" + config.getDashboardID()
-				+ "-ci-dashboard' class='panel'><h3>Continuous Integration Dashboard - "
-				+ title + " - Current Status: " + persistenceHandler.
-						renderCurrentBuildStatus() + " - Weather Forecast: " +
-				persistenceHandler.renderWeatherForecast() + "</h3>\n");
+		html.append("<div id='" + config.getDashboardID() + "-ci-dashboard' class='panel'><h3>");
+		html.append(persistenceHandler.renderCurrentBuildStatus() + "&nbsp;&nbsp;&nbsp;&nbsp;");
+		html.append(persistenceHandler.renderBuildHealthReport() + "&nbsp;&nbsp;&nbsp;&nbsp;");
+		html.append(config.getMonitoredArticleTitle());
+
+		html.append("</h3>\n");
 
 		html.append("<div id='ci-content-wrapper'>");// Main content wrapper
 
@@ -62,17 +62,24 @@ public class CIDashboard {
 		// article
 		html.append("<div id='" + config.getDashboardID() + "-column-left' class='ci-column-left'>");
 
-		html.append("<h3 style=\"background-color: #CCCCCC;\">Build-Progression</h3>");
-
-		// render Builds
+		html.append("<h3 style=\"background-color: #CCCCCC;\">Build History");
 
 		if (config.getTrigger().equals(CIBuildTriggers.onDemand)) {
-			html.append("<div style=\"text-align: center;\"><form name=\"CIExecuteBuildForm\">");
-			html.append("<input type=\"button\" value=\"Neuen Build Starten!\" "
-							+ "name=\"submit\" class=\"button\" onclick=\"fctExecuteNewBuild('"
-							+ config.getDashboardID() + "');\"/>");
-			html.append("</form></div>");
+			html.append("<a href=\"#\" onclick=\"fctExecuteNewBuild('" + config.getDashboardID()
+					+ "');\"");
+			html.append("<img border=\"0\" align=\"right\" src='KnowWEExtension/ci4ke/images/22x22/clock.gif' "
+					+ "alt='Schedule a build' title='Schedule a build'></a>");
 		}
+		html.append("</h3>");
+		// render Builds
+
+		// if (config.getTrigger().equals(CIBuildTriggers.onDemand)) {
+		// html.append("<div style=\"text-align: center;\"><form name=\"CIExecuteBuildForm\">");
+		// html.append("<input type=\"button\" value=\"Neuen Build Starten!\" "
+		// + "name=\"submit\" class=\"button\" onclick=\"fctExecuteNewBuild('"
+		// + config.getDashboardID() + "');\"/>");
+		// html.append("</form></div>");
+		// }
 
 		html.append("<div id=\"" + config.getDashboardID() + "-build-table\">\n");
 		html.append(persistenceHandler.renderNewestBuilds(5));

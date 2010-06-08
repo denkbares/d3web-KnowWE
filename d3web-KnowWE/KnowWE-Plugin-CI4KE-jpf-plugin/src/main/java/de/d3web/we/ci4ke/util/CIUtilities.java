@@ -207,39 +207,52 @@ public class CIUtilities {
 	public static String renderResultType(TestResultType resultType, int pixelSize) {
 
 		String imgBulb = "<img src='KnowWEExtension/ci4ke/images/" +
-				pixelSize + "x" + pixelSize + "/%s.png' alt='$s'>";
+				pixelSize + "x" + pixelSize + "/%s.png' alt='%<s' title='%s'>";
 
 		switch (resultType) {
 		case SUCCESSFUL:
-			imgBulb = String.format(imgBulb, "green", "green");
+			imgBulb = String.format(imgBulb, "green", "Current build succeeded!");
 		case FAILED:
-			imgBulb = String.format(imgBulb, "red", "red");
+			imgBulb = String.format(imgBulb, "red", "Current build failed!");
 		case ERROR:
-			imgBulb = String.format(imgBulb, "grey", "grey");
+			imgBulb = String.format(imgBulb, "grey", "Current build had errors!");
 		}
 
 		return imgBulb;
 	}
 
-	public static String renderForecastIcon(double ratio) {
+	public static String renderForecastIcon(int score, int lastBuilds, int lastFailedBuilds) {
 
 		String imgForecast = "<img src='KnowWEExtension/ci4ke/images/" +
-				"22x22/%s.png' alt='%s'>";
+				"22x22/%s.png' alt='%<s' title='%s'>";
 
-		if (ratio <= 0.2) {
-			imgForecast = String.format(imgForecast, "health-00to19", "health-00to19");
+		if (score == 0) {
+			imgForecast = String.format(imgForecast, "health-00to19",
+					"All recent builds failed.");
 		}
-		else if (ratio <= 0.4) {
-			imgForecast = String.format(imgForecast, "health-20to39", "health-20to39");
+		else if (score <= 20) {
+			imgForecast = String.format(imgForecast, "health-00to19",
+					lastFailedBuilds + " out of the last " + lastBuilds + " builds failed.");
 		}
-		else if (ratio <= 0.6) {
-			imgForecast = String.format(imgForecast, "health-40to59", "health-40to59");
+		else if (score <= 40) {
+			imgForecast = String.format(imgForecast, "health-20to39", lastFailedBuilds
+					+ " out of the last " + lastBuilds + " builds failed.");
 		}
-		else if (ratio <= 0.8) {
-			imgForecast = String.format(imgForecast, "health-60to79", "health-60to79");
+		else if (score <= 60) {
+			imgForecast = String.format(imgForecast, "health-40to59", lastFailedBuilds
+					+ " out of the last " + lastBuilds + " builds failed.");
 		}
-		else if (ratio <= 1.0) {
-			imgForecast = String.format(imgForecast, "health-80plus", "health-80plus");
+		else if (score <= 80) {
+			imgForecast = String.format(imgForecast, "health-60to79", lastFailedBuilds
+					+ " out of the last " + lastBuilds + " builds failed.");
+		}
+		else if (score < 100) {
+			imgForecast = String.format(imgForecast, "health-80plus",
+					lastFailedBuilds + " out of the last " + lastBuilds + " builds failed.");
+		}
+		else if (score == 100) {
+			imgForecast = String.format(imgForecast, "health-80plus",
+					"No recent builds failed.");
 		}
 		else {
 			imgForecast = "";

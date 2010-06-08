@@ -20,7 +20,7 @@
 
 package de.d3web.we.ci4ke.diff;
 
-public interface DiffInterface {
+public interface DiffEngine {
 
 	/**
 	 * Computes a diff between the old and the new wiki text and returns that

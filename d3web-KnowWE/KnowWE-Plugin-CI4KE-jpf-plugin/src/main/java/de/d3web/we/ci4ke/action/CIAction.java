@@ -30,7 +30,8 @@ import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.build.CIBuilder;
-import de.d3web.we.ci4ke.diff.JSPWikiTraditionalDiff;
+import de.d3web.we.ci4ke.diff.DiffEngine;
+import de.d3web.we.ci4ke.diff.DiffFactory;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -142,11 +143,11 @@ public class CIAction extends AbstractAction {
 		// "</b> (Article Version " + articleVersionSelected +
 		// ") und <b>Build " + previousBuildNr + "</b> (Article " +
 		// "Version " + articleVersionPrevious + ")</h4>");
-		buffy.append("<h3 style=\"background-color: #CCCCCC;\">Differences between Build " +
-				selectedBuildNumber + " and Build " + previousBuildNr + "</h3>");
+		buffy.append("<h3 style=\"background-color: #CCCCCC;\">Differences between Build #" +
+				selectedBuildNumber + " and Build #" + previousBuildNr + "</h3>");
 
 		KnowWEWikiConnector conny = KnowWEEnvironment.getInstance().getWikiConnector();
-		JSPWikiTraditionalDiff diff = new JSPWikiTraditionalDiff();
+		DiffEngine diff = DiffFactory.defaultDiffEngine();
 		buffy.append(diff.makeDiffHtml(
 						conny.getArticleSource(monitoredArticleTitle,
 								articleVersionPrevious),
@@ -182,7 +183,7 @@ public class CIAction extends AbstractAction {
 				}
 				// Render Test-Name
 				s = e.getAttributeValue("name");
-				if (s != null && !s.isEmpty()) buffy.append(" Testname: " + s);
+				if (s != null && !s.isEmpty()) buffy.append(s);
 
 				buffy.append("</h4>\n");
 
