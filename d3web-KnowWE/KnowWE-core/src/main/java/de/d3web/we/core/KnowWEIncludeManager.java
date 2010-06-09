@@ -523,12 +523,12 @@ public class KnowWEIncludeManager {
 		Set<Section<?>> activeIncludeTargets = new HashSet<Section<?>>();
 
 		for (Section<Include> inaInc : inactiveIncludes) {
-			if (inaInc.getTitle().equals(title)) {
+			if (inaInc.getTitle().equals(title) && src2targets.containsKey(inaInc)) {
 				inactiveIncludeTargets.addAll(src2targets.get(inaInc));
 			}
 		}
 		for (Section<Include> aInc: activeIncludes) {
-			if (aInc.getTitle().equals(title)) {
+			if (aInc.getTitle().equals(title) && src2targets.containsKey(aInc)) {
 				activeIncludeTargets.addAll(src2targets.get(aInc));
 			}
 		}
