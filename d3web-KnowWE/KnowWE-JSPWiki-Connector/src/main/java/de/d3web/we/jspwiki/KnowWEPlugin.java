@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.jspwiki;
@@ -23,6 +23,7 @@ package de.d3web.we.jspwiki;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -35,9 +36,12 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
+import com.ecyrd.jspwiki.PageManager;
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
+import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.event.WikiEvent;
 import com.ecyrd.jspwiki.event.WikiEventListener;
 import com.ecyrd.jspwiki.event.WikiEventUtils;
@@ -47,6 +51,7 @@ import com.ecyrd.jspwiki.filters.BasicPageFilter;
 import com.ecyrd.jspwiki.filters.FilterException;
 import com.ecyrd.jspwiki.plugin.PluginException;
 import com.ecyrd.jspwiki.plugin.WikiPlugin;
+import com.ecyrd.jspwiki.providers.ProviderException;
 import com.ecyrd.jspwiki.ui.TemplateManager;
 
 import de.d3web.we.core.KnowWEArticleManager;
@@ -61,10 +66,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		WikiEventListener {
 
 	private String topicName = "";
+	private boolean initializedArticles;
 
 	/**
 	 * To initialize KnowWE.
-	 *
+	 * 
 	 * @see KnowWE_config.properties
 	 */
 	@Override
@@ -112,17 +118,16 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 								+ "/resources/core-pages");
 						File[] cores = coreDir.listFiles();
 						for (File cP : coreDir.listFiles()) {
-							if (!cP.getName().endsWith(".txt"))
-								continue;
+							if (!cP.getName().endsWith(".txt")) continue;
 							File newFile = new File(pagedir.getPath() + "/"
 									+ cP.getName());
-							if (!newFile.exists())
-								FileUtils.copyFile(cP, newFile);
+							if (!newFile.exists()) FileUtils.copyFile(cP, newFile);
 						}
 					}
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			// Nothing to do. Start wiki without pages.
 		}
 
@@ -166,7 +171,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						cleanParams, topic, userContext,
 						KnowWEEnvironment.DEFAULT_WEB);
 			}
-		} catch (Throwable t) {
+		}
+		catch (Throwable t) {
 			System.out.println("****Exception EXECUTE***");
 			System.out.println("****Exception EXECUTE***");
 			System.out.println("****Exception EXECUTE***");
@@ -203,7 +209,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			htmlContent = KnowWEUtils.unmaskHTML(htmlContent);
 
 			return htmlContent;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			System.out.println("****Exception in POST TRANSLATE***");
 			System.out.println("****Exception in POST TRANSLATE***");
 			System.out.println("****Exception in POST TRANSLATE***");
@@ -215,8 +222,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	@Override
 	public String preTranslate(WikiContext wikiContext, String content)
 			throws FilterException {
-		/* creating KnowWEUserContext with username and requestParamteters */
 
+		if (!initializedArticles) initializeAllArticles(wikiContext.getEngine());
+
+		/* creating KnowWEUserContext with username and requestParamteters */
 		if (!wikiContext.getCommand().getRequestContext().equals(
 				WikiContext.VIEW)) {
 			return content;
@@ -266,8 +275,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		if (engine != null) {
 			pagedata = engine.getPureText(wikiContext.getPage().getName(),
 					wikiContext.getPage().getVersion());
-			if (!content.equals(pagedata))
-				return content;
+			if (!content.equals(pagedata)) return content;
 		}
 		try {
 
@@ -292,7 +300,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					KnowWEEnvironment.getInstance().getArticleManager(
 							"default_web").saveUpdatedArticle(article);
 				}
-			} else {
+			}
+			else {
 				article = new KnowWEArticle(content, topicName,
 						KnowWEEnvironment.getInstance().getRootType(),
 						KnowWEEnvironment.DEFAULT_WEB);
@@ -345,13 +354,49 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			// +" in "+seconds+" seconds");
 
 			return articleString.toString();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
 			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
 			System.out.println("*****EXCEPTION IN preTranslate !!! *********");
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/**
+	 * Loads ALL articles stored in the pageDir (which is specified in
+	 * jspwiki.properties).
+	 * 
+	 * @created 07.06.2010
+	 * @param engine
+	 */
+	private void initializeAllArticles(WikiEngine engine) {
+
+		PageManager mgr = engine.getPageManager();
+		Collection wikipages = null;
+
+		try {
+			wikipages = mgr.getAllPages();
+		}
+		catch (ProviderException e1) {
+			Logger.getLogger(this.getClass()).warn(
+					"Unable to load all articles, maybe some articles won't be initialized!");
+		}
+
+		for (Object o : wikipages) {
+			WikiPage wp = (WikiPage) o;
+			String content = engine.getPureText(wp.getName(), wp.getVersion());
+			KnowWEArticle article = new KnowWEArticle(content, wp.getName(),
+					KnowWEEnvironment.getInstance().getRootType(),
+					KnowWEEnvironment.DEFAULT_WEB);
+			KnowWEEnvironment.getInstance().getArticleManager(
+					"default_web").saveUpdatedArticle(article);
+
+		}
+
+		initializedArticles = true;
+
 	}
 
 	private String renderKDOM(String content, JSPWikiUserContext userContext,
@@ -367,9 +412,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * Parses the request variables (GET and POST) using a wiki context object.
-	 *
-	 * @param context
-	 *            WikiContext to be used
+	 * 
+	 * @param context WikiContext to be used
 	 * @return A Map containing all request variables
 	 */
 	private Map<String, String> parseRequestVariables(WikiContext context) {
@@ -377,8 +421,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		Map<String, String> parameter = new HashMap<String, String>();
 
-		if (req == null)
-			return parameter;
+		if (req == null) return parameter;
 
 		Enumeration p = req.getParameterNames();
 
@@ -413,7 +456,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					.getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
 
 			amgr.deleteArticle(amgr.getArticle(e.getPageName()));
-		} else if (event instanceof WikiPageRenameEvent) {
+		}
+		else if (event instanceof WikiPageRenameEvent) {
 			WikiPageRenameEvent e = (WikiPageRenameEvent) event;
 
 			KnowWEArticleManager amgr = KnowWEEnvironment.getInstance()
@@ -425,7 +469,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	/**
 	 * Adds the CSS and JS files to the current page.
-	 *
+	 * 
 	 * @param wikiContext
 	 */
 	private void handleIncludes(WikiContext wikiContext) {
@@ -442,7 +486,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				TemplateManager.addResourceRequest(wikiContext,
 						KnowWERessourceLoader.RESOURCE_SCRIPT,
 						KnowWERessourceLoader.defaultScript + resource);
-			} else if (ctx == null) {
+			}
+			else if (ctx == null) {
 				TemplateManager.addResourceRequest(wikiContext,
 						KnowWERessourceLoader.RESOURCE_SCRIPT,
 						KnowWERessourceLoader.defaultScript + resource);
@@ -458,7 +503,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				TemplateManager.addResourceRequest(wikiContext,
 						KnowWERessourceLoader.RESOURCE_STYLESHEET,
 						KnowWERessourceLoader.defaultStylesheet + resource);
-			} else if (ctx == null) {
+			}
+			else if (ctx == null) {
 				TemplateManager.addResourceRequest(wikiContext,
 						KnowWERessourceLoader.RESOURCE_STYLESHEET,
 						KnowWERessourceLoader.defaultStylesheet + resource);
