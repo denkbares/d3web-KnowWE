@@ -80,6 +80,7 @@ public class SubstanceListWriter extends WISECWriter {
 		string = string.replaceAll("ü", "ue");
 		string = string.replaceAll("ß", "ss");
 		string = string.replaceAll("\n", " ");
+		string = ConverterUtils.clean(string);
 		return string;
 	}
 
@@ -122,7 +123,7 @@ public class SubstanceListWriter extends WISECWriter {
 		writer.write("\n");
 		for (Substance substance : substances) {
 			for (String attribute : list.attributes) {
-				String value = substance.values.get(attribute);
+				String value = clean(substance.values.get(attribute));
 				writer.write("| " + value + " ");
 				if (attribute.equals(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
 					writer.write(" [ > | " + SubstanceWriter.getWikiFileNameFor(value) + "]");

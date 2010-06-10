@@ -17,7 +17,7 @@ public class ConverterUtils {
 	}
 
 	public static Writer createWriter(String filename) throws IOException {
-		return createWriter(filename, "++generated++");
+		return createWriter(filename, "%%sup [[generated]/%");
 	}
 
 	public static Writer createWriter(String filename, String headerText) throws IOException {
@@ -25,4 +25,10 @@ public class ConverterUtils {
 		w.append(headerText+ "\n");
 		return w;
 	}
+
+	public static String clean(String string) {
+		string = string.replaceAll("\\[", "[[");
+		return string;
+	}
+	
 }

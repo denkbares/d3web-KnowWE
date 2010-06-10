@@ -187,7 +187,7 @@ public class SubstanceWriter extends WISECWriter {
 	}
 
 	public static String asWikiMarkup(Substance substance) {
-		return "[ " + substance.getName() + " | "
+		return "[ " + clean(substance.getName()) + " | "
 				+ SubstanceWriter.getWikiFileNameFor(substance.getName()) + "]";
 	}
 
@@ -196,6 +196,7 @@ public class SubstanceWriter extends WISECWriter {
 		name = name.replace(",", "-");
 		name = name.replace(".", "-");
 		name = name.replace(":", "-");
+		name = ConverterUtils.clean(name);
 		return name;
 	}
 

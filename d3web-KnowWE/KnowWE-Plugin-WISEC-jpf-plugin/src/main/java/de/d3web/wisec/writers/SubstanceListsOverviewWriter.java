@@ -27,7 +27,7 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 			buffy.append("| " + getUpperListNumber(list)); // UpperListName
 			buffy.append(" | " + getUpperListName(list));   // UperListNumber
 			
-			buffy.append(" | [" + list.name +" | " +filename+ "] "); // Name of the List
+			buffy.append(" | [" + clean(list.name) +" | " +filename+ "] "); // Name of the List
 			
 			buffy.append(" | "+ computeConsideredString(list));      // How much considered?
 			buffy.append(" | "+ SubstanceListWriter.getCriteriaString(list)); // Which criteria used?
@@ -42,6 +42,10 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 
 
 	
+	private String clean(String string) {
+		return ConverterUtils.clean(string);
+	}
+
 	private String getUpperListNumber(SubstanceList list) {
 		if (list.upperList == null) {
 			return "";
@@ -56,7 +60,7 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 			return "";
 		}
 		else {
-			String linked = "["+list.upperList.getName()+" | " + UpperListWriter.getWikiFilename(list.upperList.getName()) + "]";
+			String linked = "["+clean(list.upperList.getName())+" | " + UpperListWriter.getWikiFilename(list.upperList.getName()) + "]";
 			return linked;
 		}
 	}
