@@ -1,18 +1,18 @@
 package de.d3web.wisec.writers;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.d3web.wisec.converter.WISECExcelConverter;
 import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.UpperList;
 import de.d3web.wisec.model.WISECModel;
 
 public class UpperListWriter extends WISECWriter {
 
-	private static String filePraefix = "WI_UL_";
+	private static String filePraefix = WISECExcelConverter.FILE_PRAEFIX+"UL_";
 	private static Map<String, String> listName2fileName = new HashMap<String, String>();
 
 	public UpperListWriter(WISECModel model, String outputDirectory) {
@@ -26,13 +26,13 @@ public class UpperListWriter extends WISECWriter {
 			counter++;
 			list.filename = filePraefix +counter;
 			listName2fileName.put(list.getName(), list.filename);
-			FileWriter writer = new FileWriter(new File(this.outputDirectory+list.filename+".txt"));
+			Writer writer = ConverterUtils.createWriter(this.outputDirectory+list.filename+".txt");
 			write(list,writer);
 			writer.close();
 		}
 	}
 
-	private void write(UpperList list, FileWriter w) throws IOException {
+	private void write(UpperList list, Writer w) throws IOException {
 		w.write("!!! " + list.getName() + "\n\n");
 		
 		w.write("!! Attributes \n\n");

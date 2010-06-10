@@ -1,7 +1,5 @@
 package de.d3web.wisec.writers;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -14,7 +12,7 @@ import de.d3web.wisec.model.WISECModel;
 
 public class SubstanceListWriter extends WISECWriter {
 
-	private static String FILE_PRAEFIX = "WI_SL_";
+	private static String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX+"SL_";
 	private boolean withKnowledge;
 
 	public SubstanceListWriter(WISECModel model, String outputDirectory) {
@@ -25,8 +23,8 @@ public class SubstanceListWriter extends WISECWriter {
 	public void write() throws IOException {
 		for (SubstanceList list : model.getSubstanceLists()) {
 			list.filename = getWikiFileNameFor(list.name);
-			FileWriter writer = new FileWriter(new File(this.outputDirectory + list.filename
-					+ ".txt"));
+			Writer writer = ConverterUtils.createWriter(this.outputDirectory + list.filename
+					+ ".txt");
 			write(list, writer);
 			writer.close();
 		}

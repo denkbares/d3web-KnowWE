@@ -15,9 +15,13 @@ import de.d3web.wisec.readers.UpperListReader;
 import de.d3web.wisec.readers.WISECReader;
 import de.d3web.wisec.scoring.ScoringWeightsConfiguration;
 import de.d3web.wisec.writers.OverviewWriter;
+import de.d3web.wisec.writers.RatingOverviewWriter;
 import de.d3web.wisec.writers.SubstanceListWriter;
+import de.d3web.wisec.writers.SubstanceListsOverviewWriter;
 import de.d3web.wisec.writers.SubstanceRatingListWriter;
 import de.d3web.wisec.writers.SubstanceWriter;
+import de.d3web.wisec.writers.SubstancesOverviewWriter;
+import de.d3web.wisec.writers.UpperListOverviewWriter;
 import de.d3web.wisec.writers.UpperListWriter;
 import de.d3web.wisec.writers.WISECWriter;
 
@@ -25,9 +29,12 @@ import de.d3web.wisec.writers.WISECWriter;
  * Converts the WISEC database (provided as Excel file) into
  * a collection of KnowWE wiki articles (provided as text files).
  * 
- * Todo:
- * - WI_WISEC.txt Overview of all lists generated (with number substances in parentheses)
- * - UpperList Generation and semantic alignment of lists and upper lists
+ * Current Todos:
+ * - Sonderzeichen in names of substances?
+ * - no "+" preleading the rating of a substance (should be done, check!)
+ * 
+ * Later Todos:
+ * - Semantic alignment of lists and upper lists
  * 
  * @author joba
  *
@@ -39,15 +46,22 @@ public class WISECExcelConverter {
 	public static String workspace                = "/Users/joba/Documents/Projekte/WISEC/DB/";
 	// Destination directory, where the generated files are put
 	public static String wikiworkspace            = "/Users/joba/wikirepositories/wikicontent/";
+	// Praefix of most of the generated files
+	public static final String FILE_PRAEFIX = "WI_";
+
 	// Name of the column that identifies the name of a substance 
 	public static String SUBSTANCE_IDENTIFIER     = "SGN";
 	// Include semantic annotations etc. in the generation process
 	public static boolean GENERATE_WITH_KNOWLEDGE = false;
 	// Minimum number of occurrences of a substance, that is required before it is considered for the model
-	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes 9min
-	//public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes 30min
+//	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes 9min
+	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes 30min
 	// The generation of lists is limited by the maxListsToConvert threshold 
+//	public static final int maxListsToConvert = 10;
 	public static final int maxListsToConvert = 1000000;
+	
+	// Excel identifier for the numbers
+	public static final String NUMBER_KEY = "LfdNr";
 	
 	
 	public static void main(String[] args) throws BiffException, IOException {
@@ -97,8 +111,14 @@ public class WISECExcelConverter {
 		
 		writers.add(new SubstanceWriter(model, outputDirectory));
 		
-		writers.addAll(configureRatingConfigurations(model, outputDirectory));
+		writers.add(new UpperListOverviewWriter(model, outputDirectory));
+		writers.add(new SubstanceListsOverviewWriter(model, outputDirectory));
 		
+		writers.add(new SubstancesOverviewWriter(model, outputDirectory));
+		
+		writers.addAll(configureRatingConfigurations(model, outputDirectory));
+		writers.add(new RatingOverviewWriter(model, outputDirectory));
+
 		// the overview should be the last in the list, since it uses some  
 		// information generated in previous writers
 		writers.add(new OverviewWriter(model, outputDirectory));
@@ -166,6 +186,5 @@ public class WISECExcelConverter {
 		writers.add(toxicSubstances);
 
 		return writers;
-	}
-
+	}	
 }

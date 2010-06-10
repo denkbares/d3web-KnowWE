@@ -1,7 +1,5 @@
 package de.d3web.wisec.writers;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -9,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.d3web.wisec.converter.WISECExcelConverter;
 import de.d3web.wisec.model.Substance;
 import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.WISECModel;
@@ -17,7 +16,7 @@ import de.d3web.wisec.scoring.ScoringUtils;
 
 public class SubstanceWriter extends WISECWriter {
 
-	public static final String FILE_PRAEFIX = "WI_SUB_";
+	public static final String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX+"SUB_";
 	private static final int MAXLENGTH = 10;
 	private static Map<String, String> filenameMap = new HashMap<String, String>();
 
@@ -30,8 +29,8 @@ public class SubstanceWriter extends WISECWriter {
 		for (Substance substance : model.getSubstances()) {
 			if (model.usesInLists(substance) >= model.SUBSTANCE_OCCURRENCE_THRESHOLD) {
 				String filename = getWikiFileNameFor(substance.getName());
-				FileWriter writer = new FileWriter(new File(
-						this.outputDirectory + filename + ".txt"));
+				Writer writer = ConverterUtils.createWriter(this.outputDirectory + filename + ".txt");
+				
 				write(substance, writer);
 				writer.close();
 			}
@@ -108,7 +107,9 @@ public class SubstanceWriter extends WISECWriter {
 				List<SubstanceList> list = model.listsWithCriteriaHavingValue(substance.getName(), criteria, cValue);
 				b.append(" | " + list.size());
 			}
-			b.append(" | " + ScoringUtils.computeScoreFor(model, new DefaultScoringWeightsConfiguration(), substance, criteria));
+			
+			double score = ScoringUtils.computeScoreFor(model, new DefaultScoringWeightsConfiguration(), substance, criteria);
+			b.append(" | " + ScoringUtils.prettyPrint(score));
 			b.append("\n");
 		}
 	}

@@ -17,14 +17,20 @@ public class ScoringUtils {
 	
 	public static double computeScoreFor(WISECModel model, ScoringWeightsConfiguration weights, Substance substance, String criteriaType) {
 		double scoring = 0;
+		double inclucedLists = 0;
 		for (SubstanceList list : model.getSubstanceListsContaining(substance.getName())) {
 			String criteriaValue = list.criteria.get(criteriaType);
 			if (criteriaValue != null) {
+				inclucedLists ++;
 				scoring += criteriaFactorFor(criteriaValue) * weights.weightFor(criteriaType);
 			}
 		}
-		
-		return scoring;
+		if (inclucedLists == 0) {
+			return 0;
+		}
+		else {
+			return scoring / inclucedLists;
+		}
 	}
 
 	public static Double computeTotalScoreFor(WISECModel model, ScoringWeightsConfiguration configuration, Substance substance) {
@@ -33,6 +39,15 @@ public class ScoringUtils {
 			totalScore += computeScoreFor(model, configuration, substance, criteriaName);
 		}
 		return Double.valueOf(totalScore);
+	}
+	
+	public static String prettyPrint(double score) {
+		return prettyPrint(score, 4);
+	}
+	
+	public static String prettyPrint(double score, int decimalPlace) {
+		String formatStr = "%10."+decimalPlace+"f";
+		return String.format(formatStr, score);
 	}
 	
 }

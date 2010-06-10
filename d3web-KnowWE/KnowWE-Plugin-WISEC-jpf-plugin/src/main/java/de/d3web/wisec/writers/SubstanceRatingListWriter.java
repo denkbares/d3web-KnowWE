@@ -1,12 +1,12 @@
 package de.d3web.wisec.writers;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.d3web.wisec.converter.WISECExcelConverter;
 import de.d3web.wisec.model.Substance;
 import de.d3web.wisec.model.WISECModel;
 import de.d3web.wisec.scoring.DefaultScoringWeightsConfiguration;
@@ -14,7 +14,7 @@ import de.d3web.wisec.scoring.ScoringUtils;
 import de.d3web.wisec.scoring.ScoringWeightsConfiguration;
 
 public class SubstanceRatingListWriter extends WISECWriter {
-	public static final String FILE_PRAEFIX = "WI_RATING_";
+	public static final String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX+"RATING_";
 	ScoringWeightsConfiguration configuration = new DefaultScoringWeightsConfiguration();
 	
 	class SubstanceWithRating implements Comparable<SubstanceWithRating> {
@@ -35,7 +35,7 @@ public class SubstanceRatingListWriter extends WISECWriter {
 
 	@Override
 	public void write() throws IOException {
-		FileWriter writer = new FileWriter(new File(this.outputDirectory+getFileNameFor(configuration.getName())+".txt"));
+		Writer writer = ConverterUtils.createWriter(this.outputDirectory+getFileNameFor(configuration.getName())+".txt");
 		List<SubstanceWithRating> substances = computeRating();
 		Collections.sort(substances);
 		if (substances.size() > configuration.MAX_SUBSTANCES_IN_RATING) {
@@ -54,7 +54,7 @@ public class SubstanceRatingListWriter extends WISECWriter {
 		for (SubstanceWithRating substanceWithRating : substances) {
 			b.append("# " + SubstanceWriter.asWikiMarkup(substanceWithRating.substance) + 
 					" - " + substanceWithRating.substance.get("Chemical") +	
-					" ("+substanceWithRating.rating+")\n");
+					" ("+ ScoringUtils.prettyPrint(substanceWithRating.rating)+")\n");
 		}
 		b.append("\n");
 		writer.append(b.toString());
