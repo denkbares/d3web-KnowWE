@@ -386,12 +386,16 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		for (Object o : wikipages) {
 			WikiPage wp = (WikiPage) o;
-			String content = engine.getPureText(wp.getName(), wp.getVersion());
-			KnowWEArticle article = new KnowWEArticle(content, wp.getName(),
-					KnowWEEnvironment.getInstance().getRootType(),
-					KnowWEEnvironment.DEFAULT_WEB);
-			KnowWEEnvironment.getInstance().getArticleManager(
-					"default_web").saveUpdatedArticle(article);
+			KnowWEArticle article = KnowWEEnvironment.getInstance().getArticle(
+					KnowWEEnvironment.DEFAULT_WEB, wp.getName());
+			if (article == null) {
+				String content = engine.getPureText(wp.getName(), wp.getVersion());
+				article = new KnowWEArticle(content, wp.getName(),
+						KnowWEEnvironment.getInstance().getRootType(),
+						KnowWEEnvironment.DEFAULT_WEB);
+				KnowWEEnvironment.getInstance().getArticleManager(
+						"default_web").saveUpdatedArticle(article);
+			}
 
 		}
 
