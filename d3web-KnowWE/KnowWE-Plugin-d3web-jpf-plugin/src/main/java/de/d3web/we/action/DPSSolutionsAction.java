@@ -74,6 +74,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				return -1;
 			}
 			List<Information> infos1 = new ArrayList<Information>(dummy1);
+			((InferenceComparator) infComp).sortSameSolutions(true);
 			Collections.sort(infos1, infComp);
 
 			Collection<Information> dummy2 = broker.getSession()
@@ -99,6 +100,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				}
 			}
 
+			((InferenceComparator) infComp).sortSameSolutions(false);
 			int res = new InferenceComparator().compare(info1, info2);
 			if (res == 0) {
 				int i1 = count(o1);
@@ -126,6 +128,12 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 
 	public class InferenceComparator implements Comparator<Information> {
 
+		private boolean sortSameSolutions;
+
+		public void sortSameSolutions(boolean value) {
+			sortSameSolutions = value;
+		}
+
 		public int compare(Information o1, Information o2) {
 			if (o1 == null)
 				return -1;
@@ -149,9 +157,10 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				double cb = b1 / b2;
 				double ci = i1 / i2;
 				if (cb < ci) {
-					return -1;
-				} else if (ci < cb) {
-					return 1;
+					return sortSameSolutions ? -1 : 1;
+				}
+				else if (cb > ci) {
+					return sortSameSolutions ? 1 : -1;
 				} else {
 					if (b1 < i1) {
 						return -1;
