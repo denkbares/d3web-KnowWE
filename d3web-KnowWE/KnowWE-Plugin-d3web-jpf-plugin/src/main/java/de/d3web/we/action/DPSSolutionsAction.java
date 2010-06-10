@@ -20,8 +20,6 @@
 
 package de.d3web.we.action;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,7 +72,6 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				return -1;
 			}
 			List<Information> infos1 = new ArrayList<Information>(dummy1);
-			((InferenceComparator) infComp).sortSameSolutions(true);
 			Collections.sort(infos1, infComp);
 
 			Collection<Information> dummy2 = broker.getSession()
@@ -100,7 +97,6 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				}
 			}
 
-			((InferenceComparator) infComp).sortSameSolutions(false);
 			int res = new InferenceComparator().compare(info1, info2);
 			if (res == 0) {
 				int i1 = count(o1);
@@ -128,57 +124,41 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 
 	public class InferenceComparator implements Comparator<Information> {
 
-		private boolean sortSameSolutions;
-
-		public void sortSameSolutions(boolean value) {
-			sortSameSolutions = value;
-		}
-
 		public int compare(Information o1, Information o2) {
 			if (o1 == null)
 				return -1;
 			if (o2 == null)
 				return +1;
-			if (o1.getInformationType().equals(
-					InformationType.XCLInferenceInformation)
-					&& o2.getInformationType().equals(
-							InformationType.XCLInferenceInformation)) {
-				double b1 = (Double) o1.getValues().get(0);
-				double b2 = (Double) o1.getValues().get(1);
-				double i1 = (Double) o2.getValues().get(0);
-				double i2 = (Double) o2.getValues().get(1);
-				if (b2 == 0) {
-					return -1;
-				}
-				if (i2 == 0) {
-					return 1;
-				}
 
-				double cb = b1 / b2;
-				double ci = i1 / i2;
-				if (cb < ci) {
-					return sortSameSolutions ? -1 : 1;
-				}
-				else if (cb > ci) {
-					return sortSameSolutions ? 1 : -1;
-				} else {
-					if (b1 < i1) {
+			if (o1.getInformationType().equals(InformationType.XCLInferenceInformation)
+					&& o2.getInformationType().equals(InformationType.XCLInferenceInformation)) {
+
+				double confidence1 = (Double) o1.getValues().get(0);
+				double confidence2 = (Double) o2.getValues().get(0);
+
+				// Try to sort by confidence
+				if (confidence1 > confidence2) return 1;
+				else if (confidence1 < confidence2)
+					return -1;
+				else { // confidence1 == confidence2 -> we sort by support
+
+					double support1 = (Double) o1.getValues().get(1);
+					double support2 = (Double) o2.getValues().get(1);
+
+					if (support1 > support2) return 1;
+					else if (support1 < support2)
 						return -1;
-					} else if (i1 < b1) {
-						return 1;
-					} else {
-						return 0;
-					}
+
+					return 0;
 				}
 			}
-			if (!o1.getInformationType().equals(
-					InformationType.XCLInferenceInformation)) {
+
+			if (!o1.getInformationType().equals(InformationType.XCLInferenceInformation))
 				return -1;
-			}
-			if (!o2.getInformationType().equals(
-					InformationType.XCLInferenceInformation)) {
+
+			if (!o2.getInformationType().equals(InformationType.XCLInferenceInformation))
 				return 1;
-			}
+
 			return 0;
 		}
 
@@ -228,7 +208,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 						+ getInferenceInfo(b, term, string) + "</a>");
 			}
 
-			sb.append(getAssumptionsLink(user, web, term, assumptionMap));
+			// sb.append(getAssumptionsLink(user, web, term, assumptionMap));
 
 			StringBuffer inner = new StringBuffer();
 			inner.append(KnowWERenderUtils.getTopicLink(web,
@@ -335,63 +315,66 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 
 	}
 
-	private StringBuffer getAssumptionsLink(String user, String web, Term term,
-			ISetMap<Term, Information> assumptionMap) {
-
-		StringBuffer sb = new StringBuffer();
-		Collection<Information> assumptions = assumptionMap.get(term);
-		int etas = countEtablished(assumptions);
-		int suggs = countSuggested(assumptions);
-		int excs = countExcluded(assumptions);
-
-		// String user = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.USER, String.class, true);
-		// String web = (String) BasicUtils.getModelAttribute(model,
-		// KnowWEAttributes.WEB, String.class, true);
-		String link = "";
-		try {
-
-			link = " rel=\"{term : '"
-					+ URLEncoder.encode((String) term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
-					+ "', web : '" + web + "', user: '" + user + "'}\"";
-
-			// link =
-			// "javascript:kwiki_window('KnowWE.jsp?renderer=KWiki_solutionLog&KWikiUser="
-			// + user
-			// + "&KWikiWeb="
-			// + web
-			// + "&KWikiTerm="
-			// + URLEncoder.encode((String)
-			// term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
-			// + "')";
-		}
-		catch (UnsupportedEncodingException e) {
-
-		}
-
-		if (shouldDisplay(etas, suggs, excs)) {
-			sb.append("<div class=\"show-solutions-log pointer\" " + link + ">");
-			sb.append("(");
-			sb.append("<span title='" + rb.getString("KnowWE.solution.established")
-					+ "' style='color:#007700'>");
-			sb.append(etas);
-			sb.append("</span>");
-			sb.append("|");
-			sb.append("<span title='" + rb.getString("KnowWE.solution.suggested")
-					+ "' style='color:#FF6600'>");
-			sb.append(suggs);
-			sb.append("</span>");
-			sb.append("|");
-			sb.append("<span title='" + rb.getString("KnowWE.solution.excluded")
-					+ "' style='color:#CC0000'>");
-			sb.append(excs);
-			sb.append("</span>");
-			sb.append(")");
-			sb.append("</div>");
-		}
-
-		return sb;
-	}
+	// private StringBuffer getAssumptionsLink(String user, String web, Term
+	// term,
+	// ISetMap<Term, Information> assumptionMap) {
+	//
+	// StringBuffer sb = new StringBuffer();
+	// Collection<Information> assumptions = assumptionMap.get(term);
+	// int etas = countEtablished(assumptions);
+	// int suggs = countSuggested(assumptions);
+	// int excs = countExcluded(assumptions);
+	//
+	// // String user = (String) BasicUtils.getModelAttribute(model,
+	// // KnowWEAttributes.USER, String.class, true);
+	// // String web = (String) BasicUtils.getModelAttribute(model,
+	// // KnowWEAttributes.WEB, String.class, true);
+	// String link = "";
+	// try {
+	//
+	// link = " rel=\"{term : '"
+	// + URLEncoder.encode((String) term.getInfo(TermInfoType.TERM_NAME),
+	// "ISO-8859-1")
+	// + "', web : '" + web + "', user: '" + user + "'}\"";
+	//
+	// // link =
+	// //
+	// "javascript:kwiki_window('KnowWE.jsp?renderer=KWiki_solutionLog&KWikiUser="
+	// // + user
+	// // + "&KWikiWeb="
+	// // + web
+	// // + "&KWikiTerm="
+	// // + URLEncoder.encode((String)
+	// // term.getInfo(TermInfoType.TERM_NAME), "ISO-8859-1")
+	// // + "')";
+	// }
+	// catch (UnsupportedEncodingException e) {
+	//
+	// }
+	//
+	// if (shouldDisplay(etas, suggs, excs)) {
+	// sb.append("<div class=\"show-solutions-log pointer\" " + link + ">");
+	// sb.append("(");
+	// sb.append("<span title='" + rb.getString("KnowWE.solution.established")
+	// + "' style='color:#007700'>");
+	// sb.append(etas);
+	// sb.append("</span>");
+	// sb.append("|");
+	// sb.append("<span title='" + rb.getString("KnowWE.solution.suggested")
+	// + "' style='color:#FF6600'>");
+	// sb.append(suggs);
+	// sb.append("</span>");
+	// sb.append("|");
+	// sb.append("<span title='" + rb.getString("KnowWE.solution.excluded")
+	// + "' style='color:#CC0000'>");
+	// sb.append(excs);
+	// sb.append("</span>");
+	// sb.append(")");
+	// sb.append("</div>");
+	// }
+	//
+	// return sb;
+	// }
 
 	private boolean shouldDisplay(int etas, int suggs, int excs) {
 		if ((etas + suggs + excs) <= 1) {
