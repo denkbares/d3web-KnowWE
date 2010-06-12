@@ -43,7 +43,7 @@ public class UserSettingsManager {
 		return RenderingMode.VIEW;
 	}
 	
-	private Map<String, UserSetting> settings = new HashMap<String , UserSetting>();
+	private final Map<String, UserSetting> settings = new HashMap<String , UserSetting>();
 	
 	public boolean hasQuickEditFlagSet(String nodeID, String user, String topic) {
 		if(settings.get(user) == null) return false;
@@ -51,10 +51,16 @@ public class UserSettingsManager {
 		return settings.get(user).hasQuickEditFlagSet(nodeID, topic);
 	}
 
-	public void setQuickEditFlag(String nodeID, String user, String topic) {
+	public boolean quickEditIsInPre(String nodeID, String user, String topic) {
+		if (settings.get(user) == null) return false;
+
+		return settings.get(user).quickEditIsInPre(nodeID, topic);
+	}
+
+	public void setQuickEditFlag(String nodeID, String user, String topic, String inPre) {
 		if(settings.get(user) == null) settings.put(user, new UserSetting());
 		
-		settings.get(user).setQuickEditFlag(nodeID, topic);
+		settings.get(user).setQuickEditFlag(nodeID, topic, inPre);
 		
 	}
 	

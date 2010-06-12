@@ -127,11 +127,11 @@ public class KnowWEUtils {
 	}
 	
 	/**
-	 * Stores the given Collection of Messages <tt>m</tt> with the type <tt>MSGType</tt> 
-	 * from the Class <tt>source</tt> for the KnowWEArticle <tt>article</tt> and 
+	 * Stores the given Collection of Messages <tt>m</tt> with the type <tt>MSGType</tt>
+	 * from the Class <tt>source</tt> for the KnowWEArticle <tt>article</tt> and
 	 * the Section <tt>s</tt>. <p/>
 	 * <b>ATTENTION: This method can only be used once for each article, section,
-	 * source and msgType. If you use this Method a second time with the same parameters, the 
+	 * source and msgType. If you use this Method a second time with the same parameters, the
 	 * first Collection gets overwritten!</b>
 	 * 
 	 * @param article is the article you want to store the messages for
@@ -147,7 +147,7 @@ public class KnowWEUtils {
 			Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec, msgType);
 			if (msgsMap == null) {
 				msgsMap = new HashMap<String, Collection<MSGType>>();
-				KnowWEUtils.storeSectionInfo(article.getWeb(), article.getTitle(), sec.getId(), 
+				KnowWEUtils.storeSectionInfo(article.getWeb(), article.getTitle(), sec.getId(),
 						createMsgMapKey(msgType), msgsMap);
 			}
 			msgsMap.put(source.getName(), Collections.unmodifiableCollection(msgs));
@@ -165,7 +165,7 @@ public class KnowWEUtils {
 	 * @param msgType is the Class of the Messages you want
 	 * @return an unmodifiable Collection of Messages
 	 */
-	public static <MSGType> Collection<MSGType> getMessagesFromSubtree(KnowWEArticle article, 
+	public static <MSGType> Collection<MSGType> getMessagesFromSubtree(KnowWEArticle article,
 			Section<?> sec, Class<MSGType> msgType) {
 		Collection<MSGType> msgsList = new ArrayList<MSGType>();
 		List<Section<?>> nodes = new ArrayList<Section<?>>();
@@ -199,7 +199,7 @@ public class KnowWEUtils {
 	}
 	
 	/**
-	 * Returns an unmodifiable Collection containing all Messages of the Type <tt>MSGType</tt> 
+	 * Returns an unmodifiable Collection containing all Messages of the Type <tt>MSGType</tt>
 	 * stored for the Class <tt>source</tt>.
 	 * 
 	 * @param article is the article you want the message from (not necessarily the same
@@ -210,7 +210,7 @@ public class KnowWEUtils {
 	 * @param msgType is the Class of the Messages you want
 	 * @return an unmodifiable Collection of Messages
 	 */
-	public static <MSGType> Collection<MSGType> getMessages(KnowWEArticle article, Section<?> sec, 
+	public static <MSGType> Collection<MSGType> getMessages(KnowWEArticle article, Section<?> sec,
 			Class<?> source, Class<MSGType> msgType) {
 		Map<String, Collection<MSGType>> msgsMap =  getMessagesMapModifiable(article, sec, msgType);
 		if (msgsMap != null && msgsMap.containsKey(source.getName())) {
@@ -230,7 +230,7 @@ public class KnowWEUtils {
 	 * @param msgType is the Class of the Messages you want
 	 * @return an unmodifiable Map with the Messages, mapped after <tt>source.getName()</tt>
 	 */
-	public static <MSGType> Map<String, Collection<MSGType>> getMessagesMap(KnowWEArticle article, 
+	public static <MSGType> Map<String, Collection<MSGType>> getMessagesMap(KnowWEArticle article,
 			Section<?> sec, Class<MSGType> msgType) {
 		return Collections.unmodifiableMap(getMessagesMapModifiable(article, sec, msgType));
 	}
@@ -239,9 +239,9 @@ public class KnowWEUtils {
 	 * This method is private to avoid misuse (this map is modifiable).
 	 */
 	@SuppressWarnings("unchecked")
-	private static <MSGType> Map<String, Collection<MSGType>> getMessagesMapModifiable(KnowWEArticle article, 
+	private static <MSGType> Map<String, Collection<MSGType>> getMessagesMapModifiable(KnowWEArticle article,
 			Section<?> sec, Class<MSGType> msgType) {
-		return (Map<String, Collection<MSGType>>) KnowWEUtils.getStoredObject(article.getWeb(), 
+		return (Map<String, Collection<MSGType>>) KnowWEUtils.getStoredObject(article.getWeb(),
 				article.getTitle(), sec.getId(), createMsgMapKey(msgType));
 	}
 
@@ -362,10 +362,11 @@ public class KnowWEUtils {
 				KnowWEEnvironment.HTML_BRACKET_OPEN, "[");
 		htmlContent = htmlContent.replaceAll(
 				KnowWEEnvironment.HTML_BRACKET_CLOSE, "]");
-		htmlContent = htmlContent.replace(
-				KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN, "{");
-		htmlContent = htmlContent.replace(
-				KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE, "}");
+		// htmlContent = htmlContent.replace(
+		// KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN, "{");
+		// htmlContent = htmlContent.replace(
+		// KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE, "}");
+
 		return htmlContent;
 	}
 
@@ -397,10 +398,10 @@ public class KnowWEUtils {
 				KnowWEEnvironment.HTML_BRACKET_OPEN);
 		htmlContent = htmlContent.replace("]",
 				KnowWEEnvironment.HTML_BRACKET_CLOSE);
-		htmlContent = htmlContent.replace("{",
-				KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN);
-		htmlContent = htmlContent.replace("}",
-				KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE);
+		// htmlContent = htmlContent.replace("{",
+		// KnowWEEnvironment.HTML_CURLY_BRACKET_OPEN);
+		// htmlContent = htmlContent.replace("}",
+		// KnowWEEnvironment.HTML_CURLY_BRACKET_CLOSE);
 		return htmlContent;
 	}
 

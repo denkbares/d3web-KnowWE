@@ -58,7 +58,7 @@ KNOWWE.core.actions = function(){
                     _KE.add('click', els[i], function(e){
                         var el = _KE.target(e);
                         var rel = eval("(" + el.getAttribute('rel') + ")");
-                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, null );
+                        KNOWWE.core.actions.enableQuickEdit( KNOWWE.core.edit.init, rel.id, "render" );
                     });
                 }
                 //check for save button in case the user reloads the page during quick edit
@@ -155,7 +155,8 @@ KNOWWE.core.actions = function(){
                 action : 'SetQuickEditFlagAction',
                 TargetNamespace : id,
                 KWiki_Topic : KNOWWE.helper.gup('page'),
-                ajaxToHTML : view
+                ajaxToHTML : view,
+                inPre : KNOWWE.helper.tagParent(_KS('#' + id), 'pre') != document
             }   
             
             var options = {

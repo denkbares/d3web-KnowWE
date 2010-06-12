@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -93,10 +94,22 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		}
 
 		if ( isEditable ) {
+			// Setting pre-Environment to avoid textarea content being rendered
+			// by JSPWiki if page was refreshed (while QuickEdit being opened).
+			// But only if there is no other one around it.
+			boolean preNeeded = !user.getUrlParameterMap().containsKey("action")
+					&& !UserSettingsManager.getInstance().quickEditIsInPre(sec.getId(),
+							user.getUsername(), sec.getTitle());
+			if (preNeeded) {
+				string.append("{{{");
+			}
 			String str = sec.getOriginalText();
 			string.append( KnowWEUtils.maskHTML( "<textarea name=\"default-edit-area\" id=\"" + sec.getId() + "/default-edit-area\" style=\"width:92%; height:"+this.getHeight(str)+"px;\">" ));
 			string.append( str );
 			string.append( KnowWEUtils.maskHTML( "</textarea>" ));
+			if (preNeeded) {
+				string.append("}}}");
+			}
 			string.append( KnowWEUtils.maskHTML( "<div class=\"default-edit-handle\"></div>" ));
 		} else {
 			// here the normal rendered content of the subtree is appended

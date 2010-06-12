@@ -53,6 +53,7 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 
 		String topic = parameterMap.getTopic();
 		String user = parameterMap.getUser();
+		String inPre = parameterMap.get("inPre");
 
 		KnowWEWikiConnector connector = KnowWEEnvironment.getInstance().getWikiConnector();
 
@@ -70,12 +71,17 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 			} else {
 				connector.setPageLocked(topic, user);
 			}
-			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user, topic);
+			UserSettingsManager.getInstance().setQuickEditFlag(nodeID, user, topic, inPre);
 			String result = this.rerenderKDOMElement(web, topic, new KnowWEUserContextImpl(user, parameterMap),nodeID);
 			
-			//Pushing the result through the JSPWiki rendering pipeline
-			result = KnowWEUtils.maskHTML(result);
-			result = KnowWEEnvironment.getInstance().getWikiConnector().renderWikiSyntax(result, parameterMap);
+			// Pushing the result through the JSPWiki rendering pipeline when QE
+			// is being closed and QE isn't within a pre-environment
+			if (!UserSettingsManager.getInstance().hasQuickEditFlagSet(nodeID, user, topic)
+					&& !UserSettingsManager.getInstance().quickEditIsInPre(nodeID, user, topic)) {
+				result = KnowWEUtils.maskHTML(result);
+				result = KnowWEEnvironment.getInstance().getWikiConnector().renderWikiSyntax(
+						result, parameterMap);
+			}
 			return "@replace@" + KnowWEUtils.unmaskHTML(result);
 		} else {
 			return getMessage(topic);

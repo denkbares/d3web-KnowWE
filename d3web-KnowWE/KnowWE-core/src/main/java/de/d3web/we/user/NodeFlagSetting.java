@@ -26,6 +26,19 @@ public class NodeFlagSetting {
 	
 	boolean quickEdit = false;
 	
+	/*
+	 * Is true, if the quickedit is within a pre-environment
+	 */
+	boolean inPre = false;
+
+	public boolean isInPre() {
+		return inPre;
+	}
+
+	public void setInPre(boolean inPre) {
+		this.inPre = inPre;
+	}
+
 	public boolean isQuickEdit() {
 		return quickEdit;
 	}
