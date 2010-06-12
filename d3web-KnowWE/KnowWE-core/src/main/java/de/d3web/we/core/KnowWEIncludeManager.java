@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.d3web.we.event.ArticleCreatedEvent;
+import de.d3web.we.event.EventManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
@@ -389,6 +391,11 @@ public class KnowWEIncludeManager {
 		for (KnowWEArticle ra : reviseArticles) {
 			KnowWEArticle newArt = new KnowWEArticle(ra.getSection().getOriginalText(), ra.getTitle(), 
 					env.getRootType(), web, updatingArticle, false);
+
+			// fire 'article-created' event for the new article
+			EventManager.getInstance().fireEvent(ArticleCreatedEvent.getInstance(), web,
+					null, newArt.getSection());
+
 			env.getArticleManager(web).saveUpdatedArticle(newArt);
 		}
 	}
