@@ -35,14 +35,14 @@ public class TestsuiteRunner extends AbstractCITest {
 	@Override
 	public CITestResult call() {
 
-		String monitoredArticleTitle = config.getMonitoredArticleTitle();
+	String monitoredArticleTitle = config.getMonitoredArticleTitle();
 		KnowWEArticle article = KnowWEEnvironment.getInstance().getArticleManager(
 				KnowWEEnvironment.
-					DEFAULT_WEB).getArticle(monitoredArticleTitle);
+				DEFAULT_WEB).getArticle(monitoredArticleTitle);
 		Section<TestsuiteSection> section = article.getSection().findSuccessor(
 				TestsuiteSection.class);
 
-		if (section != null) {
+	if (section != null) {
 			TestSuite suite = (TestSuite) KnowWEUtils.getStoredObject(section,
 					TestsuiteSection.TESTSUITEKEY);
 			if (suite != null) {
@@ -50,19 +50,19 @@ public class TestsuiteRunner extends AbstractCITest {
 					return new CITestResult(TestResultType.FAILED, "Testsuite is not consistent!");
 				}
 				else if (suite.totalRecall() == 1.0 && suite.totalPrecision() == 1.0) {// testsuite
-																						// passed!
+					// passed!
 					return new CITestResult(TestResultType.SUCCESSFUL, "Testsuite passed!");
 				}
 				else {// testsuite failed
 					return new CITestResult(TestResultType.FAILED,
 							"Testsuite failed! (Total Precision: " + suite.totalPrecision() +
 									", Total Recall: " + suite.totalRecall() + ")");
-				}
 			}
-			else return new CITestResult(TestResultType.ERROR,
+		}
+		else return new CITestResult(TestResultType.ERROR,
 					"Error while retrieving Testsuite from Article '" + article.getTitle() + "' !");
 
-		}
+	}
 		else return new CITestResult(TestResultType.ERROR,
 				"No Testsuite-Section found on Article '" + article.getTitle() + "' !");
 	}

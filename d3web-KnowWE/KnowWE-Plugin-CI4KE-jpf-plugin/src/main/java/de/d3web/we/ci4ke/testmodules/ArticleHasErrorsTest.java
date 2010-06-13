@@ -56,7 +56,7 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 			}
 		}
 		if (hasError) {
-			return new CITestResult(TestResultType.ERROR, buffy.toString());
+			return new CITestResult(TestResultType.FAILED, buffy.toString());
 		}
 		else {
 			return new CITestResult(TestResultType.SUCCESSFUL,
