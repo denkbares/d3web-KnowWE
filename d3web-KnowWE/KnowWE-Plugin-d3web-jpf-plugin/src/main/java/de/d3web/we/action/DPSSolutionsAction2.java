@@ -21,11 +21,13 @@
 package de.d3web.we.action;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.session.Session;
@@ -34,12 +36,17 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.taghandler.SolutionStateViewHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.xcl.InferenceTrace;
+import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.inference.PSMethodXCL;
 
 public class DPSSolutionsAction2 extends AbstractAction {
 
 	private final String iconURL;
 
 	private static ResourceBundle rb;
+
+	private final DecimalFormat dc = new DecimalFormat("0.0#");
 
 	public DPSSolutionsAction2() {
 		ResourceBundle rb = ResourceBundle.getBundle("KnowWE_config");
@@ -165,6 +172,31 @@ public class DPSSolutionsAction2 extends AbstractAction {
 				StringBuffer inner = new StringBuffer();
 				inner.append(KnowWERenderUtils.getTopicLink(web, solution.getName(), iconURL,
 						"dps", true, true));
+
+				Collection<KnowledgeSlice> models = session.getKnowledgeBase()
+						.getAllKnowledgeSlicesFor(PSMethodXCL.class);
+				for (KnowledgeSlice knowledgeSlice : models) {
+					if (knowledgeSlice instanceof XCLModel) {
+						if (((XCLModel) knowledgeSlice).getSolution().equals(
+								solution)) {
+							InferenceTrace trace = ((XCLModel) knowledgeSlice)
+									.getInferenceTrace(session);
+							if (trace != null) {
+								sb.append("<a href=\"#\" class=\"sstate-show-explanation\""
+										+ " rel=\"{term : '" + solution.getName()
+										+ "', session : '" + nameSpace + "', web : '" + web
+										+ "', user: '" + user + "'}\" >\n"
+										+ "<span title='"
+										+ rb.getString("KnowWE.solution.degreeSC") + " / "
+										+ rb.getString("KnowWE.sulution.recall")
+										+ "'> [" + dc.format(trace.getScore()) + ":"
+										+ dc.format(trace.getSupport())
+										+ "]</span>\n</a>");
+							}
+						}
+					}
+				}
+
 				sb.append("</li>");
 			}
 		}
