@@ -169,9 +169,19 @@ public interface KnowWEWikiConnector {
 	public String getArticleSource(String name, int version);
 
 	/**
+	 * Gets the author of the specified version of the given article ( by name )
+	 * 
+	 * @created 14.06.2010
+	 * @param name the name of the article which has to be selected
+	 * @param version the version number of which the author has to be returned
+	 * @return the author of the specified version or null
+	 */
+	public String getAuthor(String name, int version);
+
+	/**
 	 * Returns a map of all wiki pages with page names as key and page sources
 	 * as values
-	 *
+	 * 
 	 * @param web
 	 * @return
 	 */
@@ -320,6 +330,5 @@ public interface KnowWEWikiConnector {
 	 * @return The masked pagedata.
 	 */
 	public String renderWikiSyntax( String pagedata, KnowWEParameterMap map);
-
 
 }

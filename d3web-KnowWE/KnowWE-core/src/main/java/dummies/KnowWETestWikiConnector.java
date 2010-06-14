@@ -270,4 +270,10 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public String getAuthor(String name, int version) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
