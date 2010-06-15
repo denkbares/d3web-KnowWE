@@ -20,7 +20,7 @@
 
 package de.d3web.we.ci4ke.util;
 
-import groovy.lang.Script;
+import groovy.lang.GroovyShell;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.codehaus.groovy.control.CompilerConfiguration;
+
+import de.d3web.we.ci4ke.groovy.GroovyCITestScript;
 import de.d3web.we.ci4ke.groovy.GroovyCITestSubtreeHandler;
 import de.d3web.we.ci4ke.groovy.GroovyCITestType;
 import de.d3web.we.ci4ke.handling.CIDashboardType;
@@ -146,11 +149,8 @@ public class CIUtilities {
 				// section
 				Section<GroovyCITestType> sec = groovyTestSections.get(c);
 				// parse the content of the section into a groovy-script
-				Script script = GroovyCITestSubtreeHandler.
-						parseGroovyCITestSection(sec);
-				@SuppressWarnings("unchecked")
-				Class<? extends CITest> testClass =
-						(Class<? extends CITest>) script.getClass();
+				Class<? extends CITest> testClass = parseGroovyCITestSection(sec);
+
 				classesMap.put(c, testClass);
 
 			}
@@ -179,6 +179,23 @@ public class CIUtilities {
 			}
 		}
 		return classesMap;
+	}
+
+	public static Class<? extends CITest> parseGroovyCITestSection(Section<GroovyCITestType> testSection) {
+
+		CompilerConfiguration cc = new CompilerConfiguration();
+		cc.setScriptBaseClass(GroovyCITestScript.class.getName());
+		GroovyShell shell = new GroovyShell(cc);
+
+		String groovycode = GroovyCITestSubtreeHandler.PREPEND
+				+ DefaultMarkupType.getContent(testSection);
+
+		@SuppressWarnings("unchecked")
+		Class<? extends CITest> clazz =
+				(Class<? extends CITest>) shell.parse(groovycode).getClass();
+
+		return clazz;
+
 	}
 
 	public static Map<String, Section<GroovyCITestType>> getAllGroovyCITestSections(String web) {

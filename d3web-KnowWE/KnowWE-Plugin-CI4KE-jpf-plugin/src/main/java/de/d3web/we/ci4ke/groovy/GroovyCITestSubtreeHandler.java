@@ -21,7 +21,6 @@
 package de.d3web.we.ci4ke.groovy;
 
 import groovy.lang.GroovyShell;
-import groovy.lang.Script;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,11 +28,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 
 import de.d3web.report.Message;
 import de.d3web.we.ci4ke.handling.CIConfig;
+import de.d3web.we.ci4ke.handling.CITest;
 import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
 import de.d3web.we.ci4ke.util.CIUtilities;
@@ -56,7 +55,7 @@ public class GroovyCITestSubtreeHandler extends SubtreeHandler<GroovyCITestType>
 	/**
 	 * Prepend the groovy-code with some import statements
 	 */
-	private static final String PREPEND = "import " + CIConfig.class.getName() + ";\n" +
+	public static final String PREPEND = "import " + CIConfig.class.getName() + ";\n" +
 						"import " + CITestResult.class.getName() + ";\n" +
 						"import static " + TestResultType.class.getName() + ".*;\n";
 
@@ -73,7 +72,7 @@ public class GroovyCITestSubtreeHandler extends SubtreeHandler<GroovyCITestType>
 		}
 
 		try {
-			parseGroovyCITestSection(s);
+			parseAndRunGroovyCITestSection(s);
 		}
 		catch (Throwable th) {
 			// th.printStackTrace();
@@ -89,22 +88,26 @@ public class GroovyCITestSubtreeHandler extends SubtreeHandler<GroovyCITestType>
 
 	/**
 	 * @param s
+	 * @throws Exception
 	 */
-	public static Script parseGroovyCITestSection(Section<GroovyCITestType> s)
-			throws CompilationFailedException {
+	public static void parseAndRunGroovyCITestSection(Section<GroovyCITestType> s)
+			throws Exception {
 
-		CompilerConfiguration config = new CompilerConfiguration();
-		config.setScriptBaseClass(GroovyCITestScript.class.getName());
-		GroovyShell shell = new GroovyShell(config);
+		CompilerConfiguration cc = new CompilerConfiguration();
+		cc.setScriptBaseClass(GroovyCITestScript.class.getName());
+		GroovyShell shell = new GroovyShell(cc);
 
 		String groovycode = PREPEND + DefaultMarkupType.getContent(s);
-
-		return shell.parse(groovycode);
+		
+		CITest test = (CITest) shell.parse(groovycode);
+		CIConfig ciconfig = new CIConfig("","Main","Main","",null);
+		test.init(ciconfig);
+		test.call();
 	}
 
 	public class TestCreatedSuccessfully extends KDOMNotice {
 
-		private String s;
+		private final String s;
 
 		public TestCreatedSuccessfully(String s) {
 			this.s = s;
@@ -118,7 +121,7 @@ public class GroovyCITestSubtreeHandler extends SubtreeHandler<GroovyCITestType>
 
 	public class TestCouldNotBeCreated extends KDOMError {
 
-		private String s;
+		private final String s;
 
 		public TestCouldNotBeCreated(String s) {
 			this.s = s;
