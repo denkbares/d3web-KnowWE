@@ -6,19 +6,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.d3web.abstraction.formula.Add;
-import de.d3web.abstraction.formula.FormulaExpression;
-import de.d3web.abstraction.formula.FormulaNumber;
-import de.d3web.abstraction.formula.QNumWrapper;
-import de.d3web.core.inference.condition.CondEqual;
-import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.Choice;
-import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -33,20 +23,17 @@ import de.d3web.we.wisec.kdom.ListCriteriaRootType;
 import de.d3web.we.wisec.kdom.ListCriteriaType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
+public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler<ListCriteriaType> {
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-
-		// Just to have fewer warnings :-)
-		Section<ListCriteriaType> section = s;
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListCriteriaType> s) {
 
 		KnowledgeBaseManagement kbm = getKBM(article, s);
 
 		if (kbm != null) {
 
 			// Get the necessary Annotations
-			Section<ListCriteriaRootType> root = section.findAncestor(ListCriteriaRootType.class);
+			Section<ListCriteriaRootType> root = s.findAncestor(ListCriteriaRootType.class);
 			String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 
 			// Create AbstractListQuestion
@@ -59,9 +46,9 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			boolean useKDom = s.get().getAllowedChildrenTypes().size() > 0 ? true : false;
 
 			// Process the Table Content
-			if (useKDom) createD3ObjectsUsingKDom(section, kbm, listID);
+			if (useKDom) createD3ObjectsUsingKDom(s, kbm, listID);
 			else {
-				createD3Objects(section.getOriginalText().trim(), kbm, listID);
+				createD3Objects(s.getOriginalText().trim(), kbm, listID);
 			}
 
 			return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
@@ -101,14 +88,14 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 				ArrayList<Section<TableCellContent>> contents = new ArrayList<Section<TableCellContent>>();
 				line.findSuccessorsOfType(TableCellContent.class, contents);
 
-				// Create OWL from cell content
+				// Create d3web objects from cell content
 				if (contents.size() == 2 && !contents.get(1).getOriginalText().matches("\\s*")) {
 					String criteria = contents.get(0).getOriginalText().trim();
 					String value = contents.get(1).getOriginalText().trim();
 					if (criteria.matches("\\w+") && value.matches("\\d")) {
-						QuestionNum counterQ =
-								kbm.createQuestionNum(criteria,
-								kbm.findQContainer("Counter"));
+						// QuestionNum counterQ =
+						// kbm.createQuestionNum(criteria,
+						// kbm.findQContainer("Counter"));
 //						createCounterRule(kbm, listID, counterQ, value);
 					}
 				}
@@ -135,8 +122,9 @@ public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			String criteria = cells[i].trim();
 			String value = cells[i + 1].trim();
 			if (criteria.matches("\\w+") && value.matches("\\d")) {
-				QuestionNum counterQ =
-						kbm.createQuestionNum(criteria, kbm.findQContainer("Counter"));
+				// QuestionNum counterQ =
+				// kbm.createQuestionNum(criteria,
+				// kbm.findQContainer("Counter"));
 //				createCounterRule(kbm, listID, counterQ, value);
 			}
 		}

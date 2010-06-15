@@ -58,4 +58,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="WISECTopSubstancesHandler">
+	 	<parameter id="class"
+			value="de.d3web.we.wisec.taghandler.WISECTopSubstancesHandler" />
+		<parameter id="name" value="WISECTopSubstancesHandler" />
+		<parameter id="description" value="TagHandler WISECTopSubstancesHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
 </plugin>

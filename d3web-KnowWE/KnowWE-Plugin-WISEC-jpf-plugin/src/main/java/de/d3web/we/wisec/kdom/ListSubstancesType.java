@@ -23,7 +23,6 @@ package de.d3web.we.wisec.kdom;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.wisec.kdom.subtreehandler.ListSubstancesD3SubtreeHandler;
 import de.d3web.we.wisec.kdom.subtreehandler.ListSubstancesOWLSubtreeHandler;
 
 /**
@@ -35,8 +34,10 @@ public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
 
 	public ListSubstancesType() {
 		setSectionFinder(new AllTextSectionFinder());
-		addSubtreeHandler(Priority.LOWEST, new ListSubstancesOWLSubtreeHandler());	
-		addSubtreeHandler(new ListSubstancesD3SubtreeHandler());
+		addSubtreeHandler(Priority.LOWEST,
+				new ListSubstancesOWLSubtreeHandler());
+
+		// addSubtreeHandler(new ListSubstancesD3SubtreeHandler());
 		addChildType(new WISECTable());
 	}
 }

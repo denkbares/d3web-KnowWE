@@ -25,16 +25,13 @@ import de.d3web.we.wisec.kdom.UpperListCategoriesRootType;
 import de.d3web.we.wisec.kdom.UpperListCategoriesType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class UpperListCategoriesOWLSubtreeHandler extends OwlSubtreeHandler {
+public class UpperListCategoriesOWLSubtreeHandler extends OwlSubtreeHandler<UpperListCategoriesType> {
 	
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-		
-		// Just to have fewer warnings :-)
-		Section<UpperListCategoriesType> section = s;
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<UpperListCategoriesType> s) {
 		
 		// Get the necessary Annotations
-		Section<UpperListCategoriesRootType> root = section.findAncestor(UpperListCategoriesRootType.class);
+		Section<UpperListCategoriesRootType> root = s.findAncestor(UpperListCategoriesRootType.class);
 		String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 				
 		// Get the WISEC Namespace and create OwlObject
@@ -49,9 +46,9 @@ public class UpperListCategoriesOWLSubtreeHandler extends OwlSubtreeHandler {
 		
 		// Process the Table Content
 		if (useKDom)
-			createOWLUsingKDom(section, ioo, ns, listID);
+ createOWLUsingKDom(s, ioo, ns, listID);
 		else {
-			createOWL(section.getOriginalText().trim(), ioo, ns, listID);
+			createOWL(s.getOriginalText().trim(), ioo, ns, listID);
 		}
 		
 		// Add the created statements to KnowWE's SemanticCore

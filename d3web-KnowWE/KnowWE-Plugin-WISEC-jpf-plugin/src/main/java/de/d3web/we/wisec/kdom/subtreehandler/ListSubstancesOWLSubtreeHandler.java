@@ -24,16 +24,13 @@ import de.d3web.we.wisec.kdom.ListSubstancesRootType;
 import de.d3web.we.wisec.kdom.ListSubstancesType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler {
+public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubstancesType> {
 	
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListSubstancesType> s) {
 
-		// Just to have fewer warnings :-)
-		Section<ListSubstancesType> section = s;
-		
 		// Get the ListID
-		Section<ListSubstancesRootType> root = section.findAncestor(ListSubstancesRootType.class);
+		Section<ListSubstancesRootType> root = s.findAncestor(ListSubstancesRootType.class);
 		String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 		
 		// Get the WISEC Namespace and create OwlObject
@@ -45,9 +42,9 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler {
 		
 		// Process the Table Content
 		if (useKDom)
-			createOWLUsingKDom(section, ioo, ns, listID);
+			createOWLUsingKDom(s, ioo, ns, listID);
 		else {
-			createOWL(section.getOriginalText().trim(), ioo, ns, listID);
+			createOWL(s.getOriginalText().trim(), ioo, ns, listID);
 		}
 		
 		// Add the created statements to KnowWE's SemanticCore

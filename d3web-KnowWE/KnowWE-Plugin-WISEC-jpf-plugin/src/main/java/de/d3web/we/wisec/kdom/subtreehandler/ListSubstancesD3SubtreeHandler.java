@@ -6,13 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.d3web.core.inference.condition.CondEqual;
-import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.manage.RuleFactory;
-import de.d3web.core.session.values.Choice;
-import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.DistributedRegistrationManager;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -30,20 +24,17 @@ import de.d3web.we.wisec.kdom.ListSubstancesRootType;
 import de.d3web.we.wisec.kdom.ListSubstancesType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
+public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler<ListSubstancesType> {
 
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-
-		// Just to have fewer warnings :-)
-		Section<ListSubstancesType> section = s;
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListSubstancesType> s) {
 
 		KnowledgeBaseManagement kbm = getKBM(article, s);
 
 		if (kbm != null) {
 
 			// Get the ListID
-			Section<ListSubstancesRootType> root = section.findAncestor(ListSubstancesRootType.class);
+			Section<ListSubstancesRootType> root = s.findAncestor(ListSubstancesRootType.class);
 			String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 
 			// Create Substance Questionnaire
@@ -53,9 +44,9 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			boolean useKDom = s.get().getAllowedChildrenTypes().size() > 0 ? true : false;
 
 			// Process the Table Content
-			if (useKDom) createD3ObjectsUsingKDom(section, kbm, listID, article.getWeb());
+			if (useKDom) createD3ObjectsUsingKDom(s, kbm, listID, article.getWeb());
 			else {
-				createD3Objects(section.getOriginalText().trim(), kbm, listID, article.getWeb());
+				createD3Objects(s.getOriginalText().trim(), kbm, listID, article.getWeb());
 			}
 
 			return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
@@ -97,10 +88,11 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 					// Create OWL statements from cell content
 					if (contents.size() >= sgnIndex) {
 						String sgn = contents.get(sgnIndex).getOriginalText().trim();
-						QuestionOC sgnQ =
-								kbm.createQuestionOC(sgn, kbm.findQContainer("Substances"),
-								new String[] {
-								"included", "excluded" });
+						// QuestionOC sgnQ =
+						// kbm.createQuestionOC(sgn,
+						// kbm.findQContainer("Substances"),
+						// new String[] {
+						// "included", "excluded" });
 						addGlobalQuestion(sgn, web);
 //						createListRule(kbm, listID, sgnQ);
 					}
@@ -180,9 +172,10 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler {
 			for (int i = 1; i < lines.length; i++) {
 				cells = cellPattern.split(lines[i]);
 				String sgn = cells[sgnIndex].trim();
-				QuestionOC sgnQ =
-						kbm.createQuestionOC(sgn, kbm.findQContainer("Substances"), new String[] {
-						"included", "excluded" });
+				// QuestionOC sgnQ =
+				// kbm.createQuestionOC(sgn, kbm.findQContainer("Substances"),
+				// new String[] {
+				// "included", "excluded" });
 				addGlobalQuestion(sgn, web);
 //				createListRule(kbm, listID, sgnQ);
 			}

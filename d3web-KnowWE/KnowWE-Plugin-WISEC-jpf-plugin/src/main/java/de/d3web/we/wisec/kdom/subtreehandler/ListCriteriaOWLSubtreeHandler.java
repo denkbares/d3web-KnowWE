@@ -24,16 +24,13 @@ import de.d3web.we.wisec.kdom.ListCriteriaRootType;
 import de.d3web.we.wisec.kdom.ListCriteriaType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler {
+public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteriaType> {
 	
 	@Override
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListCriteriaType> s) {
 
-		// Just to have fewer warnings :-)
-		Section<ListCriteriaType> section = s;
-		
 		// Get the necessary Annotations
-		Section<ListCriteriaRootType> root = section.findAncestor(ListCriteriaRootType.class);
+		Section<ListCriteriaRootType> root = s.findAncestor(ListCriteriaRootType.class);
 		String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 		String upperlistID = DefaultMarkupType.getAnnotation(root, "UpperlistID");
 				
@@ -49,9 +46,9 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler {
 		
 		// Process the Table Content
 		if (useKDom)
-			createOWLUsingKDom(section, ioo, ns, listID);
+ createOWLUsingKDom(s, ioo, ns, listID);
 		else {
-			createOWL(section.getOriginalText().trim(), ioo, ns, listID);
+			createOWL(s.getOriginalText().trim(), ioo, ns, listID);
 		}
 
 		// Add the created statements to KnowWE's SemanticCore
