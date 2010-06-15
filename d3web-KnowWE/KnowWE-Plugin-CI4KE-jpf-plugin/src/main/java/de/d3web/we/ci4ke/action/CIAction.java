@@ -21,21 +21,15 @@
 package de.d3web.we.ci4ke.action;
 
 import java.io.IOException;
-import java.util.List;
-
-import org.jdom.Attribute;
-import org.jdom.Element;
 
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.build.CIBuilder;
-import de.d3web.we.ci4ke.diff.DiffEngine;
-import de.d3web.we.ci4ke.diff.DiffFactory;
-import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+import de.d3web.we.ci4ke.handling.CIDashboard;
+import de.d3web.we.ci4ke.handling.CIDashboardType;
 import de.d3web.we.ci4ke.util.CIUtilities;
-import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.wikiConnector.KnowWEWikiConnector;
+import de.d3web.we.kdom.Section;
 
 public class CIAction extends AbstractAction {
 
@@ -52,7 +46,7 @@ public class CIAction extends AbstractAction {
 		if (task.equals("null") || dashboardID.equals("null")) throw new IOException(
 				"CIAction.execute(): Required parameters not set!");
 
-		StringBuffer buffy = new StringBuffer();
+		StringBuffer buffy = new StringBuffer("");
 
 		if (task.equals("executeNewBuild")) {
 
@@ -62,158 +56,39 @@ public class CIAction extends AbstractAction {
 			CIBuilder builder = new CIBuilder(topic, dashboardID);
 			builder.executeBuild();
 
-			CIBuildPersistenceHandler handler = new CIBuildPersistenceHandler(dashboardID);
-			buffy.append(handler.renderNewestBuilds(5));
+			Section<CIDashboardType> sec = CIUtilities.findCIDashboardSection(topic, dashboardID);
+			CIDashboard dashboard = new CIDashboard(sec);
+			buffy.append(dashboard.renderDashboardContents());
+
+			// CIBuildPersistenceHandler handler = new
+			// CIBuildPersistenceHandler(dashboardID);
+			// buffy.append(handler.renderNewestBuilds(5));
+
+			// context.getKnowWEParameterMap().
 
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("getBuildDetails")) {
 
 			int selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
-			buffy.append(renderBuildDetails(dashboardID, selectedBuildNumber));
+			buffy.append(CIDashboardType.renderBuildDetails(dashboardID, selectedBuildNumber));
 
 		}
 		else if (task.equals("refreshBuildList")) {
 
-			int indexFromBack = Integer.parseInt(context.getParameter("indexFromBack"));
-			int numberOfBuilds = Integer.parseInt(context.getParameter("numberOfBuilds"));
+			int indexFromBack =
+					Integer.parseInt(context.getParameter("indexFromBack"));
+			int numberOfBuilds =
+					Integer.parseInt(context.getParameter("numberOfBuilds"));
 
-			CIBuildPersistenceHandler handler = new CIBuildPersistenceHandler(dashboardID);
-			context.getWriter().write(handler.renderBuildList(indexFromBack, numberOfBuilds));
+			CIBuildPersistenceHandler handler = new
+					CIBuildPersistenceHandler(dashboardID);
+			buffy.append(handler.renderBuildList(indexFromBack,
+					numberOfBuilds));
 		}
-		else {
-			buffy.append("@info@CIAction says: Hello World!");
-		}
+		// else {
+		// buffy.append("@info@CIAction says: Hello World!");
+		// }
 
 		context.getWriter().write(buffy.toString());
-	}
-
-	/**
-	 * Renders out the wiki changes (middle column) and the test results (right
-	 * column) of a selected build
-	 * 
-	 * @return
-	 */
-	public static String renderBuildDetails(String dashboardID, int selectedBuildNumber) {
-
-		KnowWEWikiConnector conny = KnowWEEnvironment.getInstance().getWikiConnector();
-		CIBuildPersistenceHandler handler = new CIBuildPersistenceHandler(dashboardID);
-		StringBuffer buffy = new StringBuffer();
-
-		// ------------------------------------------------------------------------
-		// Render the build details in the middle colum
-		// (ci-column-middle)
-		// ------------------------------------------------------------------------
-
-		buffy.append("<div id='" + dashboardID + "-column-middle' class='ci-column-middle'>");
-
-		String xPath = "builds/build[@nr=%s]/test";
-		List<?> tests = handler.selectNodes(String.format(xPath, selectedBuildNumber));
-
-		buffy.append("<h3 style=\"background-color: #CCCCCC;\">" +
-				"Results of Build #" + selectedBuildNumber + "</h3>");
-
-		for (Object o : tests) {
-			if (o instanceof Element) {
-				Element e = (Element) o;
-
-				buffy.append("<div class='ci-collapsible-box'><h4>");
-
-				// Render Test Result
-				String s = e.getAttributeValue("result");
-				if (s != null && !s.isEmpty()) {
-					TestResultType buildResult = TestResultType.valueOf(s);
-					buffy.append(CIUtilities.renderResultType(buildResult, 16));
-				}
-				// Render Test-Name
-				s = e.getAttributeValue("name");
-				if (s != null && !s.isEmpty()) buffy.append(s);
-
-				buffy.append("</h4>\n");
-
-				// Render Test Message (if existent)
-				buffy.append("<table style=\"display: none;\">\n");
-				s = e.getAttributeValue("message");
-				if (s != null && !s.isEmpty()) {
-					buffy.append("<tr><td>Result Message: " + s + "</td></tr>");
-				}
-
-				buffy.append("</table>\n");
-
-				buffy.append("</div>\n");
-			}
-		}
-		buffy.append("</table></div>");
-
-		// ------------------------------------------------------------------------
-
-		// -------------------------------------------------------------------------
-		// Render the wiki-changes in the right column
-		// (ci-column-right)
-		// -------------------------------------------------------------------------
-
-		buffy.append("<div id='" + dashboardID + "-column-right' class='ci-column-right'>");
-
-		// the version of the article of the selected build
-		int articleVersionSelected = 1;
-		// the version of the article of the previous build
-		int articleVersionPrevious = 1;
-
-		// Number of build to compare to (the previous build number)
-		int previousBuildNr = selectedBuildNumber > 1 ? selectedBuildNumber - 1 : 1;
-
-		String monitoredArticleTitle = "";
-		Object attrib = handler.selectSingleNode("builds/@monitoredArticle");
-		if (attrib instanceof Attribute) {
-			monitoredArticleTitle = ((Attribute) attrib).getValue();
-		}
-		attrib = null;
-
-		// xPath to select the article version of a buildNumber
-		xPath = "builds/build[@nr=%s]/@articleVersion";
-
-		// try to parse the selected build article version
-		attrib = handler.selectSingleNode(String.format(xPath, selectedBuildNumber));
-		if (attrib instanceof Attribute) {
-			String attrValue = ((Attribute) attrib).getValue();
-			if (attrValue != null && !attrValue.isEmpty()) articleVersionSelected = Integer.parseInt(attrValue);
-		}
-		attrib = null;
-
-		// try to parse the selected build article version
-		attrib = handler.selectSingleNode(String.format(xPath, previousBuildNr));
-		if (attrib instanceof Attribute) {
-			String attrValue = ((Attribute) attrib).getValue();
-			if (attrValue != null && !attrValue.isEmpty()) articleVersionPrevious = Integer.parseInt(attrValue);
-		}
-		attrib = null;
-
-		// buffy.append("<h4>Unterschiede zwischen <b>Build " + buildNr +
-		// "</b> (Article Version " + articleVersionSelected +
-		// ") und <b>Build " + previousBuildNr + "</b> (Article " +
-		// "Version " + articleVersionPrevious + ")</h4>");
-
-		// buffy.append("<h3 style=\"background-color: #CCCCCC;\">Differences between Build #"
-		// +
-		// selectedBuildNumber + " and Build #" + previousBuildNr + "</h3>");
-		buffy.append("<h3 style=\"background-color: #CCCCCC;\">Changes in Build #" +
-				selectedBuildNumber + "</h3>");
-
-		String author = conny.getAuthor(monitoredArticleTitle, articleVersionSelected);
-
-		if (author != null && !author.isEmpty()) {
-			buffy.append("<div id=\"last-author-changed\"><b>Last change:</b> " +
-					author + "</div>");
-		}
-
-		DiffEngine diff = DiffFactory.defaultDiffEngine();
-		buffy.append(diff.makeDiffHtml(
-						conny.getArticleSource(monitoredArticleTitle,
-								articleVersionPrevious),
-						conny.getArticleSource(monitoredArticleTitle,
-								articleVersionSelected)));
-
-		buffy.append("</div>");
-
-		return buffy.toString();
 	}
 }

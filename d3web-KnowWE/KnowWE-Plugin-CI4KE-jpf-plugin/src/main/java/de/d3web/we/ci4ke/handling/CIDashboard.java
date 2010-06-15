@@ -20,7 +20,6 @@
 
 package de.d3web.we.ci4ke.handling;
 
-import de.d3web.we.ci4ke.action.CIAction;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.build.CIBuilder.CIBuildTriggers;
 import de.d3web.we.core.KnowWERessourceLoader;
@@ -49,7 +48,18 @@ public class CIDashboard {
 
 		StringBuffer html = new StringBuffer();
 
-		html.append("<div id='" + config.getDashboardID() + "-ci-dashboard' class='panel'><h3>");
+		html.append("<div id='" + config.getDashboardID() + "-ci-dashboard' class='panel'>");
+		html.append(renderDashboardContents());
+		html.append("</div>");
+
+		return html.toString();
+	}
+
+	public String renderDashboardContents() {
+
+		StringBuffer html = new StringBuffer();
+
+		html.append("<h3>");
 		html.append(persistenceHandler.renderCurrentBuildStatus() + "&nbsp;&nbsp;&nbsp;&nbsp;");
 		html.append(persistenceHandler.renderBuildHealthReport() + "&nbsp;&nbsp;&nbsp;&nbsp;");
 		html.append(config.getMonitoredArticleTitle());
@@ -73,14 +83,6 @@ public class CIDashboard {
 		html.append("</h3>");
 		// render Builds
 
-		// if (config.getTrigger().equals(CIBuildTriggers.onDemand)) {
-		// html.append("<div style=\"text-align: center;\"><form name=\"CIExecuteBuildForm\">");
-		// html.append("<input type=\"button\" value=\"Neuen Build Starten!\" "
-		// + "name=\"submit\" class=\"button\" onclick=\"fctExecuteNewBuild('"
-		// + config.getDashboardID() + "');\"/>");
-		// html.append("</form></div>");
-		// }
-
 		html.append("<div id=\"" + config.getDashboardID() + "-build-table\">\n");
 		html.append(persistenceHandler.renderNewestBuilds(5));
 		html.append("</div>");
@@ -90,10 +92,10 @@ public class CIDashboard {
 		html.append("<div id='" + config.getDashboardID()
 				+ "-build-details-wrapper' class='ci-build-details-wrapper'>");
 
-		html.append(CIAction.renderBuildDetails(this.config.getDashboardID(),
+		html.append(CIDashboardType.renderBuildDetails(this.config.getDashboardID(),
 				persistenceHandler.getCurrentBuildNumber()));
 
-		html.append("</div></div></div>");
+		html.append("</div></div>");
 
 		return html.toString();
 	}

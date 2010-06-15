@@ -52,8 +52,12 @@ function fctExecuteNewBuild( dashboardID ) {
      var options = {
             url : KNOWWE.core.util.getURL( params ),
             response : {
-                ids : [ dashboardID + '-build-table'],
-                action : 'insert'
+                ids : [ dashboardID + '-ci-dashboard'],
+                action : 'insert',
+                fn : function() {
+					KNOWWE.core.util.addCollabsiblePluginHeader( dashboardID + '-ci-dashboard' );
+					makeCIBoxesCollapsible( dashboardID );
+				}
             }
      }
      
