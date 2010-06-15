@@ -44,8 +44,8 @@ import de.d3web.we.wisec.util.Criteria;
  * Displays the substances with the highest rating. The taghandlers' parameters
  * specify the weights of the criterias.
  * 
- * e.g. [{KnowWEPlugin wisec-substances; P=3; B=1; Risk_related=2;}] sets the
- * following weights:
+ * e.g. [{KnowWEPlugin wisec-substances=20; P=3; B=1; Risk_related=2;}] sets the
+ * renders the top 20 substances with the following weights:
  * 
  * P: 3, B: 1, Risk_related: 2
  * 
@@ -63,13 +63,13 @@ public class WISECTopSubstancesHandler extends AbstractTagHandler {
 	
 	@Override
 	public String getExampleString() {
-		return "[{KnowWEPlugin wisec-substances, P=3, B=1, Risk_related=2, ... }]";
+		return "[{KnowWEPlugin wisec-substances=n, P=3, B=1, Risk_related=2, ... }]";
 	}
 	
 	@Override
 	public String getDescription(KnowWEUserContext user) {
 		// TODO: This should probably moved to a resource bundle
-		return "Displays the substances with the highest rating with respect to the specified weights.";
+		return "Displays the n top substances with the highest rating with respect to the specified weights. If n is not defined (correctly) 10 substances will be displayed.";
 	}
 
 	@Override
@@ -77,6 +77,7 @@ public class WISECTopSubstancesHandler extends AbstractTagHandler {
 			Map<String, String> values, String web) {
 
 		HashMap<String, RatedSubstance> ratedSubstances = new HashMap<String, RatedSubstance>();
+		HashMap<Criteria, Double> underlyingData = new HashMap<Criteria, Double>();
 		double weight = 0;
 
 		for (Criteria criteria : Criteria.values()) {
@@ -95,6 +96,7 @@ public class WISECTopSubstancesHandler extends AbstractTagHandler {
 			if (weight != 0) {
 				try {
 					processCriteria(criteria.name(), weight, ratedSubstances);
+					underlyingData.put(criteria, weight);
 				}
 				catch (Exception e) {
 					return "An error occurred: " + e.getMessage();
@@ -102,7 +104,16 @@ public class WISECTopSubstancesHandler extends AbstractTagHandler {
 			}
 		}
 		
-		return renderSubstances(toList(ratedSubstances));
+		// try to get the maximum number of displayed substances
+		double numberSubstances = 10;
+		try {
+			String numberSubstancesStr = values.get("wisec-substances");
+			if (numberSubstancesStr != null) numberSubstances = Double.parseDouble(numberSubstancesStr);
+		}
+		catch (NumberFormatException e) {
+			numberSubstances = 10;
+		}
+		return renderSubstances(toList(ratedSubstances), numberSubstances, underlyingData);
 	}
 
 	/**
@@ -173,13 +184,14 @@ public class WISECTopSubstancesHandler extends AbstractTagHandler {
 		while (result.hasNext()) {
 			BindingSet binding = result.next();
 			String substance = binding.getValue("substance").stringValue();
+			substance = substance.substring(substance.lastIndexOf("#") + 1);
 			RatedSubstance ratedSubstance = ratedSubstances.get(substance);
 			if (ratedSubstance == null) {
 				ratedSubstance = new RatedSubstance(substance);
 				ratedSubstances.put(substance, ratedSubstance);
 			}
 			String scoreStr = binding.getValue("score").stringValue();
-			double score = Double.parseDouble(scoreStr);
+			double score = scoreStr.equals("u") ? -1 : Double.parseDouble(scoreStr);
 			ratedSubstance.addValue(score * weight);
 		}
 
@@ -206,29 +218,38 @@ public class WISECTopSubstancesHandler extends AbstractTagHandler {
 	 * 
 	 * @created 15.06.2010
 	 * @param sortedSubstances
+	 * @param numberSubstances
+	 * @param underlyingData
 	 * @return HTML formatted string representing the substances
 	 */
-	private String renderSubstances(List<RatedSubstance> sortedSubstances) {
+	private String renderSubstances(List<RatedSubstance> sortedSubstances, double numberSubstances, HashMap<Criteria, Double> underlyingData) {
 		StringBuilder result = new StringBuilder();
 
-		result.append("<div class='panel'>");
-		result.append("<h3>Top Substances</h3>");
-		result.append("<div id='wisec-top-substances'>");
-		result.append("<table>");
-		result.append("<tr><th>Substance</th><th>Score</th></tr>");
-		for (RatedSubstance rs : sortedSubstances) {
-			result.append("<tr>");
-			result.append("<td>");
+		result.append("\n!!Top Substances*\n||Substance ||Score \n");
+		double limit = numberSubstances < sortedSubstances.size()
+				? numberSubstances
+				: sortedSubstances.size();
+
+		// Render Substances
+		for (int i = 0; i < limit; i++) {
+			RatedSubstance rs = sortedSubstances.get(i);
+			result.append("|");
 			result.append(rs.getSubstance());
-			result.append("</td>");
-			result.append("<td>");
+			result.append("|");
 			result.append(rs.getScore());
-			result.append("</td>");
-			result.append("</tr>");
+			result.append("\n");
 		}
-		result.append("</table>");
-		result.append("</div>");
-		result.append("</div>");
+
+		// Render Legend
+		result.append("%%sub (");
+		for (Criteria c : underlyingData.keySet()) {
+			result.append(c.name());
+			result.append("=");
+			result.append(underlyingData.get(c));
+			result.append(", ");
+		}
+		result.delete(result.length() - 2, result.length());
+		result.append(")/%");
 
 		return result.toString();
 	}
