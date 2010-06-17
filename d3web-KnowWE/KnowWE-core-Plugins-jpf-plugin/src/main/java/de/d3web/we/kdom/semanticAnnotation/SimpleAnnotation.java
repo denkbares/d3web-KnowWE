@@ -24,6 +24,8 @@
 package de.d3web.we.kdom.semanticAnnotation;
 
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 
 import org.openrdf.model.URI;
@@ -59,7 +61,14 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			UpperOntology uo = UpperOntology.getInstance();
-			String annos = s.getOriginalText().trim().replaceAll(" ", "_");
+			
+			String annos="";
+			try {
+				annos = URLEncoder.encode(s.getOriginalText().trim(), "UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			URI anno = null;
 			if (annos.contains(":")) {
 				String[] list = annos.split(":");
