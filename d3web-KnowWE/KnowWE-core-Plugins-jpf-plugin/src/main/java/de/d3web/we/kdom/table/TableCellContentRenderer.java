@@ -85,14 +85,17 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 	protected void generateContent(String sectionText, Section<TableCellContent> sec,
 			KnowWEUserContext user, String sectionID, StringBuilder html) {
 		if( sec.hasQuickEditModeSet( user.getUsername() ) ) {
-			Section father = KnowWEObjectTypeUtils.getAncestorOfType( sec , TableAttributesProvider.class.getName());
-			String values = null, size = null, rows = null, cols = null;
+			Section father = KnowWEObjectTypeUtils.getAncestorOfType(sec, Table.class);
+			String[] values = null;
+			String size = null, rows = null, cols = null;
+			
+			
 
-			if (father != null && father.getObjectType() instanceof TableAttributesProvider ) {
-			    values = ((TableAttributesProvider)father.getObjectType()).getAttributeValues(sec.findAncestor(Table.class));
-			    size   = ((TableAttributesProvider)father.getObjectType()).getWidthAttribute(sec.findAncestor(Table.class));
-			    cols   =((TableAttributesProvider)father.getObjectType()).getNoEditColumnAttribute(sec.findAncestor(Table.class));
-			    rows   = ((TableAttributesProvider)father.getObjectType()).getNoEditRowAttribute(sec.findAncestor(Table.class));
+			if (father != null && father.getObjectType() instanceof Table) {
+			    values = ((Table)father.getObjectType()).getTableAttributesProvider().getAttributeValues(sec);
+			    size   = ((Table)father.getObjectType()).getTableAttributesProvider().getWidthAttribute(sec.findAncestor(Table.class));
+			    cols   = ((Table)father.getObjectType()).getTableAttributesProvider().getNoEditColumnAttribute(sec.findAncestor(Table.class));
+			    rows   = ((Table)father.getObjectType()).getTableAttributesProvider().getNoEditRowAttribute(sec.findAncestor(Table.class));
 			}
 			
 			if( TableUtils.isEditable( sec, rows, cols ) ) {
@@ -124,11 +127,11 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 	 * @param nodeID
 	 * @return
 	 */
-	protected String createDefaultValueDropDown(String values, String cellcontent, String nodeID, String width) {
+	protected String createDefaultValueDropDown(String[] values, String cellcontent, String nodeID, String width) {
 		StringBuilder html = new StringBuilder();
 		html.append( "<select id='" + nodeID + "' class='table-edit-node' " + TableUtils.getWidth( width ) + ">" );
 		
-		List<String> defaultValues = Arrays.asList( TableUtils.splitAttribute( values ) );
+		List<String> defaultValues = Arrays.asList(values);
 		
 		if( !defaultValues.contains( cellcontent )) {
 			html.append( "<option value='" + cellcontent + "' selected=\"selected\">" + cellcontent + "</option>" );

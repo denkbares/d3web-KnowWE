@@ -69,7 +69,7 @@ import de.d3web.we.kdom.xml.XMLContent;
  * @author smark
  * @see XMLContent
  */
-public abstract class Table extends DefaultAbstractKnowWEObjectType implements TableAttributesProvider{
+public abstract class Table extends DefaultAbstractKnowWEObjectType{
 	
 	/**
 	 * Attribute name for the default values of each cell.
@@ -86,6 +86,12 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType implements T
 	 */
 	public static final String ATT_NOEDIT_COLUMN = "column";
 	public static final String ATT_NOEDIT_ROW    = "row";
+	
+	public TableAttributesProvider tableAttributesProvider;
+	
+	public Table(TableAttributesProvider tableAttributesProvider) {
+		this.tableAttributesProvider = tableAttributesProvider;
+	}
 
 	@Override
 	protected void init() {
@@ -93,6 +99,10 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType implements T
 		this.sectionFinder = new AllTextSectionFinder();
 		this.setCustomRenderer(new TableContentRenderer());
 		this.addSubtreeHandler(new TableSubTreeHandler());
+	}
+	
+	public TableAttributesProvider getTableAttributesProvider() {
+		return tableAttributesProvider;
 	}
 
 	private class TableSubTreeHandler extends SubtreeHandler {

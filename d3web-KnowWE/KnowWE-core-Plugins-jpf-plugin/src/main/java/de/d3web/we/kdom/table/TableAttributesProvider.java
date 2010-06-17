@@ -63,7 +63,7 @@ public interface TableAttributesProvider {
 	 * @param s
 	 * @return
 	 */
-	public String getAttributeValues(Section<Table> s);
+	public String[] getAttributeValues(Section<? extends TableCellContent> s);
 	
 
 }

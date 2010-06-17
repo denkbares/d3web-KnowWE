@@ -20,31 +20,13 @@
 
 package de.d3web.we.wisec.kdom;
 
-import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.table.NullTableAttributesProvider;
 import de.d3web.we.kdom.table.Table;
 
 public class WISECTable extends Table {
 
-	@Override
-	public String getAttributeValues(Section<Table> s) {
-		return null;
+	public WISECTable() {
+		super(new NullTableAttributesProvider());
 	}
-
-	@Override
-	public String getNoEditColumnAttribute(Section<Table> s) {
-		return null;
-	}
-
-	@Override
-	public String getNoEditRowAttribute(Section<Table> s) {
-		return null;
-	}
-
-	@Override
-	public String getWidthAttribute(Section<Table> s) {
-		return null;
-	}
-
-	
 
 }

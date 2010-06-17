@@ -20,10 +20,32 @@
 
 package de.d3web.we.kdom.table;
 
-public class XMLWrappedTable extends Table {
+import de.d3web.we.kdom.Section;
 
-	public XMLWrappedTable() {
-		super(new XMLWrappedTableAttributesProvider());
+
+/**
+ * @author Florian Ziegler
+ */
+public class NullTableAttributesProvider implements TableAttributesProvider{
+
+	@Override
+	public String[] getAttributeValues(Section<? extends TableCellContent> s) {
+		return null;
+	}
+
+	@Override
+	public String getNoEditColumnAttribute(Section<Table> s) {
+		return null;
+	}
+
+	@Override
+	public String getNoEditRowAttribute(Section<Table> s) {
+		return null;
+	}
+
+	@Override
+	public String getWidthAttribute(Section<Table> s) {
+		return null;
 	}
 
 }

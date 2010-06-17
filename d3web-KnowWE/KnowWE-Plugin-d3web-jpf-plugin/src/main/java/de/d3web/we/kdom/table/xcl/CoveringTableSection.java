@@ -117,10 +117,10 @@ public class CoveringTableSection extends AbstractKopicSection implements TableA
 
 
 	@Override
-	public String getAttributeValues(Section<Table> s) {
+	public String[] getAttributeValues(Section<? extends TableCellContent> s) {
 		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
 		if(xml != null) {
-			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_VALUES);
+			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_VALUES).split(",");
 		}	
 		return null;
 	}

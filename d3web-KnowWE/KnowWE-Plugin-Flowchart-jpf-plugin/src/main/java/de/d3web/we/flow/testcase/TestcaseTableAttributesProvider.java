@@ -18,12 +18,43 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.table;
+package de.d3web.we.flow.testcase;
 
-public class XMLWrappedTable extends Table {
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.table.Table;
+import de.d3web.we.kdom.table.TableAttributesProvider;
+import de.d3web.we.kdom.table.TableCellContent;
 
-	public XMLWrappedTable() {
-		super(new XMLWrappedTableAttributesProvider());
+
+/**
+ * @author Florian Ziegler
+ */
+public class TestcaseTableAttributesProvider implements TableAttributesProvider {
+
+	@Override
+	public String[] getAttributeValues(Section<? extends TableCellContent> s) {
+
+		if (s != null) {
+			return TestcaseUtils.getKnowledge(s);
+		}
+		return null;
 	}
+
+	@Override
+	public String getNoEditColumnAttribute(Section<Table> s) {
+		return "0";
+	}
+
+	@Override
+	public String getNoEditRowAttribute(Section<Table> s) {
+		return "1";
+	}
+
+	@Override
+	public String getWidthAttribute(Section<Table> s) {
+		return null;
+	}
+
+
 
 }
