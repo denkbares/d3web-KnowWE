@@ -87,7 +87,7 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType{
 	public static final String ATT_NOEDIT_COLUMN = "column";
 	public static final String ATT_NOEDIT_ROW    = "row";
 	
-	public TableAttributesProvider tableAttributesProvider;
+	private TableAttributesProvider tableAttributesProvider;
 	
 	public Table(TableAttributesProvider tableAttributesProvider) {
 		this.tableAttributesProvider = tableAttributesProvider;
