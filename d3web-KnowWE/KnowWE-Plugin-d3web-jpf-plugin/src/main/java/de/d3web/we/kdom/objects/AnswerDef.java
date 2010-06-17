@@ -2,6 +2,7 @@ package de.d3web.we.kdom.objects;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -13,6 +14,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
+import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
@@ -21,7 +23,7 @@ public abstract class AnswerDef extends D3webObjectDef<Choice> {
 	/**
 	 * returns the section of the corresponding question-reference for this
 	 * answer
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -56,11 +58,28 @@ public abstract class AnswerDef extends D3webObjectDef<Choice> {
 			Question q = questionID.get().getObject(questionID);
 
 			if (q instanceof QuestionChoice) {
-				Choice a = mgn.addChoiceAnswer((QuestionChoice) q, name);
-				answer.get().storeObject(answer, a);
-				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
-						a.getClass().getSimpleName() + "  "
-								+ a.getName()));
+
+				// at first check if Answer already defined
+				boolean alreadyExisting = false;
+				List<Choice> allAlternatives = ((QuestionChoice) q).getAllAlternatives();
+				for (Choice choice : allAlternatives) {
+					if (choice.getName().equals(name)) {
+						alreadyExisting = true;
+					}
+				}
+
+				if (alreadyExisting) {
+					return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+							"Answer already existing - " + name));
+				}
+				else {
+
+					Choice a = mgn.addChoiceAnswer((QuestionChoice) q, name);
+					answer.get().storeObject(answer, a);
+					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
+							a.getClass().getSimpleName() + "  "
+									+ a.getName()));
+				}
 			}
 			return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 					"no choice question - " + name,

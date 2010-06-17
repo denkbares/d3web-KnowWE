@@ -1,10 +1,9 @@
+
 package de.d3web.we.kdom.questionTreeNew;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
@@ -70,17 +69,17 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-			
+
 			Section<QuestionnaireDef> qcSec = (s);
-			
+
 			KnowledgeBaseManagement mgn = D3webModule
 					.getKnowledgeRepresentationHandler(article.getWeb())
 					.getKBM(article, this, s);
 			//ReviseSubtreeHandler will be called again with a correct mgn
 			if (mgn == null) return null;
-			
+
 			String name = s.getOriginalText();
-			
+
 			IDObject o = mgn.findQContainer(name);
 
 			if (o != null) {
