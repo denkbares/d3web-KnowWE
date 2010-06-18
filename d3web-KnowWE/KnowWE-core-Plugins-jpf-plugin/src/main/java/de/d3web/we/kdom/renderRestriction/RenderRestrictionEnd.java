@@ -61,6 +61,8 @@ public class RenderRestrictionEnd extends DefaultMarkupType {
 			Section<GroupDeclaration> groupSec = sec.findSuccessor(GroupDeclaration.class);
 			if (groupSec != null) {
 				String group = groupSec.get().getGroup(groupSec);
+				String restrictionStartFrame = "%%tabbedSection\n%%tab-"+group+"Only\n";
+				String restrictionEndFrame = "/%\n/%";
 
 				// hide content (i.e., remove from rendered StringBuffer)
 				if (group != null
@@ -77,6 +79,8 @@ public class RenderRestrictionEnd extends DefaultMarkupType {
 					int index = string.indexOf(toFind);
 					if (index > -1) {
 						string.delete(index, index + toFind.length());
+						string.insert(index, restrictionStartFrame);
+						string.append(restrictionEndFrame);
 					}
 				}
 			}
