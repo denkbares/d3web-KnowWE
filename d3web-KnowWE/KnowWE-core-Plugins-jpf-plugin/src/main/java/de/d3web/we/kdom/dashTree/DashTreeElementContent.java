@@ -20,24 +20,44 @@
 package de.d3web.we.kdom.dashTree;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 
-public class DashTreeElementContent extends DefaultAbstractKnowWEObjectType{
-	
+public class DashTreeElementContent extends DefaultAbstractKnowWEObjectType {
+
 	private static DashTreeElementContent defaultInstance = null;
-	
+
 	public static DashTreeElementContent getDefaultInstance() {
 		if (defaultInstance == null) {
 			defaultInstance = new DashTreeElementContent();
-			
+
 		}
 
 		return defaultInstance;
 	}
-	
+
 	@Override
 	protected void init() {
 		this.sectionFinder = new AllTextFinderTrimmed();
+	}
+
+	/**
+	 * Delegates the getDashTreeFather-operation to DashTreeElement
+	 *
+	 * @param s
+	 * @return
+	 */
+	public static Section<? extends DashTreeElementContent> getDashTreeFatherContent(Section<? extends DashTreeElementContent> s) {
+		Section<DashTreeElement> ancestor = s.findAncestor(DashTreeElement.class);
+		if (ancestor != null) {
+			Section<? extends DashTreeElement> dashTreeFather = DashTreeElement.getDashTreeFather(
+					ancestor);
+			if (dashTreeFather != null) {
+				Section<? extends DashTreeElementContent> childOfType = dashTreeFather.findChildOfType(DashTreeElementContent.class);
+				return childOfType;
+			}
+		}
+		return null;
 	}
 
 }

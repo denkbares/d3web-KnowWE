@@ -20,12 +20,7 @@
 
 package de.d3web.we.kdom.dashTree.propertyDefinition;
 
-import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.dashTree.DashTree;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.dashTree.DashTreeElementContent;
-import de.d3web.we.kdom.dashTree.SubTree;
 
 /**
  * @author Jochen
@@ -38,28 +33,7 @@ import de.d3web.we.kdom.dashTree.SubTree;
 public class PropertyDefinitionTree extends DashTree {
 
 	public PropertyDefinitionTree() {
-
-		// replaces the inherited default DashTreeElementContent by the
-		// customized DashTreeElementContent (PropertyDashTreeElementContent)
-		// which is a type that parses and compiles Property-definitions
-		try {
-			if (childrenTypes != null && (!childrenTypes.isEmpty())) {
-				KnowWEObjectType subtree = this.childrenTypes.get(0);
-				if (subtree instanceof SubTree) {
-					KnowWEObjectType element = subtree
-							.getAllowedChildrenTypes().get(0);
-					if (element instanceof DashTreeElement) {
-						((DashTreeElement) element).replaceChildType(
-								new PropertyDashTreeElementContent(),
-								DashTreeElementContent.class);
-					}
-				}
-			}
-		}
-		catch (InvalidKDOMSchemaModificationOperation e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		replaceDashTreeElementContentType(this, new PropertyDashTreeElementContent());
 	}
 
 }

@@ -19,8 +19,13 @@
  */
 package de.d3web.we.kdom.dashTree;
 
+import java.util.List;
+
+import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -30,20 +35,55 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * @author Jochen
- * 
- * A simple DashTree. It takes all and tries to build a (dash-) SubTree (which is defined
- * recursivly).
+ *
+ *         A simple DashTree. It takes all and tries to build a (dash-) SubTree
+ *         (which is defined recursivly).
  *
  */
-public class DashTree extends DefaultAbstractKnowWEObjectType{
-	
+
+public class DashTree extends DefaultAbstractKnowWEObjectType {
+
 	public DashTree() {
 		this.sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new SubTree());
 		this.childrenTypes.add(new CommentLineType());
 		this.setCustomRenderer(new PreRenderer());
 	}
-	
+
+	/**
+	 *
+	 * replaces the inherited default DashTreeElementContent by the customized
+	 * DashTreeElementContent (PropertyDashTreeElementContent) which is a type
+	 * that parses and compiles Property-definitions
+	 *
+	 * @param dashTree
+	 * @param newContentType
+	 */
+	protected void replaceDashTreeElementContentType(AbstractKnowWEObjectType dashTree, DashTreeElementContent newContentType) {
+		List<KnowWEObjectType> types = dashTree.getAllowedChildrenTypes();
+		for (KnowWEObjectType knowWEObjectType : types) {
+			if (knowWEObjectType instanceof SubTree) {
+				List<KnowWEObjectType> content = knowWEObjectType
+						.getAllowedChildrenTypes();
+				for (KnowWEObjectType knowWEObjectType2 : content) {
+					if (knowWEObjectType2 instanceof DashTreeElement) {
+						try {
+							((AbstractKnowWEObjectType) knowWEObjectType2)
+									.replaceChildType(
+											newContentType,
+											DashTreeElementContent.class);
+
+						}
+						catch (InvalidKDOMSchemaModificationOperation e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+	}
+
 	class PreRenderer extends KnowWEDomRenderer {
 
 		@Override
@@ -53,11 +93,9 @@ public class DashTree extends DefaultAbstractKnowWEObjectType{
 			string.append("{{{");
 			DelegateRenderer.getInstance().render(article, sec, user, string);
 			string.append("}}}");
-			
+
 		}
-		
-		
-		
+
 	}
 
 }
