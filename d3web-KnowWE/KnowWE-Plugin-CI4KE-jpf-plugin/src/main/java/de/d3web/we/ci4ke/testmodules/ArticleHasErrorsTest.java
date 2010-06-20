@@ -48,6 +48,9 @@ public class ArticleHasErrorsTest extends AbstractCITest {
 				getMessagesFromSubtree(moni, moni.getSection());
 
 		for (Message message : messages) {
+			//This finds only messages, that are explicitly stored
+			//as Message.ERROR, because the Type Message.UNKNOWN_ERROR
+			//is not public!
 			if (message.getMessageType().equals(Message.ERROR)) {
 				hasError = true;
 				buffy.append("Error on monitored article: ");

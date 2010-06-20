@@ -119,4 +119,3 @@ function makeCIBoxesCollapsible( dashboardID ){
 }
 
 KNOWWE.helper.observer.subscribe( 'onload', makeCIBoxesCollapsible );
-

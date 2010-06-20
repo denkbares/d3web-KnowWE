@@ -321,13 +321,13 @@ public class CIDashboardType extends DefaultMarkupType {
 				buffy.append("</h4>\n");
 	
 				// Render Test Message (if existent)
-				buffy.append("<table style=\"display: none;\">\n");
+				buffy.append("<span style=\"display: none;\">\n");
 				s = e.getAttributeValue("message");
 				if (s != null && !s.isEmpty()) {
-					buffy.append("<tr><td>Result Message: " + s + "</td></tr>");
+					buffy.append(s);
 				}
 	
-				buffy.append("</table>\n");
+				buffy.append("</span>\n");
 	
 				buffy.append("</div>\n");
 			}
