@@ -32,11 +32,7 @@ public class TagHandlerType extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		//searches for Strings like [{KnowWEPlugin ...}]
-		
-		MultiSectionFinder multi = new MultiSectionFinder();
-		SectionFinder f1 = new RegexSectionFinder("\\[\\{KnowWEPlugin [^}]*}]");
-		multi.addSectionFinder(f1);
-		this.sectionFinder = multi;
+		this.sectionFinder = new RegexSectionFinder("\\[\\{KnowWEPlugin [^}]*}]");
 		
 		childrenTypes.add(new TagHandlerTypeStartSymbol());
 		childrenTypes.add(new TagHandlerTypeEndSymbol());
