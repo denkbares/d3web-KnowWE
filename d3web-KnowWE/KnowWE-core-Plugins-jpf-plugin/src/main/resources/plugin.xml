@@ -78,6 +78,9 @@
 		<parameter id="scope" value="root" />
 	</extension>
 	
+	
+	
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
 		id="GroovySparqlRenderer">
 		<parameter id="class"
@@ -399,6 +402,20 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+	
+		
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="ParseFullLocalPageButton">
+		<parameter id="class"
+			value="de.d3web.we.taghandler.ParseFullLocalPageButton" />
+		<parameter id="name" value="ParseFullLocalPageButton" />
+		<parameter id="description" value="TagHandler ParseFullLocalPageButton" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+	
+	
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="PageViewHandlerHG">
