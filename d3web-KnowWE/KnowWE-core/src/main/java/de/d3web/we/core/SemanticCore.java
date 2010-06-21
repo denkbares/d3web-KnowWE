@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -27,8 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Map.Entry;
@@ -68,7 +66,7 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
  * triplestore. SemanticCore manages namespaces, queries and the addition of
  * statementes. It is a singleton which is initialised at boottime (of KnowWE)
  * See also: {@link UpperOntology} {@link TaggingMangler}
- * 
+ *
  * @author FHaupt
  * @created Mar 25, 2010
  */
@@ -203,9 +201,9 @@ public class SemanticCore {
 					.createlocalProperty(props);
 			List<Statement> allStatements = io.getAllStatements();
 
-			
+
 			semsettings.put("SemanticSettings", allStatements);
-			
+
 			try {
 				for (Statement current : allStatements) {
 					if (current != null) {
@@ -226,7 +224,7 @@ public class SemanticCore {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return current settings
 	 */
 	public HashMap<String, String> getSettings() {
@@ -234,7 +232,7 @@ public class SemanticCore {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return an instance, you're in trouble if it hasn't been initialized
 	 */
 	public static SemanticCore getInstance() {
@@ -265,7 +263,7 @@ public class SemanticCore {
 
 	/**
 	 * adds Statements to the repository
-	 * 
+	 *
 	 * @param inputio
 	 *            the output of the section
 	 * @param sec
@@ -310,7 +308,7 @@ public class SemanticCore {
 	 * Add static statements to the repository. Static statements are those
 	 * statements that are not connected to a specific section and therefore are
 	 * not updated during the wiki lifetime.
-	 * 
+	 *
 	 * @param inputio
 	 *            the statements to be added
 	 * @author volker_belli
@@ -333,7 +331,7 @@ public class SemanticCore {
 	/**
 	 * Gets a contet for a section. Is used for differentiation of statements in
 	 * the triple-store
-	 * 
+	 *
 	 * @author FHaupt
 	 * @created Mar 25, 2010
 	 * @param sec
@@ -352,7 +350,7 @@ public class SemanticCore {
 
 	/**
 	 * perform a spql tuplequery
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 * @throws QueryEvaluationException
@@ -364,7 +362,7 @@ public class SemanticCore {
 
 	/**
 	 * perform a sparql graphquery
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 * @throws QueryEvaluationException
@@ -376,7 +374,7 @@ public class SemanticCore {
 
 	/**
 	 * perform a sparql booleanquery
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 * @throws QueryEvaluationException
@@ -399,7 +397,7 @@ public class SemanticCore {
 
 	/**
 	 * recursivley collects all statements saved for a section.
-	 * 
+	 *
 	 * @return List of statements.
 	 */
 	public List<Statement> getSectionStatementsRecursive(
@@ -473,7 +471,7 @@ public class SemanticCore {
 
 	/**
 	 * removes all statements produced by a specific section
-	 * 
+	 *
 	 * @param sec
 	 */
 	public void clearContext(Section sec) {
@@ -486,14 +484,77 @@ public class SemanticCore {
 		// e.printStackTrace();
 		// }
 
+		List<Statement> sectionStatementsRecursive = getSectionStatementsRecursive(sec);
+
 		RepositoryConnection con = uo.getConnection();
-		try {
-			con.remove(getSectionStatementsRecursive(sec));
-			//con.remove(getStatementsofSingleSection(sec));
-			con.commit();
-		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		// CAUTION!
+		// BEGIN - hack to work around the non-returning remove-operation
+		// it starts the remove operation in another thread, thus in any case
+		// the normal thread can proceed
+		// TODO: find better solution i.e., debug sesame/owlim ?
+		StatementRemover remover = new StatementRemover(con, sectionStatementsRecursive);
+		Thread th = new Thread(remover);
+
+		th.run();
+
+		int counter = 50;
+		while (th.isAlive()) {
+			try {
+				Thread.currentThread().wait(100);
+			}
+			catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			counter--;
+
+			// timeout!!
+			if (counter <= 0) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+						"RepositoryConnection.remove()-thread didnt return");
+				th.stop();
+			}
+		}
+		// END hack
+
+	}
+
+	/**
+	 * Belongs to the hack that should fix the non-returning remove-operation
+	 *
+	 * @author Jochen
+	 *
+	 */
+	class StatementRemover implements Runnable {
+
+		RepositoryConnection con;
+		List<Statement> sectionStatementsRecursive;
+
+		public StatementRemover(RepositoryConnection c, List<Statement> statements) {
+			this.con = c;
+			this.sectionStatementsRecursive = statements;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.lang.Runnable#run()
+		 * 
+		 * normally no own thread SHOULD be necessary to do this
+		 */
+		@Override
+		public void run() {
+			try {
+				con.remove(sectionStatementsRecursive);
+				// con.remove(getStatementsofSingleSection(sec));
+				con.commit();
+			}
+			catch (RepositoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 
 	}
@@ -503,7 +564,7 @@ public class SemanticCore {
 	 * statements that were added by section that are now not in the article
 	 * anymore. this addresses #166 so don't you mess with this unless you
 	 * _really_ know what you're doing
-	 * 
+	 *
 	 * @param sec
 	 */
 	public void clearContext(KnowWEArticle art) {
@@ -542,7 +603,7 @@ public class SemanticCore {
 	/**
 	 * creates an arraylist of a simple sparql query. the binding given in
 	 * targetbinding is rendered into the list, the rest is ignored
-	 * 
+	 *
 	 * @param inquery
 	 * @param targetbinding
 	 * @return
@@ -675,7 +736,7 @@ public class SemanticCore {
 
 	/**
 	 * reduces any namespace to its shortcut
-	 * 
+	 *
 	 * @param s
 	 * @return
 	 */
@@ -690,6 +751,6 @@ public class SemanticCore {
 		return s;
 	}
 
-	
+
 
 }
