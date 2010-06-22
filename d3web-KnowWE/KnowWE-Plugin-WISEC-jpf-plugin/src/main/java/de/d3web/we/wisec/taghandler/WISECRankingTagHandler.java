@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
@@ -207,7 +209,13 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 				ratedSubstances.put(substance, ratedSubstance);
 			}
 			String scoreStr = binding.getValue("score").stringValue();
-			double score = scoreStr.equals("u") ? -1 : Double.parseDouble(scoreStr);
+
+			// Get the correct score
+			double score;
+			if (scoreStr.equals("u")) score = -1;
+			else if (scoreStr.equals("X")) score = -0.5;
+			else score = Double.parseDouble(scoreStr);
+
 			ratedSubstance.addValue(score * weight);
 		}
 
@@ -252,11 +260,28 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 		for (int i = 0; i < limit; i++) {
 			RatedSubstance rs = sortedSubstances.get(i);
 			result.append("|");
-			result.append(KnowWEUtils.urldecode(rs.getSubstance()));
+			result.append(generateLink(KnowWEUtils.urldecode(rs.getSubstance())));
 			result.append("|");
 			result.append(rs.getScore());
 			result.append("\n");
 		}
+
+// result.append("\n<table class='wikitable' border='1'>");
+		// result.append("\n<tr><th>Substance</th><th>Score");
+		// result.append(printinfo ? "*</th>" : "</th></tr>");
+		// double limit = numberSubstances < sortedSubstances.size()
+		// ? numberSubstances
+		// : sortedSubstances.size();
+		//
+		// // Render Substances
+		// for (int i = 0; i < limit; i++) {
+		// RatedSubstance rs = sortedSubstances.get(i);
+		// result.append("<tr><td>");
+		// result.append(KnowWEUtils.urldecode(rs.getSubstance()));
+		// result.append("</td><td>");
+		// result.append(rs.getScore());
+		// result.append("</td></tr>\n");
+		// }
 
 		// Render Legend (if printinfo = true)
 		if (printinfo) {
@@ -272,6 +297,32 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 		}
 
 		return result.toString();
+	}
+
+	/**
+	 * 
+	 * @created 22.06.2010
+	 * @param urldecode
+	 * @return
+	 */
+	private Object generateLink(String text) {
+		String regex = "(.+)((\\[\\s*>\\s*\\|\\s*)([a-zA-Z_0-9-äöüÄÖÜß]+)(\\]))";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(text);
+		boolean matches = m.find();
+
+		String name;
+		String link;
+
+		if (matches && m.groupCount() == 5) {
+			name = m.group(1);
+			link = m.group(4);
+			return "<a href='Wiki.jsp?page=" + link + "'>" + name + "</a>";
+		}
+
+		// Assumption:
+		// If the text doesn't match the pattern, then it can't be a link.
+		return text;
 	}
 
 	/**
