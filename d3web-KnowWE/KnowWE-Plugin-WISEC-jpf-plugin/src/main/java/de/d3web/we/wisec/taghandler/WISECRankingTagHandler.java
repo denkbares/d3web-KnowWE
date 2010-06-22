@@ -37,12 +37,13 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.SemanticCore;
 import de.d3web.we.taghandler.AbstractTagHandler;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wisec.util.Criteria;
 
 /**
- * Displays the substances with the highest rating. The taghandlers' parameters
- * specify the weights of the criterias.
+ * Displays a ranking of the substances with the highest rating. The
+ * taghandlers' parameters specify the weights of the criterias.
  * 
  * e.g. [{KnowWEPlugin wisec-substances=20; P=3; B=1; Risk_related=2;}] sets the
  * renders the top 20 substances with the following weights:
@@ -55,21 +56,21 @@ import de.d3web.we.wisec.util.Criteria;
  * @author Sebastian Furth
  * @created 15.06.2010
  */
-public class WISECTopSubstancesHandler extends AbstractTagHandler {
+public class WISECRankingTagHandler extends AbstractTagHandler {
 
-	public WISECTopSubstancesHandler() {
-		super("wisec-substances");
+	public WISECRankingTagHandler() {
+		super("wisec-ranking");
 	}
 	
 	@Override
 	public String getExampleString() {
-		return "[{KnowWEPlugin wisec-substances=n, P=3, B=1, Risk_related=2, ... }]";
+		return "[{KnowWEPlugin wisec-ranking=n, P=3, B=1, Risk_related=2, ... , printinfo=true }]";
 	}
 	
 	@Override
 	public String getDescription(KnowWEUserContext user) {
 		// TODO: This should probably moved to a resource bundle
-		return "Displays the n top substances with the highest rating with respect to the specified weights. If n is not defined (correctly) 10 substances will be displayed.";
+		return "Displays a ranking of the n top substances with the highest rating with respect to the specified weights. If n is not defined (correctly) 10 substances will be displayed. Append 'printinfo=true' if you want the taghandler to render a legend.";
 	}
 
 	@Override
@@ -113,7 +114,22 @@ public class WISECTopSubstancesHandler extends AbstractTagHandler {
 		catch (NumberFormatException e) {
 			numberSubstances = 10;
 		}
-		return renderSubstances(toList(ratedSubstances), numberSubstances, underlyingData);
+		return renderSubstances(toList(ratedSubstances), numberSubstances, underlyingData,
+				checkPrintInfo(values));
+	}
+
+	/**
+	 * Checks if a legend of the underlying data should be printed by evaluating
+	 * the optional 'printinfo' parameter.
+	 * 
+	 * @created 22.06.2010
+	 * @param values all parameters of the taghandler
+	 * @return true if printinfo = true, else false
+	 */
+	private boolean checkPrintInfo(Map<String, String> values) {
+		String param = values.get("printinfo");
+		if (param != null && param.equals("true")) return true;
+		return false;
 	}
 
 	/**
@@ -220,12 +236,14 @@ public class WISECTopSubstancesHandler extends AbstractTagHandler {
 	 * @param sortedSubstances
 	 * @param numberSubstances
 	 * @param underlyingData
+	 * @param printinfo
 	 * @return HTML formatted string representing the substances
 	 */
-	private String renderSubstances(List<RatedSubstance> sortedSubstances, double numberSubstances, HashMap<Criteria, Double> underlyingData) {
+	private String renderSubstances(List<RatedSubstance> sortedSubstances, double numberSubstances, HashMap<Criteria, Double> underlyingData, boolean printinfo) {
 		StringBuilder result = new StringBuilder();
 
-		result.append("\n!!Top Substances*\n||Substance ||Score \n");
+		result.append("\n||Substance ||Score ");
+		result.append(printinfo ? "*\n" : "\n");
 		double limit = numberSubstances < sortedSubstances.size()
 				? numberSubstances
 				: sortedSubstances.size();
@@ -234,22 +252,24 @@ public class WISECTopSubstancesHandler extends AbstractTagHandler {
 		for (int i = 0; i < limit; i++) {
 			RatedSubstance rs = sortedSubstances.get(i);
 			result.append("|");
-			result.append(rs.getSubstance());
+			result.append(KnowWEUtils.urldecode(rs.getSubstance()));
 			result.append("|");
 			result.append(rs.getScore());
 			result.append("\n");
 		}
 
-		// Render Legend
-		result.append("%%sub (");
-		for (Criteria c : underlyingData.keySet()) {
-			result.append(c.name());
-			result.append("=");
-			result.append(underlyingData.get(c));
-			result.append(", ");
+		// Render Legend (if printinfo = true)
+		if (printinfo) {
+			result.append("%%sub * (");
+			for (Criteria c : underlyingData.keySet()) {
+				result.append(c.name());
+				result.append("=");
+				result.append(underlyingData.get(c));
+				result.append(", ");
+			}
+			result.delete(result.length() - 2, result.length());
+			result.append(")/%");
 		}
-		result.delete(result.length() - 2, result.length());
-		result.append(")/%");
 
 		return result.toString();
 	}
