@@ -82,6 +82,9 @@ public class Finding extends D3webTerminalCondition<Finding> {
 
 		if(qRef != null && aRef != null) {
 			Choice answer = aRef.get().getObject(aRef);
+			if (answer == null) {
+				return null;
+			}
 			ChoiceValue value = new ChoiceValue(
 					answer);
 			return new CondEqual(qRef.get().getObject(qRef), value);
@@ -99,7 +102,22 @@ class FindingFinder extends SectionFinder {
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
 		if (SplitUtility.containsUnquoted(text, "=")) {
-			return textFinder.lookForSections(text, father);
+
+			// if the value is a number this is not taken as a Finding (but left
+			// for NumericalFinding)
+			List<String> list = SplitUtility.splitUnquoted(text, "=");
+			String answer = list.get(1);
+			boolean isNumber = false;
+			try {
+				Double.parseDouble(answer);
+				isNumber = true;
+			}
+			catch (NumberFormatException e) {
+			}
+			// return it if answer is NOT a number
+			if (!isNumber) {
+				return textFinder.lookForSections(text, father);
+			}
 		}
 		return null;
 	}

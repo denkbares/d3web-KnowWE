@@ -59,8 +59,8 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		List<KnowWEObjectType> termConds = new ArrayList<KnowWEObjectType>();
 
 		// add all the various allowed TerminalConditions here
-		termConds.add(new NumericalFinding());
 		termConds.add(new Finding());
+		termConds.add(new NumericalFinding());
 		termConds.add(new CondKnown());
 
 		rule.setTerminalConditions(termConds);

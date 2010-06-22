@@ -32,7 +32,7 @@ import de.d3web.we.utils.SplitUtility;
 public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 	private static String[] comparators = {
-			"<=", ">=", "==", "<", ">", };
+			"<=", ">=", "==", "=", "<", ">", };
 
 	@Override
 	protected void init() {
@@ -81,7 +81,6 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 	class NumQuestionRefImpl extends QuestionRef {
 
-
 	}
 
 	@Override
@@ -95,6 +94,10 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 		Double number = numberSec.get().getNumber(numberSec);
 
 		Question q = qRef.get().getObject(qRef);
+
+		if (!(q instanceof QuestionNum)) {
+			// TODO some reasonable error handling here!
+		}
 
 		if (number != null && q != null && q instanceof QuestionNum) {
 
@@ -113,6 +116,9 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 				return new CondNumGreater(qnum, number);
 			}
 			else if (comparator.equals("==")) {
+				return new CondNumEqual(qnum, number);
+			}
+			else if (comparator.equals("=")) {
 				return new CondNumEqual(qnum, number);
 			}
 
