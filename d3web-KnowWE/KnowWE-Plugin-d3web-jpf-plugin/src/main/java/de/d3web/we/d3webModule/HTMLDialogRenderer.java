@@ -28,6 +28,7 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.Choice;
@@ -53,10 +54,12 @@ public class HTMLDialogRenderer {
 
 		// get the current knowledge base
 		KnowledgeBase b = c.getKnowledgeBase();
+		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(b);
 
 		// get all qcontainers of kb into a list
 		List<QContainer> containers = b.getQContainers();
-
+		kbm.sortQContainers(containers);
+		
 		StringBuffer buffi = new StringBuffer();
 
 		// for formatting the specific dialog panel
@@ -73,6 +76,7 @@ public class HTMLDialogRenderer {
 
 		// go through all qcontainers of the knowledge base
 		for (QContainer container : containers) {
+			
 			// skip the rootiest root element "Q000"
 			if (container.getName().endsWith("Q000")) continue;
 
