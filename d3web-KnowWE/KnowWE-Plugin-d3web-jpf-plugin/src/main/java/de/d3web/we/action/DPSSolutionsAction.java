@@ -175,7 +175,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 	}
 
 	private StringBuffer getSolutionLinkList(String user, String web, Broker b,
-			List<Term> list, ISetMap<Term, Information> assumptionMap) {
+			List<Term> list, ISetMap<Term, Information> assumptionMap, int index, String topic) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<ul>");
 		for (Term term : list) {		
@@ -195,17 +195,23 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			sb.append(" ");
 			// sb.append(" </a>");
 			for (Information info : assumptionMap.get(term)) {
-				String string = info.getNamespace();
+				String namespace = info.getNamespace();
+				// Render only one link if special article is selected
+				if (index > 0
+						&& !namespace.substring(0, info.getNamespace().indexOf("..")).equals(
+								index == 1 ? topic
+						: SolutionStateViewHandler.getArticleNames(web, user).get(index - 2)))
+					continue;
 				String url = "encoding solution failed";
 						url = "KnowWE.jsp?renderer=XCLExplanation&KWikiTerm="
 								+ info.getObjectID()
-								+ "&KWikisessionid=" + string + "&KWikiWeb=" + web
+								+ "&KWikisessionid=" + namespace + "&KWikiWeb=" + web
 								+ "&KWikiUser=" + user;
 
 			
 				sb.append("<a href=\"#\" class=\"sstate-show-explanation\"" 
-						+ " rel=\"{term : '"+info.getObjectID()+"', session : '"+string+"', web : '"+web+"', user: '"+user+"'}\" >"
-						+ getInferenceInfo(b, term, string) + "</a>");
+						+ " rel=\"{term : '"+info.getObjectID()+"', session : '"+namespace+"', web : '"+web+"', user: '"+user+"'}\" >"
+						+ getInferenceInfo(b, term, namespace) + "</a>");
 			}
 
 			// sb.append(getAssumptionsLink(user, web, term, assumptionMap));
@@ -451,7 +457,9 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			if (index > 0) {
 				for (Information info : assumptionMap.get(term)) {
 					if (info.getNamespace().substring(0, info.getNamespace().indexOf(".."))
-							.equals(index == 1 ? topic 
+							.equals(
+									index == 1
+											? topic
 											: SolutionStateViewHandler.getArticleNames(web, user).get(
 													index - 2))) {
 						skip = false;
@@ -492,7 +500,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 					+ ":</strong>");
 			// sb.append("</a>");
 			sb.append(getSolutionLinkList(user, web, broker, established,
-					assumptionMap));
+					assumptionMap, index, topic));
 			sb.append("</div>");
 			painted = true;
 		}
@@ -510,7 +518,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 					+ ":</strong>");
 			// sb.append("</a>");
 			sb.append(getSolutionLinkList(user, web, broker, suggested,
-					assumptionMap));
+					assumptionMap, index, topic));
 			sb.append("</div>");
 			painted = true;
 		}
