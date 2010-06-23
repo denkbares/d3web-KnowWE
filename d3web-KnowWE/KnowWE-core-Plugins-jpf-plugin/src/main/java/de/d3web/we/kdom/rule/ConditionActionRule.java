@@ -7,6 +7,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -39,6 +40,9 @@ public class ConditionActionRule extends DefaultAbstractKnowWEObjectType {
 		this.addChildType(condArea);
 		action.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(action);
+
+		this.setCustomRenderer(new EditSectionRenderer());
+
 	}
 
 	/**
@@ -56,7 +60,7 @@ public class ConditionActionRule extends DefaultAbstractKnowWEObjectType {
 	 *
 	 *
 	 * @author Jochen
-	 * 
+	 *
 	 */
 	class ConditionArea extends DefaultAbstractKnowWEObjectType {
 
