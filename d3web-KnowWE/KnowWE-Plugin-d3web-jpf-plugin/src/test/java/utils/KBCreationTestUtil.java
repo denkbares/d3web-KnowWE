@@ -24,13 +24,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.abstraction.formula.Add;
-import de.d3web.abstraction.formula.Div;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
-import de.d3web.abstraction.formula.Mult;
+import de.d3web.abstraction.formula.Operator;
 import de.d3web.abstraction.formula.QNumWrapper;
-import de.d3web.abstraction.formula.Sub;
+import de.d3web.abstraction.formula.Operator.Operation;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -299,7 +297,7 @@ public class KBCreationTestUtil {
 		// -- invisible
 		Question q0 = createdKBM.createQuestionOC("Exhaust fumes", qc1,
 				new String[] {
-				"black", "blue", "invisible" });
+						"black", "blue", "invisible" });
 
 		// Add MMInfo to Question "Exhaust fumes":
 		// "What is the color of the exhaust fumes?"
@@ -334,7 +332,7 @@ public class KBCreationTestUtil {
 		// ---- increased
 		Question q3 = createdKBM.createQuestionOC("Mileage evaluation", q2,
 				new String[] {
-				"normal", "increased" });
+						"normal", "increased" });
 		q3.getProperties().setProperty(Property.ABSTRACTION_QUESTION, Boolean.TRUE);
 
 		// Add question:
@@ -349,10 +347,10 @@ public class KBCreationTestUtil {
 		// -- everything is fine
 		Question q4 = createdKBM.createQuestionMC("Driving", qc1,
 				new String[] {
-				"insufficient power on partial load",
-				"insufficient power on full load",
-				"unsteady idle speed",
-				"everything is fine" });
+						"insufficient power on partial load",
+						"insufficient power on full load",
+						"unsteady idle speed",
+						"everything is fine" });
 
 		// Add question:
 		// ---- Other [text]
@@ -532,9 +530,9 @@ public class KBCreationTestUtil {
 		// "Average mileage /100km") * 100.0)
 		String ruleID = createdKBM.createRuleID();
 		QuestionNum q3 = (QuestionNum) createdKBM.findQuestion("Num. Mileage evaluation");
-		Div d = new Div(new QNumWrapper(q11), new QNumWrapper(q12));
+		Operator d = new Operator(new QNumWrapper(q11), new QNumWrapper(q12), Operation.Div);
 		FormulaNumber fn = new FormulaNumber(100.0);
-		Mult m = new Mult(d, fn);
+		Operator m = new Operator(d, fn, Operation.Mult);
 		FormulaExpression f = new FormulaExpression(q3, m);
 		RuleFactory.createSetValueRule(ruleID, q3, f, c1);
 
@@ -557,7 +555,7 @@ public class KBCreationTestUtil {
 		ruleID = createdKBM.createRuleID();
 		QuestionNum qnum = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
 		FormulaNumber fn2 = new FormulaNumber(2.0);
-		Add add = new Add(new QNumWrapper(qnum), fn2);
+		Operator add = new Operator(new QNumWrapper(qnum), fn2, Operation.Add);
 		FormulaExpression f2 = new FormulaExpression(qnum, add);
 		RuleFactory.createSetValueRule(ruleID, qnum, f2, conditionIf4);
 
@@ -570,7 +568,7 @@ public class KBCreationTestUtil {
 				answerIf5));
 		QuestionNum questionFormula = (QuestionNum) createdKBM.findQuestion("Average mileage /100km");
 		FormulaNumber fn3 = new FormulaNumber(2.0);
-		Add addition = new Add(new QNumWrapper(questionFormula), fn3);
+		Operator addition = new Operator(new QNumWrapper(questionFormula), fn3, Operation.Add);
 		QuestionNum questionThen = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
 		FormulaExpression f3 = new FormulaExpression(questionThen, addition);
 		ruleID = createdKBM.createRuleID();
@@ -585,7 +583,7 @@ public class KBCreationTestUtil {
 				answerIf6));
 		QuestionNum questionFormula2 = (QuestionNum) createdKBM.findQuestion("Average mileage /100km");
 		FormulaNumber fn4 = new FormulaNumber(1.0);
-		Sub subtraction = new Sub(new QNumWrapper(questionFormula2), fn4);
+		Operator subtraction = new Operator(new QNumWrapper(questionFormula2), fn4, Operation.Sub);
 		QuestionNum questionThen2 = (QuestionNum) createdKBM.findQuestion("Real mileage  /100km");
 		FormulaExpression f4 = new FormulaExpression(questionThen2, subtraction);
 		ruleID = createdKBM.createRuleID();

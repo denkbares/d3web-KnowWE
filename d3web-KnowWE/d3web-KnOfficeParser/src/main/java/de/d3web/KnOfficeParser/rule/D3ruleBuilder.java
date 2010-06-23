@@ -40,14 +40,12 @@ import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
 import de.d3web.KnOfficeParser.util.Scorefinder;
-import de.d3web.abstraction.formula.Add;
-import de.d3web.abstraction.formula.Div;
 import de.d3web.abstraction.formula.FormulaExpression;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.formula.FormulaNumberElement;
-import de.d3web.abstraction.formula.Mult;
+import de.d3web.abstraction.formula.Operator;
 import de.d3web.abstraction.formula.QNumWrapper;
-import de.d3web.abstraction.formula.Sub;
+import de.d3web.abstraction.formula.Operator.Operation;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.Condition;
@@ -283,7 +281,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					if (!D3webQuestionFactory.checkType((Question) qcon, type)) {
 						errors.add(MessageKnOfficeGenerator
 								.createTypeMismatchWarning(file, line,
-								linetext, s, type));
+										linetext, s, type));
 					}
 				}
 				else {
@@ -297,7 +295,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 							else {
 								errors.add(MessageKnOfficeGenerator
 										.createTypeRecognitionError(file, line,
-										linetext, s, type));
+												linetext, s, type));
 							}
 						}
 						else {
@@ -308,8 +306,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					else {
 						errors
 								.add(MessageKnOfficeGenerator
-								.createQuestionClassorQuestionNotFoundException(
-								file, line, linetext, s));
+										.createQuestionClassorQuestionNotFoundException(
+												file, line, linetext, s));
 					}
 				}
 			}
@@ -321,7 +319,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				else {
 					errors.add(MessageKnOfficeGenerator
 							.createQuestionClassNotFoundException(file, line,
-							linetext, s));
+									linetext, s));
 				}
 			}
 			i++;
@@ -380,7 +378,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			else {
 				errors.add(MessageKnOfficeGenerator
 						.createQuestionNotFoundException(file, line, linetext,
-						qname));
+								qname));
 				finishCondstack(except);
 			}
 		}
@@ -396,7 +394,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					else {
 						errors.add(MessageKnOfficeGenerator
 								.createAnswerNotFoundException(file, line,
-								linetext, s, qc.getName()));
+										linetext, s, qc.getName()));
 					}
 				}
 				if (!alist.isEmpty()) {
@@ -419,8 +417,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				else {
 					errors
 							.add(MessageKnOfficeGenerator
-							.createNoValidAnswerException(file, line,
-							linetext));
+									.createNoValidAnswerException(file, line,
+											linetext));
 					finishCondstack(except);
 				}
 			}
@@ -446,15 +444,15 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				formula = new FormulaExpression(qnum, formulaStack.pop());
 			}
 			else if (op.equals("+=")) {
-				FormulaNumberElement fne = new Add(new QNumWrapper(qnum),
-						formulaStack.pop());
+				FormulaNumberElement fne = new Operator(new QNumWrapper(qnum),
+						formulaStack.pop(), Operation.Add);
 				formula = new FormulaExpression(qnum, fne);
 			}
 			else {
 				formula = null;
 				errors.add(MessageKnOfficeGenerator
 						.createWrongOperatorInAbstractionRule(file, line,
-						linetext));
+								linetext));
 			}
 			Condition ifcond;
 			Condition exceptcond;
@@ -493,7 +491,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				else {
 					errors.add(MessageKnOfficeGenerator
 							.createQuestionOrDiagnosisNotFoundException(file,
-							line, linetext, s));
+									line, linetext, s));
 				}
 			}
 		}
@@ -506,8 +504,8 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (!((currentquestion instanceof QuestionNum) || (currentquestion instanceof QuestionChoice))) {
 				errors
 						.add(MessageKnOfficeGenerator
-						.createOnlyNumOrChoiceAllowedError(file, line,
-						linetext));
+								.createOnlyNumOrChoiceAllowedError(file, line,
+										linetext));
 			}
 		}
 	}
@@ -532,7 +530,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 					if (score == null) {
 						errors.add(MessageKnOfficeGenerator
 								.createScoreDoesntExistError(file, line,
-								linetext, value));
+										linetext, value));
 						finishCondstack(except);
 						return;
 					}
@@ -566,7 +564,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			else {
 				errors.add(MessageKnOfficeGenerator
 						.createWrongOperatorforChoiceQuestionsException(file,
-						line, linetext));
+								line, linetext));
 				finishCondstack(except);
 				return;
 			}
@@ -580,7 +578,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				else {
 					errors.add(MessageKnOfficeGenerator
 							.createAnswerNotFoundException(file, line,
-							linetext, value, qc.getName()));
+									linetext, value, qc.getName()));
 					finishCondstack(except);
 					return;
 				}
@@ -655,28 +653,28 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 	public void formulaAdd() {
 		FormulaNumberElement f2 = formulaStack.pop();
 		FormulaNumberElement f1 = formulaStack.pop();
-		formulaStack.push(new Add(f1, f2));
+		formulaStack.push(new Operator(f1, f2, Operation.Add));
 	}
 
 	@Override
 	public void formulaSub() {
 		FormulaNumberElement f2 = formulaStack.pop();
 		FormulaNumberElement f1 = formulaStack.pop();
-		formulaStack.push(new Sub(f1, f2));
+		formulaStack.push(new Operator(f1, f2, Operation.Sub));
 	}
 
 	@Override
 	public void formulaMult() {
 		FormulaNumberElement f2 = formulaStack.pop();
 		FormulaNumberElement f1 = formulaStack.pop();
-		formulaStack.push(new Mult(f1, f2));
+		formulaStack.push(new Operator(f1, f2, Operation.Mult));
 	}
 
 	@Override
 	public void formulaDiv() {
 		FormulaNumberElement f2 = formulaStack.pop();
 		FormulaNumberElement f1 = formulaStack.pop();
-		formulaStack.push(new Div(f1, f2));
+		formulaStack.push(new Operator(f1, f2, Operation.Div));
 	}
 
 	@Override
