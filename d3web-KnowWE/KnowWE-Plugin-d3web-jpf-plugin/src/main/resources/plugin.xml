@@ -60,13 +60,13 @@
 	
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="RulesBlock">
+		id="RulesMarkup">
 		<parameter id="class"
-			value="de.d3web.we.kdom.rulesNew.RulesBlock" />
+			value="de.d3web.we.kdom.rulesNew.RulesMarkup" />
 		<parameter id="name" value="RulesBlock" />
-		<parameter id="description" value="KnowWEObjectType RulesBlock" />
+		<parameter id="description" value="KnowWEObjectType RulesMarkup" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="5.0" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />
@@ -186,7 +186,7 @@
 		<parameter id="name" value="CoveringListSection" />
 		<parameter id="description" value="KnowWEObjectType CoveringListSection" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="4.9" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />
 		<parameter id="script" value="silveripe.0.2.js" />

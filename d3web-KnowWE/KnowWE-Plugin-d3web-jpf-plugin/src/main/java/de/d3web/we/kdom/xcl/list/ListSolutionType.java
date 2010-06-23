@@ -1,7 +1,28 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.xcl.list;
 
 import java.util.Collection;
 
+import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -14,10 +35,20 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.NonEmptyLineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.inference.PSMethodXCL;
 
+/**
+ * @author Jochen
+ *
+ *         A type for the head of a covering-list defining the solution that is
+ *         described by that list. The solution is created from the term found.
+ *         Further, a covering-model is created.
+ *
+ *
+ */
 public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 
 	public ListSolutionType() {
@@ -25,9 +56,9 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 		solutionFinder.addConstraint(ExactlyOneFindingConstraint.getInstance());
 		this.setSectionFinder(solutionFinder);
 
-		this.addSubtreeHandler(new XCLModelCreator());
+		this.addSubtreeHandler(Priority.HIGH, new XCLModelCreator());
 
-		// cut the optinoal '{'
+		// cut the optional '{'
 		AnonymousType closing = new AnonymousType("bracket");
 		closing.setSectionFinder(new StringSectionFinderUnquoted("{"));
 		this.addChildType(closing);
@@ -39,6 +70,13 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 		this.addChildType(solDef);
 	}
 
+	/**
+	 * @author Jochen
+	 *
+	 *         This handler creates the solution in the KB and also a
+	 *         covering-model
+	 *
+	 */
 	class XCLModelCreator extends D3webReviseSubTreeHandler<ListSolutionType> {
 
 		@Override
@@ -46,9 +84,14 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 
 			Section<SolutionDef> solutionDef = s.findSuccessor(SolutionDef.class);
 			Solution solution = solutionDef.get().getObject(solutionDef);
+
 			if (solution != null) {
-				XCLModel m = new XCLModel(solution);
-				solution.addKnowledge(PSMethodXCL.class, m, XCLModel.XCLMODEL);
+				KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
+						XCLModel.XCLMODEL);
+				if (xclModel == null) {
+					XCLModel m = new XCLModel(solution);
+					solution.addKnowledge(PSMethodXCL.class, m, XCLModel.XCLMODEL);
+				}
 			}
 			return null;
 		}

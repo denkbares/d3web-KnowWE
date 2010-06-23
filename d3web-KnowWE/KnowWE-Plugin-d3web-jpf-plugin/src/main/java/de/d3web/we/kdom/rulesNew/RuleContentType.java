@@ -48,10 +48,22 @@ import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
+/**
+ * @author Jochen
+ *
+ *         A type for the content of the RuleMarkup-block. It allocates all the
+ *         text tries to create Rules from the content
+ *
+ */
 public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
-	@Override
-	protected void init() {
+	/**
+	 * Here the type is configured. It takes all the text is gets. A
+	 * ConditionActionRule-type is initialized and inserted as child-type.
+	 *
+	 */
+	public RuleContentType() {
+		// take all the text that is passed
 		this.sectionFinder = new AllTextSectionFinder();
 
 		// configure the rule
@@ -62,15 +74,23 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		termConds.add(new Finding());
 		termConds.add(new NumericalFinding());
 		termConds.add(new CondKnown());
-
 		rule.setTerminalConditions(termConds);
 
+		// add handler to create the rules in the d3web knowledge base
 		rule.addSubtreeHandler(new RuleCompiler());
 
+		// register the configured rule-type as child
 		this.addChildType(rule);
 
 	}
 
+	/**
+	 * @author Jochen
+	 *
+	 *         This handler compiles a parsed rule into the d3web knowledge base
+	 *         (if it doesn't have errors)
+	 * 
+	 */
 	class RuleCompiler extends SubtreeHandler<ConditionActionRule> {
 
 		@Override

@@ -23,9 +23,17 @@ package de.d3web.we.kdom.rulesNew;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
-public class RulesBlock extends DefaultMarkupType {
+/**
+ * @author Jochen
+ *
+ *         A markup to create a block for text-rules
+ * @see RuleContentType
+ *
+ * 
+ */
+public class RulesMarkup extends DefaultMarkupType {
 
-	public RulesBlock(DefaultMarkup markup) {
+	public RulesMarkup(DefaultMarkup markup) {
 		super(markup);
 	}
 
@@ -38,7 +46,7 @@ public class RulesBlock extends DefaultMarkupType {
 
 	}
 
-	public RulesBlock() {
+	public RulesMarkup() {
 		super(m);
 	}
 

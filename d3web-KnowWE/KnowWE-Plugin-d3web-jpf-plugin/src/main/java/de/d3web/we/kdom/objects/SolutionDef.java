@@ -1,10 +1,8 @@
 package de.d3web.we.kdom.objects;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Solution;
@@ -12,17 +10,21 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.TerminologyManager;
 
 public class SolutionDef extends D3webObjectDef<Solution> {
 
 	public SolutionDef() {
 		super("QUESTION_STORE_KEY");
-		this.addSubtreeHandler(new CreateSolutionHandler());
+		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
+		this.addSubtreeHandler(Priority.HIGHEST, new CreateSolutionHandler());
 	}
 
 	static class CreateSolutionHandler extends SubtreeHandler<SolutionDef> {
@@ -45,6 +47,11 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(o.getClass()
 						.getSimpleName()));
 			} else {
+
+				// ok everything went well
+				// register term
+				TerminologyManager.getInstance().registerNewTerm(
+						qidSection.get().getTermName(qidSection), qidSection);
 
 
 				Solution s = mgn.createSolution(name);

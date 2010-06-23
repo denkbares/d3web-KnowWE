@@ -16,6 +16,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public abstract class AnswerDef extends D3webObjectDef<Choice> {
@@ -31,7 +32,7 @@ public abstract class AnswerDef extends D3webObjectDef<Choice> {
 
 	public AnswerDef() {
 		super("ANSWER_STORE_KEY");
-		this.addSubtreeHandler(new createAnswerHandler());
+		this.addSubtreeHandler(Priority.HIGHER, new createAnswerHandler());
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
 
 	}

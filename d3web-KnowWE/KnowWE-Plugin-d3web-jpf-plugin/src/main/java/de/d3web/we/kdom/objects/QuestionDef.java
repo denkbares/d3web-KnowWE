@@ -15,6 +15,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
+import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.terminology.TerminologyManager;
 import de.d3web.we.utils.D3webUtils;
@@ -27,7 +28,7 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 
 	public QuestionDef() {
 		super("QUESTION_STORE_KEY");
-		this.addSubtreeHandler(new CreateQuestionHandler());
+		this.addSubtreeHandler(Priority.HIGHEST, new CreateQuestionHandler());
 		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
 
 	}
