@@ -24,29 +24,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FontColorRenderer extends StyleRenderer {
-	
+
 	public static String COLOR1 = "color:rgb(40, 40, 160)";
 	public static String COLOR2 = "color:rgb(255, 0, 0)";
 	public static String COLOR3 = "color:rgb(0, 128, 0)";
-	public static String COLOR4 = "color:rgb(150, 90, 180)";
+	public static String COLOR4 = "color:rgb(150, 110, 120)";
 	public static String COLOR5 = "color:rgb(128, 128, 0)";
 	public static String COLOR6 = "color:rgb(0, 0, 255)";
 	public static String COLOR7 = "color:rgb(125, 80, 102)";
 	public static String COLOR8 = "color:rgb(0, 0, 102)";
-	
+
 	private static Map<String, FontColorRenderer> renderers = new HashMap<String, FontColorRenderer>();
-	
+
 	public static FontColorRenderer getRenderer(String color) {
 
 		if (!renderers.containsKey(color)) {
 			renderers.put(color, new FontColorRenderer(color));
 		}
-		
+
 		return renderers.get(color);
 	}
 
 	public FontColorRenderer(String s) {
 		super(s);
 	}
-	
+
 }
