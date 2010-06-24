@@ -23,9 +23,11 @@ package de.d3web.we.taghandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import de.d3web.core.inference.KnowledgeSlice;
@@ -33,13 +35,23 @@ import de.d3web.core.inference.RuleSet;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionDate;
+import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.knowledge.terminology.info.DCElement;
+import de.d3web.core.knowledge.terminology.info.DCMarkup;
+import de.d3web.core.knowledge.terminology.info.MMInfoObject;
+import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
+import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
+import de.d3web.core.knowledge.terminology.info.Properties;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.session.values.Choice;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
@@ -314,41 +326,82 @@ public class KBRenderer extends AbstractTagHandler {
 	private static int j = 0;
 
 	private String getAll(TerminologyObject[] nodes) {
-		StringBuffer test = new StringBuffer();
-
+		StringBuffer result = new StringBuffer();
+		StringBuffer properties = new StringBuffer();
+		StringBuffer range = new StringBuffer();
 		for (TerminologyObject t1 : nodes) {
+			if(t1 instanceof NamedObject && ((NamedObject) t1).getProperties() != null){
+				if (t1 instanceof Question && getPrompt((Question) t1) != null){
+					properties.append("&#126; " + getPrompt((Question) t1));
+				}
+				Properties rUnit = ((NamedObject)t1).getProperties();
+				if(rUnit.getProperty(Property.UNIT) != null){
+					range.append(" {"+rUnit.getProperty(Property.UNIT).toString()+"} ");
+				}
+				if(rUnit.getProperty(Property.QUESTION_NUM_RANGE) != null){
+					range.append("("+rUnit.getProperty(Property.QUESTION_NUM_RANGE).toString()+")");
+				}
+			}
 			if (t1 instanceof QuestionChoice) {
-				test.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.toString()
-						+ " [oc]</span><br/>");
+				if (t1 instanceof QuestionMC) {
+					result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.toString()
+							+ " "+properties+" [mc] "+range+"</span><br/>");
+				}
+				else {
+					result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.toString()
+							+ " "+properties+" [oc] "+range+"</span><br/>");
+				}
 				for (Choice c1 : ((QuestionChoice) t1).getAllAlternatives()) {
 					for (int i = 0; i < j; i++) {
-						test.append("-");
+						result.append("-");
 					}
-					test.append("-- <span style=\"color: rgb(0, 0, 255);\">" + c1.toString()
+					result.append("-- <span style=\"color: rgb(0, 0, 255);\">" + c1.toString()
 							+ "</span><br/>");
 				}
 			}
 			else if (t1 instanceof QuestionText) {
-				test.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
-						+ " [text]</span><br/>");
+				result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
+						+ " "+properties+" [text] "+range+"</span><br/>");
 			}
 			else if (t1 instanceof QuestionNum) {
-				test.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
-						+ " [num]</span><br/>");
+				result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
+						+ " "+properties+" [num] "+range+"</span><br/>");
 			}
 			else if (t1 instanceof QuestionDate) {
-				test.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
-						+ " [date]</span><br/>");
+				result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
+						+ " "+properties+" [date] "+range+"</span><br/>");
 			}
-			else if (t1.getChildren().length > 0) {
+			properties = new StringBuffer();
+			range = new StringBuffer();
+			if (t1.getChildren().length > 0) {
 				j++;
 				for (int i = 0; i < j; i++) {
-					test.append("-");
+					result.append("-");
 				}
-				test.append(getAll(t1.getChildren()));
+				result.append(getAll(t1.getChildren()));
 			}
 		}
 		j = 0;
-		return test.toString();
+		return result.toString();
+	}
+
+	public static String getPrompt(Question q) {
+		MMInfoStorage storage = (MMInfoStorage) q.getProperties()
+				.getProperty(Property.MMINFO);
+		if (storage != null) {
+			DCMarkup dcMarkup = new DCMarkup();
+			dcMarkup.setContent(DCElement.SOURCE, q.getId());
+			dcMarkup.setContent(DCElement.SUBJECT,
+					MMInfoSubject.PROMPT.getName());
+			Set<MMInfoObject> info = storage.getMMInfo(dcMarkup);
+
+			if (info != null) {
+				Iterator<MMInfoObject> iter = info.iterator();
+				while (iter.hasNext()) {
+					return iter.next().getContent();
+				}
+			}
+		}
+		return null;
 	}
 }
