@@ -21,7 +21,9 @@
 package de.d3web.we.d3webModule;
 
 import java.net.URLEncoder;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -61,6 +63,9 @@ public class HTMLDialogRenderer {
 		kbm.sortQContainers(containers);
 		
 		StringBuffer buffi = new StringBuffer();
+		
+		//Map for all processed TerminologyObjects, avoids endless recursion in cyclic hierarchies
+		Set<TerminologyObject> processedTOs = new HashSet<TerminologyObject>();
 
 		// for formatting the specific dialog panel
 		buffi.append("<div class='dialogstyle''>"
@@ -77,14 +82,17 @@ public class HTMLDialogRenderer {
 		// go through all qcontainers of the knowledge base
 		for (QContainer container : containers) {
 			
+			processedTOs.add(container);
+			
 			// skip the rootiest root element "Q000"
 			if (container.getName().endsWith("Q000")) continue;
 
 			// the first element of the dialog should be extended so the user
 			// sees where
 			// he has to do something
+			buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
+			
 			if (first) {
-				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
 				buffi.append("<h4 class='qcontainerName pointer extend-htmlpanel-down'>");
 				buffi.append("  " + container.getName() + ": ");
 				buffi.append("</h4>");
@@ -92,7 +100,6 @@ public class HTMLDialogRenderer {
 				first = false;
 			}
 			else {
-				buffi.append("<div class='qcontainer' id='" + container.getId() + "'>");
 				buffi.append("<h4 class='qcontainerName pointer extend-htmlpanel-right'>");
 				buffi.append("  " + container.getName() + ": ");
 				buffi.append("</h4>");
@@ -122,40 +129,41 @@ public class HTMLDialogRenderer {
 					// assigns different css classes according to whether
 					// nr/line is
 					// odd or even
+					String clazzName;
+					
 					if (i == 0) {
-						buffi.append(getTableRowString(c, q, web, b.getId(), false,
-								"class='trEven first'"));
+						clazzName = "class='trEven first'";
 					}
 					else if (i % 2 == 0) {
-						buffi.append(getTableRowString(c, q, web, b.getId(), false,
-								"class='trEven'"));
+						clazzName = "class='trEven'";
 					}
 					else {
-						buffi.append(getTableRowString(c, q, web, b.getId(), false, "class='trOdd'"));
+						clazzName = "class='trOdd'";
 					}
+					
+					buffi.append(getTableRowString(c, q, web, b.getId(), false, clazzName));
 
 					// if there are follow-up questions
 				}
 				else {
 
 					// first render their initiating root element
+					String classDecl;
 					if (i % 2 == 0) {
-						buffi.append(getTableRowString(c, q, web, b.getId(), false,
-								"id='" + q.getId()
-								+ "' class='follow pointer extend-htmlpanel-right-s'"));
+						classDecl = "id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right-s'";
 					}
 					else {
-						buffi.append(getTableRowString(c, q, web, b.getId(), false,
-								"id='" + q.getId()
-								+ "' class='follow pointer extend-htmlpanel-right-s'"));
+						classDecl = "id='" + q.getId() + "' class='follow pointer extend-htmlpanel-right-s'";
 					}
+					buffi.append(getTableRowString(c, q, web, b.getId(), false, classDecl));
 
 					// then assemble the StringBuffer that contains all follow
 					// up questions
 					StringBuffer ch = new StringBuffer();
+					
 					for (TerminologyObject cset : q.getChildren()) {
-						getFollowUpChildrenRekur(ch, (Question) cset, c, web, b.getId(), true, 35,
-								q);
+						getFollowUpChildrenRekur(ch, (Question) cset, c, web, b.getId(), 35, q,
+								processedTOs);
 					}
 					buffi.append(ch.toString());
 				}
@@ -186,9 +194,10 @@ public class HTMLDialogRenderer {
 	/**
 	 * gets all follow-up questions of the given Question "set" recursively and
 	 * assembles them into a StringBuffer decorated with HTML tags
+	 * @param processedTOs 
 	 */
 	private static StringBuffer getFollowUpChildrenRekur(StringBuffer children, Question set,
-			Session c, String web, String namespace, boolean bool, int indent, Question parent) {
+			Session c, String web, String namespace, int indent, Question parent, Set<TerminologyObject> processedTOs) {
 		// increase the indentation with every hierarchical descendance = each
 		// recursion level
 		indent += 15;
@@ -200,15 +209,18 @@ public class HTMLDialogRenderer {
 		children.append("<tr id='" + parent.getId() + "' class='trf hidden'");
 		children.append(renderFollowUpQuestion(c, set, web, namespace, indent));
 		children.append("</tr> \n");
-
+ 
 		// as long as the follow-up question has further child elements, call
 		// the method
 		// recursively for each of them
-		if (set.getChildren().length != 0) {
-			for (TerminologyObject cset : set.getChildren()) {
-				getFollowUpChildrenRekur(children, (Question) cset, c, web, namespace, !bool,
-						indent, parent);
+		for (TerminologyObject cset : set.getChildren()) {
+			if (!processedTOs.contains(cset)){
+				processedTOs.add(cset);
+				getFollowUpChildrenRekur(children, (Question) cset, c, web, namespace, indent,
+						parent, processedTOs);
+				
 			}
+			
 		}
 		return children;
 	}
