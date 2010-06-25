@@ -36,6 +36,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.objects.SolutionDef;
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.InvalidNumberWarning;
@@ -85,6 +86,9 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 		// the rest is CoveringRelations
 		this.addChildType(new CoveringRelation());
+
+		// quick edit
+		this.setCustomRenderer(new EditSectionRenderer());
 
 	}
 

@@ -21,12 +21,13 @@
 package de.d3web.we.kdom.questionTreeNew;
 
 import de.d3web.we.kdom.dashTree.DashTree;
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 
 public class QuestionDashTree extends DashTree {
 
 	public QuestionDashTree() {
 		super();
-		this.setCustomRenderer(null);
+		this.setCustomRenderer(new EditSectionRenderer());
 		this.replaceDashTreeElementContentType(this, new QuestionDashTreeElementContent());
 	}
 }
