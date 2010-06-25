@@ -29,6 +29,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.InvalidNumberError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class Number extends DefaultAbstractKnowWEObjectType {

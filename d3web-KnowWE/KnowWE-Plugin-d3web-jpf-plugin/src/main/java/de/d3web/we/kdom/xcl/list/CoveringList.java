@@ -38,10 +38,12 @@ import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.objects.SolutionDef;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
+import de.d3web.we.kdom.report.message.InvalidNumberWarning;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.rulesNew.KDOMConditionFactory;
 import de.d3web.we.kdom.rulesNew.terminalCondition.Finding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
+import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalIntervallFinding;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
@@ -49,11 +51,22 @@ import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
 import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;
 
+/**
+ * @author Jochen
+ *
+ *         A covering-list markup parser
+ *
+ *         In the first line the solution is defined @see ListSolutionType The
+ *         rest of the content is split by ',' (komas) and the content inbetween
+ *         is taken as CoveringRelations
+ *
+ */
 public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 	public CoveringList() {
@@ -70,6 +83,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		koma.setSectionFinder(new UnquotedExpressionFinder(","));
 		this.addChildType(koma);
 
+		// the rest is CoveringRelations
 		this.addChildType(new CoveringRelation());
 
 	}
@@ -91,17 +105,33 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			List<KnowWEObjectType> termConds = new ArrayList<KnowWEObjectType>();
 			termConds.add(new Finding());
 			termConds.add(new NumericalFinding());
+			termConds.add(new NumericalIntervallFinding());
 			cond.setAllowedTerminalConditions(termConds);
 
 			this.addChildType(cond);
 		}
 
+		/**
+		 * @author Jochen
+		 *
+		 *         this handler translates the parsed covering-relation-KDOM to
+		 *         the d3web knowledge base
+		 *
+		 */
 		class CreateXCLRealtionHandler extends D3webReviseSubTreeHandler<CoveringRelation> {
 
 			public static final String KBID_KEY = "kbid";
 
+			/*
+			 * (non-Javadoc)
+			 *
+			 * @see
+			 * de.d3web.we.kdom.subtreeHandler.SubtreeHandler#create(de.d3web
+			 * .we.kdom.KnowWEArticle, de.d3web.we.kdom.Section)
+			 */
 			@Override
 			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CoveringRelation> s) {
+				List<KDOMReportMessage> result = new ArrayList<KDOMReportMessage>();
 
 				if (s.hasErrorInSubtree()) {
 					return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
@@ -127,18 +157,43 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 										"condition error"));
 							}
 
+							// check the weight/relation type in square brackets
+							Section<XCLWeight> weight = s.findSuccessor(XCLWeight.class);
+							XCLRelationType type = XCLRelationType.explains;
+							Double w = 1.0;
+							if (weight != null) {
+								String weightString = weight.getOriginalText();
+								type = D3webUtils.getXCLRealtionTypeForString(weightString);
+								if (type == XCLRelationType.explains) {
+									weightString = weightString.replaceAll("\\[", "");
+									weightString = weightString.replaceAll("\\]", "");
+									try {
+										w = Double.valueOf(weightString.trim());
+										if (w <= 0) {
+											result.add(new InvalidNumberWarning(
+													weightString));
+										}
+									}
+									catch (NumberFormatException e) {
+										// not a valid weight
+										result.add(new InvalidNumberWarning(weightString));
+									}
+								}
+							}
+
 							// Insert the Relation into the currentModel
 							String kbRelId = XCLModel.insertXCLRelation(
 											getKBM(article, s).getKnowledgeBase(),
 									condition,
-											solution, XCLRelationType.explains, 1, null);
+											solution, type, w, null);
 							KnowWEUtils.storeSectionInfo(
 											KnowWEEnvironment.DEFAULT_WEB,
 											article.getTitle(), s.getId(), KBID_KEY,
 											kbRelId);
-							return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
-											s.getClass().getSimpleName()
-													+ "XCL"));
+							result.add(new RelationCreatedMessage("XCL: "
+									+ type.toString()));
+							return result;
+
 
 						}
 					}
@@ -157,7 +212,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		public static final char BOUNDS_CLOSE = ']';
 
 		public XCLWeight() {
-			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE));
+			this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE, 1));
 
 		}
 	}

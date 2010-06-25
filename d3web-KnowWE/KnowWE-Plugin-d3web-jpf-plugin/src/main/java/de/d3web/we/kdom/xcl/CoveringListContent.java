@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -45,6 +45,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
 import de.d3web.we.terminology.D3webReviseSubTreeHandler;
 import de.d3web.we.terminology.KnowledgeRecyclingObjectType;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
@@ -53,7 +54,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
 public class CoveringListContent extends XMLContent implements KnowledgeRecyclingObjectType {
 
 	public static final String KBID_KEY = "kbid";
-	private Pattern p = Pattern.compile("\"");
+	private final Pattern p = Pattern.compile("\"");
 
 	@Override
 	protected void init() {
@@ -71,7 +72,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-			
+
 			// Set currentWeb
 			String currentWeb = s.getWeb();
 
@@ -90,7 +91,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 		/**
 		 * Analyses a given XCList and writes it to the KnowledgeBase.
-		 * 
+		 *
 		 * @param kbm
 		 * @param currentweb
 		 * @param XCLList
@@ -167,7 +168,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 		/**
 		 * Inserts Relation into currentModel
-		 * 
+		 *
 		 * @param currentRels
 		 * @param kbm
 		 * @param currentdiag
@@ -179,7 +180,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 			for (Section rel : currentRels) {
 				double weight = this.getWeight(rel);
-				XCLRelationType relationType = this.getRelationType(rel);
+				XCLRelationType relationType = D3webUtils.getRelationType(rel);
 				// Get the Conditions
 				Condition cond = FindingToConditionBuilder.analyseAnyRelation(article, rel, kbm);
 
@@ -195,37 +196,11 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 		}
 
-		/**
-		 * Gets the RelationType from Relation
-		 * 
-		 * @param rel
-		 * @return
-		 */
-		private XCLRelationType getRelationType(Section rel) {
 
-			if (rel.findChildOfType(XCLRelationWeight.class) != null) {
-				Section relWeight = rel.findChildOfType(XCLRelationWeight.class);
-				String weightString = relWeight.getOriginalText();
-				if (weightString.trim().equals("[--]")) {
-					return XCLRelationType.contradicted;
-				}
-				else if (weightString.trim().equals("[!]")) {
-					return XCLRelationType.requires;
-				}
-				else if (weightString.trim().equals("[++]")) {
-					return XCLRelationType.sufficiently;
-				}
-				else {
-					return XCLRelationType.explains;
-				}
-			}
-
-			return XCLRelationType.explains;
-		}
 
 		/**
 		 * Gets the weight from a Relation. If it has none it returns 1.0.
-		 * 
+		 *
 		 * @param rel
 		 * @return
 		 */
@@ -247,7 +222,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 		/**
 		 * Gets all XCLRelations from a given XCLBody
-		 * 
+		 *
 		 * @param section
 		 * @return
 		 */
@@ -271,7 +246,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 		/**
 		 * Gets XCLHead, XCLBody and XCLTail from a given XCList type.
-		 * 
+		 *
 		 * @param children
 		 * @return
 		 */
@@ -294,12 +269,12 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 		if (kbm != null) {
 			// KnowWEArticle lastArt = article.getLastVersionOfArticle();
-			//				
+			//
 			// // get all XCLContent of the old article
 			// List<Section> oldXCLCs = new ArrayList<Section>();
 			// lastArt.getSection().findSuccessorsOfType(this.getClass(),
 			// oldXCLCs);
-			//			
+			//
 			// // store all Solutions of those old XCLs, that havn't got reused
 			// in the current article
 			// Set<String> xclsToDelete = new HashSet<String>();
@@ -313,7 +288,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 			// }
 			// }
 			// }
-			//			
+			//
 			// // delete the xcls from the KnowledgeBase
 			// Collection<KnowledgeSlice> slices =
 			// kbm.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);

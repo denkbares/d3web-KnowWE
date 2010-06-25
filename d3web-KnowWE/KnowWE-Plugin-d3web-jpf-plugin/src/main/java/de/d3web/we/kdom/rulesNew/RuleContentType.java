@@ -45,6 +45,7 @@ import de.d3web.we.kdom.rulesNew.ruleAction.RuleAction;
 import de.d3web.we.kdom.rulesNew.terminalCondition.CondKnown;
 import de.d3web.we.kdom.rulesNew.terminalCondition.Finding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
+import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalIntervallFinding;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
@@ -72,8 +73,9 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
 		// add all the various allowed TerminalConditions here
 		termConds.add(new Finding());
-		termConds.add(new NumericalFinding());
 		termConds.add(new CondKnown());
+		termConds.add(new NumericalFinding());
+		termConds.add(new NumericalIntervallFinding());
 		rule.setTerminalConditions(termConds);
 
 		// add handler to create the rules in the d3web knowledge base
@@ -89,7 +91,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 	 *
 	 *         This handler compiles a parsed rule into the d3web knowledge base
 	 *         (if it doesn't have errors)
-	 * 
+	 *
 	 */
 	class RuleCompiler extends SubtreeHandler<ConditionActionRule> {
 

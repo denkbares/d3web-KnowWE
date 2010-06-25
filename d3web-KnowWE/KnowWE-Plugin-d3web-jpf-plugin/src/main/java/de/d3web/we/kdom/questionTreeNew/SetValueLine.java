@@ -173,7 +173,8 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 					try {
 						d = Double.parseDouble(argument);
 					} catch (NumberFormatException e) {
-						return Arrays.asList((KDOMReportMessage) new InvalidNumberError(argument));
+						return Arrays.asList((KDOMReportMessage) new de.d3web.we.kdom.report.message.InvalidNumberError(
+								argument));
 					}
 
 					if(d != null) {

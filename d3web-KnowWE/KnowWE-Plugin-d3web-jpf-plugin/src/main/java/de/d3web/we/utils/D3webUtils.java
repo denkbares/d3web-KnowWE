@@ -44,7 +44,9 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.objects.QuestionnaireDef;
+import de.d3web.we.kdom.xcl.XCLRelationWeight;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.xcl.XCLRelationType;
 
 public class D3webUtils {
 
@@ -130,7 +132,7 @@ public class D3webUtils {
 		}
 		return session;
 	}
-	
+
 	/**
 	 * Gets the Session Object.
 	 */
@@ -225,6 +227,38 @@ public class D3webUtils {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Gets the RelationType from Relation
+	 *
+	 * @param rel
+	 * @return
+	 */
+	public static XCLRelationType getRelationType(Section<XCLRelationWeight> rel) {
+
+		if (rel.findChildOfType(XCLRelationWeight.class) != null) {
+			Section<? extends XCLRelationWeight> relWeight = rel.findChildOfType(XCLRelationWeight.class);
+			String weightString = relWeight.getOriginalText();
+			return getXCLRealtionTypeForString(weightString);
+		}
+
+		return XCLRelationType.explains;
+	}
+
+	public static XCLRelationType getXCLRealtionTypeForString(String weightString) {
+		if (weightString.contains("--")) {
+			return XCLRelationType.contradicted;
+		}
+		else if (weightString.contains("!")) {
+			return XCLRelationType.requires;
+		}
+		else if (weightString.contains("++")) {
+			return XCLRelationType.sufficiently;
+		}
+		else {
+			return XCLRelationType.explains;
+		}
 	}
 
 	public static Score getScoreForString(String argument) {
