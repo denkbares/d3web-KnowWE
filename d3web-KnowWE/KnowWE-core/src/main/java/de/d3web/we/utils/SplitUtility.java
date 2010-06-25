@@ -226,4 +226,17 @@ public class SplitUtility {
 
 	}
 
+	public static String[] getCharacterChains(String text) {
+		String content = text.trim();
+		String[] entries = content.split(" ");
+
+		List<String> nonEmpty = new ArrayList<String>();
+		for (String string : entries) {
+			if (!string.equals("")) {
+				nonEmpty.add(string);
+			}
+		}
+		return nonEmpty.toArray(new String[nonEmpty.size()]);
+	}
+
 }
