@@ -169,7 +169,7 @@ public class KnowWEIncludeManager {
 		Section<? extends KnowWEObjectType> matchingIDSection = null;
 		
 		String typeName = address.isContentSectionTarget() ? address.getTargetSection().substring(0, 
-				address.getTargetSection().indexOf(SectionID.CONTENT_SUFFIX.length())) 
+				address.getTargetSection().indexOf(SectionID.CONTENT_SUFFIX))
 				: address.getTargetSection();
 		
 		if (address.getTargetSection() != null) {
