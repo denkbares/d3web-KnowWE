@@ -61,7 +61,8 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 		// this composite takes everything it gets => needs suitable wrapper
 		// type as father
 		this.sectionFinder = new AllTextFinderTrimmed();
-		this.setCustomRenderer(new de.d3web.we.kdom.renderer.KDOMDepthFontSizeRenderer());
+		// this.setCustomRenderer(new
+		// de.d3web.we.kdom.renderer.KDOMDepthFontSizeRenderer());
 
 		// a composite condition may either be a BracedCondition,...
 		BracedCondition braced = new BracedCondition(); // contains the brackets
