@@ -162,7 +162,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							}
 
 							// check the weight/relation type in square brackets
-							Section<XCLWeight> weight = s.findSuccessor(XCLWeight.class);
+							Section<XCLWeight> weight = s.findSuccessor(
+									XCLWeight.class);
 							XCLRelationType type = XCLRelationType.explains;
 							Double w = 1.0;
 							if (weight != null) {
@@ -194,8 +195,12 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 											KnowWEEnvironment.DEFAULT_WEB,
 											article.getTitle(), s.getId(), KBID_KEY,
 											kbRelId);
+							String wString = "";
+							if (w > 0 && w != 1) {
+								wString = Double.toString(w);
+							}
 							result.add(new RelationCreatedMessage("XCL: "
-									+ type.toString()));
+									+ type.toString() + " " + wString));
 							return result;
 
 

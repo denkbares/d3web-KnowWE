@@ -80,7 +80,7 @@ public class Finding extends D3webTerminalCondition<Finding> {
 
 		Section<AnswerRef> aRef = s.findSuccessor(AnswerRef.class);
 
-		if(qRef != null && aRef != null) {
+		if (qRef != null && aRef != null) {
 			Choice answer = aRef.get().getObject(aRef);
 			if (answer == null) {
 				return null;
@@ -109,8 +109,14 @@ class FindingFinder extends SectionFinder {
 			String answer = list.get(1);
 			boolean isNumber = false;
 			try {
-				Double.parseDouble(answer);
-				isNumber = true;
+				Double d = Double.parseDouble(answer);
+				if (answer.contains("d") || answer.contains("D")) {
+					// TODO find better way to check
+					// '5D' is parsed to a valid double '5.0'
+				}
+				else {
+					isNumber = true;
+				}
 			}
 			catch (NumberFormatException e) {
 			}
@@ -127,6 +133,3 @@ class FindingFinder extends SectionFinder {
 class Comparator extends DefaultAbstractKnowWEObjectType {
 
 }
-
-
-
