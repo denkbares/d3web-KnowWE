@@ -74,9 +74,9 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 		// <img src='KnowWEExtension/images/question.gif' width='12' />
 		// id='" + arg0.getId() + "'
 
-		String htmlContent1 = "<b>"
+		String htmlContent1 = "<strong>"
 				+ arg0.getOriginalText()
-				+ "</b>"
+				+ "</strong>"
 				+ "<img rel=\"{type: '"	+ conceptName
 				+ "', id: '" + arg0.getId()
 				+ "', termName: '" + conceptName
@@ -84,8 +84,8 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				+ "'}\" class=\"conceptLink pointer\" id='"
 				+ arg0.getId()
 				+ "' src='KnowWEExtension/images/question.gif' width='12' /> "
-				+ "<span id='" + arg0.getId()
-				+ "_popupcontent' style='visibility:hidden;position:fixed' >";
+				+ "<div id='" + arg0.getId()
+				+ "_popupcontent' style='visibility:hidden;display:none;position:fixed' >";
 
 		String popupContent = generatePopupContent(arg0, subjectURI, subjectString);
 
@@ -94,7 +94,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 			return;
 		}
 
-		String htmlContentTail = "</span>";
+		String htmlContentTail = "</div>";
 		arg2.append(KnowWEUtils.maskHTML(htmlContent1));
 		arg2.append(KnowWEUtils.maskHTML(popupContent));
 		arg2.append(KnowWEUtils.maskHTML(htmlContentTail));
@@ -165,9 +165,9 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		buffy.append("<div style='padding:10px' class=\"confirmPanel\" >");
 
-		buffy.append("<span style='font-weight:bold' >" + subjectTitle + "</span>");
+		buffy.append("<strong>" + subjectTitle + "</strong>");
 
-		buffy.append("<div style='padding:10px' class=\"options\" >");
+		buffy.append("<ul style='padding:10px' class=\"options\" >");
 
 		String originalText = arg0.getOriginalText();
 		String[] opts = getPossibleProperties(subject, originalText);
@@ -189,21 +189,20 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				+ "' name='" + relationName + "' " + "ancestor='" + eventSection.getId() + "'";
 
 
-			buffy.append("<li><div class=\"confirmOption pointer\" " + options + ">");
+			buffy.append("<li><p class=\"confirmOption pointer\" " + options + ">");
 			buffy.append("" + relationName + "  " + "");
 			buffy.append("<span style='font-style:italic' class='confirmobject' "+options+">" + originalText + " </span>");
-			buffy.append("<span style='font-style:italic'> ? </span>");
-			buffy.append("</div></li>");
+			buffy.append("<em> ? </em>");
+			buffy.append("</p></li>");
 		}
 
 		for (String string : defaultOpts) {
-			buffy.append("<li><div class=\"confirmOption\" name='" + string
-					+ "'>");
+			buffy.append("<li><p class=\"confirmOption\" name='" + string + "'>");
 			buffy.append("" + string + "  " + "");
-			buffy.append("</div></li>");
+			buffy.append("</p></li>");
 		}
 
-		buffy.append("</div>");
+		buffy.append("</ul>");
 		buffy.append("</div>\n"); // add some \n from time to time to satisfy
 									// jspwiki's paragraph length
 									// restriction.... :p
