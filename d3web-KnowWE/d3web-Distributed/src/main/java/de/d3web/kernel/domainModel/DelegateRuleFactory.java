@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.kernel.domainModel;
@@ -28,15 +28,16 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.kernel.psMethods.delegate.ActionDelegate;
 import de.d3web.kernel.psMethods.delegate.ActionInstantDelegate;
+import de.d3web.kernel.psMethods.delegate.PSMethodDelegate;
 
 public class DelegateRuleFactory {
-	
-	public static Rule createDelegateRule(
-		String theId,
-		List<NamedObject> theAction,
-		String ns, Condition theCondition) {
 
-		Rule rule = RuleFactory.createRule(theId);
+	public static Rule createDelegateRule(
+			String theId,
+			List<NamedObject> theAction,
+			String ns, Condition theCondition) {
+
+		Rule rule = new Rule(theId, PSMethodDelegate.class);
 
 		ActionDelegate ruleAction = new ActionDelegate();
 		ruleAction.setNamedObjects(theAction);
@@ -44,18 +45,18 @@ public class DelegateRuleFactory {
 		RuleFactory.setRuleParams(rule, ruleAction, theCondition, null);
 		return rule;
 	}
-	
+
 	public static Rule createInstantDelegateRule(
 			String theId,
 			List<NamedObject> theAction,
 			String ns, Condition theCondition) {
 
-			Rule rule = RuleFactory.createRule(theId);
+		Rule rule = new Rule(theId, PSMethodDelegate.class);
 
-			ActionInstantDelegate ruleAction = new ActionInstantDelegate();
-			ruleAction.setNamedObjects(theAction);
-			ruleAction.setTargetNamespace(ns);
-			RuleFactory.setRuleParams(rule, ruleAction, theCondition, null);
-			return rule;
-		}
+		ActionInstantDelegate ruleAction = new ActionInstantDelegate();
+		ruleAction.setNamedObjects(theAction);
+		ruleAction.setTargetNamespace(ns);
+		RuleFactory.setRuleParams(rule, ruleAction, theCondition, null);
+		return rule;
+	}
 }
