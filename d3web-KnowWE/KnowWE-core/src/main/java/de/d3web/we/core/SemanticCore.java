@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.WeakHashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,7 +79,7 @@ public class SemanticCore {
 	private static ResourceBundle settingsbundle;
 	private final HashMap<String, Resource> contextmap;
 	private final HashMap<String, String> settings;
-	private final HashMap<String, HashMap<Section, List<Statement>>> statementcache;
+	private final HashMap<String, WeakHashMap<Section, List<Statement>>> statementcache;
 	private final HashMap<String,List<Statement>> semsettings;
 	private HashMap<String, String> namespaces;
 	private HashMap<String, String> defaultnamespaces;
@@ -87,7 +88,7 @@ public class SemanticCore {
 		this.knowWEEnvironment = ke;
 		me = this;
 		contextmap = new HashMap<String, Resource>();
-		statementcache = new HashMap<String, HashMap<Section, List<Statement>>>();
+		statementcache = new HashMap<String, WeakHashMap<Section, List<Statement>>>();
 		semsettings=new HashMap<String, List<Statement>>();
 		String path = ke.getKnowWEExtensionPath();
 		settingsbundle = ResourceBundle.getBundle("semanticdefaults");
@@ -285,10 +286,10 @@ public class SemanticCore {
 
 	// centralizing statementcache management ... for better understanding
 	private void addToStatementcache(Section sec, List<Statement> allStatements) {
-		HashMap<Section, List<Statement>> temp = statementcache.get(sec
+		WeakHashMap<Section, List<Statement>> temp = statementcache.get(sec
 				.getArticle().getTitle());
 		if (temp == null) {
-			temp = new HashMap<Section, List<Statement>>();
+			temp = new WeakHashMap<Section, List<Statement>>();
 
 		}
 		temp.put(sec, allStatements);
@@ -297,7 +298,7 @@ public class SemanticCore {
 
 	private List<Statement> getStatementsofSingleSection(
 			Section<? extends KnowWEObjectType> sec) {
-		HashMap<Section, List<Statement>> temp = statementcache.get(sec
+		WeakHashMap<Section, List<Statement>> temp = statementcache.get(sec
 				.getArticle().getTitle());
 		if (temp != null)
 			return temp.get(sec);
@@ -568,7 +569,7 @@ public class SemanticCore {
 	 * @param sec
 	 */
 	public void clearContext(KnowWEArticle art) {
-		HashMap<Section, List<Statement>> temp = statementcache.get(art
+		WeakHashMap<Section, List<Statement>> temp = statementcache.get(art
 				.getTitle());
 		if (temp != null) {
 			for (Entry<Section, List<Statement>> cur : temp.entrySet()) {
