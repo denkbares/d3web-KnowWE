@@ -64,7 +64,6 @@ import de.d3web.we.kdom.bulletLists.BulletContentType;
 import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
-import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;
@@ -246,11 +245,22 @@ public class KBRenderer extends AbstractTagHandler {
 
 					// adds tresholds if different from default
 					String thresholds = "";
-					if (model.getEstablishedThreshold() != XCLModel.defaultEstablishedThreshold ||
-							model.getSuggestedThreshold() != XCLModel.defaultSuggestedThreshold ||
-							model.getMinSupport() != XCLModel.defaultMinSupport) {
-						thresholds = " [" + model.getSuggestedThreshold() + ", "
-								+ model.getEstablishedThreshold() + ", " + model.getMinSupport()
+					if (model.getEstablishedThreshold() != null ||
+							model.getSuggestedThreshold() != null ||
+							model.getMinSupport() != null) {
+						String suggested = model.getSuggestedThreshold().toString();
+						if (suggested.equals("null")) {
+							suggested = "-";
+						}
+						String established = model.getEstablishedThreshold().toString();
+						if (established.equals("null")) {
+							established = "-";
+						}
+						String minSupport = model.getMinSupport().toString();
+						if (minSupport.equals("null")) {
+							minSupport = "-";
+						}
+						thresholds = " [" + suggested + ", " + established + ", " + minSupport
 								+ "]";
 
 					}
@@ -330,26 +340,27 @@ public class KBRenderer extends AbstractTagHandler {
 		StringBuffer properties = new StringBuffer();
 		StringBuffer range = new StringBuffer();
 		for (TerminologyObject t1 : nodes) {
-			if(t1 instanceof NamedObject && ((NamedObject) t1).getProperties() != null){
-				if (t1 instanceof Question && getPrompt((Question) t1) != null){
+			if (t1 instanceof NamedObject && ((NamedObject) t1).getProperties() != null) {
+				if (t1 instanceof Question && getPrompt((Question) t1) != null) {
 					properties.append("&#126; " + getPrompt((Question) t1));
 				}
-				Properties rUnit = ((NamedObject)t1).getProperties();
-				if(rUnit.getProperty(Property.UNIT) != null){
-					range.append(" {"+rUnit.getProperty(Property.UNIT).toString()+"} ");
+				Properties rUnit = ((NamedObject) t1).getProperties();
+				if (rUnit.getProperty(Property.UNIT) != null) {
+					range.append(" {" + rUnit.getProperty(Property.UNIT).toString() + "} ");
 				}
-				if(rUnit.getProperty(Property.QUESTION_NUM_RANGE) != null){
-					range.append("("+rUnit.getProperty(Property.QUESTION_NUM_RANGE).toString()+")");
+				if (rUnit.getProperty(Property.QUESTION_NUM_RANGE) != null) {
+					range.append("(" + rUnit.getProperty(Property.QUESTION_NUM_RANGE).toString()
+							+ ")");
 				}
 			}
 			if (t1 instanceof QuestionChoice) {
 				if (t1 instanceof QuestionMC) {
 					result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.toString()
-							+ " "+properties+" [mc] "+range+"</span><br/>");
+							+ " " + properties + " [mc] " + range + "</span><br/>");
 				}
 				else {
 					result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.toString()
-							+ " "+properties+" [oc] "+range+"</span><br/>");
+							+ " " + properties + " [oc] " + range + "</span><br/>");
 				}
 				for (Choice c1 : ((QuestionChoice) t1).getAllAlternatives()) {
 					for (int i = 0; i < j; i++) {
@@ -361,15 +372,15 @@ public class KBRenderer extends AbstractTagHandler {
 			}
 			else if (t1 instanceof QuestionText) {
 				result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
-						+ " "+properties+" [text] "+range+"</span><br/>");
+						+ " " + properties + " [text] " + range + "</span><br/>");
 			}
 			else if (t1 instanceof QuestionNum) {
 				result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
-						+ " "+properties+" [num] "+range+"</span><br/>");
+						+ " " + properties + " [num] " + range + "</span><br/>");
 			}
 			else if (t1 instanceof QuestionDate) {
 				result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
-						+ " "+properties+" [date] "+range+"</span><br/>");
+						+ " " + properties + " [date] " + range + "</span><br/>");
 			}
 			properties = new StringBuffer();
 			range = new StringBuffer();
