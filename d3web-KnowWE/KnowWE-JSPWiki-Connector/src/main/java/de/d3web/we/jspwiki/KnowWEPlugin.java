@@ -290,6 +290,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			if (article != null) {
 				String originalText = article.getSection().getOriginalText();
 				String parse = userContext.getUrlParameterMap().get("parse");
+
 				boolean fullParse = parse != null
 						&& (parse.equals("full") || parse.equals("true"));
 				if ((fullParse/* && !article.isFullParse() */)
@@ -343,7 +344,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			}
 
 			// adds the js and css to the page
-			this.handleIncludes(wikiContext);
+			this.includeDOMResources(wikiContext);
 
 			// long timeEnde = System.currentTimeMillis();
 
@@ -477,7 +478,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 *
 	 * @param wikiContext
 	 */
-	private void handleIncludes(WikiContext wikiContext) {
+	private void includeDOMResources(WikiContext wikiContext) {
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		KnowWERessourceLoader loader = KnowWERessourceLoader.getInstance();
 
