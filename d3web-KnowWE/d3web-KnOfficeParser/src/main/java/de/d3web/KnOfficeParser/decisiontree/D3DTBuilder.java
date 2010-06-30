@@ -181,23 +181,20 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			}
 			else if (currentQuestion instanceof QuestionOC) {
 				if (ref != null) {
-					answer = createAnswer(name, currentQuestion.getId() + ref);
+					answer = getAnswer(name, currentQuestion.getId() + ref);
 				}
 				else {
-					answer = createAnswer(name, null);
+					answer = getAnswer(name, null);
 				}
-				QuestionOC cq = (QuestionOC) currentQuestion;
-				cq.addAlternative(answer);
+				
 			}
 			else if (currentQuestion instanceof QuestionMC) {
 				if (ref != null) {
-					answer = createAnswer(name, currentQuestion.getId() + ref);
+					answer = getAnswer(name, currentQuestion.getId() + ref);
 				}
 				else {
-					answer = createAnswer(name, null);
+					answer = getAnswer(name, null);
 				}
-				QuestionMC cq = (QuestionMC) currentQuestion;
-				cq.addAlternative(answer);
 			}
 			else {
 				errors.add(MessageKnOfficeGenerator
@@ -309,13 +306,28 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 		}
 		return c;
 	}
+	
 
-	private Choice createAnswer(String name, String ref) {
+	private Choice getAnswer(String name, String ref) {
+		
+		QuestionChoice questionChoice = (QuestionChoice) currentQuestion;
+		
+		//Test, if answer is already created, ref is ignored in this case
+		for (Choice choice : questionChoice.getAllAlternatives()) {
+			if (choice.getName().equals(name))
+				return choice;
+		}
+		
+		//No answer found, create new one
 		if (ref == null) {
 			ref = idom
-					.findNewIDForAnswerChoice((QuestionChoice) currentQuestion);
+					.findNewIDForAnswerChoice(questionChoice);
 		}
+		
+		
 		Choice answer = AnswerFactory.createAnswerChoice(ref, name);
+		
+		questionChoice.addAlternative(answer);
 		return answer;
 	}
 
