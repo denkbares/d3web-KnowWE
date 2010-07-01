@@ -76,7 +76,7 @@
 	</build>
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    	<versionatorVersion>1.3</versionatorVersion>
+    	<versionatorVersion>1.4</versionatorVersion>
   	</properties>
 	<modules>
 		<module>d3web-Report</module>
