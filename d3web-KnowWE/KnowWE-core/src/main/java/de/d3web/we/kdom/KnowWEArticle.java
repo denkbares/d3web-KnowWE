@@ -153,8 +153,6 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 		// destroy no longer used knowledge and stuff from the last article
 		reviseLastArticleToDestroy();
-		
-		includeManager.unregisterIncludes(inactiveIncludes);
 
 		includeManager.removeSectionizingArticles(title);
 
@@ -215,6 +213,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
 		// prevent memory leak
+		includeManager.unregisterIncludes(inactiveIncludes);
 		lastVersion = null;
 
 	}

@@ -1337,7 +1337,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	public final void letSubtreeHandlerCreate(KnowWEArticle article, SubtreeHandler handler) {
 		if (handler.needsToCreate(article, this)) {
 			try {
+				// long time = System.currentTimeMillis();
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.create(article, this));
+				// System.out.println(handler.getClass().getSimpleName() + " " + (System.currentTimeMillis() - time));
 			}
 			catch (Throwable e) {
 				String text = "unexpected internal error in subtree handler '" + handler + "'";
