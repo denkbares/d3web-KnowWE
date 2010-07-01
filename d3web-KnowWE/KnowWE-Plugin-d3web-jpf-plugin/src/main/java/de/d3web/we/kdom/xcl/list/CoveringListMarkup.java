@@ -25,11 +25,19 @@ import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CoveringListMarkup extends DefaultMarkupType {
 
+	public static final String ESTABLISHED_THRESHOLD = "establishedThreshold";
+	public static final String SUGGESTED_THRESHOLD = "suggestedThreshold";
+	public static final String MIN_SUPPORT = "minSupport";
+
 	private static DefaultMarkup m = null;
 
 	static {
 		m = new DefaultMarkup("coveringList");
 		m.addContentType(new CoveringList());
+		m.addAnnotation(ESTABLISHED_THRESHOLD, false);
+		m.addAnnotation(SUGGESTED_THRESHOLD, false);
+		m.addAnnotation(MIN_SUPPORT, false);
+
 	}
 
 	public CoveringListMarkup() {

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -245,22 +245,28 @@ public class KBRenderer extends AbstractTagHandler {
 
 					// adds tresholds if different from default
 					String thresholds = "";
-					if (model.getEstablishedThreshold() != null ||
-							model.getSuggestedThreshold() != null ||
-							model.getMinSupport() != null) {
-						String suggested = model.getSuggestedThreshold().toString();
-						if (suggested.equals("null")) {
-							suggested = "-";
+					Double suggestedThreshold = model.getSuggestedThreshold();
+					Double establishedThreshold = model.getEstablishedThreshold();
+					Double minSupportVal = model.getMinSupport();
+					if (establishedThreshold != null ||
+							suggestedThreshold != null ||
+							minSupportVal != null) {
+						String suggested = "-";
+						if(suggestedThreshold != null) {
+							suggested = "" + suggestedThreshold;
 						}
-						String established = model.getEstablishedThreshold().toString();
-						if (established.equals("null")) {
-							established = "-";
+						String established = "-";
+						if (establishedThreshold != null) {
+							established = "" + establishedThreshold;
 						}
-						String minSupport = model.getMinSupport().toString();
-						if (minSupport.equals("null")) {
-							minSupport = "-";
+
+						String minSupport = "-";
+						minSupportVal.toString();
+						if (minSupportVal != null) {
+							minSupport = "" + minSupportVal;
 						}
-						thresholds = " [" + suggested + ", " + established + ", " + minSupport
+						thresholds = " [sugg: " + suggested + ", est: " + established
+								+ ", minS: " + minSupport
 								+ "]";
 
 					}

@@ -29,6 +29,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.constraint.ExactlyOneFindingConstraint;
+import de.d3web.we.kdom.defaultMarkup.AnnotationType;
+import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.objects.SolutionDef;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -85,15 +87,95 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 			Section<SolutionDef> solutionDef = s.findSuccessor(SolutionDef.class);
 			Solution solution = solutionDef.get().getObject(solutionDef);
 
+			Section<DefaultMarkupType> defaultMarkupType = s.findAncestor(DefaultMarkupType.class);
+
 			if (solution != null) {
 				KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
 						XCLModel.XCLMODEL);
 				if (xclModel == null) {
 					XCLModel m = new XCLModel(solution);
+
+					setThresholdsAndMinSupport(defaultMarkupType, m);
+
 					solution.addKnowledge(PSMethodXCL.class, m, XCLModel.XCLMODEL);
 				}
 			}
 			return null;
+		}
+
+		/**
+		 * reads out the respective annotations for suggestedThreshold,
+		 * establishedThreshold and minSupport and sets them in the XCLModel if
+		 * existing
+		 *
+		 * @param defaultMarkupType
+		 * @param m
+		 */
+		private void setThresholdsAndMinSupport(Section<DefaultMarkupType> defaultMarkupType, XCLModel m) {
+
+
+			// handle ESTABLISHED_THRESHOLD
+			Section<? extends AnnotationType> estaAnnoSection = DefaultMarkupType.getAnnotationSection(
+					defaultMarkupType,
+					CoveringListMarkup.ESTABLISHED_THRESHOLD);
+
+			if (estaAnnoSection != null) {
+				String estaText = estaAnnoSection.getOriginalText();
+				// set estaThreashold if defined
+				if (estaText != null) {
+					try {
+						Double estaThreshold = Double.parseDouble(estaText);
+						m.setEstablishedThreshold(estaThreshold);
+					}
+					catch (NumberFormatException e) {
+
+					}
+				}
+
+			}
+
+			// handle SUGGESTED_THRESHOLD
+			Section<? extends AnnotationType> suggAnnoSection = DefaultMarkupType.getAnnotationSection(
+					defaultMarkupType,
+					CoveringListMarkup.SUGGESTED_THRESHOLD);
+
+			if (suggAnnoSection != null) {
+				String suggText = suggAnnoSection.getOriginalText();
+				// set suggThreashold if defined
+				if (suggText != null) {
+					try {
+						Double suggThreashold = Double.parseDouble(suggText);
+						m.setSuggestedThreshold(suggThreashold);
+					}
+					catch (NumberFormatException e) {
+
+					}
+				}
+			}
+
+			// handle MIN_SUPPORT
+			Section<? extends AnnotationType> minAnnoSection = DefaultMarkupType.getAnnotationSection(
+					defaultMarkupType,
+					CoveringListMarkup.MIN_SUPPORT);
+			if (minAnnoSection != null) {
+				String minText = minAnnoSection.getOriginalText();
+				// set minSupport if defined
+				if (minText != null) {
+					try {
+						Double minSupport = Double.parseDouble(minText);
+						m.setMinSupport(minSupport);
+					}
+					catch (NumberFormatException e) {
+
+					}
+				}
+			}
+
+
+
+
+
+
 		}
 
 	}
