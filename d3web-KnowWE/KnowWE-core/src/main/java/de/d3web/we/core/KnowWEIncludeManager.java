@@ -308,7 +308,7 @@ public class KnowWEIncludeManager {
 	 * This method needs to get called after an article has changed.
 	 */
 	public void updateIncludesToArticle(KnowWEArticle article) {
-		Set<KnowWEArticle> reviseArticles = new HashSet<KnowWEArticle>();
+		Set<String> reviseArticles = new HashSet<String>();
 		Set<Section<Include>> includes = new HashSet<Section<Include>>(getIncludingSectionsForArticle(article.getTitle()));
 		for (Section<Include> inc:includes) {
 			// check if the target of the Include Section has changed
@@ -349,12 +349,12 @@ public class KnowWEIncludeManager {
 					if (targets.size() == lastTargets.size()) {
 						for (int i = 0; i < targets.size(); i++) {
 							if (!targets.get(i).getOriginalText().equals(lastTargets.get(i).getOriginalText())) {
-								reviseArticles.add(inc.getArticle());
+								reviseArticles.add(inc.getTitle());
 								break;
 							}
 						}
 					} else {
-						reviseArticles.add(inc.getArticle());
+						reviseArticles.add(inc.getTitle());
 					}
 				}
 			}
@@ -370,7 +370,7 @@ public class KnowWEIncludeManager {
 				// article of this Include also needs to be updated
 				for (Section<?> tar : targets) {
 					if (tar.isOrHasSuccessorNotReusedBy(inc.getTitle())) {
-						reviseArticles.add(inc.getArticle());
+						reviseArticles.add(inc.getTitle());
 						break;
 					}
 				}
@@ -388,8 +388,9 @@ public class KnowWEIncludeManager {
 		else {
 			updatingArticle = article.getTitle();
 		}
-		for (KnowWEArticle ra : reviseArticles) {
-			KnowWEArticle newArt = new KnowWEArticle(ra.getSection().getOriginalText(), ra.getTitle(), 
+		for (String title : reviseArticles) {
+			KnowWEArticle newArt = new KnowWEArticle(env.getArticle(article.getWeb(), title)
+					.getSection().getOriginalText(), title, 
 					env.getRootType(), web, updatingArticle, false);
 
 			// fire 'article-created' event for the new article
