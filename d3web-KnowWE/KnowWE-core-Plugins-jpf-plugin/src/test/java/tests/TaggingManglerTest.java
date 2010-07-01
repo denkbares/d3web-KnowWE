@@ -119,7 +119,7 @@ public class TaggingManglerTest extends TestCase {
 		tm.removeTag("AddTag", "tagtest", params);
 		assertEquals("<tags></tags>", am.getArticle("AddTag").getSection()
 				.getOriginalText());
-		sc.clearContext(am.getArticle("AddTag"));
+		am.deleteArticle(am.getArticle("AddTag"));
 	}
 
 	/**
@@ -161,7 +161,8 @@ public class TaggingManglerTest extends TestCase {
 		// add the same tag to the second article to check for interferences
 		tm.addTag("Tag1", "stein", params);
 		assertEquals(2, tags.size());
-
+		am.deleteArticle(am.getArticle("Tag1"));
+		am.deleteArticle(am.getArticle("AddTag"));
 	}
 
 	/**
@@ -194,10 +195,10 @@ public class TaggingManglerTest extends TestCase {
 		assertTrue("not found page Tag2", pages.contains("Tag2"));
 		assertTrue("not found page Tag4", pages.contains("Tag4"));
 		assertTrue("found page Tag3", !pages.contains("Tag3"));
-		sc.clearContext(am.getArticle("Tag1"));
-		sc.clearContext(am.getArticle("Tag2"));
-		sc.clearContext(am.getArticle("Tag3"));
-		sc.clearContext(am.getArticle("Tag4"));
+		am.deleteArticle(am.getArticle("Tag1"));
+		am.deleteArticle(am.getArticle("Tag2"));
+		am.deleteArticle(am.getArticle("Tag3"));
+		am.deleteArticle(am.getArticle("Tag4"));
 	}
 
 	/**
@@ -217,7 +218,7 @@ public class TaggingManglerTest extends TestCase {
 		assertTrue(tags.contains("tick"));
 		assertTrue(tags.contains("trick"));
 		assertTrue(tags.contains("track"));
-		sc.clearContext(am.getArticle("Tag"));
+		am.deleteArticle(am.getArticle("Tag"));
 	}
 
 	/**
@@ -243,9 +244,9 @@ public class TaggingManglerTest extends TestCase {
 		assertTrue(tags.contains("tag"));
 		assertTrue(tags.contains("leben"));
 		assertTrue(tags.contains("tod"));
-		sc.clearContext(am.getArticle("Tag1"));
-		sc.clearContext(am.getArticle("Tag2"));
-		sc.clearContext(am.getArticle("Tag3"));
+		am.deleteArticle(am.getArticle("Tag1"));
+		am.deleteArticle(am.getArticle("Tag2"));
+		am.deleteArticle(am.getArticle("Tag3"));
 	}
 
 	/**
@@ -306,9 +307,9 @@ public class TaggingManglerTest extends TestCase {
 		assertEquals(Integer.valueOf(15), tags.get("leben"));
 		assertEquals(Integer.valueOf(15), tags.get("tod"));
 		assertEquals(Integer.valueOf(15), tags.get("tag"));
-		sc.clearContext(am.getArticle("Tag1"));
-		sc.clearContext(am.getArticle("Tag2"));
-		sc.clearContext(am.getArticle("Tag3"));
+		am.deleteArticle(am.getArticle("Tag1"));
+		am.deleteArticle(am.getArticle("Tag2"));
+		am.deleteArticle(am.getArticle("Tag3"));
 	}
 
 	/**
@@ -352,9 +353,9 @@ public class TaggingManglerTest extends TestCase {
 		GenericSearchResult b = pages.get(1);
 		assertEquals("Tag3", a.getPagename());
 		assertEquals("Tag2", b.getPagename());
-		sc.clearContext(am.getArticle("Tag1"));
-		sc.clearContext(am.getArticle("Tag2"));
-		sc.clearContext(am.getArticle("Tag3"));
+		am.deleteArticle(am.getArticle("Tag1"));
+		am.deleteArticle(am.getArticle("Tag2"));
+		am.deleteArticle(am.getArticle("Tag3"));
 	}
 
 }
