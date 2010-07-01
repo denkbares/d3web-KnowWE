@@ -47,9 +47,16 @@ public class VersionTagHandler extends AbstractTagHandler {
 
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
+		ResourceBundle rb;
 
-		StringBuffer html = new StringBuffer();
-		ResourceBundle rb = ResourceBundle.getBundle("metadata");
+		try {
+			rb = ResourceBundle.getBundle("metadata");
+		}
+		catch(MissingResourceException e) {
+			return "no build metadata file found";
+		}
+
+		StringBuilder html = new StringBuilder();
 
 		String v = values.get("version");
 		if (v == null || v.isEmpty()) {
