@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
+import de.d3web.report.Message;
 import de.d3web.we.ci4ke.build.CIBuildPersistenceHandler;
 import de.d3web.we.ci4ke.build.CIBuilder.CIBuildTriggers;
 import de.d3web.we.ci4ke.diff.DiffEngine;
@@ -180,14 +181,31 @@ public class CIDashboardType extends DefaultMarkupType {
 		public void render(KnowWEArticle article, Section<CIDashboardType> sec,
 				KnowWEUserContext user, StringBuilder string) {
 
-			if (DefaultMarkupType.getMessages(article, sec).size() > 0) {
-				// Render Error-Messages!
-				DefaultMarkupRenderer.renderMessages(article, sec, string);
-				return;
+			boolean hasWarningOrError = false;
+
+			Collection<Message> messages = DefaultMarkupType.getMessages(article, sec);
+			for (Message m : messages) {
+				if (m.getMessageType().equals(Message.ERROR) ||
+						m.getMessageType().equals(Message.WARNING)) {
+					hasWarningOrError = true;
+					Logger.getLogger(this.getClass().getName()).log(
+							Level.INFO,
+							" >> DashboardRenderer >> "
+									+ "Found error(s) and/or warnings in this Dashboard-Section! "
+									+ "These messages will be "
+									+ "rendered instead of the dashboard! ");
+				}
 			}
 
-			CIDashboard board = new CIDashboard(sec);
-			string.append(KnowWEUtils.maskHTML(board.render()));
+			if (hasWarningOrError) {
+				// Render Error-Messages!
+				DefaultMarkupRenderer.renderMessages(article, sec, string);
+				// return;
+			}
+			else {
+				CIDashboard board = new CIDashboard(sec);
+				string.append(KnowWEUtils.maskHTML(board.render()));
+			}
 		}
 	}
 
