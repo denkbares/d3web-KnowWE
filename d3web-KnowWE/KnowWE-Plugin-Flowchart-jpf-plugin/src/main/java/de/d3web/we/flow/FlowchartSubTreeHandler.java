@@ -395,13 +395,8 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		String solution = split[0].trim();
 		String score = split[1].trim();
 
-		// Fix after Refactoring
-		Rule rule = new Rule("FlowchartRule" + System.currentTimeMillis());
 
 		ActionHeuristicPS action = new ActionHeuristicPS();
-		rule.setAction(action);
-		rule.setCondition(new CondAnd(new ArrayList()));
-		//
 
 		if (solution.startsWith("\"")) // remove "
 		solution = solution.substring(1, solution.length() - 1);
@@ -432,20 +427,14 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			return NoopAction.INSTANCE;
 		}
 
-		List qasets = new ArrayList();
+		List<QASet> qasets = new ArrayList<QASet>();
 
 		qasets.add(findQuestion);
 
-		Rule rule = RuleFactory.createRule("FlowQAIndicationRule_" + System.currentTimeMillis());
 
-		rule.setProblemsolverContext(FluxSolver.class);
-		rule.setCondition(new CondAnd(new ArrayList()));
+		ActionIndication action = new ActionIndication();
 
-		PSAction action = new ActionIndication();
-		rule.setAction(action);
-
-		((ActionIndication) action).setQASets(qasets);
-		// ((RuleAction)action).setCorrespondingRule(rule);
+		action.setQASets(qasets);
 
 		return action;
 	}

@@ -39,6 +39,7 @@ import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.flow.NamedNode;
+import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.report.Message;
 import de.d3web.we.flow.type.ExitType;
 import de.d3web.we.flow.type.NodeType;
@@ -122,8 +123,8 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 		
 		if (flowQC == null)
 			flowQC = kbm.createQContainer(name);
-		else
-			System.out.println("QContainer found:" + name);
+//		else
+//			System.out.println("QContainer found:" + name);
 
 		QuestionMC startQ = createQuestion(flowQC, flow.getName() + "_" + STARTNODES_QUESTION_NAME, flow.getStartNodes(), kbm);
 		createRules(flow, startQ, kbm);
@@ -138,8 +139,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 
 		for (Choice answer : startQ.getAlternatives()) {
 			
-			
-			Rule rule = RuleFactory.createRule("FCIndication_" + startQ  + "_" + answer.getName());
+			Rule rule = new Rule("FCIndication_" + startQ  + "_" + answer.getName(), FluxSolver.class);
 			
 			rule.setAction(new IndicateFlowAction(flow.getName(), answer.getName()));
 			rule.setCondition(new CondEqual(startQ, new ChoiceValue(answer)));
