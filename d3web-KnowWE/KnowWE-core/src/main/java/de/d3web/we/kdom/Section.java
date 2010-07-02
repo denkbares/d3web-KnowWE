@@ -47,6 +47,7 @@ import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
+import de.d3web.we.logging.Logging;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.PairOfInts;
@@ -1342,8 +1343,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				// System.out.println(handler.getClass().getSimpleName() + " " + (System.currentTimeMillis() - time));
 			}
 			catch (Throwable e) {
-				String text = "unexpected internal error in subtree handler '" + handler + "'";
-				Message msg = new Message(text + ": " + e);
+				String text = "Unexpected internal error in subtree handler '" + handler + "' : " + e.toString();
+				Message msg = new Message(text);
+				
+				Logging.getInstance().severe(text);
+				
 				AbstractKnowWEObjectType.storeMessages(article, this, this.getClass(), Arrays.asList(msg));
 				// TODO: vb: store the error also in the article. (see below for
 				// more details)
