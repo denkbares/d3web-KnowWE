@@ -2347,4 +2347,65 @@ replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
 }());
 
 
+var Testcase = function() {
+	
+}
+/**
+ * adds a new row (as last row) to the table
+ */
+Testcase.addRow = function() {
+	Testcase.sendRequest('row');
+}
 
+
+/**
+ * adds a new column (as last column) to the table
+ */
+Testcase.addCol = function() {
+	Testcase.sendRequest('col');
+}
+
+/**
+ * sends the ajax request. as type only 'row' or 'col'
+ * are allowed.
+ */
+Testcase.sendRequest = function(type) {
+	if (type != 'row' && type != 'col') {
+		return;
+	}
+	
+	var topic = KNOWWE.helper.gup('page')
+	var table = Testcase.findTable();
+		
+	var params = {
+        action : 'AppendTableNodesAction',
+        type : type,
+        KWiki_Topic : topic,
+        table : table
+    }
+
+    var options = {
+        url : KNOWWE.core.util.getURL ( params ),
+        loader : true,
+        response : {
+            action : 'none',
+            fn : function(){
+				if (table)
+					KNOWWE.core.rerendercontent.updateNode(table, topic, null);	
+            }
+        }
+    }
+    new _KA( options ).send();
+}
+
+/**
+ * returns the id of the table, which is currently being
+ * quick-edited
+ */
+Testcase.findTable = function() {
+	var button = $('addRow');
+	if (button) {
+		return button.parentNode.id;
+	}
+	return null;
+}

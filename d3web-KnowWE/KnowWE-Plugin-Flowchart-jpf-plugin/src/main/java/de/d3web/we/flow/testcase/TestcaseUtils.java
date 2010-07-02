@@ -30,9 +30,12 @@ import de.d3web.core.session.values.Choice;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.table.Table;
+import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
-import de.d3web.we.kdom.table.TableLine;
+import de.d3web.we.kdom.table.TableHeaderLine;
 
 
 /**
@@ -45,17 +48,24 @@ public class TestcaseUtils {
 	 * @return the alternatives for the current Cell
 	 */
 	public static String[] getKnowledge(Section<?> s) {
-		
-		D3webKnowledgeService knowledgeService = D3webModule.getAD3webKnowledgeServiceInTopic(s.getWeb(), s.getTitle());
+
+		D3webKnowledgeService knowledgeService = D3webModule.getAD3webKnowledgeServiceInTopic(
+				s.getWeb(), s.getTitle());
 		List<Question> qlist = knowledgeService.getBase().getQuestions();
-		
-		if(s.getObjectType() instanceof TableColumnHeaderCellContent) {
-			return getHeaderAlternatives(s, qlist);
+
+		if (s.getObjectType() instanceof TableColumnHeaderCellContent) {
+			return null;
 		}
-		
-		if(s.getObjectType() instanceof TableCellContent)
-			return getSimpleTableCellAlternatives(s, qlist);
-		
+
+		if (s.getObjectType() instanceof TableCellContent) {
+			if (s.getFather().getFather().getObjectType() instanceof TableHeaderLine) {
+				return getHeaderAlternatives(s, qlist);
+			}
+			else {
+				return getSimpleTableCellAlternatives(s, qlist);
+			}
+		}
+
 		return null;
 	}
 	
@@ -87,41 +97,81 @@ public class TestcaseUtils {
 	 */
 	public static String[] getSimpleTableCellAlternatives(Section<?> s,
 			List<Question> questions) {
+		
+		if (questions == null) {
+			return null;
+		}
 
-		StringBuffer buffy = new StringBuffer();
 		List<String> temp = new ArrayList<String>();
-		Section tableLine = s.findAncestor(TableLine.class);
 
-		if (tableLine.getChildren().size() > 0) {
-			
-			// find the LineHeader
-			Section header = ((Section) tableLine.getChildren().get(0));
-			Section headerText = header
-					.findChildOfType(TableColumnHeaderCellContent.class);
+		Section<PlainText> columnHeader = getMatchingColumnHeader(s);
+		if (columnHeader == null) {
+			return null;
+		}
 
-			if (headerText != null) {
-				String text = headerText.getOriginalText().trim();
+		String text = columnHeader.getOriginalText().trim();
+		// find the matching question for the LineHeader
+		// and add its answers
+		for (Question q : questions) {
+			if (q.getName().equals(text)) {
+				if (q instanceof QuestionYN) {
+					return new String[] {
+							"yes", "no" };
+				}
+				else if (q instanceof QuestionChoice) {
 
-				// find the matching question for the LineHeader
-				// and add its answers
-				for (Question q : questions) {
-					if (q.getName().equals(text)) {
-						if (q instanceof QuestionYN) {
-							return new String[]{"yes","no"};
-						} else if (q instanceof QuestionChoice) {
-							
-							for (Choice c : ((QuestionChoice) q)
-									.getAllAlternatives()) {
-								temp.add(c.getName());
-							}
-						} else {
-							return null;
-						}
+					for (Choice c : ((QuestionChoice) q)
+							.getAllAlternatives()) {
+						temp.add(c.getName());
 					}
 				}
-				return temp.toArray(new String[temp.size()]);
+				else {
+					return null;
+				}
 			}
 		}
-		return null;
+		return temp.toArray(new String[temp.size()]);
+	}
+
+	/**
+	 * returns the TableHeaderCell's PlainText section which is on top of the
+	 * given Section
+	 * 
+	 * @created 26.06.2010
+	 * @param s, the given section
+	 * @return PlainText section
+	 */
+	@SuppressWarnings("unchecked")
+	private static Section<PlainText> getMatchingColumnHeader(Section<?> s) {
+		String id = s.getId();
+		String cellNumber = id.substring(id.indexOf("/TableLine"));
+		cellNumber = cellNumber.substring(cellNumber.indexOf("/TableCell") + 10);
+		int number = Integer.valueOf(cellNumber.substring(0, cellNumber.indexOf("/")));
+
+		Section<? extends Table> table = (Section<? extends Table>) s.getFather().getFather().getFather();
+		if (table == null) {
+			return null;
+		}
+
+		Section<TableHeaderLine> tableHeaderLine = (Section<TableHeaderLine>) table.findChildOfType(
+				TableHeaderLine.class);
+		if (tableHeaderLine == null || tableHeaderLine.getChildren() == null
+				|| tableHeaderLine.getChildren().size() < 1) {
+			return null;
+		}
+
+		Section<TableCellContent> colHeader = (Section<TableCellContent>) ((Section<TableCell>) tableHeaderLine.getChildren().get(
+				number - 1)).findChildOfType(
+				TableCellContent.class);
+		if (colHeader == null) {
+			return null;
+		}
+
+		Section<PlainText> headerText = (Section<PlainText>) colHeader.getChildren().get(0);
+		if (headerText == null) {
+			return null;
+		}
+		return headerText;
 	}
 }
+

@@ -382,7 +382,17 @@
         <parameter id="version" value="1.0" />
         <parameter id="priority" value="5" />
     </extension>	
-	
+    
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+        id="AppendTableNodesAction">
+        <parameter id="class"
+            value="de.d3web.we.kdom.table.AppendTableNodesAction" />
+        <parameter id="name" value="AppendTableNodesAction" />
+        <parameter id="description" value="Action AppendTableNodesAction" />
+        <parameter id="version" value="1.0" />
+        <parameter id="priority" value="5" />
+    </extension>	
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler"
 		id="ValidationPageAppendHandler">
 		<parameter id="class"

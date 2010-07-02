@@ -47,7 +47,7 @@ public class TestcaseTableAttributesProvider implements TableAttributesProvider 
 
 	@Override
 	public String getNoEditRowAttribute(Section<Table> s) {
-		return "1";
+		return "0";
 	}
 
 	@Override
