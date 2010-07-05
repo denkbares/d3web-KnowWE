@@ -3,6 +3,7 @@
 <plugin id="KnowWE-Plugin-Flowchart" version="0.0.1">
 	
 	<requires>
+		<import plugin-id="d3web-Kernel-ExtensionPoints" />
 		<import plugin-id="KnowWEExtensionPoints" />
 		<import plugin-id="KnowWE-Plugin-d3web" />
 	</requires>
@@ -15,6 +16,16 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
+	
+	<extension plugin-id="d3web-Kernel-ExtensionPoints" point-id="PSMethod"
+		id="FluxSolver">
+		<parameter id="class"
+			value="de.d3web.diaFlux.inference.FluxSolver"/>
+		<parameter id="name" value="FluxSolver" />
+		<parameter id="description" value="DiaFlux-PSM" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="FlowchartTagHandler">

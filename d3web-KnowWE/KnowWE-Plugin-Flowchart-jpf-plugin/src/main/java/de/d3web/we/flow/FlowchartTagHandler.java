@@ -43,7 +43,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		
 		Session theCase = D3webUtils.getSession(topic, user, web);
 
-		if (!FluxSolver.getInstance().isFlowCase(theCase)) {
+		if (!FluxSolver.isFlowCase(theCase)) {
 			return "No Flowchart found.";
 		}
 
