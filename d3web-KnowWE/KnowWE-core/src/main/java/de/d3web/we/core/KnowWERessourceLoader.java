@@ -59,12 +59,12 @@ public class KnowWERessourceLoader {
 	/**
 	 * Stores the registered script files.
 	 */
-	private LinkedList<String> script = new LinkedList<String>();
+	private final LinkedList<String> script = new LinkedList<String>();
 
 	/**
 	 * Stores the registered CSS files.
 	 */
-	private LinkedList<String> stylesheets = new LinkedList<String>();
+	private final LinkedList<String> stylesheets = new LinkedList<String>();
 	
 	/**
 	 * Instance of the Loader. The loader is implemented as a Singleton.
@@ -82,18 +82,41 @@ public class KnowWERessourceLoader {
 			instance = new KnowWERessourceLoader();
 		}
 		return instance;
-	}	
-	
+	}
+
 	/**
-	 * Adds a resource file to the loader.
-	 * Note: Only the file name has to be added. The KnowWERessourceLoader knows the 
-     * default resource file location.
+	 * Creates a KnowWERessourceLoader instance by first loading the KnowWE
+	 * default resources.
+	 */
+	private KnowWERessourceLoader() {
+		loadDefaultResources();
+	}
+
+	/**
+	 * Loads the KnowWE standard Resources:
 	 * 
-	 * @param file
-     *         The resource file that should be added.
-     * @param first
-     *         If TRUE the file will be added as the first element, 
-     *         otherwise at the end.
+	 * - KnowWE.js
+	 * 
+	 * - KnowWE-helper.js
+	 * 
+	 * - general.css
+	 * 
+	 * @created 05.07.2010
+	 */
+	private void loadDefaultResources() {
+		addFirst("KnowWE.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+		addFirst("KnowWE-helper.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
+		addFirst("general.css", KnowWERessourceLoader.RESOURCE_STYLESHEET);
+	}
+
+	/**
+	 * Adds a resource file to the loader. Note: Only the file name has to be
+	 * added. The KnowWERessourceLoader knows the default resource file
+	 * location.
+	 * 
+	 * @param file The resource file that should be added.
+	 * @param first If TRUE the file will be added as the first element,
+	 *        otherwise at the end.
 	 */
 	public void add( String file , String type){
 		LinkedList<String> tmp = this.getList(type);

@@ -482,10 +482,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		KnowWERessourceLoader loader = KnowWERessourceLoader.getInstance();
 
-		loader.addFirst("KnowWE.js", KnowWERessourceLoader.RESOURCE_SCRIPT);
-		loader.addFirst("KnowWE-helper.js",
-				KnowWERessourceLoader.RESOURCE_SCRIPT);
-
 		LinkedList<String> script = loader.getScriptIncludes();
 		for (String resource : script) {
 			if (ctx != null && !ctx.toString().contains(resource)) {
@@ -499,9 +495,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						KnowWERessourceLoader.defaultScript + resource);
 			}
 		}
-
-		loader.addFirst("general.css",
-				KnowWERessourceLoader.RESOURCE_STYLESHEET);
 
 		LinkedList<String> css = loader.getStylesheetIncludes();
 		for (String resource : css) {
