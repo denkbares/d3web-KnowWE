@@ -84,14 +84,14 @@ function startQuiz(user, kdomid) {
     var params = {
         action : 'StartQuizAction',
         user : user,
-        kdomid: kdomid,
+        kdomid: kdomid
     }
 
     var options = {
         url : KNOWWE.core.util.getURL(params),
         response : {
             action : 'insert',
-            ids : [ 'quiz-question' ],
+            ids : [ 'quiz-question' ]
         }
     }
 
@@ -109,14 +109,14 @@ function quizAnswer(user, answer, kdomid) {
         action : 'SetAnswerAction',
         user : user,
         answer : answer,
-        kdomid : kdomid,
+        kdomid : kdomid
     }
 
     var options = {
         url : KNOWWE.core.util.getURL(params),
         response : {
             action : 'insert',
-            ids : [ 'quiz-question' ],
+            ids : [ 'quiz-question' ]
         }
     }
 
@@ -132,14 +132,14 @@ function stopQuiz(user, kdomid) {
     var params = {
         action : 'StopQuizAction',
         user : user,
-        kdomid : kdomid,
+        kdomid : kdomid
     }
 
     var options = {
         url : KNOWWE.core.util.getURL(params),
         response : {
             action : 'insert',
-            ids : [ 'quiz-question' ],
+            ids : [ 'quiz-question' ]
         }
     }
 
