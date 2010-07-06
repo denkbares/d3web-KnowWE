@@ -1474,12 +1474,11 @@ KNOWWE.helper.logger = function(){
      */
     function Observation(name, func){
         this.name = name;
+        this.f = [];
         this.add( func );
     }
     Observation.prototype = {
-        add : function( func ){
-            if( !this.f ) this.f = [];
-            
+        add : function( func ){            
             if(!KNOWWE.helper.containsArr( this.f, func)){
                 this.f.push( func );
             }
@@ -1506,14 +1505,18 @@ KNOWWE.helper.logger = function(){
      */
     function subscribeObservation(name, func){
         var l = observations.length;
-        if(l > 0){
-            for(var i = 0; i < observations.length; i++){
-                var obj = observations[i];
-                if( obj.constructor === Observation && obj.getName() === name){
-                    obj.add( func );
-                }
+        
+        var added = false;
+        for(var i = 0; i < l; i++){
+            var obj = observations[i];
+            if( obj.constructor === Observation && obj.getName() === name){
+                obj.add( func );
+                added = true;
             }
-        } else {
+        }        
+        
+        if( !added ) 
+        {
             var obj = new Observation( name, func );
             observations.push( obj );
         }
@@ -1576,9 +1579,11 @@ KNOWWE.helper.logger = function(){
         notify : function( name, o ) {
             var scope = o || window;
             var l = observations.length;
+           
             for( var i = 0; i < l; i++){
-                if( observations[i].name === name ){
-                    var f = observations[i].getFunct();
+                var obName = observations[i];
+                if( obName.getName() === name ){
+                    var f = obName.getFunct();
                     for(var j = 0; j < f.length; j++){
                         f[j].call( o );
                     }
@@ -2348,13 +2353,13 @@ replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
 
 
 var Testcase = function() {
-	
+    
 }
 /**
  * adds a new row (as last row) to the table
  */
 Testcase.addRow = function() {
-	Testcase.sendRequest('row');
+    Testcase.sendRequest('row');
 }
 
 
@@ -2362,7 +2367,7 @@ Testcase.addRow = function() {
  * adds a new column (as last column) to the table
  */
 Testcase.addCol = function() {
-	Testcase.sendRequest('col');
+    Testcase.sendRequest('col');
 }
 
 /**
@@ -2370,14 +2375,14 @@ Testcase.addCol = function() {
  * are allowed.
  */
 Testcase.sendRequest = function(type) {
-	if (type != 'row' && type != 'col') {
-		return;
-	}
-	
-	var topic = KNOWWE.helper.gup('page')
-	var table = Testcase.findTable();
-		
-	var params = {
+    if (type != 'row' && type != 'col') {
+        return;
+    }
+    
+    var topic = KNOWWE.helper.gup('page')
+    var table = Testcase.findTable();
+        
+    var params = {
         action : 'AppendTableNodesAction',
         type : type,
         KWiki_Topic : topic,
@@ -2390,8 +2395,8 @@ Testcase.sendRequest = function(type) {
         response : {
             action : 'none',
             fn : function(){
-				if (table)
-					KNOWWE.core.rerendercontent.updateNode(table, topic, null);	
+                if (table)
+                    KNOWWE.core.rerendercontent.updateNode(table, topic, null); 
             }
         }
     }
@@ -2403,9 +2408,9 @@ Testcase.sendRequest = function(type) {
  * quick-edited
  */
 Testcase.findTable = function() {
-	var button = $('addRow');
-	if (button) {
-		return button.parentNode.id;
-	}
-	return null;
+    var button = $('addRow');
+    if (button) {
+        return button.parentNode.id;
+    }
+    return null;
 }
