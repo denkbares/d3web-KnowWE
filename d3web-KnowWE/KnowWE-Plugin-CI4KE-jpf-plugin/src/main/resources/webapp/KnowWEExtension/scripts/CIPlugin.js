@@ -29,6 +29,7 @@ function fctGetBuildDetails( dashboardID , buildNr ) {
    
     var options = {
            url : KNOWWE.core.util.getURL( params ),
+           loader: true,
            response : {
                ids : [ dashboardID + '-build-details-wrapper'],
                action : 'insert',
@@ -51,6 +52,7 @@ function fctExecuteNewBuild( dashboardID ) {
     
      var options = {
             url : KNOWWE.core.util.getURL( params ),
+            loader: true,
             response : {
                 ids : [ dashboardID + '-ci-dashboard'],
                 action : 'insert',
@@ -76,6 +78,7 @@ function fctRefreshBuildList( dashboardID, indexFromBack, numberOfBuilds ) {
     
      var options = {
             url : KNOWWE.core.util.getURL( params ),
+            loader: true,
             response : {
                 ids : [ dashboardID + '-build-table'],
                 action : 'insert'
