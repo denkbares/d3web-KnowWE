@@ -582,13 +582,13 @@ KNOWWE.core.edit = function(){
             var rel = eval("(" + el.getAttribute('rel') + ")");
             var params = {
                 action : 'UpdateKDOMNodeAction',
-                TargetNamespace : _KS('#' + rel.id + '/default-edit-area').value,
                 SectionID :  rel.id,
                 KWiki_Topic : KNOWWE.helper.gup('page')
             }
 
             var options = {
                 url : KNOWWE.core.util.getURL ( params ),
+                data : 'TargetNamespace='+encodeURIComponent(_KS('#' + rel.id + '/default-edit-area').value),
                 loader : true,
                 response : {
                     action : 'none',

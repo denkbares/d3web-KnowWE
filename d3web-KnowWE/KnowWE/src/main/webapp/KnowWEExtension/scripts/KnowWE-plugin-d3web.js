@@ -1568,6 +1568,7 @@ KNOWWE.plugin.d3web.dt = function(){
             
             var options = {
                 url : KNOWWE.core.util.getURL( params ),
+                loader : true,
                 response : {
                     action : 'replace',
                     ids : [ params.KdomNodeId ],

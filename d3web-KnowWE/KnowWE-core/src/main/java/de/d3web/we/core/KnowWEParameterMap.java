@@ -20,12 +20,16 @@
 
 package de.d3web.we.core;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -39,7 +43,7 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private KnowWEUserContext wikiContext;
-
+	
 	public KnowWEParameterMap(KnowWEUserContext wikiContext,
 			HttpServletRequest rq, HttpServletResponse rp, 
 			ServletContext c, KnowWEEnvironment e) {
@@ -50,7 +54,7 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 		this.request = rq;
 		this.response = rp;
 		this.context = c;
-
+        
 		Enumeration<String> paramNames = rq.getParameterNames();
 		if ((paramNames != null)) {
 			while ((paramNames.hasMoreElements())) {
@@ -65,6 +69,7 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 				this.put(name, value);
 			}
 		} 
+		handlePostData();
 	}
 
 	public KnowWEParameterMap(String name, String value) {
@@ -107,4 +112,30 @@ public class KnowWEParameterMap extends HashMap<String, String> {
 	public KnowWEUserContext getWikiContext() {
 		return this.wikiContext;
 	}
+	
+	private void handlePostData() {
+		try {
+			String str;
+			StringBuilder post = new StringBuilder();
+			
+			BufferedReader input = new BufferedReader(new InputStreamReader( request.getInputStream() ));
+			
+			while((str = input.readLine()) != null) {
+			    post.append( str + "\n" );
+			}
+			
+			input.close();
+			int pos = post.indexOf("=");
+			if( pos != -1 ) {
+				String key, value;
+				
+				key = post.substring(0, pos);
+			    value = post.substring(pos + 1);
+			    this.put(key, value);
+			}
+
+		} catch (IOException e) {
+			//no or wrong post data do nothing
+		}		
+	}	
 }

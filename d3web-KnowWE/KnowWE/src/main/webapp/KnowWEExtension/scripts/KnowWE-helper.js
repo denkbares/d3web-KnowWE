@@ -347,6 +347,7 @@ KNOWWE.helper.ajax = function ( options ) {
     var oDefault = {
         method : 'POST',
         url : 'KnowWE.jsp',
+        data : false,
         headers : {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'text/javascript, text/html, application/xml, text/xml'
@@ -463,7 +464,8 @@ KNOWWE.helper.ajax = function ( options ) {
         if (oDefault.urlEncoded){
             var encoding = (oDefault.encoding) ? '; charset=' + oDefault.encoding : '';
             headers.set('Content-type', '"application/x-www-form-urlencoded' + encoding + '"');
-        }       
+        }
+        headers.set('Content-length', oDefault.data.length);
         
         http.open( oDefault.method.toUpperCase(), oDefault.url, oDefault.async );
         
@@ -471,8 +473,13 @@ KNOWWE.helper.ajax = function ( options ) {
             http.setRequestHeader(k, v);
         }); 
         
-        http.onreadystatechange = oDefault.fn;       
-        http.send(oDefault.method);
+        http.onreadystatechange = oDefault.fn;
+        
+        if(oDefault.data) {
+        	 http.send( oDefault.data );
+        } else {
+        	http.send( oDefault.method );
+        }
         if(oDefault.loader){
             createLoader();
         }
@@ -906,7 +913,7 @@ KNOWWE.helper.selector = function(selector, context){
     if(!t1){
         //quick fix: wiki page names containing whitespaces
         var el = document.getElementById(selector.replace(/#/, ""));
-        if(el) return el
+        if(el) return KNOWWE.helper.element( el );
         return null;
     }
     
