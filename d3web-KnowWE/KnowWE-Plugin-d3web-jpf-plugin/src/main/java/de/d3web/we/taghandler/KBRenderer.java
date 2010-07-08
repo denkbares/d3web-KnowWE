@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- *
+ * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -36,7 +36,6 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -52,6 +51,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.Properties;
 import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.values.Choice;
 import de.d3web.kernel.verbalizer.VerbalizationManager;
 import de.d3web.kernel.verbalizer.Verbalizer;
@@ -138,6 +138,7 @@ public class KBRenderer extends AbstractTagHandler {
 			// }
 
 			// Rules
+			// TODO: Fix
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 			Collection<KnowledgeSlice> rules = kb
@@ -155,7 +156,6 @@ public class KBRenderer extends AbstractTagHandler {
 							}
 							text.append("<strong>" + rb.getString("KnowWE.KBRenderer.rules")
 									+ ":</strong><p/>");
-							text.append("Slices:<br />");
 							appendedRulesHeadline = true;
 							List<Section<Rule>> allRules = new ArrayList<Section<de.d3web.we.kdom.rules.Rule>>();
 							List<Section<BulletContentType>> allBulletContentTypes = new ArrayList<Section<BulletContentType>>();
@@ -204,9 +204,12 @@ public class KBRenderer extends AbstractTagHandler {
 			text.append("<p/>");
 
 			// Questions
-			List<QASet> questions = kb.getQASets();
+			KnowledgeBaseManagement kbm = KnowledgeBaseManagement
+					.createInstance(kb);
+			List<QContainer> questions = kb.getQContainers();
+			// TODO: Sort einbauen
 			boolean appendedQuestionHeadline = false;
-			for (QASet q1 : questions) {
+			for (QContainer q1 : questions) {
 				if (!q1.getName().equals("Q000")) {
 					if (!appendedQuestionHeadline) {
 						if (appendedSolutionsHeadline || appendedRulesHeadline) {
@@ -219,7 +222,7 @@ public class KBRenderer extends AbstractTagHandler {
 					if (q1 instanceof QContainer) {
 						text.append("<span style=\"color: rgb(128, 128, 0);\">" + q1.getName()
 								+ "</span><br/>");
-						text.append(getAll(q1.getChildren()));
+						text.append(getAll(q1.getChildren(), 1));
 						text.append("<br/>");
 					}
 				}
@@ -244,35 +247,22 @@ public class KBRenderer extends AbstractTagHandler {
 					de.d3web.xcl.XCLModel model = ((de.d3web.xcl.XCLModel) slice);
 
 					// adds tresholds if different from default
-					String thresholds = "";
-					Double suggestedThreshold = model.getSuggestedThreshold();
-					Double establishedThreshold = model.getEstablishedThreshold();
-					Double minSupportVal = model.getMinSupport();
-					if (establishedThreshold != null ||
-							suggestedThreshold != null ||
-							minSupportVal != null) {
-						String suggested = "-";
-						if(suggestedThreshold != null) {
-							suggested = "" + suggestedThreshold;
-						}
-						String established = "-";
-						if (establishedThreshold != null) {
-							established = "" + establishedThreshold;
-						}
-
-						String minSupport = "-";
-						minSupportVal.toString();
-						if (minSupportVal != null) {
-							minSupport = "" + minSupportVal;
-						}
-						thresholds = " [sugg: " + suggested + ", est: " + established
-								+ ", minS: " + minSupport
-								+ "]";
-
-					}
-
-					text.append("<p /> " + model.getSolution().getName() + thresholds
-							+ ": <br />");
+					// String thresholds = "";
+					// if (model.getEstablishedThreshold() !=
+					// XCLModel.defaultEstablishedThreshold ||
+					// model.getSuggestedThreshold() !=
+					// XCLModel.defaultSuggestedThreshold ||
+					// model.getMinSupport() != XCLModel.defaultMinSupport) {
+					// thresholds = " [" + model.getSuggestedThreshold() + ", "
+					// + model.getEstablishedThreshold() + ", " +
+					// model.getMinSupport()
+					// + "]";
+					//
+					// }
+					//
+					// text.append("<p /> " + model.getSolution().getName() +
+					// thresholds
+					// + ": <br />");
 
 					Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
 							.getTypedRelations();
@@ -339,66 +329,71 @@ public class KBRenderer extends AbstractTagHandler {
 		return text.append("</p></div></div>").toString();
 	}
 
-	private static int j = 0;
-
-	private String getAll(TerminologyObject[] nodes) {
+	private String getAll(TerminologyObject[] nodes, int depth) {
 		StringBuffer result = new StringBuffer();
 		StringBuffer properties = new StringBuffer();
 		StringBuffer range = new StringBuffer();
 		for (TerminologyObject t1 : nodes) {
-			if (t1 instanceof NamedObject && ((NamedObject) t1).getProperties() != null) {
+			if (t1 instanceof NamedObject
+					&& ((NamedObject) t1).getProperties() != null) {
 				if (t1 instanceof Question && getPrompt((Question) t1) != null) {
 					properties.append("&#126; " + getPrompt((Question) t1));
 				}
 				Properties rUnit = ((NamedObject) t1).getProperties();
-				if (rUnit.getProperty(Property.UNIT) != null) {
-					range.append(" {" + rUnit.getProperty(Property.UNIT).toString() + "} ");
+				Set<Property> sUnit = rUnit.getKeys();
+				for (Property p1 : sUnit) {
+					if (p1.getName() != "mminfo"
+							&& p1.getName() != "abstractionQuestion") {
+						range.append(" " + rUnit.getProperty(p1));
+					}
 				}
-				if (rUnit.getProperty(Property.QUESTION_NUM_RANGE) != null) {
-					range.append("(" + rUnit.getProperty(Property.QUESTION_NUM_RANGE).toString()
-							+ ")");
-				}
+			}
+			for (int i = 0; i < depth; i++) {
+				result.append("-");
 			}
 			if (t1 instanceof QuestionChoice) {
 				if (t1 instanceof QuestionMC) {
-					result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.toString()
-							+ " " + properties + " [mc] " + range + "</span><br/>");
+					result.append("<span style=\"color: rgb(0, 128, 0);\">"
+							+ t1.toString() + " " + properties + " [mc] "
+							+ range + "</span><br/>");
 				}
 				else {
-					result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.toString()
-							+ " " + properties + " [oc] " + range + "</span><br/>");
+					result.append("<span style=\"color: rgb(0, 128, 0);\">"
+							+ t1.toString() + " " + properties + " [oc] "
+							+ range + "</span><br/>");
 				}
 				for (Choice c1 : ((QuestionChoice) t1).getAllAlternatives()) {
-					for (int i = 0; i < j; i++) {
+					for (int i = 0; i < depth + 1; i++) {
 						result.append("-");
 					}
-					result.append("-- <span style=\"color: rgb(0, 0, 255);\">" + c1.toString()
+					result.append("<span style=\"color: rgb(0, 0, 255);\">"
+							+ c1.toString()
 							+ "</span><br/>");
 				}
 			}
 			else if (t1 instanceof QuestionText) {
-				result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
-						+ " " + properties + " [text] " + range + "</span><br/>");
+				result.append("<span style=\"color: rgb(0, 128, 0);\">"
+						+ t1.getName() + " " + properties + " [text] " + range
+						+ "</span><br/>");
 			}
 			else if (t1 instanceof QuestionNum) {
-				result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
-						+ " " + properties + " [num] " + range + "</span><br/>");
+				result.append("<span style=\"color: rgb(0, 128, 0);\">"
+						+ t1.getName() + " " + properties + " [num] " + range
+						+ "</span><br/>");
 			}
 			else if (t1 instanceof QuestionDate) {
-				result.append("- <span style=\"color: rgb(0, 128, 0);\">" + t1.getName()
-						+ " " + properties + " [date] " + range + "</span><br/>");
+				result.append("<span style=\"color: rgb(0, 128, 0);\">"
+						+ t1.getName() + " " + properties + " [date] " + range
+						+ "</span><br/>");
 			}
 			properties = new StringBuffer();
 			range = new StringBuffer();
 			if (t1.getChildren().length > 0) {
-				j++;
-				for (int i = 0; i < j; i++) {
-					result.append("-");
-				}
-				result.append(getAll(t1.getChildren()));
+				depth++;
+				result.append(getAll(t1.getChildren(), depth));
+				depth--;
 			}
 		}
-		j = 0;
 		return result.toString();
 	}
 
