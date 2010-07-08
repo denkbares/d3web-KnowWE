@@ -207,7 +207,7 @@ public class KBRenderer extends AbstractTagHandler {
 			KnowledgeBaseManagement kbm = KnowledgeBaseManagement
 					.createInstance(kb);
 			List<QContainer> questions = kb.getQContainers();
-			// TODO: Sort einbauen
+			kbm.sortQContainers(questions);
 			boolean appendedQuestionHeadline = false;
 			for (QContainer q1 : questions) {
 				if (!q1.getName().equals("Q000")) {
