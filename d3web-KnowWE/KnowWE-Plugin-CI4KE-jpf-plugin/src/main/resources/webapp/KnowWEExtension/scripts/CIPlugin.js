@@ -78,7 +78,6 @@ function fctRefreshBuildList( dashboardID, indexFromBack, numberOfBuilds ) {
     
      var options = {
             url : KNOWWE.core.util.getURL( params ),
-            loader: true,
             response : {
                 ids : [ dashboardID + '-build-table'],
                 action : 'insert'

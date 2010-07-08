@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 
@@ -56,7 +58,15 @@ public class CIUtilities {
 	public static File getCIBuildDir() {
 		KnowWEWikiConnector con = KnowWEEnvironment.getInstance().getWikiConnector();
 		String wikiDir = con.getSavePath();
-		File buildDir = new File(wikiDir, "/ci-builds/");
+		if (wikiDir == null || wikiDir.isEmpty()) {
+			Logger.getLogger(CIUtilities.class.getName()).log(
+					Level.WARNING, "Wiki SavePath could not be retrieved! (null or empty!)");
+		}
+
+		if (!wikiDir.endsWith(File.separator)) {
+			wikiDir = wikiDir + File.separator;
+		}
+		File buildDir = new File(wikiDir + "ci-builds");
 		// check if the path exists
 		if (!buildDir.exists()) buildDir.mkdirs();
 		return buildDir;
