@@ -59,6 +59,7 @@ import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.Choice;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.report.Message;
 import de.d3web.scoring.Score;
 
@@ -93,7 +94,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		private Question question;
 		private final Condition ifcond;
 		private final Condition exceptcond;
-		private Choice[] answers;
+		private Choice answers;
 		private FormulaExpression formula;
 		private ArrayList<QASet> qcons;
 		private Score score;
@@ -101,7 +102,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 
 		public MyRule(ruletype type, Question question,
 				Condition ifcond, Condition exceptcond,
-				Choice[] answers, FormulaExpression formula,
+				Choice answers, FormulaExpression formula,
 				ArrayList<QASet> qcons) {
 			super();
 			this.type = type;
@@ -171,7 +172,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 		}
 		else if (rule.type == ruletype.supress) {
 			newRule = RuleFactory.createSuppressAnswerRule(newRuleID,
-					(QuestionChoice) rule.question, rule.answers, rule.ifcond,
+					(QuestionChoice) rule.question, new Choice[]{rule.answers}, rule.ifcond,
 					rule.exceptcond);
 		}
 		else if (rule.type == ruletype.setvalue) {
@@ -179,9 +180,9 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				newRule = RuleFactory.createSetValueRule(newRuleID, rule.question,
 						rule.formula, rule.ifcond, rule.exceptcond);
 			}
-			else if (rule.answers != null && rule.answers.length > 0) {
+			else if (rule.answers != null) {
 				newRule = RuleFactory.createSetValueRule(newRuleID, rule.question,
-						rule.answers, rule.ifcond, rule.exceptcond);
+						new ChoiceValue(rule.answers), rule.ifcond, rule.exceptcond);
 			}
 			else {
 				// TODO add error message
@@ -193,9 +194,9 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				// RuleFactory.createAddValueRule(newRuleID, rule.question,
 				// rule.formula, rule.ifcond, rule.exceptcond);
 			}
-			else if (rule.answers != null && rule.answers.length > 0) {
+			else if (rule.answers != null) {
 				newRule = RuleFactory.createAddValueRule(newRuleID, rule.question,
-						rule.answers, rule.ifcond, rule.exceptcond);
+						new ChoiceValue(rule.answers), rule.ifcond, rule.exceptcond);
 			}
 			else {
 				// TODO add error message
@@ -397,6 +398,12 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 										linetext, s, qc.getName()));
 					}
 				}
+				if (alist.size() >= 2){
+					
+					errors.add(new Message("Rule expects to suppress exactly 1 answer on question " + qc.getName()));
+					return;
+				}
+				
 				if (!alist.isEmpty()) {
 					Condition ifcond;
 					Condition exceptcond;
@@ -410,9 +417,9 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 						exceptcond = null;
 					}
 					if (ifcond == null) return;
-					Choice[] array = alist.toArray(new Choice[alist.size()]);
+					
 					addRule(new MyRule(ruletype.supress, qc, ifcond,
-							exceptcond, array, null, null));
+							exceptcond, alist.get(0), null, null));
 				}
 				else {
 					errors
@@ -597,12 +604,12 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			if (ifcond == null) return;
 			if (add) {
 				addRule(new MyRule(ruletype.addvalue, currentquestion, ifcond,
-						exceptcond, new Choice[] { a }, null, null));
+						exceptcond, a, null, null));
 
 			}
 			else {
 				addRule(new MyRule(ruletype.setvalue, currentquestion, ifcond,
-						exceptcond, new Choice[] { a }, null, null));
+						exceptcond, a , null, null));
 			}
 		}
 	}
