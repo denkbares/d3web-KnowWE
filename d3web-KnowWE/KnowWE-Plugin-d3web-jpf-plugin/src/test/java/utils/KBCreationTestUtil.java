@@ -543,7 +543,7 @@ public class KBCreationTestUtil {
 		ruleID = createdKBM.createRuleID();
 		Question q4 = createdKBM.findQuestion("Mileage evaluation");
 		Choice a = createdKBM.findChoice((QuestionChoice) q4, "increased");
-		RuleFactory.createSetValueRule(ruleID, q4, new Choice[] { a }, c2);
+		RuleFactory.createSetValueRule(ruleID, q4, new ChoiceValue(a), c2);
 
 		// Create rule R10:
 		// IF Driving = unsteady idle speed
