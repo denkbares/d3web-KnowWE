@@ -848,13 +848,13 @@ KNOWWE.core.renaming = function(){
             var params = {
                 TargetNamespace : _KS('#renameInputField').value,
                 action : 'GlobalReplaceAction',
-                KWikitext : codeReplacements,
                 KWikiFocusedTerm : _KS('#replaceInputField').value
             }
              
             var options = {
                 url : KNOWWE.core.util.getURL( params ),
                 method : 'post',
+                data : 'KWikitext='+codeReplacements,
                 response : {
                     action : 'insert',
                     ids : [ 'rename-result' ],

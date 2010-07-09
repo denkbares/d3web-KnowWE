@@ -129,6 +129,7 @@ public class WordBasedRenameFinding implements Comparable {
 	
 	@Override
 	public int compareTo(Object o) {
+		if(this.start > ((WordBasedRenameFinding)o).start ) return 1;
 		return 0;
 	}
 
