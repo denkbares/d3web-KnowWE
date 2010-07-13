@@ -209,12 +209,15 @@ KNOWWE.plugin.d3web.actions = function(){
 
 /**
  * Namespace: KNOWWE.plugin.d3web.imagequestion
- * Used for functionality of ImageQuestion in the ImageQuestionHandler.
+ * Used for functionality of ImageQuestion in the
+ * ImageQuestionHandler and ImageQuestionAction.
  */
 KNOWWE.plugin.d3web.imagequestion = function() {
 	    return {
         	/**
-        	 * 
+        	 * Function: init
+        	 * Initialiases the AnswerRegions and
+        	 * Buttons for ImageQuestionHandler
          	 */ 
         	init : function() {
            		 if(_KS('.answerRegion').length != 0){
@@ -224,7 +227,10 @@ KNOWWE.plugin.d3web.imagequestion = function() {
             	}
         	},
         	
-        	
+        	/**
+        	 * Function initAction
+        	 * Same as init. Used after rerendering.
+        	 */
         	initAction : function() {
            		 if(_KS('.answerRegion').length != 0){
                 		_KS('.answerRegion').each(function( element ){
@@ -232,12 +238,19 @@ KNOWWE.plugin.d3web.imagequestion = function() {
                 	});
             	}
         	},
+        	
             /**
          	 * Function: answerClicked
-         	 * Stores the user selected answer of the HTMLDialog.
+         	 * Copied from the Dialog.
+         	 * Stores the user selected answer in the session.
+         	 * Uses the <dialog.send> function.
+        	 * 
+        	 * See Also:
+         	 *     <updateImageQuestionPanel>
+         	 * 	   <dialog.send>
         	 * 
          	 * Parameters:
-         	 *     event - The user click event on an answer.
+         	 *     e - The user click event on an answer.
          	 */
        		 answerClicked : function( e ) {
            		var el = _KE.target(e);
@@ -248,10 +261,19 @@ KNOWWE.plugin.d3web.imagequestion = function() {
            		var answerID = rel.oid;
             	
             	KNOWWE.plugin.d3web.dialog.send( rel.web, rel.ns, rel.qid, 'undefined', {ValueID: answerID});
-            	KNOWWE.helper.observer.notify('update');
             	KNOWWE.plugin.d3web.imagequestion.updateImageQuestionPanel(rel.qid);
        		},
         	
+        	/**
+         	 * Function: updateImageQuestionPanel
+         	 * Updates the ImageQuestion Panel.
+        	 * 
+        	 * See Also:
+         	 *     <initAction>
+        	 * 
+         	 * Parameters:
+         	 *     questionID - The ID of the Question answered.
+         	 */
     		updateImageQuestionPanel : function(questionID) {
      			
             	var params = {
@@ -259,12 +281,12 @@ KNOWWE.plugin.d3web.imagequestion = function() {
                		QuestionID : questionID            	
             	}
         
-        		var panelID = 'imagetable_'+questionID;
+        		var panelTable = 'imagetable_'+questionID;
             	var options = {
                 	url : KNOWWE.core.util.getURL( params ),
                 	response : {
                     	action: 'replace',
-                    	ids : [panelID],
+                    	ids : [panelTable],
                     	fn : function() {
                     		KNOWWE.plugin.d3web.imagequestion.initAction();
                     	}
