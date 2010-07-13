@@ -39,7 +39,7 @@ public class ImageQuestionAction extends AbstractAction {
 		KnowWEParameterMap map = context.getKnowWEParameterMap();
 		String questionId = map.get("QuestionID");
 		HashMap<String,String> values = new HashMap<String,String>();
-		values.put("frage", questionId);
+		values.put("question", questionId);
 		context.getWriter().write(new ImageQuestionHandler().renderForRerenderAction(
 				map.getTopic(), context.getWikiContext(), values, map.getWeb()));
 	}

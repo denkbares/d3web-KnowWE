@@ -45,7 +45,6 @@ import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.UndefinedValue;
-import de.d3web.core.session.values.Unknown;
 import de.d3web.multimedia.io.ImageQuestionPersistenceHandler;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
@@ -63,13 +62,10 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class ImageQuestionHandler extends AbstractTagHandler {
 
 	private static final String config_knowledgebase_path=
-		"kbResources/RheumaDemoPPRheumaDemo_KB/";
-	private static final String config_knowledgebase_imagequestion_path=
-		"C:/Users/ManiaC/knowwe_newBranch/d3web-KnowWE/KnowWE/target/KnowWE-0.2-SNAPSHOT"+
-		"/kbResources/RheumaDemoPPRheumaDemo_KB/imagequestion/picturequestions.xml";
-	private static final String kbjarpath =
-		"C:/Users/ManiaC/knowwe_newBranch/d3web-KnowWE/KnowWE/target/" +
-		"KnowWE-0.2-SNAPSHOT/WEB-INF/resources/knowledgebases/RheumaDemoPPRheumaDemo_KB.jar";
+		"kbResources/";
+//	private static final String kbjarpath =
+//		"C:/Users/ManiaC/knowwe_newBranch/d3web-KnowWE/KnowWE/target/" +
+//		"KnowWE-0.2-SNAPSHOT/WEB-INF/resources/knowledgebases/RheumaDemoPPRheumaDemo_KB.jar";
 	
 	public ImageQuestionHandler() {
 		super("imagequestionhandler");
@@ -113,7 +109,8 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		try {
 			String path = KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
 				+ ImageQuestionHandler.config_knowledgebase_path
-				+ "imagequestion/picturequestions.xml";
+				+ topic + "PP" + KnowWEEnvironment.generateDefaultID(topic)
+				+ "/imagequestion/picturequestions.xml";
 			path = path.replaceAll("KnowWEExtension", "/");
 			FileInputStream stream = new FileInputStream(
 					new File(path));
@@ -217,8 +214,10 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		
 		buffi.append("<div id=\"" + q.getId() + "\" class=\"questionImage\"");
 		
-		String path = KnowWEEnvironment.getInstance().getKnowWEExtensionPath() +
-		ImageQuestionHandler.config_knowledgebase_path + "multimedia/" + questionImage;
+		String path = KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
+				+ ImageQuestionHandler.config_knowledgebase_path
+				+ topic + "PP" + KnowWEEnvironment.generateDefaultID(topic)
+				+ "/multimedia/" + questionImage;
 		path = path.replaceAll("KnowWEExtension", "");
 		
 		File imgFile = new File(path);
@@ -241,8 +240,9 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		buffer.append("margin-right: auto;");
 			
 		String relImagePath = ImageQuestionHandler.config_knowledgebase_path
-							  + "multimedia/"
-								+ questionImage ;
+							  + topic + "PP" + KnowWEEnvironment.generateDefaultID(topic)
+							  + "/multimedia/"
+							  + questionImage ;
 		buffer.append("background-image:url(" + relImagePath + ");");
 		buffi.append(" style=\"" + buffer.toString() + "\">");
 
