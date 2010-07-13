@@ -41,7 +41,7 @@ KNOWWE.plugin.d3web.actions = function(){
          * Some function that are executed on page load. They initialize some core
          * d3web plugin functionality.
          */ 
-        init : function(){           
+        init : function(){
             //init KnowledgeBasesGenerator
             if(_KS('#KnowledgeBasesGenerator')) {
                 var els = _KS('#KnowledgeBasesGenerator input[type=button]');
@@ -205,6 +205,74 @@ KNOWWE.plugin.d3web.actions = function(){
             new _KA( options ).send();
         }
     }
+}();
+
+/**
+ * Namespace: KNOWWE.plugin.d3web.imagequestion
+ * Used for functionality of ImageQuestion in the ImageQuestionHandler.
+ */
+KNOWWE.plugin.d3web.imagequestion = function() {
+	    return {
+        	/**
+        	 * 
+         	 */ 
+        	init : function() {
+           		 if(_KS('.answerRegion').length != 0){
+                		_KS('.answerRegion').each(function( element ){
+                   	 	_KE.add('click', element, KNOWWE.plugin.d3web.imagequestion.answerClicked);
+                	});
+            	}
+        	},
+        	
+        	
+        	initAction : function() {
+           		 if(_KS('.answerRegion').length != 0){
+                		_KS('.answerRegion').each(function( element ){
+                   	 	_KE.add('click', element, KNOWWE.plugin.d3web.imagequestion.answerClicked);
+                	});
+            	}
+        	},
+            /**
+         	 * Function: answerClicked
+         	 * Stores the user selected answer of the HTMLDialog.
+        	 * 
+         	 * Parameters:
+         	 *     event - The user click event on an answer.
+         	 */
+       		 answerClicked : function( e ) {
+           		var el = _KE.target(e);
+            	
+            	var rel = eval("(" + el.getAttribute('rel') + ")");
+            	_KE.cancel( e );
+            	if( !rel ) return;
+           		var answerID = rel.oid;
+            	
+            	KNOWWE.plugin.d3web.dialog.send( rel.web, rel.ns, rel.qid, 'undefined', {ValueID: answerID});
+            	KNOWWE.helper.observer.notify('update');
+            	KNOWWE.plugin.d3web.imagequestion.updateImageQuestionPanel(rel.qid);
+       		},
+        	
+    		updateImageQuestionPanel : function(questionID) {
+     			
+            	var params = {
+            		action : 'ImageQuestionAction',
+               		QuestionID : questionID            	
+            	}
+        
+        		var panelID = 'imagetable_'+questionID;
+            	var options = {
+                	url : KNOWWE.core.util.getURL( params ),
+                	response : {
+                    	action: 'replace',
+                    	ids : [panelID],
+                    	fn : function() {
+                    		KNOWWE.plugin.d3web.imagequestion.initAction();
+                    	}
+                	}
+            	}
+            	new _KA( options ).send();
+			}
+	}
 }();
 
 

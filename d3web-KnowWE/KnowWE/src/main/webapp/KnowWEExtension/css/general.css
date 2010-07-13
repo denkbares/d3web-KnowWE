@@ -709,6 +709,10 @@ font-size:120%;
     text-decoration: none;
 }
 
+.qImageHover:hover {
+	border: 1px solid #777;
+}
+
 /* ################################################## */
 /* ------->>> TemplateTaghandler  <<<------- --- */
 /* ################################################## */
@@ -858,3 +862,17 @@ div.collapsible-questiontree ul .pointer{
     clear:both; float: right; width:300px;
 }
 
+/* ################################################## */
+/* ----------Image Question TagHandler--------------- */
+/* ################################################## */
+.qImageHover:hover {
+	border: 1px solid #777;
+}
+
+.answerRegion {
+	position: absolute;
+}
+
+.answerSet {
+	border: 1px solid #777;
+}
