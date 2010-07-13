@@ -67,6 +67,16 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 //		"C:/Users/ManiaC/knowwe_newBranch/d3web-KnowWE/KnowWE/target/" +
 //		"KnowWE-0.2-SNAPSHOT/WEB-INF/resources/knowledgebases/RheumaDemoPPRheumaDemo_KB.jar";
 	
+	/**
+	 * Nearly every method in this class needs:
+	 * topic, web and the KnowWEUserContext.
+	 * So it is easier to set them at the start as fields.
+	 */
+	private String topic;
+	private String web;
+	private KnowWEUserContext user;
+	
+	
 	public ImageQuestionHandler() {
 		super("imagequestionhandler");
 	}
@@ -102,8 +112,13 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web,  boolean renderDIV) {
 
+		// set the fields.
+		this.topic = topic;
+		this.web = web;
+		this.user = user;
+		
 		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
-		KnowledgeBase kb = service.getBase();		
+		KnowledgeBase kb = service.getBase();
 
 		// TODO: This should be loaded from persistence right away!
 		try {
@@ -134,11 +149,10 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		StringBuffer renderedImage = new StringBuffer();
 		StringBuffer renderedCheckBoxes = new StringBuffer();
 		try {
-			this.renderQuestionImage(renderedImage, imageName, q, answerRegions, kb,
-					topic, user.getUsername(), web);
+			this.renderQuestionImage(renderedImage, imageName, q, answerRegions, kb);
 			this.renderQuestionChoiceColumns(
 					renderedCheckBoxes, D3webUtils.getSession(topic, user, web),
-					q, answerRegions, topic, user.getUsername(), web);			
+					q, answerRegions);
 		} catch (IOException e) {
 			Logger.getLogger(ImageQuestionHandler.class.getName())
 				.warning(
@@ -202,31 +216,27 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * @param q
 	 * @param answerRegs
 	 * @param kb
-	 * @param topic
-	 * @param user
-	 * @param web
 	 * @throws IOException
 	 */
 	private void renderQuestionImage(StringBuffer buffi,
 			String questionImage, Question q, List<AnswerRegion> answerRegs,
-			KnowledgeBase kb, String topic, String user, String web)
+			KnowledgeBase kb)
 			throws IOException {
 		
 		buffi.append("<div id=\"" + q.getId() + "\" class=\"questionImage\"");
 		
 		String path = KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
 				+ ImageQuestionHandler.config_knowledgebase_path
-				+ topic + "PP" + KnowWEEnvironment.generateDefaultID(topic)
+				+ this.topic + "PP" + KnowWEEnvironment.generateDefaultID(this.topic)
 				+ "/multimedia/" + questionImage;
-		path = path.replaceAll("KnowWEExtension", "");
-		
+		path = path.replaceAll("KnowWEExtension", "");		
 		File imgFile = new File(path);
 		
 		// TODO: Does not work, because the image is not loaded in the
 		// knowledge as a resource
-//		FileInputStream stream = new FileInputStream(ImageQuestionHandler.kbjarpath);
+//		FileInputStream stream = new FileInputStream(imgFile);
 //		List<Resource> res = kb.getResources();
-//		String pathName = kb.getResource(questionImage).getPathName();
+//		String pathName = kb.getResource(questionImage).getInputStream();
 //		File bla = new File(pathName);
 
 		BufferedImage img = ImageIO.read(imgFile.toURI().toURL());
@@ -240,7 +250,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		buffer.append("margin-right: auto;");
 			
 		String relImagePath = ImageQuestionHandler.config_knowledgebase_path
-							  + topic + "PP" + KnowWEEnvironment.generateDefaultID(topic)
+							  + this.topic + "PP" + KnowWEEnvironment.generateDefaultID(this.topic)
 							  + "/multimedia/"
 							  + questionImage ;
 		buffer.append("background-image:url(" + relImagePath + ");");
@@ -248,7 +258,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 
 		// render AnswerRegions
 		for (AnswerRegion region : answerRegs) {
-			String t = renderAnswerRegion(region, kb, q, topic, user, web);
+			String t = renderAnswerRegion(region, kb, q);
 			buffi.append(t);
 		}
 		buffi.append("</div>");
@@ -268,7 +278,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * @throws IOException
 	 */
 	private String renderAnswerRegion(AnswerRegion answerRegion,
-				KnowledgeBase kb, Question q, String topic, String user, String web) {
+				KnowledgeBase kb, Question q) {
 
 		// Is the Answer in the KnowledgeBase
 		Choice answer = kb.searchAnswerChoice(answerRegion.getAnswerID());
@@ -289,7 +299,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 
 		buffi.append(" class=\"answerRegion");
 		// if region is aleady answered --> insert another styleclass
-		if (currentAnswerIsSet(answer.getId(), q, topic, user, web)) {
+		if (currentAnswerIsSet(answer.getId(), q)) {
 			buffi.append(" answerSet");
 		}
 //		buffi.append(" qImageHover");
@@ -317,7 +327,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		
 		// Add a Semantic Annotation,
 		// so the SetSingleFindingAction can be used
-		buffi.append(this.buildRelAttributeString(answerID, web, topic, q.getId()));
+		buffi.append(this.buildRelAttributeString(answerID, q.getId()));
 		
 		buffi.append(">");
 		buffi.append("</a>");
@@ -330,17 +340,15 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * AnswerChoices.
 	 * 
 	 * @param answerID
-	 * @param web
-	 * @param topic
 	 * @param id
 	 * @return
 	 */
-	private String buildRelAttributeString(String answerID, String web,
-			String topic, String id) {
+	private String buildRelAttributeString(String answerID,String id) {
 		StringBuffer relBuffi = new StringBuffer();
 		relBuffi.append("rel=\"{oid: '" + answerID + "',");
-		relBuffi.append(" web:'" + web + "',");
-		relBuffi.append(" ns:'" + topic + ".." + topic + "_KB',"); // + ".." + topic + "_KB
+		relBuffi.append(" web:'" + this.web + "',");
+		relBuffi.append(" ns:'" + this.topic + ".."
+				+ KnowWEEnvironment.generateDefaultID(this.topic) + "',");
 		relBuffi.append(" qid:'" + id + "'}\"");
 		return relBuffi.toString();
 	}
@@ -357,7 +365,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 */
 	@SuppressWarnings("unchecked")
 	private boolean currentAnswerIsSet(String answerID,
-			Question q, String topic, String user, String web) {
+			Question q) {
 		
 		Value value = null;
 		if (q instanceof QuestionChoice) {
@@ -369,7 +377,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 			}
 		}
 		
-		Session session = D3webUtils.getSession(topic, user, web);
+		Session session = D3webUtils.getSession(this.topic, this.user, this.web);
 		Value answer = session.getBlackboard().getValue(q);
 		boolean contains = false;
 		if (!(answer instanceof UndefinedValue)) {
@@ -384,9 +392,16 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		return contains;
 	}
 	
+	/**
+	 * Renders the the columns with checkboxes and labels.
+	 * 
+	 * @param buffi
+	 * @param session
+	 * @param q
+	 * @param answerRegions
+	 */
 	private void renderQuestionChoiceColumns( StringBuffer buffi, Session session,
-			Question q, List<AnswerRegion> answerRegions,
-			String topic, String user, String web) {
+			Question q, List<AnswerRegion> answerRegions) {
 		
 		// new Table for Checkboxes an labels
 		buffi.append("<table><tr>");
@@ -396,10 +411,10 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		List<String> checkBoxes = null;
 		
 		if (q instanceof QuestionMC)
-			checkBoxes = this.renderCheckBoxes(ans, topic, user, web, q, true, session);
+			checkBoxes = this.renderCheckBoxes(ans, q, true, session);
 
 		if (q instanceof QuestionOC)
-			checkBoxes = this.renderCheckBoxes(ans, topic, user, web, q, false, session);
+			checkBoxes = this.renderCheckBoxes(ans, q, false, session);
 		
 		// Render column 1
 		int i = 0;
@@ -419,133 +434,8 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		}
 		buffi.append("</table>");
 		buffi.append("</td>");
-		
-//		for (int i = startIndex; i < startIndex + qCount; i++) {
-//			// rende unknown answer if i is out of answerlist or render
-//			// invisible unknown answer...
-//			if (i >= ans.size()
-//					|| (i == ans.size() - 1 && !isRenderUnknownAnswer(qChoice))) {
-//
-//				boolean fastAnswer = layoutDef.getFastAnswer();
-//				// disallow always: fast answer for MC
-//				if (qChoice instanceof QuestionMC) {
-//					fastAnswer = false;
-//				}
-//				renderUnknownRadioButton(writer, component, theCase, qChoice,
-//						DialogUtils.unknownAnswerInValueList(qChoice, theCase),
-//						fastAnswer);
-//				if (i >= ans.size()) {
-//					continue;
-//				}
-//			}
-//			writer.startElement("tr", component);
-//			writer.startElement("td", component);
-//
-//			DialogRenderUtils.renderTable(writer, component);
-//			writer.startElement("tr", component);
-//
-//			Choice specAns = ans.get(i);
-//
-//			// 1. column : Checkbox
-//			writer.startElement("td", component);
-//			writer.startElement("input", component);
-//			writer.writeAttribute("id", specAns.getId(), "id");
-//
-//			// if AnswerNo OR QuestionOC render radiobutton
-//			if (qChoice instanceof QuestionOC || specAns instanceof AnswerNo) {
-//				writer.writeAttribute("type", "radio", "type");
-//			}
-//			else {
-//				writer.writeAttribute("type", "checkbox", "type");
-//			}
-//			writer.writeAttribute("value", specAns.getId(), "value");
-//			writer.writeAttribute("name", qChoice.getId(), "name");
-//
-//			if (currentAnswerIsSet(new ChoiceValue(specAns), qChoice, theCase)) {
-//				writer.writeAttribute("checked", "checked", "checked");
-//			}
-//
-//			boolean badAnswer = false;
-//			if (qChoice instanceof QuestionOC) {
-//				if (layoutDef.getFastAnswer()) {
-//					writer.writeAttribute("onclick", "saveLastClickedAnswer('"
-//							+ specAns.getId() + "', '" + theCase.getId()
-//							+ "'); doSubmit()", "onclick");
-//				}
-//			}
-//			else if (qChoice instanceof QuestionMC) {
-//
-//				if (DialogUtils.getDialogSettings()
-//						.isMCConstraintsAutoGrayOut()) {
-//					// check if Question has MC constraints and disable the
-//					// button if another answer is already set and this answer
-//					// would result in a restricted combination
-//					List<List<String>> badanswersLists = (List<List<String>>) qChoice
-//							.getProperties().getProperty(
-//							Property.MC_CONSTRAINTS);
-//
-//					Value mcans = theCase.getBlackboard().getValue(qChoice);
-//					List<Choice> alreadySetAnsList = new ArrayList<Choice>();
-//
-//					if (mcans instanceof MultipleChoiceValue) {
-//						alreadySetAnsList = ((MultipleChoiceValue) mcans).asChoiceList();
-//					}
-//
-//					// only check if both lists have entries
-//					if (badanswersLists != null && badanswersLists.size() > 0
-//							&& alreadySetAnsList.size() > 0) {
-//						// add the current answerID and the already set
-//						// answerIDs in a list and check if this combination is
-//						// bad...
-//						List<Object> extendedAnswersIDList = new ArrayList<Object>();
-//						extendedAnswersIDList.add(specAns.getId());
-//						for (Choice a : alreadySetAnsList) {
-//							extendedAnswersIDList.add(a.getId());
-//						}
-//						for (List<String> badansList : badanswersLists) {
-//							boolean combinationIsBad = currentAnswersAreBad(
-//									extendedAnswersIDList, badansList);
-//							if (combinationIsBad) {
-//								badAnswer = true;
-//								writer.writeAttribute("disabled", "disabled",
-//										"disabled");
-//								break;
-//							}
-//						}
-//					}
-//				}
-//
-//				// if it is a radiobutton (-> AnswerNo) ...
-//				if (specAns instanceof AnswerNo) {
-//					writeJsDeselectAllBut(writer, qChoice.getId(),
-//							getAnsNoId(ans), layoutDef.getFastAnswer(), theCase);
-//				}
-//				// if it is a select-button (no AnswerNo)
-//				else {
-//					writeJsDeselectUnknownAnd(writer, qChoice, specAns,
-//							theCase, getAnsNoId(ans),
-//							layoutDef.getFastAnswer(), DialogUtils
-//							.getDialogSettings()
-//							.isMCConstraintsAutoGrayOut());
-//				}
-//
-//			}
-//			writer.endElement("input");
-//			writer.endElement("td");
-//
-//			// 2. column: label and text
-//			writer.startElement("td", component);
-//			writer.startElement("label", component);
-//			writer.writeAttribute("for", specAns.getId(), "for");
-//			if (badAnswer) {
-//				// kind of grayed out
-//				writer.writeAttribute("style", "color: #999;", "style");
-//			}
-//			writer.writeText(specAns.getName(), "value");
-//			writer.endElement("label");
-//			writer.endElement("td");
 			
-			// End the table from beginning
+		// End the table from beginning
 		buffi.append("</tr></table>");
 
 	}
@@ -555,17 +445,14 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * It is easier to build the table afterwards.
 	 * 
 	 * @param ans
-	 * @param web
-	 * @param topic
-	 * @param id
+	 * @param q
+	 * @param isCheckBox
+	 * @param session
 	 * @return
 	 */
 	private List<String> renderCheckBoxes(List<Choice> ans,
-			String topic, String user, String web,
 			Question q, boolean isCheckBox, Session session) {
 		
-		// TODO: Check, if it should be checked
-		// TODO: Support QuestionOC
 		StringBuffer buffi = new StringBuffer();
 		ArrayList<String> rendered = new ArrayList<String>();
 		String answerID = "";
@@ -575,18 +462,15 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 			buffi.append("<tr>");
 			buffi.append("<td>");
 			buffi.append("<input id=\"box_"+answerID+"\"" +
-					this.buildRelAttributeString(answerID, web, topic, q.getId()));
+					this.buildRelAttributeString(answerID, q.getId()));
 			if (isCheckBox)
 				buffi.append("type=\"checkbox\"");
 			else
 				buffi.append("type=\"radio\"");
 			buffi.append(" class=\"answerRegion2\" ");
 			buffi.append(this.buildRelAttributeString(
-							answerID, web, topic, q.getId()));
+							answerID, q.getId()));
 			
-			// is answer set
-//			if (this.currentAnswerIsSet(answerID, q, topic, user, web))
-//				buffi.append(" checked");
 			Value value = session.getBlackboard().getValue(q);
 			if (isAnsweredinCase(value, new ChoiceValue(ans.get(i))))
 				buffi.append(" checked");
@@ -594,7 +478,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 			buffi.append(">");
 			buffi.append("</td>");
 			
-			// Render Label for Checkbox
+			// Render Label for Button
 			answerName = ans.get(i).getName();
 			buffi.append("<td>");
 			buffi.append("<label for=\"" + answerID +"\">" +
@@ -608,8 +492,14 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		return rendered;
 	}
 	
-	private static boolean isAnsweredinCase(Value sessionValue, Value value) {
-		// test for MC values separately
+	/**
+	 * Evaluates a value in a given session.
+	 * 
+	 * @param sessionValue
+	 * @param value
+	 * @return
+	 */
+	private boolean isAnsweredinCase(Value sessionValue, Value value) {
 		if (sessionValue instanceof MultipleChoiceValue) {
 			return ((MultipleChoiceValue) sessionValue).contains(value);
 		}
