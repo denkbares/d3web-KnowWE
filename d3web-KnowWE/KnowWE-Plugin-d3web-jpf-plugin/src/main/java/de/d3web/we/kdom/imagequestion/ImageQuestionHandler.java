@@ -125,7 +125,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		}
 		
 		// Read out the properties
-		String questionID = values.get("frage");
+		String questionID = values.get("question");
 		KnowledgeBaseManagement kbm = KnowledgeBaseManagement.createInstance(kb);
 		Question q = kbm.findQuestion(questionID);
 		List props = (List) q.getProperties().getProperty(Property.IMAGE_QUESTION_INFO);
