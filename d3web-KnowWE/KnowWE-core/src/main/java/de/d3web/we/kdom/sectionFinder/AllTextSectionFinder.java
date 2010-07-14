@@ -20,24 +20,26 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.Section;
 
+/**
+ * @author Jochen
+ * 
+ *         This SectionFinder simple takes all the text given for a section
+ * 
+ */
 public class AllTextSectionFinder extends SectionFinder {
 
-	
-	public AllTextSectionFinder() {
-	}
-	
+
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		if (text.length() > 0) {
-			result.add(new SectionFinderResult(0, text.length()));
+			return SectionFinderResult.createSingleItemList(new SectionFinderResult(0,
+					text.length()));
 		}
-		return result;
+		return null;
 	}
 
 }

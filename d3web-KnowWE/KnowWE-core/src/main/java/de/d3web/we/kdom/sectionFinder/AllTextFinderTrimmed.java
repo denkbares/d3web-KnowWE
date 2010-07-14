@@ -5,9 +5,16 @@ import java.util.List;
 
 import de.d3web.we.kdom.Section;
 
+/**
+ * @author Jochen
+ *
+ *         This SectionFinder takes all the text given, but performing a trim()
+ *         operation cutting off whitespace characters
+ *
+ */
 public class AllTextFinderTrimmed extends SectionFinder {
-	
-	
+
+
 	public AllTextFinderTrimmed() {
 	}
 
