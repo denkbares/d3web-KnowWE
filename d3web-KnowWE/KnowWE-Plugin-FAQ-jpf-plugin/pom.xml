@@ -8,4 +8,47 @@
   <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-FAQ-jpf-plugin</artifactId>
   <version>0.2-SNAPSHOT</version>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-core</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>4.8.1</version>
+  		<type>jar</type>
+  		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.tomcat</groupId>
+  		<artifactId>servlet-api</artifactId>
+  		<version>6.0.28</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
+  	<distributionManagement>
+		<snapshotRepository>
+			<id>knowwe-snapshots</id>
+			<name>d3web Snapshots</name>
+			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/knowwe-snapshots/
+			</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<organization>
+		<name>Universität Würzburg</name>
+		<url>http://uni-wuerzburg.de/</url>
+	</organization>
 </project>

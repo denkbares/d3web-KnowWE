@@ -1,0 +1,46 @@
+/* ################################################## */
+/* -------------- FAQ Styling         --------------- */
+/* ################################################## */
+.
+
+/* styling of the faq"panel" i.e., the frame containing one Q & A pair */
+
+.faqpanel{
+	background-color: red;
+	margin: 10px;
+	-moz-box-shadow: 0 0 5px black;
+	-webkit-box-shadow: 0 0 5px black;
+	box-shadow: 0 0 5px black;
+	padding: 10px;
+	border: none;
+    margin: 0px;
+}
+
+.panel h3{
+	background-color: green;
+}
+
+/* the question text style */
+
+.faq_question{
+	padding: 2px;
+	font-weight: bold;
+	background-color: #CCC;
+}
+
+
+/* the answer text style */
+
+.faq_answer{
+	background-color: #BBB;
+}
+
+
+/* the tags style */
+
+.faq_tags{
+	font-size: 0.5em;
+	font-weight: bold;
+	horizontal-align: right;
+	padding-right: 20px;
+}
