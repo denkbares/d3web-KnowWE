@@ -34,6 +34,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
+import de.d3web.we.kdom.basic.CommentLineType;
+import de.d3web.we.kdom.bulletLists.CommentRenderer;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.objects.SolutionDef;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
@@ -45,9 +47,10 @@ import de.d3web.we.kdom.rulesNew.KDOMConditionFactory;
 import de.d3web.we.kdom.rulesNew.terminalCondition.Finding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalIntervallFinding;
-import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimSpaces;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
+import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
 import de.d3web.we.kdom.subtreeHandler.Priority;
@@ -79,6 +82,9 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		closing.setSectionFinder(new StringSectionFinderUnquoted("}"));
 		this.addChildType(closing);
 
+		// allow for comment lines
+		this.addChildType(new CommentLineType());
+
 		// split by search for komas
 		AnonymousType koma = new AnonymousType("koma");
 		koma.setSectionFinder(new UnquotedExpressionFinder(","));
@@ -96,8 +102,15 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 		public CoveringRelation() {
 
-			this.setSectionFinder(new AllTextFinderTrimmed());
+			this.setSectionFinder(new AllTextFinderTrimSpaces());
 			this.addSubtreeHandler(Priority.LOW, new CreateXCLRealtionHandler());
+
+			// here also a comment might occur:
+			AnonymousType relationComment = new AnonymousType("comment");
+			relationComment.setSectionFinder(new RegexSectionFinder("[\\t ]*"
+					+ "//[^\r\n]*+" + "\\r?\\n"));
+			relationComment.setCustomRenderer(new CommentRenderer());
+			this.addChildType(relationComment);
 
 			// take weights
 			this.addChildType(new XCLWeight());
@@ -114,6 +127,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			this.addChildType(cond);
 		}
+
 
 		/**
 		 * @author Jochen
@@ -135,7 +149,14 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			 */
 			@Override
 			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<CoveringRelation> s) {
+
 				List<KDOMReportMessage> result = new ArrayList<KDOMReportMessage>();
+
+				Section<CompositeCondition> cond = s.findSuccessor(CompositeCondition.class);
+				if (cond == null) {
+					// no valid relation, do not revise
+					return result;
+				}
 
 				if (s.hasErrorInSubtree()) {
 					return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
@@ -151,7 +172,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							XCLModel.XCLMODEL);
 
 					if (xclModel != null) {
-						Section<CompositeCondition> cond = s.findSuccessor(CompositeCondition.class);
+
 						if (cond != null) {
 
 							Condition condition = KDOMConditionFactory.createCondition(cond);
