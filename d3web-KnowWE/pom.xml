@@ -96,6 +96,7 @@
 		<module>KnowWE-core-Plugins-jpf-plugin</module>
 		<module>KnowWE-Plugin-WISEC-jpf-plugin</module>
 		<module>KnowWE-Plugin-CI4KE-jpf-plugin</module>
+		<module>KnowWE-Plugin-FAQ-jpf-plugin</module>
 	</modules>
 	<repositories>
 		<repository>
