@@ -96,6 +96,7 @@
 		<module>KnowWE-core-Plugins-jpf-plugin</module>
 		<module>KnowWE-Plugin-WISEC-jpf-plugin</module>
 		<module>KnowWE-Plugin-CI4KE-jpf-plugin</module>
+		<module>KnowWE-Plugin-FAQ-jpf-plugin</module>
 	</modules>
 	<repositories>
 		<repository>
@@ -120,7 +121,6 @@
 			<url>http://isci.informatik.uni-wuerzburg.de:8080/artifactory/infovi-contrib/</url>
 		</pluginRepository>
 	</pluginRepositories>
-
 	<distributionManagement>
 		<snapshotRepository>
 			<id>knowwe-snapshots</id>
