@@ -28,16 +28,16 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TableHeaderLineRenderer extends KnowWEDomRenderer {
-	
+
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		StringBuilder b = new StringBuilder();
 		StringBuilder buffi = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
-		buffi.append( "<tr style='background-color:#BBBBBB;'>" );
+		buffi.append("<tr>");
 		buffi.append( b.toString() );
 		buffi.append( "\n</tr>" );
-						
+
 		string.append(KnowWEUtils.maskHTML( buffi.toString() ));
 	}
 

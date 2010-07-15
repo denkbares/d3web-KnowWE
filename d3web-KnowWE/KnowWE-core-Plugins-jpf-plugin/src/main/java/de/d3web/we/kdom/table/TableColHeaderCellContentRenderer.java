@@ -25,22 +25,22 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class TableColHeaderCellContentRenderer extends TableCellContentRenderer{
-	
 
-	
+
+
 	/**
 	 * Wraps the content of the cell (sectionText) with the HTML-Code needed for the table
 	 */
 	@Override
 	protected String wrappContent(String sectionText, Section sec, KnowWEUserContext user) {
 
-		
+
 		String sectionID = sec.getId();
 		StringBuilder html = new StringBuilder();
-		html.append( "<td style='background-color:#CCCC99;'>   " );
+		html.append("<td>   ");
 		generateContent(sectionText, sec, user, sectionID, html);
 		html.append( "</td>" );
 		return KnowWEEnvironment.maskHTML( html.toString() );
 	}
-	
+
 }
