@@ -143,10 +143,10 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 	}
 
 	@Override
-	public Solution findDiagnosis(String name) {
+	public Solution findSolution(String name) {
 		Solution diag = kbm.findSolution(name);
 		if (diag == null && lazyDiags) {
-			diag = createDiagnosis(name, null);
+			diag = createSolution(name, null);
 		}
 		return diag;
 	}
@@ -201,7 +201,7 @@ public class RestrictedIDObjectManager extends SingleKBMIDObjectManager {
 	}
 
 	@Override
-	public Solution createDiagnosis(String id, String name, Solution parent) {
+	public Solution createSolution(String id, String name, Solution parent) {
 		if (parent == null) {
 			parent = kbm.getKnowledgeBase().getRootSolution();
 		}

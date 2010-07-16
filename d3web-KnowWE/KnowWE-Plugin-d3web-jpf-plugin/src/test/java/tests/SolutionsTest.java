@@ -39,23 +39,23 @@ import de.d3web.we.logging.Logging;
  * @see KBCreationTest.txt to modify the Article which is tested
  * 
  */
-public class DiagnosesTest extends TestCase {
+public class SolutionsTest extends TestCase {
 
 	@Override
 	protected void setUp() throws IOException {
 		InitPluginManager.init();
 	}
 
-	public void testNumberOfDiagnoses() {
+	public void testNumberOfSolutions() {
 
 		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
 
-		assertEquals("Number of Diagnoses differ.", createdKB.getSolutions().size(),
+		assertEquals("Number of Solutions differ.", createdKB.getSolutions().size(),
 				loadedKB.getSolutions().size());
 	}
 
-	public void testDiagnoses() {
+	public void testSolutions() {
 
 		KnowledgeBase loadedKB = KBCreationTestUtil.getInstance().getLoadedKB();
 		KnowledgeBase createdKB = KBCreationTestUtil.getInstance().getCreatedKB();
@@ -67,26 +67,26 @@ public class DiagnosesTest extends TestCase {
 				Solution actual = loadedKB.getSolutions().get(i);
 
 				// Test ID & Name
-				assertEquals("Diagnosis " + expected.getName() + " has wrong ID.",
+				assertEquals("Solution " + expected.getName() + " has wrong ID.",
 						expected.getId(), actual.getId());
-				assertEquals("Diagnosis " + expected.getName() + " has wrong name.",
+				assertEquals("Solution " + expected.getName() + " has wrong name.",
 						expected.getName(), actual.getName());
 
 				// Test Hierarchy
-				assertTrue("Diagnosis " + expected.getName() + " has wrong parents.",
+				assertTrue("Solution " + expected.getName() + " has wrong parents.",
 						Arrays.equals(expected.getParents(), actual.getParents()));
-				assertTrue("Diagnosis " + expected.getName() + " has wrong children.",
+				assertTrue("Solution " + expected.getName() + " has wrong children.",
 						Arrays.equals(expected.getChildren(), actual.getChildren()));
 
 				// Test Explanation
-				assertEquals("Diagnosis " + expected.getName() + " has wrong explanation.",
+				assertEquals("Solution " + expected.getName() + " has wrong explanation.",
 						expected.getProperties().getProperty(Property.EXPLANATION),
 						actual.getProperties().getProperty(Property.EXPLANATION));
 			}
 		}
 		else {
 			Logging.getInstance().getLogger().warning(
-					"DiagnosesTest: Diagnoses have not been tested!");
+					"SolutionsTest: Solutions have not been tested!");
 		}
 	}
 }

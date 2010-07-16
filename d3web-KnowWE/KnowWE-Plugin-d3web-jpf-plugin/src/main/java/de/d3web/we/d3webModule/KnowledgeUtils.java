@@ -97,10 +97,10 @@ public class KnowledgeUtils {
 						type));
 			}
 		}
-		Solution diag = idom.findDiagnosis(solution);
+		Solution diag = idom.findSolution(solution);
 		if (diag == null) {
 			errors.add(MessageKnOfficeGenerator
-					.createDiagnosisNotFoundException(kdomid, line, column, "",
+					.createSolutionNotFoundException(kdomid, line, column, "",
 							solution));
 			return errors;
 		}

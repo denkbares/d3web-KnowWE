@@ -76,7 +76,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 
 		questions = manager.getQuestions();
 
-		diagnoses = manager.getDiagnosisList();
+		diagnoses = manager.getSolutionList();
 		diagnoses.remove(manager.getKB().getRootSolution());
 
 		qcontainers = manager.getQClasses();
@@ -91,7 +91,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		writeQuestionSheet();
 
 		// SHEET 2: Attributtabelle für die Diagnosen
-		writeDiagnosisSheet();
+		writeSolutionSheet();
 
 		// SHEET 3: Attributtabelle für die Frageklassen
 		// writeQClassesSheet();
@@ -255,7 +255,7 @@ public class AttributeTableWriter extends XlsKnowledgeWriter {
 		return check;
 	}
 
-	private void writeDiagnosisSheet() throws RowsExceededException, WriteException {
+	private void writeSolutionSheet() throws RowsExceededException, WriteException {
 		WritableSheet dSheet = wb.createSheet(KnowledgeManager.getResourceBundle().getString(
 				"writer.diagnoses"), 1);
 

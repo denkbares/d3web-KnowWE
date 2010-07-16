@@ -41,16 +41,16 @@ public class DiagnosisHierarchyWriter extends TxtKnowledgeWriter {
 		StringBuffer text = new StringBuffer();
 		Solution rootDiagnosis = manager.getKB().getRootSolution();
 
-		addChildDiagnoses(text, rootDiagnosis, 0, new HashSet<Solution>());
+		addChildSolutions(text, rootDiagnosis, 0, new HashSet<Solution>());
 		return text.toString();
 	}
 
-	private void addChildDiagnoses(StringBuffer text, Solution d, int level,
+	private void addChildSolutions(StringBuffer text, Solution d, int level,
 			Set<Solution> alreadyDone) {
 		boolean alreadyWritten = alreadyDone.contains(d);
 		alreadyDone.add(d);
 		if (!d.equals(manager.getKB().getRootSolution())
-				&& (manager.getDiagnosisList().contains(d))) {
+				&& (manager.getSolutionList().contains(d))) {
 			for (int i = 0; i < level; i++) {
 				text.append("-");
 				if (i == level - 1) {
@@ -70,7 +70,7 @@ public class DiagnosisHierarchyWriter extends TxtKnowledgeWriter {
 		if (!alreadyWritten) {
 			for (TerminologyObject to : d.getChildren()) {
 				if (to instanceof Solution) {
-					addChildDiagnoses(text, (Solution) to, level, alreadyDone);
+					addChildSolutions(text, (Solution) to, level, alreadyDone);
 				}
 			}
 		}

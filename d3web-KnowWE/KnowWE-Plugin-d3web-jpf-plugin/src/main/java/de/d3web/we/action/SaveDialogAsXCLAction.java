@@ -63,8 +63,8 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 
 			List<? extends Question> answeredQuestions = c.getBlackboard().getAnsweredQuestions();
 
-			Solution d = findDiagnosis(web, topic, solution);
-			if (isDiagnosisNew(d)) {
+			Solution d = findSolution(web, topic, solution);
+			if (isSolutionNew(d)) {
 				d = getKBM(c.getKnowledgeBase()).createSolution(solution,
 						c.getKnowledgeBase().getRootSolution());
 			}
@@ -121,7 +121,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param d
 	 * @return
 	 */
-	private boolean isDiagnosisNew(Solution d) {
+	private boolean isSolutionNew(Solution d) {
 		if (d == null) return true;
 		return false;
 	}
@@ -174,7 +174,7 @@ public class SaveDialogAsXCLAction extends DeprecatedAbstractKnowWEAction {
 	 * @param solution
 	 * @return
 	 */
-	private Solution findDiagnosis(String web, String topic, String solution) {
+	private Solution findSolution(String web, String topic, String solution) {
 		D3webKnowledgeService ks = D3webModule.getAD3webKnowledgeServiceInTopic(web,
 				topic);
 

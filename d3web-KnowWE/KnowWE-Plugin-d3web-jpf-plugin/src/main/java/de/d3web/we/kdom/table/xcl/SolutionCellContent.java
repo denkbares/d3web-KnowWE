@@ -118,10 +118,10 @@ class SolutionCellHandler extends SubtreeHandler {
 		String name = s.getOriginalText();
 		name = name.replaceAll("__", "").trim();
 
-		Solution d = mgr.findDiagnosis(name);
+		Solution d = mgr.findSolution(name);
 
 		if (d == null) {
-			Solution newD = mgr.createDiagnosis(name, mgr.getKnowledgeBase()
+			Solution newD = mgr.createSolution(name, mgr.getKnowledgeBase()
 					.getRootSolution());
 			if (newD != null) {
 				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(

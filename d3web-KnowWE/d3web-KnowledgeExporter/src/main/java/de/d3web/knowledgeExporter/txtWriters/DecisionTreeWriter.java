@@ -373,20 +373,20 @@ public class DecisionTreeWriter extends TxtKnowledgeWriter {
 			}
 			else if (action instanceof ActionHeuristicPS && !manager.isDone(rule)) {
 				ActionHeuristicPS ah = (ActionHeuristicPS) action;
-				Solution diagnosis = ah.getDiagnosis();
+				Solution diagnosis = ah.getSolution();
 				String dt = diagnosis.getName();
 				Score score = ah.getScore();
 				s.append(dashes(level + 1) + quote(dt) + " ("
 						+ score.getSymbol() + ")\n");
-				processDiagnosis(diagnosis, s);
+				processSolution(diagnosis, s);
 				manager.ruleDone(rule);
 			}
 		}
 	}
 
-	private void processDiagnosis(Solution diagnosis, StringBuffer s) {
+	private void processSolution(Solution solution, StringBuffer s) {
 		Map<Condition, List<Rule>> mergedRules = new HashMap<Condition, List<Rule>>();
-		addChildren(diagnosis, PSMethodNextQASet.class, mergedRules);
+		addChildren(solution, PSMethodNextQASet.class, mergedRules);
 		for (Condition diagCondition : mergedRules.keySet()) {
 			if (diagCondition instanceof CondDState) {
 				for (Rule diagRule : mergedRules.get(diagCondition)) {

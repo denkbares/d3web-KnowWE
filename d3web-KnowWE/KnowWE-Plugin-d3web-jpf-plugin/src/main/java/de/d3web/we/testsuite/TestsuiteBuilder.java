@@ -170,11 +170,11 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	 */
 	public void addSolution(String name, String rating, int line, String linetext) {
 
-		Solution d = idom.findDiagnosis(name);
+		Solution d = idom.findSolution(name);
 
 		if (d == null) {
 			errors.add(MessageKnOfficeGenerator
-					.createDiagnosisNotFoundException("", line, linetext, name));
+					.createSolutionNotFoundException("", line, linetext, name));
 		} else {
 			StateRating r = new StateRating(rating);
 			addRatedSolution(d, r);
@@ -185,11 +185,11 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	
 	public void addHeuristicSolution(String name, String rating, int line, String linetext) {
 		
-		Solution d = idom.findDiagnosis(name);
+		Solution d = idom.findSolution(name);
 		
 		if (d == null) {
 			errors.add(MessageKnOfficeGenerator
-					.createDiagnosisNotFoundException("", line, linetext, name));
+					.createSolutionNotFoundException("", line, linetext, name));
 		} else {
 			StateRating r = new StateRating(rating);
 			addRatedSolution(d, r);
@@ -198,11 +198,11 @@ public class TestsuiteBuilder implements KnOfficeParser {
 
 	public void addXCLSolution(String name, String rating, int line, String linetext) {
 		
-		Solution d = idom.findDiagnosis(name);
+		Solution d = idom.findSolution(name);
 		
 		if (d == null) {
 			errors.add(MessageKnOfficeGenerator
-					.createDiagnosisNotFoundException("", line, linetext, name));
+					.createSolutionNotFoundException("", line, linetext, name));
 		} else {
 			StateRating r = new StateRating(rating);
 			addRatedSolution(d, r);

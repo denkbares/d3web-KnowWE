@@ -195,7 +195,7 @@ public class KBCreationTestUtil {
 
 		createdKB = new KnowledgeBase();
 		createdKBM = KnowledgeBaseManagement.createInstance(createdKB);
-		createDiagnoses();
+		createSolutions();
 		createQuestionnaires();
 		createQuestions();
 		createAttributeTable();
@@ -208,7 +208,7 @@ public class KBCreationTestUtil {
 	/**
 	 * Creates the Diagnoses for the KnowledgeBase.
 	 */
-	private void createDiagnoses() {
+	private void createSolutions() {
 
 		Solution p0 = new Solution("P000");
 		p0.setName("P000");

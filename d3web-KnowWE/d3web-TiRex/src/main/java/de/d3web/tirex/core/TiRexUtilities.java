@@ -81,7 +81,7 @@ public class TiRexUtilities {
 	 *        are read and returned, else the answers are extracted as well.
 	 * @return A textual representation of the knowledgebase.
 	 */
-	public String getAllQuestionsAnswersAndDiagnosesAsString(
+	public String getAllQuestionsAnswersAndSolutionsAsString(
 			KnowledgeBase knowledge, boolean getAnswers) {
 		StringBuffer buffer = new StringBuffer();
 

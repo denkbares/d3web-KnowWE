@@ -98,7 +98,7 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 			String diagDescription, int order) {
 
 		Solution parent;
-		Solution newDiag = idom.findDiagnosis(diag);
+		Solution newDiag = idom.findSolution(diag);
 
 		// this gets the appropriate parent for the new Diagnosis
 		if (dashes == 0) {
@@ -112,7 +112,7 @@ public class SolutionsBuilder implements DashTBuilder, KnOfficeParser {
 
 		// create new diagnosis in KB if there isn't already the same diagnosis
 		if (newDiag == null) {
-			newDiag = idom.createDiagnosis(ref, diag, parent);
+			newDiag = idom.createSolution(ref, diag, parent);
 		}
 
 		// saves the description of the solution if available

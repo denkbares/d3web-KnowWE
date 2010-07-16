@@ -90,7 +90,7 @@ public class SetCoveringTableWriter extends QDTableWriter {
             }
         }
 
-        splitDiagnosisList();
+        splitSolutionList();
 		
 	}
 }

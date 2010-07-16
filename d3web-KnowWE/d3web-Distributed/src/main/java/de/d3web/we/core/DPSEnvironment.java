@@ -135,9 +135,9 @@ public class DPSEnvironment {
 			GlobalTerminology gt = createNewTerminology(TerminologyType.diagnosis);
 			Logger.getLogger(getClass().getName()).info("Created global diagnosis terminology: "+gt.getAllTerms().size()+ " terms");
 			
-			TerminologyPersistenceHandler.getInstance().saveDiagnosisTerminology(gt, diagnosisGTFile);
+			TerminologyPersistenceHandler.getInstance().saveSolutionTerminology(gt, diagnosisGTFile);
 		} else {
-			GlobalTerminology gt= TerminologyPersistenceHandler.getInstance().loadDiagnosisTerminology(diagnosisGTFile);
+			GlobalTerminology gt= TerminologyPersistenceHandler.getInstance().loadSolutionTerminology(diagnosisGTFile);
 			terminologyServer.setGlobalTerminology(TerminologyType.diagnosis, gt);
 		}
 	}
@@ -220,7 +220,7 @@ public class DPSEnvironment {
 			File globalAlignmentFile = new File(dir, globalAlignments);	
 			File clustersFile = new File(dir, clustersLocation);
 			TerminologyPersistenceHandler.getInstance().saveSymptomTerminology(terminologyServer.getGlobalTerminology(TerminologyType.symptom), symptomGTFile);
-			TerminologyPersistenceHandler.getInstance().saveDiagnosisTerminology(terminologyServer.getGlobalTerminology(TerminologyType.diagnosis), diagnosisGTFile);
+			TerminologyPersistenceHandler.getInstance().saveSolutionTerminology(terminologyServer.getGlobalTerminology(TerminologyType.diagnosis), diagnosisGTFile);
 			AlignmentPersistenceHandler.getInstance().saveLocalAlignments(terminologyServer.getLocalAlignments(), localAlignmentFile.toURI().toURL());
 			AlignmentPersistenceHandler.getInstance().saveGlobalAlignments(terminologyServer.getGlobalAlignments(), globalAlignmentFile.toURI().toURL());
 			FriendlyServiceClusterPersistenceHandler.getInstance().saveClusterInformation(clusters, clustersFile.toURI().toURL());

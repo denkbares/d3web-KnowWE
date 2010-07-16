@@ -62,7 +62,7 @@ public class TerminologyPersistenceHandler {
 		} 
 	}
 	
-	public GlobalTerminology loadDiagnosisTerminology(File target) {
+	public GlobalTerminology loadSolutionTerminology(File target) {
 		try {
 			return loadTerminology(target.toURI().toURL());
 		} catch (Exception e) {
@@ -161,7 +161,7 @@ public class TerminologyPersistenceHandler {
 		}
 	}
 	
-	public void saveDiagnosisTerminology(GlobalTerminology gt, File target) {
+	public void saveSolutionTerminology(GlobalTerminology gt, File target) {
 		try {
 			saveTerminology(gt, target.toURI().toURL());
 		} catch (Exception e) {

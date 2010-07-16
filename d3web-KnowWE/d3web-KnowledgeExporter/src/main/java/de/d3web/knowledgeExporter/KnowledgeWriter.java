@@ -50,9 +50,9 @@ public abstract class KnowledgeWriter {
 	}
 
 	
-	protected Solution getDiagnosis(Rule r) {
+	protected Solution getSolution(Rule r) {
 		ActionHeuristicPS action = (ActionHeuristicPS) r.getAction();
-		return action.getDiagnosis();
+		return action.getSolution();
 	}
 
 
@@ -75,7 +75,7 @@ public abstract class KnowledgeWriter {
 			return false;
 		}
 		if (a instanceof ActionHeuristicPS) {
-			Solution d = ((ActionHeuristicPS) a).getDiagnosis();
+			Solution d = ((ActionHeuristicPS) a).getSolution();
 			if (d == null) {
 				return false;
 			}
@@ -93,7 +93,7 @@ public abstract class KnowledgeWriter {
 		}
 		if (cond instanceof TerminalCondition) {
 			if (cond instanceof CondDState) {
-				Solution d = ((CondDState) cond).getDiagnosis();
+				Solution d = ((CondDState) cond).getSolution();
 				if (d == null) {
 					return false;
 				}

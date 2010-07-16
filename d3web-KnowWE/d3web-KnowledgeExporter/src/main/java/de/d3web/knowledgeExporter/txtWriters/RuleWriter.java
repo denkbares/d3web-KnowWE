@@ -149,7 +149,7 @@ public class RuleWriter extends TxtKnowledgeWriter {
 	private boolean appendAction(PSAction a, StringBuffer s) {
 		if (a instanceof ActionHeuristicPS) {
 			ActionHeuristicPS action = (ActionHeuristicPS) a;
-			Solution d = action.getDiagnosis();
+			Solution d = action.getSolution();
 			s.append(quote(d.toString()));
 			s.append(" = ");
 			s.append(action.getScore().toString());

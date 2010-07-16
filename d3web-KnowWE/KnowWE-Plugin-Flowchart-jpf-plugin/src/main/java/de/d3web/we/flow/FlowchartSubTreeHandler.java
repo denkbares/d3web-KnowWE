@@ -408,7 +408,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			errors.add(new Message("Diagnosis not found: " + solution));
 		}
 
-		action.setDiagnosis(diagnosis);
+		action.setSolution(diagnosis);
 
 		if (score.contains("P7")) action.setScore(Score.P7);
 		else action.setScore(Score.N7);

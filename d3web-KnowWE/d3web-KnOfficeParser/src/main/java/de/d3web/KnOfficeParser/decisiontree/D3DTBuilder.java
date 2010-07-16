@@ -445,10 +445,10 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			}
 			// Diagnoseherleitung
 			else {
-				Solution diag = idom.findDiagnosis(name);
+				Solution diag = idom.findSolution(name);
 				if (diag == null) {
 					errors.add(MessageKnOfficeGenerator
-							.createDiagnosisNotFoundException(file, line,
+							.createSolutionNotFoundException(file, line,
 							linetext, name));
 					continue;
 				}
@@ -683,11 +683,11 @@ public class D3DTBuilder implements DTBuilder, KnOfficeParser {
 			action.add(set);
 			if (statecond.getStatus().hasState(State.ESTABLISHED)) {
 				RuleFactory.createRefinementRule(newRuleID, action, statecond
-						.getDiagnosis(), statecond);
+						.getSolution(), statecond);
 			}
 			else if (statecond.getStatus().hasState(State.SUGGESTED)) {
 				RuleFactory.createClarificationRule(newRuleID, action,
-						statecond.getDiagnosis(), statecond);
+						statecond.getSolution(), statecond);
 			}
 			else {
 				errors.add(MessageKnOfficeGenerator.createWrongDiagScore(

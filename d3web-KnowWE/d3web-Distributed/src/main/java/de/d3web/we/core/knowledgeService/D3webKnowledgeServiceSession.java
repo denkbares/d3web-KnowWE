@@ -274,7 +274,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			if (info.getInformationType().equals(
 					InformationType.SolutionInformation)) {
 				if (external != null && external) {
-					value = getStatesForDiagnosis(info.getValues());
+					value = getStatesForSolution(info.getValues());
 				}
 			}
 			else {
@@ -380,7 +380,7 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 		return UndefinedValue.getInstance();
 	}
 
-	private Value getStatesForDiagnosis(List<?> values) {
+	private Value getStatesForSolution(List<?> values) {
 		if (values.size() == 1) {
 			SolutionState state = (SolutionState) values.get(0);
 			if (state.equals(SolutionState.ESTABLISHED)) {

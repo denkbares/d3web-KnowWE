@@ -113,7 +113,7 @@ public class HeuristicDecisionTableWriter extends XlsKnowledgeWriter {
 					verbalizer.createConditionVerbalization(rc.getCondition());
 				
 				sheet.addCell(new Label(j + (isExtraAnswerColumn() ? 2 : 1), 0, 
-						getDiagnosis(rc).getName(), getCellFormatBoldCenter()));
+						getSolution(rc).getName(), getCellFormatBoldCenter()));
 				sheet.addCell(new Label(j + (isExtraAnswerColumn() ? 2 : 1), 1, 
 						((ActionHeuristicPS) rc.getAction()).getScore().toString(), getCellFormatBoldCenter()));
 				sheet.addCell(new Label(j + (isExtraAnswerColumn() ? 2 : 1), 2, 

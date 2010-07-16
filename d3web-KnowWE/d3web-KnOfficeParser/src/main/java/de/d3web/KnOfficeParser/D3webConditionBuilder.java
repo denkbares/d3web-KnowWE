@@ -141,7 +141,7 @@ public class D3webConditionBuilder implements ConditionBuilder {
 			condstack.push(null);
 			return;
 		}
-		Solution diag = idom.findDiagnosis(qname);
+		Solution diag = idom.findSolution(qname);
 		if (diag != null) {
 			if (value.equalsIgnoreCase("established")
 					|| value.equalsIgnoreCase("etabliert")) {

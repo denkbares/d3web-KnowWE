@@ -114,7 +114,7 @@ public class TiRexInterpreter {
 	 * @return The extracted Diagnosis wrapped into an
 	 *         "OriginalMatchAndStrategy" object along with other useful data.
 	 */
-	public OriginalMatchAndStrategy extractDiagnosis(KnowledgeBase kb,
+	public OriginalMatchAndStrategy extractSolution(KnowledgeBase kb,
 			String knowledge, Collection<ExtractionStrategy> strategies) {
 		for (ExtractionStrategy strategy : strategies) {
 			for (Solution d : kb.getSolutions()) {

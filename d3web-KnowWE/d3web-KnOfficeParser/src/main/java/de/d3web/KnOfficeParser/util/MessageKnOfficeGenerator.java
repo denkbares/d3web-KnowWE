@@ -158,7 +158,7 @@ public class MessageKnOfficeGenerator {
 		return mg.createErrorMSG("wrongOpAbs", file, line, linetext);
 	}
 	
-	public static Message createQuestionOrDiagnosisNotFoundException(String file, int line, String linetext, String question) {
+	public static Message createQuestionOrSolutionNotFoundException(String file, int line, String linetext, String question) {
 		return mg.createErrorMSG("qodnf", file, line, linetext, question);
 	}
 	
@@ -198,11 +198,11 @@ public class MessageKnOfficeGenerator {
 		return mg.createErrorMSG("antlrInputError", file, line, column, linetext);
 	}
 	
-	public static Message createDiagnosisNotFoundException(String file, int line, String linetext, String diagnosis) {
+	public static Message createSolutionNotFoundException(String file, int line, String linetext, String diagnosis) {
 		return mg.createErrorMSG("dnf", file, line, linetext, diagnosis);
 	}
 	
-	public static Message createDiagnosisNotFoundException(String file, int line, int column, String linetext, String diagnosis) {
+	public static Message createSolutionNotFoundException(String file, int line, int column, String linetext, String diagnosis) {
 		return mg.createErrorMSG("dnf", file, line, column, linetext, diagnosis);
 	}
 	

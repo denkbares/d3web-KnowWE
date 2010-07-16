@@ -99,9 +99,9 @@ public class D3SCMCBRBuilder implements SCMCBRBuilder, KnOfficeParser {
 
 	@Override
 	public void solution(int line, String text, String name) {
-		currentdiag=idom.createDiagnosis(name, null);
+		currentdiag=idom.createSolution(name, null);
 		if (currentdiag==null) {
-			errors.add(MessageKnOfficeGenerator.createDiagnosisNotFoundException(file, line, text, name));
+			errors.add(MessageKnOfficeGenerator.createSolutionNotFoundException(file, line, text, name));
 		}
 	}
 

@@ -144,12 +144,12 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				CondDState statecond = (CondDState) cond;
 				if (statecond.getStatus().hasState(State.ESTABLISHED)) {
 					newRule = RuleFactory.createRefinementRule(newRuleID, rule.qcons,
-							statecond.getDiagnosis(), statecond,
+							statecond.getSolution(), statecond,
 							rule.exceptcond);
 				}
 				else if (statecond.getStatus().hasState(State.SUGGESTED)) {
 					newRule = RuleFactory.createClarificationRule(newRuleID, rule.qcons,
-							statecond.getDiagnosis(), statecond,
+							statecond.getSolution(), statecond,
 							rule.exceptcond);
 				}
 				else {
@@ -483,7 +483,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 			String type) {
 		currentquestion = idom.findQuestion(s);
 		if (currentquestion == null) {
-			currentdiag = idom.findDiagnosis(s);
+			currentdiag = idom.findSolution(s);
 			if (currentdiag == null) {
 				if (lazy) {
 					if (type != null) {
@@ -497,7 +497,7 @@ public class D3ruleBuilder implements KnOfficeParser, RuleBuilder {
 				}
 				else {
 					errors.add(MessageKnOfficeGenerator
-							.createQuestionOrDiagnosisNotFoundException(file,
+							.createQuestionOrSolutionNotFoundException(file,
 									line, linetext, s));
 				}
 			}

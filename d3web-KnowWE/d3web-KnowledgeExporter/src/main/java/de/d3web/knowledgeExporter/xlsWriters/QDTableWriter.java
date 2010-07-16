@@ -70,7 +70,7 @@ public abstract class QDTableWriter extends XlsKnowledgeWriter {
 	 * Exceltabellen gehen nur bis 255 Spalten, deswegen müssen die
 	 * Regeln ggf. auf mehrerer Sheets verteilt werden.
 	 */
-	protected void splitDiagnosisList() {
+	protected void splitSolutionList() {
 		int index = 0;
 		int stepWidth = excelMaxCols - 4;
 		while (diagnosisList.size() - index > excelMaxCols - 3) {
@@ -112,7 +112,7 @@ public abstract class QDTableWriter extends XlsKnowledgeWriter {
 				}
 				// Scores to the columns of the diagnoses
 				for (CellEntry se:ae.getCellEntrys()) {
-					int[] coordinates = findHeaderEntry(se.getDiagnosis());
+					int[] coordinates = findHeaderEntry(se.getSolution());
 					if (coordinates != null) {
 						WritableSheet sheet = wb.getSheet(coordinates[1]);
 						sheet.addCell(new Label(coordinates[0], row, se.getContent().toString(), getCellFormatCenter()));
@@ -190,7 +190,7 @@ public abstract class QDTableWriter extends XlsKnowledgeWriter {
 			this.content = content;
 		}
 
-		public String getDiagnosis() {
+		public String getSolution() {
 			return diagnosis;
 		}
 

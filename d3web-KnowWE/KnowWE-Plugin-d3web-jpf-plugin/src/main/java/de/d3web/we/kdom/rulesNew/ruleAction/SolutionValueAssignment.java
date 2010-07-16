@@ -130,7 +130,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		Section<SolutionRef> solutionRef = s.findSuccessor(SolutionRef.class);
 		Section<ScorePoint> scoreRef = s.findSuccessor(ScorePoint.class);
 		ActionHeuristicPS a = new ActionHeuristicPS();
-		a.setDiagnosis(solutionRef.get().getObject(solutionRef));
+		a.setSolution(solutionRef.get().getObject(solutionRef));
 		a.setScore(D3webUtils.getScoreForString(scoreRef.getOriginalText()));
 		return a;
 	}

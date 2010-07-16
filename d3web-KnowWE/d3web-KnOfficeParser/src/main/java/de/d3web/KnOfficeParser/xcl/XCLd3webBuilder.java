@@ -162,13 +162,13 @@ public class XCLd3webBuilder implements KnOfficeParser, XCLBuilder {
 	public void solution(int line, String linetext, String name) {
 		findingscountlist.add(countfindings);
 		countfindings = 0;
-		currentdiag = idom.findDiagnosis(name);
+		currentdiag = idom.findSolution(name);
 		if (currentdiag == null) {
 			if (lazydiag) {
-				currentdiag = idom.createDiagnosis(name, idom.getKnowledgeBase().getRootSolution());
+				currentdiag = idom.createSolution(name, idom.getKnowledgeBase().getRootSolution());
 			}
 			else {
-				errors.add(MessageKnOfficeGenerator.createDiagnosisNotFoundException(file, line,
+				errors.add(MessageKnOfficeGenerator.createSolutionNotFoundException(file, line,
 						linetext, name));
 			}
 		}

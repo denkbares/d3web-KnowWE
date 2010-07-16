@@ -65,13 +65,13 @@ public class KnowledgeManager {
 	private static ResourceBundle rb;
 
 	private Set<Rule> allRules = new HashSet<Rule>();
-	private Set<Rule> doneRules = new HashSet<Rule>();
+	private final Set<Rule> doneRules = new HashSet<Rule>();
 	private List<Solution> diagnosisList = new LinkedList<Solution>();
 	private Set<Question> questions = new HashSet<Question>();
 	private Set<QASet> qClasses = new HashSet<QASet>();
 	private boolean filterOn = false;
-	private KnowledgeBase kb;
-	private Set<Rule> indicationRules = new HashSet<Rule>();
+	private final KnowledgeBase kb;
+	private final Set<Rule> indicationRules = new HashSet<Rule>();
 
 	/**
 	 * If you dont want to export the complete KnowledgeBase, you have the
@@ -92,7 +92,7 @@ public class KnowledgeManager {
 		}
 		else {
 			filterOn = true;
-			diagnosisList = calcDiagnosisSet(diagnosesToExport);
+			diagnosisList = calcSolutionSet(diagnosesToExport);
 		}
 
 		for (Iterator<KnowledgeSlice> iter = knowledge.iterator(); iter.hasNext();) {
@@ -143,7 +143,7 @@ public class KnowledgeManager {
 
 		if (diagnosesToExport != null) {
 			filterOn = true;
-			diagnosisList = calcDiagnosisSet(diagnosesToExport);
+			diagnosisList = calcSolutionSet(diagnosesToExport);
 		}
 		else {
 			return;
@@ -187,8 +187,7 @@ public class KnowledgeManager {
 		return kb;
 	}
 
-	public List<Solution> getDiagnosisList() {
-
+	public List<Solution> getSolutionList() {
 		return diagnosisList;
 	}
 
@@ -370,7 +369,7 @@ public class KnowledgeManager {
 		}
 	}
 
-	private List<Solution> calcDiagnosisSet(List<Solution> l) {
+	private List<Solution> calcSolutionSet(List<Solution> l) {
 		List<Solution> result = new LinkedList<Solution>();
 		for (Iterator<Solution> iter = l.iterator(); iter.hasNext();) {
 			Solution element = iter.next();
@@ -413,7 +412,7 @@ public class KnowledgeManager {
 					if (action == null) {
 						return false;
 					}
-					Solution d = action.getDiagnosis();
+					Solution d = action.getSolution();
 					if (d == null) {
 						return false;
 					}
@@ -426,7 +425,7 @@ public class KnowledgeManager {
 
 					if (r.getCondition() instanceof CondDState) {
 
-						if (((CondDState) r.getCondition()).getDiagnosis()
+						if (((CondDState) r.getCondition()).getSolution()
 								.equals(element)) {
 							return true;
 						}

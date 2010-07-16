@@ -159,13 +159,13 @@ public class D3webBuilder implements Builder, KnOfficeParser {
 				}
 			}
 		}
-		Solution diag = idom.findDiagnosis(solution);
+		Solution diag = idom.findSolution(solution);
 		if (diag == null) {
 			if (lazydiag) {
-				diag = idom.createDiagnosis(solution, idom.getKnowledgeBase().getRootSolution());
+				diag = idom.createSolution(solution, idom.getKnowledgeBase().getRootSolution());
 			}
 			else {
-				errors.add(MessageKnOfficeGenerator.createDiagnosisNotFoundException(file, line,
+				errors.add(MessageKnOfficeGenerator.createSolutionNotFoundException(file, line,
 						column, "", solution));
 				return;
 			}

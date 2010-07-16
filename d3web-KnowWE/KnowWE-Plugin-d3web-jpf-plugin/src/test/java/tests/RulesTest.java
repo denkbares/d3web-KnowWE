@@ -117,8 +117,8 @@ public class RulesTest extends TestCase {
 					
 					// Compare Diagnosis of ActionHeuristicPS
 					assertEquals("ActionHeuristicPS of " + createdRule.getId() + " has wrong Diagnosis.",
-							((ActionHeuristicPS)createdRule.getAction()).getDiagnosis(),
-							((ActionHeuristicPS)loadedRule.getAction()).getDiagnosis());
+							((ActionHeuristicPS)createdRule.getAction()).getSolution(),
+							((ActionHeuristicPS)loadedRule.getAction()).getSolution());
 					
 					// Compare Score of ActionHeuristicPS
 					assertEquals("ActionHeuristicPS of " + createdRule.getId() + " has wrong Score.",
