@@ -40,6 +40,7 @@ public class ImageQuestionAction extends AbstractAction {
 		String questionId = map.get("QuestionID");
 		HashMap<String,String> values = new HashMap<String,String>();
 		values.put("question", questionId);
+		new SetSingleFindingAction().execute(context);
 		context.getWriter().write(new ImageQuestionHandler().renderForRerenderAction(
 				map.getTopic(), context.getWikiContext(), values, map.getWeb()));
 	}

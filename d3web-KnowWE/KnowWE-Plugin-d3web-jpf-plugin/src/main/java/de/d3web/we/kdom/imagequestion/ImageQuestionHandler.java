@@ -20,10 +20,10 @@
 package de.d3web.we.kdom.imagequestion;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +31,8 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import de.d3web.core.io.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.Resource;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
@@ -45,7 +45,7 @@ import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.UndefinedValue;
-import de.d3web.multimedia.io.ImageQuestionPersistenceHandler;
+import de.d3web.we.action.SetSingleFindingAction;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
@@ -121,20 +121,20 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		KnowledgeBase kb = service.getBase();
 
 		// TODO: This should be loaded from persistence right away!
-		try {
-			String path = KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
-				+ ImageQuestionHandler.config_knowledgebase_path
-				+ topic + "PP" + KnowWEEnvironment.generateDefaultID(topic)
-				+ "/imagequestion/picturequestions.xml";
-			path = path.replaceAll("KnowWEExtension", "/");
-			FileInputStream stream = new FileInputStream(
-					new File(path));
-			BufferedInputStream stream2 = new BufferedInputStream(stream);
-			ImageQuestionPersistenceHandler handler = new ImageQuestionPersistenceHandler();
-			handler.read(kb, stream2, new DummyProgressListener());
-		} catch (IOException e1) {
-			// TODO Welchen Logger benutzen
-		}
+//		try {
+//			String path = KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
+//				+ ImageQuestionHandler.config_knowledgebase_path
+//				+ topic + "PP" + KnowWEEnvironment.generateDefaultID(topic)
+//				+ "/imagequestion/picturequestions.xml";
+//			path = path.replaceAll("KnowWEExtension", "/");
+//			FileInputStream stream = new FileInputStream(
+//					new File(path));
+//			BufferedInputStream stream2 = new BufferedInputStream(stream);
+//			ImageQuestionPersistenceHandler handler = new ImageQuestionPersistenceHandler();
+//			handler.read(kb, stream2, new DummyProgressListener());
+//		} catch (IOException e1) {
+//			// TODO Welchen Logger benutzen
+//		}
 		
 		// Read out the properties
 		String questionID = values.get("question");
@@ -229,14 +229,14 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 				+ ImageQuestionHandler.config_knowledgebase_path
 				+ this.topic + "PP" + KnowWEEnvironment.generateDefaultID(this.topic)
 				+ "/multimedia/" + questionImage;
-		path = path.replaceAll("KnowWEExtension", "");		
+		path = path.replaceAll("KnowWEExtension", "");	
 		File imgFile = new File(path);
 		
 		// TODO: Does not work, because the image is not loaded in the
 		// knowledge as a resource
 //		FileInputStream stream = new FileInputStream(imgFile);
 //		List<Resource> res = kb.getResources();
-//		String pathName = kb.getResource(questionImage).getInputStream();
+//		Resource input = kb.getResource("multimedia/"+questionImage);
 //		File bla = new File(pathName);
 
 		BufferedImage img = ImageIO.read(imgFile.toURI().toURL());

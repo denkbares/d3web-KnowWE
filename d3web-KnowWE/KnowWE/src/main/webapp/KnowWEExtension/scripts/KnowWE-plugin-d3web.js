@@ -243,25 +243,22 @@ KNOWWE.plugin.d3web.imagequestion = function() {
          	 * Function: answerClicked
          	 * Copied from the Dialog.
          	 * Stores the user selected answer in the session.
-         	 * Uses the <dialog.send> function.
         	 * 
         	 * See Also:
          	 *     <updateImageQuestionPanel>
-         	 * 	   <dialog.send>
         	 * 
          	 * Parameters:
          	 *     e - The user click event on an answer.
          	 */
-       		 answerClicked : function( e ) {
-           		var el = _KE.target(e);
+       		answerClicked : function( e ) {
+           		 var el = _KE.target(e);
             	
-            	var rel = eval("(" + el.getAttribute('rel') + ")");
-            	_KE.cancel( e );
-            	if( !rel ) return;
-           		var answerID = rel.oid;
-            	
-            	KNOWWE.plugin.d3web.dialog.send( rel.web, rel.ns, rel.qid, 'undefined', {ValueID: answerID});
-            	KNOWWE.plugin.d3web.imagequestion.updateImageQuestionPanel(rel.qid);
+            	 var rel = eval("(" + el.getAttribute('rel') + ")");
+            	 _KE.cancel( e );
+            	 if( !rel ) return;
+           		 var answerID = rel.oid;
+           		 
+            	 KNOWWE.plugin.d3web.imagequestion.updateImageQuestionPanel(rel.web, rel.ns, rel.qid, 'undefined', {ValueID: answerID});
        		},
         	
         	/**
@@ -274,21 +271,27 @@ KNOWWE.plugin.d3web.imagequestion = function() {
          	 * Parameters:
          	 *     questionID - The ID of the Question answered.
          	 */
-    		updateImageQuestionPanel : function(questionID) {
+    		updateImageQuestionPanel : function(web, namespace, questionID, termName, params) {
      			
-            	var params = {
+            	var pDefault = {
             		action : 'ImageQuestionAction',
-               		QuestionID : questionID            	
+               		QuestionID : questionID,
+               		KWikiWeb : web,
+                	namespace : namespace,
+                	ObjectID : questionID,
+                	TermName : termName
             	}
-        
+        		pDefault = KNOWWE.helper.enrich( params, pDefault );
+        		
         		var panelTable = 'imagetable_'+questionID;
             	var options = {
-                	url : KNOWWE.core.util.getURL( params ),
+                	url : KNOWWE.core.util.getURL( pDefault ),
                 	response : {
                     	action: 'replace',
                     	ids : [panelTable],
                     	fn : function() {
                     		KNOWWE.plugin.d3web.imagequestion.initAction();
+                    		KNOWWE.helper.observer.notify('update');
                     	}
                 	}
             	}
