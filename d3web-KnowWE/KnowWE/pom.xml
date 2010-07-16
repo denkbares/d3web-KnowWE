@@ -286,6 +286,25 @@
 			</dependencies>
 		</profile>
 		
+		<!-- FAQ plugin -->
+		<profile>
+			<id>faq-plugin</id>
+			<activation>
+				<property>
+					<name>faq-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-FAQ-jpf-plugin</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
 		<profile>
 			<id>denkbar</id>
 			<dependencies>
