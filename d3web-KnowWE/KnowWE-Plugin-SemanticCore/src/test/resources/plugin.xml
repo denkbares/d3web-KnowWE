@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<!-- This plugin only defines extension points for CasePersistenceHandler and CaseConversionHandler. -->
+<plugin id="KnowWE-Plugin-SemanticCore" version="0.0.1">
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Basic-Plugins" />
+	</requires>
+        
+        <extension-point plugin-id="KnowWEExtensionPoints" point-id="SemanticCoreImpl" id="SemanticCoreImpl">
+                <parameter-def id="class" value="de.d3web.we.core.semantic.SemanticCore/>
+                <parameter-def id="name" value="SemanticCoreImpl"/>
+                <parameter-def id="description" value="real core"/>
+                <parameter-def id="version"  value="0.0.1"/>
+                <parameter-def id="priority" type="number" value="5" />
+        </extension-point>
+        
+</plugin>
