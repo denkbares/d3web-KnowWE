@@ -38,6 +38,7 @@ import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.objects.QuestionRef;
 import de.d3web.we.kdom.objects.QuestionnaireRef;
+import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -68,6 +69,7 @@ public class IndicationHandler extends D3webSubtreeHandler<DefaultAbstractKnowWE
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<DefaultAbstractKnowWEObjectType> s) {
 
 		if (s.hasErrorInSubtree()) {
@@ -100,19 +102,18 @@ public class IndicationHandler extends D3webSubtreeHandler<DefaultAbstractKnowWE
 			// retrieve the QASet for the different KnowWEObjectTypes that might
 			// use this handler
 			QASet qaset = null;
-			Section<QuestionnaireRef> qnref = element.findSuccessor(QuestionnaireRef.class);
-			if (qnref != null) {
-				qaset = qnref.get().getObject(article, qnref);
-			}
-			if (qaset == null) {
-				Section<QuestionDef> qdef = element.findSuccessor(QuestionDef.class);
-				if (qdef != null) {
+			Section<? extends TermReference> termRef = element.findSuccessor(TermReference.class);
+			if (termRef != null) {
+				if (termRef.get() instanceof QuestionnaireRef) {
+					Section<QuestionnaireRef> qnref = (Section<QuestionnaireRef>) termRef;
+					qaset = qnref.get().getObject(article, qnref);
+				}
+				else if (termRef.get() instanceof QuestionDef) {
+					Section<QuestionDef> qdef = (Section<QuestionDef>) termRef;
 					qaset = qdef.get().getObject(article, qdef);
 				}
-			}
-			if (qaset == null) {
-				Section<QuestionRef> qref = element.findSuccessor(QuestionRef.class);
-				if (qref != null) {
+				else if (termRef.get() instanceof QuestionRef) {
+					Section<QuestionRef> qref = (Section<QuestionRef>) termRef;
 					qaset = qref.get().getObject(article, qref);
 				}
 			}
