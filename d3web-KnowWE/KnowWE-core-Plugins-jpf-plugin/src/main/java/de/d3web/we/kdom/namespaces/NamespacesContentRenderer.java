@@ -5,7 +5,8 @@ import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.ISemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -15,7 +16,7 @@ public class NamespacesContentRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		SemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCore.getInstance();
 		StringBuffer buffy = new StringBuffer();
 		ResourceBundle rb = KnowWEEnvironment.getInstance()
 				.getKwikiBundle(user);

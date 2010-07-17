@@ -26,7 +26,8 @@ import java.util.Map;
 import org.openrdf.model.Statement;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.ISemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class PageViewHandler extends AbstractTagHandler {
@@ -44,7 +45,7 @@ public class PageViewHandler extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-		SemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCore.getInstance();
 		StringBuffer output = new StringBuffer();
 		output.append("<tr><th>S</th><th>P</th><th>O</th></tr>");
 

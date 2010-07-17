@@ -37,7 +37,8 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.ISemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -159,7 +160,7 @@ public final class SparqlDelegateRenderer extends
 	 */
 	private String executeQuery(SparqlRenderer currentrenderer,
 			Map<String, String> params, String querystring) {
-		SemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		// try {
 		// con.setAutoCommit(false);

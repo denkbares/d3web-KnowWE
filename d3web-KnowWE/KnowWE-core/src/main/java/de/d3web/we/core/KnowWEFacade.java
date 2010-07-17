@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import de.d3web.we.action.Action;
 import de.d3web.we.action.ActionContext;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.knowwe.plugin.Plugins;
 
 /**

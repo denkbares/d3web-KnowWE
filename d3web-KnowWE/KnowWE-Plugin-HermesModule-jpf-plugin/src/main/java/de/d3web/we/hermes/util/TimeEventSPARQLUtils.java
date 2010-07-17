@@ -21,8 +21,9 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.hermes.TimeEvent;
 import de.d3web.we.hermes.maps.Placemark;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
@@ -69,7 +70,7 @@ public class TimeEventSPARQLUtils {
 	}
 
 	public static TupleQueryResult executeQuery(String querystring) {
-		SemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		// try {
 		// con.setAutoCommit(false);

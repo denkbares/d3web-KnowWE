@@ -36,8 +36,9 @@ import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.TaggingMangler;
+import de.d3web.we.core.semantic.ISemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.search.GenericSearchResult;
@@ -54,7 +55,7 @@ public class TaggingManglerTest extends TestCase {
 	private KnowWEParameterMap params;
 	private KnowWEObjectType type;
 	private KnowWEEnvironment ke;
-	private SemanticCore sc;
+	private ISemanticCore sc;
 
 	/*
 	 * (non-Javadoc)

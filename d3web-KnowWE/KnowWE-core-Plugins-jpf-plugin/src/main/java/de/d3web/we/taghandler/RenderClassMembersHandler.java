@@ -14,7 +14,8 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.ISemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.kdom.sparql.DefaultSparqlRenderer;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -38,7 +39,7 @@ public class RenderClassMembersHandler extends AbstractTagHandler {
 		}
 		String querystring = TIME_SPARQL.replaceAll("CLASS", className);
 
-		SemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		// try {
 		// con.setAutoCommit(false);

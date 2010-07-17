@@ -11,8 +11,8 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
-import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.hermes.kdom.TimeEventType;
 import de.d3web.we.kdom.KnowWEArticle;

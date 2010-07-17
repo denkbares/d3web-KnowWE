@@ -42,6 +42,7 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.d3web.we.action.KnowWEActionDispatcher;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.InitEvent;

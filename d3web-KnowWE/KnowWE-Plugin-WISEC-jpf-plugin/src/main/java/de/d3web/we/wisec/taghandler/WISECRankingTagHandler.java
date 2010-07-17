@@ -37,7 +37,7 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;

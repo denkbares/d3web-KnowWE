@@ -32,8 +32,8 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.TaggingMangler;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;

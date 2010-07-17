@@ -41,7 +41,8 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.ISemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -77,7 +78,7 @@ public class TimeLineHandler extends AbstractTagHandler {
 					+ " no valid parameter for: " + TIME_AFTER;
 		}
 
-		SemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCore.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		Query query = null;
 		try {

@@ -36,10 +36,11 @@ import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
+import de.d3web.we.core.semantic.ISemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.kdom.Annotation.Annotation;
 import de.d3web.we.kdom.kopic.renderer.AnnotationInlineAnswerRenderer;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -85,7 +86,7 @@ public class D3webModule {
 
 		}
 		// Introduce my ontology parts to the core
-		SemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCore.getInstance();
 		sc.getUpper().loadOwlFile(
 				new File(KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
 						+ File.separatorChar + ontfile));

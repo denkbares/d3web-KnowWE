@@ -26,10 +26,10 @@ package de.d3web.we.kdom.semanticFactSheet;
 
 import java.util.Collection;
 
-import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.PropertyManager;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;

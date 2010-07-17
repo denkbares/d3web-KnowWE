@@ -8,8 +8,8 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
-import de.d3web.we.core.SemanticCore;
 import de.d3web.we.core.semantic.OwlHelper;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
 import de.d3web.we.taghandler.AbstractTagHandler;

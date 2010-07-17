@@ -34,7 +34,6 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.we.core.SemanticCore;
 
 /**
  * This class manages semantic properties, n-ary as well as simple ones

@@ -29,7 +29,8 @@ import org.openrdf.model.Statement;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.ISemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 
 public class GraphMLOwlRenderer extends DeprecatedAbstractKnowWEAction {
 	private int id;
@@ -53,7 +54,7 @@ public class GraphMLOwlRenderer extends DeprecatedAbstractKnowWEAction {
 		String footer = "</graphml>";
 		String topicName = topic;
 		String output="";
-		SemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCore.getInstance();
 		List<Statement> list = sc.getTopicStatements(topicName);
 		if (list != null) {
 			for (Statement cur : list) {

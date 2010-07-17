@@ -32,8 +32,9 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
 
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.Section;
 
@@ -68,7 +69,7 @@ public class ExtensionObject {
 	}
 
 	private void extend(String value) {
-		SemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCore.getInstance();
 		UpperOntology uo = UpperOntology.getInstance();
 		RepositoryConnection con = uo.getConnection();
 		sc.clearContext(father);

@@ -6,7 +6,7 @@ package de.d3web.we.kdom.subtreeHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.we.core.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
