@@ -64,7 +64,7 @@ public abstract class QuestionTreeElementDef<TermObject> extends D3webObjectDef<
 					subtreeFather.findChildOfType(DashTreeElement.class);
 
 			if (dashTreeElement != null) {
-				Section<QuestionTreeElementDef> qasetSection =
+				Section<? extends QuestionTreeElementDef> qasetSection =
 						dashTreeElement.findSuccessor(QuestionTreeElementDef.class);
 				if (qasetSection != null && (qasetSection.get() instanceof QuestionDef
 							|| qasetSection.get() instanceof QuestionnaireDef)) {
