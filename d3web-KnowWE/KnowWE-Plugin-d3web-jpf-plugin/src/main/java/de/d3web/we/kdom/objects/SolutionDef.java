@@ -73,7 +73,7 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 				if (kbsol != null) kbsol.getKnowledgeBase().remove(kbsol);
 			}
 			catch (IllegalAccessException e) {
-				e.printStackTrace();
+				article.setFullParse(true, this);
 			}
 			TerminologyManager.getInstance().unregisterTermDef(article, solution);
 			return;
