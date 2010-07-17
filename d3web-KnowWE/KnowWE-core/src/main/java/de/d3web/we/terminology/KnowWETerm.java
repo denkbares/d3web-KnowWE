@@ -1,11 +1,14 @@
 package de.d3web.we.terminology;
 
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.TermReference;
+
 public class KnowWETerm {
 
 	private final String termName;
 
-	public KnowWETerm(String s) {
-		termName = s;
+	public <TermObject> KnowWETerm(Section<? extends TermReference<TermObject>> s) {
+		termName = s.get().getTermName(s);
 	}
 
 	@Override
@@ -27,6 +30,11 @@ public class KnowWETerm {
 		}
 		else if (!termName.equals(other.termName)) return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return termName;
 	}
 
 }

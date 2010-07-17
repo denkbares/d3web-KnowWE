@@ -56,7 +56,7 @@ public class KDomSectionHighlightingRenderer extends KnowWEDomRenderer {
 		// that is needed for Highlighting the section
 		StringBuilder b = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
-		string.append(KnowWEUtils.maskHTML("<span id='"+sec.getId()
+		string.append(KnowWEUtils.maskHTML("<span id='"+sec.getID()
 						+ "'><span id=''>"
 						+ b.toString()
 						+ "</span></span>"));

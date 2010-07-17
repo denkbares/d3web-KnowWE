@@ -24,23 +24,17 @@ import java.io.IOException;
 import java.net.URL;
 
 import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-
 
 /**
  * 
- * See D3webTerminologyHandler for examples...
- *
+ * See D3webKnowledgeHandler for examples...
+ * 
  */
 public interface KnowledgeRepresentationHandler {
 	
 	void initArticle(KnowWEArticle art);
 	
 	void finishArticle(KnowWEArticle art);
-	
-	boolean buildKnowledge(KnowWEArticle article, Section<? extends KnowWEObjectType> s);
 
 	URL saveKnowledge(String title) throws IOException;
 

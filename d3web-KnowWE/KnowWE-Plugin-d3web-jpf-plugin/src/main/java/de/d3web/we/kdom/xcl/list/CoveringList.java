@@ -28,7 +28,6 @@ import java.util.List;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -54,10 +53,11 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.xcl.XCLModel;
+import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;
 
@@ -136,9 +136,19 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		 *         the d3web knowledge base
 		 *
 		 */
-		class CreateXCLRealtionHandler extends D3webReviseSubTreeHandler<CoveringRelation> {
+		class CreateXCLRealtionHandler extends D3webSubtreeHandler<CoveringRelation> {
 
-			public static final String KBID_KEY = "kbid";
+			private final String relationStoreKey = "XCLRELATION_STORE_KEY";
+
+			private Section<SolutionDef> getCorrespondingSolutionDef(Section<CoveringRelation> s) {
+				return s.getFather().getFather().findSuccessor(SolutionDef.class);
+			}
+
+			@Override
+			public boolean needsToCreate(KnowWEArticle article, Section<CoveringRelation> s) {
+				return super.needsToCreate(article, s)
+						|| !getCorrespondingSolutionDef(s).isReusedBy(article.getTitle());
+			}
 
 			/*
 			 * (non-Javadoc)
@@ -163,11 +173,10 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							"XCL-relation"));
 				}
 
-				Section<SolutionDef> soltuionDef = s.getFather().getFather().findSuccessor(
-						SolutionDef.class);
+				Section<SolutionDef> soltuionDef = getCorrespondingSolutionDef(s);
 				if (soltuionDef != null) {
 					Solution solution = soltuionDef.get().getObject(
-							soltuionDef);
+							article, soltuionDef);
 					KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
 							XCLModel.XCLMODEL);
 
@@ -175,7 +184,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 						if (cond != null) {
 
-							Condition condition = KDOMConditionFactory.createCondition(cond);
+							Condition condition = KDOMConditionFactory.createCondition(article,
+									cond);
 
 							if (condition == null) {
 								return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
@@ -208,14 +218,13 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							}
 
 							// Insert the Relation into the currentModel
-							String kbRelId = XCLModel.insertXCLRelation(
-											getKBM(article, s).getKnowledgeBase(),
-									condition,
+							XCLRelation relation = XCLModel.insertAndReturnXCLRelation(
+											getKBM(article).getKnowledgeBase(),
+											condition,
 											solution, type, w, null);
-							KnowWEUtils.storeSectionInfo(
-											KnowWEEnvironment.DEFAULT_WEB,
-											article.getTitle(), s.getId(), KBID_KEY,
-											kbRelId);
+
+							KnowWEUtils.storeSectionInfo(article, s, relationStoreKey, relation);
+
 							String wString = "";
 							if (w > 0 && w != 1) {
 								wString = Double.toString(w);
@@ -230,6 +239,33 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				}
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 						"XCL-relation"));
+			}
+
+//			@Override
+//			public boolean needsToDestroy(KnowWEArticle article, Section<CoveringRelation> s) {
+//				return super.needsToDestroy(article, s)
+//						|| !getCorrespondingSolutionDef(s).isReusedBy(article.getTitle());
+//			}
+
+			@Override
+			public void destroy(KnowWEArticle article, Section<CoveringRelation> s) {
+				Section<SolutionDef> soltuionDef = getCorrespondingSolutionDef(s);
+
+				if (soltuionDef == null) return;
+				Solution solution = soltuionDef.get().getObjectFromLastVersion(article,
+						soltuionDef);
+
+				if (solution == null) return;
+				XCLModel xclModel = (XCLModel) solution.getKnowledge(PSMethodXCL.class,
+						XCLModel.XCLMODEL);
+
+				if (xclModel == null) return;
+				XCLRelation rel = (XCLRelation) KnowWEUtils.getObjectFromLastVersion(article, s,
+						relationStoreKey);
+
+				if (rel == null) return;
+				xclModel.removeRelation(rel);
+
 			}
 
 		}

@@ -30,6 +30,7 @@ import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.QuestionRef;
@@ -103,7 +104,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 	}
 
 	@Override
-	public TerminalCondition getTerminalCondition(Section<NumericalFinding> s) {
+	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<NumericalFinding> s) {
 		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
 
 		Section<Number> numberSec = s.findSuccessor(Number.class);
@@ -112,7 +113,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 		Double number = numberSec.get().getNumber(numberSec);
 
-		Question q = qRef.get().getObject(qRef);
+		Question q = qRef.get().getObject(article, qRef);
 
 		if (!(q instanceof QuestionNum)) {
 			// TODO some reasonable error handling here!

@@ -2,8 +2,8 @@ package de.d3web.we.kdom.objects;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -11,7 +11,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.terminology.KnowWETerm;
 import de.d3web.we.terminology.TerminologyManager;
 
 /**
@@ -24,9 +23,11 @@ import de.d3web.we.terminology.TerminologyManager;
  *
  * @author Jochen
  *
- * @param <T>
+ * @param <TermObject>
  */
-public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType implements TermReference<T> {
+public abstract class ObjectRef<TermObject>
+		extends DefaultAbstractKnowWEObjectType
+		implements TermReference<TermObject> {
 
 	/**
 	 * has to check whether the referenced object is existing, i.e., has been
@@ -35,43 +36,53 @@ public abstract class ObjectRef<T> extends DefaultAbstractKnowWEObjectType imple
 	 * @param s
 	 * @return
 	 */
-	public abstract boolean objectExisting(Section<? extends ObjectRef<T>> s);
 
-	public abstract T getObject(Section<? extends ObjectRef<T>> s);
+	public final TermObject getObject(KnowWEArticle article, Section<? extends ObjectRef<TermObject>> s) {
+		Section<? extends ObjectDef<TermObject>> objectDefinition = TerminologyManager.getInstance()
+				.getTermDefSection(article, s);
+		if (objectDefinition != null) {
+			TermObject c = objectDefinition.get().getObject(article, objectDefinition);
+			if (c != null && c.toString().equals(objectDefinition.get().getTermName(s))) {
+				return c;
+			}
+		}
+		return getObjectFallback(article, s);
+	}
+
+	/**
+	 * Fallback method in case the object isn't defined via an ObjectDef
+	 * respectively in the TerminologyManager.
+	 */
+	public TermObject getObjectFallback(KnowWEArticle article, Section<? extends ObjectRef<TermObject>> s) {
+		return null;
+	}
 
 	public ObjectRef() {
-		// TODO make ObjectChecker singleton (somehow)
-		this.addSubtreeHandler(new ObjectChecker());
-		this.addSubtreeHandler(new TermUseRegistration());
+		this.addSubtreeHandler(new TermRegistration());
 	}
 
-
-	class TermUseRegistration extends SubtreeHandler<ObjectRef<T>> {
+	class TermRegistration extends SubtreeHandler<ObjectRef<TermObject>> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ObjectRef<T>> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ObjectRef<TermObject>> s) {
 
-			KnowWETerm term = TerminologyManager.getInstance().getTerm(s);
-			if (term != null) {
-				TerminologyManager.getInstance().registerTermUse(term, s);
+			TerminologyManager.getInstance().registerTermRef(article, s);
+
+			if (!TerminologyManager.getInstance().isDefinedTerm(article, s)
+					&& s.get().getObjectFallback(article, s) == null) {
+
+				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(s.get().getName()
+						+ ": " + s.getOriginalText()));
 			}
 
-			return new ArrayList<KDOMReportMessage>();
+			return new ArrayList<KDOMReportMessage>(0);
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<ObjectRef<TermObject>> s) {
+			TerminologyManager.getInstance().unregisterTermRef(article, s);
 		}
 
 	}
 
-	class ObjectChecker extends SubtreeHandler<ObjectRef<T>> {
-
-		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ObjectRef<T>> s) {
-			List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
-			if (!objectExisting(s)) {
-				msgs.add(new NoSuchObjectError(s.get().getName() + ": "
-								+ s.getOriginalText()));
-			}
-			return msgs;
-		}
-
-	}
 }

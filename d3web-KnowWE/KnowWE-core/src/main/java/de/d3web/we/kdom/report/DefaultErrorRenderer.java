@@ -42,8 +42,8 @@ public class DefaultErrorRenderer implements MessageRenderer {
 		StringBuilder string = new StringBuilder();
 
 		string.append(KnowWEUtils.maskHTML("<span"));
-		if (m.getVerbalization(user) != null) {
-			string.append(" title='").append(m.getVerbalization(user)).append("'");
+		if (m.getVerbalization() != null) {
+			string.append(" title='").append(m.getVerbalization()).append("'");
 		}
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");

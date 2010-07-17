@@ -35,7 +35,7 @@ public class TableColHeaderCellContentRenderer extends TableCellContentRenderer{
 	protected String wrappContent(String sectionText, Section sec, KnowWEUserContext user) {
 
 
-		String sectionID = sec.getId();
+		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
 		html.append("<td>   ");
 		generateContent(sectionText, sec, user, sectionID, html);

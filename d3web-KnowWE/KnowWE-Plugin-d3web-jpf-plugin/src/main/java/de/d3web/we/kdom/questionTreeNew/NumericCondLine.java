@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.questionTreeNew;
 
+import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -72,11 +73,28 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 		}
 		return null;
 	}
+	
+	public static NumericalInterval getNumericalInterval(Section<NumericCondLine> sec) {
+		if (isIntervall(sec)) {
+			String[] doubles = sec.getOriginalText().substring(1,
+					sec.getOriginalText().length() - 1).split(" ");
+			if (doubles.length == 2) {
+				try {
+					return new NumericalInterval(Double.parseDouble(doubles[0]),
+							Double.parseDouble(doubles[1]));
+				}
+				catch (NumberFormatException e) {
+				}
+			}
+		}
+		return null;
+	}
 
-	public boolean isIntervall(Section<NumericCondLine> sec) {
+	public static boolean isIntervall(Section<NumericCondLine> sec) {
 		if(sec.getOriginalText().startsWith("[") && sec.getOriginalText().endsWith("]")) {
 			return true;
 		}
 		return false;
 	}
+
 }

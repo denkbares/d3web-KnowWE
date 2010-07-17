@@ -45,7 +45,7 @@ import de.d3web.we.kdom.Annotation.Annotation;
 import de.d3web.we.kdom.kopic.renderer.AnnotationInlineAnswerRenderer;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.taghandler.KnOfficeUploadHandler;
-import de.d3web.we.terminology.D3webTerminologyHandler;
+import de.d3web.we.terminology.D3webKnowledgeHandler;
 import de.d3web.we.upload.UploadManager;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -252,11 +252,11 @@ public class D3webModule {
 		return varPath;
 	}
 
-	public static D3webTerminologyHandler getKnowledgeRepresentationHandler(String web) {
+	public static D3webKnowledgeHandler getKnowledgeRepresentationHandler(String web) {
 		Collection<KnowledgeRepresentationHandler> handlers = KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web).getHandlers();
 		for (KnowledgeRepresentationHandler handler: handlers) {
-			if (handler instanceof D3webTerminologyHandler) {
-				return (D3webTerminologyHandler) handler;
+			if (handler instanceof D3webKnowledgeHandler) {
+				return (D3webKnowledgeHandler) handler;
 			}
 		}
 		return null;

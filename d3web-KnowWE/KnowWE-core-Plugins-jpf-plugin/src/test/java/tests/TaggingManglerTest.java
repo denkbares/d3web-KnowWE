@@ -137,14 +137,14 @@ public class TaggingManglerTest extends TestCase {
 		am.saveUpdatedArticle(article1);
 		tm.addTag("AddTag", "tagtest", params);
 		//remember: article* are not the current articles anymore, changes to the articles by the TaggingMangler do not backpropagate to those variables
-		String keyorig = article1.getSection().getId().hashCode()+"";
+		String keyorig = article1.getSection().getID().hashCode()+"";
 		assertEquals("<tags>tagtest</tags>", am.getArticle("AddTag")
 				.getSection().getOriginalText());
 		ArrayList<String> tags = tm.getPageTags("AddTag");
 		assertEquals(1, tags.size());
 		assertEquals("tagtest", tags.get(0));
 		// remove statements from triplestore
-		assertEquals(keyorig, article1.getSection().getId().hashCode()+"");
+		assertEquals(keyorig, article1.getSection().getID().hashCode()+"");
 		sc.clearContext(am.getArticle("AddTag"));
 		tags = tm.getPageTags("AddTag");
 		// make sure it is gone

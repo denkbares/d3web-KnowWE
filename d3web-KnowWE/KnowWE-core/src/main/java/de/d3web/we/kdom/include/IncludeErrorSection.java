@@ -23,6 +23,7 @@ package de.d3web.we.kdom.include;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.SectionID;
 
 public class IncludeErrorSection extends Section<IncludeError> {
 
@@ -32,7 +33,7 @@ public class IncludeErrorSection extends Section<IncludeError> {
 		this.objectType = IncludeError.getInstance();
 		this.originalText = text;
 		this.father = father;
-		this.id = "bla";
+		this.setID(new SectionID(father, objectType).toString());
 	}
 
 }

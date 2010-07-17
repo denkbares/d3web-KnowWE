@@ -34,7 +34,7 @@ public class EditCoveringTableCellRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		String currentOp = sec.getOriginalText().trim();
-		String secID = sec.getId();
+		String secID = sec.getID();
 
 		StringBuilder b = new StringBuilder();
 		b.append("<select id=\"editCell"

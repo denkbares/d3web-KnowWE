@@ -29,7 +29,6 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * 
@@ -48,10 +47,9 @@ public abstract class KDOMReportMessage {
 	 * return the verbalization of this message. Will be rendered into the wiki
 	 * page by the given MessageRenderer of the KnowWEObjectType of the section
 	 * 
-	 * @param usercontext
 	 * @return
 	 */
-	public abstract String getVerbalization(KnowWEUserContext usercontext);
+	public abstract String getVerbalization();
 
 	/**
 	 * @see KnowWEUtils#clearMessages(KnowWEArticle, Section, Class, Class)
@@ -164,15 +162,15 @@ public abstract class KDOMReportMessage {
 	@Override
 	public int hashCode() {
 		// TODO better implementation possible
-		return this.getVerbalization(null).hashCode();
+		return this.getVerbalization().hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof KDOMReportMessage) {
 			// TODO better implementation possible
-			return ((KDOMReportMessage) obj).getVerbalization(null).equals(
-					this.getVerbalization(null));
+			return ((KDOMReportMessage) obj).getVerbalization().equals(
+					this.getVerbalization());
 		}
 		return false;
 	}

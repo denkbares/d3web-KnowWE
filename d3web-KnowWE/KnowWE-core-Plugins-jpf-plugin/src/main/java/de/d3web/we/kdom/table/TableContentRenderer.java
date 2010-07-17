@@ -50,7 +50,8 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 		
 		buffi.append( getOpeningTag(sec) );
 		if (!sec.hasQuickEditModeSet(user.getUsername())) {
-			buffi.append( generateQuickEdit(sec.getId(), rb.getString("KnowWE.TableContentRenderer.setQE")));
+			buffi.append(generateQuickEdit(sec.getID(),
+					rb.getString("KnowWE.TableContentRenderer.setQE")));
 		}
 		
 		buffi.append( "<table style='border:1px solid #999999;' class='wikitable knowwetable' border='1'><tbody>" );
@@ -71,11 +72,11 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 			buffi.append("<img id=\"addRow\" class=\"addRow\" style=\"margin-left: 10px; margin-top: 5px; margin-right: 5px; float:left\" src=\"KnowWEExtension/images/plus.png\" title=\"Zeile hinzufügen\" onclick=\"return Testcase.addRow()\">");
 
 			buffi.append("<input class=\"pointer\" id=\""
-					+ sec.getId()
+					+ sec.getID()
 					+ "\" style=\"padding:0 0 0 0; width: 25px; height: 25px; background: #FFF url(KnowWEExtension/images/msg_checkmark.png) no-repeat; border: none; vertical-align:top;\" name=\""
-					+ sec.getId() + "_accept\" type=\"submit\" value=\"\" title=\""
+					+ sec.getID() + "_accept\" type=\"submit\" value=\"\" title=\""
 					+ rb.getString("KnowWE.TableContentRenderer.accept") + "\">");
-			buffi.append("<img class=\"quickedit table pointer\" id=\"" + sec.getId()
+			buffi.append("<img class=\"quickedit table pointer\" id=\"" + sec.getID()
 					+ "_cancel\" width=\"25\" title=\""
 					+ rb.getString("KnowWE.TableContentRenderer.cancel")
 					+ "\" src=\"KnowWEExtension/images/msg_cross.png\"/>");
@@ -105,7 +106,7 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 	}
 	
 	protected String getOpeningTag(Section sec) {
-		return "<div class=\"table-edit\" id=\"" + sec.getId() + "\">";
+		return "<div class=\"table-edit\" id=\"" + sec.getID() + "\">";
 	}
 	
 	protected String getClosingTag() {

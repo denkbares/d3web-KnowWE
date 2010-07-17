@@ -55,8 +55,6 @@ public class StringEnumChecker<T extends KnowWEObjectType> extends SubtreeHandle
 			msgs.add(error);
 		}
 		return msgs;
-
-
 	}
 
 }

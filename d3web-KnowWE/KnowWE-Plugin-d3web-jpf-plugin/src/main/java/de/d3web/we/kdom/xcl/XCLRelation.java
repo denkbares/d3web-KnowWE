@@ -71,7 +71,7 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 				UpperOntology uo = UpperOntology.getInstance();
 
 				URI explainsdings = uo.getHelper().createlocalURI(
-						s.getTitle() + ".." + s.getId());
+						s.getTitle() + ".." + s.getID());
 				URI solutionuri = ((DefaultSubjectContext) ContextManager
 						.getInstance().getContext(s, DefaultSubjectContext.CID))
 						.getSolutionURI();

@@ -7,7 +7,6 @@ import java.util.Collection;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -16,7 +15,7 @@ import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.terminology.TerminologyManager;
 
 public class SolutionDef extends D3webObjectDef<Solution> {
@@ -27,18 +26,16 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 		this.addSubtreeHandler(Priority.HIGHEST, new CreateSolutionHandler());
 	}
 
-	static class CreateSolutionHandler extends SubtreeHandler<SolutionDef> {
+	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDef> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
-				Section<SolutionDef> qidSection) {
+				Section<SolutionDef> solutionSection) {
 
 
-			String name = qidSection.get().getTermName(qidSection);
+			String name = solutionSection.get().getTermName(solutionSection);
 
-			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
-					article.getWeb())
-					.getKBM(article, this, qidSection);
+			KnowledgeBaseManagement mgn = getKBM(article);
 			if (mgn == null) return null;
 
 			IDObject o = mgn.findSolution(name);
@@ -48,16 +45,17 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 						.getSimpleName()));
 			} else {
 
-				// ok everything went well
-				// register term
-				TerminologyManager.getInstance().registerNewTerm(
-						qidSection.get().getTermName(qidSection), qidSection);
+
 
 
 				Solution s = mgn.createSolution(name);
 
 				if (s != null) {
-					qidSection.get().storeObject(qidSection, s);
+					// ok everything went well
+					// register term
+					TerminologyManager.getInstance().registerTermDef(article,
+							solutionSection);
+					solutionSection.get().storeObject(article, solutionSection, s);
 					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(s.getClass().getSimpleName()
 							+ " " + s.getName()));
 				} else {
@@ -66,6 +64,19 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 
 			}
 
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<SolutionDef> solution) {
+			Solution kbsol = solution.get().getObjectFromLastVersion(article, solution);
+			try {
+				if (kbsol != null) kbsol.getKnowledgeBase().remove(kbsol);
+			}
+			catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			TerminologyManager.getInstance().unregisterTermDef(article, solution);
+			return;
 		}
 
 	}

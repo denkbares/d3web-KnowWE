@@ -47,7 +47,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.logging.Logging;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.Patterns;
 
 public class XCLHead extends DefaultAbstractKnowWEObjectType {
@@ -66,7 +66,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 	}
 	
 	
-	private class XCLHeadSubtreeHandler extends D3webReviseSubTreeHandler {
+	private class XCLHeadSubtreeHandler extends D3webSubtreeHandler {
 		
 
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {

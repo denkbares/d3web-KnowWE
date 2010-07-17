@@ -80,7 +80,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		 */
 		KnowWEArticle article = _env.getArticle("default_web", "Test_Article");
 		Section<?> artSec = article.getSection();
-		String toReplace = ((Section) artSec.getChildren().get(0)).getId();
+		String toReplace = ((Section) artSec.getChildren().get(0)).getID();
 		KnowWEParameterMap map = new KnowWEParameterMap(KnowWEAttributes.WEB, "default_web");
 		map.put(KnowWEAttributes.TARGET, toReplace);
 		map.put(KnowWEAttributes.TOPIC, "Test_Article");
@@ -106,7 +106,7 @@ public class ReplaceKdomNodeTest extends TestCase {
 		/**
 		 * 2. Build new subtree.
 		 */
-		toReplace = ((Section) artSec.getChildren().get(0)).getId();
+		toReplace = ((Section) artSec.getChildren().get(0)).getID();
 		map.put(KnowWEAttributes.TARGET, toReplace);
 		map.put(KnowWEAttributes.TOPIC, "Test_Article");
 		map.put(KnowWEAttributes.TEXT, "-aa-");

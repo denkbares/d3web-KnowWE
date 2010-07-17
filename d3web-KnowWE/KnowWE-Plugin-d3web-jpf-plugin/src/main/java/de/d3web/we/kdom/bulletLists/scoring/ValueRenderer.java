@@ -10,7 +10,7 @@ public class ValueRenderer extends KnowWEDomRenderer {
 
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		string.append(KnowWEEnvironment.maskHTML("<span id='"+sec.getId()
+		string.append(KnowWEEnvironment.maskHTML("<span id='"+sec.getID()
 				+"' class = 'XCLRelationInList'><span id=\"\">"));
 		
 		string.append(sec.getOriginalText());

@@ -39,11 +39,11 @@ import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.kdom.table.TableUtils;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -92,13 +92,13 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 		String title = "relation_not_found";
 
 		String kbrelId = (String) KnowWEUtils.getStoredObject(sec.getArticle()
-				.getWeb(), sec.getTitle(), sec.getId(),
+				.getWeb(), sec.getTitle(), sec.getID(),
 				EntryCellContentSubtreeHandler.XCLRELATION_ID);
 		if (kbrelId != null) {
 			// Get the KnowledgeSlices from KB and find the XCLRelation to be
 			// rendered
 			KnowledgeBaseManagement mgn = D3webModule
-					.getKnowledgeRepresentationHandler(sec.getArticle().getWeb()).getKBM(sec.getArticle(), null, sec);
+					.getKnowledgeRepresentationHandler(sec.getWeb()).getKBM(sec.getTitle());
 
 			Collection<KnowledgeSlice> models = mgn.getKnowledgeBase()
 					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
@@ -138,13 +138,13 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 			}
 		}
 
-		String sectionID = sec.getId();
+		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
 		if (sectionText.trim().length() > 0) {
 			if(kbrelId != null) {
 			html
 					.append("<td style='color: green; background-color:#DDDDDD;text-align:center;'>   ");
-			html.append("<span id='" + sec.getId()
+			html.append("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInTable'>");
 			html.append("<span id=''>");
 			html.append("<span title='" + title + "'>");
@@ -178,7 +178,7 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 
 }
 
-class EntryCellContentSubtreeHandler extends SubtreeHandler {
+class EntryCellContentSubtreeHandler extends D3webSubtreeHandler {
 
 	public static final String XCLRELATION_ID = "xclid";
 	public static final String KEY_REPORT = "report_message";
@@ -187,8 +187,7 @@ class EntryCellContentSubtreeHandler extends SubtreeHandler {
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 		if (s.getOriginalText().trim().length() > 0) {
 
-			KnowledgeBaseManagement mgn = D3webModule
-					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
+			KnowledgeBaseManagement mgn = getKBM(article);
 			
 			if (mgn == null) {
 				return null;
@@ -234,14 +233,14 @@ class EntryCellContentSubtreeHandler extends SubtreeHandler {
 				List<Message> messages = KnowledgeUtils.addKnowledge(mgr,
 						question.trim(), answer, ((SolutionColumnContext) c)
 								.getSolution(), s.getOriginalText().trim(),
-						line, col, false, s.getId(), xcl);
+						line, col, false, s.getID(), xcl);
 
 				for (Message message : messages) {
 					if (message.getMessageText().startsWith("relID:")) {
 						String relationID = message.getMessageText()
 								.replaceAll("relID:", "");
 						KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
-								.getTitle(), s.getId(), XCLRELATION_ID,
+								.getTitle(), s.getID(), XCLRELATION_ID,
 								relationID);
 					}else {
 						KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(

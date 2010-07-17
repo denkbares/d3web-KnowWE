@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.QContainer;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.utilities.ISetMap;
 import de.d3web.utilities.SetMap;
 import de.d3web.we.alignment.AlignmentFilter;
@@ -50,11 +50,11 @@ import de.d3web.we.terminology.term.TermFactory;
 
 public class TerminologyBroker {
 
-	private Map<TerminologyType, GlobalTerminology> globalTerminologies;
+	private final Map<TerminologyType, GlobalTerminology> globalTerminologies;
 
-	private ISetMap<IdentifiableInstance, LocalAlignment> localAlignments;
-	private ISetMap<IdentifiableInstance, GlobalAlignment> globalAlignments;
-	private ISetMap<Term, GlobalAlignment> globalTermAlignments;
+	private final ISetMap<IdentifiableInstance, LocalAlignment> localAlignments;
+	private final ISetMap<IdentifiableInstance, GlobalAlignment> globalAlignments;
+	private final ISetMap<Term, GlobalAlignment> globalTermAlignments;
 	
 	
 	public TerminologyBroker() {

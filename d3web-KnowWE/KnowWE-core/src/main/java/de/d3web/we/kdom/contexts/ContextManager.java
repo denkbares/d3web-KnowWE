@@ -47,14 +47,14 @@ public class ContextManager {
 	}
 	
 	public void attachContextForClass(Section section, Context c) {
-		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getId(), c.getClass().getName());
+		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getID(), c.getClass().getName());
 		if(o != null && (o instanceof Set)) {
 			Set<Context> contextSet = ((Set<Context>)o);
 			contextSet.add(c);
 		}else {
 			Set<Context> contextSet = new HashSet<Context>();
 			contextSet.add(c);
-			KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getId(), c.getClass().getName(), contextSet);
+			KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getID(), c.getClass().getName(), contextSet);
 
 		}
 	
@@ -68,7 +68,7 @@ public class ContextManager {
 	 */
 	public void attachContext(Section section, Context context) {
 		
-		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getId(), context.getCID(), context);
+		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getID(), context.getCID(), context);
 
 //		String title = section.getArticle().getTitle();
 //		ArticleContextMap art = contextmap.get(title);
@@ -153,7 +153,7 @@ public class ContextManager {
 	 * @return
 	 */
 	public Context getContext(Section section, Section originalSection, String contextid) {
-		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getId(), contextid);
+		Object o = KnowWEUtils.getStoredObject(KnowWEEnvironment.DEFAULT_WEB, section.getTitle(), section.getID(), contextid);
 		if(o instanceof Context) {
 			if(((Context)o).isValidForSection(section)) {
 				return (Context)o;

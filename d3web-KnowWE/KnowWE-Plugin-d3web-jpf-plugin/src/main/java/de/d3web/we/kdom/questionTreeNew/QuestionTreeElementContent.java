@@ -22,9 +22,9 @@ package de.d3web.we.kdom.questionTreeNew;
 
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 
-public class QuestionDashTreeElementContent extends DashTreeElementContent {
+public class QuestionTreeElementContent extends DashTreeElementContent {
 
-	public QuestionDashTreeElementContent() {
+	public QuestionTreeElementContent() {
 		this.childrenTypes.add(new QuestionRefLine());
 		this.childrenTypes.add(new QuestionLine());
 		this.childrenTypes.add(new NumericCondLine());

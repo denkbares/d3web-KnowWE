@@ -26,17 +26,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import common.Logger;
 
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.blackboard.Blackboard;
+import de.d3web.core.session.blackboard.DefaultFact;
+import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
@@ -48,6 +56,7 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FindingSetEvent;
@@ -56,7 +65,8 @@ import de.d3web.we.utils.D3webUtils;
 
 public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings( {
+			"unchecked", "deprecation" })
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		String namespace = java.net.URLDecoder.decode(parameterMap
@@ -66,160 +76,204 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 				.get(KnowWEAttributes.SEMANO_TERM_NAME));
 		String valueid = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID);
 		String valuenum = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_NUM);
-		String valueids = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_IDS);
+		String topic = parameterMap.getTopic();
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
-
-		
-		
-		DPSEnvironment env = DPSEnvironmentManager.getInstance()
-				.getEnvironments(web);
-		Broker broker = env.getBroker(user);
 
 		if (namespace == null || objectid == null) {
 			return "null";
 		}
-		// Object value = null;
-		// List<Object> values = new ArrayList<Object>();
-		// if(valueid != null) {
-		// value = valueid;
-		// } else if(valuenum != null) {
-		// value = Double.valueOf(valuenum);
-		// }
-		// if(value != null) {
-		// values.add(value);
-		// }
-		// if(valueids != null) {
-		// String[] ids = valueids.split("\\,");
-		// for (String string : ids) {
-		// values.add(string.trim());
-		// }
-		// }
-		
-		
-		
-		
-		Term term = null;
-		term = SemanticAnnotationAction.getTerm(env, termName);
-		
-		//workaround TODO refactor
-		if(term == null) {
-			KnowledgeServiceSession kss = broker.getSession()
-			.getServiceSession(namespace);
-			if (kss instanceof D3webKnowledgeServiceSession) {
-				Question q = ((D3webKnowledgeServiceSession)kss).getBaseManagement().getKnowledgeBase().searchQuestion(objectid);
-				if(q != null) {
-					termName = q.getName();
-					term = SemanticAnnotationAction.getTerm(env, termName);
+
+
+		// if DPS is inactive
+		if (!ResourceBundle.getBundle("KnowWE_config").getString("dps.active").contains("true")) {
+			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(topic);
+			Session session = D3webUtils.getSession(topic, user, web);
+			Blackboard blackboard = session.getBlackboard();
+
+			// Necessary for FindingSetEvent
+			Question question = kbm.findQuestion(objectid);
+			if (question != null) {
+				Value value = null;
+				if (valueid != null) {
+					value = kbm.findValue(question, valueid);
+				}
+				else if (valuenum != null) {
+					value = new NumValue(Double.parseDouble(valuenum));
+				}
+
+				if (value != null) {
+					if (question instanceof QuestionMC && !value.equals(Unknown.getInstance())) {
+						Fact mcFact = blackboard.getValueFact(question);
+						if (mcFact != null && !mcFact.getValue().equals(Unknown.getInstance())) {
+							MultipleChoiceValue mcv = ((MultipleChoiceValue) mcFact.getValue());
+							List<ChoiceValue> thisMcv = (List<ChoiceValue>) ((MultipleChoiceValue) value).getValue();
+							for (ChoiceValue cv : (List<ChoiceValue>) mcv.getValue()) {
+								if (!thisMcv.contains(cv)) {
+									thisMcv.add(cv);
+								}
+							}
+						}
+					}
+
+					blackboard.addValueFact(new DefaultFact(question,
+							value, PSMethodUserSelected.getInstance(),
+									PSMethodUserSelected.getInstance()));
+
+					EventManager.getInstance().fireEvent(
+							new FindingSetEvent(question, value, namespace),
+							web, user, null);
 				}
 			}
 		}
+		// with active DPS
+		else  {
+			DPSEnvironment env = DPSEnvironmentManager.getInstance()
+					.getEnvironments(web);
+			Broker broker = env.getBroker(user);
 
-		IdentifiableInstance ii = null;
-		if (term != null) {
-			ii = SemanticAnnotationAction.getII(env, namespace, term);
-		}
-		if (ii == null) {
-			return "Question not found in KB: " + termName;
-		}
+			// Object value = null;
+			// List<Object> values = new ArrayList<Object>();
+			// if(valueid != null) {
+			// value = valueid;
+			// } else if(valuenum != null) {
+			// value = Double.valueOf(valuenum);
+			// }
+			// if(value != null) {
+			// values.add(value);
+			// }
+			// if(valueids != null) {
+			// String[] ids = valueids.split("\\,");
+			// for (String string : ids) {
+			// values.add(string.trim());
+			// }
+			// }
 
-		List<String> answers = new ArrayList<String>();
+			Term term = null;
+			term = SemanticAnnotationAction.getTerm(env, termName);
 
-		String qid = null;
-
-		KnowledgeServiceSession kss = broker.getSession().getServiceSession(
-				namespace);
-		
-		List<Information> userInfos = broker.getSession().getBlackboard()
-				.getOriginalUserInformation();
-		for (Information information : userInfos) {
-			IdentifiableInstance iio = information
-					.getIdentifiableObjectInstance();
-			if (!iio.equals(ii))
-				continue;
-			qid = iio.getObjectId();
-			Collection<IdentifiableInstance> iivs = information
-					.getIdentifiableValueInstances();
-			if (iivs.isEmpty())
-				break;
-			Iterator<IdentifiableInstance> iter = iivs.iterator();
-
-			while (iter.hasNext()) {
-				IdentifiableInstance iiv = iter.next();
-				Object val = iiv.getValue();
-				if (val instanceof String) {
-					answers.add((String) val);
+			// workaround TODO refactor
+			if (term == null) {
+				KnowledgeServiceSession kss = broker.getSession()
+						.getServiceSession(namespace);
+				if (kss instanceof D3webKnowledgeServiceSession) {
+					Question q = ((D3webKnowledgeServiceSession) kss).getBaseManagement().getKnowledgeBase().searchQuestion(
+							objectid);
+					if (q != null) {
+						termName = q.getName();
+						term = SemanticAnnotationAction.getTerm(env, termName);
+					}
 				}
 			}
-		}
-		
-		//HOTFIX for answer not set in mc-question.
-		// Occurred just once, dont know why exactly.
-		if (qid == null) 
-			qid = objectid;
 
-		// Necessary for FindingSetEvent
-		Question question = D3webUtils.getQuestion(kss, qid);
-		Value value = null;
-		
-		// We need the Answer (Choice) Object for the FindingSetEvent
-		if (question instanceof QuestionChoice) {
-			for (Choice choice : ((QuestionChoice) question).getAllAlternatives()) {
-				if (choice.getId().equals(valueid)) {
-					value = new ChoiceValue(choice);
+			IdentifiableInstance ii = null;
+			if (term != null) {
+				ii = SemanticAnnotationAction.getII(env, namespace, term);
+			}
+			if (ii == null) {
+				return "Question not found in KB: " + termName;
+			}
+
+			List<String> answers = new ArrayList<String>();
+
+			String qid = null;
+
+			KnowledgeServiceSession kss = broker.getSession().getServiceSession(
+					namespace);
+
+			List<Information> userInfos = broker.getSession().getBlackboard()
+					.getOriginalUserInformation();
+			for (Information information : userInfos) {
+				IdentifiableInstance iio = information
+						.getIdentifiableObjectInstance();
+				if (!iio.equals(ii)) continue;
+				qid = iio.getObjectId();
+				Collection<IdentifiableInstance> iivs = information
+						.getIdentifiableValueInstances();
+				if (iivs.isEmpty())
 					break;
+				Iterator<IdentifiableInstance> iter = iivs.iterator();
+
+				while (iter.hasNext()) {
+					IdentifiableInstance iiv = iter.next();
+					Object val = iiv.getValue();
+					if (val instanceof String) {
+						answers.add((String) val);
+					}
 				}
 			}
-		}
-		
-		boolean contains = false;
-		boolean mc = (question instanceof QuestionMC);
-		for (String a : answers) {
-			if (a.equals(valueid)) {
-				contains = true;
-			}
-		}
-		List<Object> valuesAfterClick = new ArrayList<Object>();
-		if (mc) {
-			if (!contains) {
-				for (String a : answers) {
-					valuesAfterClick.add(a);
+
+			// HOTFIX for answer not set in mc-question.
+			// Occurred just once, dont know why exactly.
+			if (qid == null) qid = objectid;
+
+			// Necessary for FindingSetEvent
+			Question question = D3webUtils.getQuestion(kss, qid);
+			Value value = null;
+
+			// We need the Answer (Choice) Object for the FindingSetEvent
+			if (question instanceof QuestionChoice) {
+				for (Choice choice : ((QuestionChoice) question).getAllAlternatives()) {
+					if (choice.getId().equals(valueid)) {
+						value = new ChoiceValue(choice);
+						break;
+					}
 				}
-				valuesAfterClick.add(valueid.trim());
-			} else {
-				for (String a : answers) {
-					if (!a.equals(valueid))
+			}
+
+			boolean contains = false;
+			boolean mc = (question instanceof QuestionMC);
+			for (String a : answers) {
+				if (a.equals(valueid)) {
+					contains = true;
+				}
+			}
+			List<Object> valuesAfterClick = new ArrayList<Object>();
+			if (mc) {
+				if (!contains) {
+					for (String a : answers) {
 						valuesAfterClick.add(a);
+					}
+					valuesAfterClick.add(valueid.trim());
 				}
-			}
+				else {
+					for (String a : answers) {
+						if (!a.equals(valueid)) valuesAfterClick.add(a);
+					}
+				}
 
-		} else {
-			if (valuenum != null) {
-				try {
-					Double doubleValue = Double.valueOf(valuenum);
-					valuesAfterClick.add(doubleValue);
-					// Necessary for FindingSetEvent
-					value = new NumValue(doubleValue);
+			}
+			else {
+				if (valuenum != null) {
+					try {
+						Double doubleValue = Double.valueOf(valuenum);
+						valuesAfterClick.add(doubleValue);
+						// Necessary for FindingSetEvent
+						value = new NumValue(doubleValue);
+
+					}
+					catch (NumberFormatException e) {
+					}
 					
-				} catch (NumberFormatException e) {
 				}
-				
-			} else {
-				valuesAfterClick.add(valueid.trim());
+				else {
+					valuesAfterClick.add(valueid.trim());
+				}
 			}
-		}
-		
-		if (value == null && valueid.equals(Unknown.getInstance().getId())) {
-			value = Unknown.getInstance();
-		}
-		
-		EventManager.getInstance().fireEvent(new FindingSetEvent(question, value, namespace), web, user, null);
 
-		Information info = new Information(namespace, objectid,
-				valuesAfterClick, TerminologyType.symptom,
-				InformationType.OriginalUserInformation);
-		kss.inform(info);
-		broker.update(info);
+			if (value == null && valueid.equals(Unknown.getInstance().getId())) {
+				value = Unknown.getInstance();
+			}
+
+			EventManager.getInstance().fireEvent(new FindingSetEvent(question, value, namespace),
+					web, user, null);
+
+			Information info = new Information(namespace, objectid,
+					valuesAfterClick, TerminologyType.symptom,
+					InformationType.OriginalUserInformation);
+			kss.inform(info);
+			broker.update(info);
+		}
 
 		try {
 			KnowWEFacade.getInstance().performAction("RefreshHTMLDialogAction", parameterMap);

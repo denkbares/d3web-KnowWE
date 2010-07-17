@@ -68,9 +68,9 @@ class QuestionLineCellRenderer extends TableCellContentRenderer {
 
 		int col = TableUtils.getColumn(sec);
 		
-		Context context  = ContextManager.getInstance().getContext(sec,KnowWEObjectTypeUtils.getAncestorOfType(sec,Table.class).getId()+"_col"+col);
+		Context context  = ContextManager.getInstance().getContext(sec,KnowWEObjectTypeUtils.getAncestorOfType(sec,Table.class).getID()+"_col"+col);
 		
-		String sectionID = sec.getId();
+		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
 		html.append( "<td style='background-color:#EEEEEE;'>   " );
 		generateContent(sectionText, sec, user, sectionID, html);

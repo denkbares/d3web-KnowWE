@@ -124,6 +124,7 @@ public class FindingToConditionBuilder {
 			Section comp, String comparator, Double valueOf,
 			QuestionNum questionNum) {
 		KnowWEUtils.clearMessages(article, comp, FindingToConditionBuilder.class, Message.class);
+
 		if (comparator.equals("=")) return new CondNumEqual(questionNum, valueOf);
 		else if (comparator.equals(">")) return new CondNumGreater(questionNum, valueOf);
 		else if (comparator.equals(">=")) return new CondNumGreaterEqual(questionNum, valueOf);
@@ -132,7 +133,7 @@ public class FindingToConditionBuilder {
 		else {
 			KnowWEUtils.storeSingleMessage(article, comp,
 					FindingToConditionBuilder.class, Message.class, new Message(
-					"Unkown comparator '" + comparator + "'."));
+							"Unkown comparator '" + comparator + "'."));
 			return null;
 		}
 	}

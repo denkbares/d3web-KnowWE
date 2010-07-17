@@ -25,6 +25,7 @@ import java.util.List;
 import de.d3web.core.inference.PSAction;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
 import de.d3web.we.kdom.objects.SolutionRef;
@@ -126,11 +127,11 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	}
 
 	@Override
-	public PSAction getAction(Section<SolutionValueAssignment> s) {
+	public PSAction getAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
 		Section<SolutionRef> solutionRef = s.findSuccessor(SolutionRef.class);
 		Section<ScorePoint> scoreRef = s.findSuccessor(ScorePoint.class);
 		ActionHeuristicPS a = new ActionHeuristicPS();
-		a.setSolution(solutionRef.get().getObject(solutionRef));
+		a.setSolution(solutionRef.get().getObject(article, solutionRef));
 		a.setScore(D3webUtils.getScoreForString(scoreRef.getOriginalText()));
 		return a;
 	}

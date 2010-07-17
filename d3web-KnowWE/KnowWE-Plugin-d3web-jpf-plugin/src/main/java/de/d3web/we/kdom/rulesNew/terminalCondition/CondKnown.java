@@ -23,6 +23,7 @@ import java.util.List;
 
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.QuestionRef;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -77,10 +78,10 @@ public class CondKnown extends D3webTerminalCondition<CondKnown> {
 	}
 
 	@Override
-	public TerminalCondition getTerminalCondition(Section<CondKnown> s) {
+	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<CondKnown> s) {
 		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
 		if (qRef != null) {
-			Question q = qRef.get().getObject(qRef);
+			Question q = qRef.get().getObject(article, qRef);
 
 			if (q != null) {
 				return new de.d3web.core.inference.condition.CondKnown(q);

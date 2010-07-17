@@ -22,13 +22,10 @@ package de.d3web.we.kdom.xcl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
-import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
@@ -43,15 +40,14 @@ import de.d3web.we.kdom.condition.NegatedFinding;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
-import de.d3web.we.terminology.KnowledgeRecyclingObjectType;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 import de.d3web.xcl.inference.PSMethodXCL;
 
-public class CoveringListContent extends XMLContent implements KnowledgeRecyclingObjectType {
+public class CoveringListContent extends XMLContent {
 
 	public static final String KBID_KEY = "kbid";
 	private final Pattern p = Pattern.compile("\"");
@@ -64,7 +60,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 		this.setCustomRenderer(new EditSectionRenderer());
 	}
 
-	public class CoveringListContentSubTreeHandler extends D3webReviseSubTreeHandler {
+	public class CoveringListContentSubTreeHandler extends D3webSubtreeHandler {
 
 		// KnowledgeBaseManagement kbm = null;
 		// String currentWeb = "";
@@ -76,7 +72,7 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 			// Set currentWeb
 			String currentWeb = s.getWeb();
 
-			KnowledgeBaseManagement kbm = getKBM(article, s);
+			KnowledgeBaseManagement kbm = getKBM(article);
 
 			if (kbm != null) {
 				// Analyse s (Has XCList-Children)
@@ -188,8 +184,8 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 				// Insert the Relation into the currentModel
 				String kbRelId = XCLModel.insertXCLRelation(kbm.getKnowledgeBase(), cond,
-						currentdiag, relationType, weight, rel.getId());
-				KnowWEUtils.storeSectionInfo(currentWeb, article.getTitle(), rel.getId(), KBID_KEY,
+						currentdiag, relationType, weight, rel.getID());
+				KnowWEUtils.storeSectionInfo(currentWeb, article.getTitle(), rel.getID(), KBID_KEY,
 						kbRelId);
 
 			}
@@ -264,67 +260,4 @@ public class CoveringListContent extends XMLContent implements KnowledgeRecyclin
 
 	}
 
-	@Override
-	public void cleanKnowledge(KnowWEArticle article, KnowledgeBaseManagement kbm) {
-
-		if (kbm != null) {
-			// KnowWEArticle lastArt = article.getLastVersionOfArticle();
-			//
-			// // get all XCLContent of the old article
-			// List<Section> oldXCLCs = new ArrayList<Section>();
-			// lastArt.getSection().findSuccessorsOfType(this.getClass(),
-			// oldXCLCs);
-			//
-			// // store all Solutions of those old XCLs, that havn't got reused
-			// in the current article
-			// Set<String> xclsToDelete = new HashSet<String>();
-			// for (Section os:oldXCLCs) {
-			// if (!os.isReusedBy(article.getTitle())) {
-			// List<Section> heads = new ArrayList<Section>();
-			// os.findSuccessorsOfType(XCLHead.class, heads);
-			// for (Section head:heads) {
-			// xclsToDelete.add(head.getOriginalText().replaceAll(p.toString(),
-			// "").trim());
-			// }
-			// }
-			// }
-			//
-			// // delete the xcls from the KnowledgeBase
-			// Collection<KnowledgeSlice> slices =
-			// kbm.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
-			// for (KnowledgeSlice slice:slices) {
-			// if (xclsToDelete.contains(((XCLModel)
-			// slice).getSolution().getText())) {
-			// kbm.getKnowledgeBase().remove(slice);
-			// //System.out.println("Deleted XCL " + slice.getId());
-			// }
-			// }
-
-			List<Section<XCLRelation>> newXCLs = new ArrayList<Section<XCLRelation>>();
-			article.getSection().findSuccessorsOfType(XCLRelation.class, newXCLs);
-
-			Set<String> kbIDs = new HashSet<String>();
-			for (Section<XCLRelation> xcl : newXCLs) {
-				kbIDs.add((String) KnowWEUtils.getStoredObject(article.getWeb(), article
-						.getTitle(), xcl.getId(), CoveringListContent.KBID_KEY));
-			}
-			// delete the xcls from the KnowledgeBase
-			Collection<KnowledgeSlice> slices = kbm.getKnowledgeBase().getAllKnowledgeSlicesFor(
-					PSMethodXCL.class, XCLModel.XCLMODEL);
-			for (KnowledgeSlice slice : new ArrayList<KnowledgeSlice>(slices)) {
-				XCLModel model = (XCLModel) slice;
-				for (de.d3web.xcl.XCLRelation rel : model.getAllRelations()) {
-					if (!kbIDs.contains(rel.getId())) {
-						model.removeRelation(rel);
-					}
-				}
-				if (model.getAllRelations().isEmpty()) {
-					kbm.getKnowledgeBase().remove(slice);
-				}
-
-			}
-			// System.out.println("Cleaned XCLs in " +
-			// (System.currentTimeMillis() - startTime) + "ms");
-		}
-	}
 }

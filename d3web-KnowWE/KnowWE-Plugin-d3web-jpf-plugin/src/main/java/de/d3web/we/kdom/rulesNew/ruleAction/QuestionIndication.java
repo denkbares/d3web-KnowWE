@@ -28,6 +28,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.indication.ActionIndication;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.QuestionnaireRef;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -104,7 +105,7 @@ public class QuestionIndication extends D3webRuleAction<QuestionIndication> {
 	}
 
 	@Override
-	public PSAction getAction(Section<QuestionIndication> s) {
+	public PSAction getAction(KnowWEArticle article, Section<QuestionIndication> s) {
 		List<Section<QuestionnaireRef>> qContainerrefs = new ArrayList<Section<QuestionnaireRef>>();
 		s.findSuccessorsOfType(QuestionnaireRef.class,
 				qContainerrefs);
@@ -114,7 +115,7 @@ public class QuestionIndication extends D3webRuleAction<QuestionIndication> {
 			ActionIndication a = new ActionIndication();
 			List<QASet> qContainers = new ArrayList<QASet>();
 			for (Section<QuestionnaireRef> section : qContainerrefs) {
-				QContainer qc = section.get().getObject(section);
+				QContainer qc = section.get().getObject(article, section);
 				if (qc != null) {
 					qContainers.add(qc);
 				}

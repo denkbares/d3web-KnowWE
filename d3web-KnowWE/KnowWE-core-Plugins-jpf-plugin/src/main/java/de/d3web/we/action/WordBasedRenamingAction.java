@@ -222,7 +222,7 @@ public class WordBasedRenamingAction extends DeprecatedAbstractKnowWEAction {
 				String checkBoxID = "replaceBox_"
 						+ article.getTitle()
 						+ TXT_SEPERATOR
-						+ WordBasedRenameFinding.getSec().getId() + TXT_SEPERATOR
+						+ WordBasedRenameFinding.getSec().getID() + TXT_SEPERATOR
 						+ WordBasedRenameFinding.getStart();
 				
 				mask.append("<tr>");
@@ -233,13 +233,13 @@ public class WordBasedRenamingAction extends DeprecatedAbstractKnowWEAction {
 				mask.append("<td>"
 						+ createAdditionalMatchingTextSpan(article,
 								WordBasedRenameFinding.getStart(),
-								WordBasedRenameFinding.getSec().getId(),
+								WordBasedRenameFinding.getSec().getID(),
 								0,
 								'p', true));
 				mask.append(" " + text + " ");
 				mask.append(createAdditionalMatchingTextSpan(article,
 								WordBasedRenameFinding.getStart(),
-								WordBasedRenameFinding.getSec().getId(),
+								WordBasedRenameFinding.getSec().getID(),
 								0,
 								'a', true));
 				mask.append("</td>");

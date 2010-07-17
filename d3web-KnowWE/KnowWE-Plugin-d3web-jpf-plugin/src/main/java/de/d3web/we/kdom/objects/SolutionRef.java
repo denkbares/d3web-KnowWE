@@ -1,9 +1,11 @@
 package de.d3web.we.kdom.objects;
 
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.terminology.TerminologyManager;
 
 public class SolutionRef extends D3webObjectRef<Solution> {
 
@@ -12,25 +14,20 @@ public class SolutionRef extends D3webObjectRef<Solution> {
 	}
 
 	@Override
-	public Solution getObject(Section<? extends ObjectRef<Solution>> s) {
+	@SuppressWarnings("unchecked")
+	public Solution getObjectFallback(KnowWEArticle article, Section<? extends ObjectRef<Solution>> s) {
 		if (s.get() instanceof SolutionRef) {
 
-			Section<? extends ObjectDef<Solution>> objectDefinition = TerminologyManager.getInstance().getObjectDefinition(
-					s);
-			Solution sol = null;
-			if (objectDefinition != null) {
-				sol = objectDefinition.get().getObject(objectDefinition);
-			}
+			Section<SolutionRef> sec = (Section<SolutionRef>) s;
+			String solutionName = sec.get().getTermName(sec);
 
+			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
+					article.getWeb()).getKBM(article.getTitle());
 
-			return sol;
+			Solution solution = mgn.findSolution(solutionName);
+			return solution;
 		}
 		return null;
-	}
-
-	@Override
-	public boolean objectExisting(Section<? extends ObjectRef<Solution>> s) {
-		return getObject(s) != null;
 	}
 
 }

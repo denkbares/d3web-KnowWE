@@ -133,7 +133,7 @@ public class SetQuickEditFlagAction extends DeprecatedAbstractKnowWEAction {
 	 * @param found
 	 */
 	private Section getSectionFromCurrentID(String nodeID, Section root) {
-		if (root.getId().equals(nodeID))
+		if (root.getID().equals(nodeID))
 			return root;
 
 		Section found = null;

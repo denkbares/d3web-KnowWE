@@ -19,7 +19,6 @@
 package de.d3web.we.kdom.report.message;
 
 import de.d3web.we.kdom.report.KDOMNotice;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 /**
  * Creates a notice, that an object has been found
  *
@@ -34,7 +33,7 @@ private String s;
 	}
 	
 	@Override
-	public String getVerbalization(KnowWEUserContext usercontext) {
+	public String getVerbalization() {
 		return "Object found: "+s;
 	}
 

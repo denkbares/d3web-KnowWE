@@ -1,7 +1,6 @@
 package de.d3web.we.kdom.report;
 
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * Abstract class for a message denoting a serious error in the
@@ -19,6 +18,6 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public abstract class KDOMError extends KDOMReportMessage {
 
 	@Override
-	public abstract String getVerbalization(KnowWEUserContext usercontext);
+	public abstract String getVerbalization();
 
 }

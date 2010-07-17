@@ -42,7 +42,7 @@ public class RuleSectionRenderer extends KnowWEDomRenderer {
 		@Override
 		public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder result) {
 			
-			result.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getId() + "\" />"));
+			result.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getID() + "\" />"));
 			StringBuilder messagesBuilder = new StringBuilder();
 			
 			result.append("\n{{{");
@@ -70,14 +70,14 @@ public class RuleSectionRenderer extends KnowWEDomRenderer {
 						} else if (msg.getMessageType() == Message.WARNING && foundWarning == false) {
 							warnings.add(KnowWEUtils.maskHTML("<a "//href=\"#\" " 
 									+ "class=\"highligh-rule\" "
-									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"
+									+ "rel=\"{kdomid: '"+r.getID()+"', topic: '"
 									+ r.getTitle()+"', depth: 0, breadth: 0}\""
 									+ "/>" + rnum + "</a>"));
 							foundWarning = true;
 						} else if (msg.getMessageType() == Message.ERROR && foundError == false) {
 							errors.add(KnowWEUtils.maskHTML("<a "//href=\"#\" " 
 									+ "class=\"highligh-rule\" "
-									+ "rel=\"{kdomid: '"+r.getId()+"', topic: '"
+									+ "rel=\"{kdomid: '"+r.getID()+"', topic: '"
 									+ r.getTitle()+"', depth: 0, breadth: 0}\""
 									+ "/>" + rnum + "</a>"));
 							foundError = true;
@@ -113,7 +113,7 @@ public class RuleSectionRenderer extends KnowWEDomRenderer {
 			String title = MessageKnOfficeGenerator.createNoteMSG("rule", "", 0, "", parsedCount).getMessageText();
 			
 			result.append(KnowWEUtils.maskHTML("<div title='"+title+"' class=\"ReRenderSectionMarker\" id=\"" 
-					+ sec.getId() + "-pre\" rel=\"{id:'"+sec.getId()+"'}\">"));
+					+ sec.getID() + "-pre\" rel=\"{id:'"+sec.getID()+"'}\">"));
 			
 			// Rendering children
 			StringBuilder b = new StringBuilder();

@@ -33,7 +33,7 @@ public class StartQuizAction extends DeprecatedAbstractKnowWEAction {
 		if (kdomid != null) {
 			Object storedValues = KnowWEEnvironment.getInstance().getArticleManager(
 					sec.getWeb()).getTypeStore().getStoredObject(sec.getTitle(),
-					sec.getId(),
+					sec.getID(),
 					TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
 			if (storedValues != null) {
 				if (storedValues instanceof Map) {

@@ -18,17 +18,17 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.logging.Logging;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.wisec.kdom.ListCriteriaRootType;
 import de.d3web.we.wisec.kdom.ListCriteriaType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class ListCriteriaD3SubtreeHandler extends D3webReviseSubTreeHandler<ListCriteriaType> {
+public class ListCriteriaD3SubtreeHandler extends D3webSubtreeHandler<ListCriteriaType> {
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListCriteriaType> s) {
 
-		KnowledgeBaseManagement kbm = getKBM(article, s);
+		KnowledgeBaseManagement kbm = getKBM(article);
 
 		if (kbm != null) {
 

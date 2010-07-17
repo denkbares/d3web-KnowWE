@@ -36,7 +36,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 
 public class SolutionsSection extends AbstractKopicSection {
 
@@ -49,15 +49,16 @@ public class SolutionsSection extends AbstractKopicSection {
 	@Override
 	protected void init() {
 		childrenTypes.add(new SolutionsContent());
+		this.setOrderSensitive(true);
 		this.addSubtreeHandler(Priority.increment(Priority.TERMINOLOGY), new SolutionsSubTreeHandler());
 	}
 	
-	private class SolutionsSubTreeHandler extends D3webReviseSubTreeHandler {
+	private class SolutionsSubTreeHandler extends D3webSubtreeHandler {
 	
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 	
-			KnowledgeBaseManagement kbm = getKBM(article, s);
+			KnowledgeBaseManagement kbm = getKBM(article);
 			
 			if (kbm != null) {
 	

@@ -32,8 +32,9 @@ import de.d3web.we.utils.KnowWEUtils;
 /**
  * @author Jochen
  * 
- * A DashTree-element (one line with dashes), which is always the root-element of the SubTree which comes after it.
- *
+ *         A DashTree-element (one line with dashes), which is always the
+ *         root-element of the SubTree which comes after it.
+ * 
  */
 public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 
@@ -53,30 +54,26 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 	 * @return
 	 */
 	public static int getLevel(Section<? extends DashTreeElement> s) {
-		if (s == null)
-			return -1;
-		if (DashTreeElement.class.isAssignableFrom(s.getObjectType().getClass())) {
-			String text = s.getOriginalText().trim();
-			if (text.length() == 0)
-				return -1;
-			int index = 0;
-			while (text.charAt(index) == '-') {
-				index++;
-			}
-			return index;
-		} else {
-			return -1;
+		if (s == null) return -1;
+
+		String text = s.getOriginalText().trim();
+
+		if (text.length() == 0) return -1;
+
+		int index = 0;
+		while (text.charAt(index) == '-') {
+			index++;
 		}
+		return index;
 	}
 
 	public static Section<? extends DashTreeElement> getDashTreeFather(Section<? extends DashTreeElement> s) {
-		if(s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
-			Section father = s.getFather();
-			if(father != null) {
-				Section grandFather = father.getFather();
-				if(grandFather != null) {
-					return grandFather.findChildOfType(DashTreeElement.class);
-				}
+
+		Section<?> father = s.getFather();
+		if (father != null) {
+			Section<?> grandFather = father.getFather();
+			if (grandFather != null) {
+				return grandFather.findChildOfType(DashTreeElement.class);
 			}
 		}
 		return null;
@@ -86,16 +83,16 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 	
 	public static List<Section<? extends DashTreeElement>> getDashTreeAncestors(Section<? extends DashTreeElement> s) {
 		List<Section<? extends DashTreeElement>> ancestors = new ArrayList<Section<? extends DashTreeElement>>();
-		List<Section> ancestorSubTrees = new ArrayList<Section>();
-		Section father = s.getFather();
-		if (father != null && father.getObjectType().isAssignableFromType(SubTree.class)) {
+		List<Section<?>> ancestorSubTrees = new ArrayList<Section<?>>();
+		Section<?> father = s.getFather();
+		if (father != null && father.getObjectType().isAssignableFromType(DashSubtree.class)) {
 			father = father.getFather();
 		}
-		while (father != null && father.getObjectType().isAssignableFromType(SubTree.class)) {
+		while (father != null && father.getObjectType().isAssignableFromType(DashSubtree.class)) {
 			ancestorSubTrees.add(father);
 			father = father.getFather();
 		}
-		for (Section subTree:ancestorSubTrees) {
+		for (Section<?> subTree : ancestorSubTrees) {
 			ancestors.add(subTree.findChildOfType(DashTreeElement.class));
 		}
 		return ancestors;
@@ -111,7 +108,7 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
+				Section<?> father) {
 
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 

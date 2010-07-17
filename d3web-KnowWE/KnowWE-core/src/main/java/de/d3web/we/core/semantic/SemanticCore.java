@@ -273,7 +273,7 @@ public class SemanticCore implements ISemanticCore {
 		addToStatementcache(sec, allStatements);
 
 		Logger.getLogger(this.getClass().getName()).finer(
-				"semantic core updating " + sec.getId() + "  "
+				"semantic core updating " + sec.getID() + "  "
 						+ allStatements.size());
 
 		addStaticStatements(inputio, sec);
@@ -322,7 +322,7 @@ public class SemanticCore implements ISemanticCore {
 	 * @see de.d3web.we.core.ISemanticCore#getContext(de.d3web.we.kdom.Section)
 	 */
 	public Resource getContext(Section sec) {
-		String name = sec.getId().hashCode() + "";
+		String name = sec.getID().hashCode() + "";
 		Resource context = contextmap.get(name);
 		if (context == null) {
 			RepositoryConnection con = uo.getConnection();

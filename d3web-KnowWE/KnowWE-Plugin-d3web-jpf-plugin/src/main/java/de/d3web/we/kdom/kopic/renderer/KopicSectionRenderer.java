@@ -41,7 +41,7 @@ public class KopicSectionRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
 		
-		string.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getId() + "\" ></a>"));
+		string.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getID() + "\" ></a>"));
 		//string.append("%%collapsebox-closed \n");
 		
 		StringBuilder builder = new StringBuilder();

@@ -57,7 +57,8 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @return true if this handler needs to create, false if not.
 	 */
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return true;
+		return article.isFullParse() || !s.isReusedBy(article.getTitle())
+				|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()));
 	}
 
 	/**
@@ -89,7 +90,8 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @return true if this handler needs to destroy, false if not.
 	 */
 	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return true;
+		return !article.isFullParse() && !s.isReusedBy(article.getTitle())
+				|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()));
 	}
 
 	/**

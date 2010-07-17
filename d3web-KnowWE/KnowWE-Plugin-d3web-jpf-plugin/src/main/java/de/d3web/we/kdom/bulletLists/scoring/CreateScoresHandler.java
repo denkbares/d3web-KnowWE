@@ -16,16 +16,15 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.scoring.Score;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class CreateScoresHandler extends SubtreeHandler {
+public class CreateScoresHandler extends D3webSubtreeHandler {
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
@@ -52,8 +51,7 @@ public class CreateScoresHandler extends SubtreeHandler {
 			String score = string.substring(string.indexOf("=") + 1).trim();
 			String question = s.getOriginalText();
 
-			KnowledgeBaseManagement kbm = D3webModule
-					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
+			KnowledgeBaseManagement kbm = getKBM(article);
 
 			if (kbm == null) return; // dirty hack for testing
 
@@ -79,9 +77,9 @@ public class CreateScoresHandler extends SubtreeHandler {
 
 			if (scoreV != null && d != null && cond != null) {
 
-				Rule rule = RuleFactory.createHeuristicPSRule(s.getId(), d, scoreV, cond);
+				Rule rule = RuleFactory.createHeuristicPSRule(s.getID(), d, scoreV, cond);
 				KnowWEUtils.storeSectionInfo(
-						s.getArticle().getWeb(), article.getTitle(), s.getId(),
+						s.getArticle().getWeb(), article.getTitle(), s.getID(),
 						de.d3web.we.kdom.rules.Rule.KBID_KEY, rule.getId());
 				
 			} else {
@@ -133,10 +131,10 @@ public class CreateScoresHandler extends SubtreeHandler {
 	private QuestionOC createQuestion(String question, String defaultValue,
 			KnowledgeBaseManagement kbm, Section s) {
 
-		Choice a1 = new Choice(s.getId() + defaultValue);
+		Choice a1 = new Choice(s.getID() + defaultValue);
 		a1.setText(defaultValue);
 
-		Choice a2 = new Choice(s.getId() + "not " + defaultValue);
+		Choice a2 = new Choice(s.getID() + "not " + defaultValue);
 		a2.setText("not " + defaultValue);
 
 		QuestionOC q = kbm.createQuestionOC(question, kbm.getKnowledgeBase()

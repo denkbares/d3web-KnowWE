@@ -179,7 +179,7 @@ public class D3webUtils {
 
 		// current DashTreeElement
 		Section<DashTreeElement> element = KnowWEObjectTypeUtils
-				.getAncestorOfType(s, new DashTreeElement());
+				.getAncestorOfType(s, DashTreeElement.class);
 		// get dashTree-father
 		Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
 				.getDashTreeFather(element);

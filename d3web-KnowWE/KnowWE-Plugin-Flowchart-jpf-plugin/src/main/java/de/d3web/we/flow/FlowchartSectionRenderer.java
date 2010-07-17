@@ -68,9 +68,9 @@ public class FlowchartSectionRenderer extends KnowWEDomRenderer {
 					.maskHTML(
 					"<div style='cursor: pointer;' " +
 					"onclick='window.open(\""
-					+ createEditURL(sec.getId(), topic)
+					+ createEditURL(sec.getID(), topic)
 					+ "\", \""
-					+ sec.getId().replaceAll("[^\\w]", "_")
+					+ sec.getID().replaceAll("[^\\w]", "_")
 					+ "\")'>"
 					+ "\r\n"
 					+

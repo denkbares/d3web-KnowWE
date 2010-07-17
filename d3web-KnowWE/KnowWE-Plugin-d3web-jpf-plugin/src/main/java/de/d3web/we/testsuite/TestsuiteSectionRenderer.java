@@ -40,10 +40,10 @@ public class TestsuiteSectionRenderer extends KnowWEDomRenderer {
 		StringBuilder b = new StringBuilder();
 		
 		// Render Title and Download Buttons
-		String title = "Testsuite "	+ generateLinkIcons(article.getTitle(), article.getWeb(), sec.getId());		
+		String title = "Testsuite "	+ generateLinkIcons(article.getTitle(), article.getWeb(), sec.getID());		
 		
 		// Render anker
-		b.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getId() + "\" />"));
+		b.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getID() + "\" />"));
 		
 		// Render Errors / Tooltip
 		String tooltip = null;

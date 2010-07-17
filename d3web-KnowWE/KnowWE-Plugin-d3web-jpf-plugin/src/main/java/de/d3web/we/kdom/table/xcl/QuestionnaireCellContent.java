@@ -8,11 +8,10 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class QuestionnaireCellContent extends
@@ -33,15 +32,14 @@ public class QuestionnaireCellContent extends
 		this.addSubtreeHandler(new QuestionnaireCellHandler());
 	}
 
-	class QuestionnaireCellHandler extends SubtreeHandler<QuestionnaireCellContent> {
+	class QuestionnaireCellHandler extends D3webSubtreeHandler<QuestionnaireCellContent> {
 
 		public static final String KEY_REPORT = "report_message";
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionnaireCellContent> s) {
-			KnowledgeBaseManagement mgn = D3webModule
-					.getKnowledgeRepresentationHandler(article.getWeb())
-					.getKBM(article, this, s);
+
+			KnowledgeBaseManagement mgn = getKBM(article);
 
 			if (mgn == null) {
 				return null;

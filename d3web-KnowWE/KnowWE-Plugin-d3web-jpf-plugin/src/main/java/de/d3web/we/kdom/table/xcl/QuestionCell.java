@@ -30,7 +30,6 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.KnowledgeUtils;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -38,9 +37,9 @@ import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -94,7 +93,7 @@ class QuestionCellRenderer extends TableCellContentRenderer {
 			title = ((Message) o).getMessageText();
 		}
 
-		String sectionID = sec.getId();
+		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
 		html.append("<td title='" + title
 				+ "' style='background-color:#EEEEEE;'>   ");
@@ -116,15 +115,13 @@ class QuestionCellRenderer extends TableCellContentRenderer {
 
 }
 
-class QuestionCellHandler extends SubtreeHandler {
+class QuestionCellHandler extends D3webSubtreeHandler {
 
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-		KnowledgeBaseManagement mgn = D3webModule
-				.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
-						article, this, s);
+		KnowledgeBaseManagement mgn = getKBM(article);
 
 		if (mgn == null) {
 			return null;
@@ -134,7 +131,7 @@ class QuestionCellHandler extends SubtreeHandler {
 				.getAncestorOfType(s, Table.class);
 		Section questionnaireSection = (Section) KnowWEUtils.getStoredObject(s
 				.getArticle().getWeb(), s.getTitle(), tableContentSection
-				.getId(),
+				.getID(),
 				CoveringTableHeaderColumnCellContent.QUESTIONNAIRE_CELL);
 
 		QContainer parent = null;

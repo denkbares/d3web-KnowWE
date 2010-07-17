@@ -168,15 +168,15 @@ public class KBRenderer extends AbstractTagHandler {
 							for (Section<Rule> rule : allRules) {
 								String kbRuleId = (String) KnowWEUtils.getStoredObject(
 										rule.getWeb(), topic,
-										rule.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
-								idMap.put(kbRuleId, rule.getId());
+										rule.getID(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
+								idMap.put(kbRuleId, rule.getID());
 							}
 
 							for (Section<BulletContentType> bullet : allBulletContentTypes) {
 								String kbRuleId = (String) KnowWEUtils.getStoredObject(
 										bullet.getWeb(), topic,
-										bullet.getId(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
-								idMap.put(kbRuleId, bullet.getId());
+										bullet.getID(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
+								idMap.put(kbRuleId, bullet.getID());
 							}
 						}
 						String kdomid = idMap.get(r.getId());
@@ -259,10 +259,9 @@ public class KBRenderer extends AbstractTagHandler {
 					// + "]";
 					//
 					// }
-					//
-					// text.append("<p /> " + model.getSolution().getName() +
-					// thresholds
-					// + ": <br />");
+
+					text.append("<p /> " + model.getSolution().getName()
+							+ ": <br />");
 
 					Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
 							.getTypedRelations();

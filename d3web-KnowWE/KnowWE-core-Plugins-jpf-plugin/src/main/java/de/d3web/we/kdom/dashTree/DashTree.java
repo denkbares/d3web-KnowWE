@@ -45,7 +45,7 @@ public class DashTree extends DefaultAbstractKnowWEObjectType {
 
 	public DashTree() {
 		this.sectionFinder = new AllTextSectionFinder();
-		this.childrenTypes.add(new SubTree());
+		this.childrenTypes.add(new DashSubtree());
 		this.childrenTypes.add(new CommentLineType());
 		this.setCustomRenderer(new PreRenderer());
 	}
@@ -62,7 +62,7 @@ public class DashTree extends DefaultAbstractKnowWEObjectType {
 	protected void replaceDashTreeElementContentType(AbstractKnowWEObjectType dashTree, DashTreeElementContent newContentType) {
 		List<KnowWEObjectType> types = dashTree.getAllowedChildrenTypes();
 		for (KnowWEObjectType knowWEObjectType : types) {
-			if (knowWEObjectType instanceof SubTree) {
+			if (knowWEObjectType instanceof DashSubtree) {
 				List<KnowWEObjectType> content = knowWEObjectType
 						.getAllowedChildrenTypes();
 				for (KnowWEObjectType knowWEObjectType2 : content) {
@@ -84,10 +84,10 @@ public class DashTree extends DefaultAbstractKnowWEObjectType {
 		}
 	}
 
-	class PreRenderer extends KnowWEDomRenderer {
+	class PreRenderer extends KnowWEDomRenderer<DashTree> {
 
 		@Override
-		public void render(KnowWEArticle article, Section sec,
+		public void render(KnowWEArticle article, Section<DashTree> sec,
 				KnowWEUserContext user, StringBuilder string) {
 
 			string.append("{{{");

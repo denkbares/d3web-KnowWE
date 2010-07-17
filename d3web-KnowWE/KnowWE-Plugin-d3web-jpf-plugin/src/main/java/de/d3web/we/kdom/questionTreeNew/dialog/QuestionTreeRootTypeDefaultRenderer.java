@@ -42,7 +42,7 @@ public class QuestionTreeRootTypeDefaultRenderer extends DefaultMarkupRenderer{
 			KnowWEUserContext user, StringBuilder string) {
 		
 		boolean renderDialog = Boolean.parseBoolean( DefaultMarkupType.getAnnotation(sec, "dialog") );
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getId() + "\" >\n"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() + "\" >\n"));
 		string.append(KnowWEUtils.maskHTML("<a name='" + KnowWEUtils.getAnchor(sec) + "'></a>\n"));		
 		string.append("{{{\n");	
 		
@@ -50,9 +50,9 @@ public class QuestionTreeRootTypeDefaultRenderer extends DefaultMarkupRenderer{
 			
 			string.append(KnowWEUtils.maskHTML("<div id=\"\" style=\"float:right;\">"));
 			
-			string.append(KnowWEUtils.maskHTML("<span class=\"dt-ajax pointer\" rel=\"{dt : '', KdomNodeId : '"+sec.getId()+"'}\"><img src='KnowWEExtension/images/dt_icon_explanation2.png' alt='Default decision tree view' title='Default decision tree view'/></span> "
-	        + "<span class=\"dt-ajax pointer\" rel=\"{dt : 'question', KdomNodeId : '"+sec.getId()+"'}\"><img src='KnowWEExtension/images/icon_question_small.gif' alt='Show decision tree in question mode' title='Show decision tree in question mode'/></span> "
-	        + "<span class=\"dt-ajax pointer\" rel=\"{dt : 'answer', KdomNodeId : '"+sec.getId()+"'}\"><img src='KnowWEExtension/images/icon_diagnosis.gif' alt='Show decision tree in anwser mode' title='Show decision tree in anwser mode'/></span>"
+			string.append(KnowWEUtils.maskHTML("<span class=\"dt-ajax pointer\" rel=\"{dt : '', KdomNodeId : '"+sec.getID()+"'}\"><img src='KnowWEExtension/images/dt_icon_explanation2.png' alt='Default decision tree view' title='Default decision tree view'/></span> "
+	        + "<span class=\"dt-ajax pointer\" rel=\"{dt : 'question', KdomNodeId : '"+sec.getID()+"'}\"><img src='KnowWEExtension/images/icon_question_small.gif' alt='Show decision tree in question mode' title='Show decision tree in question mode'/></span> "
+	        + "<span class=\"dt-ajax pointer\" rel=\"{dt : 'answer', KdomNodeId : '"+sec.getID()+"'}\"><img src='KnowWEExtension/images/icon_diagnosis.gif' alt='Show decision tree in anwser mode' title='Show decision tree in anwser mode'/></span>"
 	        ));
 			string.append(KnowWEUtils.maskHTML("</div>\n"));
 		} 

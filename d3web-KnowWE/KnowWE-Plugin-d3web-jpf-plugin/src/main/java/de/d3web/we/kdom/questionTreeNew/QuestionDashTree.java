@@ -28,6 +28,6 @@ public class QuestionDashTree extends DashTree {
 	public QuestionDashTree() {
 		super();
 		this.setCustomRenderer(new EditSectionRenderer());
-		this.replaceDashTreeElementContentType(this, new QuestionDashTreeElementContent());
+		this.replaceDashTreeElementContentType(this, new QuestionTreeElementContent());
 	}
 }

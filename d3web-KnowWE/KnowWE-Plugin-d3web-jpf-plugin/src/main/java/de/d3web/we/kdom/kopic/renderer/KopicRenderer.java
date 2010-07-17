@@ -38,7 +38,7 @@ public class KopicRenderer extends KnowWEDomRenderer {
 		String title = "Knowledge "
 						+ generateLinkIcons(user.getUsername(), article.getTitle(), 
 						KnowWEEnvironment.generateDefaultID(
-								article.getTitle()), article.getWeb(), false, sec.getId());
+								article.getTitle()), article.getWeb(), false, sec.getID());
 		StringBuilder b = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
 		string.append(wrapCollapsebox(title, b.toString()));

@@ -28,14 +28,13 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -83,7 +82,7 @@ class QuestionCellContentRenderer extends TableCellContentRenderer {
 			title = ((Message) o).getMessageText();
 		}
 
-		String sectionID = sec.getId();
+		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
 		html.append("<td title='" + title + "' style='background-color:#96BBD9;'>   ");
 		generateContent(sectionText, sec, user, sectionID, html);
@@ -100,14 +99,13 @@ class QuestionCellContentRenderer extends TableCellContentRenderer {
 
 }
 
-class SolutionCellHandler extends SubtreeHandler {
+class SolutionCellHandler extends D3webSubtreeHandler {
 
 	public static final String KEY_REPORT = "report_message";
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-		KnowledgeBaseManagement mgn = D3webModule
-				.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
+		KnowledgeBaseManagement mgn = getKBM(article);
 
 		if (mgn == null) {
 			return null;

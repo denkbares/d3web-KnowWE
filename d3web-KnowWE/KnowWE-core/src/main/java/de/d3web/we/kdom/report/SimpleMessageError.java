@@ -1,6 +1,5 @@
 package de.d3web.we.kdom.report;
 
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class SimpleMessageError extends KDOMError{
 
@@ -11,7 +10,7 @@ public class SimpleMessageError extends KDOMError{
 	}
 	
 	@Override
-	public String getVerbalization(KnowWEUserContext usercontext) {
+	public String getVerbalization() {
 		return message;
 	}
 

@@ -82,24 +82,6 @@ public class KnowWEObjectTypeUtils {
 	}
 	
 	/**
-	 * Get the father element of the current cell content section. Search as long as the section
-	 * is instance of AbstractXMLObjectType. Used to get the <code>Table</code> section itself.
-	 * 
-	 * @param child
-	 * @return
-	 */
-	public static <T extends KnowWEObjectType>Section<T> getAncestorOfType(Section child, T t) {
-		if( child == null )
-			return null;
-		
-			if( t.getClass().isAssignableFrom(
-					child.getObjectType().getClass() ) ) return child;
-	
-		 
-		return getAncestorOfType(child.getFather(), t);
-	}
-	
-	/**
 	 * Getting of all ChildrenTypes of a
 	 * KnowWEObjectType.
 	 * 
@@ -186,7 +168,7 @@ public class KnowWEObjectTypeUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static<OT extends KnowWEObjectType> Section<OT> getAncestorOfType(Section<? extends KnowWEObjectType> child, Class<OT> clazz) {
+	public static <OT extends KnowWEObjectType> Section<OT> getAncestorOfType(Section<? extends KnowWEObjectType> child, Class<OT> clazz) {
 		if( child == null ) 
 			return null;		
 		

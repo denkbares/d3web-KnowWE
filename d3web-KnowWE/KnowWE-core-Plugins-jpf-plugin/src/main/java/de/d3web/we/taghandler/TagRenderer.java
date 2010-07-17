@@ -42,7 +42,7 @@ public class TagRenderer extends KnowWEDomRenderer{
 
 		if(type instanceof TagHandlerTypeContent) {
 			Map<String,String> attValues = null; //((TagHandlerTypeContent)type).getValuesForSections().get(attrContent);
-			Object storedValues = KnowWEEnvironment.getInstance().getArticleManager(sec.getWeb()).getTypeStore().getStoredObject(sec.getTitle(), sec.getId(), TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
+			Object storedValues = KnowWEEnvironment.getInstance().getArticleManager(sec.getWeb()).getTypeStore().getStoredObject(sec.getTitle(), sec.getID(), TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
 			if(storedValues != null) {
 				if(storedValues instanceof Map) {
 					attValues = (Map<String,String>) storedValues;
@@ -50,7 +50,7 @@ public class TagRenderer extends KnowWEDomRenderer{
 			}
 
 			if (attValues != null) {
-				attValues.put("kdomid", sec.getId());
+				attValues.put("kdomid", sec.getID());
 				for (String elem: attValues.keySet()) {
 					HashMap<String, TagHandler> defaultTagHandlers = KnowWEEnvironment.getInstance().getDefaultTagHandlers();
 					if (defaultTagHandlers.containsKey(elem.toLowerCase())) {

@@ -65,7 +65,7 @@ public class Conjunct extends DefaultAbstractKnowWEObjectType {
 			try {
 				UpperOntology uo = UpperOntology.getInstance();
 				URI compositeexpression = uo.getHelper().createlocalURI(
-						s.getTitle() + ".." + s.getId());
+						s.getTitle() + ".." + s.getID());
 				io.addStatement(uo.getHelper().createStatement(compositeexpression,
 						RDF.TYPE, D3WebOWLVokab.CONJUNCTION));
 				io.addLiteral(compositeexpression);

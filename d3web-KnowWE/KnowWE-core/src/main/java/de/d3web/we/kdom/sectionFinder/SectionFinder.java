@@ -23,6 +23,7 @@ package de.d3web.we.kdom.sectionFinder;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SectionFinderConstraint;
 
@@ -62,6 +63,7 @@ public abstract class SectionFinder {
 	 * @return List of SectionFinderResults with informations about what part of the next belongs
 	 * to the ObjectType calling the SectionFinder
 	 */
-	public abstract List<SectionFinderResult> lookForSections(String text, Section father);
+	public abstract List<SectionFinderResult> lookForSections(
+			String text, Section<? extends KnowWEObjectType> father);
 
 }

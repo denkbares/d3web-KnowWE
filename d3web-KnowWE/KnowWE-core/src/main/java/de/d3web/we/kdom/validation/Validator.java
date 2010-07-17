@@ -249,11 +249,11 @@ public class Validator {
 		List<Section> nodes = new ArrayList<Section>();
 		root.getAllNodesPreOrder(nodes);
 		for (Section node:nodes) {
-			if (IDs.contains(node.getId()) && !duplicateIDs.contains(node.getId())) {
-				duplicateIDs.add(node.getId());
+			if (IDs.contains(node.getID()) && !duplicateIDs.contains(node.getID())) {
+				duplicateIDs.add(node.getID());
 				valid = false;
 			} else {
-				IDs.add(node.getId());
+				IDs.add(node.getID());
 			}
 			if (!validateNode(node)) {
 				valid = false;
@@ -288,15 +288,15 @@ public class Validator {
 		
 		if (node.getOriginalText() == null) {
 			log(Level.SEVERE, 
-					"Text of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
-							+ "</span>" : node.getId()) + "' is null" + (verbose ? "\n" : ""));
+					"Text of node '" + (htmlAllowed ? "<span title='" + node.getID() + "'>" + node.getShortId() 
+							+ "</span>" : node.getID()) + "' is null" + (verbose ? "\n" : ""));
 			valid = false;
 		}
 		
 		if (node.getObjectType() == null) {
 			log(Level.SEVERE, 
-					"ObjectType of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
-							+ "</span>" : node.getId()) + "' is null" + (verbose ? "\n" : ""));
+					"ObjectType of node '" + (htmlAllowed ? "<span title='" + node.getID() + "'>" + node.getShortId() 
+							+ "</span>" : node.getID()) + "' is null" + (verbose ? "\n" : ""));
 			valid = false;
 		} 
 		
@@ -304,8 +304,8 @@ public class Validator {
 				&& !(node.getObjectType() != null 
 					&& node.getObjectType() instanceof KnowWEArticle)) {
 			log(Level.WARNING, 
-					"Father of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
-							+ "</span>" : node.getId()) + "' is null" + (verbose ? "\n" : ""));
+					"Father of node '" + (htmlAllowed ? "<span title='" + node.getID() + "'>" + node.getShortId() 
+							+ "</span>" : node.getID()) + "' is null" + (verbose ? "\n" : ""));
 			valid = false;
 		}
 		
@@ -319,8 +319,8 @@ public class Validator {
 		
 		if (node.getOffSetFromFatherText() <= -1) {
 			log(Level.WARNING, 
-					"OffSetFromFatherText of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
-							+ "</span>" : node.getId()) + "' isn't set" + (verbose ? "\n" : ""));
+					"OffSetFromFatherText of node '" + (htmlAllowed ? "<span title='" + node.getID() + "'>" + node.getShortId() 
+							+ "</span>" : node.getID()) + "' isn't set" + (verbose ? "\n" : ""));
 			if (correcting 
 					&& node.getFather() != null
 					&& node.getFather().getOriginalText() != null
@@ -328,8 +328,8 @@ public class Validator {
 				node.setOffSetFromFatherText(node.getFather().getOriginalText().indexOf(node.getOriginalText()));
 				log(Level.INFO, 
 						"Set OffSetFromFatherText in node '" 
-						+ (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
-								+ "</span>" : node.getId()) 
+						+ (htmlAllowed ? "<span title='" + node.getID() + "'>" + node.getShortId() 
+								+ "</span>" : node.getID()) 
 						+ "' to " + node.getOffSetFromFatherText()   
 						+ (verbose ? "\nFather:\n<" + node.getFather().getOriginalText() 
 								+ ">\nNode:\n<" + node.getOriginalText() + ">\n" : ""));
@@ -348,8 +348,8 @@ public class Validator {
 					.startsWith(node.getOriginalText())) {
 			
 			log(Level.WARNING, 
-					"OffSetFromFatherText of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
-							+ "</span>" : node.getId()) + "' doesn't fit" + (verbose ? "\n" : ""));
+					"OffSetFromFatherText of node '" + (htmlAllowed ? "<span title='" + node.getID() + "'>" + node.getShortId() 
+							+ "</span>" : node.getID()) + "' doesn't fit" + (verbose ? "\n" : ""));
 			
 			if (correcting && containsOneOf(node.getFather().getOriginalText(), node.getOriginalText())) {
 				int old = node.getOffSetFromFatherText();
@@ -362,8 +362,8 @@ public class Validator {
 				int endIndex2 = isEnd2 ? node.getOriginalText().length() : textLength;
 				node.setOffSetFromFatherText(offset);
 				log(Level.INFO, 
-						"Corrected OffSetFromFatherText in node '" + (htmlAllowed ? "<span title='" + node.getId() 
-								+ "'>" + node.getShortId() + "</span>" : node.getId()) + "'. "
+						"Corrected OffSetFromFatherText in node '" + (htmlAllowed ? "<span title='" + node.getID() 
+								+ "'>" + node.getShortId() + "</span>" : node.getID()) + "'. "
 						+ "Old: " + old + ", New: " + node.getOffSetFromFatherText()  
 						+ (verbose ? "\nFather:\n" + (isStart ? "<" : "...") 
 								+ node.getFather().getOriginalText().substring(beginIndex, endIndex1) 
@@ -386,13 +386,13 @@ public class Validator {
 					if (child.getFather() == null || !child.getFather().equals(node)) {
 						if (child.getFather() == null) {
 							log(Level.WARNING, 
-									"Father of node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" 
-											+ node.getShortId() + "</span>" : node.getId()) 
+									"Father of node '" + (htmlAllowed ? "<span title='" + node.getID() + "'>" 
+											+ node.getShortId() + "</span>" : node.getID()) 
 											+ "' is null" + (verbose ? "\n" : ""));
 						} else {
 							log(Level.WARNING, 
-									"Node '" + (htmlAllowed ? "<span title='" + node.getId() + "'>" 
-											+ node.getShortId() + "</span>" : node.getId()) 
+									"Node '" + (htmlAllowed ? "<span title='" + node.getID() + "'>" 
+											+ node.getShortId() + "</span>" : node.getID()) 
 											+ "' has wrong father" + (verbose ? "\n" : ""));
 						}
 						if (correcting && containsOneOf(node.getOriginalText(), child.getOriginalText())) {
@@ -400,9 +400,9 @@ public class Validator {
 							child.setFather(node);
 							Logger.getLogger(name).log(Level.INFO, 
 									"Repaired missing/wrong link to father in node '" 
-									+ (htmlAllowed ? "<span title='" + node.getId() + "'>" 
+									+ (htmlAllowed ? "<span title='" + node.getID() + "'>" 
 											+ node.getShortId() 
-											+ "</span>" : node.getId()) + "'"  + (verbose ? "\n" : "")); 
+											+ "</span>" : node.getID()) + "'"  + (verbose ? "\n" : "")); 
 							
 							int offset = node.getOriginalText().indexOf(child.getOriginalText());
 							boolean isStart = offset <= textLength;
@@ -414,8 +414,8 @@ public class Validator {
 							child.setOffSetFromFatherText(offset);
 							log(Level.INFO, 
 									"Set OffSetFromFatherText in node '" + (htmlAllowed ? "<span title='" 
-											+ node.getId() + "'>" + node.getShortId() 
-											+ "</span>" : node.getId()) 
+											+ node.getID() + "'>" + node.getShortId() 
+											+ "</span>" : node.getID()) 
 									+ "' to " + offset  
 									+ (verbose ? "\nFather:\n" + (isStart ? "<" : "...") 
 											+ node.getOriginalText().substring(beginIndex, endIndex1) 
@@ -431,8 +431,8 @@ public class Validator {
 			if (!node.getOriginalText().equals(builder.toString())) {
 				if (logging) {
 					log(Level.SEVERE, "Text of children doesn't fit to text of node '" 
-							+ (htmlAllowed ? "<span title='" + node.getId() + "'>" + node.getShortId() 
-							+ "</span>" : node.getId()) + "'");
+							+ (htmlAllowed ? "<span title='" + node.getID() + "'>" + node.getShortId() 
+							+ "</span>" : node.getID()) + "'");
 					if (verbose) {
 						int lDist = StringUtils.getLevenshteinDistance(node.getOriginalText(), builder.toString());
 						log(Level.INFO, " Levenshtein distance = " + lDist);

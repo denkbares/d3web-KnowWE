@@ -64,7 +64,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 	
 	public static Map<String, String> getAttributeMapFor(Section<? extends AbstractXMLObjectType> s) {
 		return (Map<String, String>) KnowWEUtils.getStoredObject(s.getWeb(),
-				s.getTitle(), s.getId(), XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
+				s.getTitle(), s.getID(), XMLSectionFinder.ATTRIBUTE_MAP_STORE_KEY);
 		
 	}
 	

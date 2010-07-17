@@ -27,12 +27,12 @@ import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionnaireDef;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementDef.QuestionTreeElementDefSubtreeHandler;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
@@ -41,7 +41,7 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.TerminologyManager;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
 public class QClassLine extends DefaultAbstractKnowWEObjectType {
@@ -54,8 +54,8 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		QuestionnaireDef qc = new QuestionnaireDef();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR5));
 		qc.setSectionFinder(new AllTextFinderTrimmed());
-		qc.addSubtreeHandler(Priority.HIGHEST,
-				new CreateQuestionnaireHandler());
+		qc.addSubtreeHandler(Priority.HIGHEST, new CreateQuestionnaireHandler());
+		qc.setOrderSensitive(true);
 		this.childrenTypes.add(qc);
 	}
 
@@ -63,10 +63,10 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new ConditionalAllTextFinder() {
 
 			@Override
-			protected boolean condition(String text, Section father) {
+			protected boolean condition(String text, Section<?> father) {
 
 				Section<DashTreeElement> s = KnowWEObjectTypeUtils
-						.getAncestorOfType(father, new DashTreeElement());
+						.getAncestorOfType(father, DashTreeElement.class);
 				if (DashTreeElement.getLevel(s) == 0) {
 					// is root level
 					return true;
@@ -74,7 +74,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 				Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
 						.getDashTreeFather(s);
 				if (dashTreeFather != null) {
-					// is child of a QClass declration => also declaration
+					// is child of a QClass declaration => also declaration
 					if (dashTreeFather.findSuccessor(QClassLine.class) != null) {
 						return true;
 					}
@@ -85,20 +85,18 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		};
 	}
 
-	static class CreateQuestionnaireHandler extends SubtreeHandler<QuestionnaireDef> {
+	static class CreateQuestionnaireHandler
+			extends QuestionTreeElementDefSubtreeHandler<QuestionnaireDef> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionnaireDef> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article,
+				Section<QuestionnaireDef> qcSec) {
 
-			Section<QuestionnaireDef> qcSec = (s);
-
-			KnowledgeBaseManagement mgn = D3webModule
-					.getKnowledgeRepresentationHandler(article.getWeb())
-					.getKBM(article, this, s);
+			KnowledgeBaseManagement mgn = getKBM(article);
 			//ReviseSubtreeHandler will be called again with a correct mgn
 			if (mgn == null) return null;
 
-			String name = s.getOriginalText();
+			String name = qcSec.getOriginalText();
 
 			IDObject o = mgn.findQContainer(name);
 
@@ -107,7 +105,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 						.getSimpleName()));
 			} else {
 				Section<DashTreeElement> element = KnowWEObjectTypeUtils
-						.getAncestorOfType(s, new DashTreeElement());
+						.getAncestorOfType(qcSec, DashTreeElement.class);
 				Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
 						.getDashTreeFather(element);
 				QASet parent = mgn.getKnowledgeBase().getRootQASet();
@@ -126,13 +124,30 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 
 				QContainer qc = mgn.createQContainer(name, parent);
 				if (qc != null) {
-					qcSec.get().storeObject(qcSec, qc);
+					if (!article.isFullParse()) parent.moveChildToPosition(qc,
+							qcSec.get().getPosition(qcSec));
+					qcSec.get().storeObject(article, qcSec, qc);
+					TerminologyManager.getInstance().registerTermDef(article, qcSec);
 					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(qc.getClass().getSimpleName()
 							+ " " + qc.getName()));
 				} else {
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(name, this.getClass()));
 				}
 			}
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<QuestionnaireDef> s) {
+
+			QContainer q = s.get().getObjectFromLastVersion(article, s);
+			try {
+				if (q != null) q.getKnowledgeBase().remove(q);
+			}
+			catch (IllegalAccessException e) {
+				article.setFullParse(true, this);
+				// e.printStackTrace();
+			}
+			TerminologyManager.getInstance().unregisterTermDef(article, s);
 		}
 
 	}

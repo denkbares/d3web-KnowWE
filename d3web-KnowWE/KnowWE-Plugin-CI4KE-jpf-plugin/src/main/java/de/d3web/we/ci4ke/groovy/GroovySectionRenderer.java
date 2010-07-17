@@ -47,7 +47,7 @@ public class GroovySectionRenderer extends KnowWEDomRenderer<GroovyCITestType> {
 		KnowWERessourceLoader.getInstance().add("SyntaxHighlighter.js",
 				KnowWERessourceLoader.RESOURCE_SCRIPT);
 
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getId() + "\">\n"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() + "\">\n"));
 		string.append("{{{\n");
 
 		// if (!user.getUrlParameterMap().containsKey("action")) {

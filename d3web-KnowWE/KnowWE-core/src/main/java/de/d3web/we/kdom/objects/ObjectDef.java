@@ -1,7 +1,7 @@
 package de.d3web.we.kdom.objects;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -14,14 +14,30 @@ import de.d3web.we.utils.KnowWEUtils;
  *
  * @author Jochen
  *
- * @param <T>
+ * @param <TermObject>
  */
-public abstract class ObjectDef<T> extends DefaultAbstractKnowWEObjectType implements TermReference<T> {
+public abstract class ObjectDef<TermObject>
+		extends DefaultAbstractKnowWEObjectType
+		implements TermReference<TermObject> {
 
 	protected String key;
 
 	public ObjectDef(String key) {
 		this.key=key;
+		// this.addSubtreeHandler(Priority.HIGHEST, new NewTermRegistration());
+	}
+
+	/**
+	 * Allows quick and simple access to the object defined by the section of
+	 * this type IFF was stored when create using storeObject()
+	 * @param article TODO
+	 * @param s
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public TermObject getObject(KnowWEArticle article, Section<? extends ObjectDef<TermObject>> s) {
+		return (TermObject) KnowWEUtils.getStoredObject(article, s, key);
 	}
 
 	/**
@@ -32,22 +48,40 @@ public abstract class ObjectDef<T> extends DefaultAbstractKnowWEObjectType imple
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public T getObject(Section<? extends ObjectDef<T>> s) {
-		return (T) KnowWEUtils.getStoredObject(s, key);
+	public TermObject getObjectFromLastVersion(KnowWEArticle article, Section<? extends ObjectDef<TermObject>> s) {
+		return (TermObject) KnowWEUtils.getObjectFromLastVersion(article, s, key);
 	}
 
 	/**
 	 * When the actual object is created, it should be stored via this method
 	 * This allows quick and simple access to the object via getObject() when
 	 * needed for the further compilation process
-	 * 
+	 * @param article TODO
 	 * @param s
 	 * @param q
 	 */
-	public void storeObject(Section<? extends KnowWEObjectType> s, T q) {
-		KnowWEUtils.storeSectionInfo(s, key, q);
+	public void storeObject(KnowWEArticle article, Section<? extends ObjectDef<TermObject>> s, TermObject q) {
+		KnowWEUtils.storeSectionInfo(article, s, key, q);
 	}
 
-
+	// class NewTermRegistration extends SubtreeHandler<ObjectDef<TermObject>> {
+	//	
+	// @Override
+	// public Collection<KDOMReportMessage> create(KnowWEArticle article,
+	// Section<ObjectDef<TermObject>> s) {
+	//	
+	// TerminologyManager.getInstance().registerTermDef(article, s);
+	//	
+	// return null;
+	// }
+	//	
+	// @Override
+	// public void destroy(KnowWEArticle article, Section<ObjectDef<TermObject>>
+	// s) {
+	//	
+	// TerminologyManager.getInstance().unregisterTermDef(article, s);
+	// }
+	//	
+	// }
 
 }

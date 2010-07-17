@@ -34,65 +34,7 @@ public class CoveringListSection extends AbstractKopicSection {
 	@Override
 	protected void init() {
 		this.childrenTypes.add(new CoveringListContent());
-		//subtreeHandler.add(new CoveringListSectionSubTreeHandler());
 		setCustomRenderer(new SetCoveringListSectionRenderer());
 	}
 	
-//	private class CoveringListSectionSubTreeHandler extends D3webReviseSubTreeHandler {
-//	
-//		@Override
-//		public void reviseSubtree(KnowWEArticle article, Section s) {
-//	
-//			KnowledgeBaseManagement kbm = getKBM(article, s);
-//			
-//			if (kbm != null) {
-//				
-//				if (AbstractXMLObjectType.getAttributeMapFor(s).containsKey("parser-version")
-//						&& AbstractXMLObjectType.getAttributeMapFor(s).get("parser-version").trim().equals("1")) {
-//					callOldParser(s, s.getReport(), kbm);
-//				} else {
-//					callNewParser(s, s.getReport(), kbm);
-//				}
-//			}
-//		}
-//	
-//		private void callOldParser(Section s, KnowWEDomParseReport rep,
-//				KnowledgeBaseManagement kbm) {
-//	
-//			Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
-//			
-//			if (content != null) {
-//				
-//				StringBuffer buffi = new StringBuffer(TextInclude.removeTextIncludeTags(content.getOriginalText()));
-//				Report xclRep = XCLParserHelper.getXCLModel
-//					(kbm.getKnowledgeBase(), buffi);
-//	
-//				KnowWEParseResult result = new KnowWEParseResult(xclRep, s
-//						.getTitle(), s.getOriginalText());
-//				rep.addReport(result);
-//			}
-//		}
-//	
-//		private void callNewParser(Section s, KnowWEDomParseReport rep,
-//				KnowledgeBaseManagement kbm) {
-//			
-//			XCLd3webBuilder builder = new XCLd3webBuilder(s.getId(), true,
-//					false, new SingleKBMIDObjectManager(kbm));
-//	
-//			Section content = ((AbstractKopicSection) s.getObjectType()).getContentChild(s);
-//			if (content != null) {
-//				Reader r = new StringReader(TextInclude.removeTextIncludeTags(content.getOriginalText()));
-//				List<Message> col = builder.addKnowledge(r, new SingleKBMIDObjectManager(kbm),
-//						null);
-//				storeMessages(s,col);
-//				Report xclRep = new Report();
-//				for (Message messageKnOffice : col) {
-//					xclRep.add(messageKnOffice);
-//				}
-//				KnowWEParseResult result = new KnowWEParseResult(xclRep, s
-//						.getTitle(), s.getOriginalText());
-//				rep.addReport(result);
-//			}
-//		}
-//	}
 }

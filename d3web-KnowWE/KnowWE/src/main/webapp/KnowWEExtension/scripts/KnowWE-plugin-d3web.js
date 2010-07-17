@@ -1144,7 +1144,7 @@ KNOWWE.plugin.d3web.solutionstate = function(){
             if(!_KS('#sstate-result')) return;
             
             var params = {
-                action : 'DPSSolutionsAction',
+                action : 'SolutionsPanelAction',
                 KWikiWeb : 'default_web',
                 ArticleSelection : (function () {
                     var box = document.getElementById('sdropdownbox');

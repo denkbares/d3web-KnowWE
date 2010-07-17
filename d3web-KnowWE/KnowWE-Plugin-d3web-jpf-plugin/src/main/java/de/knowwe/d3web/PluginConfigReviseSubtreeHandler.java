@@ -43,7 +43,7 @@ public class PluginConfigReviseSubtreeHandler extends SubtreeHandler {
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 		String xmlText = "<settings><plugins /><psmethods>"+s.getOriginalText()+"</psmethods></settings>";
-		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
+		KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article.getTitle());
 		if (kbm==null) return null;
 		KnowledgeBase kb = kbm.getKnowledgeBase();
 		try {

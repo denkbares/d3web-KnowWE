@@ -24,14 +24,13 @@ package de.d3web.we.kdom.table.xcl;
 import java.util.Collection;
 
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.TableLine;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -54,12 +53,11 @@ public class CoveringTableHeaderColumnCellContent extends
 	}
 
 	class CoveringTableHeaderColumnCellContentHandler extends
-			SubtreeHandler {
+			D3webSubtreeHandler {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-			KnowledgeBaseManagement mgn = D3webModule
-					.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, this, s);
+			KnowledgeBaseManagement mgn = getKBM(article);
 			
 			Section<CoveringTableHeaderColumnCellContent> cell = s;
 			
@@ -76,7 +74,7 @@ public class CoveringTableHeaderColumnCellContent extends
 				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
 						TableLine.class);
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
-						.getTitle(), tableContentSection.getId(), QUESTIONNAIRE_CELL, s);
+						.getTitle(), tableContentSection.getID(), QUESTIONNAIRE_CELL, s);
 				
 				lineSec.setType(QuestionnaireLine.getInstance());
 			}
@@ -86,7 +84,7 @@ public class CoveringTableHeaderColumnCellContent extends
 				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
 						TableLine.class);
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
-						.getTitle(), tableContentSection.getId(), QUESTIONNAIRE_CELL, s);
+						.getTitle(), tableContentSection.getID(), QUESTIONNAIRE_CELL, s);
 				
 				lineSec.setType(QuestionnaireLine.getInstance());
 			}
@@ -98,7 +96,7 @@ public class CoveringTableHeaderColumnCellContent extends
 						TableLine.class);
 				
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
-						.getTitle(), tableContentSection.getId(), QUESTION_CELL, s);
+						.getTitle(), tableContentSection.getID(), QUESTION_CELL, s);
 				
 				lineSec.setType(QuestionLine.getInstance());
 
@@ -110,7 +108,7 @@ public class CoveringTableHeaderColumnCellContent extends
 						TableLine.class);
 
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
-						.getTitle(), tableContentSection.getId(), QUESTION_CELL, s);
+						.getTitle(), tableContentSection.getID(), QUESTION_CELL, s);
 				lineSec.setType(QuestionLine.getInstance());
 
 			} else {
@@ -119,11 +117,11 @@ public class CoveringTableHeaderColumnCellContent extends
 				
 				Section questionSection = (Section) KnowWEUtils
 						.getStoredObject(cell.getArticle().getWeb(), cell.getTitle(),
-								tableContentSection.getId(),
+								tableContentSection.getID(),
 								QUESTION_CELL);
 				if (questionSection != null) {
 					KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
-							.getTitle(), s.getId(), QUESTION_CELL,
+							.getTitle(), s.getID(), QUESTION_CELL,
 							questionSection);
 					s.setType(AnswerCellContent.getInstance());
 

@@ -1,7 +1,6 @@
 package de.d3web.we.kdom.report.message;
 
 import de.d3web.we.kdom.report.KDOMWarning;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class InvalidNumberWarning extends KDOMWarning {
 
@@ -12,7 +11,7 @@ public class InvalidNumberWarning extends KDOMWarning {
 	}
 
 	@Override
-	public String getVerbalization(KnowWEUserContext usercontext) {
+	public String getVerbalization() {
 		return "Invalid Number: " + text;
 	}
 

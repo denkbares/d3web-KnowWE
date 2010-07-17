@@ -77,10 +77,10 @@ public class SectionTest extends TestCase{
 		
 		//Testing setOriginalTextSetLeaf for a node being not a leaf
 		String newHeader = "| |Football|Soccer|Rugby\n";
-		article.getSection().setOriginalTextSetLeaf(headerSec.getId(), newHeader);
+		article.getSection().setOriginalTextSetLeaf(headerSec.getID(), newHeader);
 		Section newHeaderSec = checkChildsTillLine(article, 0, false);
 		assertEquals("Childs of node weren't deleted", 0, newHeaderSec.getChildren().size());
-		assertEquals("New text wasn't saved to orgingialtext from" + headerSec.getId(),
+		assertEquals("New text wasn't saved to orgingialtext from" + headerSec.getID(),
 				newHeader, newHeaderSec.getOriginalText());
 		
 		article = KnowWEEnvironment.getInstance().getArticle(web, "Test_Article");
@@ -94,9 +94,9 @@ public class SectionTest extends TestCase{
 		String lineText = lineSec.getOriginalText();
 		String[] newLine = new String[] {"speed", "0", "+", "+"};
 		for (int i = 0; i < newLine.length; i++) {
-			article.getSection().setOriginalTextSetLeaf(((Section)((Section) lineSec.getChildren().get(i)).getChildren().get(1)).getId(), newLine[i]);
+			article.getSection().setOriginalTextSetLeaf(((Section)((Section) lineSec.getChildren().get(i)).getChildren().get(1)).getID(), newLine[i]);
 		}
-		article.getSection().setOriginalTextSetLeaf(((Section) lineSec.getChildren().get(newLine.length)).getId(), "\n");
+		article.getSection().setOriginalTextSetLeaf(((Section) lineSec.getChildren().get(newLine.length)).getID(), "\n");
 		assertEquals("OrignialText from parent changed by changing childs (befor save)",
 				lineText, lineSec.getOriginalText());
 		checkChildsTillLine(article, 1, true); //isDirty = true?!

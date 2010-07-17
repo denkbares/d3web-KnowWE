@@ -65,7 +65,7 @@ public class FAQRootTypeDefaultRenderer extends DefaultMarkupRenderer {
 		String major =
 				DefaultMarkupType.getAnnotation(sec, "major");
 
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getId() +
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() +
 				"\" >\n"));
 
 		string.append(KnowWEUtils.maskHTML("<p><b>Question: " + question +

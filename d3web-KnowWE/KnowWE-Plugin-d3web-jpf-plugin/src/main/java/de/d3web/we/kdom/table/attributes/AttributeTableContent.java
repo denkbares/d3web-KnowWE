@@ -32,7 +32,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.TableContentRenderer;
 import de.d3web.we.kdom.xml.XMLContent;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 
 public class AttributeTableContent extends XMLContent {
 	
@@ -44,7 +44,7 @@ public class AttributeTableContent extends XMLContent {
 		this.setCustomRenderer(new TxtAttributeTableContentRenderer());
 	}
 	
-	private class AttributeTableContentSubTreeHandler extends D3webReviseSubTreeHandler {
+	private class AttributeTableContentSubTreeHandler extends D3webSubtreeHandler {
 		
 		private  TxtAttributeTableBuilder builder;
 
@@ -56,7 +56,7 @@ public class AttributeTableContent extends XMLContent {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 			
-			KnowledgeBaseManagement kbm = getKBM(article, s);
+			KnowledgeBaseManagement kbm = getKBM(article);
 			
 			if (kbm != null) {			
 				AbstractKnowWEObjectType.storeMessages(article, s.getFather(), this.getClass(), 

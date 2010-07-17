@@ -43,7 +43,7 @@ public class RenderKDOMVisitor implements Visitor {
 	private void renderSubtree(Section s, int i, StringBuffer buffi) {
 		buffi.append(getDashes(i));
 		buffi.append(" <span style=\"color:black\" title=\"" );
-		buffi.append(" ID: " + s.getId() + "\n");
+		buffi.append(" ID: " + s.getID() + "\n");
 		buffi.append("\">");
 		buffi.append(KnowWEUtils.html_escape(s.verbalize()));
 		buffi.append("</span>\n <br />"); // \n only to avoid HTML-code being cut by JspWiki (String.length > 10000)

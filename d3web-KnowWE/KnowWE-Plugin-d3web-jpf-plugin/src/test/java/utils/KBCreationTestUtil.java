@@ -70,7 +70,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.terminology.D3webTerminologyHandler;
+import de.d3web.we.terminology.D3webKnowledgeHandler;
 import de.d3web.we.testsuite.TestsuiteSection;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.xcl.XCLModel;
@@ -167,7 +167,7 @@ public class KBCreationTestUtil {
 
 		// Initialize KnowWE
 		KnowWEEnvironment.initKnowWE(new KnowWETestWikiConnector());
-		D3webTerminologyHandler d3Handler = D3webModule.getKnowledgeRepresentationHandler("default_web");
+		D3webKnowledgeHandler d3Handler = D3webModule.getKnowledgeRepresentationHandler("default_web");
 
 		// Create Article
 		KnowWEArticle article = new KnowWEArticle(content, "KBCreationTest",
@@ -175,7 +175,7 @@ public class KBCreationTestUtil {
 		KnowWEEnvironment.getInstance().getArticleManager("default_web").saveUpdatedArticle(article);
 
 		// Load KnowledgeBase
-		loadedKB = d3Handler.getKBM(article, null, article.getSection()).getKnowledgeBase();
+		loadedKB = d3Handler.getKBM(article.getTitle()).getKnowledgeBase();
 
 		// Load TestSuite
 		// TODO: HOTFIX!! I don't think this is the proper way to get the
@@ -183,7 +183,7 @@ public class KBCreationTestUtil {
 		Section<?> s = article.getSection().getChildren().get(0).findChildOfType(
 				TestsuiteSection.class);
 		loadedTS = (TestSuite) KnowWEUtils.getStoredObject("default_web", "KBCreationTest",
-				s.getId(), "TestsuiteSection_Testsuite");
+				s.getID(), "TestsuiteSection_Testsuite");
 
 	}
 

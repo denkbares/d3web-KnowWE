@@ -100,7 +100,11 @@ public interface KnowWEObjectType extends KnowWEType {
 	public boolean isNotRecyclable();
 
 	public void setNotRecyclable(boolean notRecyclable);
+
+	public boolean isOrderSensitive();
 	
+	public void setOrderSensitive(boolean orderSensitive);
+
 	public TreeMap<Priority, List<SubtreeHandler<? extends KnowWEObjectType>>> getSubtreeHandlers();
 	
 	public List<SubtreeHandler<? extends KnowWEObjectType>> getSubtreeHandlers(Priority p);

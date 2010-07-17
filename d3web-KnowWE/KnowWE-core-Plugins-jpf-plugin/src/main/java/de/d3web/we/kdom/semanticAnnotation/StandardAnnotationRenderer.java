@@ -115,7 +115,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 
 		if (content != null) {
 			String title = subject + " " + property + " " + object;
-			text = KnowWEUtils.maskHTML("<a href=\"#" + s.getId() + "\"></a>"
+			text = KnowWEUtils.maskHTML("<a href=\"#" + s.getID() + "\"></a>"
 					+ "<span title='" + title + "'>" + text + "</span>");
 		}
 

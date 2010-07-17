@@ -7,20 +7,19 @@ import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementDef;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.terminology.TerminologyManager;
 import de.d3web.we.utils.D3webUtils;
 
-public abstract class QuestionDef extends D3webObjectDef<Question> {
+public abstract class QuestionDef extends QuestionTreeElementDef<Question> {
 
 	public static enum QuestionType {
 		OC, MC, YN, NUM, DATE, TEXT;
@@ -28,14 +27,15 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 
 	public QuestionDef() {
 		super("QUESTION_STORE_KEY");
-		this.addSubtreeHandler(Priority.HIGHEST, new CreateQuestionHandler());
+		this.addSubtreeHandler(Priority.HIGHER, new CreateQuestionHandler());
 		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
-
+		this.setOrderSensitive(true);
 	}
 
 	public abstract QuestionType getQuestionType(Section<QuestionDef> s);
 
-	static class CreateQuestionHandler extends SubtreeHandler<QuestionDef> {
+
+	static class CreateQuestionHandler extends QuestionTreeElementDefSubtreeHandler<QuestionDef> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
@@ -45,10 +45,7 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 
 			String name = qidSection.get().getTermName(qidSection);
 
-			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
-					article.getWeb())
-					.getKBM(article, this, sec);
-			if (mgn == null) return null;
+			KnowledgeBaseManagement mgn = getKBM(article);
 
 			IDObject o = mgn.findQuestion(name);
 
@@ -59,7 +56,7 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 
 			QASet parent = D3webUtils.findParent(qidSection, mgn);
 
-			de.d3web.we.kdom.objects.QuestionDef.QuestionType questionType = qidSection.get().getQuestionType(
+			QuestionType questionType = qidSection.get().getQuestionType(
 					qidSection);
 
 			Question q = null;
@@ -87,14 +84,18 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 
 			if (q != null) {
 				// ok everything went well
-				// 1. register term
-				TerminologyManager.getInstance().registerNewTerm(
-						sec.get().getTermName(sec), sec);
+				// set position right in case this is an incremental update
+				if (!article.isFullParse()) {
+					parent.moveChildToPosition(q, sec.get().getPosition(sec));
+				}
+				// register term
+				TerminologyManager.getInstance().registerTermDef(
+						article, sec);
 
-				// 2. store object in section
-				qidSection.get().storeObject(qidSection, q);
+				// store object in section
+				qidSection.get().storeObject(article, qidSection, q);
 
-				// 3. return success message
+				// return success message
 				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
 						q.getClass().getSimpleName()
 								+ " " + q.getName()));
@@ -106,5 +107,20 @@ public abstract class QuestionDef extends D3webObjectDef<Question> {
 
 		}
 
+		@Override
+		public void destroy(KnowWEArticle article, Section<QuestionDef> question) {
+
+			Question q = question.get().getObjectFromLastVersion(article, question);
+			try {
+				if (q != null) q.getKnowledgeBase().remove(q);
+			}
+			catch (IllegalAccessException e) {
+				article.setFullParse(true, this);
+				// e.printStackTrace();
+			}
+			TerminologyManager.getInstance().unregisterTermDef(article, question);
+		}
+
 	}
+
 }

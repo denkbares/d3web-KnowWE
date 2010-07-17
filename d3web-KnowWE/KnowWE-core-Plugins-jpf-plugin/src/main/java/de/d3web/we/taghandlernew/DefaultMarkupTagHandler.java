@@ -118,7 +118,7 @@ public class DefaultMarkupTagHandler extends DefaultMarkupType {
 				Map<String,String> attValues = null;
 				Object storedValues = KnowWEEnvironment.getInstance()
 						.getArticleManager(sec.getWeb()).getTypeStore()
-						.getStoredObject(sec.getTitle(), markupContent.getId(),
+						.getStoredObject(sec.getTitle(), markupContent.getID(),
 								TagHandlerAttributeSubTreeHandler.ATTRIBUTE_MAP);
 				if (storedValues != null) {
 					if (storedValues instanceof Map) {

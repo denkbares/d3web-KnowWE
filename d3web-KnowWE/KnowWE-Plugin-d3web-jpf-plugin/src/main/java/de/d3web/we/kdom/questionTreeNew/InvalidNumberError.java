@@ -17,30 +17,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rendering;
 
-import de.d3web.we.kdom.KnowWEArticle;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
+package de.d3web.we.kdom.questionTreeNew;
 
-/**
- * The AnchorKDOMRender prefixes a section with an HTML anchor. This anchor can 
- * be used to link from other articles to the section. Also due the fact that the
- * anchor is unique it can be used to address the section itself. E.g. for AJAX
- * interaction.
- * 
- * @author Jochen, smark
- * @since 2009/10/19
- */
-public abstract class AnchorKDOMRender extends KnowWEDomRenderer{
+import de.d3web.we.kdom.report.KDOMError;
+
+public class InvalidNumberError extends KDOMError {
+
+	private final String v;
+
+	public InvalidNumberError(String value) {
+		this.v = value;
+	}
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
-		String head = "<a name=\"" + sec.getID() + "\" id=\"" + sec.getID() + "\"></a>";
-		string.append( head );
-		
-		renderContent(sec, user, string);
+	public String getVerbalization() {
+		return "Not a valid number: "+v;
 	}
-	
-	public abstract void renderContent(Section sec, KnowWEUserContext user, StringBuilder string);
+
 }

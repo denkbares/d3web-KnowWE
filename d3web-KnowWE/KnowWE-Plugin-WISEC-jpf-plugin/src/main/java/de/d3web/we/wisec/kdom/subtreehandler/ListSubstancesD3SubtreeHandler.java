@@ -19,17 +19,17 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.logging.Logging;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.wisec.kdom.ListSubstancesRootType;
 import de.d3web.we.wisec.kdom.ListSubstancesType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
-public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler<ListSubstancesType> {
+public class ListSubstancesD3SubtreeHandler extends D3webSubtreeHandler<ListSubstancesType> {
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListSubstancesType> s) {
 
-		KnowledgeBaseManagement kbm = getKBM(article, s);
+		KnowledgeBaseManagement kbm = getKBM(article);
 
 		if (kbm != null) {
 
@@ -93,7 +93,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler<Li
 						// kbm.findQContainer("Substances"),
 						// new String[] {
 						// "included", "excluded" });
-						addGlobalQuestion(sgn, web);
+						addGlobalQuestion(sgn, web, kbm);
 //						createListRule(kbm, listID, sgnQ);
 					}
 					else {
@@ -109,14 +109,13 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler<Li
 		}
 	}
 
-	private void addGlobalQuestion(String sgn, String web) {
+	private void addGlobalQuestion(String sgn, String web, KnowledgeBaseManagement kbm) {
 		KnowWEArticle globalsArticle = KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(
 				"WISEC_D3Globals");
 		Section<QuestionsSection> questionsSection = globalsArticle.getSection().findSuccessor(
 				QuestionsSection.class);
 
 		if (globalsArticle != null && questionsSection != null) {
-			KnowledgeBaseManagement kbm = getKBM(globalsArticle, questionsSection);
 			if (kbm.findQContainer("Substances") == null) kbm.createQContainer("Substances");
 			if (kbm.findQuestion(sgn) == null) {
 				kbm.createQuestionOC(sgn, kbm.findQContainer("Substances"), new String[] {
@@ -176,7 +175,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webReviseSubTreeHandler<Li
 				// kbm.createQuestionOC(sgn, kbm.findQContainer("Substances"),
 				// new String[] {
 				// "included", "excluded" });
-				addGlobalQuestion(sgn, web);
+				addGlobalQuestion(sgn, web, kbm);
 //				createListRule(kbm, listID, sgnQ);
 			}
 		}

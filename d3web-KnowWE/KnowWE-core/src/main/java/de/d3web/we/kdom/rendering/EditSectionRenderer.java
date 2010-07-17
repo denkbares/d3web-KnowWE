@@ -70,14 +70,14 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 
 		String highlightKDOMID = urlParameterMap.get("highlight");
 		if(highlightKDOMID != null) {
-			if(highlightKDOMID.equals(sec.getId())) {
+			if(highlightKDOMID.equals(sec.getID())) {
 				highlight = true;
 			}
 		}
 
 		String editKDOMID = urlParameterMap.get("edit");
 		if(editKDOMID != null) {
-			if(editKDOMID.equals(sec.getId())) {
+			if(editKDOMID.equals(sec.getID())) {
 				isEditable = true;
 			}
 		}
@@ -85,11 +85,11 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		if(highlight && !isEditable) {
 			string.append(KnowWEUtils.maskHTML("<div class=\"searchword\">"));
 		}
-		string.append( KnowWEUtils.maskHTML( "<a name=\""+sec.getId()+"\"></a><div id=\"" + sec.getId() + "\">" ));
+		string.append( KnowWEUtils.maskHTML( "<a name=\""+sec.getID()+"\"></a><div id=\"" + sec.getID() + "\">" ));
 
 		if( sec.getArticle().equals( article ) ) {
 			string.append(KnowWEUtils.maskHTML( this.generateQuickEdit
-					("Quickedit " + sec.getObjectType().getName() + " Section", sec.getId(),
+					("Quickedit " + sec.getObjectType().getName() + " Section", sec.getID(),
 							isEditable, user)));
 		}
 
@@ -98,13 +98,13 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 			// by JSPWiki if page was refreshed (while QuickEdit being opened).
 			// But only if there is no other one around it.
 			boolean preNeeded = !user.getUrlParameterMap().containsKey("action")
-					&& !UserSettingsManager.getInstance().quickEditIsInPre(sec.getId(),
+					&& !UserSettingsManager.getInstance().quickEditIsInPre(sec.getID(),
 							user.getUsername(), sec.getTitle());
 			if (preNeeded) {
 				string.append("{{{");
 			}
 			String str = sec.getOriginalText();
-			string.append( KnowWEUtils.maskHTML( "<textarea name=\"default-edit-area\" id=\"" + sec.getId() + "/default-edit-area\" style=\"width:92%; height:"+this.getHeight(str)+"px;\">" ));
+			string.append( KnowWEUtils.maskHTML( "<textarea name=\"default-edit-area\" id=\"" + sec.getID() + "/default-edit-area\" style=\"width:92%; height:"+this.getHeight(str)+"px;\">" ));
 			string.append( str );
 			string.append( KnowWEUtils.maskHTML( "</textarea>" ));
 			if (preNeeded) {

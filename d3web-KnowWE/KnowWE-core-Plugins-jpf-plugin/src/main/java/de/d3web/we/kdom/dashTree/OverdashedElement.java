@@ -62,8 +62,8 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 
 
 				//IMPORTANT: +1
-				if(father.getObjectType() instanceof SubTree) {
-					level = SubTree.getLevel(father) + 1;
+				if(father.getObjectType() instanceof DashSubtree) {
+					level = DashSubtree.getLevel(father) + 1;
 				}
 
 				Matcher m  = Pattern.compile("^\\s*" + "(-{"+level+"})",

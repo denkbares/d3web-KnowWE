@@ -27,7 +27,6 @@ public class ConditionActionRule extends DefaultAbstractKnowWEObjectType {
 	ConditionArea condArea = new ConditionArea();
 
 	public ConditionActionRule(AbstractKnowWEObjectType action) {
-
 		sectionFinder = new RegexSectionFinder(
 				"(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN"
 						+ "|\\s*\\z))",

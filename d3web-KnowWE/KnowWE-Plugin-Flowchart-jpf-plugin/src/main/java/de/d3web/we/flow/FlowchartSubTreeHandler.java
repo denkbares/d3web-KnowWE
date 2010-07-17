@@ -82,21 +82,20 @@ import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * 
  * 
  * @author Reinhard Hatko Created on: 12.10.2009
  */
-public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
+public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 		
-		KnowledgeBaseManagement kbm = getKBM(article, s);
+		KnowledgeBaseManagement kbm = getKBM(article);
 
 		if (kbm == null) return null;
 
@@ -131,7 +130,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		Flow flow = FlowFactory.getInstance().createFlow(id, name, nodes, edges);
 
-		KnowledgeBase knowledgeBase = getKBM(article, s).getKnowledgeBase();
+		KnowledgeBase knowledgeBase = getKBM(article).getKnowledgeBase();
 
 		FluxSolver.addFlow(flow, knowledgeBase, article.getTitle());
 
@@ -142,7 +141,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 			msgs.add(new KDOMWarning() {
 
 				@Override
-				public String getVerbalization(KnowWEUserContext usercontext) {
+				public String getVerbalization() {
 					StringBuffer buffer = new StringBuffer();
 	
 					for (Message message : errors) {
@@ -228,7 +227,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ComplexConditionSOLO parser = new ComplexConditionSOLO(tokens);
 
-		RestrictedIDObjectManager idom = new RestrictedIDObjectManager(getKBM(article, s));
+		RestrictedIDObjectManager idom = new RestrictedIDObjectManager(getKBM(article));
 
 		// For creating conditions in edges coming out from call nodes
 		// TODO explicitly create oc-question for all FCs
@@ -341,7 +340,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		String flowName = string.substring(5, nodenameStart);
 		String nodeName = string.substring(nodenameStart + 1, nodenameEnd);
 
-		KnowledgeBaseManagement kbm = getKBM(article, section);
+		KnowledgeBaseManagement kbm = getKBM(article);
 
 		QContainer container = kbm.findQContainer(flowName + "_Questionnaire");
 
@@ -401,7 +400,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 		if (solution.startsWith("\"")) // remove "
 		solution = solution.substring(1, solution.length() - 1);
 
-		KnowledgeBaseManagement kbm = getKBM(article, section);
+		KnowledgeBaseManagement kbm = getKBM(article);
 		Solution diagnosis = kbm.findSolution(solution);
 
 		if (diagnosis == null) {
@@ -418,9 +417,9 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 	private PSAction createQAindicationAction(KnowWEArticle article, Section section, String string, List<Message> errors) {
 		String name = string.substring(8, string.length() - 1);
-		QASet findQuestion = getKBM(article, section).findQuestion(name);
+		QASet findQuestion = getKBM(article).findQuestion(name);
 
-		if (findQuestion == null) findQuestion = getKBM(article, section).findQContainer(name);
+		if (findQuestion == null) findQuestion = getKBM(article).findQContainer(name);
 
 		if (findQuestion == null) {
 			errors.add(new Message("Question not found: " + name));
@@ -444,7 +443,7 @@ public class FlowchartSubTreeHandler extends D3webReviseSubTreeHandler {
 
 		ActionSetValue action = FlowFactory.getInstance().createSetValueAction();
 
-		QuestionMC question = (QuestionMC) getKBM(article, section).findQuestion(
+		QuestionMC question = (QuestionMC) getKBM(article).findQuestion(
 				flowName + "_" + FlowchartTerminologySubTreeHandler.EXITNODES_QUESTION_NAME);
 
 		action.setQuestion(question);

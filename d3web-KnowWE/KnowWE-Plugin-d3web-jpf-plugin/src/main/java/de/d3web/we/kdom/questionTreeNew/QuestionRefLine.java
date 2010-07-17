@@ -1,28 +1,31 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
 package de.d3web.we.kdom.questionTreeNew;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
-import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.manage.RuleFactory;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionRef;
-import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.message.CreateRelationFailed;
-import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
 public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
 
@@ -30,13 +33,14 @@ public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
 
 	public QuestionRefLine() {
 
-	// every line containing [...] (unquoted) is recognized as QuestionLine
-	this.sectionFinder = new ConditionalAllTextFinder() {
-		@Override
-		protected boolean condition(String text, Section father) {
+		// every line containing [...] (unquoted) is recognized as QuestionLine
+		this.sectionFinder = new ConditionalAllTextFinder() {
+
+			@Override
+			protected boolean condition(String text, Section<?> father) {
 				return text.trim().startsWith(REF_KEYWORD);
-		}
-	};
+			}
+		};
 
 		// take the keyword
 		AnonymousType key = new AnonymousType("ref-key");
@@ -49,65 +53,69 @@ public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes
 				.add(questionRef);
 
-		this.addSubtreeHandler(new CreateIndicationHandler());
+		// this.addSubtreeHandler(new CreateIndicationHandler());
+		this.addSubtreeHandler(IndicationHandler.getInstance());
 
 	}
 
-	/**
-	 * This handler creates an indication rule if a question if son of an answer
-	 * if a preceeding question
-	 *
-	 * @author Jochen
-	 *
-	 */
-	static class CreateIndicationHandler extends SubtreeHandler<QuestionRefLine> {
-
-		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionRefLine> qRefLine) {
-
-			if (qRefLine.hasErrorInSubtree()) {
-				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-						"indication rule"));
-			}
-			Section<QuestionRef> qrefSection = qRefLine.findSuccessor(QuestionRef.class);
-
-			// current DashTreeElement
-			Section<DashTreeElement> element = KnowWEObjectTypeUtils
-					.getAncestorOfType(qRefLine, new DashTreeElement());
-			// get dashTree-father
-			Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
-					.getDashTreeFather(element);
-
-			Section<QuestionTreeAnswerDef> answerSec = dashTreeFather
-					.findSuccessor(QuestionTreeAnswerDef.class);
-			Section<NumericCondLine> numCondSec = dashTreeFather
-					.findSuccessor(NumericCondLine.class);
-
-			if (answerSec != null || numCondSec != null) {
-
-				KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
-						article.getWeb())
-						.getKBM(article, this, qRefLine);
-
-				String newRuleID = mgn.createRuleID();
-
-				Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
-
-				Rule r = RuleFactory.createIndicationRule(newRuleID, qrefSection
-						.get().getObject(qrefSection), cond);
-				if (r != null) {
-					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-							r.getClass() + " : "
-									+ r.getId()));
-				}
-				else {
-					return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-							Rule.class.getSimpleName()));
-				}
-			}
-
-			return new ArrayList<KDOMReportMessage>(0);
-		}
-
-	}
+	// /**
+	// * This handler creates an indication rule if a question if son of an
+	// answer
+	// * if a preceeding question
+	// *
+	// * @author Jochen
+	// *
+	// */
+	// static class CreateIndicationHandler extends
+	// D3webSubtreeHandler<QuestionRefLine> {
+	//
+	// @Override
+	// public Collection<KDOMReportMessage> create(KnowWEArticle article,
+	// Section<QuestionRefLine> qRefLine) {
+	//
+	// if (qRefLine.hasErrorInSubtree()) {
+	// return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+	// "indication rule"));
+	// }
+	// Section<QuestionRef> qrefSection =
+	// qRefLine.findSuccessor(QuestionRef.class);
+	//
+	// // current DashTreeElement
+	// Section<DashTreeElement> element = KnowWEObjectTypeUtils
+	// .getAncestorOfType(qRefLine, DashTreeElement.class);
+	// // get dashTree-father
+	// Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
+	// .getDashTreeFather(element);
+	//
+	// Section<QuestionTreeAnswerDef> answerSec = dashTreeFather
+	// .findSuccessor(QuestionTreeAnswerDef.class);
+	// Section<NumericCondLine> numCondSec = dashTreeFather
+	// .findSuccessor(NumericCondLine.class);
+	//
+	// if (answerSec != null || numCondSec != null) {
+	//
+	// KnowledgeBaseManagement mgn = getKBM(article);
+	//
+	// String newRuleID = mgn.createRuleID();
+	//
+	// Condition cond = Utils.createCondition(article,
+	// DashTreeElement.getDashTreeAncestors(element));
+	//
+	// Rule r = RuleFactory.createIndicationRule(newRuleID, qrefSection
+	// .get().getObject(article, qrefSection), cond);
+	// if (r != null) {
+	// return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+	// r.getClass() + " : "
+	// + r.getId()));
+	// }
+	// else {
+	// return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+	// Rule.class.getSimpleName()));
+	// }
+	// }
+	//
+	// return new ArrayList<KDOMReportMessage>(0);
+	// }
+	//
+	// }
 }

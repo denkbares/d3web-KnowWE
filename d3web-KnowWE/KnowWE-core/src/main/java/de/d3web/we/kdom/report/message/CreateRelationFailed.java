@@ -21,7 +21,6 @@
 package de.d3web.we.kdom.report.message;
 
 import de.d3web.we.kdom.report.KDOMWarning;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class CreateRelationFailed extends KDOMWarning{
 
@@ -32,7 +31,7 @@ public class CreateRelationFailed extends KDOMWarning{
 	}
 	
 	@Override
-	public String getVerbalization(KnowWEUserContext usercontext) {
+	public String getVerbalization() {
 		return "Failed to create: "+s;
 	}
 

@@ -38,9 +38,9 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.dashTree.SubTree;
+import de.d3web.we.kdom.dashTree.DashSubtree;
 import de.d3web.we.kdom.objects.AnswerDef;
-import de.d3web.we.kdom.questionTreeNew.QuestionDashTreeElementContent;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementContent;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -106,11 +106,11 @@ public class QuestionDashTreeRenderer extends CustomRenderer {
 				c = "";
 				
 				renderLine(article, s, user, string);
-			} else if( s.getObjectType() instanceof SubTree ) {
+			} else if( s.getObjectType() instanceof DashSubtree ) {
 				string.append(KnowWEUtils.maskHTML("<li class=\"qline\">")); //body class
 				
 				renderLine(article, s.findChildOfType( DashTreeElement.class ), user, string);
-				renderSubtreeChildren(article, s.findChildrenOfType(SubTree.class), user, string);
+				renderSubtreeChildren(article, s.findChildrenOfType(DashSubtree.class), user, string);
 			}
 			string.append(KnowWEUtils.maskHTML("</li>"));
 		}
@@ -126,7 +126,7 @@ public class QuestionDashTreeRenderer extends CustomRenderer {
 	 * @param li
 	 */
 	private void renderSubtreeChildren(KnowWEArticle article,
-			List<Section<SubTree>> children,
+			List<Section<DashSubtree>> children,
 			KnowWEUserContext user,
 			StringBuilder string){
 		
@@ -166,10 +166,10 @@ public class QuestionDashTreeRenderer extends CustomRenderer {
 		//render the additional information icon
 		Session theCase = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
 		if (theCase != null) {
-			Section<? extends KnowWEObjectType> child = section.findChildOfType(QuestionDashTreeElementContent.class);
+			Section<? extends KnowWEObjectType> child = section.findChildOfType(QuestionTreeElementContent.class);
 			String name = child.getOriginalText();
 
-			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article, null, section);
+			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article.getTitle());
 
 			NamedObject o = kbm.findQuestion(name);
 
@@ -179,7 +179,7 @@ public class QuestionDashTreeRenderer extends CustomRenderer {
 			 MMInfoStorage mminfo = null;
 
 			if (answerSec != null) {
-				c = answerSec.get().getObject(answerSec);
+				c = answerSec.get().getObject(article, answerSec);
 				if (c != null) {
 					mminfo = (MMInfoStorage) c.getProperties().getProperty(Property.MMINFO);;
 				}

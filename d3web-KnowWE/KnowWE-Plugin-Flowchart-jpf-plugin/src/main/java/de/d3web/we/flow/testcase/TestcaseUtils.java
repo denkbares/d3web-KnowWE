@@ -143,7 +143,7 @@ public class TestcaseUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Section<PlainText> getMatchingColumnHeader(Section<?> s) {
-		String id = s.getId();
+		String id = s.getID();
 		String cellNumber = id.substring(id.indexOf("/TableLine"));
 		cellNumber = cellNumber.substring(cellNumber.indexOf("/TableCell") + 10);
 		int number = Integer.valueOf(cellNumber.substring(0, cellNumber.indexOf("/")));

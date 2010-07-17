@@ -20,6 +20,7 @@
 
 package de.d3web.we.kdom.questionTreeNew;
 
+import de.d3web.core.session.values.Choice;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
@@ -77,14 +78,18 @@ public class InlineChoiceAnswerDefinition extends DefaultAbstractKnowWEObjectTyp
 	 */
 	class InlineAnswerDef extends AnswerDef {
 
+
 		@Override
-		public <T extends QuestionDef> Section<? extends QuestionDef> getQuestionSection(Section<? extends AnswerDef> s) {
-			Section<? extends QuestionLine> ql = s.findAncestor(QuestionLine.class);
-			if (ql != null) {
-				Section<? extends QuestionDef> qs = ql.findSuccessor(
-					QuestionDef.class);
-				return qs;
-			}
+		public int getPosition(Section<? extends QuestionTreeElementDef<Choice>> s) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+
+		@Override
+		public Section<? extends QuestionDef> retrieveAndStoreParentQASetSection(
+				Section<? extends QuestionTreeElementDef<?>> s) {
+			// TODO Auto-generated method stub
 			return null;
 		}
 	}

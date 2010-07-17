@@ -1,6 +1,5 @@
 package de.d3web.we.kdom.report;
 
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class SyntaxError extends KDOMError {
 
@@ -11,7 +10,7 @@ public class SyntaxError extends KDOMError {
 	}
 
 	@Override
-	public String getVerbalization(KnowWEUserContext usercontext) {
+	public String getVerbalization() {
 		// TODO Auto-generated method stub
 		return "Syntax Error: " + text;
 	}

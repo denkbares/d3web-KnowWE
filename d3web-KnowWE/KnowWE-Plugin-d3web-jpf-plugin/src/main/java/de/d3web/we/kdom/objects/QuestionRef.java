@@ -3,9 +3,9 @@ package de.d3web.we.kdom.objects;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.d3webModule.D3webModule;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.terminology.TerminologyManager;
 
 public class QuestionRef extends D3webObjectRef<Question> {
 
@@ -14,25 +14,17 @@ public class QuestionRef extends D3webObjectRef<Question> {
 	}
 
 	@Override
-	public Question getObject(Section<? extends ObjectRef<Question>> s) {
-		// new lookup method using Terminology Manager
-		Section<? extends ObjectDef<Question>> objectDefinition = TerminologyManager.getInstance().getObjectDefinition(
-				s);
-		if (objectDefinition != null) {
-			Question q = objectDefinition.get().getObject(objectDefinition);
-			if (q != null) {
-				return q;
-			}
-		}
+	@SuppressWarnings("unchecked")
+	public Question getObjectFallback(KnowWEArticle article, Section<?
+			extends ObjectRef<Question>> s) {
 
-		// old lookup method using knowledge base - evil slow!!
 		if (s.get() instanceof QuestionRef) {
 			Section<QuestionRef> sec = (Section<QuestionRef>) s;
 			String questionName = sec.get().getTermName(sec);
 
-			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
-					s.getArticle().getWeb())
-					.getKBM(s.getArticle(), null, sec);
+			KnowledgeBaseManagement mgn =
+					D3webModule.getKnowledgeRepresentationHandler(
+							article.getWeb()).getKBM(article.getTitle());
 
 			Question question = mgn.findQuestion(questionName);
 			return question;

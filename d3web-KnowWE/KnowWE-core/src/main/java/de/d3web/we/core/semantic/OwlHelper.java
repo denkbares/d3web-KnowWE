@@ -175,7 +175,7 @@ public class OwlHelper {
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		io.addStatement(createStatement(to, RDF.TYPE, TEXTORIGIN));
 		io.addStatement(createStatement(to, HASNODE,
-				createLiteral(source.getId())));
+				createLiteral(source.getID())));
 		io.addStatement(createStatement(to, HASTOPIC,
 				createlocalURI(source.getTitle())));
 		return io;
@@ -364,7 +364,7 @@ public class OwlHelper {
 			BNode to = uo.getVf().createBNode();
 			OwlHelper helper = uo.getHelper();
 			URI nary = uo.getHelper().createlocalURI(
-					source.getTitle() + ".." + source.getId() + ".."
+					source.getTitle() + ".." + source.getID() + ".."
 							+ suri.getLocalName() + puri.getLocalName()
 							+ ouri.getLocalName());
 			io.merge(helper.createTextOrigin(source, to));
@@ -399,7 +399,7 @@ public class OwlHelper {
 			BNode to = uo.getVf().createBNode();
 			OwlHelper helper = uo.getHelper();
 			URI nary = uo.getHelper().createlocalURI(
-					source.getTitle() + ".." + source.getId() + ".."
+					source.getTitle() + ".." + source.getID() + ".."
 							+ suri.getLocalName() + puri.getLocalName()
 							+ ouri.getLocalName());
 			io.merge(helper.createTextOrigin(source, to));
@@ -442,7 +442,7 @@ public class OwlHelper {
 		IntermediateOwlObject io = new IntermediateOwlObject();
 		io.addStatement(createStatement(to, RDF.TYPE, TEXTORIGIN));
 		io.addStatement(createStatement(to, HASNODE,
-				createLiteral(source.getId())));
+				createLiteral(source.getID())));
 		io.addStatement(createStatement(to, HASTOPIC,
 				createlocalURI(source.getTitle())));
 		io.addStatement(createStatement(to, HASTYPE, type));

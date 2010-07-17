@@ -24,11 +24,11 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowledgeRepresentationHandler"
-		id="D3webTerminologyHandler">
+		id="D3webKnowledgeHandler">
 		<parameter id="class"
-			value="de.d3web.we.terminology.D3webTerminologyHandler" />
-		<parameter id="name" value="D3webTerminologyHandler" />
-		<parameter id="description" value="KnowledgeRepresentationHandler D3webTerminologyHandler" />
+			value="de.d3web.we.terminology.D3webKnowledgeHandler" />
+		<parameter id="name" value="D3webKnowledgeHandler" />
+		<parameter id="description" value="KnowledgeRepresentationHandler D3webKnowledgeHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
@@ -432,21 +432,11 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="DPSSolutionsAction">
+		id="SolutionsPanelAction">
 		<parameter id="class"
-			value="de.d3web.we.action.DPSSolutionsAction" />
-		<parameter id="name" value="DPSSolutionsAction" />
-		<parameter id="description" value="Action DPSSolutionsAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="DPSSolutionsAction2">
-		<parameter id="class"
-			value="de.d3web.we.action.DPSSolutionsAction2" />
-		<parameter id="name" value="DPSSolutionsAction2" />
-		<parameter id="description" value="Action DPSSolutionsAction2" />
+			value="de.d3web.we.action.SolutionsPanelAction" />
+		<parameter id="name" value="SolutionsPanelAction" />
+		<parameter id="description" value="Action SolutionsPanelAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

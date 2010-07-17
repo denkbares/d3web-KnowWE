@@ -175,13 +175,13 @@ public class KnowWEIncludeManager {
 		if (address.getTargetSection() != null) {
 			for (Section<?> node : art.getAllNodesPreOrder()) {
 				// if the complete ID is given
-				if (node.getId().equalsIgnoreCase(address.getOriginalAddress())) {
+				if (node.getID().equalsIgnoreCase(address.getOriginalAddress())) {
 					matchingIDSection = node;
 					break;
 				}
 				// if only the last part of the ID is given
-				if ((node.getId().length() > address.getTargetSection().length() 
-						&& node.getId().substring(node.getId().length() - address.getTargetSection().length())
+				if ((node.getID().length() > address.getTargetSection().length() && node.getID().substring(
+						node.getID().length() - address.getTargetSection().length())
 							.equalsIgnoreCase(address.getTargetSection()))) {
 					matchingIdEndSections.add(node);
 					if (!address.isWildcardSectionTarget() && matchingIdEndSections.size() > 1) {

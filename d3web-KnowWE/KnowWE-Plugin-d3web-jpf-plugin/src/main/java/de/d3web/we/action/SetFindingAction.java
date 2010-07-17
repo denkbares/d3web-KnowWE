@@ -22,7 +22,21 @@ package de.d3web.we.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.blackboard.Blackboard;
+import de.d3web.core.session.blackboard.DefaultFact;
+import de.d3web.core.session.blackboard.Fact;
+import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.MultipleChoiceValue;
+import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.Unknown;
+import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.TerminologyType;
@@ -31,7 +45,11 @@ import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
+import de.d3web.we.event.EventManager;
+import de.d3web.we.event.FindingSetEvent;
+import de.d3web.we.utils.D3webUtils;
 
 
 public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
@@ -56,7 +74,8 @@ public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 //		
 //	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings( {
+			"unchecked", "deprecation" })
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
 		String namespace = java.net.URLDecoder.decode(parameterMap.get(KnowWEAttributes.SEMANO_NAMESPACE));
@@ -64,38 +83,99 @@ public class SetFindingAction extends DeprecatedAbstractKnowWEAction {
 		String valueid = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_ID);
 		String valuenum = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_NUM);
 		String valueids = parameterMap.get(KnowWEAttributes.SEMANO_VALUE_IDS);
+		String topic = parameterMap.getTopic();
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String web = parameterMap.get(KnowWEAttributes.WEB);
 		
-		DPSEnvironment env = DPSEnvironmentManager.getInstance().getEnvironments(web);
-		Broker broker = env.getBroker(user);
-		
-		if(namespace == null || objectid == null) {
+		if (namespace == null || objectid == null) {
 			return "null";
 		}
-		Object value = null;
-		List<Object> values = new ArrayList<Object>();
-		if(valueid != null) {
-			value = valueid;
-		} else if(valuenum != null && !valuenum.equals("")) {
-			value = Double.valueOf(valuenum);
-		}
-		if(value != null) {
-			values.add(value);
-		}
-		if(valueids != null) {
-			String[] ids = valueids.split("\\,");
-			for (String string : ids) {
-				values.add(string.trim());
+		
+		// if DPS is inactive
+		if (!ResourceBundle.getBundle("KnowWE_config").getString("dps.active").contains("true")) {
+			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(
+					topic);
+			Session session = D3webUtils.getSession(topic, user, web);
+			Blackboard blackboard = session.getBlackboard();
+
+			// Necessary for FindingSetEvent
+			Question question = kbm.findQuestion(objectid);
+			if (question != null) {
+				List<Value> values = new ArrayList<Value>();
+				if (valueids != null) {
+					String[] ids = valueids.split("\\,");
+					for (String string : ids) {
+						values.add(kbm.findValue(question, string.trim()));
+					}
+				} 
+				Value singleValue = null;
+				if (valueid != null) {
+					singleValue = kbm.findValue(question, valueid);
+				}
+				else if (valuenum != null) {
+					singleValue = new NumValue(Double.parseDouble(valuenum));
+				}
+				if (singleValue != null) values.add(singleValue);
+
+				if (!values.isEmpty()) {
+					for (Value value : values) {
+						if (question instanceof QuestionMC && !value.equals(Unknown.getInstance())) {
+							Fact mcFact = blackboard.getValueFact(question);
+							if (mcFact != null && !mcFact.getValue().equals(Unknown.getInstance())) {
+								MultipleChoiceValue mcv = ((MultipleChoiceValue) mcFact.getValue());
+								List<ChoiceValue> thisMcv = (List<ChoiceValue>) ((MultipleChoiceValue) value).getValue();
+								for (ChoiceValue cv : (List<ChoiceValue>) mcv.getValue()) {
+									if (!thisMcv.contains(cv)) {
+										thisMcv.add(cv);
+									}
+								}
+							}
+						}
+
+						blackboard.addValueFact(new DefaultFact(question,
+								value, PSMethodUserSelected.getInstance(),
+										PSMethodUserSelected.getInstance()));
+
+						EventManager.getInstance().fireEvent(
+								new FindingSetEvent(question, value, namespace),
+								web, user, null);
+					}
+				}
 			}
 		}
-		
-		KnowledgeServiceSession kss = broker.getSession().getServiceSession(namespace);
-		
-		Information info = new Information(namespace, objectid, values, TerminologyType.symptom, InformationType.OriginalUserInformation);
-		kss.inform(info);
-		broker.update(info);
-		
+		// with active DPS
+		else {
+
+			DPSEnvironment env = DPSEnvironmentManager.getInstance().getEnvironments(web);
+			Broker broker = env.getBroker(user);
+
+			Object value = null;
+			List<Object> values = new ArrayList<Object>();
+			if (valueid != null) {
+				value = valueid;
+			}
+			else if (valuenum != null && !valuenum.equals("")) {
+				value = Double.valueOf(valuenum);
+			}
+			if (value != null) {
+				values.add(value);
+			}
+			if (valueids != null) {
+				String[] ids = valueids.split("\\,");
+				for (String string : ids) {
+					values.add(string.trim());
+				}
+			}
+
+			KnowledgeServiceSession kss = broker.getSession().getServiceSession(namespace);
+
+			Information info = new Information(namespace, objectid, values,
+					TerminologyType.symptom, InformationType.OriginalUserInformation);
+			kss.inform(info);
+			broker.update(info);
+
+
+		}
 		return "value set";
 	}
 

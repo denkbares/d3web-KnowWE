@@ -21,7 +21,6 @@
 package de.d3web.we.core;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -42,7 +41,6 @@ import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.broker.BrokerImpl;
 import de.d3web.we.core.dialog.DistributedDialogControl;
-import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.persistence.AlignmentPersistenceHandler;
@@ -264,7 +262,7 @@ public class DPSEnvironment {
 		}
 	}
 	
-	public void addService(KnowledgeService service, String clusterID, boolean initialize) {
+	public void addService(KnowledgeService service, String clusterID, boolean initialize, boolean useDPS) {
 		KnowledgeService oldService = getService(service.getId());
 		if(oldService != null) {
 			removeService(oldService);
@@ -283,18 +281,27 @@ public class DPSEnvironment {
 			}
 		}
 		services.put(service.getId(), service);
+
 		for (TerminologyType eachType : service.getTerminologies().keySet()) {
 			LocalTerminologyAccess eachAccess = service.getTerminologies().get(eachType);
 			terminologyServer.getStorage().register(service.getId(), eachType, eachAccess);
-			if(initialize) {
+			if (initialize) {
 				TerminologyBroker tb = terminologyServer.getBroker();
-				ISetMap<Object, Term> map = tb.addTerminology(eachType, eachAccess, service.getId(), terminologyServer.getStorage());
-				Collection<GlobalAlignment> gas = tb.alignGlobal(eachAccess, service.getId(), terminologyServer.getStorage());
-				Collection<LocalAlignment> las = tb.alignLocal(eachAccess, service.getId(), terminologyServer.getStorage());
-				tb.addGlobalAlignments(gas);
+				ISetMap<Object, Term> map = tb.addTerminology(eachType, eachAccess,
+						service.getId(), terminologyServer.getStorage());
+
+				Collection<LocalAlignment> las = tb.alignLocal(eachAccess, service.getId(),
+						terminologyServer.getStorage());
+
 				tb.addLocalAlignments(las);
-				
-				saveAll();
+
+				if (useDPS) {
+					Collection<GlobalAlignment> gas = tb.alignGlobal(eachAccess, service.getId(),
+							terminologyServer.getStorage());
+					tb.addGlobalAlignments(gas);
+					saveAll();
+				}
+
 			}
 		}
 	}

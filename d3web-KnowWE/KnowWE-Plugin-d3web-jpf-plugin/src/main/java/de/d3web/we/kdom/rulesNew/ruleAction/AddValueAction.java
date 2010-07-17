@@ -25,6 +25,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.values.Choice;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.objects.AnswerRef;
@@ -85,9 +86,9 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 		}
 
 		@Override
-		public PSAction getAction(Section<NumericalAddValueAction> s) {
+		public PSAction getAction(KnowWEArticle article, Section<NumericalAddValueAction> s) {
 			Section<QuestionRef> qref = s.findSuccessor(QuestionRef.class);
-			Question q = qref.get().getObject(qref);
+			Question q = qref.get().getObject(article, qref);
 			Section<de.d3web.we.kdom.rulesNew.terminalCondition.Number> aref = s.findSuccessor(de.d3web.we.kdom.rulesNew.terminalCondition.Number.class);
 
 			Double d = aref.get().getNumber(aref);
@@ -119,11 +120,11 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 		}
 
 		@Override
-		public PSAction getAction(Section<NumericalAddValueAction> s) {
+		public PSAction getAction(KnowWEArticle article, Section<NumericalAddValueAction> s) {
 			Section<QuestionRef> qref = s.findSuccessor(QuestionRef.class);
-			Question q = qref.get().getObject(qref);
+			Question q = qref.get().getObject(article, qref);
 			Section<AnswerRef> aref = s.findSuccessor(AnswerRef.class);
-			Choice c = aref.get().getObject(aref);
+			Choice c = aref.get().getObject(article, aref);
 
 			if (q != null && c != null) {
 				ActionAddValue a = new ActionAddValue();

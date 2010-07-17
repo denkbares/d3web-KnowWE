@@ -12,6 +12,10 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.KDOMNotice;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -20,7 +24,7 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 	@Override
 	public void render(KnowWEArticle article, Section<DefaultMarkupType> section, KnowWEUserContext user, StringBuilder string) {
 
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + section.getId() + "\">\n"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + section.getID() + "\">\n"));
 		// render pre-formatted box
 		string.append("{{{\n");
 
@@ -38,10 +42,18 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 	}
 
 	public static void renderMessages(KnowWEArticle article, Section<? extends DefaultMarkupType> section, StringBuilder string) {
-		Collection<Message> messages = AbstractKnowWEObjectType.getMessagesFromSubtree(article, section);
+		Collection<Message> messages = AbstractKnowWEObjectType.getMessagesFromSubtree(article,
+				section);
 		renderMessageBlock(getMessagesOfType(messages, Message.ERROR), string);
 		renderMessageBlock(getMessagesOfType(messages, Message.WARNING), string);
 		renderMessageBlock(getMessagesOfType(messages, Message.NOTE), string);
+		renderKDOMReportMessageBlock(KnowWEUtils.getMessagesFromSubtree(article, section,
+				KDOMError.class), string);
+		renderKDOMReportMessageBlock(KnowWEUtils.getMessagesFromSubtree(article, section,
+				KDOMWarning.class), string);
+		// renderKDOMReportMessageBlock(KnowWEUtils.getMessagesFromSubtree(article,
+		// section,
+		// KDOMNotice.class), string);
 	}
 
 	private static Message[] getMessagesOfType(Collection<Message> allMessages, String messageType) {
@@ -53,6 +65,31 @@ public class DefaultMarkupRenderer extends KnowWEDomRenderer<DefaultMarkupType> 
 			}
 		}
 		return result.toArray(new Message[result.size()]);
+	}
+
+	private static void renderKDOMReportMessageBlock(Collection<? extends KDOMReportMessage> messages, StringBuilder string) {
+		if (messages == null) return;
+		if (messages.size() == 0) return;
+
+		Class<? extends KDOMReportMessage> type = messages.iterator().next().getClass();
+		String className = "";
+		if (type.equals(KDOMNotice.class)) {
+			className = "information";
+		}
+		else if (type.equals(KDOMWarning.class)) {
+			className = "warning";
+		}
+		else if (type.equals(KDOMError.class)) {
+			className = "error";
+		}
+
+		string.append(KnowWEUtils.maskHTML("<span class='" + className + "'>"));
+		for (KDOMReportMessage error : messages) {
+			string.append(error.getVerbalization());
+			string.append("\n");
+		}
+		string.append("\n");
+		string.append(KnowWEUtils.maskHTML("</span>"));
 	}
 
 	private static void renderMessageBlock(Message[] messages, StringBuilder string) {

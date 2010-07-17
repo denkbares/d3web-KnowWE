@@ -117,7 +117,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 		Section ruleSection = KnowWEObjectTypeUtils.getAncestorOfType(sec,
 				de.d3web.we.kdom.rules.Rule.class);
 		String kbRuleId = (String) KnowWEUtils.getStoredObject(sec.getWeb(),
-				sec.getTitle(), ruleSection.getId(),
+				sec.getTitle(), ruleSection.getID(),
 				de.d3web.we.kdom.rules.Rule.KBID_KEY);
 
 		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());

@@ -20,33 +20,25 @@
 
 package de.d3web.we.kdom.questionTreeNew;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
-import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.manage.RuleFactory;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.objects.QuestionDef;
 import de.d3web.we.kdom.objects.QuestionDef.QuestionType;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
-import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -60,14 +52,12 @@ import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.SplitUtility;
 
 /**
  * QuestionLine of the QuestionTree, here Questions can be defined
- *
- * @see QuestionTypeDeclaration
  * 
+ * @see QuestionTypeDeclaration
  * 
  * @author Jochen
  * 
@@ -79,7 +69,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		// every line containing [...] (unquoted) is recognized as QuestionLine
 		this.sectionFinder = new ConditionalAllTextFinder() {
 			@Override
-			protected boolean condition(String text, Section father) {
+			protected boolean condition(String text, Section<?> father) {
 				return SplitUtility.containsUnquoted(text, "[")
 						&& SplitUtility.containsUnquoted(text, "]")
 						&& !text.startsWith("[");
@@ -101,7 +91,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		// finally the name of the question
 		this.childrenTypes
-				.add(new QuestionDefQTree());
+				.add(new QuestionTreeQuestionDef());
 	}
 
 	/**
@@ -110,18 +100,19 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 *
 	 */
-	static class QuestionDefQTree extends QuestionDef {
+	static class QuestionTreeQuestionDef extends QuestionDef {
 
 		@Override
 		protected void init() {
 			SectionFinder f = new AllTextFinderTrimmed();
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
-			this.addSubtreeHandler(new CreateIndicationHandler());
+			// this.addSubtreeHandler(new CreateIndicationHandler());
+			this.addSubtreeHandler(IndicationHandler.getInstance());
 		}
 
 		@Override
-		public de.d3web.we.kdom.objects.QuestionDef.QuestionType getQuestionType(Section<QuestionDef> s) {
+		public QuestionDef.QuestionType getQuestionType(Section<QuestionDef> s) {
 			return QuestionTypeDeclaration
 					.getQuestionType(s.getFather().findSuccessor(
 							QuestionTypeDeclaration.class));
@@ -129,57 +120,71 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	/**
-	 * This handler creates an indication rule if a question if son of an answer
-	 * if a preceeding question
-	 *
-	 * @author Jochen
-	 *
-	 */
-	static class CreateIndicationHandler extends SubtreeHandler<QuestionDefQTree> {
-
-		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionDefQTree> qidSection) {
-
-			// current DashTreeElement
-			Section<DashTreeElement> element = KnowWEObjectTypeUtils
-					.getAncestorOfType(qidSection, new DashTreeElement());
-			// get dashTree-father
-			Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
-					.getDashTreeFather(element);
-
-			Section<QuestionTreeAnswerDef> answerSec = dashTreeFather
-					.findSuccessor(QuestionTreeAnswerDef.class);
-			Section<NumericCondLine> numCondSec = dashTreeFather
-					.findSuccessor(NumericCondLine.class);
-
-			if (answerSec != null || numCondSec != null) {
-
-				KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
-						article.getWeb())
-						.getKBM(article, this, qidSection);
-
-				String newRuleID = mgn.createRuleID();
-
-				Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
-
-				Rule r = RuleFactory.createIndicationRule(newRuleID, qidSection
-						.get().getObject(qidSection), cond);
-				if (r != null) {
-					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-							r.getClass() + " : "
-									+ r.getId()));
-				}
-				else {
-					return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-							Rule.class.getSimpleName()));
-				}
-			}
-
-			return new ArrayList<KDOMReportMessage>(0);
-		}
-
-	}
+	// /**
+	// * This handler creates an indication rule if a question if son of an
+	// answer
+	// * if a preceeding question
+	// *
+	// * @author Jochen
+	// *
+	// */
+	// static class CreateIndicationHandler extends
+	// QuestionTreeElementDefSubtreeHandler<QuestionTreeQuestionDef> {
+	//
+	// private final String ruleKey = "RULE_STORE_KEY";
+	//
+	// @Override
+	// public Collection<KDOMReportMessage> create(KnowWEArticle article,
+	// Section<QuestionTreeQuestionDef> qidSection) {
+	//
+	// // current DashTreeElement
+	// Section<DashTreeElement> element = KnowWEObjectTypeUtils
+	// .getAncestorOfType(qidSection, DashTreeElement.class);
+	//
+	// // get dashTree-father
+	// Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
+	// .getDashTreeFather(element);
+	//
+	// Section<QuestionTreeAnswerDef> answerSec = dashTreeFather
+	// .findSuccessor(QuestionTreeAnswerDef.class);
+	// Section<NumericCondLine> numCondSec = dashTreeFather
+	// .findSuccessor(NumericCondLine.class);
+	//
+	// if (answerSec != null || numCondSec != null) {
+	//
+	// KnowledgeBaseManagement mgn = getKBM(article);
+	//
+	// String newRuleID = mgn.createRuleID();
+	//
+	// Condition cond = Utils.createCondition(article,
+	// DashTreeElement.getDashTreeAncestors(element));
+	//
+	// Rule r = RuleFactory.createIndicationRule(newRuleID, qidSection
+	// .get().getObject(article, qidSection), cond);
+	// if (r != null) {
+	// KnowWEUtils.storeSectionInfo(article, qidSection, ruleKey, r);
+	// return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+	// r.getClass() + " : "
+	// + r.getId()));
+	// }
+	// else {
+	// return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+	// Rule.class.getSimpleName()));
+	// }
+	// }
+	//
+	// return new ArrayList<KDOMReportMessage>(0);
+	// }
+	//
+	// @Override
+	// public void destroy(KnowWEArticle article,
+	// Section<QuestionTreeQuestionDef> s) {
+	// Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
+	// ruleKey);
+	// if (kbr != null) kbr.remove();
+	// }
+	//
+	// }
 
 	/**
 	 * A type allowing for the definition of numerical ranges/boundaries for
@@ -226,7 +231,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 					if (qDef != null) {
 
-						Question question = qDef.get().getObject(qDef);
+						Question question = qDef.get().getObject(article, qDef);
 						if (!(question instanceof QuestionNum)) {
 							// if not numerical question throw error
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
@@ -355,7 +360,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 					if (qDef != null) {
 
-						Question question = qDef.get().getObject(qDef);
+						Question question = qDef.get().getObject(article, qDef);
 						if (!(question instanceof QuestionNum)) {
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 									"only for numerical questions allowed",
@@ -404,7 +409,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 					if (qDef != null) {
 
-						Question question = qDef.get().getObject(qDef);
+						Question question = qDef.get().getObject(article, qDef);
 						question.getProperties().setProperty(
 								Property.ABSTRACTION_QUESTION, true);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
@@ -449,7 +454,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 					if (qDef != null) {
 
-						Question question = qDef.get().getObject(qDef);
+						Question question = qDef.get().getObject(article, qDef);
 
 						if (question != null) {
 							D3webUtils.addMMInfo(question, "LT",
@@ -526,7 +531,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
-						Section father) {
+						Section<?> father) {
 
 					return SectionFinderResult
 							.createSingleItemList(new SectionFinderResult(

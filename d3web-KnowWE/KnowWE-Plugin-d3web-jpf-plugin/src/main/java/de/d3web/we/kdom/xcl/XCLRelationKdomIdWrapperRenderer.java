@@ -49,7 +49,7 @@ public class XCLRelationKdomIdWrapperRenderer extends KnowWEDomRenderer {
 		// id can be found by the class.
 		StringBuilder b = new StringBuilder();
 		XCLRelationHighlightingRenderer.getInstance().render(article, sec, user, b);
-		string.append(KnowWEUtils.maskHTML("<span id='"+sec.getId()+"' class = 'XCLRelationInList'>"
+		string.append(KnowWEUtils.maskHTML("<span id='"+sec.getID()+"' class = 'XCLRelationInList'>"
 										  + b.toString()
 										  + "</span>"));
 	}

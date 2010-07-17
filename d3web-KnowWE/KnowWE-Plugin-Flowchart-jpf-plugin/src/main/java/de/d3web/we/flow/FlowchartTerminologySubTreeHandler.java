@@ -51,14 +51,14 @@ import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 
 /**
  *
  * @author Reinhard Hatko
  * Created on: 12.10.2009
  */
-public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandler {
+public class FlowchartTerminologySubTreeHandler extends D3webSubtreeHandler {
 	
 	
 	private static final String FLOWCHART_QUESTIONNAIRE_NAME = "Questionnaire";
@@ -71,7 +71,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webReviseSubTreeHandle
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 		
-		KnowledgeBaseManagement kbm = getKBM(article, s);
+		KnowledgeBaseManagement kbm = getKBM(article);
 		
 		if (kbm == null)
 			return null;

@@ -207,8 +207,8 @@ public class KnowWEArticleManager {
 
 	private void appendTextReplaceNode(Section sec,
 			Map<String, String> nodesMap, StringBuffer newText) {
-		if (nodesMap.containsKey(sec.getId())) {
-			newText.append(nodesMap.get(sec.getId()));
+		if (nodesMap.containsKey(sec.getID())) {
+			newText.append(nodesMap.get(sec.getID()));
 			return;
 		}
 		List<Section> children = sec.getChildren();
@@ -255,6 +255,8 @@ public class KnowWEArticleManager {
 		// article to don't interfere with the next incremental update of this
 		// article
 		art.getSection().setReusedStateOfThisArticleRecursively(art.getTitle(), false);
+		// art.getSection().setPositionChangedRecursivelyFor(art.getTitle(),
+		// false);
 
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.INFO,

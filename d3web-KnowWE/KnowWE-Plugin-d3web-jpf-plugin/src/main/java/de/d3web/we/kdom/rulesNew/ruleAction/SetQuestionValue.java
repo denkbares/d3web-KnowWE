@@ -26,6 +26,7 @@ import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.session.values.Choice;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
 import de.d3web.we.kdom.objects.AnswerRef;
@@ -131,11 +132,11 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	}
 
 	@Override
-	public PSAction getAction(Section<SetQuestionValue> s) {
+	public PSAction getAction(KnowWEArticle article, Section<SetQuestionValue> s) {
 		Section<QuestionRef> qref = s.findSuccessor(QuestionRef.class);
-		Question q = qref.get().getObject(qref);
+		Question q = qref.get().getObject(article, qref);
 		Section<AnswerRef> aref = s.findSuccessor(AnswerRef.class);
-		Choice c = aref.get().getObject(aref);
+		Choice c = aref.get().getObject(article, aref);
 
 		if (q != null && c != null) {
 			ActionSetValue a = new ActionSetValue();

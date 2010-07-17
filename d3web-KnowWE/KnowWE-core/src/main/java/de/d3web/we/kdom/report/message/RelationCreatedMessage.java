@@ -20,7 +20,6 @@
 package de.d3web.we.kdom.report.message;
 
 import de.d3web.we.kdom.report.KDOMNotice;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class RelationCreatedMessage extends KDOMNotice {
 
@@ -31,7 +30,7 @@ public class RelationCreatedMessage extends KDOMNotice {
 	}
 
 	@Override
-	public String getVerbalization(KnowWEUserContext usercontext) {
+	public String getVerbalization() {
 		return "Created realation: " + s;
 	}
 

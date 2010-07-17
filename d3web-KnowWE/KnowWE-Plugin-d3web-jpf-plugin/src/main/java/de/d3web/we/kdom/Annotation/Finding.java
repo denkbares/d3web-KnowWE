@@ -106,7 +106,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 				URI questionuri = uo.getHelper().createlocalURI(question);
 				URI answeruri = uo.getHelper().createlocalURI(answer);
 				URI literalinstance = uo.getHelper().createlocalURI(
-						section.getTitle() + ".." + section.getId() + ".."
+						section.getTitle() + ".." + section.getID() + ".."
 						+ question + comparator + answer);
 
 				ArrayList<Statement> slist = new ArrayList<Statement>();

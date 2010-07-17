@@ -78,13 +78,13 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 				+ arg0.getOriginalText()
 				+ "</strong>"
 				+ "<img rel=\"{type: '"	+ conceptName
-				+ "', id: '" + arg0.getId()
+				+ "', id: '" + arg0.getID()
 				+ "', termName: '" + conceptName
 				+ "', user:'" + arg1.getUsername()
 				+ "'}\" class=\"conceptLink pointer\" id='"
-				+ arg0.getId()
+				+ arg0.getID()
 				+ "' src='KnowWEExtension/images/question.gif' width='12' /> "
-				+ "<div id='" + arg0.getId()
+				+ "<div id='" + arg0.getID()
 				+ "_popupcontent' style='visibility:hidden;display:none;position:fixed' >";
 
 		String popupContent = generatePopupContent(arg0, subjectURI, subjectString);
@@ -184,9 +184,9 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		for (String relationName : newOpts) {
 
-			String options =  "kdomid='" + arg0.getId() + "' subject='" + subject
+			String options =  "kdomid='" + arg0.getID() + "' subject='" + subject
 				+ "' rel='"	+ relationName + "' object='" + originalText
-				+ "' name='" + relationName + "' " + "ancestor='" + eventSection.getId() + "'";
+				+ "' name='" + relationName + "' " + "ancestor='" + eventSection.getID() + "'";
 
 
 			buffy.append("<li><p class=\"confirmOption pointer\" " + options + ">");

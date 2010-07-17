@@ -5,12 +5,12 @@ import de.d3web.we.kdom.Section;
 
 /**
  * Interface for type containing/wrapping term names
- *
+ * 
  * @author Jochen
- *
- * @param <T>
+ * 
+ * @param <TermObject>
  */
-public interface TermReference<T> extends KnowWEObjectType {
+public interface TermReference<TermObject> extends KnowWEObjectType {
 
-	public String getTermName(Section<? extends TermReference<T>> s);
+	public String getTermName(Section<? extends TermReference<TermObject>> s);
 }

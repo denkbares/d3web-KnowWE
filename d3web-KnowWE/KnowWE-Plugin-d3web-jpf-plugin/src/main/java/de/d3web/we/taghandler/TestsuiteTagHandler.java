@@ -494,7 +494,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 
 	private TestSuite loadTestSuite(String article) {
 		Section<TestsuiteSection> s = testsuites.get(article);
-		return (TestSuite) KnowWEUtils.getStoredObject(web, article, s.getId(), TestsuiteSection.TESTSUITEKEY);
+		return (TestSuite) KnowWEUtils.getStoredObject(web, article, s.getID(), TestsuiteSection.TESTSUITEKEY);
 	}
 	
 	private void loadArticlesContainingTestSuites() {
@@ -560,7 +560,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("&web=");
 		html.append(web);
 		html.append("&nodeID=");
-		html.append(testsuites.get(article).getId());
+		html.append(testsuites.get(article).getID());
 		html.append("&filename=");
 		html.append(article);
 		html.append("_Visualization.pdf");
@@ -582,7 +582,7 @@ public class TestsuiteTagHandler extends AbstractTagHandler {
 		html.append("&web=");
 		html.append(web);
 		html.append("&nodeID=");
-		html.append(testsuites.get(article).getId());
+		html.append(testsuites.get(article).getID());
 		html.append("&filename=");
 		html.append(article);
 		html.append("_Visualization.dot");

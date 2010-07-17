@@ -30,7 +30,6 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -47,7 +46,8 @@ import de.d3web.we.kdom.rulesNew.terminalCondition.Finding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalIntervallFinding;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author Jochen
@@ -93,7 +93,9 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 	 *         (if it doesn't have errors)
 	 *
 	 */
-	class RuleCompiler extends SubtreeHandler<ConditionActionRule> {
+	class RuleCompiler extends D3webSubtreeHandler<ConditionActionRule> {
+
+		private final String ruleStoreKey = "RULE_STORE_KEY";
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ConditionActionRule> s) {
@@ -102,23 +104,21 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed("Rule"));
 			}
 
-			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(
-					article.getWeb())
-					.getKBM(article, this, s);
+			KnowledgeBaseManagement mgn = getKBM(article);
 
 			Section<CompositeCondition> cond = s.findSuccessor(CompositeCondition.class);
 
-			Condition d3Cond = KDOMConditionFactory.createCondition(cond);
+			Condition d3Cond = KDOMConditionFactory.createCondition(article, cond);
 
 			Section<D3webRuleAction> action = s.findSuccessor(D3webRuleAction.class);
 
-			PSAction d3action = action.get().getAction(action);
+			PSAction d3action = action.get().getAction(article, action);
 			if (d3action != null) {
 
 				Rule r = RuleFactory.createRule(mgn.createRuleID(), d3action, d3Cond,
-						null,
-						null);
+						null, null);
 				if (r != null) {
+					KnowWEUtils.storeSectionInfo(article, s, ruleStoreKey, r);
 					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage("Rule"));
 				}
 
@@ -127,6 +127,15 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			// should not happen
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 					"rule not created"));
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<ConditionActionRule> rule) {
+			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, rule, ruleStoreKey);
+			if (kbr != null) {
+				kbr.remove();
+				KnowWEUtils.storeSectionInfo(article, rule, ruleStoreKey, null);
+			}
 		}
 
 	}

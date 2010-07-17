@@ -32,7 +32,7 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 
 /**
  * @author Jochen
@@ -65,20 +65,20 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 	 *         knowledge base
 	 *
 	 */
-	class CreateSubSolutionRelationHandler extends D3webReviseSubTreeHandler<SolutionDashTreeElementContent> {
+	class CreateSubSolutionRelationHandler extends D3webSubtreeHandler<SolutionDashTreeElementContent> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
 			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeElementContent.getDashTreeFatherContent(
 					s);
 			Section<SolutionDef> localSolutionDef = s.findSuccessor(SolutionDef.class);
-			Solution localSolution = localSolutionDef.get().getObject(localSolutionDef);
+			Solution localSolution = localSolutionDef.get().getObject(article, localSolutionDef);
 
 			if (fatherSolutionContent != null && localSolution != null) {
 
 				Section<SolutionDef> solutionDef = fatherSolutionContent.findSuccessor(SolutionDef.class);
 				if (solutionDef != null) {
-					Solution superSolution = solutionDef.get().getObject(solutionDef);
+					Solution superSolution = solutionDef.get().getObject(article, solutionDef);
 					// here the actual taxonomic relation is established
 					superSolution.addChild(localSolution);
 					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(

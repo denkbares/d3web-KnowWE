@@ -25,12 +25,15 @@ import java.util.List;
 
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.FindingToConditionBuilder;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
@@ -46,14 +49,15 @@ public class Utils {
 	 * will be returned. Such a List of DashTreeElements can be created with
 	 * <tt>DashTreeElement.getDashTreeAncestors(Section s)</tt>, if <tt>s</tt>
 	 * is the child Section of an answer in a valid DashTree.
+	 * @param article TODO
 	 */
 	public static Condition createCondition(
-			List<Section<? extends DashTreeElement>> ancestors) {
+			KnowWEArticle article, List<Section<? extends DashTreeElement>> ancestors) {
 
 		List<Condition> simpleConds = new ArrayList<Condition>();
 
 		for (int i = 0; i + 2 < ancestors.size(); i += 2) {
-			Condition simpleCond = createSimpleCondition(ancestors
+			Condition simpleCond = createSimpleCondition(article, ancestors
 					.get(i), ancestors.get(i + 1));
 			if (simpleCond != null) {
 				simpleConds.add(simpleCond);
@@ -78,6 +82,7 @@ public class Utils {
 	 * QuestionID. If thats not the case, <tt>null</tt> will be returned.
 	 */
 	public static Condition createSimpleCondition(
+			KnowWEArticle article,
 			Section<? extends DashTreeElement> father,
 			Section<? extends DashTreeElement> grandFather) {
 
@@ -85,10 +90,10 @@ public class Utils {
 				.findSuccessor(QuestionTreeAnswerDef.class);
 		Section<QuestionDef> qSec = grandFather.findSuccessor(QuestionDef.class);
 
-		Question q = qSec.get().getObject(qSec);
+		Question q = qSec.get().getObject(article, qSec);
 
 		if (answerSec != null && q instanceof QuestionChoice) {
-			Choice a = answerSec.get().getObject(answerSec);
+			Choice a = answerSec.get().getObject(article, answerSec);
 			if (a != null) {
 				CondEqual c = new CondEqual(q, new ChoiceValue(
 						a));
@@ -100,12 +105,18 @@ public class Utils {
 				.findSuccessor(NumericCondLine.class);
 
 		if (numCondSec != null && q instanceof QuestionNum) {
-			Double d = NumericCondLine.getValue(numCondSec);
-			String comp = NumericCondLine.getComparator(numCondSec);
-			Condition condNum = FindingToConditionBuilder
-					.createCondNum(father.getArticle(), numCondSec, comp, d,
-					(QuestionNum) q);
-			return condNum;
+			if (NumericCondLine.isIntervall(numCondSec)) {
+				NumericalInterval ival = NumericCondLine.getNumericalInterval(numCondSec);
+				if (ival != null) return new CondNumIn((QuestionNum) q, ival);
+			}
+			else {
+				Double d = NumericCondLine.getValue(numCondSec);
+				String comp = NumericCondLine.getComparator(numCondSec);
+
+				if (d != null && comp != null) return FindingToConditionBuilder
+						.createCondNum(father.getArticle(), numCondSec, comp, d,
+						(QuestionNum) q);;
+			}
 		}
 
 		return null;

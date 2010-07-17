@@ -58,7 +58,7 @@ private static DefaultWarningRenderer instance = null;
 
 		buffy.append(" <img style='vertical-align:middle;' height='12' src='KnowWEExtension/images/lo.gif'");
 
-		buffy.append(" title='"+notice.getVerbalization(user)+"'>");
+		buffy.append(" title='"+notice.getVerbalization()+"'>");
 
 		return  KnowWEUtils.maskHTML(buffy.toString());
 

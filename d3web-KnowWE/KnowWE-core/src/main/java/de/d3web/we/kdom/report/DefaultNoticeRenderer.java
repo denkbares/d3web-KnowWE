@@ -58,7 +58,7 @@ public class DefaultNoticeRenderer implements MessageRenderer{
 
 		buffy.append(" <img height='6' src='KnowWEExtension/images/green_bulb.gif'");
 
-		buffy.append(" title='"+notice.getVerbalization(user)+"'>");
+		buffy.append(" title='"+notice.getVerbalization()+"'>");
 
 		return  KnowWEUtils.maskHTML(buffy.toString());
 

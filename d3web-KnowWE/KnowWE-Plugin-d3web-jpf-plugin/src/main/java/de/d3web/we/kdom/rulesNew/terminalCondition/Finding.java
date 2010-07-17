@@ -27,6 +27,7 @@ import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.AnswerRef;
@@ -74,20 +75,20 @@ public class Finding extends D3webTerminalCondition<Finding> {
 	}
 
 	@Override
-	public TerminalCondition getTerminalCondition(Section<Finding> s) {
+	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<Finding> s) {
 
 		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
 
 		Section<AnswerRef> aRef = s.findSuccessor(AnswerRef.class);
 
 		if (qRef != null && aRef != null) {
-			Choice answer = aRef.get().getObject(aRef);
+			Choice answer = aRef.get().getObject(article, aRef);
 			if (answer == null) {
 				return null;
 			}
 			ChoiceValue value = new ChoiceValue(
 					answer);
-			return new CondEqual(qRef.get().getObject(qRef), value);
+			return new CondEqual(qRef.get().getObject(article, qRef), value);
 		}
 
 		return null;

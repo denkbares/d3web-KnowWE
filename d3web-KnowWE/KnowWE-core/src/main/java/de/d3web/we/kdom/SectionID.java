@@ -50,22 +50,22 @@ public class SectionID {
 	public SectionID(Section father, KnowWEObjectType type) {
 		String typename;
 		if (type instanceof XMLContent) {
-			typename = getEndOfId(father.getId()) + CONTENT_SUFFIX;
+			typename = getEndOfId(father.getID()) + CONTENT_SUFFIX;
 		} else if (type instanceof XMLHead) {
-			typename = getEndOfId(father.getId()) + HEAD_SUFFIX;
+			typename = getEndOfId(father.getID()) + HEAD_SUFFIX;
 		} else  if (type instanceof XMLTail) {
-			typename = getEndOfId(father.getId()) + TAIL_SUFFIX;
+			typename = getEndOfId(father.getID()) + TAIL_SUFFIX;
 		} else {
 			typename = type.getName();
 		}
-		createID(father.getArticle(), father.getId() + SEPARATOR + typename);
+		createID(father.getArticle(), father.getID() + SEPARATOR + typename);
 	}
 	
 	/**
 	 * This Constructor should be used for assigning <b>nonspecific</b> IDs
 	 */
 	public SectionID(Section father, String id) {
-		createID(father.getArticle(), father.getId() + SEPARATOR + id);
+		createID(father.getArticle(), father.getID() + SEPARATOR + id);
 	}
 	
 	/**

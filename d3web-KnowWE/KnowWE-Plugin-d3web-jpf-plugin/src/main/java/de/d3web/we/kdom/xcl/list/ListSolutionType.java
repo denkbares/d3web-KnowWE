@@ -38,7 +38,7 @@ import de.d3web.we.kdom.sectionFinder.NonEmptyLineSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.inference.PSMethodXCL;
 
@@ -79,13 +79,13 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 	 *         covering-model
 	 *
 	 */
-	class XCLModelCreator extends D3webReviseSubTreeHandler<ListSolutionType> {
+	class XCLModelCreator extends D3webSubtreeHandler<ListSolutionType> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListSolutionType> s) {
 
 			Section<SolutionDef> solutionDef = s.findSuccessor(SolutionDef.class);
-			Solution solution = solutionDef.get().getObject(solutionDef);
+			Solution solution = solutionDef.get().getObject(article, solutionDef);
 
 			Section<DefaultMarkupType> defaultMarkupType = s.findAncestor(DefaultMarkupType.class);
 
@@ -101,6 +101,13 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 				}
 			}
 			return null;
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<ListSolutionType> s) {
+			// nothing to do, the solution, along with its attached model, will
+			// be destroyed in the SolutionDef
+			return;
 		}
 
 		/**
@@ -170,11 +177,6 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 					}
 				}
 			}
-
-
-
-
-
 
 		}
 

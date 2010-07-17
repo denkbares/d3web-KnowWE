@@ -35,7 +35,6 @@ import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.Choice;
 import de.d3web.scoring.Score;
-import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -52,7 +51,7 @@ import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -126,18 +125,17 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	static class CreateSetValueRuleHandler extends SubtreeHandler<QuestionRef> {
+	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionRef> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionRef> s) {
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils
-					.getAncestorOfType(s, new DashTreeElement());
+					.getAncestorOfType(s, DashTreeElement.class);
 			// get dashTree-father
 
-			KnowledgeBaseManagement mgn = D3webModule.getKnowledgeRepresentationHandler(article.getWeb())
-					.getKBM(article, this, s);
+			KnowledgeBaseManagement mgn = getKBM(article);
 
 			Question q = mgn.findQuestion(trimQuotes(s));
 
@@ -158,7 +156,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 					if(a != null) {
 						String newRuleID = mgn.createRuleID();
 
-						Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
+						Condition cond = Utils.createCondition(article, DashTreeElement.getDashTreeAncestors(element));
 
 						Rule r = RuleFactory.createSetValueRule(newRuleID, qc, new Object[]{a}, cond, null);
 						if (r != null) {
@@ -179,7 +177,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 					if(d != null) {
 						String newRuleID = mgn.createRuleID();
-						Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
+						Condition cond = Utils.createCondition(article, DashTreeElement.getDashTreeAncestors(element));
 						Rule r  = RuleFactory.createAddValueRule(newRuleID, q, new Object[]{d},cond);
 						if (r != null) {
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass()
@@ -197,7 +195,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 				if(score != null) {
 					String newRuleID = mgn.createRuleID();
 
-					Condition cond = Utils.createCondition(DashTreeElement.getDashTreeAncestors(element));
+					Condition cond = Utils.createCondition(article, DashTreeElement.getDashTreeAncestors(element));
 
 					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, d, score, cond);
 					if (r != null) {

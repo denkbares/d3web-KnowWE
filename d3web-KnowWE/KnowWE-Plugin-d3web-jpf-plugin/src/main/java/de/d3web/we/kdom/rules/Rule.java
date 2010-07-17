@@ -24,16 +24,12 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.rule.D3ruleBuilder;
-import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.inference.RuleSet;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
@@ -49,14 +45,12 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
-import de.d3web.we.terminology.D3webReviseSubTreeHandler;
-import de.d3web.we.terminology.KnowledgeRecyclingObjectType;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class Rule extends DefaultAbstractKnowWEObjectType implements
-		KnowledgeRecyclingObjectType {
+public class Rule extends DefaultAbstractKnowWEObjectType {
 
 	public static final String KBID_KEY = "kbid";
 	public static final String KDOMID_KEY = "kdomid";
@@ -73,43 +67,6 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 	}
 
-	@Override
-	public void cleanKnowledge(KnowWEArticle article, KnowledgeBaseManagement kbm) {
-
-		if (kbm != null) {
-
-			// get new Rules if necessary
-			List<Section<Rule>> newRules = new ArrayList<Section<Rule>>();
-			article.getSection().findSuccessorsOfType(Rule.class, newRules);
-
-			Set<String> kbIDs = new HashSet<String>();
-			for (Section<Rule> r:newRules) {
-				kbIDs.add((String) KnowWEUtils.getStoredObject(article.getWeb(), article
-						.getTitle(), r.getId(), Rule.KBID_KEY));
-			}
-
-
-			// delete the rules from the KnowledgeBase
-			Collection<KnowledgeSlice> ruleComplexes = kbm.getKnowledgeBase().getAllKnowledgeSlices();
-			for (KnowledgeSlice rc:ruleComplexes) {
-				if (rc instanceof RuleSet) {
-					RuleSet rs = (RuleSet) rc;
-					for (de.d3web.core.inference.Rule r: new ArrayList<de.d3web.core.inference.Rule>(rs.getRules())) {
-						if (!kbIDs.contains(r.getId())) {
-							rs.removeRule(r);
-						}
-					}
-					if (rs.isEmpty()) {
-						kbm.getKnowledgeBase().remove(rs);
-					}
-				}
-			}
-
-			//System.out.println("Cleaned Rules in " + (System.currentTimeMillis() - startTime) + "ms");
-			//System.out.println("Deleted old Rules in " + (System.nanoTime() - start) + "ns");
-
-		}
-	}
 
 	private class RuleRenderer extends KnowWEDomRenderer<Rule> {
 
@@ -119,7 +76,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 			List<Message> errors = getErrorMessages(article, sec);
 
-			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getId()
+			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
 					+ "' class = 'XCLRelationInList'>"));
 
 			boolean empty = true;
@@ -161,7 +118,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 	}
 
-	class RuleSubTreeHandler extends D3webReviseSubTreeHandler<Rule> {
+	class RuleSubTreeHandler extends D3webSubtreeHandler<Rule> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Rule> s) {
@@ -181,11 +138,11 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 				}
 			}
 
-			KnowledgeBaseManagement kbm = getKBM(article, s);
+			KnowledgeBaseManagement kbm = getKBM(article);
 
 			if (kbm != null) {
 
-				D3ruleBuilder builder = new D3ruleBuilder(s.getId(), lazy,
+				D3ruleBuilder builder = new D3ruleBuilder(s.getID(), lazy,
 						new SingleKBMIDObjectManager(kbm));
 
 				if (s != null) {
@@ -197,7 +154,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 
 					if (builder.getRuleIDs().size() == 1) {
 						KnowWEUtils.storeSectionInfo(article.getWeb(), article
-								.getTitle(), s.getId(), KBID_KEY, builder
+								.getTitle(), s.getID(), KBID_KEY, builder
 								.getRuleIDs().get(0));
 					}
 
@@ -242,7 +199,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	 */
 	public static void storeErrorMessages(KnowWEArticle article, Section s, List<Message> message) {
 		KnowWEUtils.storeSectionInfo(KnowWEEnvironment.DEFAULT_WEB, article
-				.getTitle(), s.getId(), RULE_ERROR_MESSAGE_STORE_KEY, message);
+				.getTitle(), s.getID(), RULE_ERROR_MESSAGE_STORE_KEY, message);
 	}
 
 	/**
@@ -253,7 +210,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType implements
 	 */
 	public static List<Message> getErrorMessages(KnowWEArticle article, Section s) {
 		return (List<Message>) KnowWEUtils.getStoredObject(
-				KnowWEEnvironment.DEFAULT_WEB, article.getTitle(), s.getId(),
+				KnowWEEnvironment.DEFAULT_WEB, article.getTitle(), s.getID(),
 				RULE_ERROR_MESSAGE_STORE_KEY);
 	}
 

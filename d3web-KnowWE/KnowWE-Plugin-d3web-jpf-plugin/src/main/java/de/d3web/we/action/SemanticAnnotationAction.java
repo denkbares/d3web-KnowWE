@@ -39,7 +39,7 @@ import de.d3web.we.terminology.term.Term;
 public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 
 	// private FindingXMLWriter questionWriter;
-	private FindingHTMLWriter questionWriter;
+	private final FindingHTMLWriter questionWriter;
 
 	public SemanticAnnotationAction() {
 		questionWriter = new FindingHTMLWriter();
@@ -67,6 +67,15 @@ public class SemanticAnnotationAction extends DeprecatedAbstractKnowWEAction {
 			result = each.getTerm(termName, null);
 			if (result != null) {
 				return result;
+			}
+		}
+		if (result == null) {
+			for (GlobalTerminology each : dpse.getTerminologyServer().getBroker()
+					.getGlobalTerminologies()) {
+				result = each.getTerm(termName, null);
+				if (result != null) {
+					return result;
+				}
 			}
 		}
 		return result;

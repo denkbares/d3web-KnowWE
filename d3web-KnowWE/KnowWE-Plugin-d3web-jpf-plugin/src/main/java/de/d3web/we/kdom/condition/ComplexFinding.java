@@ -91,7 +91,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 				URI complexfinding = uo.getHelper().createChildOf(D3WebOWLVokab.COMPLEXFINDING
 						,
 						uo.getHelper().createlocalURI(
-								s.getTitle() + ".." + s.getId()));
+								s.getTitle() + ".." + s.getID()));
 				io.addLiteral(complexfinding);
 				List<Section> children = s.getChildren();
 				for (Section current : children) {

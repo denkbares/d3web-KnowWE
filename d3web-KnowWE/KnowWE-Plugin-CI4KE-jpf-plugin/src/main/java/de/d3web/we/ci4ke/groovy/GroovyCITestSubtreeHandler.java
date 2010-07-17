@@ -45,7 +45,6 @@ import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class GroovyCITestSubtreeHandler extends SubtreeHandler<GroovyCITestType> {
 
@@ -67,7 +66,7 @@ public class GroovyCITestSubtreeHandler extends SubtreeHandler<GroovyCITestType>
 		Map<String, Section<GroovyCITestType>> map = CIUtilities.getAllGroovyCITestSections(KnowWEEnvironment.DEFAULT_WEB);
 		if (map.containsKey(testname)) {
 			Section<GroovyCITestType> testSection = map.get(testname);
-			if (!testSection.getId().equals(s.getId())) msgs.add(new Message(Message.ERROR,
+			if (!testSection.getID().equals(s.getID())) msgs.add(new Message(Message.ERROR,
 					"Test name '" + testname + "' is not unique!", null, -1, null));
 		}
 
@@ -114,7 +113,7 @@ public class GroovyCITestSubtreeHandler extends SubtreeHandler<GroovyCITestType>
 		}
 
 		@Override
-		public String getVerbalization(KnowWEUserContext usercontext) {
+		public String getVerbalization() {
 			return "Test successfully created: " + s;
 		}
 	}
@@ -128,7 +127,7 @@ public class GroovyCITestSubtreeHandler extends SubtreeHandler<GroovyCITestType>
 		}
 
 		@Override
-		public String getVerbalization(KnowWEUserContext usercontext) {
+		public String getVerbalization() {
 			return "Test could not be created: " + s;
 		}
 	}

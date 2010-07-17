@@ -6,9 +6,13 @@ public class QuestionTreeModule extends KnowledgeModule {
 	public String generateModuleText(int size, int depth) {
 		StringBuilder text = new StringBuilder();
 		text.append("%%QuestionTree\n");
+		
+		text.append("\n");
+		text.append("QPage1\n");
+		text.append("QPage2\n");
+		text.append("QPage3\n\n");
 		text.append("QClass\n");
-		
-		
+
 		for (int i = 0; i < size; i++) {
 			
 			int mod = i % 3;
@@ -41,12 +45,9 @@ public class QuestionTreeModule extends KnowledgeModule {
 			
 		}
 		
-		text.append("\n");
-		text.append("QPage1\n");
-		text.append("QPage2\n");
-		text.append("QPage3\n");
 
-		text.append("%");
+
+		text.append("%\n\n");
 		return text.toString();
 	}
 

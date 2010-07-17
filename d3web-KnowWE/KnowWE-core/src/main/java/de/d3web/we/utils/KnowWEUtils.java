@@ -38,7 +38,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.store.SectionStore;
 
 public class KnowWEUtils {
 	
@@ -73,7 +72,7 @@ public class KnowWEUtils {
 	 * @return the created link
 	 */
 	public static String getLink(Section<?> section) {
-		return section.getTitle() + "#" + Math.abs(section.getId().hashCode());
+		return section.getTitle() + "#" + Math.abs(section.getID().hashCode());
 	}
 
 	/**
@@ -88,7 +87,7 @@ public class KnowWEUtils {
 		// TODO: figure out how JSPWiki builds section anchor names
 		return "section-"
 				+ section.getArticle().getTitle().replace(' ', '+') + "-"
-				+ Math.abs(section.getId().hashCode());
+				+ Math.abs(section.getID().hashCode());
 	}
 	
 	/**
@@ -147,7 +146,7 @@ public class KnowWEUtils {
 			Map<String, Collection<MSGType>> msgsMap = getMessagesMapModifiable(article, sec, msgType);
 			if (msgsMap == null) {
 				msgsMap = new HashMap<String, Collection<MSGType>>();
-				KnowWEUtils.storeSectionInfo(article.getWeb(), article.getTitle(), sec.getId(),
+				KnowWEUtils.storeSectionInfo(article.getWeb(), article.getTitle(), sec.getID(),
 						createMsgMapKey(msgType), msgsMap);
 			}
 			msgsMap.put(source.getName(), Collections.unmodifiableCollection(msgs));
@@ -242,22 +241,47 @@ public class KnowWEUtils {
 	private static <MSGType> Map<String, Collection<MSGType>> getMessagesMapModifiable(KnowWEArticle article,
 			Section<?> sec, Class<MSGType> msgType) {
 		return (Map<String, Collection<MSGType>>) KnowWEUtils.getStoredObject(article.getWeb(),
-				article.getTitle(), sec.getId(), createMsgMapKey(msgType));
+				article.getTitle(), sec.getID(), createMsgMapKey(msgType));
 	}
 
+
+
+	/**
+	 * This method is deprecated! If the Section is included in other articles,
+	 * the returned object might be created for an other article!
+	 */
+	@Deprecated
+	public static void storeSectionInfo(Section<?> sec, String key, Object o) {
+		storeSectionInfo(sec.getWeb(), sec.getTitle(), sec.getID(), key, o);
+	}
+
+	/**
+	 * This method is deprecated! If the Section is included in other articles,
+	 * the object might be overwritten!
+	 */
+	@Deprecated
+	public static Object getStoredObject(Section<?> s, String key) {
+		return getStoredObject(s.getWeb(), s.getTitle(), s.getID(), key);
+	}
+
+	public static void storeSectionInfo(KnowWEArticle article, Section<?> sec, String key, Object o) {
+		storeSectionInfo(article.getWeb(), article.getTitle(), sec.getID(), key, o);
+	}
+
+	public static Object getStoredObject(KnowWEArticle article, Section<?> s, String key) {
+		return getStoredObject(article.getWeb(), article.getTitle(), s.getID(), key);
+	}
+
+	public static Object getObjectFromLastVersion(KnowWEArticle article, Section<?> s, String key) {
+		return KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).getTypeStore()
+				.getLastStoredObject(article.getTitle(),
+						s.isReusedBy(article.getTitle()) ? s.getLastID() : s.getID(), key);
+		// return getStoredObject(article, s, key);
+	}
 
 	public static void storeSectionInfo(String web, String article, String kdomid, String key, Object o) {
 		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().storeObject(
 				article, kdomid, key, o);
-	}
-
-	public static void storeSectionInfo(Section<?> sec, String key, Object o) {
-		storeSectionInfo(sec.getWeb(), sec.getTitle(), sec.getId(), key, o);
-	}
-
-	public static void putSectionStore(String web, String article, String kdomid, SectionStore store) {
-		KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().putSectionStore(
-				article, kdomid, store);
 	}
 
 	public static Object getStoredObject(String web, String article, String kdomid, String key) {
@@ -265,23 +289,20 @@ public class KnowWEUtils {
 				article, kdomid, key);
 	}
 
-	public static Object getStoredObject(Section<?> s, String key) {
-		return getStoredObject(s.getWeb(), s.getTitle(), s.getId(), key);
+	public static List<Integer> getPositionInKDOM(Section<?> s) {
+		return getPositionInKDOM(s, s.getArticle().getSection());
 	}
 
-	public static Object getLastStoredObject(String web, String article, String kdomid, String key) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getLastStoredObject(
-				article, kdomid, key);
-	}
-
-	public static SectionStore getSectionStore(String web, String article, String kdomid) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObjects(
-				article, kdomid);
-	}
-
-	public static SectionStore getLastSectionStore(String web, String article, String kdomid) {
-		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getLastStoredObjects(
-				article, kdomid);
+	public static List<Integer> getPositionInKDOM(Section<?> start, Section<?> end) {
+		List<Integer> positions = new ArrayList<Integer>();
+		Section<?> temp = start;
+		Section<?> tempFather = temp.getFather();
+		while (temp != end && tempFather != null) {
+			positions.add(tempFather.getChildren().indexOf(temp));
+			temp = tempFather;
+			tempFather = temp.getFather();
+		}
+		return positions;
 	}
 
 	public static String convertUmlaut(String text) {
@@ -420,6 +441,16 @@ public class KnowWEUtils {
 		result = result.replaceAll("ü", "ue");
 		result = result.replaceAll("ß", "ss");
 		return result;
+	}
+
+	public static String trimAndRemoveQuotes(String text) {
+		String trimmed = text.trim();
+
+		if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
+			return trimmed.substring(1, trimmed.length() - 1).trim();
+		}
+
+		return trimmed;
 	}
 
 	// public static Broker getBroker(Model model) {

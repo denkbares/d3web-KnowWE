@@ -71,7 +71,7 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 	 */
 	protected String wrappContent(String sectionText, Section<TableCellContent> sec, KnowWEUserContext user) {
 	
-		String sectionID = sec.getId();
+		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
 		html.append( "<td>" );
 

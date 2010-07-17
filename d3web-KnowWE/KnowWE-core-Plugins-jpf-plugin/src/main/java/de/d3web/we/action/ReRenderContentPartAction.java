@@ -90,7 +90,7 @@ public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction  {
 	 * @param found
 	 */
 	private Section<? extends KnowWEObjectType> getSectionFromCurrentID( String nodeID, Section<? extends KnowWEObjectType> root ) {		
-	    if( root.getId().equals( nodeID ))
+	    if( root.getID().equals( nodeID ))
 	    	return root;
 	 
 		Section<? extends KnowWEObjectType> found = null;

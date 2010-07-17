@@ -36,7 +36,7 @@ public class StandardAnnotationRenderer extends ConditionalRenderer {
 			Section content = sec.findSuccessor(SemanticAnnotationContent.class);
 			if(content != null) {
 				String title = content.getOriginalText();
-				text = KnowWEUtils.maskHTML("<a href=\"#"+sec.getId()+"\"></a>"+"<span title='"+title+"'>"+text+"</span>");
+				text = KnowWEUtils.maskHTML("<a href=\"#"+sec.getID()+"\"></a>"+"<span title='"+title+"'>"+text+"</span>");
 			}
 		
 			string.append(text);

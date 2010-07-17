@@ -46,14 +46,14 @@ public class QuestionTreeRootTypeRenderer extends CustomRenderer{
 	public void render(KnowWEArticle article, Section sec,
 			KnowWEUserContext user, StringBuilder string) {
 		
-		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getId() + "\" class=\"collapsible-questiontree\">\n"));
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() + "\" class=\"collapsible-questiontree\">\n"));
 		
 
 		string.append(KnowWEUtils.maskHTML("<div id=\"\" style=\"float:right;\">\n"));
 			
-		string.append(KnowWEUtils.maskHTML("<span class=\"dt-ajax pointer\" rel=\"{dt : '', KdomNodeId : '"+sec.getId()+"'}\"><img src='KnowWEExtension/images/dt_icon_explanation2.png' alt='Default decision tree view' title='Default decision tree view'/></span> "
-				+ "<span class=\"dt-ajax pointer\" rel=\"{dt : 'question', KdomNodeId : '"+sec.getId()+"'}\"><img src='KnowWEExtension/images/icon_question_small.gif' alt='Show decision tree in question mode' title='Show decision tree in question mode'/></span> "
-				+ "<span class=\"dt-ajax pointer\" rel=\"{dt : 'answer', KdomNodeId : '"+sec.getId()+"'}\"><img src='KnowWEExtension/images/icon_diagnosis.gif' alt='Show decision tree in anwser mode' title='Show decision tree in anwser mode'/></span>"
+		string.append(KnowWEUtils.maskHTML("<span class=\"dt-ajax pointer\" rel=\"{dt : '', KdomNodeId : '"+sec.getID()+"'}\"><img src='KnowWEExtension/images/dt_icon_explanation2.png' alt='Default decision tree view' title='Default decision tree view'/></span> "
+				+ "<span class=\"dt-ajax pointer\" rel=\"{dt : 'question', KdomNodeId : '"+sec.getID()+"'}\"><img src='KnowWEExtension/images/icon_question_small.gif' alt='Show decision tree in question mode' title='Show decision tree in question mode'/></span> "
+				+ "<span class=\"dt-ajax pointer\" rel=\"{dt : 'answer', KdomNodeId : '"+sec.getID()+"'}\"><img src='KnowWEExtension/images/icon_diagnosis.gif' alt='Show decision tree in anwser mode' title='Show decision tree in anwser mode'/></span>"
 	        ));
 		string.append(KnowWEUtils.maskHTML("</div>\n"));
 		string.append(KnowWEUtils.maskHTML("<div id=\"collapsible-questiontree-info\" style=\"display:none\"></div>\n"));

@@ -1,6 +1,6 @@
-<Kopic>
 
-<Rules-section>
+
+%%Rules
 \\
 \\
 The evalutaion of the exhaust pipe color depends on the type of fuel:
@@ -35,7 +35,7 @@ Compute the percentual mileage increase from the real and the average mileage:
 IF "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
 THEN "Num. Mileage evaluation" = (("Real mileage  /100km" / "Average mileage /100km") * 100.0)  
 
-</Rules-section>
+%
 
 
 
@@ -122,4 +122,3 @@ Technical Examinations [3]
 </Questionnaires-section>
 
 
-</Kopic>

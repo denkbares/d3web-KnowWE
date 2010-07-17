@@ -153,7 +153,7 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 			mask.append("<tr>");
 			mask.append("<td>"
 					+ createAdditionalMatchingTextSpan(sec.getArticle(),
-							f.getSec().getId(),
+							f.getSec().getID(),
 							f.getSec().getAbsolutePositionStartInArticle(),
 							0, 'p',
 							true, sectionWords.length, sectionWords[0].length()));
@@ -161,7 +161,7 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 			mask.append(" " + text + " ");
 
 			mask.append(createAdditionalMatchingTextSpan(sec.getArticle(),
-							f.getSec().getId(),
+							f.getSec().getID(),
 							f.getSec().getAbsolutePositionStartInArticle(),0,
 							'a', true, sectionWords.length, sectionWords[0].length()));
 
@@ -383,7 +383,7 @@ public class KnowWEObjectTypeBrowserAction extends DeprecatedAbstractKnowWEActio
 					return k;
 			} catch (NullPointerException e) {
 				Logger.getLogger(this.getClass().getName()).warning(
-				"Section is not valid: " + found.get(k).getId() + "!");
+				"Section is not valid: " + found.get(k).getID() + "!");
 			}
 		}
 		return -1;

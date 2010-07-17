@@ -85,7 +85,7 @@ public class AppendTableNodesAction extends AbstractAction {
 		String[] lines = tableText.split("\n");
 		int lastLine = lines.length - 1;
 		int cells = lines[0].length() - lines[0].replace("|", "").length();
-		String id = table.getChildren().get(lines.length - 1).getId();
+		String id = table.getChildren().get(lines.length - 1).getID();
 
 		
 		StringBuffer buffy = new StringBuffer();
@@ -114,7 +114,7 @@ public class AppendTableNodesAction extends AbstractAction {
 		String id = "";
 
 		for (int i = 0; i < lines.length; i++) {
-			id = table.getChildren().get(i).getId();
+			id = table.getChildren().get(i).getID();
 			lines[i] = lines[i].trim() + "| - \n";
 			nodesMap.put(id, lines[i]);
 

@@ -284,7 +284,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		}
 
 		for (Section<CIDashboardType> s : list) {
-			if (s.getId() != section.getId()) {
+			if (s.getID() != section.getID()) {
 				String dashboardID = DefaultMarkupType.
 						getAnnotation(section, OVERRIDDEN_ID);
 				if (dashboardID != null && !dashboardID.isEmpty()) {

@@ -42,13 +42,6 @@ import de.d3web.we.utils.KnowWEUtils;
 public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	/**
-	 * This is just a (conventional) key under which messages can be stored (and
-	 * then be found again) in the sectionStore
-	 * 
-	 */
-	public static final String MESSAGES_STORE_KEY = "messages";
-
-	/**
 	 * the children types of the type. Used to serve the getAllowedChildrenTypes
 	 * of the KnowWEObjectType interface
 	 * 
@@ -57,8 +50,6 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 */
 	protected List<KnowWEObjectType> childrenTypes = new ArrayList<KnowWEObjectType>();
 
-	// protected List<KnowWEObjectType> priorityChildrenTypes = new
-	// ArrayList<KnowWEObjectType>();
 
 	/**
 	 * Manages the subtreeHandlers which are registered to this type
@@ -74,13 +65,27 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	protected boolean isActivated = true;
 
 	/**
+	 * determines whether this type is sectionized after creating the knowledge
+	 * or before as all other types
+	 * 
+	 * @see AbstractKnowWEObjectType#isPostBuildSectionizing()
+	 */
+	protected boolean postBuildSectionizing = false;
+
+	/**
 	 * a flag for the updating mechanism, which manages translations to explicit
 	 * knowledge formats
 	 */
 	private boolean isNotRecyclable = false;
 
 	/**
-	 * specifies whether there is a enumeration of siblings defined for this
+	 * a flag to show, that this ObjectType is sensitive to the order its
+	 * Sections appears in the article
+	 */
+	private boolean isOrderSensitive = false;
+
+	/**
+	 * determines whether there is a enumeration of siblings defined for this
 	 * type (e.g., to add line numbers to line-based sections)
 	 */
 	protected boolean isNumberedType = false;
@@ -116,6 +121,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * wiki view
 	 */
 	protected KnowWEDomRenderer customRenderer = null;
+
 
 	/**
 	 * constructor calling init() which is abstract
@@ -466,6 +472,22 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		this.customRenderer = renderer;
 	}
 
+	/**
+	 * This enables a second sectionizing stage. Normally all Sections get
+	 * sectionized at the start of building an article and after that, the
+	 * knowledge gets created by the SubtreeHandlers.
+	 * <p />
+	 * If this returns true, the Sections of this ObjectType don't get
+	 * sectionized further until after creating the knowledge (from other
+	 * Sections). Therefore it is possible to use all the stuff created by the
+	 * SubtreeHandlers to sectionze this Section.
+	 * 
+	 * @created 14.06.2010
+	 */
+	public boolean isPostBuildSectionizing() {
+		return this.postBuildSectionizing;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -507,6 +529,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return isNotRecyclable;
 	}
 
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -521,4 +544,13 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 
 	}
 
+	@Override
+	public boolean isOrderSensitive() {
+		return isOrderSensitive;
+	}
+
+	@Override
+	public void setOrderSensitive(boolean orderSensitive) {
+		this.isOrderSensitive = orderSensitive;
+	}
 }

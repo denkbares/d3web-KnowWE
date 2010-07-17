@@ -35,7 +35,7 @@ public class TableColumnContext extends  StringContext {
 
 	@Override
 	public String getCID() {
-		return table.getId()+"_col"+column;
+		return table.getID()+"_col"+column;
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.QuestionRef;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -26,7 +27,7 @@ public class NumericalIntervallFinding extends D3webTerminalCondition<NumericalF
 	}
 
 	@Override
-	public TerminalCondition getTerminalCondition(Section<NumericalFinding> s) {
+	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<NumericalFinding> s) {
 		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
 
 		Section<Intervall> intervall = s.findSuccessor(Intervall.class);
@@ -34,7 +35,7 @@ public class NumericalIntervallFinding extends D3webTerminalCondition<NumericalF
 		Double number1 = intervall.get().getFirstNumber(intervall);
 		Double number2 = intervall.get().getSecondNumber(intervall);
 
-		Question q = qRef.get().getObject(qRef);
+		Question q = qRef.get().getObject(article, qRef);
 
 		if (!(q instanceof QuestionNum)) {
 			// TODO some reasonable error handling here!

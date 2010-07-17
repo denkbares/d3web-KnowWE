@@ -26,7 +26,7 @@ import de.d3web.we.kdom.InvalidKDOMSchemaModificationOperation;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.dashTree.DashTree;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.dashTree.SubTree;
+import de.d3web.we.kdom.dashTree.DashSubtree;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLContent;
 
@@ -61,7 +61,7 @@ public class SubClassing extends AbstractXMLObjectType{
 				AbstractKnowWEObjectType subClassingDashTree) {
 			List<KnowWEObjectType> types = subClassingDashTree.getAllowedChildrenTypes();
 			for (KnowWEObjectType knowWEObjectType : types) {
-				if(knowWEObjectType instanceof SubTree) {		
+				if(knowWEObjectType instanceof DashSubtree) {		
 					try {
 						((AbstractKnowWEObjectType)knowWEObjectType).replaceChildType(new SubClassingDashTreeElement(), DashTreeElement.class);
 					} catch (InvalidKDOMSchemaModificationOperation e) {
