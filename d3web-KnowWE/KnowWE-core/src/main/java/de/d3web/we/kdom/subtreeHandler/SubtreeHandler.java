@@ -75,8 +75,8 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 
 	/**
 	 * If this method returns false, the method<tt>destroy(KnowWEArticle,
-	 * Section)</tt> in this handler will not be called for the not reused
-	 * Sections of the last version of the KDOM.
+	 * Section)</tt> in this handler will not be called for that Section of the
+	 * last version of the KDOM.
 	 * <p/>
 	 * If you are implementing an incremental SubtreeHandler, you can overwrite
 	 * this method and replace it with an algorithm to decide, if this handler
@@ -95,20 +95,15 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	}
 
 	/**
-	 * After editing an article, this method is called for every Section that,
-	 * because of changes, couldn't be reused by the update mechanism (
-	 * <tt>s.isReusedBy(article.getTitle()) == false</tt>), if the method
-	 * <tt>needsToDestroy(KnowWEArticle, Section)</tt> of this handler returns
-	 * true.
-	 * <p/>
 	 * This method is called after the creation of the new KDOM (but prior to
-	 * the revising of the new KDOM) on the Sections of the last KDOM. If you
-	 * are implementing an incremental SubtreeHandler, you can overwrite this
-	 * method to implement one, that removes everything the Section created in
-	 * the last version of the article. This way you can, later on in the
-	 * revise-step, simply add the stuff from the newly created Sections in the
-	 * new KDOM to the remaining stuff from the last version of the article to
-	 * get a consistent result.
+	 * the revising of the new KDOM) on the Sections of the last KDOM, if the
+	 * method <tt>needsToDestroy(KnowWEArticle, Section)</tt> of this handler
+	 * returns true. If you are implementing an incremental SubtreeHandler, you
+	 * can overwrite this method to implement one, that removes everything the
+	 * Section created in the last version of the article. This way you can,
+	 * later on in the revise-step, simply add the stuff from the newly created
+	 * Sections in the new KDOM to the remaining stuff from the last version of
+	 * the article to get a consistent result.
 	 * <p/>
 	 * 
 	 * <b>Attention:</b> Be aware, that the not reused Sections of the last KDOM
