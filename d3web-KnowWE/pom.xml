@@ -130,6 +130,7 @@
 		<module>KnowWE-Plugin-WISEC-jpf-plugin</module>
 		<module>KnowWE-Plugin-CI4KE-jpf-plugin</module>
 		<module>KnowWE-Plugin-FAQ-jpf-plugin</module>
+		<module>KnowWE-Plugin-SemanticCore</module>
 	</modules>
 	<repositories>
 		<repository>
