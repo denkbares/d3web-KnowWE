@@ -1,46 +1,63 @@
 /* ################################################## */
 /* -------------- FAQ Styling         --------------- */
 /* ################################################## */
-.
 
-/* styling of the faq"panel" i.e., the frame containing one Q & A pair */
 
-.faqpanel{
-	background-color: red;
-	margin: 10px;
-	-moz-box-shadow: 0 0 5px black;
-	-webkit-box-shadow: 0 0 5px black;
-	box-shadow: 0 0 5px black;
-	padding: 10px;
+/* dont display the blue plugin panel border */
+
+#faq .panel{
 	border: none;
-    margin: 0px;
 }
 
-.panel h3{
-	background-color: green;
+/* dont display a header for the faq plugin */
+
+#faq .panel h3{
+	display: none;
 }
+
 
 /* the question text style */
 
 .faq_question{
-	padding: 2px;
 	font-weight: bold;
 	background-color: #CCC;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-top: 20px;
+	margin-bottom: 0px;
+	-moz-box-shadow: 0 0 5px black;
+	-webkit-box-shadow: 0 0 5px black;
+	box-shadow: 0 0 5px black;
+	padding: 5px;
+	padding-left: 7px;
 }
 
 
 /* the answer text style */
 
 .faq_answer{
-	background-color: #BBB;
+	background-color: #EEE;
+	margin-left: 8px;
+	margin-right: 8px;
+	margin-bottom: 20px;
+	margin-top: 3px;
+	-moz-box-shadow: 0 0 5px black;
+	-webkit-box-shadow: 0 0 5px black;
+	box-shadow: 0 0 5px black;
+	padding: 5px;
 }
 
+.faq_answer p{
+	margin: 0px;
+	padding: 0px;
+}
 
 /* the tags style */
 
 .faq_tags{
-	font-size: 0.5em;
+	font-size: 0.7em;
 	font-weight: bold;
-	horizontal-align: right;
-	padding-right: 20px;
+	margin-right: 5px;
+	text-align: right;
+	margin: 0px;
 }

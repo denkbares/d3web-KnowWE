@@ -218,7 +218,10 @@ public class FAQTagHandler extends AbstractTagHandler {
 			// in case yes, write result to variable
 			BindingSet set = result.next();
 			if (set.getValue("a") != null) {
-				answer = set.getValue("a").stringValue();
+				answer = "A: ";
+				String a = set.getValue("a").stringValue();
+				a = a.trim();
+				answer = answer.concat(a);
 			}
 			if (set.getValue("q") != null) {
 				question = set.getValue("q").stringValue();
@@ -231,12 +234,12 @@ public class FAQTagHandler extends AbstractTagHandler {
 			}
 
 			// build the HTML
-			string.append(KnowWEUtils.maskHTML("<div class='faq_question'> Question: "));
+			string.append(KnowWEUtils.maskHTML("<div class='faq_question'> Q: "));
 			string.append(KnowWEUtils.maskHTML(question));
 			string.append(KnowWEUtils.maskHTML("</div>"));
-			string.append(KnowWEUtils.maskHTML("<div class='faq_answer'>"));
+			string.append(KnowWEUtils.maskHTML("<div class='faq_answer'> "));
 			string.append(KnowWEUtils.maskHTML(answer));
-			string.append(KnowWEUtils.maskHTML("<div class='faq_tags'>"));
+			string.append(KnowWEUtils.maskHTML("<div class='faq_tags'> "));
 			string.append(KnowWEUtils.maskHTML(status));
 			string.append(KnowWEUtils.maskHTML(" "));
 			string.append(KnowWEUtils.maskHTML(major));
@@ -255,11 +258,9 @@ public class FAQTagHandler extends AbstractTagHandler {
 	 */
 	private String renderPlugin(String pluginInner) {
 		StringBuilder string = new StringBuilder();
-		string.append(KnowWEUtils.maskHTML("<div class='faqpanel'>"));
 		string.append(KnowWEUtils.maskHTML("<div class='panel'>"));
 		string.append(KnowWEUtils.maskHTML("<h3>FAQ Plugin</h3>"));
 		string.append(KnowWEUtils.maskHTML(pluginInner));
-		string.append(KnowWEUtils.maskHTML("</div>"));
 		string.append(KnowWEUtils.maskHTML("</div>"));
 		return string.toString();
 	}
