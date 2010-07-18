@@ -155,7 +155,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// SubtreeHandler) he prevents incremental updating
 		if (!handlersUnableToDestroy.isEmpty()) {
 			Logger.getLogger(this.getClass().getName()).log(
-					Level.WARNING, "The following SubtreeHandlers " +
+					Level.INFO, "The following SubtreeHandlers " +
 							"prevent inrememental updating:\n" +
 							handlersUnableToDestroy.toString());
 		}
