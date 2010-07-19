@@ -22,8 +22,8 @@ package de.d3web.we.kdom.rulesNew.ruleAction;
 
 import de.d3web.abstraction.ActionAddValue;
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.session.values.Choice;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;

@@ -24,7 +24,7 @@ import java.util.List;
 
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.TerminalCondition;
-import de.d3web.core.session.values.Choice;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;

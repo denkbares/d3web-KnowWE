@@ -24,8 +24,8 @@ import java.util.List;
 
 import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.inference.PSAction;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.session.values.Choice;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;

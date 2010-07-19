@@ -23,10 +23,10 @@ package de.d3web.we.flow.testcase;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
-import de.d3web.core.session.values.Choice;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;

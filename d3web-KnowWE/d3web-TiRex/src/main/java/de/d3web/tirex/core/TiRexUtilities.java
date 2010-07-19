@@ -34,10 +34,10 @@ import java.util.regex.Pattern;
 import com.wcohen.ss.Levenstein;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.session.values.Choice;
 
 /**
  * A singleton class that contains numerous methods necessary to run the

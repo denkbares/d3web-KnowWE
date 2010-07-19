@@ -25,6 +25,7 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.DerivationType;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
@@ -38,7 +39,6 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.session.values.Choice;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;

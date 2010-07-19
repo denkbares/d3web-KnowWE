@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.session.values.Choice;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;

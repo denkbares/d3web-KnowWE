@@ -20,9 +20,9 @@
 
 package de.d3web.we.alignment;
 
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.session.values.Choice;
 
 public class D3webAlignUtils {
 

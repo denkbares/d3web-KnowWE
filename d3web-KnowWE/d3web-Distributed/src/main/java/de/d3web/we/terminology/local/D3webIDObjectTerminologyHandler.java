@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.info.PropertiesContainer;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.session.values.Choice;
 
 public class D3webIDObjectTerminologyHandler extends LocalTerminologyHandler<IDObject, IDObject> {
 
