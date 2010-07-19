@@ -18,36 +18,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.kernel.dialogControl;
+package de.d3web.kernel.dialogcontrol2;
+
+import de.d3web.core.session.Session;
+import de.d3web.core.session.interviewmanager.DialogController;
+import de.d3web.core.session.interviewmanager.MQDialogController;
+import de.d3web.core.session.interviewmanager.QASetManager;
+import de.d3web.core.session.interviewmanager.QASetManagerFactory;
 
 
-public abstract class ExternalClient {
+public class DistributedControllerFactory implements QASetManagerFactory {
+
+	private ExternalProxy proxy;
 	
-	private int priority = 0;
-
-	public ExternalClient() {
+	public DistributedControllerFactory(ExternalProxy proxy) {
 		super();
+		this.proxy = proxy;
 	}
 	
-	public ExternalClient(int priority) {
-		super();
-		this.priority = priority;
-	}
-
-	public abstract void init();
-	
-	public abstract void delegate(String targetNamespace, String id, boolean temporary, String comment);
-	
-	public abstract void delegateInstanly(String targetNamespace, String id, boolean temporary, String comment);
-
-	public abstract void executeDelegation();
-
-	public int getPriority() {
-		return priority;
-	}
-
-	public void setPriority(int newPriority) {
-		priority = newPriority;
+	public QASetManager createQASetManager(Session session) {
+		DialogController delegate = new MQDialogController(session);
+		DistributedDialogController result = new DistributedDialogController(delegate, proxy);
+		return result;
 	}
 
 }

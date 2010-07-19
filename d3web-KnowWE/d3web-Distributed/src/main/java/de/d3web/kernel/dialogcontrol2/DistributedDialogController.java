@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.kernel.dialogControl;
+package de.d3web.kernel.dialogcontrol2;
 
 import java.util.List;
 
