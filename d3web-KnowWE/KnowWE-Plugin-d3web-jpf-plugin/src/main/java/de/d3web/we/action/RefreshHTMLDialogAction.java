@@ -34,6 +34,7 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.HTMLDialogRenderer;
+import de.d3web.we.d3webModule.HTMLInterviewRenderer;
 
 public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 
@@ -87,5 +88,53 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 		
 		return null;
 	}
+	
+	/**
+	 * The new Interview Renderer call. Will substitute above "Dialog Renderer"
+	 * once completed and working.
+	 *
+	 * @created 15.07.2010
+	 * @param topic
+	 * @param user
+	 * @param request
+	 * @param web
+	 * @return
+	 */
+	public static String callInterviewRenderer(String topic, String user, HttpServletRequest request, String web) {
+
+		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(request);
+
+		D3webKnowledgeService knowledgeServiceInTopic = D3webModule.getAD3webKnowledgeServiceInTopic(
+				web, topic);
+		if (knowledgeServiceInTopic == null) return rb.getString("KnowWE.DialogPane.error");
+		String kbid = knowledgeServiceInTopic.getId();
+		// String kbid = topic+".."+KnowWEEnvironment.generateDefaultID(topic);
+
+		Broker broker = D3webModule.getBroker(user, web);
+		broker.activate(broker.getSession().getServiceSession(kbid), null, true,
+				false, null);
+		broker.getDialogControl().showNextActiveDialog();
+		KnowledgeServiceSession serviceSession = broker.getSession()
+				.getServiceSession(kbid);
+		Session session = null;
+
+		if (serviceSession instanceof D3webKnowledgeServiceSession) {
+			session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+			return HTMLInterviewRenderer.renderInterview(session, web);
+		}
+
+		if (serviceSession == null) {
+			kbid = KnowWEEnvironment.WIKI_FINDINGS + ".."
+					+ KnowWEEnvironment.generateDefaultID(KnowWEEnvironment.WIKI_FINDINGS);
+			serviceSession = broker.getSession().getServiceSession(kbid);
+			if (serviceSession instanceof D3webKnowledgeServiceSession) {
+				session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
+				return HTMLInterviewRenderer.renderInterview(session, web);
+			}
+		}
+
+		return null;
+	}
+
 
 }
