@@ -25,9 +25,9 @@
 	margin-right: 5px;
 	margin-top: 20px;
 	margin-bottom: 0px;
-	-moz-box-shadow: 0 0 5px black;
-	-webkit-box-shadow: 0 0 5px black;
-	box-shadow: 0 0 5px black;
+	-moz-box-shadow: 0 0 2px #003366;
+	-webkit-box-shadow: 0 0 2px #003366;
+	box-shadow: 0 0 2px #003366;
 	padding: 5px;
 	padding-left: 7px;
 }
@@ -41,9 +41,9 @@
 	margin-right: 8px;
 	margin-bottom: 20px;
 	margin-top: 3px;
-	-moz-box-shadow: 0 0 5px black;
-	-webkit-box-shadow: 0 0 5px black;
-	box-shadow: 0 0 5px black;
+	-moz-box-shadow: 0 0 3px black;
+	-webkit-box-shadow: 0 0 3px black;
+	box-shadow: 0 0 3px black;
 	padding: 5px;
 }
 

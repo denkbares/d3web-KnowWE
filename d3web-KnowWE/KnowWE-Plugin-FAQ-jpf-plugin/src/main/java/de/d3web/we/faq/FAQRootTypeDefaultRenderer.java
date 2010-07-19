@@ -57,27 +57,33 @@ public class FAQRootTypeDefaultRenderer extends DefaultMarkupRenderer {
 	public void render(KnowWEArticle article, Section sec,
 			KnowWEUserContext user, StringBuilder string) {
 
-		String content = DefaultMarkupType.getContent(sec);
 		String question =
 				DefaultMarkupType.getAnnotation(sec, "question");
 		String status =
 				DefaultMarkupType.getAnnotation(sec, "status");
 		String major =
 				DefaultMarkupType.getAnnotation(sec, "major");
-
+		
+		String answer = "A: ";
+		String a = DefaultMarkupType.getContent(sec);
+		a = a.trim();
+		answer = answer.concat(a);
+		
 		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() +
 				"\" >\n"));
 
-		string.append(KnowWEUtils.maskHTML("<p><b>Question: " + question +
-				"</b></p>"));
-		string.append(KnowWEUtils.maskHTML("<p>" + content +
-				"</p><hr />"));
-		string.append(KnowWEUtils.maskHTML("<p>Status tagged as: " + status +
-				"</p>"));
-		string.append(KnowWEUtils.maskHTML("<p>Major tagged as: " +
-				major + "</p><hr /><hr />"));
-
-		string.append(KnowWEUtils.maskHTML("</div>\n"));
+		// build the HTML
+		string.append(KnowWEUtils.maskHTML("<div class='faq_question'> Q: "));
+		string.append(KnowWEUtils.maskHTML(question));
+		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append(KnowWEUtils.maskHTML("<div class='faq_answer'> "));
+		string.append(KnowWEUtils.maskHTML(answer));
+		string.append(KnowWEUtils.maskHTML("<div class='faq_tags'> "));
+		string.append(KnowWEUtils.maskHTML(status));
+		string.append(KnowWEUtils.maskHTML(" "));
+		string.append(KnowWEUtils.maskHTML(major));
+		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append(KnowWEUtils.maskHTML("</div>"));
 
 	}
 }
