@@ -52,7 +52,7 @@ public class CallFlowAction extends PSAction {
 	}
 
 	@Override
-	public void doIt(Session theCase, Object source, PSMethod psmethod) {
+	public void doIt(Session session, Object source, PSMethod psmethod) {
 
 	}
 
@@ -62,7 +62,7 @@ public class CallFlowAction extends PSAction {
 	}
 
 	@Override
-	public void undo(Session theCase, Object source, PSMethod psmethod) {
+	public void undo(Session session, Object source, PSMethod psmethod) {
 		
 	}
 	

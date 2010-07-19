@@ -55,23 +55,23 @@ public class IndicateFlowAction extends PSAction {
 	}
 
 	@Override
-	public void doIt(Session theCase, Object source, PSMethod psmethod) {
+	public void doIt(Session session, Object source, PSMethod psmethod) {
 		
 		
 		log("Indicating Startnode '"  + startNodeName +"' of flow '" + flowName + "'.", Level.FINE);
 		
-		StartNode startNode = findStartNode(theCase);
+		StartNode startNode = findStartNode(session);
 		
-		FluxSolver.indicateFlow((Rule) source, startNode, theCase);
+		FluxSolver.indicateFlow((Rule) source, startNode, session);
 
 	}
 	
 	/**
 	 * returns the StartNode that is called by the supplied action
 	 */
-	private StartNode findStartNode(Session theCase) {
+	private StartNode findStartNode(Session session) {
 		
-		FlowSet flowSet = FluxSolver.getFlowSet(theCase);
+		FlowSet flowSet = FluxSolver.getFlowSet(session);
 		
 		Flow subflow = flowSet.getByName(flowName);
 		List<StartNode> startNodes = subflow.getStartNodes();
@@ -98,7 +98,7 @@ public class IndicateFlowAction extends PSAction {
 	}
 
 	@Override
-	public void undo(Session theCase, Object source, PSMethod psmethod) {
+	public void undo(Session session, Object source, PSMethod psmethod) {
 		
 		
 		

@@ -164,8 +164,8 @@ public class QuestionDashTreeRenderer extends CustomRenderer {
 		DelegateRenderer.getInstance().render(article, section, user, string);
 
 		//render the additional information icon
-		Session theCase = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
-		if (theCase != null) {
+		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
+		if (session != null) {
 			Section<? extends KnowWEObjectType> child = section.findChildOfType(QuestionTreeElementContent.class);
 			String name = child.getOriginalText();
 

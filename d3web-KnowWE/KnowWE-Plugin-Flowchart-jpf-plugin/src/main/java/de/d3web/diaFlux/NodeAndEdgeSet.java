@@ -75,7 +75,7 @@ public class NodeAndEdgeSet implements KnowledgeSlice {
 	}
 
 	@Override
-	public boolean isUsed(Session theCase) {
+	public boolean isUsed(Session session) {
 		// TODO Auto-generated method stub
 		return false;
 	}

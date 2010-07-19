@@ -42,7 +42,7 @@ public class PSMethodDelegate extends PSMethodAdapter {
 	}
 
 	@Override
-	public void propagate(Session theCase, Collection<PropagationEntry> changes) {
+	public void propagate(Session session, Collection<PropagationEntry> changes) {
 
 		for (PropagationEntry propagationEntry : changes) {
 
@@ -52,7 +52,7 @@ public class PSMethodDelegate extends PSMethodAdapter {
 			if (slices == null) return;
 			RuleSet rs = (RuleSet) slices;
 			for (Rule slice : rs.getRules()) {
-				slice.check(theCase);
+				slice.check(session);
 			}
 		}
 	}

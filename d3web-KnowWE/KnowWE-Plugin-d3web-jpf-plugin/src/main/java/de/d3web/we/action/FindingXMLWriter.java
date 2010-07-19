@@ -51,32 +51,32 @@ public class FindingXMLWriter {
 
 	private static ResourceBundle rb;
 
-	private void appendAnswers(Question theQuestion, StringBuffer sb, Session theCase) {
+	private void appendAnswers(Question theQuestion, StringBuffer sb, Session session) {
 		sb.append("<Answers>\n");
 		if (theQuestion instanceof QuestionChoice) {
 			QuestionChoice theQC = (QuestionChoice) theQuestion;
 			if (theQC.getAllAlternatives() != null) {
 				for (Choice each : theQC.getAllAlternatives()) {
-					appendAnswer(theQuestion, sb, new ChoiceValue(each), theCase);
+					appendAnswer(theQuestion, sb, new ChoiceValue(each), session);
 				}
-				appendAnswer(theQuestion, sb, Unknown.getInstance(), theCase);
+				appendAnswer(theQuestion, sb, Unknown.getInstance(), session);
 			}
 		}
 		if (theQuestion instanceof QuestionNum) {
-			if (theCase != null) {
-				NumValue answer = (NumValue) theCase.getBlackboard().getValue(theQuestion);
+			if (session != null) {
+				NumValue answer = (NumValue) session.getBlackboard().getValue(theQuestion);
 				if (answer != null) {
-					appendAnswer(theQuestion, sb, answer, theCase);
+					appendAnswer(theQuestion, sb, answer, session);
 				}
 			}
 			else {
-				appendAnswer(theQuestion, sb, new NumValue(0), theCase);
+				appendAnswer(theQuestion, sb, new NumValue(0), session);
 			}
 		}
 		sb.append("</Answers>\n");
 	}
 
-	private void appendAnswer(Question theQuestion, StringBuffer sb, Value theAnswer, Session theCase) {
+	private void appendAnswer(Question theQuestion, StringBuffer sb, Value theAnswer, Session session) {
 		String theID = theAnswer.getValue().toString();
 		if (theAnswer instanceof ChoiceValue) {
 			theID = ((ChoiceValue) theAnswer).getAnswerChoiceID();
@@ -102,7 +102,7 @@ public class FindingXMLWriter {
 		else {
 			sb.append(" type='AnswerChoice'");
 		}
-		if (theCase != null && theCase.getBlackboard().getValue(theQuestion).equals(theAnswer)) {
+		if (session != null && session.getBlackboard().getValue(theQuestion).equals(theAnswer)) {
 			sb.append(" active='true'");
 		}
 		sb.append(">\n");
@@ -120,7 +120,7 @@ public class FindingXMLWriter {
 		sb.append("</Answer>\n");
 	}
 
-	private String getXMLString(Question theQuestion, String type, Session theCase) {
+	private String getXMLString(Question theQuestion, String type, Session session) {
 		StringBuffer sb = new StringBuffer();
 		String questionID = theQuestion.getId();
 		sb.append(
@@ -136,13 +136,13 @@ public class FindingXMLWriter {
 		catch (UnsupportedEncodingException e) {
 		}
 		sb.append("<Text><![CDATA[" + text + "]]></Text>\n");
-		appendAnswers(theQuestion, sb, theCase);
+		appendAnswers(theQuestion, sb, session);
 
 		sb.append("</Question>\n");
 		return sb.toString();
 	}
 
-	public String getXMLString(Question question, Session theCase) {
+	public String getXMLString(Question question, Session session) {
 
 		rb = D3webModule.getKwikiBundle_d3web();
 		String retVal = null;
@@ -151,21 +151,21 @@ public class FindingXMLWriter {
 		}
 		else {
 			if (question instanceof QuestionYN) {
-				retVal = getXMLString(question, "YN", theCase);
+				retVal = getXMLString(question, "YN", session);
 			}
 			else if (question instanceof QuestionOC) {
-				retVal = getXMLString(question, "OC", theCase);
+				retVal = getXMLString(question, "OC", session);
 			}
 			else if (question instanceof QuestionMC) {
-				retVal = getXMLString(question, "MC", theCase);
+				retVal = getXMLString(question, "MC", session);
 			}
 			else if (question instanceof QuestionNum) {
-				retVal = getXMLString(question, "Num", theCase);
+				retVal = getXMLString(question, "Num", session);
 			} /*
 			 * else if (question instanceof QuestionText) { retVal =
-			 * getXMLString((Question) question, "Text", theCase); } else if
+			 * getXMLString((Question) question, "Text", session); } else if
 			 * (question instanceof QuestionDate) { retVal =
-			 * getXMLString((Question) question, "Date", theCase); }
+			 * getXMLString((Question) question, "Date", session); }
 			 */
 		}
 		return retVal;

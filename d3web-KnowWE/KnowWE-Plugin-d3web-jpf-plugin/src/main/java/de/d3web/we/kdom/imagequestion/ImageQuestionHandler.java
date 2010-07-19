@@ -360,7 +360,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 	 * 
 	 * @param specAns
 	 * @param q
-	 * @param theCase
+	 * @param session
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")

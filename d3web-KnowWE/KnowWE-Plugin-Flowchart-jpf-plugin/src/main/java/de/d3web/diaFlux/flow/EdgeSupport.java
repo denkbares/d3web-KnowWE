@@ -26,10 +26,10 @@ public class EdgeSupport implements ISupport {
 
 
 
-	public boolean isValid(Session theCase) {
+	public boolean isValid(Session session) {
 		
 		try {
-			return edge.getCondition().eval(theCase);
+			return edge.getCondition().eval(session);
 			
 		} catch (NoAnswerException e) {
 			return false;

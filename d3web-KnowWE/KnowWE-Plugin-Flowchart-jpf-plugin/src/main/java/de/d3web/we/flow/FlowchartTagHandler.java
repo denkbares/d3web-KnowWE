@@ -41,9 +41,9 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
 		
-		Session theCase = D3webUtils.getSession(topic, user, web);
+		Session session = D3webUtils.getSession(topic, user, web);
 
-		if (!FluxSolver.isFlowCase(theCase)) {
+		if (!FluxSolver.isFlowCase(session)) {
 			return "No Flowchart found.";
 		}
 
@@ -61,7 +61,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		}
 
 		// Debug
-		if (isDebug(user.getUrlParameterMap())) builder.append(getPathendText(theCase));
+		if (isDebug(user.getUrlParameterMap())) builder.append(getPathendText(session));
 		//
 
 		for (Section<FlowchartType> section : flows) {
@@ -76,8 +76,8 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 			builder.append("'");
 			builder.append("</h3>");
 
-			if (isActive(section, theCase)) {
-				builder.append(createPreviewWithHighlightedPath(section, theCase));
+			if (isActive(section, session)) {
+				builder.append(createPreviewWithHighlightedPath(section, session));
 			}
 
 			builder.append("</div>");
@@ -88,27 +88,27 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		return builder.toString();
 	}
 
-	private boolean isActive(Section section, Session theCase) {
+	private boolean isActive(Section section, Session session) {
 
 		// TODO
 		// String flowID =
 		// AbstractXMLObjectType.getAttributeMapFor(section).get("id");
 		//		
-		// CaseObjectSource flowSet = FluxSolver.getFlowSet(theCase);
+		// CaseObjectSource flowSet = FluxSolver.getFlowSet(session);
 		//		
 		// DiaFluxCaseObject caseObject = (DiaFluxCaseObject)
-		// theCase.getCaseObject(flowSet);
+		// session.getCaseObject(flowSet);
 		//       
 		return true;
 	}
 
-	private String getPathendText(Session theCase) {
+	private String getPathendText(Session session) {
 
-		if (theCase == null) return "";
+		if (session == null) return "";
 
-		FlowSet set = FluxSolver.getFlowSet(theCase);
+		FlowSet set = FluxSolver.getFlowSet(session);
 
-		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) theCase.getCaseObject(set);
+		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(set);
 		List<PathEntry> pathEnds = caseObject.getPathEnds();
 
 		StringBuilder builder = new StringBuilder();

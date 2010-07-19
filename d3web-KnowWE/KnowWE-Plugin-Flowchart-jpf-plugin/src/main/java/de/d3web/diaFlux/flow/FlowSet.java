@@ -128,7 +128,7 @@ public class FlowSet implements KnowledgeSlice, CaseObjectSource {
 	}
 
 	@Override
-	public boolean isUsed(Session theCase) {
+	public boolean isUsed(Session session) {
 		//TODO
 		return true;
 	}

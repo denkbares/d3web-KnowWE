@@ -36,8 +36,8 @@ public class DistributedControllerFactory implements QASetManagerFactory {
 		this.proxy = proxy;
 	}
 	
-	public QASetManager createQASetManager(Session theCase) {
-		DialogController delegate = new MQDialogController(theCase);
+	public QASetManager createQASetManager(Session session) {
+		DialogController delegate = new MQDialogController(session);
 		DistributedDialogController result = new DistributedDialogController(delegate, proxy);
 		return result;
 	}

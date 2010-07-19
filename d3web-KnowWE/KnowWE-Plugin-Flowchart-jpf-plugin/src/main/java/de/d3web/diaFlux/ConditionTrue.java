@@ -21,7 +21,7 @@ public class ConditionTrue extends TerminalCondition {
 	}
 
 	@Override
-	public boolean eval(Session theCase) throws NoAnswerException,
+	public boolean eval(Session session) throws NoAnswerException,
 			UnknownAnswerException {
 		return true;
 	}

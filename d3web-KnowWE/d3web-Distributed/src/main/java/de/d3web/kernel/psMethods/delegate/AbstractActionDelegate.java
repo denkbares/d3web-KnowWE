@@ -46,8 +46,8 @@ public abstract class AbstractActionDelegate extends PSAction {
 	public abstract PSAction copy();
 
 	@Override
-	public void doIt(Session theCase, Object source, PSMethod psmethod) {
-		QASetManager manager = theCase.getQASetManager();
+	public void doIt(Session session, Object source, PSMethod psmethod) {
+		QASetManager manager = session.getQASetManager();
 		for (NamedObject no : getNamedObjects()) {
 			//TODO added cast to Rule, as source was formerly of type rule --rh@20100625
 			manager.propagate(no, (Rule) source, psmethod);
@@ -55,7 +55,7 @@ public abstract class AbstractActionDelegate extends PSAction {
 	}
 
 	@Override
-	public void undo(Session theCase, Object source, PSMethod psmethod) {
+	public void undo(Session session, Object source, PSMethod psmethod) {
 		// can not undo this kind of action
 	}
 	

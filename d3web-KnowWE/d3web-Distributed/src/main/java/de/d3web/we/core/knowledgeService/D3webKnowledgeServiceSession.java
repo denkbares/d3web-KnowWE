@@ -149,15 +149,15 @@ public class D3webKnowledgeServiceSession implements KnowledgeServiceSession {
 			percentagesToScores.put(1.00, 100);
 		}
 
-		public void notify(IEventSource source, Session theCase) {
-			if (theCase != session) return;
+		public void notify(IEventSource source, Session session) {
+			if (session != session) return;
 
 			XCLModel model = (XCLModel) source;
 			List<Object> values = new ArrayList<Object>();
 			List<Object> xclInferenceValues = new ArrayList<Object>();
-			Rating xclstate = model.getState(theCase);
-			Double precision = model.getInferenceTrace(theCase).getScore();
-			Double support = model.getInferenceTrace(theCase).getSupport();
+			Rating xclstate = model.getState(session);
+			Double precision = model.getInferenceTrace(session).getScore();
+			Double support = model.getInferenceTrace(session).getSupport();
 			xclInferenceValues.add(precision);
 			xclInferenceValues.add(support);
 			values = new ArrayList<Object>();

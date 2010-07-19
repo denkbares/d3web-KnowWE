@@ -108,7 +108,7 @@ public class FindingHTMLWriter {
 			// TODO: 04.2010 joba: add Unknown alternative
 			// String answerText =
 			// theQuestion.getUnknownAlternative().verbalizeValue(
-			// theCase);
+			// session);
 			//
 			// buffy.append("<INPUT TYPE=radio NAME='f" + timestampid + "id"
 			// + theQuestion.getId() + "'"
@@ -120,9 +120,9 @@ public class FindingHTMLWriter {
 			// "'"
 			// + "}\" ");
 
-			// if (theCase != null
-			// && theCase.getValue(theQuestion) != UndefinedValue.getInstance()
-			// && theCase.getValue(theQuestion).equals(
+			// if (session != null
+			// && session.getValue(theQuestion) != UndefinedValue.getInstance()
+			// && session.getValue(theQuestion).equals(
 			// theQuestion.getUnknownAlternative())) {
 			// buffy.append(" checked=\"checked\" ");
 			// }
@@ -244,21 +244,21 @@ public class FindingHTMLWriter {
 	}
 
 	private String getHTMLString(Question theQuestion, String type,
-			Session theCase, String namespace, String webname, String topic, String targetUrlPrefix) {
+			Session session, String namespace, String webname, String topic, String targetUrlPrefix) {
 		StringBuffer buffy = new StringBuffer();
 
 		buffy.append("<div class=\"semContents\" >");
 		buffy.append("<div class=\"questionsheet-layer\">");
 		if (type.equalsIgnoreCase(MC)) {
-			appendMCAnswers(theQuestion, buffy, theCase, namespace, webname, topic,
+			appendMCAnswers(theQuestion, buffy, session, namespace, webname, topic,
 					targetUrlPrefix);
 		}
 		else if (type.equalsIgnoreCase(OC) || type.equalsIgnoreCase(YN)) {
-			appendOCAnswers(theQuestion, buffy, theCase, namespace, webname, topic,
+			appendOCAnswers(theQuestion, buffy, session, namespace, webname, topic,
 					targetUrlPrefix);
 		}
 		else if (type.equalsIgnoreCase(NUM)) {
-			appendNUMAnswers(theQuestion, buffy, theCase, namespace, webname, topic,
+			appendNUMAnswers(theQuestion, buffy, session, namespace, webname, topic,
 					targetUrlPrefix);
 		}
 		else {
@@ -288,7 +288,7 @@ public class FindingHTMLWriter {
 		return null;
 	}
 
-	public String getHTMLString(Question question, Session theCase,
+	public String getHTMLString(Question question, Session session,
 			String namespace, String webname, String topic, String targetUrlPrefix) {
 
 		rb = D3webModule.getKwikiBundle_d3web();
@@ -305,24 +305,24 @@ public class FindingHTMLWriter {
 			retVal = "<h3>" + KnowWEUtils.convertUmlaut(questionText) + "</h3>";
 			if (question instanceof QuestionYN) {
 				retVal += getHTMLString(question, "YN",
-						theCase, namespace, webname, topic, targetUrlPrefix);
+						session, namespace, webname, topic, targetUrlPrefix);
 			}
 			else if (question instanceof QuestionOC) {
 				retVal += getHTMLString(question, "OC",
-						theCase, namespace, webname, topic, targetUrlPrefix);
+						session, namespace, webname, topic, targetUrlPrefix);
 			}
 			else if (question instanceof QuestionMC) {
 				retVal += getHTMLString(question, "MC",
-						theCase, namespace, webname, topic, targetUrlPrefix);
+						session, namespace, webname, topic, targetUrlPrefix);
 			}
 			else if (question instanceof QuestionNum) {
-				retVal += getHTMLString(question, "Num", theCase,
+				retVal += getHTMLString(question, "Num", session,
 						namespace, webname, topic, targetUrlPrefix);
 			} /*
 			 * else if (question instanceof QuestionText) { retVal =
-			 * getXMLString((Question) question, "Text", theCase); } else if
+			 * getXMLString((Question) question, "Text", session); } else if
 			 * (question instanceof QuestionDate) { retVal =
-			 * getXMLString((Question) question, "Date", theCase); }
+			 * getXMLString((Question) question, "Date", session); }
 			 */
 		}
 		String reencode = retVal;

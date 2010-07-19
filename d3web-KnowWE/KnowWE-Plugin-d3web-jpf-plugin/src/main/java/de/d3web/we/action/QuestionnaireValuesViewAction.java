@@ -53,15 +53,15 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 		StringBuilder result = new StringBuilder();
 
 		for (KnowWEArticle article : KnowWEEnvironment.getInstance().getArticleManager(web).getArticles()) {
-			Session theCase = D3webUtils.getSession(article.getTitle(), context.getWikiContext(),
+			Session session = D3webUtils.getSession(article.getTitle(), context.getWikiContext(),
 					web);
-			if (theCase != null) {
-				IDObject io = theCase.getKnowledgeBase().searchObjectForName(questionnaireName);
+			if (session != null) {
+				IDObject io = session.getKnowledgeBase().searchObjectForName(questionnaireName);
 				if (io instanceof QContainer) {
 					QContainer questionnaire = (QContainer) io;
 					for (TerminologyObject no : questionnaire.getChildren()) {
 						if (no instanceof Question) {
-							renderQuestion((Question) no, theCase, result);
+							renderQuestion((Question) no, session, result);
 						}
 					}
 					context.getWriter().write(result.toString());
@@ -74,12 +74,12 @@ public class QuestionnaireValuesViewAction extends AbstractAction {
 
 	}
 
-	private void renderQuestion(Question question, Session theCase,
+	private void renderQuestion(Question question, Session session,
 			StringBuilder result) {
 
 		Value v = null;
 
-		if (theCase.getBlackboard().getAnsweredQuestions().contains(question)) v = theCase.getBlackboard().getValue(
+		if (session.getBlackboard().getAnsweredQuestions().contains(question)) v = session.getBlackboard().getValue(
 				question);
 
 		result.append("<p>");

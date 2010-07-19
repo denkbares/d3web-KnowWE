@@ -52,7 +52,7 @@ public class ConverterUtils {
 		return result;
 	}
 
-	public static List<Object> toValueList(Value givenValue, Session theCase) {
+	public static List<Object> toValueList(Value givenValue, Session session) {
 		List<Object> result = new ArrayList<Object>();
 		if (givenValue instanceof NumValue) {
 			Double value = (Double) ((NumValue) givenValue).getValue();
@@ -63,7 +63,7 @@ public class ConverterUtils {
 		else if (givenValue instanceof DateValue) {
 			EvaluatableAnswerDateValue dateEval = (EvaluatableAnswerDateValue) ((DateValue) givenValue)
 					.getValue();
-			Date value = dateEval.eval(theCase);
+			Date value = dateEval.eval(session);
 			if (value != null) {
 				result.add(value);
 			}
