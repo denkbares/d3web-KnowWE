@@ -30,8 +30,6 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.apache.tools.ant.util.ReaderInputStream;
 
-import de.d3web.KnOfficeParser.KnOfficeParameterSet;
-import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
@@ -42,13 +40,15 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.NumValue;
-import de.d3web.empiricalTesting.Finding;
-import de.d3web.empiricalTesting.RatedSolution;
-import de.d3web.empiricalTesting.RatedTestCase;
-import de.d3web.empiricalTesting.Rating;
-import de.d3web.empiricalTesting.SequentialTestCase;
-import de.d3web.empiricalTesting.StateRating;
-import de.d3web.empiricalTesting.TestSuite;
+import de.d3web.empiricaltesting2.Finding;
+import de.d3web.empiricaltesting2.RatedSolution;
+import de.d3web.empiricaltesting2.RatedTestCase;
+import de.d3web.empiricaltesting2.Rating;
+import de.d3web.empiricaltesting2.SequentialTestCase;
+import de.d3web.empiricaltesting2.StateRating;
+import de.d3web.empiricaltesting2.TestSuite;
+import de.d3web.knofficeparser2.KnOfficeParameterSet;
+import de.d3web.knofficeparser2.KnOfficeParser;
 import de.d3web.report.Message;
 
 /**

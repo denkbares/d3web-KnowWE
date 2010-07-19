@@ -21,8 +21,8 @@
 // $ANTLR 3.1.2 D:\\Projekte\\ANTLR\\Grammars\\TestsuiteANTLR.g 2010-01-18 22:36:08
 
 package de.d3web.we.testsuite;
+import de.d3web.knofficeparser2.ParserErrorHandler;
 import de.d3web.we.testsuite.TestsuiteBuilder;
-import de.d3web.KnOfficeParser.ParserErrorHandler;
 
 
 import org.antlr.runtime.*;

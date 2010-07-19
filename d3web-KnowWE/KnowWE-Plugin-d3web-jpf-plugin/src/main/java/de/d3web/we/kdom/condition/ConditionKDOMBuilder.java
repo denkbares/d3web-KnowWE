@@ -25,7 +25,7 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.KnOfficeParser.ConditionBuilder;
+import de.d3web.knofficeparser2.ConditionBuilder;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingComparator;

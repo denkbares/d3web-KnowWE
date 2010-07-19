@@ -23,9 +23,9 @@ package de.d3web.we.kdom.table.xcl;
 
 import java.util.Collection;
 
-import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.knofficeparser2.SingleKBMIDObjectManager;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;

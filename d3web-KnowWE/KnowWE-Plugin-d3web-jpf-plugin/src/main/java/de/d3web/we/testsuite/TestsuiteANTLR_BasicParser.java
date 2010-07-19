@@ -32,7 +32,7 @@ import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 
-import de.d3web.KnOfficeParser.ParserErrorHandler;
+import de.d3web.knofficeparser2.ParserErrorHandler;
 
 
 public class TestsuiteANTLR_BasicParser extends Parser {

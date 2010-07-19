@@ -21,7 +21,7 @@
 // $ANTLR 3.1.2 BasicLexer.g 2009-06-22 22:36:59
 
 package de.d3web.we.testsuite;
-import de.d3web.KnOfficeParser.LexerErrorHandler;
+import de.d3web.knofficeparser2.LexerErrorHandler;
 
 
 import org.antlr.runtime.*;

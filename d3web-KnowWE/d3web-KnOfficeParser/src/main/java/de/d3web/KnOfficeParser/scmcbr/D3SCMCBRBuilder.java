@@ -42,7 +42,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.IDObjectManagement;
-import de.d3web.kernel.psMethods.SCMCBR.SCMCBRModel;
+import de.d3web.kernel.psMethods.scmcbr2.SCMCBRModel;
 import de.d3web.report.Message;
 import de.d3web.xcl.XCLRelationType;
 /**

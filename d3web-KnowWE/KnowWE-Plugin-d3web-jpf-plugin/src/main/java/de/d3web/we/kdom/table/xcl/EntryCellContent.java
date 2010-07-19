@@ -23,12 +23,12 @@ package de.d3web.we.kdom.table.xcl;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.table.XCLRelationBuilder;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.kernel.verbalizer.ConditionVerbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
+import de.d3web.knofficeparser2.SingleKBMIDObjectManager;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;

@@ -25,9 +25,9 @@ import java.io.StringReader;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.knofficeparser2.SingleKBMIDObjectManager;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEParseResult;

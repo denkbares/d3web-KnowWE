@@ -3,10 +3,10 @@ package de.d3web.we.kdom.table.xcl;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.knofficeparser2.SingleKBMIDObjectManager;
 import de.d3web.report.Message;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;

@@ -31,9 +31,9 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.apache.tools.ant.util.ReaderInputStream;
 
-import de.d3web.KnOfficeParser.DefaultLexer;
 import de.d3web.KnOfficeParser.dashtree.DashTree;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
+import de.d3web.knofficeparser2.DefaultLexer;
 import de.d3web.report.Message;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeKDOMBuilder;

@@ -34,8 +34,8 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.KnOfficeParser.DefaultLexer;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
+import de.d3web.knofficeparser2.DefaultLexer;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.SemanticCore;

@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.kernel.psMethods.verbalizer.XclVerbalizer;
+import de.d3web.kernel.psmethods2.verbalizer.XclVerbalizer;
 import de.d3web.kernel.verbalizer.Verbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
 import de.d3web.knowledgeExporter.KnowledgeManager;
