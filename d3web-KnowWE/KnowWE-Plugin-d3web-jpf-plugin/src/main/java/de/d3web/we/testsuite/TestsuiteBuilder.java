@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.testsuite;
@@ -30,6 +30,8 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.apache.tools.ant.util.ReaderInputStream;
 
+import de.d3web.KnOfficeParser.KnOfficeParameterSet;
+import de.d3web.KnOfficeParser.KnOfficeParser;
 import de.d3web.KnOfficeParser.util.DefaultD3webLexerErrorHandler;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.KnOfficeParser.util.MessageKnOfficeGenerator;
@@ -40,27 +42,25 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.IDObjectManagement;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.values.NumValue;
-import de.d3web.empiricaltesting2.Finding;
-import de.d3web.empiricaltesting2.RatedSolution;
-import de.d3web.empiricaltesting2.RatedTestCase;
-import de.d3web.empiricaltesting2.Rating;
-import de.d3web.empiricaltesting2.SequentialTestCase;
-import de.d3web.empiricaltesting2.StateRating;
-import de.d3web.empiricaltesting2.TestSuite;
-import de.d3web.knofficeparser2.KnOfficeParameterSet;
-import de.d3web.knofficeparser2.KnOfficeParser;
+import de.d3web.empiricaltesting.Finding;
+import de.d3web.empiricaltesting.RatedSolution;
+import de.d3web.empiricaltesting.RatedTestCase;
+import de.d3web.empiricaltesting.Rating;
+import de.d3web.empiricaltesting.SequentialTestCase;
+import de.d3web.empiricaltesting.StateRating;
+import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.report.Message;
 
 /**
- * TestsuiteBuilder
- * This class creates a testsuite containing several SequentialTestCases.
- * Testsuites are parsed by TestsuiteANTLR
+ * TestsuiteBuilder This class creates a testsuite containing several
+ * SequentialTestCases. Testsuites are parsed by TestsuiteANTLR
+ * 
  * @author Sebastian Furth
  * @see TestsuiteANTLR.g
- *
+ * 
  */
 public class TestsuiteBuilder implements KnOfficeParser {
-	
+
 	private IDObjectManagement idom;
 	private final String file;
 	private final List<Message> errors = new ArrayList<Message>();
@@ -68,55 +68,61 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	private SequentialTestCase currentSequentialTestCase;
 	private RatedTestCase currentRatedTestCase;
 	private TestSuite testSuite;
-	
+
 	public TestsuiteBuilder(String file, IDObjectManagement idom) {
 		this.idom = idom;
 		this.file = file;
 	}
-	
+
 	@Override
 	public List<Message> addKnowledge(Reader r,
 			IDObjectManagement idom, KnOfficeParameterSet s) {
-		
+
 		// Initialization
 		this.idom = idom;
 		ReaderInputStream input = new ReaderInputStream(r);
 		ANTLRInputStream istream = null;
-		
+
 		try {
 			istream = new ANTLRInputStream(input);
-		} catch (IOException e1) {
+		}
+		catch (IOException e1) {
 			errors.add(MessageKnOfficeGenerator.createAntlrInputError(file, 0, ""));
 		}
-		
-		TestsuiteLexer lexer = new TestsuiteLexer(istream, new DefaultD3webLexerErrorHandler(errors, file));
+
+		TestsuiteLexer lexer = new TestsuiteLexer(istream, new DefaultD3webLexerErrorHandler(
+				errors, file));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		
+
 		TestsuiteANTLR parser =
-			new TestsuiteANTLR(tokens, this, new DefaultD3webParserErrorHandler(errors, file, "BasicLexer"));
-		
+				new TestsuiteANTLR(tokens, this, new DefaultD3webParserErrorHandler(errors, file,
+						"BasicLexer"));
+
 		// Parsing
 		try {
 			parser.knowledge();
-		} catch (RecognitionException e) {
+		}
+		catch (RecognitionException e) {
 			e.printStackTrace();
 		}
-		
+
 		// Reporting
 		return getErrors();
 	}
-	
+
 	/**
 	 * Initializes a new SequentialTestCase
+	 * 
 	 * @param name of the new SequentialTestCase
 	 */
 	public void addSequentialTestCase(String name) {
 		currentSequentialTestCase = new SequentialTestCase();
 		currentSequentialTestCase.setName(name);
 	}
-	
+
 	/**
 	 * Initializes a new RatedTestCase
+	 * 
 	 * @param i number of the RatedTestCase in current SQTestCase
 	 * @param line
 	 * @param linetext
@@ -124,9 +130,10 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	public void addRatedTestCase(int i, int line, String linetext) {
 		currentRatedTestCase = new RatedTestCase();
 	}
-	
+
 	/**
 	 * Adds a Finding to the current RatedTestCase
+	 * 
 	 * @param question name of the question
 	 * @parm answer name of the answer
 	 * @param line linenumber
@@ -135,34 +142,39 @@ public class TestsuiteBuilder implements KnOfficeParser {
 	public void addFinding(String question, String answer, int line, String linetext) {
 
 		Question q = idom.findQuestion(question);
-		
+
 		if (q == null) {
 			errors.add(MessageKnOfficeGenerator
 					.createQuestionNotFoundException("", line, linetext, question));
-		} else if (q instanceof QuestionNum) {
+		}
+		else if (q instanceof QuestionNum) {
 			try {
 				double value = Double.parseDouble(answer);
 				Finding currentFinding = new Finding(q, new NumValue(value));
 				currentRatedTestCase.add(currentFinding);
-				
-			} catch (NumberFormatException e) {
+
+			}
+			catch (NumberFormatException e) {
 				errors.add(MessageKnOfficeGenerator
 						.createNaNException("", line, linetext, answer));
 			}
-		} else {
+		}
+		else {
 			Value a = idom.findValue(q, answer);
 			if (a == null) {
 				errors.add(MessageKnOfficeGenerator
 						.createAnswerNotFoundException("", line, linetext, answer, question));
-			} else {
+			}
+			else {
 				Finding currentFinding = new Finding(q, a);
 				currentRatedTestCase.add(currentFinding);
 			}
 		}
 	}
-	
+
 	/**
 	 * Adds a new Solution to the current RatedTestCase
+	 * 
 	 * @param solution name of the solution
 	 * @parm rating rating of the solution
 	 * @param line linenumber
@@ -175,42 +187,46 @@ public class TestsuiteBuilder implements KnOfficeParser {
 		if (d == null) {
 			errors.add(MessageKnOfficeGenerator
 					.createSolutionNotFoundException("", line, linetext, name));
-		} else {
+		}
+		else {
 			StateRating r = new StateRating(rating);
 			addRatedSolution(d, r);
-			
+
 		}
-	
+
 	}
-	
+
 	public void addHeuristicSolution(String name, String rating, int line, String linetext) {
-		
+
 		Solution d = idom.findSolution(name);
-		
+
 		if (d == null) {
 			errors.add(MessageKnOfficeGenerator
 					.createSolutionNotFoundException("", line, linetext, name));
-		} else {
+		}
+		else {
 			StateRating r = new StateRating(rating);
 			addRatedSolution(d, r);
 		}
 	}
 
 	public void addXCLSolution(String name, String rating, int line, String linetext) {
-		
+
 		Solution d = idom.findSolution(name);
-		
+
 		if (d == null) {
 			errors.add(MessageKnOfficeGenerator
 					.createSolutionNotFoundException("", line, linetext, name));
-		} else {
+		}
+		else {
 			StateRating r = new StateRating(rating);
 			addRatedSolution(d, r);
 		}
 	}
-	
+
 	/**
 	 * Adds a RatedSolution to the current RatedTestCase
+	 * 
 	 * @param d Diagnosis
 	 * @param r Rating
 	 */
@@ -218,7 +234,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 		RatedSolution rs = new RatedSolution(d, r);
 		currentRatedTestCase.addExpected(rs);
 	}
-	
+
 	/**
 	 * Adds the current RatedTestCase to the current SequentialTestCase
 	 */
@@ -228,32 +244,31 @@ public class TestsuiteBuilder implements KnOfficeParser {
 			RatedTestCase equalRTC = searchForEqualPathRTC();
 			if (equalRTC != null) {
 				name = equalRTC.getName();
-			} else {
+			}
+			else {
 				name = "RTC_" + System.currentTimeMillis();
 			}
 			currentRatedTestCase.setName(name);
 			currentSequentialTestCase.add(currentRatedTestCase);
-			
+
 		}
 	}
-	
+
 	private RatedTestCase searchForEqualPathRTC() {
-		
-		if (sequentialTestCases.size() == 0)
-			return null;
+
+		if (sequentialTestCases.size() == 0) return null;
 
 		boolean equality;
 		int pathLength = currentSequentialTestCase.getCases().size();
 		RatedTestCase lastCase;
-		
+
 		for (SequentialTestCase stc : sequentialTestCases) {
-			
+
 			equality = true;
-			
+
 			// If the path is shorter, the cases can't be equal
-			if (stc.getCases().size() < pathLength + 1)
-				continue;
-			
+			if (stc.getCases().size() < pathLength + 1) continue;
+
 			// Compares the already added RatedTestCases
 			for (int i = 0; i < pathLength; i++) {
 				if (!equalCases(stc.getCases().get(i), currentSequentialTestCase.getCases().get(i))) {
@@ -261,23 +276,20 @@ public class TestsuiteBuilder implements KnOfficeParser {
 					break;
 				}
 			}
-			
+
 			// Compares the last RTC of the STC with the current RTC
 			lastCase = stc.getCases().get(pathLength);
-			if (equality && equalCases(lastCase, currentRatedTestCase))
-				return lastCase;
+			if (equality && equalCases(lastCase, currentRatedTestCase)) return lastCase;
 		}
-		
+
 		// Return null if there is no equal RTC
 		return null;
 	}
 
 	private boolean equalCases(RatedTestCase rtc1, RatedTestCase rtc2) {
 
-		if (!rtc1.getExpectedSolutions().equals(rtc2.getExpectedSolutions()))
-			return false;
-		if (!rtc1.getFindings().equals(rtc2.getFindings()))
-			return false;
+		if (!rtc1.getExpectedSolutions().equals(rtc2.getExpectedSolutions())) return false;
+		if (!rtc1.getFindings().equals(rtc2.getFindings())) return false;
 
 		return true;
 	}
@@ -290,7 +302,7 @@ public class TestsuiteBuilder implements KnOfficeParser {
 			sequentialTestCases.add(currentSequentialTestCase);
 		}
 	}
-	
+
 	/**
 	 * Creates a new Testsuite containing the list of sequentialTestCases
 	 */
@@ -302,24 +314,26 @@ public class TestsuiteBuilder implements KnOfficeParser {
 			testSuite.setRepository(sequentialTestCases);
 		}
 	}
-	
+
 	@Override
 	public List<Message> checkKnowledge() {
 		return getErrors();
 	}
-	
+
 	private List<Message> getErrors() {
 		List<Message> ret = new ArrayList<Message>(errors);
-				
+
 		if (ret.size() == 0) {
-			ret.add(MessageKnOfficeGenerator.createTestsuiteParsedNote(file, 0, "", sequentialTestCases.size()));
+			ret.add(MessageKnOfficeGenerator.createTestsuiteParsedNote(file, 0, "",
+					sequentialTestCases.size()));
 		}
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Returns the created TestSuite.
+	 * 
 	 * @return testSuite
 	 */
 	public TestSuite getTestsuite() {

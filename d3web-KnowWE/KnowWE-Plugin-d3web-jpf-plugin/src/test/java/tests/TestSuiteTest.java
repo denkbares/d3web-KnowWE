@@ -23,8 +23,8 @@ package tests;
 import java.io.IOException;
 
 import utils.KBCreationTestUtil;
-import de.d3web.empiricaltesting2.RatedTestCase;
-import de.d3web.empiricaltesting2.TestSuite;
+import de.d3web.empiricaltesting.RatedTestCase;
+import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.plugin.test.InitPluginManager;
 import junit.framework.TestCase;
 

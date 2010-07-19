@@ -29,10 +29,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import de.d3web.empiricaltesting2.RatedSolution;
-import de.d3web.empiricaltesting2.RatedTestCase;
-import de.d3web.empiricaltesting2.SequentialTestCase;
-import de.d3web.empiricaltesting2.TestSuite;
+import de.d3web.empiricaltesting.RatedSolution;
+import de.d3web.empiricaltesting.RatedTestCase;
+import de.d3web.empiricaltesting.SequentialTestCase;
+import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;

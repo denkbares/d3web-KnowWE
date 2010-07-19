@@ -3,10 +3,10 @@ package de.d3web.we.testsuite;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import de.d3web.empiricaltesting2.TestSuite;
-import de.d3web.empiricaltesting2.caseconverter.CaseObjectToKnOffice;
-import de.d3web.empiricaltesting2.caseconverter.CaseObjectToTestSuiteXML;
-import de.d3web.empiricaltesting2.casevisualization.dot.DDBuilder;
+import de.d3web.empiricaltesting.TestSuite;
+import de.d3web.empiricaltesting.caseconverter.CaseObjectToKnOffice;
+import de.d3web.empiricaltesting.caseconverter.CaseObjectToTestSuiteXML;
+import de.d3web.empiricaltesting.casevisualization.dot.DDBuilder;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEAttributes;
@@ -51,7 +51,7 @@ public class TestSuiteServlet extends AbstractAction {
 		} else if (filename.endsWith(".pdf")) {
 			
 			//Get the file content
-			ByteArrayOutputStream bstream = de.d3web.empiricaltesting2.casevisualization.jung.JUNGCaseVisualizer.getInstance().getByteArrayOutputStream(t.getRepository());
+			ByteArrayOutputStream bstream = de.d3web.empiricaltesting.casevisualization.jung.JUNGCaseVisualizer.getInstance().getByteArrayOutputStream(t.getRepository());
 			
 			//Response
 			context.setContentType("application/pdf");

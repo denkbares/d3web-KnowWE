@@ -20,7 +20,7 @@
 
 package de.d3web.we.ci4ke.testmodules;
 
-import de.d3web.empiricaltesting2.TestSuite;
+import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.we.ci4ke.handling.AbstractCITest;
 import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;

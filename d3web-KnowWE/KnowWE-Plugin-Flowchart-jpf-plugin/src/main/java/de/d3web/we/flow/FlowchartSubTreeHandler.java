@@ -34,11 +34,12 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.apache.commons.lang.StringEscapeUtils;
 
+import de.d3web.KnOfficeParser.D3webConditionBuilder;
+import de.d3web.KnOfficeParser.DefaultLexer;
+import de.d3web.KnOfficeParser.RestrictedIDObjectManager;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
 import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.inference.PSAction;
-import de.d3web.core.inference.Rule;
-import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -48,7 +49,6 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.diaFlux.ConditionTrue;
@@ -59,9 +59,6 @@ import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
 import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.indication.ActionIndication;
-import de.d3web.knofficeparser2.D3webConditionBuilder;
-import de.d3web.knofficeparser2.DefaultLexer;
-import de.d3web.knofficeparser2.RestrictedIDObjectManager;
 import de.d3web.report.Message;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
@@ -94,7 +91,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-		
+
 		KnowledgeBaseManagement kbm = getKBM(article);
 
 		if (kbm == null) return null;
@@ -102,7 +99,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 		Section content = ((AbstractXMLObjectType) s.getObjectType()).getContentChild(s);
 
 		if (content == null) return null;
-		
+
 		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 
 		final List<Message> errors = new ArrayList<Message>();
@@ -143,17 +140,17 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 				@Override
 				public String getVerbalization() {
 					StringBuffer buffer = new StringBuffer();
-	
+
 					for (Message message : errors) {
 						buffer.append(KnowWEUtils.maskHTML(message.getLineNo() + ": "
 								+ message.getMessageText() + "\r\n"));
 					}
-	
+
 					return buffer.toString();
 				}
 			});
 		}
-		
+
 		return msgs;
 	}
 
@@ -275,6 +272,7 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 			// get the important info
 			List<Section> children = nodeContent.getChildren(new SectionFilter() {
 
+				@Override
 				public boolean accept(Section section) {
 					return section.getObjectType() != PositionType.getInstance()
 							&& section.getObjectType() != PlainText.getInstance();
@@ -378,12 +376,12 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 			return NoopAction.INSTANCE;
 		}
 
-	//TODO: HOTFIX	
-			List<ChoiceValue> values = new LinkedList<ChoiceValue>();
-			values.add(new ChoiceValue(answer));
-		
+		// TODO: HOTFIX
+		List<ChoiceValue> values = new LinkedList<ChoiceValue>();
+		values.add(new ChoiceValue(answer));
+
 		action.setValue(new MultipleChoiceValue(values));
-//
+		//
 		return action;
 	}
 
@@ -393,7 +391,6 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 		String[] split = string.split("=");
 		String solution = split[0].trim();
 		String score = split[1].trim();
-
 
 		ActionHeuristicPS action = new ActionHeuristicPS();
 
@@ -430,7 +427,6 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 
 		qasets.add(findQuestion);
 
-
 		ActionIndication action = new ActionIndication();
 
 		action.setQASets(qasets);
@@ -460,12 +456,12 @@ public class FlowchartSubTreeHandler extends D3webSubtreeHandler {
 			return null;
 		}
 
-		//HOTFIX
+		// HOTFIX
 		List<ChoiceValue> values = new LinkedList<ChoiceValue>();
 		values.add(new ChoiceValue(answer));
-	
-	action.setValue(new MultipleChoiceValue(values));
-//
+
+		action.setValue(new MultipleChoiceValue(values));
+		//
 		return FlowFactory.getInstance().createEndNode(id, name, action);
 	}
 

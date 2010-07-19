@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.table.xcl;
@@ -23,12 +23,12 @@ package de.d3web.we.kdom.table.xcl;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.table.XCLRelationBuilder;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.kernel.verbalizer.ConditionVerbalizer;
 import de.d3web.kernel.verbalizer.VerbalizationManager.RenderingFormat;
-import de.d3web.knofficeparser2.SingleKBMIDObjectManager;
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.d3webModule.D3webModule;
@@ -111,7 +111,10 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 						XCLRelation rel = ((XCLModel) knowledgeSlice)
 								.findRelation(kbrelId);
 
-						title = ((XCLModel) knowledgeSlice).getSolution().getName()+": "+ new ConditionVerbalizer().verbalize( rel.getConditionedFinding(),RenderingFormat.PLAIN_TEXT,null);
+						title = ((XCLModel) knowledgeSlice).getSolution().getName()
+								+ ": "
+								+ new ConditionVerbalizer().verbalize(rel.getConditionedFinding(),
+										RenderingFormat.PLAIN_TEXT, null);
 						break;
 						// // eval the Relation to find the right Rendering
 						// try {
@@ -131,36 +134,40 @@ class CoveringTableEntryRenderer extends TableCellContentRenderer {
 				}
 			}
 
-		}else {
+		}
+		else {
 			Object o = KnowWEUtils.getStoredObject(sec, EntryCellContentSubtreeHandler.KEY_REPORT);
-			if(o != null && o instanceof Message) {
-				title = ((Message)o).getMessageText();
+			if (o != null && o instanceof Message) {
+				title = ((Message) o).getMessageText();
 			}
 		}
 
 		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
 		if (sectionText.trim().length() > 0) {
-			if(kbrelId != null) {
-			html
-					.append("<td style='color: green; background-color:#DDDDDD;text-align:center;'>   ");
-			html.append("<span id='" + sec.getID()
-					+ "' class = 'XCLRelationInTable'>");
-			html.append("<span id=''>");
-			html.append("<span title='" + title + "'>");
+			if (kbrelId != null) {
+				html
+						.append("<td style='color: green; background-color:#DDDDDD;text-align:center;'>   ");
+				html.append("<span id='" + sec.getID()
+						+ "' class = 'XCLRelationInTable'>");
+				html.append("<span id=''>");
+				html.append("<span title='" + title + "'>");
 
-			generateContent(sectionText, sec, user, sectionID, html);
-			html.append("</span>");
-			html.append("</span>");
-			html.append("</span>");
-			html.append("</td>");
-			}else {
-				html.append("<td title='" + title + "' style='background-color:red;text-align:center;'>   ");
+				generateContent(sectionText, sec, user, sectionID, html);
+				html.append("</span>");
+				html.append("</span>");
+				html.append("</span>");
+				html.append("</td>");
+			}
+			else {
+				html.append("<td title='" + title
+						+ "' style='background-color:red;text-align:center;'>   ");
 				generateContent(sectionText, sec, user, sectionID, html);
 				html.append("</td>");
 			}
 
-		} else {
+		}
+		else {
 			html.append("<td style='background-color:#BBBBBB;'>   ");
 			html.append("</td>");
 		}
@@ -188,20 +195,20 @@ class EntryCellContentSubtreeHandler extends D3webSubtreeHandler {
 		if (s.getOriginalText().trim().length() > 0) {
 
 			KnowledgeBaseManagement mgn = getKBM(article);
-			
+
 			if (mgn == null) {
 				return null;
 			}
-			
+
 			SingleKBMIDObjectManager mgr = new SingleKBMIDObjectManager(mgn);
 			XCLRelationBuilder xcl = new XCLRelationBuilder(null);
 
 			Context c = ContextManager.getInstance().getContextForClass(s,
 					SolutionColumnContext.class);
-			
-			if(c == null) {
+
+			if (c == null) {
 				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
-				"No solution context found"));
+						"No solution context found"));
 				return null;
 			}
 
@@ -218,15 +225,15 @@ class EntryCellContentSubtreeHandler extends D3webSubtreeHandler {
 				Section questionCellContent = AnswerCellContent.getQuestionCellContent(
 						answerSec);
 				String question = "questionCellNotFound";
-				if(questionCellContent != null) {
+				if (questionCellContent != null) {
 					question = questionCellContent.getOriginalText();
 				}
 				question = question.replaceAll("\\|", "");
 				question = question.replaceAll("__", "");
-				
-				if(question == null) {
+
+				if (question == null) {
 					KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
-					"No question found"));
+							"No question found"));
 					return null;
 				}
 
@@ -242,18 +249,20 @@ class EntryCellContentSubtreeHandler extends D3webSubtreeHandler {
 						KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
 								.getTitle(), s.getID(), XCLRELATION_ID,
 								relationID);
-					}else {
+					}
+					else {
 						KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
-						"Error creating relation: "+message.getMessageText()));
+								"Error creating relation: " + message.getMessageText()));
 					}
 				}
-			} else {
+			}
+			else {
 				KnowWEUtils.storeSectionInfo(s, KEY_REPORT, new Message(
 						"AnswerSection not found"));
 			}
-			
+
 		}
-		
+
 		return null;
 	}
 

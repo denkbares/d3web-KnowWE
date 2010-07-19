@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.rules;
@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import de.d3web.KnOfficeParser.SingleKBMIDObjectManager;
 import de.d3web.KnOfficeParser.rule.D3ruleBuilder;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.knofficeparser2.SingleKBMIDObjectManager;
 import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -58,15 +58,15 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.addSubtreeHandler(new RuleSubTreeHandler());
-		sectionFinder = new RegexSectionFinder("(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN"
-				+ "|\\s*\\z))",
+		sectionFinder = new RegexSectionFinder(
+				"(IF|WENN).*?(?=(\\s*?(?m)^\\s*?$\\s*|\\s*IF|\\s*WENN"
+						+ "|\\s*\\z))",
 				Pattern.DOTALL);
 		setCustomRenderer(new RuleRenderer());
 		this.childrenTypes.add(new RuleActionLine());
 		this.childrenTypes.add(new RuleCondLine());
 
 	}
-
 
 	private class RuleRenderer extends KnowWEDomRenderer<Rule> {
 
@@ -81,9 +81,10 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 
 			boolean empty = true;
 			if (errors != null) {
-				for (Message error:errors) {
+				for (Message error : errors) {
 					if (error != null) {
-							// hack showing only errors, this rendering needs a complete redesign
+						// hack showing only errors, this rendering needs a
+						// complete redesign
 						empty = false;
 						string.append(KnowWEUtils
 								.maskHTML("<span class='error' style='color:red'>"));
@@ -109,7 +110,8 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 				b.append(KnowWEUtils.maskHTML("<span class='error_highlight'>"));
 				DefaultTextRenderer.getInstance().render(article, sec, user, b);
 				b.append(KnowWEUtils.maskHTML("</span>"));
-			} else {
+			}
+			else {
 				DelegateRenderer.getInstance().render(article, sec, user, b);
 			}
 			string.append(b.toString()
@@ -168,7 +170,8 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 					}
 					if (errors.isEmpty()) {
 						storeErrorMessages(article, s, null);
-					} else {
+					}
+					else {
 						storeErrorMessages(article, s, errors);
 					}
 
@@ -180,7 +183,8 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 							.getTitle(), s.getOriginalText());
 					s.getArticle().getReport().addReport(result);
 				}
-			} else {
+			}
+			else {
 				// store empty message to prevent surviving of old errors due to
 				// update-inconstistencies
 				storeErrorMessages(article, s, null);
@@ -193,7 +197,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * Stores a message under to rule-error-store-key
-	 *
+	 * 
 	 * @param s
 	 * @param message
 	 */
@@ -204,7 +208,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * Stores a message under to rule-error-store-key
-	 *
+	 * 
 	 * @param s
 	 * @param message
 	 */
@@ -213,6 +217,5 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 				KnowWEEnvironment.DEFAULT_WEB, article.getTitle(), s.getID(),
 				RULE_ERROR_MESSAGE_STORE_KEY);
 	}
-
 
 }

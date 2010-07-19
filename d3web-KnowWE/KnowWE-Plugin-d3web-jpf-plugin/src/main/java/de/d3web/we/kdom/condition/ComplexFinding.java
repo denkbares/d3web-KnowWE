@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.condition;
@@ -34,11 +34,10 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
+import de.d3web.KnOfficeParser.DefaultLexer;
 import de.d3web.KnOfficeParser.complexcondition.ComplexConditionSOLO;
-import de.d3web.knofficeparser2.DefaultLexer;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -55,12 +54,10 @@ import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationObject;
 import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
+public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
 
 	@Override
 	protected void init() {
@@ -79,7 +76,6 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 					getRenderer(FontColorRenderer.COLOR5, color);
 	}
 
-	
 	private class ComplexFindingSubtreeHandler extends OwlSubtreeHandler {
 
 		@Override
@@ -96,10 +92,11 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 				List<Section> children = s.getChildren();
 				for (Section current : children) {
 					if (current.getObjectType() instanceof Disjunct) {
-						IntermediateOwlObject iohandler = (IntermediateOwlObject) KnowWEUtils.getStoredObject(current, OwlHelper.IOO);
+						IntermediateOwlObject iohandler = (IntermediateOwlObject) KnowWEUtils.getStoredObject(
+								current, OwlHelper.IOO);
 						for (URI curi : iohandler.getLiterals()) {
 							Statement state = uo.getHelper().createStatement(
-									complexfinding,D3WebOWLVokab.HASDISJUNCTS
+									complexfinding, D3WebOWLVokab.HASDISJUNCTS
 									, curi);
 							io.addStatement(state);
 							iohandler.removeLiteral(curi);
@@ -107,15 +104,16 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 						io.merge(iohandler);
 					}
 				}
-			} catch (RepositoryException e) {
+			}
+			catch (RepositoryException e) {
 				msgs.add(new SimpleMessageError(e.getMessage()));
 			}
-			//return io;
-			//SemanticCore.getInstance().addStatements(io, s);
+			// return io;
+			// SemanticCore.getInstance().addStatements(io, s);
 			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
 			return msgs;
 		}
-		
+
 	}
 
 	public class ComplexFindingANTLRSectionFinder extends SectionFinder {
@@ -123,24 +121,26 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType{
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father) {
 			InputStream stream = new ByteArrayInputStream(text.getBytes());
-			ANTLRInputStream input  = null;
+			ANTLRInputStream input = null;
 			try {
 				input = new ANTLRInputStream(stream);
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 			DefaultLexer lexer = new DefaultLexer(input);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			ComplexConditionSOLO parser = new ComplexConditionSOLO(tokens);
-			ConditionKDOMBuilder builder =new ConditionKDOMBuilder(); 
+			ConditionKDOMBuilder builder = new ConditionKDOMBuilder();
 			parser.setBuilder(builder);
 			try {
 				parser.complexcondition();
-			} catch (RecognitionException e) {
+			}
+			catch (RecognitionException e) {
 				e.printStackTrace();
 			}
 			ExpandedSectionFinderResult s = builder.peek();
-			if(s == null) {
+			if (s == null) {
 				return null;
 			}
 			List<SectionFinderResult> list = new ArrayList<SectionFinderResult>();

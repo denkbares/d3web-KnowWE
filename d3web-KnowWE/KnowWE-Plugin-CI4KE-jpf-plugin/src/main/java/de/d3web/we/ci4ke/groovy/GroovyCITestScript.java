@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.d3web.empiricaltesting2.TestSuite;
+import de.d3web.empiricaltesting.TestSuite;
 import de.d3web.we.ci4ke.handling.CIConfig;
 import de.d3web.we.ci4ke.handling.CITest;
 import de.d3web.we.core.KnowWEEnvironment;

@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.kdom.condition;
@@ -25,7 +25,7 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.knofficeparser2.ConditionBuilder;
+import de.d3web.KnOfficeParser.ConditionBuilder;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingComparator;
@@ -33,10 +33,12 @@ import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.condition.old.Conjunct;
 import de.d3web.we.kdom.rules.RuleCondLine;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
+
 /**
  * Klasse um den KDOM Tree mithilfe des ANTLR Parsers zu Erstellen
+ * 
  * @author Markus Friedrich
- *
+ * 
  */
 public class ConditionKDOMBuilder implements ConditionBuilder {
 
@@ -45,13 +47,13 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 	@Override
 	public void all(int line, String linetext, String question, String type,
 			List<String> answers) {
-		if(linetext == null) return;
+		if (linetext == null) return;
 
 	}
 
 	@Override
 	public void andcond(String text) {
-		if(text == null) return;
+		if (text == null) return;
 		if (sections.size() >= 2) {
 			ExpandedSectionFinderResult disjunct = new ExpandedSectionFinderResult(text,
 					new Conjunct(), -1);
@@ -75,9 +77,10 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 
 	@Override
 	public void orcond(String text) {
-		if(text == null) return;
+		if (text == null) return;
 		if (sections.size() >= 2) {
-			ExpandedSectionFinderResult cf = new ExpandedSectionFinderResult(text, new ComplexFinding(),  -1);
+			ExpandedSectionFinderResult cf = new ExpandedSectionFinderResult(text,
+					new ComplexFinding(), -1);
 			ExpandedSectionFinderResult second = sections.pop();
 			cf.addChild(sections.pop());
 
@@ -98,36 +101,42 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 
 	@Override
 	public void complexcondition(String text) {
-		if(sections.size() == 0) {
+		if (sections.size() == 0) {
 			return;
 		}
 		String content = sections.peek().getText();
-		Pattern bracedPattern = Pattern.compile("( *\\( *)(" + Pattern.quote(content) + ")( *\\) *)");
+		Pattern bracedPattern = Pattern.compile("( *\\( *)(" + Pattern.quote(content)
+				+ ")( *\\) *)");
 		Matcher m = bracedPattern.matcher(text);
-		if(m.find()) {
-			ExpandedSectionFinderResult bracedCond = new ExpandedSectionFinderResult(text, new ComplexFindingBraced(), -1);
-			bracedCond.addChild(new ExpandedSectionFinderResult(m.group(1), new ConditionBracketOpen(), m.start(1)));
+		if (m.find()) {
+			ExpandedSectionFinderResult bracedCond = new ExpandedSectionFinderResult(text,
+					new ComplexFindingBraced(), -1);
+			bracedCond.addChild(new ExpandedSectionFinderResult(m.group(1),
+					new ConditionBracketOpen(), m.start(1)));
 			ExpandedSectionFinderResult cond = sections.pop();
 			bracedCond.addChild(cond);
-			bracedCond.addChild(new ExpandedSectionFinderResult(m.group(3), new ConditionBracketClose(), m.start(3)));
+			bracedCond.addChild(new ExpandedSectionFinderResult(m.group(3),
+					new ConditionBracketClose(), m.start(3)));
 			sections.push(bracedCond);
 		}
 	}
 
 	public ExpandedSectionFinderResult peek() {
-		if(sections.size() == 0) return null;
+		if (sections.size() == 0) return null;
 		return sections.peek();
 	}
 
 	@Override
 	public void condition(int line, String linetext, String qname, String type,
 			String op, String value) {
-		if(linetext == null) return;
-		ExpandedSectionFinderResult cond = new ExpandedSectionFinderResult(linetext, new Finding(), -1);
+		if (linetext == null) return;
+		ExpandedSectionFinderResult cond = new ExpandedSectionFinderResult(linetext, new Finding(),
+				-1);
 		sections.add(cond);
-		if(qname == null || op == null || value == null) return;
+		if (qname == null || op == null || value == null) return;
 
-		Pattern condPattern = Pattern.compile("\\A(\"?" + Pattern.quote(qname) + "\"?)( +" + Pattern.quote(op)
+		Pattern condPattern = Pattern.compile("\\A(\"?" + Pattern.quote(qname) + "\"?)( +"
+				+ Pattern.quote(op)
 				+ " +)(\"?" + Pattern.quote(value) + "\"?)");
 		Matcher m = condPattern.matcher(linetext);
 
@@ -155,7 +164,8 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 	public void condition(int line, String linetext, String qname, String type,
 			double left, double right, boolean in) {
 
-		ExpandedSectionFinderResult cond = new ExpandedSectionFinderResult(linetext, new RuleCondLine(), -1);
+		ExpandedSectionFinderResult cond = new ExpandedSectionFinderResult(linetext,
+				new RuleCondLine(), -1);
 		sections.add(cond);
 
 		int offset1 = 1;
@@ -175,7 +185,8 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 		int offset6 = 6;
 		String rightBorder = trimZeros(Double.toString(right));
 
-		Pattern condPattern = Pattern.compile("\\A( *\"" + Pattern.quote(qname) + "\")( +IN +)?(\\[ *)("
+		Pattern condPattern = Pattern.compile("\\A( *\"" + Pattern.quote(qname)
+				+ "\")( +IN +)?(\\[ *)("
 				+ leftBorder + " +)(" + rightBorder + " *)(\\] *)");
 		Matcher m = condPattern.matcher(linetext);
 
@@ -204,29 +215,36 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 
 		cond.addChild(new ExpandedSectionFinderResult(qname, new FindingQuestion(), offset1));
 
-		//TODO: Bedeutung von type? Überflüssig?
-		//if (type!=null) Section.createExpandedSection(type, null, cond, fatherindex++, topic, null, null, idgen);
+		// TODO: Bedeutung von type? Überflüssig?
+		// if (type!=null) Section.createExpandedSection(type, null, cond,
+		// fatherindex++, topic, null, null, idgen);
 
 		if (in) cond.addChild(new ExpandedSectionFinderResult(inString, new IN(), offset2));
-		cond.addChild(new ExpandedSectionFinderResult(bracketOpen, new IntervallBracketOpen(), offset3));
-		cond.addChild(new ExpandedSectionFinderResult(leftBorder, new IntervallLeftBorderValue(), offset4));
-		cond.addChild(new ExpandedSectionFinderResult(rightBorder, new IntervallRightBorderValue(), offset5));
-		cond.addChild(new ExpandedSectionFinderResult(bracketClose, new IntervallBracketClose(), offset6));
+		cond.addChild(new ExpandedSectionFinderResult(bracketOpen, new IntervallBracketOpen(),
+				offset3));
+		cond.addChild(new ExpandedSectionFinderResult(leftBorder, new IntervallLeftBorderValue(),
+				offset4));
+		cond.addChild(new ExpandedSectionFinderResult(rightBorder, new IntervallRightBorderValue(),
+				offset5));
+		cond.addChild(new ExpandedSectionFinderResult(bracketClose, new IntervallBracketClose(),
+				offset6));
 	}
 
 	@Override
 	public void in(int line, String linetext, String question, String type,
 			List<String> answers) {
-		if(linetext == null) return;
+		if (linetext == null) return;
 
 	}
 
 	@Override
 	public void knowncondition(int line, String linetext, String name,
 			String type, boolean unknown) {
-		if(name == null) return;
-		ExpandedSectionFinderResult s = new ExpandedSectionFinderResult(linetext, new CondKnown(), -1);
-		s.addChild(new ExpandedSectionFinderResult(linetext.substring(0, linetext.indexOf("[") + 1), new CondKnownSyntax(), 1));
+		if (name == null) return;
+		ExpandedSectionFinderResult s = new ExpandedSectionFinderResult(linetext, new CondKnown(),
+				-1);
+		s.addChild(new ExpandedSectionFinderResult(
+				linetext.substring(0, linetext.indexOf("[") + 1), new CondKnownSyntax(), 1));
 		Pattern q = Pattern.compile("\"?" + Pattern.quote(name) + "\"?");
 		Matcher m = q.matcher(linetext);
 		if (m.find()) {
@@ -235,7 +253,6 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 		s.addChild(new ExpandedSectionFinderResult(name, new FindingQuestion(), 2));
 		s.addChild(new ExpandedSectionFinderResult("]", new CondKnownSyntax(), 3));
 		sections.push(s);
-
 
 	}
 
@@ -248,7 +265,7 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 
 	@Override
 	public void notcond(String text) {
-		if(text == null) return;
+		if (text == null) return;
 
 		if (sections.size() >= 1) {
 			String not = "NOT ";
@@ -256,7 +273,8 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 			if (m.find()) {
 				not = m.group();
 			}
-			ExpandedSectionFinderResult notCond = new ExpandedSectionFinderResult(text, new NegatedFinding(), -1);
+			ExpandedSectionFinderResult notCond = new ExpandedSectionFinderResult(text,
+					new NegatedFinding(), -1);
 			notCond.addChild(new ExpandedSectionFinderResult(not, new NOT(), 0));
 			notCond.addChild(sections.pop());
 			sections.push(notCond);
@@ -267,7 +285,5 @@ public class ConditionKDOMBuilder implements ConditionBuilder {
 		s = s.replaceAll("\\.0", "");
 		return s;
 	}
-
-
 
 }
