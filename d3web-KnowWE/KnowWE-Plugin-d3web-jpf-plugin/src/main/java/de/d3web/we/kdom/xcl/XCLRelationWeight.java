@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -44,7 +45,7 @@ public class XCLRelationWeight extends DefaultAbstractKnowWEObjectType  {
 		}
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);		
 			Matcher m = pattern.matcher(text);

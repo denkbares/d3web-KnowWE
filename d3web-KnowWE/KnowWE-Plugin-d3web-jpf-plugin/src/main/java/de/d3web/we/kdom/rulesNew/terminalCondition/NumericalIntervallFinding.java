@@ -8,6 +8,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -50,7 +51,7 @@ public class NumericalIntervallFinding extends D3webTerminalCondition<NumericalF
 	class NumericalIntervallFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
 			// has to end with ']'
 			if (text.trim().endsWith("]")) {
@@ -66,7 +67,7 @@ public class NumericalIntervallFinding extends D3webTerminalCondition<NumericalF
 
 				// ..if so, take it all
 				if (nonEmptyParts.length == 2) {
-					return new AllTextFinderTrimmed().lookForSections(text, father);
+					return new AllTextFinderTrimmed().lookForSections(text, father, type);
 				}
 
 			}
@@ -118,7 +119,7 @@ public class NumericalIntervallFinding extends D3webTerminalCondition<NumericalF
 			this.setSectionFinder(new SectionFinder() {
 
 				@Override
-				public List<SectionFinderResult> lookForSections(String text, Section father) {
+				public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 					if (text.trim().endsWith("]")) {
 						int bracketsStart = SplitUtility.lastIndexOfUnquoted(text, "[");
 						int bracketsEnd = SplitUtility.lastIndexOfUnquoted(text, "]");

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rulesNew.ruleAction.QuestionIndication;
 import de.d3web.we.kdom.rulesNew.ruleAction.SetQuestionValue;
@@ -55,7 +56,7 @@ public class IndicationRuleAction extends DefaultAbstractKnowWEObjectType {
 	private class IndicationRuleActionSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			
 			String[] parts = text.split(" ");
 			for (String s : parts) {

@@ -37,6 +37,7 @@ import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.contexts.ContextManager;
@@ -104,7 +105,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 		}
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			if(text.length() == 0) 
 				return null;
 			

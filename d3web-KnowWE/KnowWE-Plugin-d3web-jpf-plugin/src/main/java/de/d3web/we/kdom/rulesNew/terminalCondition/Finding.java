@@ -28,6 +28,7 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.AnswerReference;
@@ -101,7 +102,7 @@ class FindingFinder extends SectionFinder {
 	private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 		if (SplitUtility.containsUnquoted(text, "=")) {
 
 			// if the value is a number this is not taken as a Finding (but left
@@ -123,7 +124,7 @@ class FindingFinder extends SectionFinder {
 			}
 			// return it if answer is NOT a number
 			if (!isNumber) {
-				return textFinder.lookForSections(text, father);
+				return textFinder.lookForSections(text, father,  type);
 			}
 		}
 		return null;

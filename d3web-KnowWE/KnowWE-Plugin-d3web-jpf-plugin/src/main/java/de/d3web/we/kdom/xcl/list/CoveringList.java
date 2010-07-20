@@ -147,8 +147,13 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public boolean needsToCreate(KnowWEArticle article, Section<CoveringRelation> s) {
+				
+				//TODO: handle this case...
+				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(s);
+				if(solutionDef == null) return false;
+				
 				return super.needsToCreate(article, s)
-						|| !getCorrespondingSolutionDef(s).isReusedBy(article.getTitle());
+						|| !solutionDef.isReusedBy(article.getTitle());
 			}
 
 			/*

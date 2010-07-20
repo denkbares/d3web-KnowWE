@@ -31,6 +31,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.QuestionReference;
@@ -81,12 +82,12 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 		private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			for (String comp : comparators) {
 				if (SplitUtility.containsUnquoted(text, comp)) {
 
 					return textFinder.lookForSections(text,
-							father);
+							father, type);
 				}
 			}
 

@@ -29,6 +29,7 @@ import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.indication.ActionIndication;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.QuestionnaireReference;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -51,7 +52,7 @@ public class QuestionIndication extends D3webRuleAction<QuestionIndication> {
 	private class QuestionIndicationSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
 			if (text.contains(";")) {
 
@@ -79,7 +80,7 @@ public class QuestionIndication extends D3webRuleAction<QuestionIndication> {
 	private class SeperatedQuestionClassSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
 			if (!text.equals("") && !text.equals(" ")) {
 				int start = 0;

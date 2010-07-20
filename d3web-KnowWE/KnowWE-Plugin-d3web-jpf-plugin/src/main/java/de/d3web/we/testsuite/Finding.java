@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
@@ -54,7 +55,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	public class FindingSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<String> findings = SplitUtility.splitUnquoted(text, ",");
@@ -73,7 +74,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	public class AnswerSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<String> findings = SplitUtility.splitUnquoted(text, "=");
@@ -92,7 +93,7 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 	class QuestionSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			List<String> findings = SplitUtility.splitUnquoted(text, "=");

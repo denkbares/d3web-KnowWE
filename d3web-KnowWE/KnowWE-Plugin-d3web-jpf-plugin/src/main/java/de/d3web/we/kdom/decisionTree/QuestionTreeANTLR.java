@@ -36,6 +36,7 @@ import de.d3web.KnOfficeParser.decisiontree.DecisionTree;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.report.Message;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.renderer.DefaultLineNumberDeligateRenderer;
 import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
@@ -56,7 +57,7 @@ public class QuestionTreeANTLR extends DefaultAbstractKnowWEObjectType {
 		private DecisionTree parser;
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			ReaderInputStream input = new ReaderInputStream(new StringReader(text));
 			ANTLRInputStream istream = null;
 			try {

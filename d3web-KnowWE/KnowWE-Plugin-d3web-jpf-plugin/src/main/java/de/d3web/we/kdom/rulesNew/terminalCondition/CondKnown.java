@@ -24,6 +24,7 @@ import java.util.List;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -53,7 +54,7 @@ public class CondKnown extends D3webTerminalCondition<CondKnown> {
 		QuestionReference question = new QuestionReference();
 		question.setSectionFinder(new SectionFinder() {
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father) {
+			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
 						text.indexOf('[') + 1, text.indexOf(']')));
 			}
@@ -64,12 +65,12 @@ public class CondKnown extends D3webTerminalCondition<CondKnown> {
 	class CondKnownFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
 			for (String key : KEYWORDS) {
 				if (text.trim().startsWith(key + "[") && text.trim().endsWith("]")) {
 					return new AllTextFinderTrimmed().lookForSections(text,
-							father);
+							father, type);
 				}
 			}
 			return null;

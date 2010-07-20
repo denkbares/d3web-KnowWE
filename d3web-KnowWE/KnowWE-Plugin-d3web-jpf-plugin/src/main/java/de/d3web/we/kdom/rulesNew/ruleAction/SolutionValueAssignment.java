@@ -26,6 +26,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
 import de.d3web.we.kdom.objects.SolutionReference;
@@ -91,7 +92,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		}
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			if (text.contains(" = ")) {
 
 				int start = 0;

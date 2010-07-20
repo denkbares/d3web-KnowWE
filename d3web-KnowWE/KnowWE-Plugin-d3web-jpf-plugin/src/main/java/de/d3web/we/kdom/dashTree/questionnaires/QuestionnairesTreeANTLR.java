@@ -35,6 +35,7 @@ import de.d3web.KnOfficeParser.DefaultLexer;
 import de.d3web.KnOfficeParser.dashtree.DashTree;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.report.Message;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeKDOMBuilder;
 import de.d3web.we.kdom.kopic.renderer.DefaultLineNumberDeligateRenderer;
@@ -57,7 +58,7 @@ public class QuestionnairesTreeANTLR extends de.d3web.we.kdom.DefaultAbstractKno
 		private DashTree parser;
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			ReaderInputStream input = new ReaderInputStream(new StringReader(text));
 			ANTLRInputStream istream = null;
 			try {

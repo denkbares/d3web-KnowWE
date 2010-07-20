@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rulesNew.ruleAction.SetQuestionValue;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -45,7 +46,7 @@ public class AbstractionRuleAction extends DefaultAbstractKnowWEObjectType {
 	private class AbstractionRuleActionSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			
 			if ((text.contains("+=") || text.contains("=")) && !text.contains("HIDE")) {
 

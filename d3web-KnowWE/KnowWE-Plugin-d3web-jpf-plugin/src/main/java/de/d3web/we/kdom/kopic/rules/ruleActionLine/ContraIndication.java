@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.NOT;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
@@ -47,7 +48,7 @@ public class ContraIndication extends DefaultAbstractKnowWEObjectType {
 	private class ContraIndicationSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			if (text.contains("NOT") || text.contains("NICHT")) {
 				
 				int start = 0;

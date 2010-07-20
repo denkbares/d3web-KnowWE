@@ -32,6 +32,7 @@ import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.QuestionDefinition;
@@ -531,7 +532,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 				@Override
 				public List<SectionFinderResult> lookForSections(String text,
-						Section<?> father) {
+						Section<?> father, KnowWEObjectType type) {
 
 					return SectionFinderResult
 							.createSingleItemList(new SectionFinderResult(

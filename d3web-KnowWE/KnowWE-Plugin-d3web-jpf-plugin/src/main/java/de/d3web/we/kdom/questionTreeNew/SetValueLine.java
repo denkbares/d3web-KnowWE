@@ -95,7 +95,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text,
-					Section father) {
+					Section father, KnowWEObjectType type) {
 
 				return SectionFinderResult
 						.createSingleItemList(new SectionFinderResult(

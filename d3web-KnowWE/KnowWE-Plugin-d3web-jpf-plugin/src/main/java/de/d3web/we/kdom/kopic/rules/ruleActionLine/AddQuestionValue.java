@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -48,7 +49,7 @@ public class AddQuestionValue extends DefaultAbstractKnowWEObjectType {
 	private class AddQuestionValueSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
 			if (text.contains("+=")) {
 				
@@ -75,7 +76,7 @@ public class AddQuestionValue extends DefaultAbstractKnowWEObjectType {
 	private class AddingValueSectionFinder extends SectionFinder {
 		
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			
 			if (text.contains("(") && text.contains(")")) {
 				List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();

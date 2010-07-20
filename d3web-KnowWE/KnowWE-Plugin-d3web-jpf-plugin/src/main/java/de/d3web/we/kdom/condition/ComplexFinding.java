@@ -42,6 +42,7 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.condition.old.Disjunct;
@@ -119,7 +120,7 @@ public class ComplexFinding extends DefaultAbstractKnowWEObjectType {
 	public class ComplexFindingANTLRSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			InputStream stream = new ByteArrayInputStream(text.getBytes());
 			ANTLRInputStream input = null;
 			try {

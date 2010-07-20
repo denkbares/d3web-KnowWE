@@ -23,6 +23,7 @@ package de.d3web.we.kdom.Annotation;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -37,9 +38,9 @@ public class FindingQuestion extends DefaultAbstractKnowWEObjectType {
 
 		private AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			if(father.hasRightSonOfType(FindingComparator.class, text)) {
-				return textFinder.lookForSections(text, father);
+				return textFinder.lookForSections(text, father, type);
 			}
 			return null;
 		}

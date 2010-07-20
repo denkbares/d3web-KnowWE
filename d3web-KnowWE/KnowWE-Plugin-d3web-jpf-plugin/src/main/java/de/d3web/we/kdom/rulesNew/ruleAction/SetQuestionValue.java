@@ -27,6 +27,7 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
 import de.d3web.we.kdom.objects.AnswerReference;
@@ -72,7 +73,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	private class SetQuestionValueSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
 			if (SplitUtility.containsUnquoted(text, " =")) {
 
@@ -88,7 +89,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	private class SetValueSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
 			// Formula Expressions
 			// TODO Could also find AddQuestion Value!
@@ -106,7 +107,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	public class WordSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
 			if (!text.equals(" ") && !text.equals("\"")
 					&& !text.contains("(") && !text.contains(")")) {

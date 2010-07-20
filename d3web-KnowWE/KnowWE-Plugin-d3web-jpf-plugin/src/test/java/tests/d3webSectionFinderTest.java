@@ -136,7 +136,7 @@ public class d3webSectionFinderTest extends TestCase {
 	public void testAnnotationSectioner() {
 		String test = "blablub {{the currently measured mileage <=> asks:: Real mileage  /100km}}bla blub";
 		List<SectionFinderResult> results =
-			new Annotation().new AnnotationSectionFinder().lookForSections(test, null);
+			new Annotation().new AnnotationSectionFinder().lookForSections(test, null, null);
 
 		assertEquals(WRONG_FIRST_START, 8, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 74, results.get(0).getEnd());
@@ -195,7 +195,7 @@ public class d3webSectionFinderTest extends TestCase {
 		String test = "Are you hungry? = Yes OR Are you hungry? = Very very hungry [2]";
 		ComplexFinding.ComplexFindingANTLRSectionFinder creator =
 					new ComplexFinding().new ComplexFindingANTLRSectionFinder();
-		List<SectionFinderResult> results = creator.lookForSections(test, null);
+		List<SectionFinderResult> results = creator.lookForSections(test, null, null);
 		assertEquals(WRONG_FIRST_START, -1, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 58, results.get(0).getEnd());
 	}
@@ -206,7 +206,7 @@ public class d3webSectionFinderTest extends TestCase {
 	public void testFindingSectionFinder() {
 		String text = "Are you hungry? = Yes";
 		Finding.FindingSectionFinder f = new Finding().new FindingSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 21, results.get(0).getEnd());
@@ -217,7 +217,7 @@ public class d3webSectionFinderTest extends TestCase {
 		String text = "";
 		QuestionnairesTreeANTLR.QuestionnairesKDOMANTLRSectionFinder f =
 			new QuestionnairesTreeANTLR().new QuestionnairesKDOMANTLRSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 	}
 
 	// TODO: What text...
@@ -235,7 +235,7 @@ public class d3webSectionFinderTest extends TestCase {
 
 		QuestionTreeANTLR.QuestionTreeKDOMANTLRSectionFinder f =
 			new QuestionTreeANTLR().new QuestionTreeKDOMANTLRSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 		System.out.println();
 	}
 
@@ -243,7 +243,7 @@ public class d3webSectionFinderTest extends TestCase {
 		String text = " yoyo THEN Exhaust pipe color evaluation += abnormal";
 		RuleActionLine.RuleActionLineSectionFinder f =
 			new RuleActionLine().new RuleActionLineSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 6, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 52, results.get(0).getEnd());
@@ -253,7 +253,7 @@ public class d3webSectionFinderTest extends TestCase {
 		String text = " yoyo IF (Fuel = unleaded gasoline AND Exhaust pipe color = sooty black)";
 		SectionFinder f =
 			new RuleCondLine().getSectioner();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 6, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 72, results.get(0).getEnd());
@@ -263,7 +263,7 @@ public class d3webSectionFinderTest extends TestCase {
 		String text = " yoyo IF (Fuel = diesel AND Exhaust pipe color = sooty black)\r\n"
 					+ "THEN Exhaust pipe color evaluation += normal";
 		SectionFinder f = new Rule().getSectioner();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 6, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 107, results.get(0).getEnd());
@@ -274,7 +274,7 @@ public class d3webSectionFinderTest extends TestCase {
 		String text = "";
 		SolutionsTreeANTLR.SolutionsKDOMANTLRSectionFinder f =
 			new SolutionsTreeANTLR().new SolutionsKDOMANTLRSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 	}
 
 	// TODO How to test that
@@ -301,7 +301,7 @@ public class d3webSectionFinderTest extends TestCase {
 		    		+ "}\r\n";
 
 		SectionFinder f = new XCList().getSectioner();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 198, results.get(0).getEnd());
@@ -325,7 +325,7 @@ public class d3webSectionFinderTest extends TestCase {
 //				+ "}\r\n";
 
 		XCLBody.XCLBodySectionFinder f = new XCLBody().new XCLBodySectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 14, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 198, results.get(0).getEnd());
@@ -340,7 +340,7 @@ public class d3webSectionFinderTest extends TestCase {
 					+ "}\r\n \r\n \r \n";
 
 		XCLHead.XCLHeadSectionFinder f = new XCLHead().new XCLHeadSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 13, results.get(0).getEnd());
@@ -361,7 +361,7 @@ public class d3webSectionFinderTest extends TestCase {
 			+ "} [lol] \r\n";
 
 		XCLTail.XCLTailSectionFinder f = new XCLTail().new XCLTailSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 456, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 461, results.get(0).getEnd());
@@ -374,7 +374,7 @@ public class d3webSectionFinderTest extends TestCase {
 			+ "} \r\n \r\n \r \n";
 
 		SectionFinder f = new XCLRelation().getSectioner();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 69, results.get(0).getEnd());
@@ -397,7 +397,7 @@ public class d3webSectionFinderTest extends TestCase {
 
 		XCLRelationWeight.XCLRelationWeightSectionFinder f =
 			new XCLRelationWeight().new XCLRelationWeightSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 84, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 87, results.get(0).getEnd());

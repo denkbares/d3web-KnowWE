@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.KnOfficeParser.txttable.TxtTableParserResult;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -33,7 +34,7 @@ public abstract class TableSectionFinder extends SectionFinder {
 	protected abstract List<TxtTableParserResult> getParserResults(String text);
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 		List<TxtTableParserResult> tpResults = getParserResults(text);
 		for (TxtTableParserResult r:tpResults) {

@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.LineBreak;
@@ -49,7 +50,7 @@ public class RuleActionLine extends DefaultAbstractKnowWEObjectType {
 	public class RuleActionLineSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
 			String lineRegex = "(THEN|DANN).+";
 			Pattern linePattern = Pattern.compile(lineRegex, Pattern.DOTALL);

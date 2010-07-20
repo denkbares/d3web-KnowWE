@@ -35,6 +35,7 @@ import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.QuotedType;
 import de.d3web.we.kdom.condition.NOT;
@@ -149,11 +150,11 @@ public class Finding extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
+				Section father, KnowWEObjectType type) {
 			if (text.contains(">") || text.contains("=") || text.contains("<")) {
 				if (!text.contains("+=")) { // hack excluding "+="
 					return textFinder.lookForSections(
-							text, father);
+							text, father,  type);
 				}
 			}
 			return null;
