@@ -41,7 +41,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionRef;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -82,7 +82,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	private KnowWEObjectType createObjectRefTypeBefore(
 			KnowWEObjectType typeAfter) {
-		QuestionRef qid = new QuestionRef();
+		QuestionReference qid = new QuestionReference();
 		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
 		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
 		qid.addSubtreeHandler(new CreateSetValueRuleHandler());
@@ -125,10 +125,10 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionRef> {
+	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionReference> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionRef> s) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
 
 			// current DashTreeElement
 			Section<DashTreeElement> element = KnowWEObjectTypeUtils
@@ -209,7 +209,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 
 		}
 
-		private String getArgumentString(Section<QuestionRef> s) {
+		private String getArgumentString(Section<QuestionReference> s) {
 			String argument = null;
 			List<Section<AnonymousType>> children = new ArrayList<Section<AnonymousType>>();
 			s.getFather().findSuccessorsOfType(AnonymousType.class, children);

@@ -179,7 +179,7 @@ public class QuestionDashTreeRenderer extends CustomRenderer {
 			 MMInfoStorage mminfo = null;
 
 			if (answerSec != null) {
-				c = answerSec.get().getObject(article, answerSec);
+				c = answerSec.get().getTermObject(article, answerSec);
 				if (c != null) {
 					mminfo = (MMInfoStorage) c.getProperties().getProperty(Property.MMINFO);;
 				}

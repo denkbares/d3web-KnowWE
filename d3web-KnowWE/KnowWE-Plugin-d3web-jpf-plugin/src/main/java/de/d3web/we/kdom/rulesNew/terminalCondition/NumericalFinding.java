@@ -33,7 +33,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.objects.QuestionRef;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -64,7 +64,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 		this.childrenTypes.add(comparator);
 
 		// question
-		QuestionRef question = new NumQuestionRefImpl();
+		QuestionReference question = new NumQuestionReferenceImpl();
 		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
@@ -99,13 +99,13 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 	}
 
-	class NumQuestionRefImpl extends QuestionRef {
+	class NumQuestionReferenceImpl extends QuestionReference {
 
 	}
 
 	@Override
 	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<NumericalFinding> s) {
-		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
+		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 
 		Section<Number> numberSec = s.findSuccessor(Number.class);
 
@@ -113,7 +113,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 		Double number = numberSec.get().getNumber(numberSec);
 
-		Question q = qRef.get().getObject(article, qRef);
+		Question q = qRef.get().getTermObject(article, qRef);
 
 		if (!(q instanceof QuestionNum)) {
 			// TODO some reasonable error handling here!

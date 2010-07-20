@@ -22,7 +22,7 @@ package de.d3web.we.kdom.questionTreeNew;
 
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.objects.QuestionnaireRef;
+import de.d3web.we.kdom.objects.QuestionnaireReference;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.subtreeHandler.Priority;
@@ -33,7 +33,7 @@ public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 	protected void init() {
 		this.sectionFinder = new AllTextFinderTrimmed();
 
-		QuestionnaireRef qc = new QuestionnaireRef();
+		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 		qc.setSectionFinder(new AllTextFinderTrimmed());
 		// qc.addSubtreeHandler(Priority.LOW, new CreateIndication());

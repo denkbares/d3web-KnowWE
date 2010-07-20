@@ -57,6 +57,7 @@ import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.search.MultiSearchEngine;
 import de.d3web.we.taghandler.TagHandler;
+import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.user.UserSettingsManager;
 import de.d3web.we.utils.KnowWEObjectTypeSet;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
@@ -463,7 +464,7 @@ public class KnowWEEnvironment {
 			handler.setWeb(web);
 			manager.registerHandler(handler);
 		}
-
+		manager.registerHandler(new TerminologyHandler(web));
 
 
 		Plugins.initJS();

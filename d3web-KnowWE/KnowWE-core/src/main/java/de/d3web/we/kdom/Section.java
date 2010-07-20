@@ -41,8 +41,8 @@ import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeAddress;
-import de.d3web.we.kdom.objects.ObjectDef;
-import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.Priority;
@@ -292,8 +292,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return (objectType != null && objectType instanceof Include && article != null ?
 				article.getTitle() : this.getObjectType().getClass().getName() + " l:"
 				+ this.getOriginalText().length()) + " - "
-				+ (objectType != null && objectType instanceof TermReference<?>
-						? ((TermReference) objectType).getTermName(this)
+				+ (objectType != null && objectType instanceof KnowWETerm<?>
+						? ((KnowWETerm) objectType).getTermName(this)
 						: this.getOriginalText());
 	}
 
@@ -1326,14 +1326,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param title
 	 * @return
 	 */
-	public boolean isOrHasObjectDefSuccessorNotReusedByOrPositionChangedFor(String title) {
-		if (objectType instanceof ObjectDef<?>
+	public boolean isOrHasTermDefSuccessorNotReusedByOrPositionChangedFor(String title) {
+		if (objectType instanceof TermDefinition<?>
 				&& (!isReusedBy(title) || isPositionChangedFor(title))) {
 			return true;
 		}
 		else {
 			for (Section<?> child : this.getChildren()) {
-				if (child.isOrHasObjectDefSuccessorNotReusedByOrPositionChangedFor(title)) return true;
+				if (child.isOrHasTermDefSuccessorNotReusedByOrPositionChangedFor(title)) return true;
 			}
 			return false;
 		}
@@ -1445,7 +1445,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				// long time = System.currentTimeMillis();
 				KDOMReportMessage.storeMessages(article, this, handler.getClass(), handler.create(article, this));
 				// System.out.println(handler.getClass().getSimpleName());
-				// System.out.println(handler.getClass().getSimpleName() + " " + (System.currentTimeMillis() - time));
+				// System.out.println(handler.getClass().getSimpleName() + " "
+				// + (System.currentTimeMillis() - time));
 			}
 			catch (Throwable e) {
 				e.printStackTrace();

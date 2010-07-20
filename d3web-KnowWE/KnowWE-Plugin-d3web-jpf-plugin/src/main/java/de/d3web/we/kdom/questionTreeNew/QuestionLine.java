@@ -34,8 +34,8 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.objects.QuestionDef;
-import de.d3web.we.kdom.objects.QuestionDef.QuestionType;
+import de.d3web.we.kdom.objects.QuestionDefinition;
+import de.d3web.we.kdom.objects.QuestionDefinition.QuestionType;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
@@ -91,7 +91,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		// finally the name of the question
 		this.childrenTypes
-				.add(new QuestionTreeQuestionDef());
+				.add(new QuestionTreeQuestionDefinition());
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 *
 	 */
-	static class QuestionTreeQuestionDef extends QuestionDef {
+	static class QuestionTreeQuestionDefinition extends QuestionDefinition {
 
 		@Override
 		protected void init() {
@@ -112,7 +112,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 		@Override
-		public QuestionDef.QuestionType getQuestionType(Section<QuestionDef> s) {
+		public QuestionDefinition.QuestionType getQuestionType(Section<QuestionDefinition> s) {
 			return QuestionTypeDeclaration
 					.getQuestionType(s.getFather().findSuccessor(
 							QuestionTypeDeclaration.class));
@@ -226,12 +226,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 								this.getClass()));
 					}
 
-					Section<QuestionDef> qDef = s.getFather().findSuccessor(
-							QuestionDef.class);
+					Section<QuestionDefinition> qDef = s.getFather().findSuccessor(
+							QuestionDefinition.class);
 
 					if (qDef != null) {
 
-						Question question = qDef.get().getObject(article, qDef);
+						Question question = qDef.get().getTermObject(article, qDef);
 						if (!(question instanceof QuestionNum)) {
 							// if not numerical question throw error
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
@@ -355,12 +355,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				 */
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumUnit> s) {
-					Section<QuestionDef> qDef = s.getFather().findSuccessor(
-							QuestionDef.class);
+					Section<QuestionDefinition> qDef = s.getFather().findSuccessor(
+							QuestionDefinition.class);
 
 					if (qDef != null) {
 
-						Question question = qDef.get().getObject(article, qDef);
+						Question question = qDef.get().getTermObject(article, qDef);
 						if (!(question instanceof QuestionNum)) {
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 									"only for numerical questions allowed",
@@ -404,12 +404,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractFlag> s) {
 
-					Section<QuestionDef> qDef = s.getFather().findSuccessor(
-							QuestionDef.class);
+					Section<QuestionDefinition> qDef = s.getFather().findSuccessor(
+							QuestionDefinition.class);
 
 					if (qDef != null) {
 
-						Question question = qDef.get().getObject(article, qDef);
+						Question question = qDef.get().getTermObject(article, qDef);
 						question.getProperties().setProperty(
 								Property.ABSTRACTION_QUESTION, true);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
@@ -449,12 +449,12 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionText> sec) {
 
-					Section<QuestionDef> qDef = sec.getFather().findSuccessor(
-							QuestionDef.class);
+					Section<QuestionDefinition> qDef = sec.getFather().findSuccessor(
+							QuestionDefinition.class);
 
 					if (qDef != null) {
 
-						Question question = qDef.get().getObject(article, qDef);
+						Question question = qDef.get().getTermObject(article, qDef);
 
 						if (question != null) {
 							D3webUtils.addMMInfo(question, "LT",

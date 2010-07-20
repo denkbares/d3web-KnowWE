@@ -25,7 +25,7 @@ import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.QuestionRef;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -50,7 +50,7 @@ public class CondKnown extends D3webTerminalCondition<CondKnown> {
 		this.sectionFinder = new CondKnownFinder();
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR7));
 
-		QuestionRef question = new QuestionRef();
+		QuestionReference question = new QuestionReference();
 		question.setSectionFinder(new SectionFinder() {
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section father) {
@@ -79,9 +79,9 @@ public class CondKnown extends D3webTerminalCondition<CondKnown> {
 
 	@Override
 	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<CondKnown> s) {
-		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
+		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 		if (qRef != null) {
-			Question q = qRef.get().getObject(article, qRef);
+			Question q = qRef.get().getTermObject(article, qRef);
 
 			if (q != null) {
 				return new de.d3web.core.inference.condition.CondKnown(q);

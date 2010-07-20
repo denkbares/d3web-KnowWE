@@ -31,8 +31,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.AnswerRef;
-import de.d3web.we.kdom.objects.AnswerRefImpl;
-import de.d3web.we.kdom.objects.QuestionRef;
+import de.d3web.we.kdom.objects.AnswerReferenceImpl;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -62,14 +62,14 @@ public class Finding extends D3webTerminalCondition<Finding> {
 		this.childrenTypes.add(comparator);
 
 		// question
-		QuestionRef question = new QuestionRef();
+		QuestionReference question = new QuestionReference();
 		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
 		this.childrenTypes.add(question);
 
 		// answer
-		AnswerRef answer = new AnswerRefImpl();
+		AnswerRef answer = new AnswerReferenceImpl();
 		answer.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(answer);
 	}
@@ -77,18 +77,18 @@ public class Finding extends D3webTerminalCondition<Finding> {
 	@Override
 	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<Finding> s) {
 
-		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
+		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 
 		Section<AnswerRef> aRef = s.findSuccessor(AnswerRef.class);
 
 		if (qRef != null && aRef != null) {
-			Choice answer = aRef.get().getObject(article, aRef);
+			Choice answer = aRef.get().getTermObject(article, aRef);
 			if (answer == null) {
 				return null;
 			}
 			ChoiceValue value = new ChoiceValue(
 					answer);
-			return new CondEqual(qRef.get().getObject(article, qRef), value);
+			return new CondEqual(qRef.get().getTermObject(article, qRef), value);
 		}
 
 		return null;

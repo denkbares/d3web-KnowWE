@@ -9,7 +9,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.QuestionRef;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -21,21 +21,21 @@ public class NumericalIntervallFinding extends D3webTerminalCondition<NumericalF
 		this.setSectionFinder(new NumericalIntervallFinder());
 
 		this.addChildType(new Intervall());
-		QuestionRef questionRef = new QuestionRef();
+		QuestionReference questionRef = new QuestionReference();
 		questionRef.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(questionRef);
 	}
 
 	@Override
 	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<NumericalFinding> s) {
-		Section<QuestionRef> qRef = s.findSuccessor(QuestionRef.class);
+		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 
 		Section<Intervall> intervall = s.findSuccessor(Intervall.class);
 
 		Double number1 = intervall.get().getFirstNumber(intervall);
 		Double number2 = intervall.get().getSecondNumber(intervall);
 
-		Question q = qRef.get().getObject(article, qRef);
+		Question q = qRef.get().getTermObject(article, qRef);
 
 		if (!(q instanceof QuestionNum)) {
 			// TODO some reasonable error handling here!

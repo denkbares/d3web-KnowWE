@@ -28,7 +28,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
-import de.d3web.we.kdom.objects.SolutionRef;
+import de.d3web.we.kdom.objects.SolutionReference;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -49,7 +49,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		this.sectionFinder = new DiagnosisRuleActionSectionFinder(possibleScorePoints);
 		ScorePoint scorePoint = new ScorePoint();
 		Equals equ = new Equals();
-		SolutionRef solutionRef = new SolutionRef();
+		SolutionReference solutionRef = new SolutionReference();
 		solutionRef.setSectionFinder(new AllBeforeTypeSectionFinder(equ));
 
 		this.childrenTypes.add(scorePoint);
@@ -128,10 +128,10 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 
 	@Override
 	public PSAction getAction(KnowWEArticle article, Section<SolutionValueAssignment> s) {
-		Section<SolutionRef> solutionRef = s.findSuccessor(SolutionRef.class);
+		Section<SolutionReference> solutionRef = s.findSuccessor(SolutionReference.class);
 		Section<ScorePoint> scoreRef = s.findSuccessor(ScorePoint.class);
 		ActionHeuristicPS a = new ActionHeuristicPS();
-		a.setSolution(solutionRef.get().getObject(article, solutionRef));
+		a.setSolution(solutionRef.get().getTermObject(article, solutionRef));
 		a.setScore(D3webUtils.getScoreForString(scoreRef.getOriginalText()));
 		return a;
 	}

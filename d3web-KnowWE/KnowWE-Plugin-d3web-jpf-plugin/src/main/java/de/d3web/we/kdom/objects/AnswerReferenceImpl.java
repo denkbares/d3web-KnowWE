@@ -3,7 +3,7 @@ package de.d3web.we.kdom.objects;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 
-public class AnswerRefImpl extends AnswerRef {
+public class AnswerReferenceImpl extends AnswerRef {
 
 	@Override
 	protected void init() {
@@ -11,8 +11,8 @@ public class AnswerRefImpl extends AnswerRef {
 	}
 
 	@Override
-	public Section<QuestionRef> getQuestionSection(Section<? extends AnswerRef> s) {
-		return s.getFather().findSuccessor(QuestionRef.class);
+	public Section<QuestionReference> getQuestionSection(Section<? extends AnswerRef> s) {
+		return s.getFather().findSuccessor(QuestionReference.class);
 	}
 
 }

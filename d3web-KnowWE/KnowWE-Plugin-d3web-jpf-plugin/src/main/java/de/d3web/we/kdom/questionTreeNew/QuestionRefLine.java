@@ -22,7 +22,7 @@ package de.d3web.we.kdom.questionTreeNew;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.objects.QuestionRef;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
@@ -48,13 +48,14 @@ public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(key);
 
 		// the rest for the name of the question
-		QuestionRef questionRef = new QuestionRef();
+		QuestionReference questionRef = new QuestionReference();
 		questionRef.setSectionFinder(new AllTextFinderTrimmed());
+		questionRef.addSubtreeHandler(IndicationHandler.getInstance());
 		this.childrenTypes
 				.add(questionRef);
 
 		// this.addSubtreeHandler(new CreateIndicationHandler());
-		this.addSubtreeHandler(IndicationHandler.getInstance());
+
 
 	}
 

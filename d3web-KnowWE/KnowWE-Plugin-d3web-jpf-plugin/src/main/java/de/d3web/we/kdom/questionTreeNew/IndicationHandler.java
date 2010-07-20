@@ -30,15 +30,14 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashSubtree;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionDef;
-import de.d3web.we.kdom.objects.QuestionRef;
-import de.d3web.we.kdom.objects.QuestionnaireRef;
-import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.kdom.objects.QuestionDefinition;
+import de.d3web.we.kdom.objects.QuestionReference;
+import de.d3web.we.kdom.objects.QuestionnaireReference;
+import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -46,7 +45,7 @@ import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
-public class IndicationHandler extends D3webSubtreeHandler<DefaultAbstractKnowWEObjectType> {
+public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 	private final String indicationStoreKey = "INDICATION_STORE_KEY";
 
@@ -63,14 +62,14 @@ public class IndicationHandler extends D3webSubtreeHandler<DefaultAbstractKnowWE
 	}
 
 	@Override
-	public boolean needsToCreate(KnowWEArticle article, Section<DefaultAbstractKnowWEObjectType> s) {
+	public boolean needsToCreate(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 		return super.needsToCreate(article, s)
 				|| DashSubtree.subtreeAncestorHasNotReusedObjectDefs(article, s);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<DefaultAbstractKnowWEObjectType> s) {
+	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 
 		if (s.hasErrorInSubtree()) {
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
@@ -92,8 +91,8 @@ public class IndicationHandler extends D3webSubtreeHandler<DefaultAbstractKnowWE
 		Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
 				.getDashTreeFather(element);
 
-		Section<QuestionTreeAnswerDef> answerSec = dashTreeFather
-				.findSuccessor(QuestionTreeAnswerDef.class);
+		Section<QuestionTreeAnswerDefinition> answerSec = dashTreeFather
+				.findSuccessor(QuestionTreeAnswerDefinition.class);
 		Section<NumericCondLine> numCondSec = dashTreeFather
 				.findSuccessor(NumericCondLine.class);
 
@@ -102,19 +101,19 @@ public class IndicationHandler extends D3webSubtreeHandler<DefaultAbstractKnowWE
 			// retrieve the QASet for the different KnowWEObjectTypes that might
 			// use this handler
 			QASet qaset = null;
-			Section<? extends TermReference> termRef = element.findSuccessor(TermReference.class);
+			Section<? extends KnowWETerm> termRef = element.findSuccessor(KnowWETerm.class);
 			if (termRef != null) {
-				if (termRef.get() instanceof QuestionnaireRef) {
-					Section<QuestionnaireRef> qnref = (Section<QuestionnaireRef>) termRef;
-					qaset = qnref.get().getObject(article, qnref);
+				if (termRef.get() instanceof QuestionnaireReference) {
+					Section<QuestionnaireReference> qnref = (Section<QuestionnaireReference>) termRef;
+					qaset = qnref.get().getTermObject(article, qnref);
 				}
-				else if (termRef.get() instanceof QuestionDef) {
-					Section<QuestionDef> qdef = (Section<QuestionDef>) termRef;
-					qaset = qdef.get().getObject(article, qdef);
+				else if (termRef.get() instanceof QuestionDefinition) {
+					Section<QuestionDefinition> qdef = (Section<QuestionDefinition>) termRef;
+					qaset = qdef.get().getTermObject(article, qdef);
 				}
-				else if (termRef.get() instanceof QuestionRef) {
-					Section<QuestionRef> qref = (Section<QuestionRef>) termRef;
-					qaset = qref.get().getObject(article, qref);
+				else if (termRef.get() instanceof QuestionReference) {
+					Section<QuestionReference> qref = (Section<QuestionReference>) termRef;
+					qaset = qref.get().getTermObject(article, qref);
 				}
 			}
 
@@ -143,13 +142,13 @@ public class IndicationHandler extends D3webSubtreeHandler<DefaultAbstractKnowWE
 	}
 
 	@Override
-	public boolean needsToDestroy(KnowWEArticle article, Section<DefaultAbstractKnowWEObjectType> s) {
+	public boolean needsToDestroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 		return super.needsToDestroy(article, s)
 				|| DashSubtree.subtreeAncestorHasNotReusedObjectDefs(article, s);
 	}
 
 	@Override
-	public void destroy(KnowWEArticle article, Section<DefaultAbstractKnowWEObjectType> s) {
+	public void destroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 		Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
 				indicationStoreKey);
 		if (kbr != null) kbr.remove();

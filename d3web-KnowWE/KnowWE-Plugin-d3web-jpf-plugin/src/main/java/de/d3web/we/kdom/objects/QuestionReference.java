@@ -7,19 +7,19 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 
-public class QuestionRef extends D3webObjectRef<Question> {
+public class QuestionReference extends D3webTermReference<Question> {
 
-	public QuestionRef() {
+	public QuestionReference() {
 		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Question getObjectFallback(KnowWEArticle article, Section<?
-			extends ObjectRef<Question>> s) {
+	public Question getTermObjectFallback(KnowWEArticle article, Section<?
+			extends TermReference<Question>> s) {
 
-		if (s.get() instanceof QuestionRef) {
-			Section<QuestionRef> sec = (Section<QuestionRef>) s;
+		if (s.get() instanceof QuestionReference) {
+			Section<QuestionReference> sec = (Section<QuestionReference>) s;
 			String questionName = sec.get().getTermName(sec);
 
 			KnowledgeBaseManagement mgn =

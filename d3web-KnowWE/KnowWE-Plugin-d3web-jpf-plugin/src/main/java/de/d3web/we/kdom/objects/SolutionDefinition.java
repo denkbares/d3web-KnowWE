@@ -16,21 +16,21 @@ import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.terminology.TerminologyManager;
+import de.d3web.we.utils.KnowWEUtils;
 
-public class SolutionDef extends D3webObjectDef<Solution> {
+public class SolutionDefinition extends D3webTermDefinition<Solution> {
 
-	public SolutionDef() {
+	public SolutionDefinition() {
 		super("QUESTION_STORE_KEY");
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 		this.addSubtreeHandler(Priority.HIGHEST, new CreateSolutionHandler());
 	}
 
-	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDef> {
+	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDefinition> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
-				Section<SolutionDef> solutionSection) {
+				Section<SolutionDefinition> solutionSection) {
 
 
 			String name = solutionSection.get().getTermName(solutionSection);
@@ -53,9 +53,9 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 				if (s != null) {
 					// ok everything went well
 					// register term
-					TerminologyManager.getInstance().registerTermDef(article,
-							solutionSection);
-					solutionSection.get().storeObject(article, solutionSection, s);
+					KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+							article, solutionSection);
+					solutionSection.get().storeTermObject(article, solutionSection, s);
 					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(s.getClass().getSimpleName()
 							+ " " + s.getName()));
 				} else {
@@ -67,15 +67,16 @@ public class SolutionDef extends D3webObjectDef<Solution> {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<SolutionDef> solution) {
-			Solution kbsol = solution.get().getObjectFromLastVersion(article, solution);
+		public void destroy(KnowWEArticle article, Section<SolutionDefinition> solution) {
+			Solution kbsol = solution.get().getTermObjectFromLastVersion(article, solution);
 			try {
 				if (kbsol != null) kbsol.getKnowledgeBase().remove(kbsol);
 			}
 			catch (IllegalAccessException e) {
 				article.setFullParse(true, this);
 			}
-			TerminologyManager.getInstance().unregisterTermDef(article, solution);
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(article,
+					solution);
 			return;
 		}
 

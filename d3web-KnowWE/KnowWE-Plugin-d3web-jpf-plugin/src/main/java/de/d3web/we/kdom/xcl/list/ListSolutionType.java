@@ -24,14 +24,14 @@ import java.util.Collection;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.constraint.ExactlyOneFindingConstraint;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
-import de.d3web.we.kdom.objects.SolutionDef;
+import de.d3web.we.kdom.objects.SolutionDefinition;
+import de.d3web.we.kdom.objects.TermRelationDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.NonEmptyLineSectionFinder;
@@ -51,7 +51,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
  *
  *
  */
-public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
+public class ListSolutionType extends TermRelationDefinition {
 
 	public ListSolutionType() {
 		SectionFinder solutionFinder = new NonEmptyLineSectionFinder();
@@ -65,7 +65,7 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 		closing.setSectionFinder(new StringSectionFinderUnquoted("{"));
 		this.addChildType(closing);
 
-		SolutionDef solDef = new SolutionDef();
+		SolutionDefinition solDef = new SolutionDefinition();
 		SectionFinder allFinder = new AllTextFinderTrimmed();
 		allFinder.addConstraint(ExactlyOneFindingConstraint.getInstance());
 		solDef.setSectionFinder(allFinder);
@@ -84,8 +84,8 @@ public class ListSolutionType extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListSolutionType> s) {
 
-			Section<SolutionDef> solutionDef = s.findSuccessor(SolutionDef.class);
-			Solution solution = solutionDef.get().getObject(article, solutionDef);
+			Section<SolutionDefinition> solutionDef = s.findSuccessor(SolutionDefinition.class);
+			Solution solution = solutionDef.get().getTermObject(article, solutionDef);
 
 			Section<DefaultMarkupType> defaultMarkupType = s.findAncestor(DefaultMarkupType.class);
 

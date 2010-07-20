@@ -36,6 +36,7 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEIncludeManager;
+import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.include.Include;
@@ -44,7 +45,6 @@ import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.validation.Validator;
-import de.d3web.we.terminology.TerminologyManager;
 
 /**
  * @author Jochen
@@ -163,18 +163,28 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		includeManager.removeSectionizingArticles(title);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINER,
+				Level.FINE,
 				"<- Built KDOM in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
 		startTime = System.currentTimeMillis();
 
+		if (fullParse) {
+			SemanticCore.getInstance().clearContext(this);
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.FINE,
+					"<- Cleared SemanticCore context in "
+							+ (System.currentTimeMillis() - startTime) + "ms <-");
+			startTime = System.currentTimeMillis();
+		}
+		
+		
 		// run initHooks at KnowledgeRepManager
 		instance.getKnowledgeRepresentationManager(web)
 				.initArticle(this);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINER,
+				Level.FINE,
 				"<- Initialized Knowledge Manager in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -186,14 +196,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 			con.setSubject(title);
 			ContextManager.getInstance().attachContext(sec, con);
 		}
-		
-		if (this.fullParse) TerminologyManager.getInstance().removeTermsForArticle(this);
+
 
 		// call SubTreeHandler for all Sections to create
 		reviseCurrentArticleToCreate();
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINER,
+				Level.FINE,
 				"<- Built Knowledge in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 
@@ -220,7 +229,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				.finishArticle(this);
 
 		Logger.getLogger(this.getClass().getName()).log(
-				Level.FINER,
+				Level.FINE,
 				"<- Registered Knowledge in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
 

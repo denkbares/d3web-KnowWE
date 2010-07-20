@@ -26,7 +26,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.questionTreeNew.QuestionTreeAnswerDef;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeAnswerDefinition;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.RenderingMode;
@@ -35,7 +35,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * QuestionTreeAnswerDefRenderer.
- * Renders the {@link QuestionTreeAnswerDef } in the collapsible question tree
+ * Renders the {@link QuestionTreeAnswerDefinition } in the collapsible question tree
  * view. Used to remove the quotation marks that surround some answers.
  * 
  * @author smark

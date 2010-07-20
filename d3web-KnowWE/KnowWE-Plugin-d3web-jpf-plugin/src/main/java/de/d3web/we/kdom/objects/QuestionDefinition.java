@@ -9,39 +9,39 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementDef;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementDefinition;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.terminology.TerminologyManager;
 import de.d3web.we.utils.D3webUtils;
+import de.d3web.we.utils.KnowWEUtils;
 
-public abstract class QuestionDef extends QuestionTreeElementDef<Question> {
+public abstract class QuestionDefinition extends QuestionTreeElementDefinition<Question> {
 
 	public static enum QuestionType {
 		OC, MC, YN, NUM, DATE, TEXT;
 	}
 
-	public QuestionDef() {
+	public QuestionDefinition() {
 		super("QUESTION_STORE_KEY");
 		this.addSubtreeHandler(Priority.HIGHER, new CreateQuestionHandler());
 		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
 		this.setOrderSensitive(true);
 	}
 
-	public abstract QuestionType getQuestionType(Section<QuestionDef> s);
+	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
 
-	static class CreateQuestionHandler extends QuestionTreeElementDefSubtreeHandler<QuestionDef> {
+	static class CreateQuestionHandler extends QuestionTreeElementDefSubtreeHandler<QuestionDefinition> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
-				Section<QuestionDef> sec) {
+				Section<QuestionDefinition> sec) {
 
-			Section<QuestionDef> qidSection = (sec);
+			Section<QuestionDefinition> qidSection = (sec);
 
 			String name = qidSection.get().getTermName(qidSection);
 
@@ -89,11 +89,11 @@ public abstract class QuestionDef extends QuestionTreeElementDef<Question> {
 					parent.moveChildToPosition(q, sec.get().getPosition(sec));
 				}
 				// register term
-				TerminologyManager.getInstance().registerTermDef(
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
 						article, sec);
 
 				// store object in section
-				qidSection.get().storeObject(article, qidSection, q);
+				qidSection.get().storeTermObject(article, qidSection, q);
 
 				// return success message
 				return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
@@ -108,9 +108,9 @@ public abstract class QuestionDef extends QuestionTreeElementDef<Question> {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<QuestionDef> question) {
+		public void destroy(KnowWEArticle article, Section<QuestionDefinition> question) {
 
-			Question q = question.get().getObjectFromLastVersion(article, question);
+			Question q = question.get().getTermObjectFromLastVersion(article, question);
 			try {
 				if (q != null) q.getKnowledgeBase().remove(q);
 			}
@@ -118,7 +118,8 @@ public abstract class QuestionDef extends QuestionTreeElementDef<Question> {
 				article.setFullParse(true, this);
 				// e.printStackTrace();
 			}
-			TerminologyManager.getInstance().unregisterTermDef(article, question);
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(article,
+					question);
 		}
 
 	}

@@ -30,8 +30,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
 import de.d3web.we.kdom.objects.AnswerRef;
-import de.d3web.we.kdom.objects.AnswerRefImpl;
-import de.d3web.we.kdom.objects.QuestionRef;
+import de.d3web.we.kdom.objects.AnswerReferenceImpl;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -48,12 +48,12 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	public void init() {
 		this.sectionFinder = new SetQuestionValueSectionFinder();
 		Equals equals = new Equals();
-		QuestionRef qr = new QuestionRef();
+		QuestionReference qr = new QuestionReference();
 		qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
 		this.childrenTypes.add(equals);
 		this.childrenTypes.add(qr);
 
-		AnswerRef a = new AnswerRefImpl();
+		AnswerRef a = new AnswerReferenceImpl();
 		a.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(a);
 
@@ -133,10 +133,10 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 
 	@Override
 	public PSAction getAction(KnowWEArticle article, Section<SetQuestionValue> s) {
-		Section<QuestionRef> qref = s.findSuccessor(QuestionRef.class);
-		Question q = qref.get().getObject(article, qref);
+		Section<QuestionReference> qref = s.findSuccessor(QuestionReference.class);
+		Question q = qref.get().getTermObject(article, qref);
 		Section<AnswerRef> aref = s.findSuccessor(AnswerRef.class);
-		Choice c = aref.get().getObject(article, aref);
+		Choice c = aref.get().getTermObject(article, aref);
 
 		if (q != null && c != null) {
 			ActionSetValue a = new ActionSetValue();

@@ -91,7 +91,7 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 */
 	@Override
 	public void initArticle(KnowWEArticle art) {
-		DPSEnvironment env = D3webModule.getDPSE("default_web");
+		DPSEnvironment env = D3webModule.getDPSE(web);
 		String id = art.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(art.getTitle());
 		KnowledgeService service = env.getService(id);
 		if (service != null) {
@@ -153,6 +153,5 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	public void setWeb(String web) {
 		this.web = web;
 	}
-
 
 }

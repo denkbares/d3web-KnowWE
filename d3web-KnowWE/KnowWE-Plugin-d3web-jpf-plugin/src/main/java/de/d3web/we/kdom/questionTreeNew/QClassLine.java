@@ -31,8 +31,8 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionnaireDef;
-import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementDef.QuestionTreeElementDefSubtreeHandler;
+import de.d3web.we.kdom.objects.QuestionnaireDefinition;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementDefinition.QuestionTreeElementDefSubtreeHandler;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
@@ -41,8 +41,8 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.terminology.TerminologyManager;
 import de.d3web.we.utils.KnowWEObjectTypeUtils;
+import de.d3web.we.utils.KnowWEUtils;
 
 public class QClassLine extends DefaultAbstractKnowWEObjectType {
 
@@ -51,7 +51,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 
 		initSectionFinder();
 
-		QuestionnaireDef qc = new QuestionnaireDef();
+		QuestionnaireDefinition qc = new QuestionnaireDefinition();
 		qc.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR5));
 		qc.setSectionFinder(new AllTextFinderTrimmed());
 		qc.addSubtreeHandler(Priority.HIGHEST, new CreateQuestionnaireHandler());
@@ -86,11 +86,11 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 	}
 
 	static class CreateQuestionnaireHandler
-			extends QuestionTreeElementDefSubtreeHandler<QuestionnaireDef> {
+			extends QuestionTreeElementDefSubtreeHandler<QuestionnaireDefinition> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
-				Section<QuestionnaireDef> qcSec) {
+				Section<QuestionnaireDefinition> qcSec) {
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 			//ReviseSubtreeHandler will be called again with a correct mgn
@@ -126,8 +126,9 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 				if (qc != null) {
 					if (!article.isFullParse()) parent.moveChildToPosition(qc,
 							qcSec.get().getPosition(qcSec));
-					qcSec.get().storeObject(article, qcSec, qc);
-					TerminologyManager.getInstance().registerTermDef(article, qcSec);
+					qcSec.get().storeTermObject(article, qcSec, qc);
+					KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
+							article, qcSec);
 					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(qc.getClass().getSimpleName()
 							+ " " + qc.getName()));
 				} else {
@@ -137,9 +138,9 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		}
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<QuestionnaireDef> s) {
+		public void destroy(KnowWEArticle article, Section<QuestionnaireDefinition> s) {
 
-			QContainer q = s.get().getObjectFromLastVersion(article, s);
+			QContainer q = s.get().getTermObjectFromLastVersion(article, s);
 			try {
 				if (q != null) q.getKnowledgeBase().remove(q);
 			}
@@ -147,7 +148,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 				article.setFullParse(true, this);
 				// e.printStackTrace();
 			}
-			TerminologyManager.getInstance().unregisterTermDef(article, s);
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(article, s);
 		}
 
 	}

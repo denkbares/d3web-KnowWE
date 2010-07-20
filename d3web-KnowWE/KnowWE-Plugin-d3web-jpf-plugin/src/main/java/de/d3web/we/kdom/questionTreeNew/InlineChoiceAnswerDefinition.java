@@ -25,7 +25,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.objects.AnswerDef;
-import de.d3web.we.kdom.objects.QuestionDef;
+import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
@@ -80,15 +80,15 @@ public class InlineChoiceAnswerDefinition extends DefaultAbstractKnowWEObjectTyp
 
 
 		@Override
-		public int getPosition(Section<? extends QuestionTreeElementDef<Choice>> s) {
+		public int getPosition(Section<? extends QuestionTreeElementDefinition<Choice>> s) {
 			// TODO Auto-generated method stub
 			return 0;
 		}
 
 
 		@Override
-		public Section<? extends QuestionDef> retrieveAndStoreParentQASetSection(
-				Section<? extends QuestionTreeElementDef<?>> s) {
+		public Section<? extends QuestionDefinition> retrieveAndStoreParentQASetSection(
+				Section<? extends QuestionTreeElementDefinition<?>> s) {
 			// TODO Auto-generated method stub
 			return null;
 		}

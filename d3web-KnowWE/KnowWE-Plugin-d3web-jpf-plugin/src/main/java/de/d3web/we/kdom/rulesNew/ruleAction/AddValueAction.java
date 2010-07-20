@@ -29,8 +29,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.objects.AnswerRef;
-import de.d3web.we.kdom.objects.AnswerRefImpl;
-import de.d3web.we.kdom.objects.QuestionRef;
+import de.d3web.we.kdom.objects.AnswerReferenceImpl;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
@@ -59,7 +59,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			AnonymousType equals = new AnonymousType("plus-equal");
 			equals.setSectionFinder(new StringSectionFinderUnquoted(ADD_VALUE_SIGN));
 
-			QuestionRef qr = new QuestionRef();
+			QuestionReference qr = new QuestionReference();
 			qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
 			this.childrenTypes.add(equals);
 			this.childrenTypes.add(qr);
@@ -87,8 +87,8 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public PSAction getAction(KnowWEArticle article, Section<NumericalAddValueAction> s) {
-			Section<QuestionRef> qref = s.findSuccessor(QuestionRef.class);
-			Question q = qref.get().getObject(article, qref);
+			Section<QuestionReference> qref = s.findSuccessor(QuestionReference.class);
+			Question q = qref.get().getTermObject(article, qref);
 			Section<de.d3web.we.kdom.rulesNew.terminalCondition.Number> aref = s.findSuccessor(de.d3web.we.kdom.rulesNew.terminalCondition.Number.class);
 
 			Double d = aref.get().getNumber(aref);
@@ -108,12 +108,12 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			AnonymousType equals = new AnonymousType("plus-equal");
 			equals.setSectionFinder(new StringSectionFinderUnquoted(ADD_VALUE_SIGN));
 
-			QuestionRef qr = new QuestionRef();
+			QuestionReference qr = new QuestionReference();
 			qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
 			this.childrenTypes.add(equals);
 			this.childrenTypes.add(qr);
 
-			AnswerRef a = new AnswerRefImpl();
+			AnswerRef a = new AnswerReferenceImpl();
 			a.setSectionFinder(new AllTextFinderTrimmed());
 			this.childrenTypes.add(a);
 			this.sectionFinder = new AllTextFinderTrimmed();
@@ -121,10 +121,10 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public PSAction getAction(KnowWEArticle article, Section<NumericalAddValueAction> s) {
-			Section<QuestionRef> qref = s.findSuccessor(QuestionRef.class);
-			Question q = qref.get().getObject(article, qref);
+			Section<QuestionReference> qref = s.findSuccessor(QuestionReference.class);
+			Question q = qref.get().getTermObject(article, qref);
 			Section<AnswerRef> aref = s.findSuccessor(AnswerRef.class);
-			Choice c = aref.get().getObject(article, aref);
+			Choice c = aref.get().getTermObject(article, aref);
 
 			if (q != null && c != null) {
 				ActionAddValue a = new ActionAddValue();

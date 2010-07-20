@@ -37,7 +37,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.FindingToConditionBuilder;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionDef;
+import de.d3web.we.kdom.objects.QuestionDefinition;
 
 public class Utils {
 
@@ -86,14 +86,14 @@ public class Utils {
 			Section<? extends DashTreeElement> father,
 			Section<? extends DashTreeElement> grandFather) {
 
-		Section<QuestionTreeAnswerDef> answerSec = father
-				.findSuccessor(QuestionTreeAnswerDef.class);
-		Section<QuestionDef> qSec = grandFather.findSuccessor(QuestionDef.class);
+		Section<QuestionTreeAnswerDefinition> answerSec = father
+				.findSuccessor(QuestionTreeAnswerDefinition.class);
+		Section<QuestionDefinition> qSec = grandFather.findSuccessor(QuestionDefinition.class);
 
-		Question q = qSec.get().getObject(article, qSec);
+		Question q = qSec.get().getTermObject(article, qSec);
 
 		if (answerSec != null && q instanceof QuestionChoice) {
-			Choice a = answerSec.get().getObject(article, answerSec);
+			Choice a = answerSec.get().getTermObject(article, answerSec);
 			if (a != null) {
 				CondEqual c = new CondEqual(q, new ChoiceValue(
 						a));

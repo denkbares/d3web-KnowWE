@@ -30,7 +30,7 @@ import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.indication.ActionIndication;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.QuestionnaireRef;
+import de.d3web.we.kdom.objects.QuestionnaireReference;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -43,7 +43,7 @@ public class QuestionIndication extends D3webRuleAction<QuestionIndication> {
 	@Override
 	public void init() {
 		this.sectionFinder = new QuestionIndicationSectionFinder();
-		QuestionnaireRef qC = new QuestionnaireRef();
+		QuestionnaireReference qC = new QuestionnaireReference();
 		qC.setSectionFinder(new SeperatedQuestionClassSectionFinder());
 		this.childrenTypes.add(qC);
 	}
@@ -106,16 +106,16 @@ public class QuestionIndication extends D3webRuleAction<QuestionIndication> {
 
 	@Override
 	public PSAction getAction(KnowWEArticle article, Section<QuestionIndication> s) {
-		List<Section<QuestionnaireRef>> qContainerrefs = new ArrayList<Section<QuestionnaireRef>>();
-		s.findSuccessorsOfType(QuestionnaireRef.class,
+		List<Section<QuestionnaireReference>> qContainerrefs = new ArrayList<Section<QuestionnaireReference>>();
+		s.findSuccessorsOfType(QuestionnaireReference.class,
 				qContainerrefs);
 
 
 		if (qContainerrefs.size() > 0) {
 			ActionIndication a = new ActionIndication();
 			List<QASet> qContainers = new ArrayList<QASet>();
-			for (Section<QuestionnaireRef> section : qContainerrefs) {
-				QContainer qc = section.get().getObject(article, section);
+			for (Section<QuestionnaireReference> section : qContainerrefs) {
+				QContainer qc = section.get().getTermObject(article, section);
 				if (qc != null) {
 					qContainers.add(qc);
 				}

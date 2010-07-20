@@ -269,7 +269,7 @@ public class SemanticCore implements ISemanticCore {
 	public void addStatements(IntermediateOwlObject inputio, Section sec) {
 
 		List<Statement> allStatements = inputio.getAllStatements();
-		clearContext(sec);
+		// clearContext(sec);
 		addToStatementcache(sec, allStatements);
 
 		Logger.getLogger(this.getClass().getName()).finer(

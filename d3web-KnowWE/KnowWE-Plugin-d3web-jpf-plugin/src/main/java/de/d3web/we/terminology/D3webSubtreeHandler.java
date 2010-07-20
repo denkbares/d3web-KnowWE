@@ -25,7 +25,9 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.utils.KnowWEUtils;
 
 public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends SubtreeHandler<T> {
 
@@ -36,6 +38,34 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	protected KnowledgeBaseManagement getKBM(KnowWEArticle article) {
 		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(
 				article.getTitle());
+	}
+
+	/*
+	 * Checking for a Section with an KnowWEObjectType extending KnowWETerm is
+	 * necessary for the compatibility with KnowWEObjectTypes that do not use
+	 * KnowWETerms. So if you use them in the SubtreeHandler for your
+	 * KnowWEObjectType, be sure to extend KnowWETerm.
+	 */
+	@Override
+	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
+		return super.needsToCreate(article, s)
+				|| (!(s.get() instanceof KnowWETerm<?>)
+						&& KnowWEUtils.getTerminologyHandler(article.getWeb())
+								.areTermDefinitionsModifiedFor(article));
+	}
+
+	/*
+	 * Checking for a Section with an KnowWEObjectType extending KnowWETerm is
+	 * necessary for the compatibility with KnowWEObjectTypes that do not use
+	 * KnowWETerms. So if you use them in the SubtreeHandler for your
+	 * KnowWEObjectType, be sure to extend KnowWETerm.
+	 */
+	@Override
+	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
+		return super.needsToDestroy(article, s)
+				|| (!(s.get() instanceof KnowWETerm<?>)
+						&& KnowWEUtils.getTerminologyHandler(article.getWeb())
+								.areTermDefinitionsModifiedFor(article));
 	}
 
 	@Override

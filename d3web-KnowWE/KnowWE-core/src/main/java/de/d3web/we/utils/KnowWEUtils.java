@@ -38,6 +38,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.terminology.TerminologyHandler;
 
 public class KnowWEUtils {
 	
@@ -287,6 +288,11 @@ public class KnowWEUtils {
 	public static Object getStoredObject(String web, String article, String kdomid, String key) {
 		return KnowWEEnvironment.getInstance().getArticleManager(web).getTypeStore().getStoredObject(
 				article, kdomid, key);
+	}
+
+	public static TerminologyHandler getTerminologyHandler(String web) {
+		return (TerminologyHandler) KnowWEEnvironment.getInstance()
+				.getKnowledgeRepresentationManager(web).getHandler(TerminologyHandler.HANDLER_KEY);
 	}
 
 	public static List<Integer> getPositionInKDOM(Section<?> s) {

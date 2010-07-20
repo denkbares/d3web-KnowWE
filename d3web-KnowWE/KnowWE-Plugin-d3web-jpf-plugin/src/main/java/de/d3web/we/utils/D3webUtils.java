@@ -42,8 +42,8 @@ import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionDef;
-import de.d3web.we.kdom.objects.QuestionnaireDef;
+import de.d3web.we.kdom.objects.QuestionDefinition;
+import de.d3web.we.kdom.objects.QuestionnaireDefinition;
 import de.d3web.we.kdom.xcl.XCLRelationWeight;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLRelationType;
@@ -175,7 +175,7 @@ public class D3webUtils {
 	 * @param mgn
 	 * @return
 	 */
-	public static QASet findParent(Section<QuestionDef> s, KnowledgeBaseManagement mgn) {
+	public static QASet findParent(Section<QuestionDefinition> s, KnowledgeBaseManagement mgn) {
 
 		// current DashTreeElement
 		Section<DashTreeElement> element = KnowWEObjectTypeUtils
@@ -211,15 +211,15 @@ public class D3webUtils {
 			Section<? extends DashTreeElement> dashTreeElement,
 			KnowledgeBaseManagement mgn) {
 
-		if (dashTreeElement.findSuccessor(QuestionnaireDef.class) != null) {
-			String qClassName = dashTreeElement.findSuccessor(QuestionnaireDef.class).getOriginalText();
+		if (dashTreeElement.findSuccessor(QuestionnaireDefinition.class) != null) {
+			String qClassName = dashTreeElement.findSuccessor(QuestionnaireDefinition.class).getOriginalText();
 			QASet parent = mgn.findQContainer(qClassName);
 			if (parent != null)
 				return parent;
 		}
 
-		if (dashTreeElement.findSuccessor(QuestionDef.class) != null) {
-			String qName = dashTreeElement.findSuccessor(QuestionDef.class)
+		if (dashTreeElement.findSuccessor(QuestionDefinition.class) != null) {
+			String qName = dashTreeElement.findSuccessor(QuestionDefinition.class)
 					.getOriginalText();
 			QASet parent = mgn.findQuestion(qName);
 			if (parent != null)

@@ -64,7 +64,7 @@ public class DashSubtree extends DefaultAbstractKnowWEObjectType {
 		while (subtreeFather.get() instanceof DashSubtree) {
 			Section<? extends DashTreeElement> dashElement = subtreeFather.findChildOfType(DashTreeElement.class);
 			if (DashTreeElement.getLevel(dashElement) == 1) {
-				if (subtreeFather.isOrHasObjectDefSuccessorNotReusedByOrPositionChangedFor(article.getTitle())) {
+				if (subtreeFather.isOrHasTermDefSuccessorNotReusedByOrPositionChangedFor(article.getTitle())) {
 					return true;
 				}
 				else {

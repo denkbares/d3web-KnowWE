@@ -27,7 +27,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
-import de.d3web.we.kdom.objects.SolutionDef;
+import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.SolutionDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -45,11 +46,11 @@ import de.d3web.we.terminology.D3webSubtreeHandler;
  *
  *
  */
-public class SolutionDashTreeElementContent extends DashTreeElementContent {
+public class SolutionDashTreeElementContent extends DashTreeElementContent implements KnowWETerm<Object> {
 
 	public SolutionDashTreeElementContent() {
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
-		SolutionDef solutionDef = new SolutionDef();
+		SolutionDefinition solutionDef = new SolutionDefinition();
 		SectionFinder f = new AllTextFinderTrimmed();
 		f.addConstraint(SingleChildConstraint.getInstance());
 		solutionDef.setSectionFinder(f);
@@ -71,14 +72,14 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
 			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeElementContent.getDashTreeFatherContent(
 					s);
-			Section<SolutionDef> localSolutionDef = s.findSuccessor(SolutionDef.class);
-			Solution localSolution = localSolutionDef.get().getObject(article, localSolutionDef);
+			Section<SolutionDefinition> localSolutionDef = s.findSuccessor(SolutionDefinition.class);
+			Solution localSolution = localSolutionDef.get().getTermObject(article, localSolutionDef);
 
 			if (fatherSolutionContent != null && localSolution != null) {
 
-				Section<SolutionDef> solutionDef = fatherSolutionContent.findSuccessor(SolutionDef.class);
+				Section<SolutionDefinition> solutionDef = fatherSolutionContent.findSuccessor(SolutionDefinition.class);
 				if (solutionDef != null) {
-					Solution superSolution = solutionDef.get().getObject(article, solutionDef);
+					Solution superSolution = solutionDef.get().getTermObject(article, solutionDef);
 					// here the actual taxonomic relation is established
 					superSolution.addChild(localSolution);
 					return Arrays.asList((KDOMReportMessage) new RelationCreatedMessage(
@@ -91,6 +92,11 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent {
 			return null;
 		}
 
+	}
+
+	@Override
+	public String getTermName(Section<? extends KnowWETerm<Object>> s) {
+		return s.getOriginalText().trim();
 	}
 
 }

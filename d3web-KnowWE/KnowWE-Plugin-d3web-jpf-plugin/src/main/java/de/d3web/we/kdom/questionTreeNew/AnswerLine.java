@@ -58,7 +58,7 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 			}
 		};
 
-		QuestionTreeAnswerDef aid = new QuestionTreeAnswerDef();
+		QuestionTreeAnswerDefinition aid = new QuestionTreeAnswerDefinition();
 		aid.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(aid);
 	}

@@ -36,7 +36,8 @@ import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.bulletLists.CommentRenderer;
 import de.d3web.we.kdom.condition.CompositeCondition;
-import de.d3web.we.kdom.objects.SolutionDef;
+import de.d3web.we.kdom.objects.SolutionDefinition;
+import de.d3web.we.kdom.objects.TermRelationDefinition;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
@@ -98,7 +99,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	class CoveringRelation extends DefaultAbstractKnowWEObjectType {
+	class CoveringRelation extends TermRelationDefinition {
 
 		public CoveringRelation() {
 
@@ -140,8 +141,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			private final String relationStoreKey = "XCLRELATION_STORE_KEY";
 
-			private Section<SolutionDef> getCorrespondingSolutionDef(Section<CoveringRelation> s) {
-				return s.getFather().getFather().findSuccessor(SolutionDef.class);
+			private Section<SolutionDefinition> getCorrespondingSolutionDef(Section<CoveringRelation> s) {
+				return s.getFather().getFather().findSuccessor(SolutionDefinition.class);
 			}
 
 			@Override
@@ -173,9 +174,9 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							"XCL-relation"));
 				}
 
-				Section<SolutionDef> soltuionDef = getCorrespondingSolutionDef(s);
+				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(s);
 				if (soltuionDef != null) {
-					Solution solution = soltuionDef.get().getObject(
+					Solution solution = soltuionDef.get().getTermObject(
 							article, soltuionDef);
 					KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
 							XCLModel.XCLMODEL);
@@ -249,10 +250,10 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public void destroy(KnowWEArticle article, Section<CoveringRelation> s) {
-				Section<SolutionDef> soltuionDef = getCorrespondingSolutionDef(s);
+				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(s);
 
 				if (soltuionDef == null) return;
-				Solution solution = soltuionDef.get().getObjectFromLastVersion(article,
+				Solution solution = soltuionDef.get().getTermObjectFromLastVersion(article,
 						soltuionDef);
 
 				if (solution == null) return;
