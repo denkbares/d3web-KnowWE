@@ -22,7 +22,7 @@ public class SubstanceListWriter extends WISECWriter {
 	@Override
 	public void write() throws IOException {
 		for (SubstanceList list : model.getSubstanceLists()) {
-			list.filename = getWikiFileNameFor(list.name);
+			list.filename = getWikiFileNameFor(list.id);
 			Writer writer = ConverterUtils.createWriter(this.outputDirectory + list.filename
 					+ ".txt");
 			write(list, writer);
@@ -49,6 +49,8 @@ public class SubstanceListWriter extends WISECWriter {
 		}
 		writeKnowledge(writer, "-\n" +
 				"@ListID: " + list.name + "\n" +
+				// TODO: Replace WISECUPPER with list.upperlist.getName() but
+				// atm the id is not recognized in the upperlist
 				"@UpperlistID: WISECUPPER \n" +
 				"%\n");
 
@@ -151,7 +153,7 @@ public class SubstanceListWriter extends WISECWriter {
 	}
 
 	public static String asWikiMarkup(SubstanceList list) {
-		return "[ " + list.name + " | " + SubstanceListWriter.getWikiFileNameFor(list.name) + "]";
+		return "[ " + list.name + " | " + SubstanceListWriter.getWikiFileNameFor(list.id) + "]";
 	}
 
 	public static String getCriteriaString(SubstanceList list) {
@@ -163,7 +165,6 @@ public class SubstanceListWriter extends WISECWriter {
 			}
 		}
 		if (criteriaString.length() < 2) {
-			System.out.println(list.name); // TODO: RemoveMe
 			return criteriaString;
 		}
 		return criteriaString.substring(0, criteriaString.length() - 2);

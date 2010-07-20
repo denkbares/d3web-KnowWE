@@ -12,8 +12,8 @@ public class UpperListOverviewWriter extends WISECWriter {
 			+ "InformationSources";
 
 	private static final String[] PRINTABLE_ATTRIBUTES = new String[] {
-			WISECExcelConverter.NUMBER_KEY, "Inhalt", "Institution", "Pefix",
-			"Incl" };
+			WISECExcelConverter.NUMBER_KEY, "Name", "Author", "Criteria_code",
+			"Inclusion_WISEC" };
 
 	public UpperListOverviewWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);

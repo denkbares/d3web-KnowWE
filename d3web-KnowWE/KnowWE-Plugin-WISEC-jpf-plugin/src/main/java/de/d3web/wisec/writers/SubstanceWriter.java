@@ -99,7 +99,7 @@ public class SubstanceWriter extends WISECWriter {
 				String value = substanceList.criteria.get(criteria);
 				if (value != null && value.length() > 0) {
 					b.append(" ["+value+" | " + 
-							SubstanceListWriter.getWikiFileNameFor(substanceList.name) +
+							SubstanceListWriter.getWikiFileNameFor(substanceList.id) +
 							"]");
 				}
 			}

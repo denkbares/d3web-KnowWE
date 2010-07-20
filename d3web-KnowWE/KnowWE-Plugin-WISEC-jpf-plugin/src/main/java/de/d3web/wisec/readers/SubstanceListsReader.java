@@ -11,6 +11,7 @@ import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.UpperList;
 import de.d3web.wisec.model.WISECModel;
 
+@Deprecated
 public class SubstanceListsReader extends WISECReader {
 	private static final String DATENTABELLEN = "Datentabellen";
 	// abort reading, when this threshold is exceeded

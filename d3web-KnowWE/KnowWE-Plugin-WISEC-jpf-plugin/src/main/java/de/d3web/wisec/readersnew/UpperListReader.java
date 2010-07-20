@@ -30,7 +30,7 @@ public class UpperListReader extends WISECReader {
 
 	@Override
 	public void read(WISECModel model) {
-		int HEADER_ROW = 1;
+		final int HEADER_ROW = 0;
 		Sheet sheet = workbook.getSheet(SHEETNAME);
 		List<String> headers = coputeHeaderNames(sheet.getRow(HEADER_ROW));
 		for (int row = HEADER_ROW+1; row < sheet.getRows(); row++) {

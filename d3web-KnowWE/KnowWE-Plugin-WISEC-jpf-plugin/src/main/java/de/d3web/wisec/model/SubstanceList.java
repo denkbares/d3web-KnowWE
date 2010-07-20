@@ -7,6 +7,8 @@ import java.util.Map;
 
 
 public class SubstanceList {
+
+	public String id;
 	public String name;
 	public List<String> attributes = new ArrayList<String>();
 	public List<Substance> substances = new ArrayList<Substance>();
@@ -14,8 +16,8 @@ public class SubstanceList {
 	public String filename = "";
 	public UpperList upperList;
 	
-	public SubstanceList(String listname) {
-		this.name = listname;
+	public SubstanceList(String id) {
+		this.id = id;
 	}
 	
 	public void add(Substance substance) {

@@ -41,7 +41,7 @@ import de.d3web.wisec.writers.WISECWriter;
  */
 public class WISECExcelConverter {
 	// The master database file, that is the input of all knowledge
-	public static String WISEC_FILE = "20100715_WISEC.xls";
+	public static String WISEC_FILE = "20100720_WISECv2.xls";
 	// The directory of the master database file
 	public static String workspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
@@ -54,9 +54,9 @@ public class WISECExcelConverter {
 	// Include semantic annotations etc. in the generation process
 	public static boolean GENERATE_WITH_KNOWLEDGE = true;
 	// Minimum number of occurrences of a substance, that is required before it is considered for the model
-	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
+	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
 	// 9min
-	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
+	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
 	// 30min
 	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 5; // takes
 	// 110min
@@ -65,7 +65,7 @@ public class WISECExcelConverter {
 	public static final int maxListsToConvert = 1000000;
 	
 	// Excel identifier for the numbers
-	public static final String NUMBER_KEY = "LfdNr";
+	public static final String NUMBER_KEY = "ID";
 	
 	
 	public static void main(String[] args) throws BiffException, IOException {
@@ -138,7 +138,8 @@ public class WISECExcelConverter {
 		ScoringWeightsConfiguration config1 = new ScoringWeightsConfiguration();
 		config1.setName("PBT Substances");
 		config1.setWeights(new String[] {
-				"P", "3", "B", "3", "Aqua_Tox", "3", "Multiple_Tox", "1", "EDC", "-1", "CMR", "-1", 
+				"Persistence", "3", "Bioakumulation_Potential", "3", "Aqua_Tox", "3",
+				"Multiple_Tox", "1", "EDC", "-1", "CMR", "-1",
 				"LRT", "2", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
 			});
 		SubstanceRatingListWriter pbtSubstances = new SubstanceRatingListWriter(model, outputDirectory);
@@ -149,9 +150,11 @@ public class WISECExcelConverter {
 		ScoringWeightsConfiguration config2 = new ScoringWeightsConfiguration();
 		config2.setName("vPvB Substances");
 		config2.setWeights(new String[] {
-				"P", "3", "B", "3", "Aqua_Tox", "0", "Multiple_Tox", "0", "EDC", "-1", "CMR", "-1", 
+				"Persistence", "3", "Bioakumulation_Potential", "3", "Aqua_Tox", "0",
+				"Multiple_Tox", "0", "EDC", "-1", "CMR", "-1",
 				"LRT", "3", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
 			});
+
 		SubstanceRatingListWriter vPvB = new SubstanceRatingListWriter(model, outputDirectory);
 		vPvB.setConfiguration(config2);
 		writers.add(vPvB);
@@ -160,9 +163,11 @@ public class WISECExcelConverter {
 		ScoringWeightsConfiguration config3 = new ScoringWeightsConfiguration();
 		config3.setName("EDC Substances");
 		config3.setWeights(new String[] {
-				"P", "0", "B", "0", "Aqua_Tox", "0", "Multiple_Tox", "0", "EDC", "3", "CMR", "-1", 
+				"Persistence", "0", "Bioakumulation_Potential", "0", "Aqua_Tox", "0",
+				"Multiple_Tox", "0", "EDC", "3", "CMR", "-1",
 				"LRT", "0", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
 			});
+
 		SubstanceRatingListWriter edcSubstances = new SubstanceRatingListWriter(model, outputDirectory);
 		edcSubstances.setConfiguration(config3);
 		writers.add(edcSubstances);
@@ -171,9 +176,11 @@ public class WISECExcelConverter {
 		ScoringWeightsConfiguration config4 = new ScoringWeightsConfiguration();
 		config4.setName("CMR Substances");
 		config4.setWeights(new String[] {
-				"P", "0", "B", "0", "Aqua_Tox", "0", "Multiple_Tox", "0", "EDC", "0", "CMR", "3", 
+				"Persistence", "0", "Bioakumulation_Potential", "0", "Aqua_Tox", "0",
+				"Multiple_Tox", "0", "EDC", "0", "CMR", "3",
 				"LRT", "0", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
 			});
+
 		SubstanceRatingListWriter cmrSubstances = new SubstanceRatingListWriter(model, outputDirectory);
 		cmrSubstances.setConfiguration(config4);
 		writers.add(cmrSubstances);
@@ -182,9 +189,11 @@ public class WISECExcelConverter {
 		ScoringWeightsConfiguration config5 = new ScoringWeightsConfiguration();
 		config5.setName("Toxic Substances");
 		config5.setWeights(new String[] {
-				"P", "0", "B", "0", "Aqua_Tox", "3", "Multiple_Tox", "3", "EDC", "2", "CMR", "0", 
+				"Persistence", "0", "Bioakumulation_Potential", "0", "Aqua_Tox", "3",
+				"Multiple_Tox", "3", "EDC", "2", "CMR", "0",
 				"LRT", "0", "Climatic_Change", "0", "Risk_related", "0", "Political", "1", "Exposure", "2"
 			});
+
 		SubstanceRatingListWriter toxicSubstances = new SubstanceRatingListWriter(model, outputDirectory);
 		toxicSubstances.setConfiguration(config5);
 		writers.add(toxicSubstances);

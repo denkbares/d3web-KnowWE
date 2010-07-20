@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class UpperList {
 	Map<String, String> attributes = new LinkedHashMap<String, String>();
-	private Collection<SubstanceList> children = new LinkedList<SubstanceList>();
+	private final Collection<SubstanceList> children = new LinkedList<SubstanceList>();
 	public String filename = "";
 	
 	public void add(String attribute, String value) {
@@ -31,7 +31,7 @@ public class UpperList {
 	}
 	
 	public String getName() {
-		return get("Inhalt");
+		return get("Name");
 	}
 
 	public Collection<String> getAttributes() {

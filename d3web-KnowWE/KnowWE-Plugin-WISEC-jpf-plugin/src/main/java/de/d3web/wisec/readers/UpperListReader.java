@@ -11,6 +11,7 @@ import jxl.Workbook;
 import de.d3web.wisec.model.UpperList;
 import de.d3web.wisec.model.WISECModel;
 
+@Deprecated
 public class UpperListReader extends WISECReader {
 	public static String SHEETNAME = "ListenListe";
 	public Map<String, String> criteria = new LinkedHashMap<String, String>();
