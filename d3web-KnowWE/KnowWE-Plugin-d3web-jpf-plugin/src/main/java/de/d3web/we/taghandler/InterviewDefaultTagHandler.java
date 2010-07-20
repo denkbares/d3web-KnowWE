@@ -33,7 +33,7 @@ public class InterviewDefaultTagHandler extends AbstractTagHandler {
 	public InterviewDefaultTagHandler() {
 		super("interview");
 
-		KnowWERessourceLoader.getInstance().add("defaultInterview.css",
+		KnowWERessourceLoader.getInstance().add("interview.css",
 				KnowWERessourceLoader.RESOURCE_STYLESHEET);
 	}
 

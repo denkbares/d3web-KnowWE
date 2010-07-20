@@ -9,6 +9,7 @@ Table of content
 (7) Plugin KnowObjectTypeActivator
 (8) Plugin Testsuite
 (9) Plugin TemplateTagHandler
+(10) Default Interview
 
 used colors
 #D2D2D2 ~ even tbl column color
@@ -875,4 +876,17 @@ div.collapsible-questiontree ul .pointer{
 
 .answerSet {
 	border: 1px solid #777;
+}
+
+
+
+/* ################################################## */
+/* --------------- Interview Styling ---------------- */
+/* ################################################## */
+
+
+/* dont display a header for the faq plugin */
+
+#interview h3{
+	color: red;
 }
