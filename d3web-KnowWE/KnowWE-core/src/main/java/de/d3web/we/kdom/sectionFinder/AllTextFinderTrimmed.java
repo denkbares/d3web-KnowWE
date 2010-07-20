@@ -3,6 +3,7 @@ package de.d3web.we.kdom.sectionFinder;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -19,7 +20,7 @@ public class AllTextFinderTrimmed extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 
 		String trimmed = text.trim();

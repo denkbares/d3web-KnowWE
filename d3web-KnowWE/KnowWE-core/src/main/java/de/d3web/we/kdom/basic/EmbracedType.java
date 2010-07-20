@@ -42,7 +42,7 @@ public class EmbracedType extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
+				Section father, KnowWEObjectType type) {
 			String trimmed = text.trim();
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			if (steal) {
@@ -51,7 +51,7 @@ public class EmbracedType extends DefaultAbstractKnowWEObjectType {
 							+ start.length(), trimmed.indexOf(end) + 1
 							- end.length());
 					List<SectionFinderResult> lookAheadSections = bodyType
-							.getSectioner().lookForSections(body, father);
+							.getSectioner().lookForSections(body, father, type);
 					if (lookAheadSections != null
 							&& lookAheadSections.size() > 0) {
 						result.add(new SectionFinderResult(text.indexOf(start),
@@ -65,7 +65,7 @@ public class EmbracedType extends DefaultAbstractKnowWEObjectType {
 					String body = trimmed.substring(start.length(), trimmed
 							.length()
 							- end.length());
-					List<SectionFinderResult> lookAheadSections = bodyType.getSectioner().lookForSections(body, father);
+					List<SectionFinderResult> lookAheadSections = bodyType.getSectioner().lookForSections(body, father, type);
 					if (lookAheadSections != null && lookAheadSections.size() > 0) {
 						result.add(new SectionFinderResult(text.indexOf(trimmed),
 								text.indexOf(trimmed) + trimmed.length()));

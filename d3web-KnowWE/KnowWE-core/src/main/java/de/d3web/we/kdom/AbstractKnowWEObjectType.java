@@ -384,6 +384,11 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		return this.getClass().getSimpleName();
 	}
 
+	
+	/**
+	 * use normal constructor!
+	 */
+	@Deprecated
 	protected abstract void init();
 
 	/*

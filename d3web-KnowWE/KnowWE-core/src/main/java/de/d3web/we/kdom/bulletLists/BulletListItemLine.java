@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -28,7 +29,7 @@ public class BulletListItemLine extends DefaultAbstractKnowWEObjectType {
 		@SuppressWarnings("unchecked")
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
+				Section father, KnowWEObjectType type) {
 				
 				
 			String lineRegex = "\\r?\\n";

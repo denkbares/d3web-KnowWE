@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -24,7 +25,7 @@ public class EmbraceEnd extends DefaultAbstractKnowWEObjectType {
 		
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
+				Section father, KnowWEObjectType type) {
 			
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			if(text.endsWith(end)) {

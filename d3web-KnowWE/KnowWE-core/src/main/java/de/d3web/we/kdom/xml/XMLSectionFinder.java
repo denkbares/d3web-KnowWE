@@ -103,7 +103,7 @@ public class XMLSectionFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 		
 		
 		Matcher tagMatcher = tagPattern.matcher(text);
@@ -204,7 +204,7 @@ public class XMLSectionFinder extends SectionFinder {
 	public static void main(String[] args) {
 		TestSectionFinder finder = new XMLSectionFinder(null).new TestSectionFinder(null, "include");
 		String text = "<include src='test' />";
-		List<SectionFinderResult> results= finder.lookForSections(text, null);
+		List<SectionFinderResult> results= finder.lookForSections(text, null, null);
 		
 		for (SectionFinderResult result:results) {
 			System.out.println("#######+++++++");

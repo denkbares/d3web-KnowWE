@@ -20,6 +20,9 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
+import java.util.List;
+
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -30,6 +33,7 @@ import de.d3web.we.kdom.Section;
  * @author Jochen
  * 
  */
+
 public class StringSectionFinder extends AbstractSingleResultFinder {
 
 	private final String string;
@@ -45,7 +49,7 @@ public class StringSectionFinder extends AbstractSingleResultFinder {
 	}
 
 	@Override
-	public SectionFinderResult lookForSection(String text, Section father) {
+	public SectionFinderResult lookForSection(String text, Section father, KnowWEObjectType type) {
 
 		int index;
 
@@ -60,5 +64,7 @@ public class StringSectionFinder extends AbstractSingleResultFinder {
 
 		return new SectionFinderResult(index, index + string.length());
 	}
+
+
 
 }

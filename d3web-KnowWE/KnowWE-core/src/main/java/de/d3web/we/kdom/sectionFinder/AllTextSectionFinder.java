@@ -22,6 +22,7 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -34,7 +35,7 @@ public class AllTextSectionFinder extends SectionFinder {
 
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 		if (text.length() > 0) {
 			return SectionFinderResult.createSingleItemList(new SectionFinderResult(0,
 					text.length()));

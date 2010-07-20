@@ -157,7 +157,7 @@ public class Sectionizer {
 
 				// find the sub-sections
 				List<SectionFinderResult> results = finder.lookForSections(secText,
-						father);
+						father,ob);
 
 				if (results == null) {
 					thisSection = nextSection;

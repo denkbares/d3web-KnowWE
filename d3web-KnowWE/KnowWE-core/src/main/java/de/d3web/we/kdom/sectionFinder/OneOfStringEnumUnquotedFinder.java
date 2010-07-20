@@ -2,6 +2,7 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.MultiSectionFinder;
 import de.d3web.we.kdom.Section;
 
@@ -24,7 +25,7 @@ public class OneOfStringEnumUnquotedFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
-		return msf.lookForSections(text, father);
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		return msf.lookForSections(text, father, type);
 	}
 }

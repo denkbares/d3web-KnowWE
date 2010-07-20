@@ -2,6 +2,7 @@ package de.d3web.we.kdom.sectionFinder;
 
 import java.util.List;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -21,9 +22,9 @@ public class MatchUntilEndFinder extends SectionFinder {
 
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 
-		SectionFinderResult res = startFinder.lookForSection(text, father);
+		SectionFinderResult res = startFinder.lookForSection(text, father,type);
 		if (res != null) {
 			return SectionFinderResult.createSingleItemResultList(res.getStart(),
 					text.length());

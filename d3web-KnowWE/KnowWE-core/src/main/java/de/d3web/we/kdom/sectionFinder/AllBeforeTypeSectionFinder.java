@@ -18,13 +18,13 @@ public class AllBeforeTypeSectionFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 		// note this indexOf call is unsafe - wrong matches are caught by SingelChildConstraint
 		Section s = father.getChildSectionAtPosition(father.getOriginalText().indexOf(
 				text)
 				+ text.length());
 		if(s != null && s.getObjectType().getName().equals(markerType.getName())) {
-			return allTextFinderTrimmed.lookForSections(text, father);
+			return allTextFinderTrimmed.lookForSections(text, father, type);
 		}
 
 		return null;

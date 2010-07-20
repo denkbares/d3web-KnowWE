@@ -23,6 +23,7 @@ package de.d3web.we.kdom.sectionFinder;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SectionFinderConstraint;
 
@@ -59,10 +60,11 @@ public abstract class SectionFinder {
 	 * If no interesting section is found in a passed fragment, return 'null' or an array of length 0; 
 	 * @param text Text fragment of the wiki article source
 	 * @param father TODO
+	 * @param type TODO
 	 * @return List of SectionFinderResults with informations about what part of the next belongs
 	 * to the ObjectType calling the SectionFinder
 	 */
 	public abstract List<SectionFinderResult> lookForSections(
-			String text, Section<?> father);
+			String text, Section<?> father, KnowWEObjectType type);
 
 }

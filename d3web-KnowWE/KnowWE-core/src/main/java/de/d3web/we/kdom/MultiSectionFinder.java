@@ -61,12 +61,12 @@ public class MultiSectionFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
 		
 		//  iterates all finders and gathers together all SectionFinderResults
 		for (SectionFinder finder : finders) {
-			List<SectionFinderResult> singleResult = finder.lookForSections(text, father);
+			List<SectionFinderResult> singleResult = finder.lookForSections(text, father, type);
 			if(singleResult != null) {
 				results.addAll(singleResult);
 			}

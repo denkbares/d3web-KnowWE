@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.NothingRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -46,7 +47,7 @@ public class XMLTail extends DefaultAbstractKnowWEObjectType {
 	public class XMLTailSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text2, Section father) {
+		public List<SectionFinderResult> lookForSections(String text2, Section father, KnowWEObjectType type) {
 
 			if (father.getObjectType() instanceof AbstractXMLObjectType) {
 				String text = AbstractXMLObjectType.getAttributeMapFor(father).get(AbstractXMLObjectType.TAIL);
