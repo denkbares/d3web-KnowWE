@@ -162,6 +162,10 @@ public class SubstanceListWriter extends WISECWriter {
 				criteriaString += criteria + "=" + value + ", ";
 			}
 		}
+		if (criteriaString.length() < 2) {
+			System.out.println(list.name); // TODO: RemoveMe
+			return criteriaString;
+		}
 		return criteriaString.substring(0, criteriaString.length() - 2);
 	}
 

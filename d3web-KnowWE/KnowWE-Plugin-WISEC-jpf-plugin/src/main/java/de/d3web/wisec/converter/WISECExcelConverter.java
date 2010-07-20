@@ -10,9 +10,9 @@ import java.util.List;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import de.d3web.wisec.model.WISECModel;
-import de.d3web.wisec.readers.SubstanceListsReader;
-import de.d3web.wisec.readers.UpperListReader;
 import de.d3web.wisec.readers.WISECReader;
+import de.d3web.wisec.readersnew.SubstanceListsReader;
+import de.d3web.wisec.readersnew.UpperListReader;
 import de.d3web.wisec.scoring.ScoringWeightsConfiguration;
 import de.d3web.wisec.writers.OverviewWriter;
 import de.d3web.wisec.writers.RatingOverviewWriter;
@@ -41,23 +41,27 @@ import de.d3web.wisec.writers.WISECWriter;
  */
 public class WISECExcelConverter {
 	// The master database file, that is the input of all knowledge
-	public static String WISEC_FILE               = "WISEC.xls";
+	public static String WISEC_FILE = "20100715_WISEC.xls";
 	// The directory of the master database file
-	public static String workspace                = "/Users/joba/Documents/Projekte/WISEC/DB/";
+	public static String workspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
-	public static String wikiworkspace            = "/Users/joba/wikirepositories/wikicontent/";
+	public static String wikiworkspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/Treshold-40/";
 	// Praefix of most of the generated files
 	public static final String FILE_PRAEFIX = "WI_";
 
 	// Name of the column that identifies the name of a substance 
 	public static String SUBSTANCE_IDENTIFIER     = "SGN";
 	// Include semantic annotations etc. in the generation process
-	public static boolean GENERATE_WITH_KNOWLEDGE = false;
+	public static boolean GENERATE_WITH_KNOWLEDGE = true;
 	// Minimum number of occurrences of a substance, that is required before it is considered for the model
-	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes 9min
-//	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes 30min
+	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
+	// 9min
+	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
+	// 30min
+	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 5; // takes
+	// 110min
 	// The generation of lists is limited by the maxListsToConvert threshold 
-//	public static final int maxListsToConvert = 10;
+	// public static final int maxListsToConvert = 10;
 	public static final int maxListsToConvert = 1000000;
 	
 	// Excel identifier for the numbers

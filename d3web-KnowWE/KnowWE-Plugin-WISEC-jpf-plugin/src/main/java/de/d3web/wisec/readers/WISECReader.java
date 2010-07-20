@@ -1,7 +1,7 @@
 package de.d3web.wisec.readers;
 
-import de.d3web.wisec.model.WISECModel;
 import jxl.Workbook;
+import de.d3web.wisec.model.WISECModel;
 
 /**
  * General interface for all readers, that load knowledge from the 
@@ -10,7 +10,8 @@ import jxl.Workbook;
  *
  */
 public abstract class WISECReader {
-	Workbook workbook;
+
+	protected Workbook workbook;
 	
 	public WISECReader(Workbook workbook) {
 		this.workbook = workbook;
