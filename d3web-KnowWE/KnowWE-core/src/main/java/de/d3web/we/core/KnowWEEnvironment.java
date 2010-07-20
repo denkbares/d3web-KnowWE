@@ -592,15 +592,15 @@ public class KnowWEEnvironment {
 	/**
 	 * Called from the Wikiplugin when article is saved. Parses and updates
 	 * inner knowledge representation of KnowWE2
-	 *
-	 * @param username
-	 * @param content
-	 * @param topic
-	 * @param web
-	 * @return
 	 */
 	public String processAndUpdateArticle(String username, String content,
 			String topic, String web) {
+		return processAndUpdateArticle(username, content, topic, web, false);
+
+	}
+
+	public String processAndUpdateArticle(String username, String content,
+			String topic, String web, boolean fullParse) {
 
 		// create article with the new content
 		KnowWEArticle article = new KnowWEArticle(content, topic, KnowWEEnvironment
