@@ -24,7 +24,7 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.objects.AnswerDef;
+import de.d3web.we.kdom.objects.AnswerDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
@@ -76,7 +76,7 @@ public class InlineChoiceAnswerDefinition extends DefaultAbstractKnowWEObjectTyp
 	 * @author Jochen
 	 * 
 	 */
-	class InlineAnswerDef extends AnswerDef {
+	class InlineAnswerDef extends AnswerDefinition {
 
 
 		@Override

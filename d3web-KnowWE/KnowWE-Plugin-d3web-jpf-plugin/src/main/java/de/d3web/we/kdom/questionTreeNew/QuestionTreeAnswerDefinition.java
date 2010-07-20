@@ -20,9 +20,9 @@
 
 package de.d3web.we.kdom.questionTreeNew;
 
-import de.d3web.we.kdom.objects.AnswerDef;
+import de.d3web.we.kdom.objects.AnswerDefinition;
 
-public class QuestionTreeAnswerDefinition extends AnswerDef {
+public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 
 
 }

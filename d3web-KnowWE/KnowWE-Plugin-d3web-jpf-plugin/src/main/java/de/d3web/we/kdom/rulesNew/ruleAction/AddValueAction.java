@@ -28,7 +28,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.objects.AnswerRef;
+import de.d3web.we.kdom.objects.AnswerReference;
 import de.d3web.we.kdom.objects.AnswerReferenceImpl;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -113,7 +113,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			this.childrenTypes.add(equals);
 			this.childrenTypes.add(qr);
 
-			AnswerRef a = new AnswerReferenceImpl();
+			AnswerReference a = new AnswerReferenceImpl();
 			a.setSectionFinder(new AllTextFinderTrimmed());
 			this.childrenTypes.add(a);
 			this.sectionFinder = new AllTextFinderTrimmed();
@@ -123,7 +123,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 		public PSAction getAction(KnowWEArticle article, Section<NumericalAddValueAction> s) {
 			Section<QuestionReference> qref = s.findSuccessor(QuestionReference.class);
 			Question q = qref.get().getTermObject(article, qref);
-			Section<AnswerRef> aref = s.findSuccessor(AnswerRef.class);
+			Section<AnswerReference> aref = s.findSuccessor(AnswerReference.class);
 			Choice c = aref.get().getTermObject(article, aref);
 
 			if (q != null && c != null) {

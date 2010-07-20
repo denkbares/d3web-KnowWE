@@ -10,18 +10,18 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementDef;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementDefinition;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.terminology.TerminologyManager;
+import de.d3web.we.utils.KnowWEUtils;
 
-public abstract class AnswerDef extends QuestionTreeElementDef<Choice> {
+public abstract class AnswerDefinition extends QuestionTreeElementDefinition<Choice> {
 
-	public AnswerDef() {
+	public AnswerDefinition() {
 		super("ANSWER_STORE_KEY");
 		this.addSubtreeHandler(Priority.HIGH, new CreateAnswerHandler());
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
@@ -30,20 +30,20 @@ public abstract class AnswerDef extends QuestionTreeElementDef<Choice> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Section<? extends QuestionDef> retrieveAndStoreParentQASetSection(
-			Section<? extends QuestionTreeElementDef<?>> s) {
-		return (Section<? extends QuestionDef>) super.retrieveAndStoreParentQASetSection(s);
+	public Section<? extends QuestionDefinition> retrieveAndStoreParentQASetSection(
+			Section<? extends QuestionTreeElementDefinition<?>> s) {
+		return (Section<? extends QuestionDefinition>) super.retrieveAndStoreParentQASetSection(s);
 	}
 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public String getTermName(Section<? extends TermReference<Choice>> s) {
+	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
 
-		Section<? extends AnswerDef> sa;
+		Section<? extends AnswerDefinition> sa;
 
-		if (s.get() instanceof AnswerDef) {
-			sa = (Section<? extends AnswerDef>) s;
+		if (s.get() instanceof AnswerDefinition) {
+			sa = (Section<? extends AnswerDefinition>) s;
 		}
 		else {
 			return super.getTermName(s);
@@ -64,10 +64,10 @@ public abstract class AnswerDef extends QuestionTreeElementDef<Choice> {
 		return question + " " + answer;
 	}
 
-	static class CreateAnswerHandler extends QuestionTreeElementDefSubtreeHandler<AnswerDef> {
+	static class CreateAnswerHandler extends QuestionTreeElementDefSubtreeHandler<AnswerDefinition> {
 
 		@Override
-		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnswerDef> answerSection) {
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AnswerDefinition> answerSection) {
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
@@ -76,10 +76,10 @@ public abstract class AnswerDef extends QuestionTreeElementDef<Choice> {
 				name = name.substring(1, name.length() - 1).trim();
 			}
 
-			Section<? extends QuestionDef> questionID = answerSection
+			Section<? extends QuestionDefinition> questionID = answerSection
 					.get().retrieveAndStoreParentQASetSection(answerSection);
 
-			Question q = questionID.get().getObject(article, questionID);
+			Question q = questionID.get().getTermObject(article, questionID);
 
 			if (q instanceof QuestionChoice) {
 
@@ -99,10 +99,10 @@ public abstract class AnswerDef extends QuestionTreeElementDef<Choice> {
 				else {
 					Choice a = mgn.addChoiceAnswer((QuestionChoice) q, name);
 
-					TerminologyManager.getInstance().registerTermDef(
+					KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermDefinition(
 							article, answerSection);
 
-					answerSection.get().storeObject(article, answerSection, a);
+					answerSection.get().storeTermObject(article, answerSection, a);
 
 					return Arrays.asList((KDOMReportMessage) new NewObjectCreated(
 							a.getClass().getSimpleName() + "  "
@@ -116,9 +116,9 @@ public abstract class AnswerDef extends QuestionTreeElementDef<Choice> {
 
 
 		@Override
-		public void destroy(KnowWEArticle article, Section<AnswerDef> s) {
+		public void destroy(KnowWEArticle article, Section<AnswerDefinition> s) {
 			// s.get().retrieveAndStoreParentQASetSection(s);
-			TerminologyManager.getInstance().unregisterTermDef(article, s);
+			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(article, s);
 		}
 	}
 

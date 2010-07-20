@@ -13,21 +13,21 @@ import de.d3web.we.utils.KnowWEUtils;
 
 
 
-public abstract class AnswerRef extends D3webObjectRef<Choice> {
+public abstract class AnswerReference extends D3webTermReference<Choice> {
 
-	public AnswerRef() {
+	public AnswerReference() {
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Choice getObjectFallback(KnowWEArticle article, Section<? extends
-			ObjectRef<Choice>> s) {
+	public Choice getTermObjectFallback(KnowWEArticle article, Section<? extends
+			TermReference<Choice>> s) {
 
-		if (s.get() instanceof AnswerRef) {
-			Section<AnswerRef> sec = (Section<AnswerRef>) s;
+		if (s.get() instanceof AnswerReference) {
+			Section<AnswerReference> sec = (Section<AnswerReference>) s;
 
-			Section<QuestionRef> ref = sec.get().getQuestionSection(sec);
+			Section<QuestionReference> ref = sec.get().getQuestionSection(sec);
 			String questionName = ref.get().getTermName(ref);
 
 			String answerName = KnowWEUtils.trimAndRemoveQuotes(sec.getOriginalText());
@@ -57,16 +57,16 @@ public abstract class AnswerRef extends D3webObjectRef<Choice> {
 	 * @param s
 	 * @return
 	 */
-	public abstract Section<QuestionRef> getQuestionSection(Section<? extends AnswerRef> s);
+	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s);
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public String getTermName(Section<? extends TermReference<Choice>> s) {
+	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
 
-		Section<? extends AnswerRef> sa;
+		Section<? extends AnswerReference> sa;
 
-		if (s.get() instanceof AnswerRef) {
-			sa = (Section<? extends AnswerRef>) s;
+		if (s.get() instanceof AnswerReference) {
+			sa = (Section<? extends AnswerReference>) s;
 		}
 		else {
 			return super.getTermName(s);

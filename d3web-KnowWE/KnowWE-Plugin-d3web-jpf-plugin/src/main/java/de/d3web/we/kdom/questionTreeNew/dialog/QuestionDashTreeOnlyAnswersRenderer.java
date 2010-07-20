@@ -39,7 +39,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashSubtree;
-import de.d3web.we.kdom.objects.AnswerDef;
+import de.d3web.we.kdom.objects.AnswerDefinition;
 import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementContent;
 import de.d3web.we.kdom.rendering.CustomRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
@@ -173,7 +173,7 @@ public class QuestionDashTreeOnlyAnswersRenderer extends CustomRenderer {
 
 			NamedObject o = kbm.findQuestion(name);
 
-			Section<AnswerDef> answerSec = section.findSuccessor(AnswerDef.class);
+			Section<AnswerDefinition> answerSec = section.findSuccessor(AnswerDefinition.class);
 			Choice c = null;
 
 			 MMInfoStorage mminfo = null;

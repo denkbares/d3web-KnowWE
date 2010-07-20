@@ -30,7 +30,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
-import de.d3web.we.kdom.objects.AnswerRef;
+import de.d3web.we.kdom.objects.AnswerReference;
 import de.d3web.we.kdom.objects.AnswerReferenceImpl;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -69,7 +69,7 @@ public class Finding extends D3webTerminalCondition<Finding> {
 		this.childrenTypes.add(question);
 
 		// answer
-		AnswerRef answer = new AnswerReferenceImpl();
+		AnswerReference answer = new AnswerReferenceImpl();
 		answer.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(answer);
 	}
@@ -79,7 +79,7 @@ public class Finding extends D3webTerminalCondition<Finding> {
 
 		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
 
-		Section<AnswerRef> aRef = s.findSuccessor(AnswerRef.class);
+		Section<AnswerReference> aRef = s.findSuccessor(AnswerReference.class);
 
 		if (qRef != null && aRef != null) {
 			Choice answer = aRef.get().getTermObject(article, aRef);

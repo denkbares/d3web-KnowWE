@@ -29,7 +29,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.rules.ruleActionLine.Equals;
-import de.d3web.we.kdom.objects.AnswerRef;
+import de.d3web.we.kdom.objects.AnswerReference;
 import de.d3web.we.kdom.objects.AnswerReferenceImpl;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
@@ -53,7 +53,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		this.childrenTypes.add(equals);
 		this.childrenTypes.add(qr);
 
-		AnswerRef a = new AnswerReferenceImpl();
+		AnswerReference a = new AnswerReferenceImpl();
 		a.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(a);
 
@@ -135,7 +135,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	public PSAction getAction(KnowWEArticle article, Section<SetQuestionValue> s) {
 		Section<QuestionReference> qref = s.findSuccessor(QuestionReference.class);
 		Question q = qref.get().getTermObject(article, qref);
-		Section<AnswerRef> aref = s.findSuccessor(AnswerRef.class);
+		Section<AnswerReference> aref = s.findSuccessor(AnswerReference.class);
 		Choice c = aref.get().getTermObject(article, aref);
 
 		if (q != null && c != null) {
