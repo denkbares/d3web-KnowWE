@@ -13,6 +13,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
@@ -29,7 +30,7 @@ public abstract class ConceptFinder extends SectionFinder {
 	private Set<String> objectNames = null;
 	
 	@Override
-	public List<SectionFinderResult> lookForSections(String arg0, Section arg1) {
+	public List<SectionFinderResult> lookForSections(String arg0, Section arg1, KnowWEObjectType type) {
 		
 		
 		String text = arg0;
