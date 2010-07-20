@@ -27,10 +27,10 @@ import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
-public class InterviewDefaultTagHandler extends AbstractTagHandler {
+public class QuickInterviewTagHandler extends AbstractTagHandler {
 
 
-	public InterviewDefaultTagHandler() {
+	public QuickInterviewTagHandler() {
 		super("interview");
 
 		KnowWERessourceLoader.getInstance().add("interview.css",
@@ -47,7 +47,7 @@ public class InterviewDefaultTagHandler extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
 
-		String iv = RefreshHTMLDialogAction.callInterviewRenderer(topic, user.getUsername(),
+		String iv = RefreshHTMLDialogAction.callQuickInterviewRenderer(topic, user.getUsername(),
 				user.getHttpRequest(), web);
 		if (iv == null) return null;
 

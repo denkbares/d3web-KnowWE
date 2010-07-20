@@ -328,11 +328,11 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="InterviewDefaultTagHandler">
+		id="QuickInterviewTagHandler">
 		<parameter id="class"
-			value="de.d3web.we.taghandler.InterviewDefaultTagHandler" />
-		<parameter id="name" value="InterviewDefaultTagHandler" />
-		<parameter id="description" value="TagHandler InterviewDefaultTagHandler" />
+			value="de.d3web.we.taghandler.QuickInterviewTagHandler" />
+		<parameter id="name" value="QuickInterviewTagHandler" />
+		<parameter id="description" value="TagHandler QuickInterviewTagHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="KnowWE-plugin-d3web.js" />

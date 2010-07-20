@@ -47,7 +47,7 @@ import de.d3web.core.session.Session;
  * @author meggy
  * @created 20.07.2010
  */
-public class HTMLInterviewRenderer {
+public class QuickInterviewRenderer {
 
 	/**
 	 * Assembles and returns the HTML representation of the interview.
@@ -107,7 +107,7 @@ public class HTMLInterviewRenderer {
 	private static String getInterviewPluginHeader() {
 		StringBuffer html = new StringBuffer();
 		html.append("<h3>");
-		html.append("Interview");
+		html.append("Quick Interview");
 		html.append("</h3>");
 		return html.toString();
 	}

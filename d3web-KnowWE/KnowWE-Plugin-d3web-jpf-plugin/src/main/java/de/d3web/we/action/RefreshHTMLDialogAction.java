@@ -34,7 +34,7 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.d3webModule.HTMLDialogRenderer;
-import de.d3web.we.d3webModule.HTMLInterviewRenderer;
+import de.d3web.we.d3webModule.QuickInterviewRenderer;
 
 public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 
@@ -100,7 +100,7 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 	 * @param web
 	 * @return
 	 */
-	public static String callInterviewRenderer(String topic, String user, HttpServletRequest request, String web) {
+	public static String callQuickInterviewRenderer(String topic, String user, HttpServletRequest request, String web) {
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(request);
 
@@ -120,7 +120,7 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 
 		if (serviceSession instanceof D3webKnowledgeServiceSession) {
 			session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
-			return HTMLInterviewRenderer.renderInterview(session, web);
+			return QuickInterviewRenderer.renderInterview(session, web);
 		}
 
 		if (serviceSession == null) {
@@ -129,7 +129,7 @@ public class RefreshHTMLDialogAction extends DeprecatedAbstractKnowWEAction {
 			serviceSession = broker.getSession().getServiceSession(kbid);
 			if (serviceSession instanceof D3webKnowledgeServiceSession) {
 				session = ((D3webKnowledgeServiceSession) serviceSession).getSession();
-				return HTMLInterviewRenderer.renderInterview(session, web);
+				return QuickInterviewRenderer.renderInterview(session, web);
 			}
 		}
 
