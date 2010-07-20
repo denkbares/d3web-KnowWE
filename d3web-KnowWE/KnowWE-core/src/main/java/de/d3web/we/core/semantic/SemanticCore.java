@@ -543,7 +543,7 @@ public class SemanticCore implements ISemanticCore {
 				}
 			}
 		}
-		statementcache.remove(art.getName());
+		statementcache.remove(art.getTitle());
 
 	}
 

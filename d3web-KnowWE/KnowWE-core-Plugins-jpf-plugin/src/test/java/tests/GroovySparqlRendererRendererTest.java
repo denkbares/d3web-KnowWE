@@ -95,6 +95,8 @@ public class GroovySparqlRendererRendererTest {
 		String result_is = KnowWEUtils.unmaskHTML(articleString.toString());
 		String result_should_be = "hallo";
 		assertEquals(result_should_be, result_is);
+		am.deleteArticle(am.getArticle("Tag1"));
+		am.deleteArticle(am.getArticle("Tag2"));
 	}
 
 }

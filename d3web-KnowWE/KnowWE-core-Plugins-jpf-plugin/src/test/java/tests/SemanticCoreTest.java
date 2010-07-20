@@ -143,6 +143,7 @@ public class SemanticCoreTest {
 		TaggingMangler tm = TaggingMangler.getInstance();
 		tm.addTag("Tag1", "tag", params);
 		am.saveUpdatedArticle(article1);
+		am.deleteArticle(am.getArticle("Tag1"));
 	}
 
 	@Test

@@ -111,7 +111,6 @@ public class TaggingMangler implements KnowWESearchProvider {
 		} else {
 			addNewTagSection(pagename, tag, params);
 		}
-		ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).saveUpdatedArticle(ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB).getArticle(pagename));
 	}
 
 	/**

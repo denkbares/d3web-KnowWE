@@ -62,6 +62,7 @@ public class TaggingManglerTest extends TestCase {
 	 * 
 	 * @see junit.framework.TestCase#setUp()
 	 */
+	@Override
 	@Before
 	public void setUp() throws Exception {
 		InitPluginManager.init();
