@@ -25,6 +25,7 @@ import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -63,9 +64,9 @@ class PropertyDetailsSectionFinder extends SectionFinder {
 	
 	@Override
 	public List<SectionFinderResult> lookForSections(String text,
-			Section father) {
+			Section father, KnowWEObjectType type) {
 		if(text.contains("-->")) {
-			return textFinder.lookForSections(text, father);
+			return textFinder.lookForSections(text, father, type);
 		}
 		return null;
 	}
@@ -75,7 +76,7 @@ class PropertyDetailsSectionFinder extends SectionFinder {
 class DomainFinder extends SectionFinder {
 	@Override
 	public List<SectionFinderResult> lookForSections(String text,
-			Section father) {
+			Section father, KnowWEObjectType type) {
 		if(text.contains(DomainRangeOperatorType.DOMAIN_RANGE_OPERATOR)) {
 			
 			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();

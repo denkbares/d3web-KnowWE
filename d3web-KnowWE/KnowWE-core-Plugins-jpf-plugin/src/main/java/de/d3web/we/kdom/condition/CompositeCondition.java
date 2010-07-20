@@ -296,12 +296,12 @@ class NegatedExpression extends NonTerminalCondition {
 		this.sectionFinder = new SectionFinder() {
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father) {
+			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 				String trimmed = text.trim();
 				for (String sign : NEG_SIGNS) {
 					if (trimmed.startsWith(sign)) {
 						return new AllTextFinderTrimmed().lookForSections(text,
-								father);
+								father,type);
 					}
 				}
 				return null;
@@ -321,7 +321,7 @@ class ConjunctSectionFinder extends SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section father) {
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 		Map<Integer, Integer> allFoundOps = new HashMap<Integer, Integer>();
 		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
 		for (String symbol : signs) {
@@ -372,7 +372,7 @@ class BracedConditionContent extends NonTerminalCondition {
 	class BracedConditionContentFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			String trimmed = text.trim();
 			int leadingSpaces = text.indexOf(trimmed);
 			if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {
@@ -415,7 +415,7 @@ class BracedCondition extends NonTerminalCondition {
 	 */
 	class EmbracedExpressionFinder extends SectionFinder {
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			String trimmed = text.trim();
 			int leadingSpaces = text.indexOf(trimmed);
 			int followingSpaces = text.length() - trimmed.length() - leadingSpaces;

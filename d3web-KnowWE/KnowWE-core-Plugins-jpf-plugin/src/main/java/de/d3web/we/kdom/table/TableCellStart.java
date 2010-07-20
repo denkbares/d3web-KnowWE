@@ -27,6 +27,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -54,7 +55,7 @@ public class TableCellStart extends DefaultAbstractKnowWEObjectType {
 	public class TableCellStartSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father)  {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type)  {
 			int index = text.indexOf("|") + 1;
 			if(index == -1) return null;
 

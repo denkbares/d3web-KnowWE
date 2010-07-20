@@ -37,6 +37,7 @@ import de.d3web.we.core.semantic.SemanticCore;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -65,7 +66,7 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
+				Section father, KnowWEObjectType type) {
 			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
 			Pattern p = Pattern.compile(PATTERN);
 			Matcher m = p.matcher(text);

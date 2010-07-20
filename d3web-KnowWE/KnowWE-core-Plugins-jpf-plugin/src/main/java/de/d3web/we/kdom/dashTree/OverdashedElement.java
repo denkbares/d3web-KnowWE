@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
@@ -57,7 +58,7 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new SectionFinder() {
 
 			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section father) {
+			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 				int level = -1;
 
 

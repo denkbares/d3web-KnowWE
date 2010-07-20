@@ -3,6 +3,7 @@ package de.d3web.we.kdom.dashTree;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.bulletLists.CommentRenderer;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -28,7 +29,7 @@ public class LineEndComment extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
+				Section father, KnowWEObjectType type) {
 
 			//looks for an unquoted occurrence of '//' and cuts off from this point 
 			int start = SplitUtility.indexOfUnquoted(text, "//");

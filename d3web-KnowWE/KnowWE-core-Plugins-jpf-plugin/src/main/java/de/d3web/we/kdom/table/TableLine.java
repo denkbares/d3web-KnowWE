@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -65,7 +66,7 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section father) {
+				Section father, KnowWEObjectType type) {
 			String lineRegex = ".+(\\r?\\n)";
 			Pattern linePattern = Pattern.compile(lineRegex, Pattern.MULTILINE);
 

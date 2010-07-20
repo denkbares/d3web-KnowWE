@@ -23,6 +23,7 @@ package tests;
 import java.util.List;
 
 import junit.framework.TestCase;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.LineSectionFinder;
@@ -56,7 +57,7 @@ public class KnowWESectionFinderTest extends TestCase {
 	
 	public void testAllTextFinder() {
 		String test = "asoflkoasklfolakso";
-		List<SectionFinderResult> results = new AllTextSectionFinder().lookForSections(test, null);
+		List<SectionFinderResult> results = new AllTextSectionFinder().lookForSections(test, null, null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, test.length(), results.get(0).getEnd());
@@ -83,7 +84,7 @@ public class KnowWESectionFinderTest extends TestCase {
 					+ " <=> swrc:asks:: Real mileage  /100km}}bla blub";
 		SemanticAnnotationProperty.AnnotationPropertySectionFinder f = 
 					new SemanticAnnotationProperty.AnnotationPropertySectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(test, null);
+		List<SectionFinderResult> results = f.lookForSections(test, null, null);
 
 		assertEquals(WRONG_FIRST_START, 45, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 56, results.get(0).getEnd());
@@ -109,7 +110,7 @@ public class KnowWESectionFinderTest extends TestCase {
 					+ " and there it goes not"
 					+ "perhaps it dont want to go \r\n";
 		SectionFinder f = new LineBreak().getSectioner();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null,null);
 		
 		assertEquals(WRONG_FIRST_START, 19, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 21, results.get(0).getEnd());
@@ -123,7 +124,7 @@ public class KnowWESectionFinderTest extends TestCase {
 			+ " and there it goes not"
 			+ "perhaps it dont want to go \r\n";
 		SectionFinder f = LineSectionFinder.getInstance();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null,null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 21, results.get(0).getEnd());
@@ -143,13 +144,13 @@ public class KnowWESectionFinderTest extends TestCase {
 	public void testRegexSectionFinder() {
 		String text = "<ME> is a ,bad, cruel bastard !! that !! </ME>";
 		RegexSectionFinder f = new RegexSectionFinder("[!!]+[ \\w ]+[!!]+", 0);
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 		
 		assertEquals(WRONG_FIRST_START, 30, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 40, results.get(0).getEnd());
 		
 		f = new RegexSectionFinder("[<ME>][\\w\\W]*[</ME>]", 0);
-		results = f.lookForSections(text, null);
+		results = f.lookForSections(text, null, null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 46, results.get(0).getEnd());
@@ -164,7 +165,7 @@ public class KnowWESectionFinderTest extends TestCase {
 					+ "so lets smoke! a cigarette. or two\n\r"
 					+ "and sing a mascarade.";
 		SentenceSectionFinder f = new SentenceSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 		
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 57, results.get(0).getEnd());
@@ -185,7 +186,7 @@ public class KnowWESectionFinderTest extends TestCase {
 	public void testStringSectionFinder() {
 		String text = " bla blublbu bla jetzt nicht bla";
 		StringSectionFinder f = new StringSectionFinder("bla");
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null,null);
 		
 		assertEquals(WRONG_FIRST_START, 1, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 4, results.get(0).getEnd());
@@ -207,7 +208,7 @@ public class KnowWESectionFinderTest extends TestCase {
 					+ "</Table>";
 
 		TableCell.TableCellSectionFinder f = new TableCell().new TableCellSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 		
 		assertEquals(WRONG_FIRST_START, 54, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 79, results.get(0).getEnd());
@@ -230,7 +231,7 @@ public class KnowWESectionFinderTest extends TestCase {
 					+ "</Table>";
 		TableCellStart.TableCellStartSectionFinder f =
 			new TableCellStart().new TableCellStartSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 		assertEquals(WRONG_FIRST_END, 55, results.get(0).getEnd());
 	}
@@ -243,7 +244,7 @@ public class KnowWESectionFinderTest extends TestCase {
 					+ "</Table>";
 		TableLine.TableLineSectionFinder f = 
 			new TableLine().new TableLineSectionFinder();
-		List<SectionFinderResult> results = f.lookForSections(text, null);
+		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 		
 //		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
 //		assertEquals(WRONG_FIRST_END, 55, results.get(0).getEnd());

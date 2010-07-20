@@ -74,7 +74,7 @@ public class XMLSectionFinderTest extends TestCase {
 		
 		// Test 1
 		f = new XMLSectionFinder("Start");
-		findings = f.lookForSections(content, artSec);
+		findings = f.lookForSections(content, artSec, null);
 		start = 0;
 		end = 254;
 		assertEquals("Element <Start> begin index wrong", start, findings.get(0).getStart());
@@ -82,7 +82,7 @@ public class XMLSectionFinderTest extends TestCase {
 		
 		// Test2
 		f = new XMLSectionFinder("SubSection");
-		findings = f.lookForSections(content, artSec);
+		findings = f.lookForSections(content, artSec, null);
 		start = 9;
 		end = 190;
 		assertEquals("Element <SubSection> begin index wrong", start, findings.get(0).getStart());
@@ -90,14 +90,14 @@ public class XMLSectionFinderTest extends TestCase {
 		
 		// Test3
 		f = new XMLSectionFinder("SubSubSection1");
-		findings = f.lookForSections(content, artSec);
+		findings = f.lookForSections(content, artSec, null);
 		start = 61;
 		end = 98;
 		assertEquals("Element <SubSubSection1> begin index wrong",start, findings.get(0).getStart());
 		assertEquals("Element <SubSubSection1> end index wrong", end, findings.get(0).getEnd());
 		
 		f = new XMLSectionFinder("SubSubSection2");
-		findings = f.lookForSections(content, artSec);
+		findings = f.lookForSections(content, artSec, null);
 		start = 100;
 		end = 175;
 		assertEquals("Element <SubSubSection2> begin index wrong",start, findings.get(0).getStart());
@@ -105,7 +105,7 @@ public class XMLSectionFinderTest extends TestCase {
 		
 		// Test4
 		f = new XMLSectionFinder("Text2");
-		findings = f.lookForSections(content, artSec);
+		findings = f.lookForSections(content, artSec, null);
 		start = 120;
 		end = 155;
 		assertEquals("Element <Text2> begin index wrong", start, findings.get(0).getStart());
@@ -119,7 +119,7 @@ public class XMLSectionFinderTest extends TestCase {
 		 * Tests for Generic XMLSectionFinder
 		 */
 		f = new XMLSectionFinder();
-		findings = f.lookForSections(content, artSec);
+		findings = f.lookForSections(content, artSec, null);
 		start = 0;
 		end = 254;
 		assertEquals("Generic SectionFinder failed", start, findings.get(0).getStart());

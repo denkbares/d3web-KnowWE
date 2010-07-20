@@ -23,6 +23,7 @@ package de.d3web.we.kdom.semanticAnnotation;
 import java.util.List;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
@@ -38,9 +39,9 @@ public class AnnotatedString extends DefaultAbstractKnowWEObjectType {
 	public static class AnnotatedStringSectionFinder extends SectionFinder {
 
 		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father) {
+		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			if(father.hasRightSonOfType(AnnotationMapSign.class, text)) {
-				return new AllTextSectionFinder().lookForSections(text, father);
+				return new AllTextSectionFinder().lookForSections(text, father, type);
 			}
 			return null;
 		}

@@ -127,7 +127,7 @@ public class DashSubtree extends DefaultAbstractKnowWEObjectType {
 		@Override
 		@SuppressWarnings("unchecked")
 		public List<SectionFinderResult> lookForSections(String text,
-				Section<?> father) {
+				Section<?> father, KnowWEObjectType type) {
 
 			int level = 0;
 
