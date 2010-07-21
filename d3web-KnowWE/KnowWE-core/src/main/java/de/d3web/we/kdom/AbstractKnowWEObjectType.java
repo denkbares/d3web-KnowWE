@@ -34,7 +34,7 @@ import de.d3web.we.kdom.report.DefaultErrorRenderer;
 import de.d3web.we.kdom.report.DefaultNoticeRenderer;
 import de.d3web.we.kdom.report.DefaultWarningRenderer;
 import de.d3web.we.kdom.report.MessageRenderer;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
@@ -104,14 +104,14 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * 
 	 * @see KnowWEObjectType#getSectioner()
 	 */
-	protected SectionFinder sectionFinder;
+	protected ISectionFinder sectionFinder;
 
 	/**
 	 * Allows to set a specific sectionFinder for this type
 	 * 
 	 * @param sectionFinder
 	 */
-	public void setSectionFinder(SectionFinder sectionFinder) {
+	public void setSectionFinder(ISectionFinder sectionFinder) {
 		this.sectionFinder = sectionFinder;
 	}
 
@@ -134,7 +134,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 		init();
 	}
 
-	public AbstractKnowWEObjectType(SectionFinder sectionFinder) {
+	public AbstractKnowWEObjectType(ISectionFinder sectionFinder) {
 		this();
 		this.sectionFinder = sectionFinder;
 	}
@@ -397,7 +397,7 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	 * @see de.d3web.we.kdom.KnowWEObjectType#getSectioner()
 	 */
 	@Override
-	public SectionFinder getSectioner() {
+	public ISectionFinder getSectioner() {
 		if (isActivated) {
 			return sectionFinder;
 		}
