@@ -30,6 +30,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
+import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.ExclusiveType;
 import de.d3web.we.kdom.dashTree.LineEndComment;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -245,11 +246,11 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
  *         example: 'a OR b' here 'a' and 'b' are nodes of type disjunct
  *
  */
-class Disjunct extends NonTerminalCondition {
+class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionFinder.ExclusiveType {
 	@Override
 	protected void init() {
 
-		this.sectionFinder = new ConjunctSectionFinder(new String[] {
+		this.sectionFinder = ConjunctSectionFinder.createConjunctFinder(new String[] {
 				"OR", "ODER", "|" });
 	}
 }
@@ -262,14 +263,14 @@ class Disjunct extends NonTerminalCondition {
  *         example: 'a AND b' here 'a' and 'b' are nodes of type conjunct
  *
  */
-class Conjunct extends NonTerminalCondition {
+class Conjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionFinder.ExclusiveType{
 
 	static String[] CONJ_SIGNS = {
 			"AND", "UND", "&" };
 
 	@Override
 	protected void init() {
-		this.setSectionFinder(new ConjunctSectionFinder(CONJ_SIGNS));
+		this.setSectionFinder(ConjunctSectionFinder.createConjunctFinder(CONJ_SIGNS));
 	}
 
 }
@@ -314,10 +315,16 @@ class NegatedExpression extends NonTerminalCondition {
 class ConjunctSectionFinder extends SectionFinder {
 
 	private final String[] signs;
+	
+	public static SectionFinder createConjunctFinder(String[] signs) {
+		ConstraintSectionFinder csf = new ConstraintSectionFinder(new ConjunctSectionFinder(signs));
+		csf.addConstraint(ExclusiveType.getInstance());
+		return csf;
+	}
 
-	public ConjunctSectionFinder(String[] signs) {
+	private ConjunctSectionFinder(String[] signs) {
 		this.signs = signs;
-		this.addConstraint(ExclusiveType.getInstance());
+		
 	}
 
 	@Override
@@ -400,9 +407,10 @@ class BracedCondition extends NonTerminalCondition {
 
 	@Override
 	protected void init() {
-		this.sectionFinder = new EmbracedExpressionFinder();
-		this.sectionFinder.addConstraint(ExclusiveType.getInstance());
+		this.sectionFinder = EmbracedExpressionFinder.createEmbracedExpressionFinder();
 	}
+	
+}
 
 	/**
 	 *
@@ -414,6 +422,13 @@ class BracedCondition extends NonTerminalCondition {
 	 *
 	 */
 	class EmbracedExpressionFinder extends SectionFinder {
+		
+		public static SectionFinder createEmbracedExpressionFinder() {
+			ConstraintSectionFinder sectionFinder = new ConstraintSectionFinder(new EmbracedExpressionFinder());
+			sectionFinder.addConstraint(ExclusiveType.getInstance());
+			return sectionFinder;
+		}
+		
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 			String trimmed = text.trim();
@@ -466,6 +481,6 @@ class BracedCondition extends NonTerminalCondition {
 
 			return null;
 		}
-	}
+	
 
 }

@@ -62,7 +62,7 @@ public class SemanticAnnotationObject extends DefaultAbstractKnowWEObjectType {
 	public void init() {
 		SemanticAnnotationProperty propType = new SemanticAnnotationProperty();
 		SemanticAnnotationSubject subject = new SemanticAnnotationSubject();
-		subject.setSectionFinder(new AllBeforeTypeSectionFinder(propType));
+		subject.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(propType));
 		this.childrenTypes.add(propType);
 		this.childrenTypes.add(subject);
 		this.childrenTypes.add(new SimpleAnnotation());

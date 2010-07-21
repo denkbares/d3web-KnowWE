@@ -36,7 +36,7 @@ public class ConditionActionRule extends TermRelationDefinition {
 		Then then = new Then();
 		this.addChildType(then);
 
-		condArea.setSectionFinder(new AllBeforeTypeSectionFinder(then));
+		condArea.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(then));
 		this.addChildType(condArea);
 		action.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(action);
