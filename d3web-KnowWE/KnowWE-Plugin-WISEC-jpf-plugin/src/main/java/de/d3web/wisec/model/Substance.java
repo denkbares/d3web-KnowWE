@@ -62,6 +62,7 @@ public class Substance {
 		return other.getName().equals(getName());
 	}
 
+	@Deprecated
 	public String getCAS() {
 		for (String key : values.keySet()) {
 			if (key.equalsIgnoreCase("CAS")) {

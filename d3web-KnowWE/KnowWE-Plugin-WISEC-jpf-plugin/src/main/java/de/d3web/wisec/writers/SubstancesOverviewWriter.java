@@ -29,16 +29,13 @@ public class SubstancesOverviewWriter extends WISECWriter {
 		b.append("%%zebra-table\n%%sortable\n");
 		
 		// write the data
-//		Spalte 1 SGN
-//		Spalte 2 Bei SGN = CAS den Namen sonst leer
-//		Spalte 3 EU number
-//		Spalte 4 Occurences
-		b.append("|| SGN || CAS || EU number || Occurences \n");
+		b.append("|| CAS || EC number(s) || Occurences \n");
 		List<Substance> sortedSubstances = sortSubstances();
 		for (Substance substance : sortedSubstances) {
-			String euNumber = "";
-			String casName  = substance.getCAS();
-			b.append("| "+SubstanceWriter.asWikiMarkup(substance)+" | "+casName  +" | "+euNumber +"| "+model.usesInLists(substance)+"\n");
+			List<String> ecNumbers = model.getECNamesFor(substance.getName());
+			// String casName = substance.getCAS();
+			b.append("| " + SubstanceWriter.asWikiMarkup(substance) + " | " + ecNumbers + "| "
+					+ model.usesInLists(substance) + "\n");
 		}
 		
 		writer.write(b.toString());

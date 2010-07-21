@@ -41,22 +41,24 @@ import de.d3web.wisec.writers.WISECWriter;
  */
 public class WISECExcelConverter {
 	// The master database file, that is the input of all knowledge
-	public static String WISEC_FILE = "20100721_WISEC_v1.xls";
+	public static String WISEC_FILE = "20100721_WISEC_v2.xls";
 	// The directory of the master database file
-	public static String workspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/";
+	public static String workspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
-	public static String wikiworkspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/Treshold-40/";
+	public static String wikiworkspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/wikicontent/";
+	// public static String wikiworkspace =
+	// "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/Treshold-40/";
 	// Praefix of most of the generated files
 	public static final String FILE_PRAEFIX = "WI_";
 
 	// Name of the column that identifies the name of a substance 
-	public static String SUBSTANCE_IDENTIFIER     = "SGN";
+	public static String SUBSTANCE_IDENTIFIER = "CAS";
 	// Include semantic annotations etc. in the generation process
 	public static boolean GENERATE_WITH_KNOWLEDGE = true;
 	// Minimum number of occurrences of a substance, that is required before it is considered for the model
-	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
+	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
 	// 9min
-	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
+	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
 	// 40min
 	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 5; // takes
 	// 110min

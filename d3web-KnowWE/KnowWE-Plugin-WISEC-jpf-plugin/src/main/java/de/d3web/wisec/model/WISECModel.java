@@ -2,8 +2,10 @@ package de.d3web.wisec.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,8 @@ public class WISECModel {
 	Map<Substance, Integer> usesInList;
 	Map<String, String> substanceRatings;
 
+	Map<String, List<String>> CAS2EC;
+
 	public int SUBSTANCE_OCCURRENCE_THRESHOLD = 2;
 	
 	
@@ -36,8 +40,18 @@ public class WISECModel {
 		substances = new HashMap<String,Substance>();
 		usesInList = new HashMap<Substance, Integer>();
 		substanceRatings = new LinkedHashMap<String, String>();
+		CAS2EC = new HashMap<String, List<String>>();
 	}
 	
+	public List<String> getECNamesFor(String substanceName) {
+		if (CAS2EC.get(substanceName) != null) {
+			return CAS2EC.get(substanceName);
+		}
+		else {
+			return Collections.emptyList();
+		}
+	}
+
 	public void add(SubstanceList substanceList) {
 		this.substanceLists.put(substanceList.name, substanceList);
 		updateSubstanceOccurences(substanceList);
@@ -58,9 +72,23 @@ public class WISECModel {
 				}
 				storedSubstance.usesInLists.add(substanceList);
 				substances.put(storedSubstance.getName(), storedSubstance);
+				addEC_name_for_CAS(substance);
 			}
 		}
 		
+	}
+
+	private void addEC_name_for_CAS(Substance substance) {
+		final String EC_name_ID = "EC_No";
+		List<String> ecNames = CAS2EC.get(substance.getName());
+		if (ecNames == null) {
+			ecNames = new LinkedList<String>();
+		}
+		String theECNAme = substance.get(EC_name_ID);
+		if (!ecNames.contains(theECNAme)) {
+			ecNames.add(theECNAme);
+			CAS2EC.put(substance.getName(), ecNames);
+		}
 	}
 
 	public Integer usesInLists(Substance substance) {

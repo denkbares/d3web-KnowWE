@@ -108,7 +108,7 @@ public class SubstanceListsReader extends WISECReader {
 		int row = getOverviewRowWithID(listID, overviewSheet);
 
 		// last col is the compartment col => overviewSheet.getColumns() - 1
-		for (int col = 6; col < overviewSheet.getColumns() - 1; col++) {
+		for (int col = 6; col < overviewSheet.getColumns(); col++) {
 			String criteriaName = overviewSheet.getCell(col, 0).getContents();
 			String criteriaValue = overviewSheet.getCell(col, row).getContents();
 			list.criteria.put(criteriaName, criteriaValue);

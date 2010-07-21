@@ -125,22 +125,22 @@ public class SubstanceWriter extends WISECWriter {
 	}
 
 	private void writeUsesOfCAS(Substance substance, StringBuffer b) {
-		b.append("* SGN: "+substance.getName()+"\n");
+		b.append("* Name : " + substance.getName() + "\n");
 		
-		// Compute: Which CAS names are used in which lists - "CAS"
 		Map<String, List<SubstanceList>> casUses = computeUsesOfAttribute(substance, "CAS");
-		
-		if (casUses.keySet().size() == 1) {
-			b.append("* Unique CAS used: " + casUses.keySet().iterator().next() + "\n");
-		} else {
-			for (String cas : casUses.keySet()) {
-				b.append("! " + cas + "\n");
-				for (SubstanceList list : casUses.get(cas)) {
-					b.append("# " + SubstanceListWriter.asWikiMarkup(list)
-							+ "\n");
-				}
-			}
-		}
+		//
+		// if (casUses.keySet().size() == 1) {
+		// b.append("* Unique CAS used: " + casUses.keySet().iterator().next() +
+		// "\n");
+		// } else {
+		// for (String cas : casUses.keySet()) {
+		// b.append("! " + cas + "\n");
+		// for (SubstanceList list : casUses.get(cas)) {
+		// b.append("# " + SubstanceListWriter.asWikiMarkup(list)
+		// + "\n");
+		// }
+		// }
+		// }
 		b.append("\n");
 	}
 

@@ -170,7 +170,7 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 		Pattern cellPattern = Pattern.compile("\\s*\\|{2}\\s*");
 		String[] cells = cellPattern.split(tablehead);
 		for (int i = 0; i < cells.length; i++) {
-			if (cells[i].trim().equalsIgnoreCase("SGN"))
+			if (cells[i].trim().equalsIgnoreCase("CAS"))
 				return i;
 		}
 		return -1;
@@ -180,10 +180,10 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 		ArrayList<Section<TableCellContent>> contents = new ArrayList<Section<TableCellContent>>();
 		section.findSuccessorsOfType(TableCellContent.class, contents);
 		for (int i = 0; i < contents.size(); i++) {
-			if (contents.get(i).getOriginalText().trim().equalsIgnoreCase("SGN"))
+			if (contents.get(i).getOriginalText().trim().equalsIgnoreCase("CAS"))
 					return i;
 		}
-		Logging.getInstance().warning("SGN row was not found!");
+		Logging.getInstance().warning("CAS row was not found!");
 		return -1;
 	}
 
