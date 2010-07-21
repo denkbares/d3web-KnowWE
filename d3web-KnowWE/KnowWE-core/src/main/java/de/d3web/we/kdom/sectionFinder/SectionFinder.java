@@ -20,12 +20,7 @@
 
 package de.d3web.we.kdom.sectionFinder;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.constraint.SectionFinderConstraint;
 
 
 
@@ -34,37 +29,12 @@ import de.d3web.we.kdom.constraint.SectionFinderConstraint;
  *
  */
 //TODO: make SectionFinder to be an interface
-public abstract class SectionFinder {
+
+// the interface ISectionFinder should be used instead !
+@Deprecated
+public abstract class SectionFinder implements ISectionFinder {
 	
-
-	List<SectionFinderConstraint> constraintList;
-	
-	public List<SectionFinderConstraint> getConstraints() {
-		return constraintList;
-	}
-
-	public void addConstraint(SectionFinderConstraint constraint) {
-		if (constraintList == null) {
-			constraintList = new ArrayList<SectionFinderConstraint>();
-			
-		}
-		this.constraintList.add(constraint);
-	}
-
-	/**
-	 * 
-	 * Allocates text parts for this module. The resulting array contains substrings of the 
-	 * passed text. These specified substrings will be allocated to this module. 
-	 * Method will be called multiple times with various article fragments depending on 
-	 * previous allocations of preceding modules.
-	 * If no interesting section is found in a passed fragment, return 'null' or an array of length 0; 
-	 * @param text Text fragment of the wiki article source
-	 * @param father TODO
-	 * @param type TODO
-	 * @return List of SectionFinderResults with informations about what part of the next belongs
-	 * to the ObjectType calling the SectionFinder
-	 */
-	public abstract List<SectionFinderResult> lookForSections(
-			String text, Section<?> father, KnowWEObjectType type);
+	//TODO: everywhere the interface ISectionFinder should be used to reference SectionFinders
+	// when done, this class will be deleted
 
 }

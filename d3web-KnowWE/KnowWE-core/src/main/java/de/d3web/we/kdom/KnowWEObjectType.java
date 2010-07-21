@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import de.d3web.we.kdom.report.MessageRenderer;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
@@ -52,7 +53,7 @@ public interface KnowWEObjectType extends KnowWEType {
 	 * On tree creation this SectionFinder is used to create node of this type
 	 * @return
 	 */
-	public abstract SectionFinder getSectioner();
+	public abstract ISectionFinder getSectioner();
 
 	/**
 	 * @return name of this type
