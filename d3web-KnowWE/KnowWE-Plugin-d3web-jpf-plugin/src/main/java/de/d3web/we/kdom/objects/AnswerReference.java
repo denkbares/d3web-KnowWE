@@ -78,7 +78,8 @@ public abstract class AnswerReference extends D3webTermReference<Choice> {
 			answer = answer.substring(1, answer.length() - 1).trim();
 		}
 
-		String question = getQuestionSection(sa).getOriginalText().trim();
+		Section<QuestionReference> questionSection = getQuestionSection(sa);
+		String question = questionSection.getOriginalText().trim();
 
 		if (question.startsWith("\"") && question.endsWith("\"")) {
 			question = question.substring(1, question.length() - 1).trim();

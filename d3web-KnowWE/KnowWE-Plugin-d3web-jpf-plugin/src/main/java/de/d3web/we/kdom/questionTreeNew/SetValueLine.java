@@ -84,7 +84,7 @@ public class SetValueLine extends DefaultAbstractKnowWEObjectType {
 			KnowWEObjectType typeAfter) {
 		QuestionReference qid = new QuestionReference();
 		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
-		qid.setSectionFinder(new AllBeforeTypeSectionFinder(typeAfter));
+		qid.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(typeAfter));
 		qid.addSubtreeHandler(new CreateSetValueRuleHandler());
 		return qid;
 	}

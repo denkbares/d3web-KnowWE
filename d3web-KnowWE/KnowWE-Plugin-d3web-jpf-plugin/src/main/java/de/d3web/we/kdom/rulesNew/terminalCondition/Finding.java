@@ -30,6 +30,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.AnswerReference;
 import de.d3web.we.kdom.objects.AnswerReferenceImpl;
@@ -64,7 +65,8 @@ public class Finding extends D3webTerminalCondition<Finding> {
 
 		// question
 		QuestionReference question = new QuestionReference();
-		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
+		
+		ConstraintSectionFinder questionFinder = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
 		this.childrenTypes.add(question);

@@ -51,7 +51,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		ScorePoint scorePoint = new ScorePoint();
 		Equals equ = new Equals();
 		SolutionReference solutionRef = new SolutionReference();
-		solutionRef.setSectionFinder(new AllBeforeTypeSectionFinder(equ));
+		solutionRef.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(equ));
 
 		this.childrenTypes.add(scorePoint);
 		this.childrenTypes.add(equ);

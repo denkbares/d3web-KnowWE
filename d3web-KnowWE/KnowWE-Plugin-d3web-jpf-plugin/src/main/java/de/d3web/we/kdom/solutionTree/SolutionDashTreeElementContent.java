@@ -25,6 +25,7 @@ import java.util.Collection;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.objects.KnowWETerm;
@@ -51,7 +52,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 	public SolutionDashTreeElementContent() {
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
 		SolutionDefinition solutionDef = new SolutionDefinition();
-		SectionFinder f = new AllTextFinderTrimmed();
+		ConstraintSectionFinder f = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 		f.addConstraint(SingleChildConstraint.getInstance());
 		solutionDef.setSectionFinder(f);
 		this.addChildType(solutionDef);

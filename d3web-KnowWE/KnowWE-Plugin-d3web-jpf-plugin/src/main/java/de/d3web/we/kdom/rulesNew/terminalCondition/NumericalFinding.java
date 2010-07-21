@@ -33,6 +33,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -66,7 +67,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 		// question
 		QuestionReference question = new NumQuestionReferenceImpl();
-		AllTextFinderTrimmed questionFinder = new AllTextFinderTrimmed();
+		ConstraintSectionFinder questionFinder = new ConstraintSectionFinder( new AllTextFinderTrimmed());
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
 		this.childrenTypes.add(question);

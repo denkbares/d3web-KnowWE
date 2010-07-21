@@ -50,7 +50,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 		this.sectionFinder = new SetQuestionValueSectionFinder();
 		Equals equals = new Equals();
 		QuestionReference qr = new QuestionReference();
-		qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
+		qr.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(equals));
 		this.childrenTypes.add(equals);
 		this.childrenTypes.add(qr);
 

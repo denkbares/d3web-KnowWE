@@ -34,6 +34,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition.QuestionType;
@@ -105,7 +106,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		protected void init() {
-			SectionFinder f = new AllTextFinderTrimmed();
+			ConstraintSectionFinder f = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
 			// this.addSubtreeHandler(new CreateIndicationHandler());

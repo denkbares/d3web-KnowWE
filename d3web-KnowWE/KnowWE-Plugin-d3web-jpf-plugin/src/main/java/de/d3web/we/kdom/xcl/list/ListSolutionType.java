@@ -27,6 +27,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
+import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.ExactlyOneFindingConstraint;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -54,7 +55,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
 public class ListSolutionType extends TermRelationDefinition {
 
 	public ListSolutionType() {
-		SectionFinder solutionFinder = new NonEmptyLineSectionFinder();
+		ConstraintSectionFinder solutionFinder =  new ConstraintSectionFinder(new NonEmptyLineSectionFinder());
 		solutionFinder.addConstraint(ExactlyOneFindingConstraint.getInstance());
 		this.setSectionFinder(solutionFinder);
 
@@ -66,7 +67,7 @@ public class ListSolutionType extends TermRelationDefinition {
 		this.addChildType(closing);
 
 		SolutionDefinition solDef = new SolutionDefinition();
-		SectionFinder allFinder = new AllTextFinderTrimmed();
+		ConstraintSectionFinder allFinder = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 		allFinder.addConstraint(ExactlyOneFindingConstraint.getInstance());
 		solDef.setSectionFinder(allFinder);
 		this.addChildType(solDef);

@@ -60,7 +60,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			equals.setSectionFinder(new StringSectionFinderUnquoted(ADD_VALUE_SIGN));
 
 			QuestionReference qr = new QuestionReference();
-			qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
+			qr.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(equals));
 			this.childrenTypes.add(equals);
 			this.childrenTypes.add(qr);
 
@@ -109,7 +109,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			equals.setSectionFinder(new StringSectionFinderUnquoted(ADD_VALUE_SIGN));
 
 			QuestionReference qr = new QuestionReference();
-			qr.setSectionFinder(new AllBeforeTypeSectionFinder(equals));
+			qr.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(equals));
 			this.childrenTypes.add(equals);
 			this.childrenTypes.add(qr);
 
