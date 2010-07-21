@@ -60,6 +60,30 @@ public class D3webUtils {
 
 		return null;
 	}
+	
+	static ArrayList<String> possibleScorePoints;
+	
+	public static List<String> getPossibleScores() {
+		if(possibleScorePoints == null) {
+		
+			possibleScorePoints = new ArrayList<String>();
+			
+		String n = "N";
+		String p = "P";
+		for (int i = 1; i <= 7; i++) {
+			possibleScorePoints.add(n + i);
+			possibleScorePoints.add(p + i);
+		}
+		possibleScorePoints.add("P5x");
+		possibleScorePoints.add("N5x");
+		possibleScorePoints.add("!");
+		possibleScorePoints.add("?");
+		possibleScorePoints.add("excluded");
+		possibleScorePoints.add("established");
+		possibleScorePoints.add("suggested");
+		}
+		return possibleScorePoints;
+	}
 
 	/**
 	 *
@@ -270,6 +294,13 @@ public class D3webUtils {
 				break;
 			}
 		}
+		if(argument.equals("!")) {
+			score =  Score.P7;
+		}
+		if(argument.equals("?")) {
+			score = Score.P5;
+		}
+		
 		return score;
 	}
 

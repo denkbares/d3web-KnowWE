@@ -42,11 +42,11 @@ import de.d3web.we.utils.D3webUtils;
  */
 public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssignment> {
 
-	private final ArrayList<String> possibleScorePoints = new ArrayList<String>();
+	private List<String> possibleScorePoints = new ArrayList<String>();
 
-	// TODO Add missing score values
 	public SolutionValueAssignment() {
-
+		//possibleScorePoints = D3webUtils.getPossibleScores();
+		
 		this.sectionFinder = new DiagnosisRuleActionSectionFinder(possibleScorePoints);
 		ScorePoint scorePoint = new ScorePoint();
 		Equals equ = new Equals();
@@ -70,6 +70,8 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 		possibleScorePoints.add("excluded");
 		possibleScorePoints.add("established");
 		possibleScorePoints.add("suggested");
+		
+		
 		scorePoint.setSectionFinder(new OneOfStringEnumUnquotedFinder(
 				possibleScorePoints.toArray(new String[possibleScorePoints.size()])));
 	}
@@ -84,10 +86,10 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 	 */
 	private class DiagnosisRuleActionSectionFinder extends SectionFinder {
 
-		private ArrayList<String> possibleScorePoints = new ArrayList<String>();
+		private List<String> possibleScorePoints = new ArrayList<String>();
 
 		// TODO Add missing score values
-		public DiagnosisRuleActionSectionFinder(ArrayList<String> possibleScorePoints) {
+		public DiagnosisRuleActionSectionFinder(List<String> possibleScorePoints) {
 			this.possibleScorePoints = possibleScorePoints;
 		}
 

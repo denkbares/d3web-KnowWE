@@ -45,6 +45,7 @@ import de.d3web.we.kdom.decisionTree.QuestionTreeANTLR;
 import de.d3web.we.kdom.rules.Rule;
 import de.d3web.we.kdom.rules.RuleActionLine;
 import de.d3web.we.kdom.rules.RuleCondLine;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.semanticAnnotation.AnnotatedString;
@@ -251,7 +252,7 @@ public class d3webSectionFinderTest extends TestCase {
 
 	public void testRuleCondLineSectionFinder() {
 		String text = " yoyo IF (Fuel = unleaded gasoline AND Exhaust pipe color = sooty black)";
-		SectionFinder f =
+		ISectionFinder f =
 			new RuleCondLine().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
@@ -262,7 +263,7 @@ public class d3webSectionFinderTest extends TestCase {
 	public void testRuleSectionFinder() {
 		String text = " yoyo IF (Fuel = diesel AND Exhaust pipe color = sooty black)\r\n"
 					+ "THEN Exhaust pipe color evaluation += normal";
-		SectionFinder f = new Rule().getSectioner();
+		ISectionFinder f = new Rule().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 6, results.get(0).getStart());
@@ -300,7 +301,7 @@ public class d3webSectionFinderTest extends TestCase {
 		    	    + "What do you like? = Meeting people,\r\n"
 		    		+ "}\r\n";
 
-		SectionFinder f = new XCList().getSectioner();
+		ISectionFinder f = new XCList().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
@@ -373,7 +374,7 @@ public class d3webSectionFinderTest extends TestCase {
 			+ "What do you like? = Shopping,\r\n"
 			+ "} \r\n \r\n \r \n";
 
-		SectionFinder f = new XCLRelation().getSectioner();
+		ISectionFinder f = new XCLRelation().getSectioner();
 		List<SectionFinderResult> results = f.lookForSections(text, null, null);
 
 		assertEquals(WRONG_FIRST_START, 0, results.get(0).getStart());
