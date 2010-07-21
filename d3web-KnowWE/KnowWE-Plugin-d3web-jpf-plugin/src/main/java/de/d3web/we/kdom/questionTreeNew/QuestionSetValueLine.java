@@ -137,11 +137,9 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
-			Question q = mgn.findQuestion(trimQuotes(s));
+			Question q = mgn.findQuestion(KnowWEUtils.trimQuotes(s.getOriginalText()));
 
 			String argument = getArgumentString(s);
-
-
 
 			if(q != null) {
 				Choice a = null;
@@ -223,17 +221,5 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 			return argument;
 		}
 
-	}
-
-	public static String trimQuotes(Section<?> s) {
-		String content = s.getOriginalText();
-
-		String trimmed = content.trim();
-
-		if(trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-			return trimmed.substring(1, trimmed.length()-1).trim();
-		}
-
-		return trimmed;
 	}
 }

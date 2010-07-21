@@ -449,7 +449,7 @@ public class KnowWEUtils {
 		return result;
 	}
 
-	public static String trimAndRemoveQuotes(String text) {
+	public static String trimQuotes(String text) {
 		String trimmed = text.trim();
 
 		if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {

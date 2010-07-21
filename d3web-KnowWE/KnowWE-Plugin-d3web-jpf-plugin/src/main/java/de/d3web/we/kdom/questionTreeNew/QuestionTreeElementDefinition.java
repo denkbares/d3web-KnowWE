@@ -43,13 +43,6 @@ public abstract class QuestionTreeElementDefinition<TermObject> extends D3webTer
 	/**
 	 * retrieves AND stores the corresponding parent Question or Questionnaire
 	 * to the given QuesitonTreeElement.
-	 * <p/>
-	 * Be sure to use KnowWEUtils.storeSectionInfo(s, parentQASetSectionKey,
-	 * retrievedParent); to store the retrieved Section in the SectionStore!
-	 * @param article TODO
-	 * @param s
-	 * 
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public Section<? extends QuestionTreeElementDefinition<?>> retrieveAndStoreParentQASetSection(
@@ -79,14 +72,9 @@ public abstract class QuestionTreeElementDefinition<TermObject> extends D3webTer
 		return null;
 	}
 
-
 	/**
-	 * returns the section of the corresponding question-reference for this
-	 * answer.
-	 * @param article TODO
-	 * @param s
-	 * 
-	 * @return
+	 * returns the the corresponding parent Question or Questionnaire to the
+	 * given QuesitonTreeElement.
 	 */
 	@SuppressWarnings("unchecked")
 	public final Section<? extends QuestionTreeElementDefinition<?>> getStoredParentQASetSection(

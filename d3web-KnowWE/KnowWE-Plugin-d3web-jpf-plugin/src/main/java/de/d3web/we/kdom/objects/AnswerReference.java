@@ -30,7 +30,7 @@ public abstract class AnswerReference extends D3webTermReference<Choice> {
 			Section<QuestionReference> ref = sec.get().getQuestionSection(sec);
 			String questionName = ref.get().getTermName(ref);
 
-			String answerName = KnowWEUtils.trimAndRemoveQuotes(sec.getOriginalText());
+			String answerName = KnowWEUtils.trimQuotes(sec.getOriginalText());
 
 			KnowledgeBaseManagement mgn =
 					D3webModule.getKnowledgeRepresentationHandler(
@@ -72,18 +72,9 @@ public abstract class AnswerReference extends D3webTermReference<Choice> {
 			return super.getTermName(s);
 		}
 
-		String answer = s.getOriginalText().trim();
+		String answer = KnowWEUtils.trimQuotes(s.getOriginalText());
 
-		if (answer.startsWith("\"") && answer.endsWith("\"")) {
-			answer = answer.substring(1, answer.length() - 1).trim();
-		}
-
-		Section<QuestionReference> questionSection = getQuestionSection(sa);
-		String question = questionSection.getOriginalText().trim();
-
-		if (question.startsWith("\"") && question.endsWith("\"")) {
-			question = question.substring(1, question.length() - 1).trim();
-		}
+		String question = KnowWEUtils.trimQuotes(getQuestionSection(sa).getOriginalText());
 
 		return question + " " + answer;
 	}

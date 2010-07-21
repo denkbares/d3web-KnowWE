@@ -25,10 +25,6 @@ import java.util.List;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
@@ -39,9 +35,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.objects.SolutionReference;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
@@ -49,7 +43,6 @@ import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
@@ -202,16 +195,5 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	public static String trimQuotes(Section<?> s) {
-		String content = s.getOriginalText();
-
-		String trimmed = content.trim();
-
-		if(trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-			return trimmed.substring(1, trimmed.length()-1).trim();
-		}
-
-		return trimmed;
-	}
 	
 }

@@ -49,17 +49,9 @@ public abstract class AnswerDefinition extends QuestionTreeElementDefinition<Cho
 			return super.getTermName(s);
 		}
 
-		String answer = s.getOriginalText().trim();
+		String answer = KnowWEUtils.trimQuotes(s.getOriginalText());
 
-		if (answer.startsWith("\"") && answer.endsWith("\"")) {
-			answer = answer.substring(1, answer.length() - 1).trim();
-		}
-
-		String question = getStoredParentQASetSection(sa).getOriginalText().trim();
-
-		if (question.startsWith("\"") && question.endsWith("\"")) {
-			question = question.substring(1, question.length() - 1).trim();
-		}
+		String question = KnowWEUtils.trimQuotes(getStoredParentQASetSection(sa).getOriginalText());
 
 		return question + " " + answer;
 	}

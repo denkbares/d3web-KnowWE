@@ -8,7 +8,7 @@ public abstract class D3webTermReference<TermObject> extends TermReference<TermO
 
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s) {
-		return KnowWEUtils.trimAndRemoveQuotes(s.getOriginalText());
+		return KnowWEUtils.trimQuotes(s.getOriginalText());
 	}
 
 	@Override
