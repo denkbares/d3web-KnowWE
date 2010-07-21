@@ -57,7 +57,7 @@ public class WISECExcelConverter {
 	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
 	// 9min
 	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
-	// 30min
+	// 40min
 	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 5; // takes
 	// 110min
 	// The generation of lists is limited by the maxListsToConvert threshold 
