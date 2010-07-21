@@ -131,7 +131,8 @@ public class SubstanceListsReader extends WISECReader {
 	private List<String> computeListIDs() {
 		List<String> sheetNames = new ArrayList<String>();
 		int numberOfSheets = workbook.getSheets().length;
-		for (int i = 3; i < numberOfSheets; i++) {
+		// first 4 sheets contain general information
+		for (int i = 4; i < numberOfSheets; i++) {
 			Sheet sheet = workbook.getSheet(i);
 			sheetNames.add(sheet.getName());
 		}

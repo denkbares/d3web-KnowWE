@@ -41,7 +41,7 @@ import de.d3web.wisec.writers.WISECWriter;
  */
 public class WISECExcelConverter {
 	// The master database file, that is the input of all knowledge
-	public static String WISEC_FILE = "20100720_WISECv2.xls";
+	public static String WISEC_FILE = "20100721_WISEC_v1.xls";
 	// The directory of the master database file
 	public static String workspace = "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
@@ -54,9 +54,9 @@ public class WISECExcelConverter {
 	// Include semantic annotations etc. in the generation process
 	public static boolean GENERATE_WITH_KNOWLEDGE = true;
 	// Minimum number of occurrences of a substance, that is required before it is considered for the model
-	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
+	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
 	// 9min
-	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
+	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
 	// 30min
 	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 5; // takes
 	// 110min
@@ -72,8 +72,6 @@ public class WISECExcelConverter {
 		Stopwatch timer = new Stopwatch();
 		timer.start();
 		System.out.println("Conversion started: " + new Date());
-		
-		
 		
 		new WISECExcelConverter().convert();
 		
