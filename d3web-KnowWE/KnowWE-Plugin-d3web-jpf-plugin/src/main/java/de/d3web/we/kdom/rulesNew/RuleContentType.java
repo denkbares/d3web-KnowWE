@@ -30,6 +30,7 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -126,7 +127,9 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
 			// should not happen
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-					"rule not created"));
+					D3webModule.getKwikiBundle_d3web().
+					getString("KnowWE.rulesNew.notcreated")
+			));
 		}
 
 		@Override

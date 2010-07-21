@@ -30,6 +30,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashSubtree;
@@ -73,7 +74,8 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 		if (s.hasErrorInSubtree()) {
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-					"indication rule"));
+					D3webModule.getKwikiBundle_d3web().
+					getString("KnowWE.rulesNew.indicationnotcreated")));
 		}
 
 		Section<DashTreeElement> element = KnowWEObjectTypeUtils

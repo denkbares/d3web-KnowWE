@@ -30,6 +30,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -224,7 +225,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 					if (lower == null || upper == null) {
 						// if the numbers cannot be found throw error
 						return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-								"incorrect interval definition",
+								D3webModule.getKwikiBundle_d3web()
+								.getString("KnowWE.questiontree.incorrectinterval"),
 								this.getClass()));
 					}
 
@@ -237,7 +239,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 						if (!(question instanceof QuestionNum)) {
 							// if not numerical question throw error
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-									"only for numerical questions allowed",
+									D3webModule.getKwikiBundle_d3web()
+									.getString("KnowWE.questiontree.onlyfornumerical"),
 									this.getClass()));
 						}
 						try {
@@ -250,17 +253,20 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 									Property.QUESTION_NUM_RANGE,
 									interval);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-									"set numerical range"));
+									D3webModule.getKwikiBundle_d3web()
+									.getString("KnowWE.questiontree.setnumerical")));
 						}
 						catch (IntervalException e) {
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-									"invalid interval",
+									D3webModule.getKwikiBundle_d3web()
+									.getString("KnowWE.questiontree.invalidinterval"),
 									this.getClass()));
 						}
 
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-							"numerical range",
+							D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.questiontree.numerical"),
 							this.getClass()));
 				}
 			});
@@ -365,17 +371,20 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 						Question question = qDef.get().getTermObject(article, qDef);
 						if (!(question instanceof QuestionNum)) {
 							return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-									"only for numerical questions allowed",
+									D3webModule.getKwikiBundle_d3web()
+									.getString("KnowWE.questiontree.onlyfornumerical"),
 									this.getClass()));
 						}
 						question.getProperties().setProperty(
 								Property.UNIT, s.get().getUnit(s));
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-								"set unit"));
+								D3webModule.getKwikiBundle_d3web()
+								.getString("KnowWE.questiontree.setunit")));
 
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-							"unit",
+							D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.questiontree.unit"),
 							this.getClass()));
 				}
 			});
@@ -415,11 +424,13 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 						question.getProperties().setProperty(
 								Property.ABSTRACTION_QUESTION, true);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-								"abstract question"));
+								D3webModule.getKwikiBundle_d3web()
+								.getString("KnowWE.questiontree.abstractquestion")));
 
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-							"abstract-flag",
+							D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.questiontree.abstractflag"),
 							this.getClass()));
 				}
 			});
@@ -463,11 +474,13 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 									MMInfoSubject.PROMPT.getName(),
 									QuestionText.getQuestionText(sec), null);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-									"QuestionText created"));
+									D3webModule.getKwikiBundle_d3web()
+									.getString("KnowWE.questiontree.questiontextcreated")));
 						}
 					}
 					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
-							"QuestionText",
+							D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.questiontree.questiontext"),
 							this.getClass()));
 				}
 			});
@@ -545,7 +558,8 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 			this.addSubtreeHandler(new StringEnumChecker<QuestionTypeDeclaration>(
 					QUESTION_DECLARATIONS, new SimpleMessageError(
-							"Invalid Question type - allowing only: "
+							D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.questiontree.allowingonly")
 									+ QUESTION_DECLARATIONS.toString())));
 		}
 	}

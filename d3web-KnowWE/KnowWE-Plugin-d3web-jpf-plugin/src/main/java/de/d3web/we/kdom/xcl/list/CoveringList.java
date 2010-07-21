@@ -28,6 +28,7 @@ import java.util.List;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -176,7 +177,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 				if (s.hasErrorInSubtree()) {
 					return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-							"XCL-relation"));
+							D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.xcllist.relationfail")));
 				}
 
 				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(s);
@@ -195,7 +197,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 							if (condition == null) {
 								return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-										"condition error"));
+										D3webModule.getKwikiBundle_d3web()
+										.getString("KnowWE.xcllist.conditionerror")));
 							}
 
 							// check the weight/relation type in square brackets
@@ -244,7 +247,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 					}
 				}
 				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-						"XCL-relation"));
+						D3webModule.getKwikiBundle_d3web()
+						.getString("KnowWE.xcllist.relationfail")));
 			}
 
 //			@Override
