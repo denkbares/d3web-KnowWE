@@ -20,32 +20,31 @@
 
 package de.d3web.we.d3webModule;
 
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
+import de.d3web.core.session.values.ChoiceValue;
+import de.d3web.core.session.values.MultipleChoiceValue;
+import de.d3web.core.session.values.NumValue;
+import de.d3web.core.session.values.UndefinedValue;
+import de.d3web.core.session.values.Unknown;
 
 /**
- * Render the default interview in KnowWE --- HTML / JS / CSS based
+ * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
  * 
  * @author Martina Freiberg
  * @created 15.07.2010
- */
-/**
- * 
- * @author meggy
- * @created 20.07.2010
- */
-/**
- * 
- * @author meggy
- * @created 20.07.2010
  */
 public class QuickInterviewRenderer {
 
@@ -136,42 +135,42 @@ public class QuickInterviewRenderer {
 
 			// skip the topmost (sometimes default) root element "Q000"
 			if (container.getName().endsWith("Q000")) continue;
-			else {
-				empty = (container.getNumberOfChildren() == 0) ? true : false;
-			}
 
 			String displayClass = first ? "class='visible'" : "class='hidden'";
 			first = false;
+			empty = (container.getNumberOfChildren() == 0) ? true : false;
 
-			// get appropriate header
+			// in case first questionnaire is empty --> do not display expandend
+			if (first && empty) displayClass = "class='hidden'";
+
+			// get appropriate header for the questionnaire within the interview
 			html.append(getQContainerTableHeader(displayClass, container));
 
-			// get TableRows for each Question within QContainer
+			// for each question within questionnaire get one table row that
+			// displays its text and the answer alternatives
 			for (TerminologyObject to : container.getChildren()) {
 
-				// if to is a Question, cast to Question explicitly
+				// only continue if found Terminology is a Question
+				// TODO: what if child is a questionnaire as well?
 				Question q = null;
-				if (to instanceof Question) {
-					q = (Question) to;
-				}
-				else {
+				if (!(to instanceof Question)) {
 					continue;
 				}
+				q = (Question) to;
 
-				// if question has no further children, i.e., no follow-up
-				// questions
+				// if question has no further children (follow-up questions)
 				if (q.getChildren().length == 0) {
 
-					// assigns css classes according to whether line is even/odd
+					// assigns css classes according to whether line is
+					// even/odd, afterwards toggle value
 					String trClass = even ? "class='trEven'" : "class='trOdd'";
-
-					// toggle even signature
 					even = even ? false : true;
 
 					html.append(getTableRowString(c, q, web, b.getId(), trClass));
 
-					// if there are follow-up questions
-					// TODO go on
+				}
+				else { // if there are follow-up questions
+
 				}
 
 			}
@@ -190,10 +189,10 @@ public class QuickInterviewRenderer {
 	 */
 	private static String getQContainerTableHeader(String displayClass, QContainer container) {
 		StringBuffer html = new StringBuffer();
-		html.append("<h4 class='qcontainerName pointer extend-htmlpanel-right'>");
-		html.append("  " + container.getName() + ": ");
-		html.append("</h4>");
-		html.append("<table id='ivTbl" + container.getId() + "' " + displayClass + ">");
+		html.append("<div id='containerHeader_" + container.getId() + "' class='containerHeader'>");
+		html.append(" " + container.getName() + ": ");
+		html.append("</div>");
+		html.append("<table id='containerTable_" + container.getId() + "' " + displayClass + ">");
 		return html.toString();
 	}
 
@@ -226,12 +225,194 @@ public class QuickInterviewRenderer {
 		html.append("<tr " + trClass + ">");
 
 		// render the label cell, i.e., the first cell displaying the Question
-		html.append("<td>" + q.getName() + "</td>");
+		html.append("<td><div id='question_" + q.getId() + "' class='questioncell'>" + q.getName()
+				+ " ");
 
-		// TODO fill in answers here
+		if (q instanceof QuestionChoice) {
+			List<Choice> list = ((QuestionChoice) q).getAllAlternatives();
+			html.append(renderChoiceAnswers(c, q, list, web, namespace));
+		}
 
-		html.append("</tr> \n");
+		// to remove the last comma after answers in built in dialog //
+		// * html.delete(html.length() - 2, html.length()); }
+
+		else {
+			html.append(renderNumAnswers(c, q, web, namespace, trClass));
+		}
+
+		html.append("</div></td></tr> \n");
 		return html.toString();
 	}
 
+	/**
+	 * Generates the HTML needed for displaying the (numerical) answers and for
+	 * integrating necessary JS calls for interactivity.
+	 * 
+	 * @created 20.07.2010
+	 * @param c
+	 * @param q
+	 * @param web
+	 * @param namespace
+	 * @return the String for rendering numerical answers and corresponding JS
+	 */
+	private static String renderNumAnswers(Session c, Question q, String web, String namespace, String visib) {
+
+		StringBuffer html = new StringBuffer();
+		String value = "";
+
+		// if answer has already been answered
+		if (UndefinedValue.isNotUndefinedValue(c.getBlackboard().getValue(q))) {
+			Value answer = c.getBlackboard().getValue(q);
+			if (answer != null && answer instanceof NumValue) {
+				value = answer.getValue().toString();
+			}
+		}
+
+		String id = "answerNum_" + q.getId();
+
+		// append the JS call
+		String jscall = " rel=\"{oid: '" + q.getId() + "', "
+				+ "web:'" + web + "',"
+				+ "ns:'" + namespace + "',"
+				+ "qtext:'" + URLEncoder.encode(q.getName()) + "', "
+				+ "inputid:'" + id + "'"
+				+ "}\" ";
+
+		// append the input, if available with already provided input
+		html.append("<input id='" + id + "' type='text' "
+				+ "value='" + value + "' "
+				+ "class='numInput num-cell-down " + visib + "' "
+				+ "size='7' "
+				+ jscall + ">");
+		html.append("<input type='button' value='ok' class=\"num-cell-ok\">");
+
+		return html.toString();
+	}
+
+	/**
+	 * Creates the HTML needed for displaying the answer alternatives of choice
+	 * answers.
+	 * 
+	 * @created 22.07.2010
+	 * @param session
+	 * @param q
+	 * @param choices
+	 * @param web
+	 * @param namespace
+	 * @return
+	 */
+	private static String renderChoiceAnswers(Session session, Question q, List<Choice> choices, String web, String namespace) {
+
+		StringBuffer html = new StringBuffer();
+
+		// int i = 0;
+		// to space before and after commas evenly
+		// buffi.delete(buffi.length() - 1, buffi.length());
+		for (Choice choice : choices) {
+			String cssclass = "answercell";
+
+			// For BIOLOG2
+			String jscall = " rel=\"{oid:'" + choice.getId() + "', "
+					+ "web:'" + web + "', "
+					+ "ns:'" + namespace + "', "
+					+ "qid:'" + q.getId() + "'"
+					+ "}\" ";
+
+			Value value = session.getBlackboard().getValue(q);
+			if (value != null && UndefinedValue.isNotUndefinedValue(value)
+					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
+				cssclass = "answercell answerTextActive";
+			}
+			String spanid = "answerChoice" + q.getId() + "_" + choice.getId();
+			html.append(getEnclosingTagOnClick("span", ""
+					+ choice.getName() + " ", cssclass, jscall, null,
+					spanid));
+
+			// if (i < choices.size()) { html.append(" . ");} i++;
+		}
+
+		// also render the unknown alternative for choice questions
+		html.append(renderAnswerUnknown(web, namespace, q));
+
+		return html.toString();
+	}
+
+	/**
+	 * 
+	 * @created 22.07.2010
+	 * @param sessionValue
+	 * @param value
+	 * @return
+	 */
+	private static boolean isAnsweredinCase(Value sessionValue, Value value) {
+		// test for MC values separately
+		if (sessionValue instanceof MultipleChoiceValue) {
+			return ((MultipleChoiceValue) sessionValue).contains(value);
+		}
+		else {
+			return sessionValue.equals(value);
+		}
+	}
+
+	/**
+	 * Assembles the HTML representation for rendering answer unknown
+	 * 
+	 * @created 22.07.2010
+	 * @param web
+	 * @param namespace
+	 * @param q
+	 * @return
+	 */
+	private static String renderAnswerUnknown(String web, String namespace, Question q) {
+		StringBuffer html = new StringBuffer();
+		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId() + "', "
+				+ "web:'" + web + "', "
+				+ "ns:'" + namespace + "', "
+				+ "qid:'" + q.getId() + "'"
+				+ "}\" ";
+		String cssclass = "answercell";
+		String spanid = "answerunknown_" + q.getId() + "_" + Unknown.getInstance().getId();
+		html.append(getEnclosingTagOnClick("span", "&gt;?&lt;", cssclass, jscall, null,
+				spanid));
+		return html.toString();
+	}
+
+	/**
+	 * Assembles the HTML representation for a given Tag
+	 * 
+	 * @created 22.07.2010
+	 * @param tag The String representation of the tag
+	 * @param text The text to be placed inside the tag
+	 * @param cssclass The css class to style the resulting tag
+	 * @param onclick The String representation of the onclick action, i.e., a
+	 *        JS call
+	 * @param onmouseover Something to happen regarding the onmouseover
+	 * @param id The id of the object represented , i.e., answer alternative,
+	 *        here
+	 * @return String representation of the final tag. An example: <span rel=
+	 *         "{oid:'MaU',web:'default_web',ns:'FAQ Devel..FAQ Devel_KB',qid:'Q2'}"
+	 *         class="answercell" id="span_Q2_MaU" > MaU </span>
+	 */
+	private static String getEnclosingTagOnClick(String tag, String text,
+			String cssclass, String onclick, String onmouseover, String id) {
+		StringBuffer sub = new StringBuffer();
+		sub.append("<" + tag);
+		if (id != null && id.length() > 0) {
+			sub.append(" id='" + id + "' ");
+		}
+		if (cssclass != null && cssclass.length() > 0) {
+			sub.append(" class='" + cssclass + "'");
+		}
+		if (onclick != null && onclick.length() > 0) {
+			sub.append(" " + onclick + " ");
+		}
+		if (onmouseover != null && onmouseover.length() > 0) {
+			sub.append(" " + onmouseover + " ");
+		}
+		sub.append(">");
+		sub.append(text);
+		sub.append("</" + tag + ">");
+		return sub.toString();
+
+	}
 }
