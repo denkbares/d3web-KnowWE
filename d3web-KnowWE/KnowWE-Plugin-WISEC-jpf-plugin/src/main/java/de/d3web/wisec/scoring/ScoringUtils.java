@@ -1,6 +1,5 @@
 package de.d3web.wisec.scoring;
 
-import de.d3web.wisec.model.Substance;
 import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.WISECModel;
 
@@ -15,10 +14,10 @@ public class ScoringUtils {
 		else return 0;
 	}
 	
-	public static double computeScoreFor(WISECModel model, ScoringWeightsConfiguration weights, Substance substance, String criteriaType) {
+	public static double computeScoreFor(WISECModel model, ScoringWeightsConfiguration weights, String substanceName, String criteriaType) {
 		double scoring = 0;
 		double inclucedLists = 0;
-		for (SubstanceList list : model.getSubstanceListsContaining(substance.getName())) {
+		for (SubstanceList list : model.getSubstanceListsContaining(substanceName)) {
 			String criteriaValue = list.criteria.get(criteriaType);
 			if (criteriaValue != null) {
 				inclucedLists ++;
@@ -33,10 +32,10 @@ public class ScoringUtils {
 		}
 	}
 
-	public static Double computeTotalScoreFor(WISECModel model, ScoringWeightsConfiguration configuration, Substance substance) {
+	public static Double computeTotalScoreFor(WISECModel model, ScoringWeightsConfiguration configuration, String substanceName) {
 		double totalScore = 0;
 		for (String  criteriaName : configuration.getCriterias()) {
-			totalScore += computeScoreFor(model, configuration, substance, criteriaName);
+			totalScore += computeScoreFor(model, configuration, substanceName, criteriaName);
 		}
 		return Double.valueOf(totalScore);
 	}

@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
-import de.d3web.wisec.model.Substance;
-import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.WISECModel;
 
 public class OverviewWriter extends WISECWriter {
@@ -33,38 +31,16 @@ public class OverviewWriter extends WISECWriter {
 
 	private void writeGeneralSettings(Writer writer) throws IOException {
 		// writer.write("!!! General \n");
-		writer.write("* Set occurrence threshold: " + model.SUBSTANCE_OCCURRENCE_THRESHOLD + "\n");
-		writer.write("* Number of substances used: " + computeNumberOfUsedSubstances() + "\n");
-		writer.write("* Total use of substances in lists: " + computeNumberOfTotalUse() + "\n");
+		// writer.write("* Set occurrence threshold: " +
+		// model.SUBSTANCE_OCCURRENCE_THRESHOLD + "\n");
+		writer.write("* Number of substances used: " + model.activeSubstances.size() + "\n");
+		// writer.write("* Total use of substances in lists: " +
+		// computeNumberOfTotalUse() + "\n");
 		writer.write("* [List of all substances | " + ALL_SUBSTANCES + "]\n");
 		writer.write("* [List of all substance lists | " + ALL_SUBSTANCE_LISTS + "]\n");
 
 		writer.write("\n\n");
 		
-	}
-	
-	private int computeNumberOfTotalUse() {
-		int totalUse = 0;
-		for (SubstanceList list : model.getSubstanceLists()) {
-			for (Substance substance : list.substances) {
-				Integer uses = model.usesInLists(substance);
-				if (uses >= model.SUBSTANCE_OCCURRENCE_THRESHOLD) {
-					totalUse++;
-				}				
-			}
-		}
-		return totalUse;
-	}
-
-	private int computeNumberOfUsedSubstances() {
-		int usedSubstances = 0;
-		for (Substance substance : model.getSubstances()) {
-			Integer uses = model.usesInLists(substance);
-			if (uses >= model.SUBSTANCE_OCCURRENCE_THRESHOLD) {
-				usedSubstances++;
-			}
-		}
-		return usedSubstances;
 	}
 
 

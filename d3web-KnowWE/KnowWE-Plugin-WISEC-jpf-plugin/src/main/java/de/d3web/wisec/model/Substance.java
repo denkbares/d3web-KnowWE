@@ -34,7 +34,7 @@ public class Substance {
 
 	public String getName() {
 		for (String key : values.keySet()) {
-			if (key.equals(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
+			if (key.equalsIgnoreCase(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
 				return values.get(key);
 			}
 		}
@@ -65,7 +65,7 @@ public class Substance {
 	@Deprecated
 	public String getCAS() {
 		for (String key : values.keySet()) {
-			if (key.equalsIgnoreCase("CAS")) {
+			if (key.equalsIgnoreCase("CAS_No")) {
 				return values.get(key);
 			}
 		}

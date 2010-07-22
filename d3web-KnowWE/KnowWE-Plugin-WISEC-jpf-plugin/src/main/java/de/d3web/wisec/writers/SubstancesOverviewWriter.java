@@ -2,13 +2,8 @@ package de.d3web.wisec.writers;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
-import de.d3web.wisec.model.Substance;
 import de.d3web.wisec.model.WISECModel;
 
 public class SubstancesOverviewWriter extends WISECWriter {
@@ -29,13 +24,15 @@ public class SubstancesOverviewWriter extends WISECWriter {
 		b.append("%%zebra-table\n%%sortable\n");
 		
 		// write the data
-		b.append("|| CAS || EC number(s) || Occurences \n");
-		List<Substance> sortedSubstances = sortSubstances();
-		for (Substance substance : sortedSubstances) {
-			List<String> ecNumbers = model.getECNamesFor(substance.getName());
+		b.append("|| CAS_No || EC number(s) || IUPAC || Chemical Names  \n");
+		// List<Substance> sortedSubstances = sortSubstances();
+		for (String substanceName : model.activeSubstances) {
 			// String casName = substance.getCAS();
-			b.append("| " + SubstanceWriter.asWikiMarkup(substance) + " | " + ecNumbers + "| "
-					+ model.usesInLists(substance) + "\n");
+			b.append("| [" + substanceName + " | WI_SUB_" + substanceName + "] | "
+					+ WISECExcelConverter.asString(model.getECNamesFor(substanceName)) + "| "
+					+ WISECExcelConverter.asString(model.getIUPACFor(substanceName)) + " | "
+					+ WISECExcelConverter.asString(model.getChemNamesFor(substanceName)) + "\n");
+			// + " | " + model.usesInLists(substance) + "\n");
 		}
 		
 		writer.write(b.toString());
@@ -44,22 +41,6 @@ public class SubstancesOverviewWriter extends WISECWriter {
 		writer.close();
 		
 	}
-	
-	private List<Substance> sortSubstances() {
-		List<Substance> sorted = new ArrayList<Substance>();
-		for (Substance substance : model.getSubstances()) {
-			if (model.usesInLists(substance) >= model.SUBSTANCE_OCCURRENCE_THRESHOLD) {
-				sorted.add(substance);
-			}
-		}
-		
-		Collections.sort(sorted, new Comparator<Substance>() {
-			@Override
-			public int compare(Substance o1, Substance o2) {
-				return model.usesInLists(o2) - model.usesInLists(o1);
-			}
-		});
-		return sorted;
-	}
+
 
 }

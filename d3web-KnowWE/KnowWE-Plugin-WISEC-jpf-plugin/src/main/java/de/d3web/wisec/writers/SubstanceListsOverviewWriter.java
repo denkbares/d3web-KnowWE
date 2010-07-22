@@ -69,7 +69,7 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 		int notused=0;
 		int used = 0;
 		for (Substance substance : list.substances) {
-			if (model.usesInLists(substance) >= model.SUBSTANCE_OCCURRENCE_THRESHOLD) {
+			if (model.activeSubstances.contains(substance.getName())) {
 				used++;
 			} else {
 				notused++;

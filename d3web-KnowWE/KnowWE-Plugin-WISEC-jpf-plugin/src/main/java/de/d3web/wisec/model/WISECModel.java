@@ -4,54 +4,79 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import de.d3web.wisec.writers.SubstanceRatingListWriter;
 
-
 /**
  * The {@link WISECModel} stores information about the
  * <ol>
- * <li> the upper substance lists
- * <li> the substance lists
- * <li> the substances
+ * <li>the upper substance lists
+ * <li>the substance lists
+ * <li>the substances
  * </ol>
+ * 
  * @author joba
- *
+ * 
  */
 public class WISECModel {
+
 	Map<String, UpperList> upperLists;
 	Map<String, SubstanceList> substanceLists;
 	Map<String, Substance> substances;
-	Map<Substance, Integer> usesInList;
+	Map<String, Integer> usesInList;
 	Map<String, String> substanceRatings;
 
-	Map<String, List<String>> CAS2EC;
+	// EC_no for the given CAS
+	Map<String, Collection<String>> CAS2EC;
+	// Chemical_name for the given CAS
+	Map<String, Collection<String>> CAS2ChemNames;
+	// CAS2IUPAC_name for the given CAS
+	Map<String, Collection<String>> CAS2IUPACname;
 
 	public int SUBSTANCE_OCCURRENCE_THRESHOLD = 2;
-	
-	
+
+	// the CAS names of substances that are initially active
+	public Collection<String> activeSubstances;
+
 	public WISECModel() {
 		upperLists = new LinkedHashMap<String, UpperList>();
 		substanceLists = new LinkedHashMap<String, SubstanceList>();
-		substances = new HashMap<String,Substance>();
-		usesInList = new HashMap<Substance, Integer>();
+		substances = new HashMap<String, Substance>();
+		usesInList = new HashMap<String, Integer>();
 		substanceRatings = new LinkedHashMap<String, String>();
-		CAS2EC = new HashMap<String, List<String>>();
+		CAS2EC = new HashMap<String, Collection<String>>();
+		CAS2ChemNames = new HashMap<String, Collection<String>>();
+		CAS2IUPACname = new HashMap<String, Collection<String>>();
+		activeSubstances = new HashSet<String>();
 	}
-	
-	public List<String> getECNamesFor(String substanceName) {
+
+	public Collection<String> getECNamesFor(String substanceName) {
 		if (CAS2EC.get(substanceName) != null) {
 			return CAS2EC.get(substanceName);
 		}
 		else {
-			return Collections.emptyList();
+			return Collections.emptySet();
 		}
 	}
 
+	public Collection<String> getIUPACFor(String name) {
+		if (CAS2IUPACname.get(name) != null) {
+			return CAS2IUPACname.get(name);
+		}
+		return Collections.emptySet();
+	}
+
+	public Collection<String> getChemNamesFor(String name) {
+		if (CAS2ChemNames.get(name) != null) {
+			return CAS2ChemNames.get(name);
+		}
+		return Collections.emptySet();
+	}
+	
 	public void add(SubstanceList substanceList) {
 		this.substanceLists.put(substanceList.name, substanceList);
 		updateSubstanceOccurences(substanceList);
@@ -64,7 +89,7 @@ public class WISECModel {
 				doublettes.add(substance.getName());
 				// update uses
 				Integer uses = usesInLists(substance) + 1;
-				usesInList.put(substance, uses);
+				usesInList.put(substance.getName(), uses);
 				// update references in substance
 				Substance storedSubstance = substances.get(substance.getName());
 				if (storedSubstance == null) {
@@ -72,35 +97,38 @@ public class WISECModel {
 				}
 				storedSubstance.usesInLists.add(substanceList);
 				substances.put(storedSubstance.getName(), storedSubstance);
-				addEC_name_for_CAS(substance);
+				update("EC_No", CAS2EC, substance);
+				update("Chemical_name", CAS2ChemNames, substance);
+				update("IUPAC_name", CAS2IUPACname, substance);
 			}
 		}
-		
+
 	}
 
-	private void addEC_name_for_CAS(Substance substance) {
-		final String EC_name_ID = "EC_No";
-		List<String> ecNames = CAS2EC.get(substance.getName());
-		if (ecNames == null) {
-			ecNames = new LinkedList<String>();
-		}
-		String theECNAme = substance.get(EC_name_ID);
-		if (!ecNames.contains(theECNAme)) {
-			ecNames.add(theECNAme);
-			CAS2EC.put(substance.getName(), ecNames);
+	private void update(String idName, Map<String, Collection<String>> infoMap, Substance substance) {
+		String theName = substance.get(idName).trim().replaceAll("\\n", " ");
+		if (theName != null && !theName.isEmpty()) {
+			Collection<String> names = infoMap.get(substance.getName());
+			if (names == null) {
+				names = new HashSet<String>();
+			}
+			if (!names.contains(theName)) {
+				names.add(theName);
+				infoMap.put(substance.getName(), names);
+			}
 		}
 	}
 
 	public Integer usesInLists(Substance substance) {
-		Integer uses = usesInList.get(substance);
+		Integer uses = usesInList.get(substance.getName());
 		if (uses == null) {
 			return Integer.valueOf(0);
 		}
-		else { 
+		else {
 			return uses;
 		}
 	}
-	
+
 	public Collection<SubstanceList> getSubstanceLists() {
 		return this.substanceLists.values();
 	}
@@ -117,7 +145,7 @@ public class WISECModel {
 	public Collection<UpperList> getUpperLists() {
 		return upperLists.values();
 	}
-	
+
 	public Map<SubstanceList, String> listsWithCriteria(String substancename, String criteria) {
 		Map<SubstanceList, String> result = new HashMap<SubstanceList, String>();
 		for (SubstanceList substanceList : getSubstanceListsContaining(substancename)) {
@@ -128,7 +156,7 @@ public class WISECModel {
 		}
 		return result;
 	}
-	
+
 	public List<SubstanceList> getSubstanceListsContaining(String substancename) {
 		List<SubstanceList> result = new ArrayList<SubstanceList>();
 		for (SubstanceList list : getSubstanceLists()) {
@@ -153,13 +181,14 @@ public class WISECModel {
 	public void addRating(String name, String string) {
 		substanceRatings.put(name, string);
 	}
-	
+
 	public Collection<String> generatedRatings() {
 		return substanceRatings.keySet();
 	}
-	
+
 	public String wikiFileNameForRating(String ratingName) {
 		return SubstanceRatingListWriter.getFileNameFor(ratingName);
 	}
+
 
 }

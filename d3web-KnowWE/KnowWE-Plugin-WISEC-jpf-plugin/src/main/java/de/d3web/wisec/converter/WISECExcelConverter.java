@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import de.d3web.wisec.model.WISECModel;
 import de.d3web.wisec.readers.WISECReader;
+import de.d3web.wisec.readersnew.ActiveSubstancesReader;
 import de.d3web.wisec.readersnew.SubstanceListsReader;
 import de.d3web.wisec.readersnew.UpperListReader;
 import de.d3web.wisec.scoring.ScoringWeightsConfiguration;
@@ -45,20 +47,20 @@ public class WISECExcelConverter {
 	// The directory of the master database file
 	public static String workspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
-	public static String wikiworkspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/wikicontent/";
+	public static String wikiworkspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/wikicontent_gen/";
 	// public static String wikiworkspace =
 	// "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/Treshold-40/";
 	// Praefix of most of the generated files
 	public static final String FILE_PRAEFIX = "WI_";
 
 	// Name of the column that identifies the name of a substance 
-	public static String SUBSTANCE_IDENTIFIER = "CAS";
+	public static String SUBSTANCE_IDENTIFIER = "CAS_No";
 	// Include semantic annotations etc. in the generation process
 	public static boolean GENERATE_WITH_KNOWLEDGE = true;
 	// Minimum number of occurrences of a substance, that is required before it is considered for the model
-	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
+	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
 	// 9min
-	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
+	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
 	// 40min
 	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 5; // takes
 	// 110min
@@ -90,13 +92,17 @@ public class WISECExcelConverter {
 
 		
 		List<? extends WISECReader> readers = Arrays.asList(
-				new UpperListReader(workbook),
-				new SubstanceListsReader(workbook));
+					new UpperListReader(workbook),
+					new SubstanceListsReader(workbook),
+				new ActiveSubstancesReader(workbook)
+				);
 		for (WISECReader wisecReader : readers) {
 			wisecReader.read(model);
 		}
 		
-		List<? extends WISECWriter> writers = configureWriters(model, wikiworkspace);
+
+		List<? extends WISECWriter> writers = configureWriters(model,
+				wikiworkspace);
 		for (WISECWriter wisecWriter : writers) {
 			wisecWriter.write();
 		}
@@ -199,5 +205,21 @@ public class WISECExcelConverter {
 		writers.add(toxicSubstances);
 
 		return writers;
+	}
+
+	/**
+	 * Creates a pretty formated, Wiki-save String of the given Collection.
+	 * 
+	 * @created 22.07.2010
+	 * @param collection
+	 * @return
+	 */
+	public static String asString(Collection<String> collection) {
+		if (collection != null) {
+			return collection.toString().replaceAll("\\[", "[[");
+		}
+		else {
+			return "[[]";
+		}
 	}	
 }

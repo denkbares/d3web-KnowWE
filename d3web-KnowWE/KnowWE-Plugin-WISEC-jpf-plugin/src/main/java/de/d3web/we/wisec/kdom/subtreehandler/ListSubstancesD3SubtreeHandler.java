@@ -185,7 +185,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webSubtreeHandler<ListSubs
 		Pattern cellPattern = Pattern.compile("\\s*\\|{2}\\s*");
 		String[] cells = cellPattern.split(tablehead);
 		for (int i = 0; i < cells.length; i++) {
-			if (cells[i].trim().equalsIgnoreCase("CAS")) return i;
+			if (cells[i].trim().equalsIgnoreCase("CAS_No")) return i;
 		}
 		return -1;
 	}
@@ -194,9 +194,9 @@ public class ListSubstancesD3SubtreeHandler extends D3webSubtreeHandler<ListSubs
 		ArrayList<Section<TableCellContent>> contents = new ArrayList<Section<TableCellContent>>();
 		section.findSuccessorsOfType(TableCellContent.class, contents);
 		for (int i = 0; i < contents.size(); i++) {
-			if (contents.get(i).getOriginalText().trim().equalsIgnoreCase("CAS")) return i;
+			if (contents.get(i).getOriginalText().trim().equalsIgnoreCase("CAS_No")) return i;
 		}
-		Logging.getInstance().warning("CAS row was not found!");
+		Logging.getInstance().warning("CAS_No row was not found!");
 		return -1;
 	}
 

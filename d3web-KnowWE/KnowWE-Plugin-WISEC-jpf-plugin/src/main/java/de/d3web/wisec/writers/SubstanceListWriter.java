@@ -92,7 +92,7 @@ public class SubstanceListWriter extends WISECWriter {
 		List<Substance> consideredSubstances = new ArrayList<Substance>();
 		List<Substance> notConsideredSubstances = new ArrayList<Substance>();
 		for (Substance substance : list.substances) {
-			if (substanceExceedsThreshold(substance)) {
+			if (considerSubstance(substance)) {
 				consideredSubstances.add(substance);
 			}
 			else {
@@ -136,8 +136,8 @@ public class SubstanceListWriter extends WISECWriter {
 		writer.write("\n");
 	}
 
-	private boolean substanceExceedsThreshold(Substance substance) {
-		return model.usesInLists(substance) >= model.SUBSTANCE_OCCURRENCE_THRESHOLD;
+	private boolean considerSubstance(Substance substance) {
+		return model.activeSubstances.contains(substance.getName());
 	}
 
 	public void setFilePraefix(String praefix) {
