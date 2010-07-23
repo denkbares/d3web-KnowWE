@@ -21,10 +21,9 @@ package de.d3web.we.kdom.imagequestion;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -32,7 +31,6 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.Resource;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
@@ -178,7 +176,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 			+ "</tr></table>");
 		if (renderDIV)
 			buffi.append("</div>");
-		
+
 		return buffi.toString();
 	}
 
@@ -307,7 +305,6 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 
 		// write style-Attribute
 		StringBuffer styleString = new StringBuffer();
-//		styleString.append("position: absolute;");
 		styleString.append(" top: " + answerRegion.getYStart() + "px;");
 		styleString.append(" left: " + answerRegion.getXStart() + "px;");
 		styleString.append(" width: " + answerRegion.getWidth() + "px; height: "
@@ -330,7 +327,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		buffi.append(this.buildRelAttributeString(answerID, q.getId()));
 		
 		buffi.append(">");
-		buffi.append("</a>");
+		buffi.append("</a> \n"); // avoid pagebreak by jspwiki
 		
 		return buffi.toString();
 	}
@@ -349,7 +346,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		relBuffi.append(" web:'" + this.web + "',");
 		relBuffi.append(" ns:'" + this.topic + ".."
 				+ KnowWEEnvironment.generateDefaultID(this.topic) + "',");
-		relBuffi.append(" qid:'" + id + "'}\"");
+		relBuffi.append(" qid:'" + id + "' }\"");
 		return relBuffi.toString();
 	}
 
@@ -381,7 +378,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		Value answer = session.getBlackboard().getValue(q);
 		boolean contains = false;
 		if (!(answer instanceof UndefinedValue)) {
-			ArrayList<Value> values = (ArrayList<Value>)answer.getValue();
+			LinkedList<Value> values = (LinkedList<Value>)answer.getValue();
 			for (Value val : values) {
 				if (val.equals(value)) {
 					contains = true;
