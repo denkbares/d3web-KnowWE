@@ -21,11 +21,29 @@
 package de.d3web.we.kdom.questionTreeNew;
 
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.apache.poi.hssf.util.HSSFColor.AQUA;
+
+import de.d3web.core.knowledge.terminology.QASet;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.info.Property;
+import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.objects.AnswerDefinition;
+import de.d3web.we.kdom.objects.QuestionDefinition;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
+import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**
  * Answerline of the questionTree; a dashTreeElement is an AnswerLine if its
@@ -61,6 +79,72 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 		QuestionTreeAnswerDefinition aid = new QuestionTreeAnswerDefinition();
 		aid.setSectionFinder(new AllTextFinderTrimmed());
 		this.childrenTypes.add(aid);
+	}
+	
+	
+	
+	/**
+	 * Allows for the definition of abstract-flagged questions Syntax is:
+	 * "<abstract>" or "<abstrakt>"
+	 *
+	 * The subtreehandler creates the corresponding
+	 * ABSTRACTION_QUESTION-property in the knoweldge base
+	 *
+	 *
+	 * @author Jochen
+	 *
+	 */
+	static class InitFlag extends DefaultAbstractKnowWEObjectType {
+
+		public InitFlag() {
+			this.sectionFinder = new OneOfStringEnumFinder(new String[] {
+					"<init>" });
+			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
+
+			this.addSubtreeHandler(new SubtreeHandler<InitFlag>() {
+
+				@Override
+				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<InitFlag> s) {
+
+					Section<AnswerDefinition> aDef = s.getFather().findSuccessor(
+							AnswerDefinition.class);
+
+					//Section<? extends QuestionTreeElementDefinition<QASet>> qDef = 
+					Section<? extends QuestionDefinition> qaSetSection = aDef.get().retrieveAndStoreParentQASetSection(aDef);
+						
+					Section<? extends QuestionTreeElementDefinition<?>> storedParentQASetSection = aDef.get().getStoredParentQASetSection(aDef);
+					
+					
+					if (qaSetSection != null) {
+
+						
+						Question question = qaSetSection.get().getTermObject(article, qaSetSection);
+						
+						String answerName = aDef.get().getTermObject(article, aDef).getName();
+						
+						Object p = question.getProperties().getProperty(Property.INIT);
+						
+						if(p == null) {
+							question.getProperties().setProperty(Property.INIT, answerName);
+						} else {
+							if(p instanceof String) {
+								String newValue = ((String)p).concat(";"+answerName);
+								question.getProperties().setProperty(Property.INIT, newValue);
+							}
+					
+						}
+						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+								D3webModule.getKwikiBundle_d3web()
+								.getString("KnowWE.questiontree.abstractquestion")));
+
+					}
+					return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
+							D3webModule.getKwikiBundle_d3web()
+							.getString("KnowWE.questiontree.abstractflag"),
+							this.getClass()));
+				}
+			});
+		}
 	}
 
 }

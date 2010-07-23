@@ -8,15 +8,46 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 
 
 
 public abstract class AnswerReference extends D3webTermReference<Choice> {
 
+	String fontcolor;
+	
 	public AnswerReference() {
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
+		this.setCustomRenderer(new ReferenceRenderer());
+		this.fontcolor = FontColorRenderer.COLOR1;
+	}
+	
+	class ReferenceRenderer extends KnowWEDomRenderer<AnswerReference>  {
+
+		@Override
+		public void render(KnowWEArticle article, Section<AnswerReference> sec, KnowWEUserContext user, StringBuilder string) {
+			String refText = sec.get().getTermName(sec);
+			String originalText = sec.getOriginalText();
+			int index = originalText.indexOf(refText);
+			
+			new FontColorRenderer(fontcolor).render(article, sec, user, string);
+			
+//			if(index < 0) {
+//				string.append("error: KnowWETermname not contained in text");
+//			}else {
+//				string.append(originalText.substring(0, index));
+//				string.append(KnowWEUtils.maskHTML("<span")); 
+//				string.append(" style='").append(fontcolor).append("'");
+//				string.append(KnowWEUtils.maskHTML(">"));
+//				string.append(KnowWEUtils.maskHTML("</span>"));
+//				string.append(originalText.substring(index+refText.length(), originalText.length()));
+//			}
+			
+		}
+		
 	}
 
 	@Override
@@ -72,10 +103,10 @@ public abstract class AnswerReference extends D3webTermReference<Choice> {
 			return super.getTermName(s);
 		}
 
-		String answer = KnowWEUtils.trimQuotes(s.getOriginalText());
+String answer = KnowWEUtils.trimQuotes(s.getOriginalText());
 
+		//TODO: question prefix should be removed here!
 		String question = KnowWEUtils.trimQuotes(getQuestionSection(sa).getOriginalText());
-
 		return question + " " + answer;
 	}
 
