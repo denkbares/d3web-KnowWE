@@ -41,6 +41,8 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.objects.AnswerReference;
+import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -74,7 +76,7 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 			}
 		};
 
-		AnonymousType argumentType = createArgumentType();
+		AnswerReferenceInBrackets argumentType = new AnswerReferenceInBrackets();
 		this.childrenTypes.add(argumentType);
 		this.childrenTypes.add(createObjectRefTypeBefore(argumentType));
 
@@ -89,24 +91,7 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 		return qid;
 	}
 
-	private AnonymousType createArgumentType() {
-		AnonymousType typeDef = new AnonymousType(SETVALUE_ARGUMENT);
-		SectionFinder typeFinder = new SectionFinder() {
-
-			@Override
-			public List<SectionFinderResult> lookForSections(String text,
-					Section father, KnowWEObjectType type) {
-
-				return SectionFinderResult
-						.createSingleItemList(new SectionFinderResult(
-								SplitUtility.indexOfUnquoted(text, "("),
-								SplitUtility.indexOfUnquoted(text, ")") + 1));
-			}
-		};
-		typeDef.setSectionFinder(typeFinder);
-		typeDef.setCustomRenderer(new ArgumentRenderer());
-		return typeDef;
-	}
+	
 
 	static class ArgumentRenderer extends KnowWEDomRenderer {
 
@@ -137,25 +122,34 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
-			Question q = mgn.findQuestion(KnowWEUtils.trimQuotes(s.getOriginalText()));
+			Question q = mgn.findQuestion(trimQuotes(s));
 
-			String argument = getArgumentString(s);
+			Section<AnswerReference> answerSec = s.getFather().findSuccessor(AnswerReference.class);
+			
+			String answerTermName = answerSec.get().getTermName(answerSec);
 
+			// TODO: shouldnt be necessary
+			String answerName = answerTermName.substring(answerTermName.indexOf(' ')).trim();
+			
 			if(q != null) {
 				Choice a = null;
 				if(q instanceof QuestionChoice) {
 					QuestionChoice qc = (QuestionChoice )q;
 					List<Choice> allAlternatives = qc.getAllAlternatives();
 					for (Choice answerChoice : allAlternatives) {
-						if(answerChoice.getName().equals(argument)) {
+						if(answerChoice.getName().equals(answerName)) {
 							a = answerChoice;
+							break;
 						}
 					}
 					if(a != null) {
 						String newRuleID = mgn.createRuleID();
 
 						Condition cond = Utils.createCondition(article, DashTreeElement.getDashTreeAncestors(element));
-
+						if(cond == null) {
+							return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()));
+						}
+						
 						Rule r = RuleFactory.createSetValueRule(newRuleID, qc, new Object[]{a}, cond, null);
 						if (r != null) {
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass() + " : "
@@ -164,44 +158,8 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 					}
 				}
-				if(q instanceof QuestionNum) {
-					Double d = null;
-					try {
-						d = Double.parseDouble(argument);
-					} catch (NumberFormatException e) {
-						return Arrays.asList((KDOMReportMessage) new de.d3web.we.kdom.report.message.InvalidNumberError(
-								argument));
-					}
-
-					if(d != null) {
-						String newRuleID = mgn.createRuleID();
-						Condition cond = Utils.createCondition(article, DashTreeElement.getDashTreeAncestors(element));
-						Rule r  = RuleFactory.createAddValueRule(newRuleID, q, new Object[]{d},cond);
-						if (r != null) {
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass()
-									+ " : " + r.getId()));
-						}
-					}
-
-				}
 			}
-
-			Solution d = mgn.findSolution(s.getOriginalText());
-			if( d != null) {
-				Score score = D3webUtils.getScoreForString(argument);
-
-				if(score != null) {
-					String newRuleID = mgn.createRuleID();
-
-					Condition cond = Utils.createCondition(article, DashTreeElement.getDashTreeAncestors(element));
-
-					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, d, score, cond);
-					if (r != null) {
-						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass()
-								+ " : " + r.getId()));
-					}
-				}
-			}
+			
 
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()));
 
@@ -221,5 +179,17 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 			return argument;
 		}
 
+	}
+
+	public static String trimQuotes(Section<?> s) {
+		String content = s.getOriginalText();
+
+		String trimmed = content.trim();
+
+		if(trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
+			return trimmed.substring(1, trimmed.length()-1).trim();
+		}
+
+		return trimmed;
 	}
 }

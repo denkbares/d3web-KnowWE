@@ -29,8 +29,8 @@ public class QuestionTreeElementContent extends DashTreeElementContent {
 		this.childrenTypes.add(new QuestionLine());
 		this.childrenTypes.add(new NumericCondLine());
 		this.childrenTypes.add(new SolutionSetValueLine());
-		//this.childrenTypes.add(new QuestionSetValueNumLine());  // add!
-		//this.childrenTypes.add(new QuestionSetValueLine());	 // add!
+		this.childrenTypes.add(new QuestionSetValueNumLine());
+		this.childrenTypes.add(new QuestionSetValueLine());	 
 		this.childrenTypes.add(new AnswerLine());
 		this.childrenTypes.add(new QClassLine());
 		this.childrenTypes.add(new IndicationLine());
