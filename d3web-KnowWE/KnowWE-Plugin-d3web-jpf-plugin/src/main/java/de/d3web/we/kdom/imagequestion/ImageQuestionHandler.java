@@ -378,7 +378,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		Value answer = session.getBlackboard().getValue(q);
 		boolean contains = false;
 		if (!(answer instanceof UndefinedValue)) {
-			LinkedList<Value> values = (LinkedList<Value>)answer.getValue();
+			List<Value> values = (List<Value>)answer.getValue();
 			for (Value val : values) {
 				if (val.equals(value)) {
 					contains = true;
