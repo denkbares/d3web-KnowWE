@@ -32,6 +32,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.CommentLineType;
@@ -54,7 +55,6 @@ import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
@@ -142,7 +142,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			private final String relationStoreKey = "XCLRELATION_STORE_KEY";
 
-			private Section<SolutionDefinition> getCorrespondingSolutionDef(Section<CoveringRelation> s) {
+			private Section<SolutionDefinition> getCorrespondingSolutionDef(KnowWEArticle article, Section<CoveringRelation> s) {
 				return s.getFather().getFather().findSuccessor(SolutionDefinition.class);
 			}
 
@@ -150,7 +150,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			public boolean needsToCreate(KnowWEArticle article, Section<CoveringRelation> s) {
 				
 				//TODO: handle this case...
-				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(s);
+				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article, s);
 				if(solutionDef == null) return false;
 				
 				return super.needsToCreate(article, s)
@@ -181,7 +181,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							.getString("KnowWE.xcllist.relationfail")));
 				}
 
-				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(s);
+				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(article, s);
 				if (solutionDef != null) {
 					Solution solution = solutionDef.get().getTermObject(
 							article, solutionDef);
@@ -259,7 +259,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public void destroy(KnowWEArticle article, Section<CoveringRelation> s) {
-				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(s);
+				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(article, s);
 
 				if (soltuionDef == null) return;
 				Solution solution = soltuionDef.get().getTermObjectFromLastVersion(article,
