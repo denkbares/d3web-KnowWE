@@ -23,7 +23,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -61,9 +60,6 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 
 	private static final String config_knowledgebase_path=
 		"kbResources/";
-//	private static final String kbjarpath =
-//		"C:/Users/ManiaC/knowwe_newBranch/d3web-KnowWE/KnowWE/target/" +
-//		"KnowWE-0.2-SNAPSHOT/WEB-INF/resources/knowledgebases/RheumaDemoPPRheumaDemo_KB.jar";
 	
 	/**
 	 * Nearly every method in this class needs:
@@ -117,22 +113,6 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		
 		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
 		KnowledgeBase kb = service.getBase();
-
-		// TODO: This should be loaded from persistence right away!
-//		try {
-//			String path = KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
-//				+ ImageQuestionHandler.config_knowledgebase_path
-//				+ topic + "PP" + KnowWEEnvironment.generateDefaultID(topic)
-//				+ "/imagequestion/picturequestions.xml";
-//			path = path.replaceAll("KnowWEExtension", "/");
-//			FileInputStream stream = new FileInputStream(
-//					new File(path));
-//			BufferedInputStream stream2 = new BufferedInputStream(stream);
-//			ImageQuestionPersistenceHandler handler = new ImageQuestionPersistenceHandler();
-//			handler.read(kb, stream2, new DummyProgressListener());
-//		} catch (IOException e1) {
-//			// TODO Welchen Logger benutzen
-//		}
 		
 		// Read out the properties
 		String questionID = values.get("question");
@@ -144,6 +124,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		List<AnswerRegion> answerRegions = 
 			this.buildAnswerRegions((List)props.get(1));
 		
+		// Layout is: Picture | Checkboxes with labels
 		StringBuffer renderedImage = new StringBuffer();
 		StringBuffer renderedCheckBoxes = new StringBuffer();
 		try {
@@ -300,7 +281,6 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		if (currentAnswerIsSet(answer.getId(), q)) {
 			buffi.append(" answerSet");
 		}
-//		buffi.append(" qImageHover");
 		buffi.append("\"");
 
 		// write style-Attribute
@@ -320,7 +300,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		buffi.append(" width=\"" + answerRegion.getWidth() + "\"");
 		buffi.append(" height=\"" + answerRegion.getHeight() + "\"");
 		buffi.append(" title=\"" + imageName + "\" ");
-		buffi.append(" id=\"bild_" + answerID + "\" ");
+		buffi.append(" id=\"img_" + answerID + "\" ");
 		
 		// Add a Semantic Annotation,
 		// so the SetSingleFindingAction can be used
@@ -417,7 +397,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		int i = 0;
 		buffi.append("<td>");
 		buffi.append("<table>");
-		for (;i < (checkBoxes.size()/2);i++) {
+		for (;i < ((checkBoxes.size()/2) + 1);i++) {
 			buffi.append(checkBoxes.get(i));
 		}
 		buffi.append("</table>");
