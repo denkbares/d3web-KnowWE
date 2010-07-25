@@ -21,8 +21,8 @@
 package de.d3web.we.wisec.kdom;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.wisec.kdom.subtreehandler.ListSubstancesOWLSubtreeHandler;
 
 /**

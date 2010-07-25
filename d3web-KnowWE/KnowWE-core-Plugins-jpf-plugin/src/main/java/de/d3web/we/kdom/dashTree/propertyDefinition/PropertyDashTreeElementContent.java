@@ -40,6 +40,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.RoundBracedType;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
@@ -101,7 +102,7 @@ public class PropertyDashTreeElementContent extends DashTreeElementContent{
 
 
 						// creates a Subproperty relation IF father exists
-						Section<? extends DashTreeElement> fatherElement = DashTreeElement.getDashTreeFather((Section<DashTreeElement>)sec.getFather());
+						Section<? extends DashTreeElement> fatherElement = DashTreeUtils.getFatherDashTreeElement((Section<DashTreeElement>)sec.getFather());
 						if(fatherElement != null) {
 							Section<PropertyIDDefinition> fatherID  = fatherElement.findSuccessor(PropertyIDDefinition.class);
 							if(fatherID != null) {

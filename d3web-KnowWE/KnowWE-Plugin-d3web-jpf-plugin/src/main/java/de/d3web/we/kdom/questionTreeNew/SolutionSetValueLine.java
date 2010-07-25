@@ -25,12 +25,7 @@ import java.util.List;
 
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.scoring.Score;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -38,10 +33,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionReference;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.SolutionReference;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
@@ -49,11 +42,9 @@ import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -116,7 +107,7 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text,
-					Section father, KnowWEObjectType type) {
+					Section<?> father, KnowWEObjectType type) {
 
 				return SectionFinderResult
 						.createSingleItemList(new SectionFinderResult(
@@ -129,10 +120,10 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 		return typeDef;
 	}
 
-	static class ArgumentRenderer extends KnowWEDomRenderer {
+	static class ArgumentRenderer extends KnowWEDomRenderer<AnonymousType> {
 
 		@Override
-		public void render(KnowWEArticle article, Section sec,
+		public void render(KnowWEArticle article, Section<AnonymousType> sec,
 				KnowWEUserContext user, StringBuilder string) {
 			String embracedContent = sec.getOriginalText().substring(1,
 					sec.getOriginalText().length() - 1);
@@ -151,28 +142,18 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionReference> s) {
 
-			// current DashTreeElement
-			Section<DashTreeElement> element = KnowWEObjectTypeUtils
-					.getAncestorOfType(s, DashTreeElement.class);
-			// get dashTree-father
-
-
 			Solution sol = s.get().getTermObject(s.getArticle(), s);
-			
-			
+
 			String argument = getArgumentString(s);
 
-
-
-			
 			if( sol != null) {
 				Score score = D3webUtils.getScoreForString(argument);
-				KnowledgeBaseManagement mgn = getKBM(article);
 				
 				if(score != null) {
-					String newRuleID = mgn.createRuleID();
+					String newRuleID = getKBM(article).createRuleID();
 
-					Condition cond = Utils.createCondition(article, DashTreeElement.getDashTreeAncestors(element));
+					Condition cond = Utils.createCondition(article,
+							DashTreeUtils.getAncestorDashTreeElements(s));
 
 					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, sol, score, cond);
 					if (r != null) {
@@ -202,16 +183,5 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	public static String trimQuotes(Section<?> s) {
-		String content = s.getOriginalText();
-
-		String trimmed = content.trim();
-
-		if(trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-			return trimmed.substring(1, trimmed.length()-1).trim();
-		}
-
-		return trimmed;
-	}
 	
 }

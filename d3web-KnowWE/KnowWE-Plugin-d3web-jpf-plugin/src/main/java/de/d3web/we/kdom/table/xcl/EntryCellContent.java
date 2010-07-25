@@ -44,7 +44,6 @@ import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.kdom.table.TableUtils;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLModel;
@@ -212,8 +211,7 @@ class EntryCellContentSubtreeHandler extends D3webSubtreeHandler {
 				return null;
 			}
 
-			Section lineSec = KnowWEObjectTypeUtils.getAncestorOfType(s,
-					TableLine.class);
+			Section lineSec = s.findAncestorOfType(TableLine.class);
 			Section answerSec = lineSec.findSuccessor(AnswerCellContent.class);
 			String answer = null;
 			if (answerSec != null) {

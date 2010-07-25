@@ -31,10 +31,10 @@ import de.d3web.report.Message;
 import de.d3web.report.Report;
 import de.d3web.we.core.KnowWEParseResult;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.AbstractKopicSection;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 
 public class QuestionsSection extends AbstractKopicSection {
@@ -49,7 +49,7 @@ public class QuestionsSection extends AbstractKopicSection {
 	protected void init() {
 		childrenTypes.add(new QuestionsSectionContent());
 		this.setOrderSensitive(true);
-		this.addSubtreeHandler(Priority.TERMINOLOGY, new QuestionsSectionSubTreeHandler());
+		this.addSubtreeHandler(Priority.HIGHER, new QuestionsSectionSubTreeHandler());
 
 	}
 

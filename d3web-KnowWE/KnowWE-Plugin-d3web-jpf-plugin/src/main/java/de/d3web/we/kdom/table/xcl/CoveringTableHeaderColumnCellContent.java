@@ -31,7 +31,6 @@ import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -68,11 +67,9 @@ public class CoveringTableHeaderColumnCellContent extends
 			String text = s.getOriginalText().trim();
 			
 			//if it is an already defined QContainer
-			Section<Table> tableContentSection = KnowWEObjectTypeUtils.getAncestorOfType(cell,
-			Table.class);
+			Section<Table> tableContentSection = cell.findAncestorOfType(Table.class);
 			if(mgn.findQContainer(text) != null) {
-				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
-						TableLine.class);
+				Section<TableLine> lineSec = cell.findAncestorOfType(TableLine.class);
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
 						.getTitle(), tableContentSection.getID(), QUESTIONNAIRE_CELL, s);
 				
@@ -81,8 +78,7 @@ public class CoveringTableHeaderColumnCellContent extends
 			
 			//if it is a marked up new QContainer
 			if(QuestionnaireCellContent.hasQContainerDeclarationSyntax(text)) {
-				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
-						TableLine.class);
+				Section<TableLine> lineSec = cell.findAncestorOfType(TableLine.class);
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
 						.getTitle(), tableContentSection.getID(), QUESTIONNAIRE_CELL, s);
 				
@@ -92,8 +88,7 @@ public class CoveringTableHeaderColumnCellContent extends
 			
 			//if it is an already defined Question
 			if (mgn.findQuestion(text) != null) {
-				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
-						TableLine.class);
+				Section<TableLine> lineSec = cell.findAncestorOfType(TableLine.class);
 				
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
 						.getTitle(), tableContentSection.getID(), QUESTION_CELL, s);
@@ -104,8 +99,7 @@ public class CoveringTableHeaderColumnCellContent extends
 			
 			//if it is a new marked up question
 			if (containsQTypeMarkup(text)) {
-				Section<TableLine> lineSec = KnowWEObjectTypeUtils.getAncestorOfType(cell,
-						TableLine.class);
+				Section<TableLine> lineSec = cell.findAncestorOfType(TableLine.class);
 
 				KnowWEUtils.storeSectionInfo(s.getArticle().getWeb(), s
 						.getTitle(), tableContentSection.getID(), QUESTION_CELL, s);

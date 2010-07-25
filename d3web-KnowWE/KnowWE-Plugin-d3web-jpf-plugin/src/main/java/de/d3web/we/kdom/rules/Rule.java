@@ -46,7 +46,6 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -126,8 +125,7 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<Rule> s) {
 
 			boolean lazy = false;
-			Section xml = KnowWEObjectTypeUtils.getAncestorOfType(s,
-					AbstractXMLObjectType.class);
+			Section xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 			Map<String, String> attributes = AbstractXMLObjectType
 					.getAttributeMapFor(xml);
 			if (attributes != null && attributes.containsKey("lazy")) {

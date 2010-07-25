@@ -1,6 +1,7 @@
 package de.knowwe.plugin;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -8,7 +9,11 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.action.Action;
 import de.d3web.we.core.KnowWERessourceLoader;
+import de.d3web.we.kdom.ExpandedSectionizerModule;
+import de.d3web.we.kdom.IncludeSectionizerModule;
+import de.d3web.we.kdom.IncrementalSectionizerModule;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.SectionizerModule;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.module.PageAppendHandler;
 import de.d3web.we.taghandler.TagHandler;
@@ -106,6 +111,14 @@ public class Plugins {
 			}
 		}
 		return ret;
+	}
+
+	public static Collection<SectionizerModule> getSectionizerModules() {
+		Collection<SectionizerModule> sm = new ArrayList<SectionizerModule>();
+		sm.add(new IncrementalSectionizerModule());
+		sm.add(new ExpandedSectionizerModule());
+		sm.add(new IncludeSectionizerModule());
+		return sm;
 	}
 
 	/**

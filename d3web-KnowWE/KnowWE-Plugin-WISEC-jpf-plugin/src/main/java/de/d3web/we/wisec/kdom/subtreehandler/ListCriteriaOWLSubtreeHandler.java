@@ -30,7 +30,7 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListCriteriaType> s) {
 
 		// Get the necessary Annotations
-		Section<ListCriteriaRootType> root = s.findAncestor(ListCriteriaRootType.class);
+		Section<ListCriteriaRootType> root = s.findAncestorOfType(ListCriteriaRootType.class);
 		String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 		String upperlistID = DefaultMarkupType.getAnnotation(root, "UpperlistID");
 				

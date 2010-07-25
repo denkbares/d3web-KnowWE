@@ -30,7 +30,7 @@ public class XMLWrappedTableAttributesProvider implements TableAttributesProvide
 
 	@Override
 	public String[] getAttributeValues(Section<? extends TableCellContent> s) {
-		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
+		Section<AbstractXMLObjectType> xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if(xml != null) {
 			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_VALUES).split(",");
 		}	
@@ -39,7 +39,7 @@ public class XMLWrappedTableAttributesProvider implements TableAttributesProvide
 
 	@Override
 	public String getNoEditColumnAttribute(Section<Table> s) {
-		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
+		Section<AbstractXMLObjectType> xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if(xml != null) {
 			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_COLUMN);
 		}	
@@ -48,7 +48,7 @@ public class XMLWrappedTableAttributesProvider implements TableAttributesProvide
 
 	@Override
 	public String getNoEditRowAttribute(Section<Table> s) {
-		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
+		Section<AbstractXMLObjectType> xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if(xml != null) {
 			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_NOEDIT_ROW);
 		}	
@@ -57,7 +57,7 @@ public class XMLWrappedTableAttributesProvider implements TableAttributesProvide
 
 	@Override
 	public String getWidthAttribute(Section<Table> s) {
-		Section<AbstractXMLObjectType> xml = s.findAncestor(AbstractXMLObjectType.class);
+		Section<AbstractXMLObjectType> xml = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if(xml != null) {
 			return AbstractXMLObjectType.getAttributeMapFor(xml).get(Table.ATT_WIDTH);
 		}	

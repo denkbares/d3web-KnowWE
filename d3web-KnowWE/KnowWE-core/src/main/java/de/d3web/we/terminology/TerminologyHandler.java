@@ -13,13 +13,14 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.NotUniqueKnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.objects.TermReference;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 
 /**
- * @author Jochen
- *
+ * @author Jochen, Albrecht
+ * 
  *         This class manages the definition and usage of terms. A term
  *         represents some kind of object. For each term that is defined in the
  *         wiki (and registered here) it stores the location where it has been
@@ -27,9 +28,9 @@ import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
  *         The service of this manager is, that for a given term the definition
  *         and the references can be asked for. Obviously, this only works if
  *         the terms are registered here.
- *
- *
- *
+ * 
+ * 
+ * 
  */
 public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
@@ -41,8 +42,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	private String web;
 
 	@SuppressWarnings("unchecked")
-	private final Map<String, Map<KnowWETermName, TermReferenceLog>> termReferenceLogsMaps =
-			new HashMap<String, Map<KnowWETermName, TermReferenceLog>>();
+	private final Map<String, Map<TermIdentifier, TermReferenceLog>> termReferenceLogsMaps =
+			new HashMap<String, Map<TermIdentifier, TermReferenceLog>>();
 
 	// private static TerminologyHandler instance = null;
 	//
@@ -69,10 +70,10 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<KnowWETermName, TermReferenceLog> getTermReferenceLogsMap(String title) {
-		Map<KnowWETermName, TermReferenceLog> tmap = termReferenceLogsMaps.get(title);
+	private Map<TermIdentifier, TermReferenceLog> getTermReferenceLogsMap(String title) {
+		Map<TermIdentifier, TermReferenceLog> tmap = termReferenceLogsMaps.get(title);
 		if (tmap == null) {
-			tmap = new HashMap<KnowWETermName, TermReferenceLog>();
+			tmap = new HashMap<TermIdentifier, TermReferenceLog>();
 			termReferenceLogsMaps.put(title, tmap);
 		}
 		return tmap;
@@ -80,7 +81,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
 	@SuppressWarnings("unchecked")
 	private <TermObject> Set<Section<? extends TermReference<TermObject>>> getTermReferencesTo(
-			KnowWEArticle article, KnowWETermName t) {
+			KnowWEArticle article, TermIdentifier t) {
 
 		if (getTermReferenceLogsMap(article.getTitle()).containsKey(t)) {
 			return getTermReferenceLogsMap(article.getTitle()).get(t).getReferences();
@@ -94,12 +95,12 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	private <TermObject> TermReferenceLog<TermObject> getTermReferenceLog(KnowWEArticle article,
 			Section<? extends KnowWETerm<TermObject>> r) {
 		return getTermReferenceLogsMap(article.getTitle()).get(
-				new KnowWETermName(r));
+				new TermIdentifier(article, r));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void removeTermReferenceLogsForArticle(KnowWEArticle article) {
-		termReferenceLogsMaps.put(article.getTitle(), new HashMap<KnowWETermName, TermReferenceLog>());
+		termReferenceLogsMaps.put(article.getTitle(), new HashMap<TermIdentifier, TermReferenceLog>());
 	}
 
 	public void initArticle(KnowWEArticle article) {
@@ -120,7 +121,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	 * @param <TermObject>
 	 */
 	public <TermObject> void registerTermDefinition(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> r) {
-		KnowWETermName termName = new KnowWETermName(r);
+		TermIdentifier termName = new TermIdentifier(article, r);
 		TermReferenceLog<TermObject> termRefLog = getTermReferenceLog(article, r);
 		if (termRefLog != null) {
 			if (termRefLog.termDefiningSection != null) {
@@ -144,7 +145,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, r);
 		if (refLog == null) {
 			refLog = new TermReferenceLog<TermObject>(null);
-			getTermReferenceLogsMap(article.getTitle()).put(new KnowWETermName(r), refLog);
+			getTermReferenceLogsMap(article.getTitle()).put(new TermIdentifier(article, r), refLog);
 		}
 		refLog.addTermReference(r);
 	}
@@ -180,7 +181,7 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	 * @return
 	 */
 	public <TermObject> Section<? extends TermDefinition<TermObject>> getTermDefinitionSection(
-			KnowWEArticle article, Section<? extends TermReference<TermObject>> r) {
+			KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> r) {
 
 		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, r);
 
@@ -191,8 +192,8 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		return null;
 	}
 
-	public <TermObject> Set<Section<? extends TermReference<TermObject>>> getTermReferenceSections(KnowWEArticle article, Section<? extends TermDefinition<TermObject>> r) {
-		return getTermReferencesTo(article, new KnowWETermName(r));
+	public <TermObject> Set<Section<? extends TermReference<TermObject>>> getTermReferenceSections(KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> r) {
+		return getTermReferencesTo(article, new TermIdentifier(article, r));
 	}
 
 	public <TermObject> void setTermReferencesToNotReused(KnowWEArticle article,
@@ -279,5 +280,49 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		}
 
 	}
+
+	private class TermIdentifier {
+
+		private final String termIdentifier;
+
+		@SuppressWarnings("unchecked")
+		public <TermObject> TermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> s) {
+			if (s.get() instanceof NotUniqueKnowWETerm) {
+				Section<? extends NotUniqueKnowWETerm> nus = (Section<? extends NotUniqueKnowWETerm>) s;
+				termIdentifier = nus.get().getUniqueTermIdentifier(article, nus);
+			}
+			else {
+				termIdentifier = s.get().getTermName(s);
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((termIdentifier == null) ? 0 : termIdentifier.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			TermIdentifier other = (TermIdentifier) obj;
+			if (termIdentifier == null) {
+				if (other.termIdentifier != null) return false;
+			}
+			else if (!termIdentifier.equals(other.termIdentifier)) return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return termIdentifier;
+		}
+
+	}
+
 
 }

@@ -17,12 +17,13 @@ import de.d3web.we.utils.KnowWEUtils;
  * A type representing a text slice, which _references_ an (existing) Object. It
  * comes along with a ReviseHandler that checks whether the referenced object is
  * existing and throws an error if not.
- *
- * This should not be used for types _creating_ objects @link {@link TermDefinition}
- *
- *
- * @author Jochen
- *
+ * 
+ * This should not be used for types _creating_ objects @link
+ * {@link TermDefinition}
+ * 
+ * 
+ * @author Jochen, Albrecht
+ * 
  * @param <TermObject>
  */
 public abstract class TermReference<TermObject>
@@ -30,13 +31,9 @@ public abstract class TermReference<TermObject>
 		implements KnowWETerm<TermObject> {
 
 	/**
-	 * has to check whether the referenced object is existing, i.e., has been
-	 * created before (by a corresponding ObjectDef)
-	 *
-	 * @param s
-	 * @return
+	 * Allows quick and simple access to the object this sections is refering
+	 * to.
 	 */
-
 	public final TermObject getTermObject(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
 		Section<? extends TermDefinition<TermObject>> objectDefinition = KnowWEUtils.getTerminologyHandler(
 				article.getWeb()).getTermDefinitionSection(article, s);

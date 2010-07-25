@@ -45,13 +45,11 @@ import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
 import de.d3web.we.logging.Logging;
 import de.d3web.we.user.UserSettingsManager;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.PairOfInts;
 
@@ -154,7 +152,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return objectType;
 	}
 
-	public static <T extends KnowWEObjectType>Section<T> createTypedSection(String text, T o, Section<? extends KnowWEObjectType> father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded, IncludeAddress adress, T type) {
+	public static <T extends KnowWEObjectType> Section<T> createTypedSection(String text, T o, Section<? extends KnowWEObjectType> father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded, IncludeAddress adress, T type) {
         return new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded,adress);
     }
 
@@ -825,8 +823,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param clazz
 	 * @return
 	 */
-	public <OT extends KnowWEObjectType> Section<OT> findAncestor(Class<OT> clazz) {
-		return KnowWEObjectTypeUtils.getAncestorOfType(this, clazz);
+	@SuppressWarnings("unchecked")
+	public <OT extends KnowWEObjectType> Section<OT> findAncestorOfType(Class<OT> clazz) {
+
+		if (clazz.isAssignableFrom(objectType.getClass())) return (Section<OT>) this;
+
+		return father != null ? father.findAncestorOfType(clazz) : null;
 	}
 
 	/**
@@ -836,9 +838,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @return
 	 *
 	 */
-	public Section<? extends KnowWEObjectType> findAncestor(Collection<Class<? extends KnowWEObjectType>> classes) {
+	public Section<? extends KnowWEObjectType> findAncestorOfType(Collection<Class<? extends KnowWEObjectType>> classes) {
 		for (Class<? extends KnowWEObjectType> class1 : classes) {
-			Section<? extends KnowWEObjectType> s = KnowWEObjectTypeUtils.getAncestorOfType(this, class1);
+			Section<? extends KnowWEObjectType> s = findAncestorOfType(class1);
 			if(s != null) {
 				return s;
 			}
@@ -851,7 +853,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * Note: Here, a section can't be its own ancestor.
 	 * Furthermore, if an ancestor is just a subtype of the given class, it will be ignored.
 	 * For other purposes, use the following method:
-	 * @see #findAncestor(Class)
+	 * @see #findAncestorOfType(Class)
 	 * @param <OT>
 	 * @param clazz
 	 * @return
@@ -870,7 +872,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * The ancestor with the lowest distance to this section will be returned.
 	 * @see #findAncestorOfExactType(Class)
 	 * For other purposes, use the following method:
-	 * @see #findAncestor(Collection)
+	 * @see #findAncestorOfType(Collection)
 	 * @param <OT>
 	 * @param clazz
 	 * @return
@@ -1326,14 +1328,14 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param title
 	 * @return
 	 */
-	public boolean isOrHasTermDefSuccessorNotReusedByOrPositionChangedFor(String title) {
+	public boolean isOrHasChangedTermDefSuccessor(String title) {
 		if (objectType instanceof TermDefinition<?>
 				&& (!isReusedBy(title) || isPositionChangedFor(title))) {
 			return true;
 		}
 		else {
 			for (Section<?> child : this.getChildren()) {
-				if (child.isOrHasTermDefSuccessorNotReusedByOrPositionChangedFor(title)) return true;
+				if (child.isOrHasChangedTermDefSuccessor(title)) return true;
 			}
 			return false;
 		}
@@ -1391,30 +1393,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 
-	// public void setPositionChangedRecursivelyFor(String title, boolean
-	// posChanged) {
-	// setPositionChangedFor(title, posChanged);
-	// if (!(objectType instanceof Include)) {
-	// for (Section<? extends KnowWEObjectType> child : getChildren()) {
-	// child.setPositionChangedRecursivelyFor(title, posChanged);
-	// }
-	// }
-	// }
-	//
-	// public void setPositionChangedFor(String title, boolean posChanged) {
-	// this.positionChangedFor.put(title, posChanged);
-	// }
-
 	public boolean isPositionChangedFor(String title) {
 		if (lastPositions == null) return false;
-		List<Integer> posis = KnowWEUtils.getPositionInKDOM(this);
+		List<Integer> posis = KnowWEUtils.getPositionsInKDOM(this);
 		return !lastPositions.equals(posis);
 
-		// Boolean posChanged = positionChangedFor.get(title);
-		// if (posChanged == null) {
-		// posChanged = false;
-		// }
-		// return posChanged;
 	}
 
 	/*

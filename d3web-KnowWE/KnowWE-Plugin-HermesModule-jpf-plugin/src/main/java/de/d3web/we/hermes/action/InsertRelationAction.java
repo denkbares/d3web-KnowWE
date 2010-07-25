@@ -10,7 +10,6 @@ import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.hermes.kdom.TimeEventDescriptionType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
 public class InsertRelationAction extends DeprecatedAbstractKnowWEAction {
 
@@ -25,8 +24,7 @@ public class InsertRelationAction extends DeprecatedAbstractKnowWEAction {
 		Section event = art.getSection().findChild(parameterMap.get("kdomid"));
 
 		if (event != null) {
-			Section description = KnowWEObjectTypeUtils.getAncestorOfType(
-					event, TimeEventDescriptionType.class);
+			Section description = event.findAncestorOfType(TimeEventDescriptionType.class);
 			if (description != null) {
 				String property = parameterMap.get("property");
 				String object = parameterMap.get("object");

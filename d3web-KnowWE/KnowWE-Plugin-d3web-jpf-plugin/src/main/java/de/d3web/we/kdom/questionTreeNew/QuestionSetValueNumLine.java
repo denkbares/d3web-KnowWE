@@ -26,28 +26,17 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.abstraction.ActionAddValue;
-import de.d3web.abstraction.formula.FormulaExpression;
-import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.scoring.Score;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.AnswerReference;
-import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.QuestionReference;
-import de.d3web.we.kdom.questionTreeNew.SolutionSetValueLine.ArgumentRenderer;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -56,11 +45,8 @@ import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.D3webUtils;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -73,7 +59,7 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new ConditionalAllTextFinder() {
 
 			@Override
-			protected boolean condition(String text, Section father) {
+			protected boolean condition(String text, Section<?> father) {
 				int open = SplitUtility.indexOfUnquoted(text, ("("));
 				if (open == -1) return false;
 
@@ -108,7 +94,7 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text,
-					Section father, KnowWEObjectType type) {
+					Section<?> father, KnowWEObjectType type) {
 
 				return SectionFinderResult
 						.createSingleItemList(new SectionFinderResult(
@@ -130,10 +116,10 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 		return qid;
 	}
 
-	static class ArgumentRenderer extends KnowWEDomRenderer {
+	static class ArgumentRenderer extends KnowWEDomRenderer<QuestionReference> {
 
 		@Override
-		public void render(KnowWEArticle article, Section sec,
+		public void render(KnowWEArticle article, Section<QuestionReference> sec,
 				KnowWEUserContext user, StringBuilder string) {
 			String embracedContent = sec.getOriginalText().substring(1,
 					sec.getOriginalText().length() - 1);
@@ -152,24 +138,15 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
 
-			// current DashTreeElement
-			Section<DashTreeElement> element = KnowWEObjectTypeUtils
-					.getAncestorOfType(s, DashTreeElement.class);
-			// get dashTree-father
-
-			KnowledgeBaseManagement mgn = getKBM(article);
-
-			Question q = mgn.findQuestion(trimQuotes(s));
-
-
+			Question q = s.get().getTermObject(article, s);
 
 			String argument = getArgumentString(s);
 
 			if (q != null) {
-						String newRuleID = mgn.createRuleID();
+				String newRuleID = getKBM(article).createRuleID();
 
 						Condition cond = Utils.createCondition(article,
-								DashTreeElement.getDashTreeAncestors(element));
+								DashTreeUtils.getAncestorDashTreeElements(s));
 
 						Double d = Double.parseDouble(argument);
 						ActionAddValue action = new ActionAddValue();

@@ -50,6 +50,8 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.Sectionizer;
+import de.d3web.we.kdom.SectionizerModule;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -451,6 +453,10 @@ public class KnowWEEnvironment {
 
 		for (TagHandler tagHandler: Plugins.getTagHandlers() ) {
 			initTagHandler(tagHandler);
+		}
+
+		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
+			Sectionizer.getInstance().registerSectionizerModule(sm);
 		}
 
 		appendHandlers = Plugins.getPageAppendHandlers();

@@ -27,9 +27,9 @@ import java.util.Map;
 import de.d3web.we.flow.FlowchartSectionRenderer;
 import de.d3web.we.flow.FlowchartSubTreeHandler;
 import de.d3web.we.flow.FlowchartTerminologySubTreeHandler;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 /**

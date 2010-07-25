@@ -31,7 +31,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.kdom.table.TableCellSectionFinder;
 import de.d3web.we.kdom.table.TableUtils;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class AttributeTableCell extends DefaultAbstractKnowWEObjectType {
@@ -56,7 +55,7 @@ public class AttributeTableCell extends DefaultAbstractKnowWEObjectType {
 		 * @return
 		 */
 		protected int getColumn( Section section ) {
-			Section tableLine = KnowWEObjectTypeUtils.getAncestorOfType( section, AttributeTableLine.class.getName() );
+			Section tableLine = section.findAncestorOfType(AttributeTableLine.class);
 			List<Section> tmpSections = new ArrayList<Section>();
 			TableUtils.getCertainSections( tableLine, AttributeTableCell.class.getName(), tmpSections );
 			
@@ -71,7 +70,7 @@ public class AttributeTableCell extends DefaultAbstractKnowWEObjectType {
 		 * @return
 		 */
 		protected int getRow( Section section ) {
-			Section tableContent = KnowWEObjectTypeUtils.getAncestorOfType( section, AttributeTableContent.class.getName() );
+			Section tableContent = section.findAncestorOfType(AttributeTableContent.class);
 			
 			List<Section> sections = new ArrayList<Section>();
 			TableUtils.getCertainSections( tableContent, AttributeTableLine.class.getName(), sections );

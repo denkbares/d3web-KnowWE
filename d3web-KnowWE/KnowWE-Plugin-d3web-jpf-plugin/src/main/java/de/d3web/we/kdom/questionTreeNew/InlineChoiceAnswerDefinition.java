@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.questionTreeNew;
 
-import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
@@ -79,19 +78,19 @@ public class InlineChoiceAnswerDefinition extends DefaultAbstractKnowWEObjectTyp
 	class InlineAnswerDef extends AnswerDefinition {
 
 
+
 		@Override
-		public int getPosition(Section<? extends QuestionTreeElementDefinition<Choice>> s) {
+		public int getPosition(Section<? extends AnswerDefinition> s) {
 			// TODO Auto-generated method stub
 			return 0;
 		}
 
-
 		@Override
-		public Section<? extends QuestionDefinition> retrieveAndStoreParentQASetSection(
-				Section<? extends QuestionTreeElementDefinition<?>> s) {
+		public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
 	}
 
 }

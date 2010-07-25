@@ -20,9 +20,28 @@
 
 package de.d3web.we.kdom.questionTreeNew;
 
+import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.AnswerDefinition;
+import de.d3web.we.kdom.objects.QuestionDefinition;
 
 public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 
+	@Override
+	public int getPosition(Section<? extends AnswerDefinition> s) {
+		return DashTreeUtils.getPositionInFatherDashSubtree(s);
+	}
+
+	@Override
+	public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
+		return DashTreeUtils.getFatherDashTreeElementContent(s).findSuccessor(
+				QuestionDefinition.class);
+	}
+
+	@Override
+	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		return DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+	}
 
 }

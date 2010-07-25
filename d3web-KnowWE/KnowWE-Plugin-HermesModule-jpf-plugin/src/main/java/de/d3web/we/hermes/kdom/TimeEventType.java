@@ -38,6 +38,7 @@ import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.kdom.renderer.TimeEventTypeRenderer;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
@@ -48,7 +49,6 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationEndSymbol;
 import de.d3web.we.kdom.semanticAnnotation.SemanticAnnotationStartSymbol;
 import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 
 public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 

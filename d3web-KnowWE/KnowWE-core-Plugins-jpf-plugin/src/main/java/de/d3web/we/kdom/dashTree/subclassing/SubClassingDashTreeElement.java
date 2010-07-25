@@ -33,6 +33,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 
@@ -52,8 +53,8 @@ public class SubClassingDashTreeElement extends DashTreeElement {
 			Section<DashTreeElement> element = s; // warning
 			IntermediateOwlObject io = new IntermediateOwlObject();
 			if (s.getObjectType().isAssignableFromType(DashTreeElement.class)) {
-				Section<? extends DashTreeElement> father = DashTreeElement
-						.getDashTreeFather(element);
+				Section<? extends DashTreeElement> father = DashTreeUtils
+						.getFatherDashTreeElement(element);
 				if (father != null) {
 					Section<? extends DashTreeElementContent> fatherElement = father
 							.findChildOfType(DashTreeElementContent.class);

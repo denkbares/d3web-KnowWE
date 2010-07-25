@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.dashTree;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -62,9 +61,9 @@ public class OverdashedElement  extends DefaultAbstractKnowWEObjectType {
 				int level = -1;
 
 
-				//IMPORTANT: +1
+				// IMPORTANT: +2
 				if(father.getObjectType() instanceof DashSubtree) {
-					level = DashSubtree.getLevel(father) + 1;
+					level = DashTreeUtils.getDashLevel(father) + 2;
 				}
 
 				Matcher m  = Pattern.compile("^\\s*" + "(-{"+level+"})",

@@ -37,7 +37,11 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
+import de.d3web.we.kdom.dashTree.DashTreeElementContent;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
+import de.d3web.we.kdom.objects.QASetDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition;
+import de.d3web.we.kdom.objects.QuestionnaireDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition.QuestionType;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -119,6 +123,36 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			return QuestionTypeDeclaration
 					.getQuestionType(s.getFather().findSuccessor(
 							QuestionTypeDeclaration.class));
+		}
+
+		@Override
+		public int getPosition(Section<QuestionDefinition> s) {
+			return DashTreeUtils.getPositionInFatherDashSubtree(s);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef) {
+			Section<? extends DashTreeElementContent> fdtec = DashTreeUtils.getFatherDashTreeElementContent(qdef);
+			if (fdtec != null) {
+				Section<? extends QASetDefinition> qasetDef = fdtec.findSuccessor(QASetDefinition.class);
+				if (qasetDef == null) {
+					fdtec = DashTreeUtils.getFatherDashTreeElementContent(fdtec);
+					qasetDef = fdtec.findSuccessor(QASetDefinition.class);
+				}
+				if (qasetDef != null) {
+					if (qasetDef.get() instanceof QuestionnaireDefinition
+							|| qasetDef.get() instanceof QuestionDefinition) {
+						return qasetDef;
+					}
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+			return DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
 		}
 
 	}

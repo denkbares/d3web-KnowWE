@@ -87,6 +87,7 @@ public class SetSingleFindingAction extends DeprecatedAbstractKnowWEAction {
 
 		// if DPS is inactive
 		if (!ResourceBundle.getBundle("KnowWE_config").getString("dps.active").contains("true")) {
+
 			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(topic);
 			Session session = D3webUtils.getSession(topic, user, web);
 			Blackboard blackboard = session.getBlackboard();

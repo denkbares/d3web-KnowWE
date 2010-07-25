@@ -26,13 +26,11 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
-import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
 import de.d3web.core.knowledge.terminology.info.MMInfoObject;
 import de.d3web.core.knowledge.terminology.info.MMInfoStorage;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.scoring.Score;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -41,9 +39,6 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
 import de.d3web.we.core.knowledgeService.KnowledgeServiceSession;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
-import de.d3web.we.kdom.objects.QuestionDefinition;
-import de.d3web.we.kdom.objects.QuestionnaireDefinition;
 import de.d3web.we.kdom.xcl.XCLRelationWeight;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLRelationType;
@@ -192,66 +187,6 @@ public class D3webUtils {
 		return sessions;
 	}
 
-	/**
-	 * finds the (d3web-) parent QASet of a QuestionDefinition
-	 *
-	 * @param s
-	 * @param mgn
-	 * @return
-	 */
-	public static QASet findParent(Section<QuestionDefinition> s, KnowledgeBaseManagement mgn) {
-
-		// current DashTreeElement
-		Section<DashTreeElement> element = KnowWEObjectTypeUtils
-				.getAncestorOfType(s, DashTreeElement.class);
-		// get dashTree-father
-		Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
-				.getDashTreeFather(element);
-
-		if (dashTreeFather == null) {
-			return null;
-		}
-
-		// climb up tree and look for QASet
-		QASet foundAncestorQASet = null;
-		while (foundAncestorQASet == null) {
-			foundAncestorQASet = findParentObject(dashTreeFather, mgn);
-			dashTreeFather = DashTreeElement
-					.getDashTreeFather(dashTreeFather);
-			if (dashTreeFather == null)
-				break;
-
-		}
-
-		if (foundAncestorQASet == null) {
-			// root QASet as default parent
-			foundAncestorQASet = mgn.getKnowledgeBase().getRootQASet();
-		}
-
-		return foundAncestorQASet;
-	}
-
-	private static QASet findParentObject(
-			Section<? extends DashTreeElement> dashTreeElement,
-			KnowledgeBaseManagement mgn) {
-
-		if (dashTreeElement.findSuccessor(QuestionnaireDefinition.class) != null) {
-			String qClassName = dashTreeElement.findSuccessor(QuestionnaireDefinition.class).getOriginalText();
-			QASet parent = mgn.findQContainer(qClassName);
-			if (parent != null)
-				return parent;
-		}
-
-		if (dashTreeElement.findSuccessor(QuestionDefinition.class) != null) {
-			String qName = dashTreeElement.findSuccessor(QuestionDefinition.class)
-					.getOriginalText();
-			QASet parent = mgn.findQuestion(qName);
-			if (parent != null)
-				return parent;
-		}
-
-		return null;
-	}
 
 	/**
 	 * Gets the RelationType from Relation

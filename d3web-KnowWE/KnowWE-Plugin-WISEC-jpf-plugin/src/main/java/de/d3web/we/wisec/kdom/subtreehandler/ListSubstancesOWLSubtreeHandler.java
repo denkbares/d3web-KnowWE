@@ -30,7 +30,7 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListSubstancesType> s) {
 
 		// Get the ListID
-		Section<ListSubstancesRootType> root = s.findAncestor(ListSubstancesRootType.class);
+		Section<ListSubstancesRootType> root = s.findAncestorOfType(ListSubstancesRootType.class);
 		String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 		
 		// Get the WISEC Namespace and create OwlObject

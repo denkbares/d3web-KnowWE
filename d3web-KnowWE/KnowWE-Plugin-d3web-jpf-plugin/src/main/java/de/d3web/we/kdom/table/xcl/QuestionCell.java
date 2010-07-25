@@ -39,7 +39,6 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -124,8 +123,7 @@ class QuestionCellHandler extends D3webSubtreeHandler {
 			return null;
 		}
 		SingleKBMIDObjectManager mgr = new SingleKBMIDObjectManager(mgn);
-		Section<Table> tableContentSection = KnowWEObjectTypeUtils
-				.getAncestorOfType(s, Table.class);
+		Section<Table> tableContentSection = s.findAncestorOfType(Table.class);
 		Section questionnaireSection = (Section) KnowWEUtils.getStoredObject(s
 				.getArticle().getWeb(), s.getTitle(), tableContentSection
 				.getID(),

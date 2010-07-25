@@ -30,19 +30,14 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
-import de.d3web.core.knowledge.terminology.QuestionNum;
-import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.scoring.Score;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
-import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.AnswerReference;
-import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -51,11 +46,7 @@ import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.D3webUtils;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -69,7 +60,7 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new ConditionalAllTextFinder() {
 
 			@Override
-			protected boolean condition(String text, Section father) {
+			protected boolean condition(String text, Section<?> father) {
 				return SplitUtility.containsUnquoted(text, "(")
 						&& SplitUtility.containsUnquoted(text, ")");
 
@@ -115,14 +106,9 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
 
-			// current DashTreeElement
-			Section<DashTreeElement> element = KnowWEObjectTypeUtils
-					.getAncestorOfType(s, DashTreeElement.class);
-			// get dashTree-father
 
-			KnowledgeBaseManagement mgn = getKBM(article);
 
-			Question q = mgn.findQuestion(trimQuotes(s));
+			Question q = s.get().getTermObject(article, s);
 
 			Section<AnswerReference> answerSec = s.getFather().findSuccessor(AnswerReference.class);
 			
@@ -143,9 +129,10 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 						}
 					}
 					if(a != null) {
-						String newRuleID = mgn.createRuleID();
+						String newRuleID = getKBM(article).createRuleID();
 
-						Condition cond = Utils.createCondition(article, DashTreeElement.getDashTreeAncestors(element));
+						Condition cond = Utils.createCondition(article,
+								DashTreeUtils.getAncestorDashTreeElements(s));
 						if(cond == null) {
 							return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()));
 						}

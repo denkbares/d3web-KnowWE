@@ -1,18 +1,16 @@
-package de.d3web.we.kdom.subtreeHandler;
+package de.d3web.we.kdom;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import de.d3web.we.kdom.KnowWEObjectType;
-import de.d3web.we.kdom.Section;
 
 public class Priority implements Comparable<Priority> {
 
 	private static final TreeSet<Priority> registeredPriorities = new TreeSet<Priority>();
 
-	public static final Priority HIGHEST = new Priority(300);
+	public static final Priority HIGHEST = new Priority(Integer.MAX_VALUE);
 
 	public static final Priority HIGHER = new Priority(200);
 
@@ -24,12 +22,7 @@ public class Priority implements Comparable<Priority> {
 
 	public static final Priority LOWER = new Priority(-200);
 
-	public static final Priority LOWEST = new Priority(-300);
-
-	/**
-	 * Little help for d3web-Plugin here...
-	 */
-	public static final Priority TERMINOLOGY = Priority.HIGHER;
+	public static final Priority LOWEST = new Priority(Integer.MIN_VALUE);
 
 	private final int value;
 

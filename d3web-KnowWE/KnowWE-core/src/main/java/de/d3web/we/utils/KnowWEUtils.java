@@ -277,7 +277,6 @@ public class KnowWEUtils {
 		return KnowWEEnvironment.getInstance().getArticleManager(article.getWeb()).getTypeStore()
 				.getLastStoredObject(article.getTitle(),
 						s.isReusedBy(article.getTitle()) ? s.getLastID() : s.getID(), key);
-		// return getStoredObject(article, s, key);
 	}
 
 	public static void storeSectionInfo(String web, String article, String kdomid, String key, Object o) {
@@ -295,11 +294,11 @@ public class KnowWEUtils {
 				.getKnowledgeRepresentationManager(web).getHandler(TerminologyHandler.HANDLER_KEY);
 	}
 
-	public static List<Integer> getPositionInKDOM(Section<?> s) {
-		return getPositionInKDOM(s, s.getArticle().getSection());
+	public static List<Integer> getPositionsInKDOM(Section<?> s) {
+		return getPositionsInKDOM(s, s.getArticle().getSection());
 	}
 
-	public static List<Integer> getPositionInKDOM(Section<?> start, Section<?> end) {
+	public static List<Integer> getPositionsInKDOM(Section<?> start, Section<?> end) {
 		List<Integer> positions = new ArrayList<Integer>();
 		Section<?> temp = start;
 		Section<?> tempFather = temp.getFather();

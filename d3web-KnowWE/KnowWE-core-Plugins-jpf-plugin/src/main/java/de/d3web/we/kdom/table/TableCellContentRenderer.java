@@ -22,10 +22,10 @@ package de.d3web.we.kdom.table;
 
 import java.util.Arrays;
 import java.util.List;
+
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -85,7 +85,7 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 	protected void generateContent(String sectionText, Section<TableCellContent> sec,
 			KnowWEUserContext user, String sectionID, StringBuilder html) {
 		if( sec.hasQuickEditModeSet( user.getUsername() ) ) {
-			Section father = KnowWEObjectTypeUtils.getAncestorOfType(sec, Table.class);
+			Section father = sec.findAncestorOfType(Table.class);
 			String[] values = null;
 			String size = null, rows = null, cols = null;
 			
@@ -93,9 +93,9 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 
 			if (father != null && father.getObjectType() instanceof Table) {
 			    values = ((Table)father.getObjectType()).getTableAttributesProvider().getAttributeValues(sec);
-			    size   = ((Table)father.getObjectType()).getTableAttributesProvider().getWidthAttribute(sec.findAncestor(Table.class));
-			    cols   = ((Table)father.getObjectType()).getTableAttributesProvider().getNoEditColumnAttribute(sec.findAncestor(Table.class));
-			    rows   = ((Table)father.getObjectType()).getTableAttributesProvider().getNoEditRowAttribute(sec.findAncestor(Table.class));
+			    size   = ((Table)father.getObjectType()).getTableAttributesProvider().getWidthAttribute(sec.findAncestorOfType(Table.class));
+			    cols   = ((Table)father.getObjectType()).getTableAttributesProvider().getNoEditColumnAttribute(sec.findAncestorOfType(Table.class));
+			    rows   = ((Table)father.getObjectType()).getTableAttributesProvider().getNoEditRowAttribute(sec.findAncestorOfType(Table.class));
 			}
 			
 			if( TableUtils.isEditable( sec, rows, cols ) ) {

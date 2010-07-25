@@ -22,10 +22,10 @@ package de.d3web.we.kdom.questionTreeNew;
 
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.objects.QuestionnaireReference;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 
 public class IndicationLine extends DefaultAbstractKnowWEObjectType {
 

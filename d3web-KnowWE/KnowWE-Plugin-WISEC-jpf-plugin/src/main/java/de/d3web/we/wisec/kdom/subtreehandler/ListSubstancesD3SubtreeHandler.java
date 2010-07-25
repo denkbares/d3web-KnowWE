@@ -34,7 +34,7 @@ public class ListSubstancesD3SubtreeHandler extends D3webSubtreeHandler<ListSubs
 		if (kbm != null) {
 
 			// Get the ListID
-			Section<ListSubstancesRootType> root = s.findAncestor(ListSubstancesRootType.class);
+			Section<ListSubstancesRootType> root = s.findAncestorOfType(ListSubstancesRootType.class);
 			String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 
 			// Create Substance Questionnaire

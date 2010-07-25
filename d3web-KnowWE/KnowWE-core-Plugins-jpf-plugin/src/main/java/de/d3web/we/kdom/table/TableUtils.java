@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.Section;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
 public class TableUtils {
 
@@ -64,7 +63,7 @@ public class TableUtils {
 	 */
 	public static int getColumn( Section<TableCellContent> section )
 	{
-		Section tableLine = KnowWEObjectTypeUtils.getAncestorOfType( section, TableLine.class.getName() );
+		Section tableLine = section.findAncestorOfType(TableLine.class);
 		List<Section> tmpSections = new ArrayList<Section>();
 		getCertainSections( tableLine, TableCellContent.class.getName(), tmpSections );
 		
@@ -80,7 +79,7 @@ public class TableUtils {
 	 */
 	public static int getRow( Section<TableCellContent> section )
 	{
-		Section tableContent = KnowWEObjectTypeUtils.getAncestorOfType( section, Table.class );
+		Section tableContent = section.findAncestorOfType(Table.class);
 		
 		List<Section> sections = new ArrayList<Section>();
 		getCertainSections( tableContent, TableLine.class.getName(), sections );

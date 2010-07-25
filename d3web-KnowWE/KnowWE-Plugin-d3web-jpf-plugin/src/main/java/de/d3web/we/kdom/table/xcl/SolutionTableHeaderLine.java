@@ -34,7 +34,6 @@ import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableHeaderLine;
 import de.d3web.we.kdom.table.TableUtils;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 
 /**
  * @author jochen
@@ -64,8 +63,7 @@ public class SolutionTableHeaderLine extends TableHeaderLine {
 			List<Section<TableCell>> cells = new ArrayList<Section<TableCell>>();
 			s.findSuccessorsOfType(TableCell.class, cells);
 
-			Section<Table> tableContent = KnowWEObjectTypeUtils.getAncestorOfType(s,
-					Table.class);
+			Section<Table> tableContent = s.findAncestorOfType(Table.class);
 
 			for (Section<TableCell> section : cells) {
 				Section<TableCellContent> findChildOfType = section.findSuccessor(TableCellContent.class);

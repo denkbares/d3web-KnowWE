@@ -23,6 +23,7 @@ package de.d3web.we.kdom.subtreeHandler;
 
 import java.util.Collection;
 
+import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -45,10 +46,8 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * called in the revising of the article.
 	 * <p/>
 	 * If you are implementing an incremental SubtreeHandler, you can overwrite
-	 * this method and replace it with an algorithm to decide, if this handler
-	 * needs to create, for example in a full build, or doesn't need to create,
-	 * for example if the Section got reused by the update mechanism because it
-	 * hasn't changed (<tt>s.isReusedBy(article.getTitle()) == true</tt>).
+	 * or extend this method with an algorithm to decide, if this handler needs
+	 * or doesn't need to create, depending on the constraints there might be.
 	 * 
 	 * @param article is the article that calls this method... not necessarily
 	 *        the article the Section is hooked into directly, since Sections
@@ -57,8 +56,11 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @return true if this handler needs to create, false if not.
 	 */
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return article.isFullParse() || !s.isReusedBy(article.getTitle())
-				|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()));
+		return article.isFullParse() 
+				|| !s.isReusedBy(article.getTitle())
+				|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
+				|| (s.get() instanceof IncrementalConstraints
+						&& ((IncrementalConstraints) s.get()).hasViolatedConstraints(article, s));
 	}
 
 	/**
@@ -79,9 +81,9 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * last version of the KDOM.
 	 * <p/>
 	 * If you are implementing an incremental SubtreeHandler, you can overwrite
-	 * this method and replace it with an algorithm to decide, if this handler
-	 * needs or doesn't need to destroy the old stuff, depending on the
-	 * constraints there might be.
+	 * or extend this method with an algorithm to decide, if this handler needs
+	 * or doesn't need to destroy the old stuff, depending on the constraints
+	 * there might be.
 	 * 
 	 * @param article is the last version of the article that calls this
 	 *        method... not necessarily the article the Section is hooked into
@@ -90,8 +92,11 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @return true if this handler needs to destroy, false if not.
 	 */
 	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return !article.isFullParse() && !s.isReusedBy(article.getTitle())
-				|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()));
+		return !article.isFullParse()
+				&& (!s.isReusedBy(article.getTitle())
+						|| (s.get().isOrderSensitive() && s.isPositionChangedFor(article.getTitle()))
+						|| (s.get() instanceof IncrementalConstraints
+								&& ((IncrementalConstraints) s.get()).hasViolatedConstraints(article, s)));
 	}
 
 	/**

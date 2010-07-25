@@ -42,7 +42,6 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.D3webUtils;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
@@ -114,7 +113,7 @@ public class RuleConditionHighlightingRenderer extends KnowWEDomRenderer {
 			KnowWEUserContext user, StringBuilder result) {
 
 		// get the rule: Eval it and highlight the condition
-		Section ruleSection = KnowWEObjectTypeUtils.getAncestorOfType(sec,
+		Section ruleSection = sec.findAncestorOfType(
 				de.d3web.we.kdom.rules.Rule.class);
 		String kbRuleId = (String) KnowWEUtils.getStoredObject(sec.getWeb(),
 				sec.getTitle(), ruleSection.getID(),

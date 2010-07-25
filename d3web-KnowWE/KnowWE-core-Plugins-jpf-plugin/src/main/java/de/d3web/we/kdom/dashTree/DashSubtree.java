@@ -25,7 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.CommentLineType;
@@ -58,48 +57,6 @@ public class DashSubtree extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new CommentLineType());
 	}
 
-	public static boolean subtreeAncestorHasNotReusedObjectDefs(KnowWEArticle article, Section<?> s) {
-	
-		Section<?> subtreeFather = getNextDashSubtreeFor(s);
-		while (subtreeFather.get() instanceof DashSubtree) {
-			Section<? extends DashTreeElement> dashElement = subtreeFather.findChildOfType(DashTreeElement.class);
-			if (DashTreeElement.getLevel(dashElement) == 1) {
-				if (subtreeFather.isOrHasTermDefSuccessorNotReusedByOrPositionChangedFor(article.getTitle())) {
-					return true;
-				}
-				else {
-					return false;
-				}
-			}
-			subtreeFather = subtreeFather.getFather();
-		}
-		return false;
-	}
-
-	/**
-	 * Delivers the (dash-) level of a Subtree-section by asking its
-	 * Root-Element (which is (KDOM-)child of the Subtree)
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public static int getLevel(Section<? extends DashSubtree> s) {
-		Section<? extends DashTreeElement> root = s
-				.findChildOfType(DashTreeElement.class);
-		if (root == null) return 0;
-		return DashTreeElement.getLevel(root) + 1;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static Section<DashSubtree> getNextDashSubtreeFor(Section<?> s) {
-		Section<?> father = s;
-		while (father != null) {
-			if (father.get() instanceof DashSubtree) return (Section<DashSubtree>) father;
-			father = father.getFather();
-		}
-		return null;
-	}
-
 	/**
 	 * @author Jochen
 	 * 
@@ -125,7 +82,6 @@ public class DashSubtree extends DefaultAbstractKnowWEObjectType {
 				Pattern.MULTILINE);
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, KnowWEObjectType type) {
 
@@ -133,7 +89,7 @@ public class DashSubtree extends DefaultAbstractKnowWEObjectType {
 
 			KnowWEObjectType fatherType = father.getObjectType();
 			if (fatherType instanceof DashSubtree) {
-				level = getLevel((Section<? extends DashSubtree>) father);
+				level = DashTreeUtils.getDashLevel(father) + 1;
 			}
 
 			Matcher m = null;

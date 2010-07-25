@@ -31,7 +31,7 @@ public class UpperListCategoriesOWLSubtreeHandler extends OwlSubtreeHandler<Uppe
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<UpperListCategoriesType> s) {
 		
 		// Get the necessary Annotations
-		Section<UpperListCategoriesRootType> root = s.findAncestor(UpperListCategoriesRootType.class);
+		Section<UpperListCategoriesRootType> root = s.findAncestorOfType(UpperListCategoriesRootType.class);
 		String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 				
 		// Get the WISEC Namespace and create OwlObject

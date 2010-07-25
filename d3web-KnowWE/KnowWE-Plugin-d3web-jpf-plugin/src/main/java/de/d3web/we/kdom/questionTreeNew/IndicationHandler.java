@@ -33,17 +33,16 @@ import de.d3web.core.manage.RuleFactory;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.dashTree.DashSubtree;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
+import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.objects.QuestionnaireReference;
-import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
@@ -64,22 +63,15 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<KnowWETerm<?>> s) {
-		return super.needsToCreate(article, s)
-				|| DashSubtree.subtreeAncestorHasNotReusedObjectDefs(article, s);
+		return super.needsToCreate(article, s) 
+				|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 
-		if (s.hasErrorInSubtree()) {
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-					D3webModule.getKwikiBundle_d3web().
-					getString("KnowWE.rulesNew.indicationnotcreated")));
-		}
-
-		Section<DashTreeElement> element = KnowWEObjectTypeUtils
-				.getAncestorOfType(s, DashTreeElement.class);
+		Section<DashTreeElement> element = s.findAncestorOfType(DashTreeElement.class);
 
 		if (element == null) {
 			Logger.getLogger(this.getClass().getName()).log(
@@ -90,8 +82,8 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 			return new ArrayList<KDOMReportMessage>(0);
 		}
 
-		Section<? extends DashTreeElement> dashTreeFather = DashTreeElement
-				.getDashTreeFather(element);
+		Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
+				.getFatherDashTreeElement(element);
 
 		Section<QuestionTreeAnswerDefinition> answerSec = dashTreeFather
 				.findSuccessor(QuestionTreeAnswerDefinition.class);
@@ -99,6 +91,12 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 				.findSuccessor(NumericCondLine.class);
 
 		if (answerSec != null || numCondSec != null) {
+
+			if (s.hasErrorInSubtree()) {
+				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+						D3webModule.getKwikiBundle_d3web().
+								getString("KnowWE.rulesNew.indicationnotcreated")));
+			}
 
 			// retrieve the QASet for the different KnowWEObjectTypes that might
 			// use this handler
@@ -124,7 +122,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 				KnowledgeBaseManagement mgn = getKBM(article);
 				String newRuleID = mgn.createRuleID();
 				Condition cond = Utils.createCondition(article,
-						DashTreeElement.getDashTreeAncestors(element));
+						DashTreeUtils.getAncestorDashTreeElements(element));
 
 				Rule r = RuleFactory.createIndicationRule(newRuleID, qaset, cond);
 
@@ -146,7 +144,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 	@Override
 	public boolean needsToDestroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 		return super.needsToDestroy(article, s)
-				|| DashSubtree.subtreeAncestorHasNotReusedObjectDefs(article, s);
+				|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
 	}
 
 	@Override

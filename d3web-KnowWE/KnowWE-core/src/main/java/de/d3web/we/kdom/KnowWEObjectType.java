@@ -26,8 +26,6 @@ import java.util.TreeMap;
 
 import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 /**

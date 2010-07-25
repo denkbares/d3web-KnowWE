@@ -21,7 +21,6 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class CreateScoresHandler extends D3webSubtreeHandler {
@@ -29,8 +28,7 @@ public class CreateScoresHandler extends D3webSubtreeHandler {
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
 
-		Section scoringSection = KnowWEObjectTypeUtils.getAncestorOfType(s,
-				BulletScoring.class);
+		Section<? extends BulletScoring> scoringSection = s.findAncestorOfType(BulletScoring.class);
 		List<String> targets = BulletScoring
 				.getScoringTargets(scoringSection);
 
@@ -90,8 +88,7 @@ public class CreateScoresHandler extends D3webSubtreeHandler {
 	}
 
 	private boolean isLazy(Section s) {
-		Section scoringSection = KnowWEObjectTypeUtils.getAncestorOfType(s,
-				BulletScoring.class);
+		Section scoringSection = s.findAncestorOfType(BulletScoring.class);
 		Map<String, String> attributes = AbstractXMLObjectType
 				.getAttributeMapFor(scoringSection);
 

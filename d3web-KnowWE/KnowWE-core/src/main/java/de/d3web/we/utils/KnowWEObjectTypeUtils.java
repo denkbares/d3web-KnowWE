@@ -58,28 +58,32 @@ public class KnowWEObjectTypeUtils {
 		return cleaned;
 	}
 	
-	/**
-	 * Get the father element of the current cell content section. Search as long as the section
-	 * is instance of AbstractXMLObjectType. Used to get the <code>Table</code> section itself.
-	 * 
-	 * @param child
-	 * @return
-	 */
-	@Deprecated
-	public static Section getAncestorOfType(Section child, String classname) {
-		if( child == null )
-			return null;
-		
-		try {
-			if( Class.forName( classname ).isAssignableFrom(
-					child.getObjectType().getClass() ) ) return child;
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-		 
-		return getAncestorOfType(child.getFather(), classname);
-	}
+
+	// /**
+	// * Get the father element of the current cell content section. Search as
+	// long as the section
+	// * is instance of AbstractXMLObjectType. Used to get the
+	// <code>Table</code> section itself.
+	// *
+	// * @param child
+	// * @return
+	// */
+	// @Deprecated
+	// public static Section getAncestorOfType(Section child, String classname)
+	// {
+	// if( child == null )
+	// return null;
+	//		
+	// try {
+	// if( Class.forName( classname ).isAssignableFrom(
+	// child.getObjectType().getClass() ) ) return child;
+	// } catch (ClassNotFoundException e) {
+	// e.printStackTrace();
+	// return null;
+	// }
+	//		 
+	// return getAncestorOfType(child.getFather(), classname);
+	// }
 	
 	/**
 	 * Getting of all ChildrenTypes of a
@@ -164,17 +168,17 @@ public class KnowWEObjectTypeUtils {
 	/**
 	 * Get the father element of the given section specified by class.
 	 * 
-	 * @param child
+	 * @param s
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <OT extends KnowWEObjectType> Section<OT> getAncestorOfType(Section<? extends KnowWEObjectType> child, Class<OT> clazz) {
-		if( child == null ) 
-			return null;		
-		
-		if( clazz.isAssignableFrom( child.getObjectType().getClass())) 
-			return (Section<OT>)child;
-		
-		return getAncestorOfType(child.getFather(), clazz);
+	@Deprecated
+	public static <OT extends KnowWEObjectType> Section<OT> getAncestorOfType(Section<?> s, Class<OT> clazz) {
+
+		if (s == null) return null;
+
+		if (clazz.isAssignableFrom(s.getObjectType().getClass())) return (Section<OT>) s;
+
+		return getAncestorOfType(s.getFather(), clazz);
 	}
 }

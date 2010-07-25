@@ -24,9 +24,6 @@ package de.d3web.we.kdom.questionTreeNew;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.poi.hssf.util.HSSFColor.AQUA;
-
-import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.d3webModule.D3webModule;
@@ -34,6 +31,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.AnswerDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -64,8 +62,8 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 
 				Section dashTreeElement = father.getFather();
 				if (dashTreeElement.getObjectType() instanceof DashTreeElement) {
-					Section<? extends DashTreeElement> dashFather = DashTreeElement
-							.getDashTreeFather(dashTreeElement);
+					Section<? extends DashTreeElement> dashFather = DashTreeUtils
+							.getFatherDashTreeElement(dashTreeElement);
 					if (dashFather != null
 							&& dashFather.findSuccessor(QuestionLine.class) != null) {
 						return true;
@@ -109,16 +107,13 @@ public class AnswerLine extends DefaultAbstractKnowWEObjectType {
 					Section<AnswerDefinition> aDef = s.getFather().findSuccessor(
 							AnswerDefinition.class);
 
-					//Section<? extends QuestionTreeElementDefinition<QASet>> qDef = 
-					Section<? extends QuestionDefinition> qaSetSection = aDef.get().retrieveAndStoreParentQASetSection(aDef);
+					Section<? extends QuestionDefinition> qdef = aDef.get().getQuestionSection(
+							aDef);
 						
-					Section<? extends QuestionTreeElementDefinition<?>> storedParentQASetSection = aDef.get().getStoredParentQASetSection(aDef);
-					
-					
-					if (qaSetSection != null) {
+					if (qdef != null) {
 
 						
-						Question question = qaSetSection.get().getTermObject(article, qaSetSection);
+						Question question = qdef.get().getTermObject(article, qdef);
 						
 						String answerName = aDef.get().getTermObject(article, aDef).getName();
 						

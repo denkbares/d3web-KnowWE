@@ -8,7 +8,6 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -16,7 +15,9 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 
 
-public abstract class AnswerReference extends D3webTermReference<Choice> {
+public abstract class AnswerReference 
+		extends D3webTermReference<Choice>
+		implements NotUniqueKnowWETerm<Choice> {
 
 	String fontcolor;
 	
@@ -92,21 +93,13 @@ public abstract class AnswerReference extends D3webTermReference<Choice> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
+	public String getUniqueTermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm<Choice>> s) {
 
-		Section<? extends AnswerReference> sa;
+		String answer = KnowWEUtils.trimQuotes(s.getOriginalText());
 
-		if (s.get() instanceof AnswerReference) {
-			sa = (Section<? extends AnswerReference>) s;
-		}
-		else {
-			return super.getTermName(s);
-		}
+		String question = KnowWEUtils.trimQuotes(getQuestionSection(
+				(Section<? extends AnswerReference>) s).getOriginalText());
 
-String answer = KnowWEUtils.trimQuotes(s.getOriginalText());
-
-		//TODO: question prefix should be removed here!
-		String question = KnowWEUtils.trimQuotes(getQuestionSection(sa).getOriginalText());
 		return question + " " + answer;
 	}
 

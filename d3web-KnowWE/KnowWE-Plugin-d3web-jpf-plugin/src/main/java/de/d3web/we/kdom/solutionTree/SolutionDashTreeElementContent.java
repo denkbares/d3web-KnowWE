@@ -28,6 +28,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.SolutionDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -71,7 +72,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
-			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeElementContent.getDashTreeFatherContent(
+			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeUtils.getFatherDashTreeElementContent(
 					s);
 			Section<SolutionDefinition> localSolutionDef = s.findSuccessor(SolutionDefinition.class);
 			Solution localSolution = localSolutionDef.get().getTermObject(article, localSolutionDef);

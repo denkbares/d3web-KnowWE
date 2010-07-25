@@ -3,23 +3,21 @@ package de.d3web.we.kdom.objects;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.questionTreeNew.QuestionTreeElementDefinition;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
-import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
+import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
-import de.d3web.we.kdom.subtreeHandler.Priority;
-import de.d3web.we.utils.D3webUtils;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
-public abstract class QuestionDefinition extends QuestionTreeElementDefinition<Question> {
+public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public static enum QuestionType {
 		OC, MC, YN, NUM, DATE, TEXT;
@@ -34,10 +32,15 @@ public abstract class QuestionDefinition extends QuestionTreeElementDefinition<Q
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
 
+	@SuppressWarnings("unchecked")
+	public abstract Section<? extends QASetDefinition> getParentQASetSection(Section<? extends QuestionDefinition> qdef);
 
-	static class CreateQuestionHandler extends QuestionTreeElementDefSubtreeHandler<QuestionDefinition> {
+	public abstract int getPosition(Section<QuestionDefinition> s);
+
+	static class CreateQuestionHandler extends D3webSubtreeHandler<QuestionDefinition> {
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<QuestionDefinition> sec) {
 
@@ -47,14 +50,19 @@ public abstract class QuestionDefinition extends QuestionTreeElementDefinition<Q
 
 			KnowledgeBaseManagement mgn = getKBM(article);
 
-			IDObject o = mgn.findQuestion(name);
-
-			if (o != null) {
-				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedWarning(
-						o.getClass().getSimpleName()));
+			if (KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, sec)) {
+				return Arrays.asList((KDOMReportMessage) new ObjectAlreadyDefinedError(
+						sec.get().getTermName(sec)));
 			}
 
-			QASet parent = D3webUtils.findParent(qidSection, mgn);
+			Section<? extends QASetDefinition> parentQASetSection =
+					sec.get().getParentQASetSection(sec);
+
+			QASet parent = null;
+			if (parentQASetSection != null) {
+				parent = (QASet) parentQASetSection.get().getTermObject(article, parentQASetSection);
+			}
+			if (parent == null) parent = mgn.getKnowledgeBase().getRootQASet();
 
 			QuestionType questionType = qidSection.get().getQuestionType(
 					qidSection);
@@ -112,14 +120,17 @@ public abstract class QuestionDefinition extends QuestionTreeElementDefinition<Q
 
 			Question q = question.get().getTermObjectFromLastVersion(article, question);
 			try {
-				if (q != null) q.getKnowledgeBase().remove(q);
+				if (q != null) {
+					q.getKnowledgeBase().remove(q);
+					KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
+							article, question);
+				}
 			}
 			catch (IllegalAccessException e) {
 				article.setFullParse(true, this);
 				// e.printStackTrace();
 			}
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(article,
-					question);
+
 		}
 
 	}

@@ -25,11 +25,10 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.contexts.Context;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
-import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableUtils;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -68,7 +67,8 @@ class QuestionLineCellRenderer extends TableCellContentRenderer {
 
 		int col = TableUtils.getColumn(sec);
 		
-		Context context  = ContextManager.getInstance().getContext(sec,KnowWEObjectTypeUtils.getAncestorOfType(sec,Table.class).getID()+"_col"+col);
+		Context context = ContextManager.getInstance().getContext(sec,
+				sec.findAncestorOfType(Table.class).getID() + "_col" + col);
 		
 		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();

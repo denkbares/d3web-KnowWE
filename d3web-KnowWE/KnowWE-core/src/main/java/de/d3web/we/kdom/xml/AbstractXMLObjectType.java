@@ -27,7 +27,6 @@ import java.util.Map;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.utils.KnowWEObjectTypeUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
@@ -36,9 +35,9 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 	public static final String TAIL = "tail";
 	public static final String TAGNAME = "tagName";
 	
-	private String xmlTagName;
+	private final String xmlTagName;
 	
-	private boolean anyXML;
+	private final boolean anyXML;
 	
 	private static AbstractXMLObjectType defaultInstance;
 	
@@ -87,7 +86,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 	}
 	
 	public static Section<AbstractXMLObjectType> getXMLFatherElement(Section<? extends AbstractXMLObjectType> s) {
-		Section xmlFather = KnowWEObjectTypeUtils.getAncestorOfType(s.getFather(), AbstractXMLObjectType.class);
+		Section xmlFather = s.findAncestorOfType(AbstractXMLObjectType.class);
 		return xmlFather;
 	}
 
@@ -97,7 +96,7 @@ public class AbstractXMLObjectType extends DefaultAbstractKnowWEObjectType{
 	}
 
 	private static int getXMLDepth(Section<AbstractXMLObjectType> s, int depth) {
-		Section xmlFather = KnowWEObjectTypeUtils.getAncestorOfType(s.getFather(), AbstractXMLObjectType.class);
+		Section xmlFather = s.findAncestorOfType(AbstractXMLObjectType.class);
 		if (xmlFather != null && xmlFather.getObjectType() instanceof AbstractXMLObjectType) {
 			return getXMLDepth(xmlFather, ++depth);
 		} else {

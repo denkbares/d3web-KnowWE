@@ -28,6 +28,7 @@ import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 
 /**
@@ -53,38 +54,18 @@ public class AnswerReferenceInBrackets extends AnswerReference {
 
 	@Override
 	public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
-		// TODO Auto-generated method stub
 		return s.getFather().findSuccessor(QuestionReference.class);
 	}
+
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
 		String text = s.getOriginalText().trim();
 		String answer = "";
-		if(text.indexOf('(') == 0 && text.lastIndexOf(')') == text.length()-1) {
-			answer = text.substring(1,text.length()-1).trim();
-			
+		if (text.indexOf('(') == 0 && text.lastIndexOf(')') == text.length() - 1) {
+			answer = text.substring(1, text.length() - 1).trim();
 		}
 		
-		if (answer.startsWith("\"") && answer.endsWith("\"")) {
-			answer = answer.substring(1, answer.length() - 1).trim();
-		}
-
-		Section<? extends AnswerReference> sa = null;
-
-		if (s.get() instanceof AnswerReference) {
-			sa = (Section<? extends AnswerReference>) s;
-		}
-		
-		
-		//TODO: question prefix should be removed here!
-		Section<QuestionReference> questionSection = getQuestionSection(sa);
-    	String	question = questionSection.get().getTermName(questionSection);
-		return question + " " + answer;
+		return KnowWEUtils.trimQuotes(answer);
 	}
-	
-//	@Override
-//	public String getTermName(Section<? extends KnowWETerm<TermObject>> s) {
-//		return KnowWEUtils.trimAndRemoveQuotes(s.getOriginalText());
-//	}
 
 }

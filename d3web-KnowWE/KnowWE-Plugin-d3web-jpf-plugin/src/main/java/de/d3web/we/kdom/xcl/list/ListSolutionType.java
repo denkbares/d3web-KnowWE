@@ -25,6 +25,7 @@ import java.util.Collection;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
@@ -36,9 +37,7 @@ import de.d3web.we.kdom.objects.TermRelationDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.NonEmptyLineSectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.inference.PSMethodXCL;
@@ -86,9 +85,10 @@ public class ListSolutionType extends TermRelationDefinition {
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListSolutionType> s) {
 
 			Section<SolutionDefinition> solutionDef = s.findSuccessor(SolutionDefinition.class);
+
 			Solution solution = solutionDef.get().getTermObject(article, solutionDef);
 
-			Section<DefaultMarkupType> defaultMarkupType = s.findAncestor(DefaultMarkupType.class);
+			Section<DefaultMarkupType> defaultMarkupType = s.findAncestorOfType(DefaultMarkupType.class);
 
 			if (solution != null) {
 				KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,

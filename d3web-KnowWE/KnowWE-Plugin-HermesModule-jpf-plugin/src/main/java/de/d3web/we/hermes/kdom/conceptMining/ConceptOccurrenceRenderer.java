@@ -178,7 +178,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 		String[] defaultOpts = { "concept missmatch", "dont ask again" };
 
-		Section<? extends TimeEventType> eventSection = arg0.findAncestor(TimeEventType.class);
+		Section<? extends TimeEventType> eventSection = arg0.findAncestorOfType(TimeEventType.class);
 		// Section ancestor = KnowWEObjectTypeUtils.getAncestorOfType( arg0,
 		// TimeEventType.class.getName() );
 

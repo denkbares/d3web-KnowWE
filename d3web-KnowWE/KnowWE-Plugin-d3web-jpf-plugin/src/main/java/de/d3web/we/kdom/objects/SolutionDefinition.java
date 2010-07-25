@@ -8,13 +8,13 @@ import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -70,14 +70,15 @@ public class SolutionDefinition extends D3webTermDefinition<Solution> {
 		public void destroy(KnowWEArticle article, Section<SolutionDefinition> solution) {
 			Solution kbsol = solution.get().getTermObjectFromLastVersion(article, solution);
 			try {
-				if (kbsol != null) kbsol.getKnowledgeBase().remove(kbsol);
+				if (kbsol != null) {
+					kbsol.getKnowledgeBase().remove(kbsol);
+					KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
+							article, solution);
+				}
 			}
 			catch (IllegalAccessException e) {
 				article.setFullParse(true, this);
 			}
-			KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(article,
-					solution);
-			return;
 		}
 
 	}

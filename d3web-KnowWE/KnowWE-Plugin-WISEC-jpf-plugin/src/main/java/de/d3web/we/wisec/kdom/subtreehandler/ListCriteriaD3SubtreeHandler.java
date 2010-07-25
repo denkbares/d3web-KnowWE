@@ -33,7 +33,7 @@ public class ListCriteriaD3SubtreeHandler extends D3webSubtreeHandler<ListCriter
 		if (kbm != null) {
 
 			// Get the necessary Annotations
-			Section<ListCriteriaRootType> root = s.findAncestor(ListCriteriaRootType.class);
+			Section<ListCriteriaRootType> root = s.findAncestorOfType(ListCriteriaRootType.class);
 			String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 
 			// Create AbstractListQuestion

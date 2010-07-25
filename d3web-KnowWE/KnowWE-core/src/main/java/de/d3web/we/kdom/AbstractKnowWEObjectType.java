@@ -35,7 +35,6 @@ import de.d3web.we.kdom.report.DefaultNoticeRenderer;
 import de.d3web.we.kdom.report.DefaultWarningRenderer;
 import de.d3web.we.kdom.report.MessageRenderer;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.subtreeHandler.Priority;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
@@ -558,4 +557,5 @@ public abstract class AbstractKnowWEObjectType implements KnowWEObjectType {
 	public void setOrderSensitive(boolean orderSensitive) {
 		this.isOrderSensitive = orderSensitive;
 	}
+
 }

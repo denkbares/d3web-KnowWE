@@ -49,57 +49,6 @@ public class DashTreeElement extends DefaultAbstractKnowWEObjectType {
 	}
 
 	/**
-	 * Delivers the (dash-)level if the element by counting leading '-'
-	 * 
-	 * @param s
-	 * @return
-	 */
-	public static int getLevel(Section<? extends DashTreeElement> s) {
-		if (s == null) return -1;
-
-		String text = s.getOriginalText().trim();
-
-		if (text.length() == 0) return -1;
-
-		int index = 0;
-		while (text.charAt(index) == '-') {
-			index++;
-		}
-		return index;
-	}
-
-	public static Section<? extends DashTreeElement> getDashTreeFather(Section<? extends DashTreeElement> s) {
-
-		Section<?> father = s.getFather();
-		if (father != null) {
-			Section<?> grandFather = father.getFather();
-			if (grandFather != null) {
-				return grandFather.findChildOfType(DashTreeElement.class);
-			}
-		}
-		return null;
-		
-	}
-	
-	
-	public static List<Section<? extends DashTreeElement>> getDashTreeAncestors(Section<? extends DashTreeElement> s) {
-		List<Section<? extends DashTreeElement>> ancestors = new ArrayList<Section<? extends DashTreeElement>>();
-		List<Section<?>> ancestorSubTrees = new ArrayList<Section<?>>();
-		Section<?> father = s.getFather();
-		if (father != null && father.getObjectType().isAssignableFromType(DashSubtree.class)) {
-			father = father.getFather();
-		}
-		while (father != null && father.getObjectType().isAssignableFromType(DashSubtree.class)) {
-			ancestorSubTrees.add(father);
-			father = father.getFather();
-		}
-		for (Section<?> subTree : ancestorSubTrees) {
-			ancestors.add(subTree.findChildOfType(DashTreeElement.class));
-		}
-		return ancestors;
-	}
-	
-	/**
 	 * Looks for the first non-empty line in the SubTree to make it (root-)Element
 	 * 
 	 * @author Jochen
