@@ -105,7 +105,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		public CoveringRelation() {
 
 			this.setSectionFinder(new AllTextFinderTrimSpaces());
-			this.addSubtreeHandler(Priority.LOW, new CreateXCLRealtionHandler());
+			this.addSubtreeHandler(Priority.LOW, new CreateXCLRelationHandler());
 
 			// here also a comment might occur:
 			AnonymousType relationComment = new AnonymousType("comment");
@@ -138,7 +138,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		 *         the d3web knowledge base
 		 *
 		 */
-		class CreateXCLRealtionHandler extends D3webSubtreeHandler<CoveringRelation> {
+		class CreateXCLRelationHandler extends D3webSubtreeHandler<CoveringRelation> {
 
 			private final String relationStoreKey = "XCLRELATION_STORE_KEY";
 
@@ -181,10 +181,10 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 							.getString("KnowWE.xcllist.relationfail")));
 				}
 
-				Section<SolutionDefinition> soltuionDef = getCorrespondingSolutionDef(s);
-				if (soltuionDef != null) {
-					Solution solution = soltuionDef.get().getTermObject(
-							article, soltuionDef);
+				Section<SolutionDefinition> solutionDef = getCorrespondingSolutionDef(s);
+				if (solutionDef != null) {
+					Solution solution = solutionDef.get().getTermObject(
+							article, solutionDef);
 					KnowledgeSlice xclModel = solution.getKnowledge(PSMethodXCL.class,
 							XCLModel.XCLMODEL);
 
