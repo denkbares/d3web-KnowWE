@@ -36,22 +36,20 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 /**
  * The TerminalCondition type of the CompositeCondition
  * {@link CompositeCondition}
- *
+ * 
  * A section of this type is instantiated for each leaf of the
  * CompositeCondition tree. Various allowed concrete terminal-conditions can be
  * registered as child-types. Section which are not accepted by one of the
  * registered terminal-conditions are automatically labeled with an error as
  * "unrecognized-terminal-condition".
- *
+ * 
  * @author Jochen
- *
+ * 
  */
 public class ConditionTerminal extends DefaultAbstractKnowWEObjectType {
 	@Override
 	protected void init() {
 		this.sectionFinder = new AllTextFinderTrimmed();
-
-
 
 		// last: Anything left is an UnrecognizedTC throwing an error
 		AnonymousType unrecognizedCond = new AnonymousType(
@@ -60,14 +58,24 @@ public class ConditionTerminal extends DefaultAbstractKnowWEObjectType {
 		unrecognizedCond.addSubtreeHandler(new SubtreeHandler<ConditionTerminal>() {
 			@Override
 			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section s) {
-				return Arrays.asList((KDOMReportMessage) new UnexpectedSequence("no valid TerminalCondition: "
-						+ s.getOriginalText()));
+				return Arrays.asList((KDOMReportMessage) new UnexpectedSequence(
+						"no valid TerminalCondition: "
+								+ s.getOriginalText()));
 			}
 		});
 
 		this.addChildType(unrecognizedCond);
 	}
 
+	/**
+	 * 
+	 * Via this method all valid TerminalConditions are registered. The
+	 * KDOM-types of these allowed TerminalConditions are registered as children
+	 * types of this type
+	 * 
+	 * @created 26.07.2010
+	 * @param types
+	 */
 	public void setAllowedTerminalConditions(List<? extends ConditionTerminal> types) {
 		this.childrenTypes.addAll(0, types);
 	}

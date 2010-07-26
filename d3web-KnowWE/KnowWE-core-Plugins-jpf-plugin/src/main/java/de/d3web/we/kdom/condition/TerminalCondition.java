@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.condition;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
