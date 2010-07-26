@@ -17,7 +17,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.kdom.questionTreeNew.indication;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +39,10 @@ import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.objects.QuestionnaireReference;
+import de.d3web.we.kdom.questionTreeNew.NumericCondLine;
+import de.d3web.we.kdom.questionTreeNew.QuestionDashTree;
+import de.d3web.we.kdom.questionTreeNew.QuestionTreeAnswerDefinition;
+import de.d3web.we.kdom.questionTreeNew.Utils;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;

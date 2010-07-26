@@ -43,6 +43,7 @@ import de.d3web.we.kdom.objects.QASetDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.objects.QuestionnaireDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition.QuestionType;
+import de.d3web.we.kdom.questionTreeNew.indication.IndicationHandler;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SimpleMessageError;

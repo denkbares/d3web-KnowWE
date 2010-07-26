@@ -1,14 +1,12 @@
-package de.d3web.we.kdom.objects;
+package de.d3web.we.kdom.rulesNew.terminalCondition;
 
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.AnswerReference;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 
 public class AnswerReferenceImpl extends AnswerReference {
 
-	@Override
-	protected void init() {
-		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR5));
-	}
 
 	@Override
 	public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {

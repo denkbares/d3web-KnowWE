@@ -21,6 +21,11 @@
 package de.d3web.we.kdom.questionTreeNew;
 
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
+import de.d3web.we.kdom.questionTreeNew.indication.IndicationLine;
+import de.d3web.we.kdom.questionTreeNew.indication.QuestionRefLine;
+import de.d3web.we.kdom.questionTreeNew.setValue.QuestionSetValueLine;
+import de.d3web.we.kdom.questionTreeNew.setValue.QuestionSetValueNumLine;
+import de.d3web.we.kdom.questionTreeNew.setValue.SolutionSetValueLine;
 
 public class QuestionTreeElementContent extends DashTreeElementContent {
 

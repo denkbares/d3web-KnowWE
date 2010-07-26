@@ -33,6 +33,15 @@ import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.condition.TerminalCondition;
 import de.d3web.we.kdom.rulesNew.terminalCondition.D3webTerminalCondition;
 
+/**
+ * 
+ * this class offers a method to create a (d3web-) Condition from a CompositeCondition KDOM.
+ * 
+ * @see CompositeCondition
+ * 
+ * @author Jochen
+ * @created 26.07.2010 
+ */
 public class KDOMConditionFactory {
 
 	public static Condition createCondition(KnowWEArticle article, Section<CompositeCondition> c) {

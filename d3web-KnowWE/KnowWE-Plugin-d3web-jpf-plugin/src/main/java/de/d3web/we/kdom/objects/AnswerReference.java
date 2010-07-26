@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package de.d3web.we.kdom.objects;
 
 import de.d3web.core.knowledge.terminology.Choice;
@@ -15,6 +35,16 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 
 
+/**
+ * 
+ * @author Jochen/Albrecht
+ * @created 26.07.2010 
+ * 
+ * This is the type to be used in markup for referencing (d3web-) Choice-Answers.
+ * It checks whether the referenced object is existing.
+ * In case it creates the Answer object in the knowledge base.
+ * 
+ */
 public abstract class AnswerReference 
 		extends D3webTermReference<Choice>
 		implements NotUniqueKnowWETerm<Choice> {
@@ -34,18 +64,19 @@ public abstract class AnswerReference
 			String originalText = sec.getOriginalText();
 			int index = originalText.indexOf(refText);
 			
-			new FontColorRenderer(fontcolor).render(article, sec, user, string);
+		//	new FontColorRenderer(fontcolor).render(article, sec, user, string);
 			
-//			if(index < 0) {
-//				string.append("error: KnowWETermname not contained in text");
-//			}else {
-//				string.append(originalText.substring(0, index));
-//				string.append(KnowWEUtils.maskHTML("<span")); 
-//				string.append(" style='").append(fontcolor).append("'");
-//				string.append(KnowWEUtils.maskHTML(">"));
-//				string.append(KnowWEUtils.maskHTML("</span>"));
-//				string.append(originalText.substring(index+refText.length(), originalText.length()));
-//			}
+			if(index < 0) {
+				string.append("error: KnowWETermname not contained in text");
+			}else {
+				string.append(originalText.substring(0, index));
+				string.append(KnowWEUtils.maskHTML("<span")); 
+				string.append(" style='").append(fontcolor).append("'");
+				string.append(KnowWEUtils.maskHTML(">"));
+				string.append(refText);
+				string.append(KnowWEUtils.maskHTML("</span>"));
+				string.append(originalText.substring(index+refText.length(), originalText.length()));
+			}
 			
 		}
 		
@@ -89,16 +120,22 @@ public abstract class AnswerReference
 	 * @param s
 	 * @return
 	 */
+	/**
+	 * 
+	 * @created 26.07.2010
+	 * @param s
+	 * @return 
+	 */
 	public abstract Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s);
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public String getUniqueTermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm<Choice>> s) {
 
-		String answer = KnowWEUtils.trimQuotes(s.getOriginalText());
+		String answer = s.get().getTermName(s);
 
-		String question = KnowWEUtils.trimQuotes(getQuestionSection(
-				(Section<? extends AnswerReference>) s).getOriginalText());
+		Section<QuestionReference> questionSection = getQuestionSection((Section<? extends AnswerReference>) s);
+		String question = questionSection.get().getTermName(questionSection);
 
 		return question + " " + answer;
 	}

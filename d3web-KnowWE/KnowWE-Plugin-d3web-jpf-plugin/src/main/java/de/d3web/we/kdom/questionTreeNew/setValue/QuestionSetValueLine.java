@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.kdom.questionTreeNew;
+package de.d3web.we.kdom.questionTreeNew.setValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +39,7 @@ import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.AnswerReference;
 import de.d3web.we.kdom.objects.QuestionReference;
+import de.d3web.we.kdom.questionTreeNew.Utils;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -112,10 +113,9 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 			Section<AnswerReference> answerSec = s.getFather().findSuccessor(AnswerReference.class);
 			
-			String answerTermName = answerSec.get().getTermName(answerSec);
+			String answerName = answerSec.get().getTermName(answerSec);
 
-			// TODO: shouldnt be necessary
-			String answerName = answerTermName.substring(answerTermName.indexOf(' ')).trim();
+			
 			
 			if(q != null) {
 				Choice a = null;

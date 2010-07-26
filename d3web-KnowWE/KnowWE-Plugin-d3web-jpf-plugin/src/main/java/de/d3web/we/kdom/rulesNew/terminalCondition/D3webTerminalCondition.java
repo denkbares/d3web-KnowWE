@@ -25,6 +25,12 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
+/**
+ * 
+ * @author Jochen
+ * @created 26.07.2010
+ * @param <T> 
+ */
 public abstract class D3webTerminalCondition<T extends KnowWEObjectType> extends DefaultAbstractKnowWEObjectType {
 
 	public abstract TerminalCondition getTerminalCondition(KnowWEArticle article, Section<T> s);

@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package de.d3web.we.kdom.objects;
 
 import java.util.Arrays;
@@ -20,6 +39,19 @@ import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 
+/**
+ * 
+ * @author Jochen/Albrecht
+ * @created 26.07.2010 
+ * 
+ * 
+ * This is the type to be used for markup defining new (d3web-) Choice-Answers.
+ * It checks whether the corresponding question is existing and is compatible.
+ * In case it creates the Answer object in the knowledge base.
+ * 
+ * 
+ * 
+ */
 public abstract class AnswerDefinition
 		extends D3webTermDefinition<Choice>
 		implements IncrementalConstraints, NotUniqueKnowWETerm<Choice> {
@@ -35,6 +67,14 @@ public abstract class AnswerDefinition
 	
 	public abstract int getPosition(Section<? extends AnswerDefinition> s);
 	
+	/**
+	 * 
+	 * returns the section of the question this answer belongs to
+	 * 
+	 * @created 26.07.2010
+	 * @param s
+	 * @return 
+	 */
 	public abstract Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s);
 
 	@Override
@@ -59,19 +99,27 @@ public abstract class AnswerDefinition
 		return question + " " + answer;
 	}
 
+	/**
+	 * 
+	 * @author Jochen
+	 * @created 26.07.2010 
+	 * 
+	 * This handler actually creates the Answer as an object of the knowledge base
+	 */
 	static class CreateAnswerHandler extends D3webSubtreeHandler<AnswerDefinition> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<AnswerDefinition> s) {
 
-			KnowledgeBaseManagement mgn = getKBM(article);
+			
 
 			String name = s.get().getTermName(s);
 
 			Section<? extends QuestionDefinition> qDef = s
 					.get().getQuestionSection(s);
 
+			// if having error somewhere, do nothing and report error
 			if (qDef.hasErrorInSubtree()) {
 				return Arrays.asList((KDOMReportMessage) new ObjectCreationError(
 						"no valid question - " + name,
@@ -98,6 +146,7 @@ public abstract class AnswerDefinition
 							"Answer already existing - " + name));
 				}
 				else {
+					KnowledgeBaseManagement mgn = getKBM(article);
 					Choice a = mgn.addChoiceAnswer((QuestionChoice) q, name,
 							s.get().getPosition(s));
 
