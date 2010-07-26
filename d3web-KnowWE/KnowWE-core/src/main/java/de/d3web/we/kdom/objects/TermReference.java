@@ -69,7 +69,7 @@ public abstract class TermReference<TermObject>
 					&& s.get().getTermObjectFallback(article, s) == null) {
 
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(s.get().getName()
-						+ ": " + s.getOriginalText()));
+						+ ": " + s.get().getTermName(s)));
 			}
 
 			return new ArrayList<KDOMReportMessage>(0);
