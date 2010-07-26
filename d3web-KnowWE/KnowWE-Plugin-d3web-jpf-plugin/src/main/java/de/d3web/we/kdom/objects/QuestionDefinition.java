@@ -46,7 +46,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public static enum QuestionType {
-		OC, MC, YN, NUM, DATE, TEXT;
+		OC, MC, YN, NUM, DATE, TEXT, INFO;
 	}
 
 	public QuestionDefinition() {
@@ -92,6 +92,11 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 			QuestionType questionType = qidSection.get().getQuestionType(
 					qidSection);
+			
+			if(questionType == null) {
+				return Arrays.asList((KDOMReportMessage) new ObjectCreationError("no question type found: "+name,
+						this.getClass()));
+			}
 
 			Question q = null;
 			if (questionType.equals(QuestionType.OC)) {
@@ -108,6 +113,9 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 			}
 			else if (questionType.equals(QuestionType.DATE)) {
 				q = mgn.createQuestionDate(name, parent);
+			}
+			else if (questionType.equals(QuestionType.INFO)) {
+				q = mgn.createQuestionZC(name, parent);
 			}
 			else if (questionType.equals(QuestionType.TEXT)) {
 				q = mgn.createQuestionText(name, parent);

@@ -134,7 +134,7 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 						Condition cond = Utils.createCondition(article,
 								DashTreeUtils.getAncestorDashTreeElements(s));
 						if(cond == null) {
-							return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()));
+							return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()+": check condition"));
 						}
 						
 						Rule r = RuleFactory.createSetValueRule(newRuleID, qc, new Object[]{a}, cond, null);

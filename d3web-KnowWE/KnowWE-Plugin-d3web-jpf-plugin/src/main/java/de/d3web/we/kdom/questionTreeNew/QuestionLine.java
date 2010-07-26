@@ -562,6 +562,9 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 			else if (embracedContent.contains("date")) {
 				return QuestionType.DATE;
 			}
+			else if (embracedContent.contains("info")) {
+				return QuestionType.INFO;
+			}
 			else if (embracedContent.contains("text")) {
 				return QuestionType.TEXT;
 			}
@@ -573,7 +576,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		public static final String[] QUESTION_DECLARATIONS = {
 				"oc", "mc",
-				"yn", "jn", "num", "date", "text" };
+				"yn", "jn", "num", "date", "text", "info" };
 
 		@Override
 		protected void init() {

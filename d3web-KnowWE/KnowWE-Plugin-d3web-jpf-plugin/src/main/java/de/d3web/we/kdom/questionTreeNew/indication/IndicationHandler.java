@@ -88,6 +88,12 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 		Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
 				.getFatherDashTreeElement(element);
+		
+		if(dashTreeFather == null) {
+			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+					D3webModule.getKwikiBundle_d3web().
+							getString("KnowWE.rulesNew.indicationnotcreated")+" - no dashTreeFather found"));
+		}
 
 		Section<QuestionTreeAnswerDefinition> answerSec = dashTreeFather
 				.findSuccessor(QuestionTreeAnswerDefinition.class);
