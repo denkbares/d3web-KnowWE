@@ -38,6 +38,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.AnswerReference;
+import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.questionTreeNew.Utils;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -104,10 +105,29 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionReference> {
 
+		
+		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<QuestionReference> s) {
+			return super.needsToCreate(article, s) 
+					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		}
+		
+		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<QuestionReference> s) {
+			return super.needsToDestroy(article, s)
+					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<QuestionReference> s) {
+			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
+					SETVALUE_ARGUMENT);
+			if (kbr != null) kbr.remove();
+		}
+		
+		
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
-
-
 
 			Question q = s.get().getTermObject(article, s);
 
@@ -138,7 +158,9 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 						}
 						
 						Rule r = RuleFactory.createSetValueRule(newRuleID, qc, new Object[]{a}, cond, null);
+						
 						if (r != null) {
+							KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass() + " : "
 									+ r.getId()));
 						}
@@ -152,19 +174,6 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 		}
 
-		private String getArgumentString(Section<QuestionReference> s) {
-			String argument = null;
-			List<Section<AnonymousType>> children = new ArrayList<Section<AnonymousType>>();
-			s.getFather().findSuccessorsOfType(AnonymousType.class, children);
-			for (Section<AnonymousType> section : children) {
-				if (section.get().getName().equals(SETVALUE_ARGUMENT)) {
-					argument = section.getOriginalText().substring(1,
-							section.getOriginalText().length() - 1).trim();
-					break;
-				}
-			}
-			return argument;
-		}
 
 	}
 

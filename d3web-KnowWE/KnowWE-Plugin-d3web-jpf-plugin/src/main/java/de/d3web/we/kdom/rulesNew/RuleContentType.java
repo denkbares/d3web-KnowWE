@@ -112,8 +112,16 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			Condition d3Cond = KDOMConditionFactory.createCondition(article, cond);
 
 			Section<D3webRuleAction> action = s.findSuccessor(D3webRuleAction.class);
+			if(action == null) {
+				return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+						D3webModule.getKwikiBundle_d3web().
+						getString("KnowWE.rulesNew.notcreated")+" : no valid action found"
+				));
+			}
 
 			PSAction d3action = action.get().getAction(article, action);
+			
+			
 			if (d3action != null) {
 
 				Rule r = RuleFactory.createRule(mgn.createRuleID(), d3action, d3Cond,
