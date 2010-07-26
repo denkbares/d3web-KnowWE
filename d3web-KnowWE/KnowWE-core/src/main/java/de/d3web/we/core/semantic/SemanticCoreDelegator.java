@@ -214,7 +214,9 @@ impl.removeFile(filename);
 	}
 
 	public static void initImpl(KnowWEEnvironment wiki) {
-		impl.init(wiki);		
+		if (impl!=null){
+			impl.init(wiki);
+		}
 	}
 
 	public static void setImpl(ISemanticCore cur) {
