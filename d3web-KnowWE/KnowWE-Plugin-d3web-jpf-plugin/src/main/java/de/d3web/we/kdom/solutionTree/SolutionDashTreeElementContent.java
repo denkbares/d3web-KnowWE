@@ -22,6 +22,9 @@ package de.d3web.we.kdom.solutionTree;
 import java.util.Arrays;
 import java.util.Collection;
 
+import de.d3web.core.inference.Rule;
+import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -31,11 +34,13 @@ import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.SolutionDefinition;
+import de.d3web.we.kdom.objects.SolutionReference;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author Jochen
@@ -49,6 +54,8 @@ import de.d3web.we.terminology.D3webSubtreeHandler;
  *
  */
 public class SolutionDashTreeElementContent extends DashTreeElementContent implements KnowWETerm<Object> {
+	
+	private static String STORE_KEY_SOLUTION = "solution-object";
 
 	public SolutionDashTreeElementContent() {
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
@@ -70,6 +77,38 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 	 */
 	class CreateSubSolutionRelationHandler extends D3webSubtreeHandler<SolutionDashTreeElementContent> {
 
+		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
+			return super.needsToCreate(article, s) 
+					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		}
+		
+		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
+			return super.needsToDestroy(article, s)
+					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
+			Section<SolutionDefinition> solSec = s.findSuccessor(SolutionDefinition.class);
+			Solution sol = (Solution) KnowWEUtils.getObjectFromLastVersion(article, s,
+					STORE_KEY_SOLUTION);
+			
+			try {
+				if (sol != null) {
+					sol.getKnowledgeBase().remove(sol);
+					KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
+							article, solSec);
+				}
+			}
+			catch (IllegalAccessException e) {
+				article.setFullParse(true, this);
+				// e.printStackTrace();
+			}
+
+		}
+		
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
 			Section<? extends DashTreeElementContent> fatherSolutionContent = DashTreeUtils.getFatherDashTreeElementContent(

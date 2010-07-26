@@ -54,17 +54,19 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 
-	private static final String SETVALUE_ARGUMENT = "SetValueArgument";
+	private static final String SETVALUE_ARGUMENT = "SetValueNumArgument";
+	private static final String OPEN = "(";
+	private static final String CLOSE = ")";
 
 	public QuestionSetValueNumLine() {
 		this.sectionFinder = new ConditionalAllTextFinder() {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
-				int open = SplitUtility.indexOfUnquoted(text, ("("));
+				int open = SplitUtility.indexOfUnquoted(text, (OPEN));
 				if (open == -1) return false;
 
-				int close = SplitUtility.findIndexOfClosingBracket(text, open, '(', ')');
+				int close = SplitUtility.findIndexOfClosingBracket(text, open, OPEN.charAt(0), CLOSE.charAt(0));
 
 				if (close == -1) return false;
 
@@ -99,8 +101,8 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 
 				return SectionFinderResult
 						.createSingleItemList(new SectionFinderResult(
-								SplitUtility.indexOfUnquoted(text, "("),
-								SplitUtility.indexOfUnquoted(text, ")") + 1));
+								SplitUtility.indexOfUnquoted(text, OPEN),
+								SplitUtility.indexOfUnquoted(text, CLOSE) + 1));
 			}
 		};
 		typeDef.setSectionFinder(typeFinder);
@@ -137,7 +139,27 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 	static class CreateSetValueNumRuleHandler extends D3webSubtreeHandler<QuestionReference> {
 
 		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<QuestionReference> s) {
+			return super.needsToCreate(article, s) 
+					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		}
+		
+		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<QuestionReference> s) {
+			return super.needsToDestroy(article, s)
+					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<QuestionReference> s) {
+			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
+					SETVALUE_ARGUMENT);
+			if (kbr != null) kbr.remove();
+		}
+		
+		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
+			
 
 			Question q = s.get().getTermObject(article, s);
 
@@ -156,6 +178,7 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 
 						Rule r = RuleFactory.createRule(newRuleID, action, cond, null, null);
 						if (r != null) {
+							KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
 							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
 									r.getClass() + " : "
 											+ r.getId()));
@@ -185,15 +208,5 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	public static String trimQuotes(Section<?> s) {
-		String content = s.getOriginalText();
 
-		String trimmed = content.trim();
-
-		if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-			return trimmed.substring(1, trimmed.length() - 1).trim();
-		}
-
-		return trimmed;
-	}
 }

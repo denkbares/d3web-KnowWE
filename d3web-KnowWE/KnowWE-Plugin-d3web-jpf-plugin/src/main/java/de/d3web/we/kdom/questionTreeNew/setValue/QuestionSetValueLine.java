@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.questionTreeNew.setValue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -35,36 +34,41 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.AnswerReference;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.questionTreeNew.Utils;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
+import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	private static final String SETVALUE_ARGUMENT = "SetValueArgument";
+	private static final String OPEN = "(";
+	private static final String CLOSE = ")";
+	
 
+	/**
+	 *
+	 */
 	@Override
 	protected void init() {
 		this.sectionFinder = new ConditionalAllTextFinder() {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {
-				return SplitUtility.containsUnquoted(text, "(")
-						&& SplitUtility.containsUnquoted(text, ")");
+				return SplitUtility.containsUnquoted(text, OPEN)
+						&& SplitUtility.containsUnquoted(text, CLOSE);
 
 			}
 		};
@@ -85,23 +89,6 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 	}
 
 	
-
-	static class ArgumentRenderer extends KnowWEDomRenderer {
-
-		@Override
-		public void render(KnowWEArticle article, Section sec,
-				KnowWEUserContext user, StringBuilder string) {
-			String embracedContent = sec.getOriginalText().substring(1,
-					sec.getOriginalText().length() - 1);
-			string
-					.append(KnowWEUtils
-							.maskHTML(" <img height='10' src='KnowWEExtension/images/arrow_right_s.png'>"));
-			string.append(KnowWEUtils
-					.maskHTML("<b>(" + embracedContent + ")</b>"));
-
-		}
-
-	}
 
 	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionReference> {
 
@@ -176,16 +163,46 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 
 	}
+	
+	/**
+	 * 
+	 * A type for an AnswerReference in brackets like '(AnswerXY)'
+	 * 
+	 * @author Jochen
+	 * @created 26.07.2010 
+	 */
+	class AnswerReferenceInBrackets extends AnswerReference {
+		
+		public AnswerReferenceInBrackets() {
+			this.sectionFinder = new ISectionFinder() {
+				@Override
+				public List<SectionFinderResult> lookForSections(String text,
+						Section father, KnowWEObjectType type) {
 
-	public static String trimQuotes(Section<?> s) {
-		String content = s.getOriginalText();
-
-		String trimmed = content.trim();
-
-		if(trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-			return trimmed.substring(1, trimmed.length()-1).trim();
+					return SectionFinderResult
+							.createSingleItemList(new SectionFinderResult(
+									SplitUtility.indexOfUnquoted(text, OPEN),
+									SplitUtility.indexOfUnquoted(text, CLOSE) + 1));
+				}
+			};
 		}
 
-		return trimmed;
+		@Override
+		public Section<QuestionReference> getQuestionSection(Section<? extends AnswerReference> s) {
+			return s.getFather().findSuccessor(QuestionReference.class);
+		}
+
+		@Override
+		public String getTermName(Section<? extends KnowWETerm<Choice>> s) {
+			String text = s.getOriginalText().trim();
+			String answer = "";
+			if (text.indexOf(OPEN) == 0 && text.lastIndexOf(CLOSE) == text.length() - 1) {
+				answer = text.substring(1, text.length() - 1).trim();
+			}
+			
+			return KnowWEUtils.trimQuotes(answer);
+		}
+
 	}
+
 }

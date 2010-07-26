@@ -34,6 +34,7 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
+import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.objects.SolutionReference;
 import de.d3web.we.kdom.questionTreeNew.Utils;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -58,6 +59,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	private static final String SETVALUE_ARGUMENT = "SolutionScore";
+	private static final String OPEN = "(";
+	private static final String CLOSE = ")";
 
 	@Override
 	protected void init() {
@@ -72,10 +75,10 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		protected boolean condition(String text, Section<?> father) {
-			int open = SplitUtility.indexOfUnquoted(text, ("("));
+			int open = SplitUtility.indexOfUnquoted(text, (OPEN));
 			if(open == -1) return false;
 			
-			int close = SplitUtility.findIndexOfClosingBracket(text, open, '(', ')');
+			int close = SplitUtility.findIndexOfClosingBracket(text, open, OPEN.charAt(0), CLOSE.charAt(0));
 			
 			if(close == -1) return false;
 			
@@ -112,8 +115,8 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 				return SectionFinderResult
 						.createSingleItemList(new SectionFinderResult(
-								SplitUtility.indexOfUnquoted(text, "("),
-								SplitUtility.indexOfUnquoted(text, ")") + 1));
+								SplitUtility.indexOfUnquoted(text, OPEN),
+								SplitUtility.indexOfUnquoted(text, CLOSE) + 1));
 			}
 		};
 		typeDef.setSectionFinder(typeFinder);
@@ -139,6 +142,25 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 	}
 
 	static class CreateScoringRuleHandler extends D3webSubtreeHandler<SolutionReference> {
+		
+		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<SolutionReference> s) {
+			return super.needsToCreate(article, s) 
+					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		}
+		
+		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<SolutionReference> s) {
+			return super.needsToDestroy(article, s)
+					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		}
+
+		@Override
+		public void destroy(KnowWEArticle article, Section<SolutionReference> s) {
+			Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
+					SETVALUE_ARGUMENT);
+			if (kbr != null) kbr.remove();
+		}
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<SolutionReference> s) {
@@ -158,6 +180,7 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, sol, score, cond);
 					if (r != null) {
+						KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
 						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass()
 								+ " : " + r.getId()));
 					}
