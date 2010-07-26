@@ -27,7 +27,7 @@ import org.openrdf.model.Statement;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class PageViewHandler extends AbstractTagHandler {
@@ -45,7 +45,7 @@ public class PageViewHandler extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-		ISemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		StringBuffer output = new StringBuffer();
 		output.append("<tr><th>S</th><th>P</th><th>O</th></tr>");
 
@@ -55,9 +55,9 @@ public class PageViewHandler extends AbstractTagHandler {
 				String s = cur.getSubject().stringValue();
 				String p = cur.getPredicate().stringValue();
 				String o = cur.getObject().stringValue();
-				s = SemanticCore.getInstance().reduceNamespace(s);
-				p = SemanticCore.getInstance().reduceNamespace(p);
-				o = SemanticCore.getInstance().reduceNamespace(o);
+				s = SemanticCoreDelegator.getInstance().reduceNamespace(s);
+				p = SemanticCoreDelegator.getInstance().reduceNamespace(p);
+				o = SemanticCoreDelegator.getInstance().reduceNamespace(o);
 				// s = s.substring(s.indexOf('#') + 1);
 				// o = o.substring(o.indexOf('#') + 1);
 				// p = p.substring(p.indexOf('#') + 1);

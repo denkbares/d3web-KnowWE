@@ -28,7 +28,7 @@ import org.openrdf.model.URI;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -67,7 +67,7 @@ public class TagsContent extends XMLContent {
 					}
 				}
 			}
-			SemanticCore.getInstance().addStatements(io, s);
+			SemanticCoreDelegator.getInstance().addStatements(io, s);
 
 			return null;
 		}

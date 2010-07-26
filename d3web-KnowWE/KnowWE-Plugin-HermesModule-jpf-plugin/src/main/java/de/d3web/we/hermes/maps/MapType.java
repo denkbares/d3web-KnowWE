@@ -13,7 +13,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -51,7 +51,7 @@ public class MapType extends AbstractXMLObjectType {
 			for (Placemark placem : placemarks) {
 				addPlacemarkToOwlObject(placem, ioo);
 			}
-			SemanticCore.getInstance().addStatements(ioo, s);
+			SemanticCoreDelegator.getInstance().addStatements(ioo, s);
 			return null;
 		}
 

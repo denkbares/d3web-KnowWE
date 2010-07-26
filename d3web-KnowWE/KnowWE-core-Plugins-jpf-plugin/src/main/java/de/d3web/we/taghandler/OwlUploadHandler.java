@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class OwlUploadHandler extends AbstractTagHandler {
@@ -79,7 +79,7 @@ public class OwlUploadHandler extends AbstractTagHandler {
 				.append("<p id='knoffice-show-extend' class='show-extend pointer extend-panel-down'>"
 						+ rb.getString("KnowWE.renamingtool.settings") + "</p>");
 		html.append("<div id='knoffice-panel-extend' class='hidden'>");
-		ISemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		File[] files = sc.getImportList();
 		if (files != null) {
 			html.append("<form method=\"POST\" action=\"OWLDelete\">");

@@ -33,7 +33,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -132,7 +132,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 					.getContext(section, DefaultSubjectContext.CID);
 			String solution = sol != null ? sol.getSubject() : null;
 			if (solution != null) {
-				UpperOntology uo = SemanticCore.getInstance().getUpper();
+				UpperOntology uo = SemanticCoreDelegator.getInstance().getUpper();
 
 				try {
 					URI solutionuri = uo.getHelper().createlocalURI(solution);
@@ -143,7 +143,7 @@ public class XCLHead extends DefaultAbstractKnowWEObjectType {
 					e.printStackTrace();
 				}
 			}
-			SemanticCore.getInstance().addStatements(io, section);
+			SemanticCoreDelegator.getInstance().addStatements(io, section);
 			return null;
 		}
 	

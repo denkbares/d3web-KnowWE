@@ -26,7 +26,7 @@ import de.d3web.we.basic.TerminologyType;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeServiceSession;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.d3webModule.DPSEnvironmentManager;
 import de.d3web.we.event.Event;
 import de.d3web.we.event.EventListener;
@@ -100,7 +100,7 @@ public class WISECFindingSetEventListener implements EventListener<FindingSetEve
 	 */
 	private Query createQuery(Question question, Value value, Criteria criteria) throws RepositoryException, MalformedQueryException {
 		
-		String queryString = SemanticCore.getInstance().getSparqlNamespaceShorts() +
+		String queryString = SemanticCoreDelegator.getInstance().getSparqlNamespaceShorts() +
 							 "SELECT ?" + LIST + " ?" + criteria + " " +
 		 					 "WHERE { " +
 		 					 "<http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#" + 
@@ -109,7 +109,7 @@ public class WISECFindingSetEventListener implements EventListener<FindingSetEve
 		 					 "?" + LIST + " w:" + criteria +  " ?" + criteria + " ." +
 		 					 "}";
 
-		RepositoryConnection con = SemanticCore.getInstance().getUpper().getConnection();
+		RepositoryConnection con = SemanticCoreDelegator.getInstance().getUpper().getConnection();
 		return con.prepareQuery(QueryLanguage.SPARQL, queryString);
 	}
 	

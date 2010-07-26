@@ -32,7 +32,7 @@ import org.openrdf.model.URI;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -73,7 +73,7 @@ public class SimpleAnnotation extends DefaultAbstractKnowWEObjectType {
 			if (annos.contains(":")) {
 				String[] list = annos.split(":");
 				String ns = list[0];
-				String ens = SemanticCore.getInstance().expandNamespace(ns);
+				String ens = SemanticCoreDelegator.getInstance().expandNamespace(ns);
 				if (ns.equals(ens)) {
 					io.setValidPropFlag(false);
 					io.setBadAttribute(ns + " is no valid namespace");

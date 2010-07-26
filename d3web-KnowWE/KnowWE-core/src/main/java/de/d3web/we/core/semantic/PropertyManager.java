@@ -91,7 +91,7 @@ public class PropertyManager {
 		if (property.getLocalName().contains("subClassOf")
 				|| property.getLocalName().contains("type")
 				|| property.getLocalName().contains("subPropertyOf")) return true;
-		String querystring = SemanticCore.getInstance().getSparqlNamespaceShorts();
+		String querystring = SemanticCoreDelegator.getInstance().getSparqlNamespaceShorts();
 		String objectpropquery = querystring + "ASK WHERE { <"
 				+ property.toString() + "> rdf:type owl:ObjectProperty }";
 		String datatypepropquery = querystring + "ASK WHERE { <"

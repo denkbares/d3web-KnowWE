@@ -29,7 +29,7 @@ import java.util.Collection;
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
 import de.d3web.we.core.semantic.PropertyManager;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -85,7 +85,7 @@ public class InfoContent extends XMLContent {
 				}
 			}
 			KnowWEUtils.storeSectionInfo(s, OwlHelper.IOO, io);
-			SemanticCore.getInstance().addStatements(io, s);
+			SemanticCoreDelegator.getInstance().addStatements(io, s);
 			return null;
 		}
 

@@ -32,7 +32,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.kdom.renderer.TimeEventTypeRenderer;
@@ -195,7 +195,7 @@ public class TimeEventType extends DefaultAbstractKnowWEObjectType {
 				e.printStackTrace();
 			}
 
-			SemanticCore.getInstance().addStatements(io, section);
+			SemanticCoreDelegator.getInstance().addStatements(io, section);
 			return new ArrayList<KDOMReportMessage>(0);
 		}
 

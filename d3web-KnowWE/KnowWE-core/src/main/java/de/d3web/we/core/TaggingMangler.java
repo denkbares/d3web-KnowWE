@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.tagging.TagsContent;
@@ -158,7 +158,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 	 * @return
 	 */
 	public ArrayList<String> getPages(String tag) {
-		String lns = SemanticCore.getInstance().getUpper().getLocaleNS();
+		String lns = SemanticCoreDelegator.getInstance().getUpper().getLocaleNS();
 		String querystring = "";
 		try {
 			querystring = "SELECT ?q \n" + "WHERE {\n" + "?t rdf:object <"
@@ -170,7 +170,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
+		return SemanticCoreDelegator.getInstance().simpleQueryToList(querystring, "q");
 	}
 
 	/**
@@ -193,10 +193,10 @@ public class TaggingMangler implements KnowWESearchProvider {
 				+ "?t rdf:object ?q .\n" + "?t rdf:predicate ns:hasTag .\n"
 				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic <%lns%"
 				+ topicenc + "> .\n" + "}";
-		String lns = SemanticCore.getInstance().getUpper().getLocaleNS();
+		String lns = SemanticCoreDelegator.getInstance().getUpper().getLocaleNS();
 		querystring = querystring.replace("%lns%", lns);
 
-		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
+		return SemanticCoreDelegator.getInstance().simpleQueryToList(querystring, "q");
 	}
 
 	/**
@@ -272,7 +272,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		String querystring = "SELECT ?q \n" + "WHERE {\n"
 				+ "?t rdf:object ?q .\n" + "?t rdf:predicate ns:hasTag .\n"
 				+ "}";
-		return SemanticCore.getInstance().simpleQueryToList(querystring, "q");
+		return SemanticCoreDelegator.getInstance().simpleQueryToList(querystring, "q");
 
 	}
 
@@ -354,7 +354,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 		String[] tags = querytags.split(" ");
 		ArrayList<GenericSearchResult> result = new ArrayList<GenericSearchResult>();
 		String querystring = "";
-		String lns = SemanticCore.getInstance().getUpper().getLocaleNS();
+		String lns = SemanticCoreDelegator.getInstance().getUpper().getLocaleNS();
 		int i = 0;
 		if (tags.length == 1) {
 			try {
@@ -383,7 +383,7 @@ public class TaggingMangler implements KnowWESearchProvider {
 			}
 			querystring += "}";
 		}
-		ArrayList<String> pages = SemanticCore.getInstance().simpleQueryToList(
+		ArrayList<String> pages = SemanticCoreDelegator.getInstance().simpleQueryToList(
 				querystring, "q");
 		for (String cur : pages) {
 			// TODO better search? better contexts..

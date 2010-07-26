@@ -36,7 +36,7 @@ import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -60,7 +60,7 @@ public class ExtensionContent extends XMLContent{
 			String text=s.getOriginalText();
 			
 			IntermediateOwlObject io = extend(text,s);;
-			SemanticCore.getInstance().addStatements(io, s);
+			SemanticCoreDelegator.getInstance().addStatements(io, s);
 			return null;
 		}
 		private IntermediateOwlObject extend(String value,Section s){

@@ -11,7 +11,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -34,7 +34,7 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 		String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 		
 		// Get the WISEC Namespace and create OwlObject
-		String ns = SemanticCore.getInstance().expandNamespace("w");
+		String ns = SemanticCoreDelegator.getInstance().expandNamespace("w");
 		IntermediateOwlObject ioo = new IntermediateOwlObject();
 		
 		// Check if we want to use the KDOM
@@ -48,7 +48,7 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 		}
 		
 		// Add the created statements to KnowWE's SemanticCore
-		SemanticCore.getInstance().addStatements(ioo, s);  
+		SemanticCoreDelegator.getInstance().addStatements(ioo, s);  
 		return null;
 	}
 
@@ -130,10 +130,10 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 
 	private void addTypeStatement(IntermediateOwlObject ioo, String ns,
 			String sgn) {
-		URI source = SemanticCore.getInstance().getUpper().getHelper().createURI(sgn);
-		URI object = SemanticCore.getInstance().getUpper().getHelper().createURI(ns, "Substance");
+		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(sgn);
+		URI object = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(ns, "Substance");
 		try {
-			Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, RDF.TYPE, object);
+			Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(source, RDF.TYPE, object);
 			ioo.addStatement(stmt);
 		} catch (RepositoryException e) {
 			e.printStackTrace();
@@ -142,11 +142,11 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 
 	private void addOnListStatement(IntermediateOwlObject ioo,
 			String ns, String sgn, String listID) {
-		URI source = SemanticCore.getInstance().getUpper().getHelper().createURI(sgn);
-		URI prop = SemanticCore.getInstance().getUpper().getHelper().createURI(ns, "onListRelation");
-		URI object = SemanticCore.getInstance().getUpper().getHelper().createURI(sgn + "-" + listID);
+		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(sgn);
+		URI prop = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(ns, "onListRelation");
+		URI object = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(sgn + "-" + listID);
 		try {
-			Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
+			Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(source, prop, object);
 			ioo.addStatement(stmt);
 		} catch (RepositoryException e) {
 			e.printStackTrace();
@@ -155,11 +155,11 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 	
 	private void addHasSubstanceStatement(IntermediateOwlObject ioo,
 			String ns, String sgn, String listID) {
-		URI source = SemanticCore.getInstance().getUpper().getHelper().createURI(listID);
-		URI prop = SemanticCore.getInstance().getUpper().getHelper().createURI(ns, "hasSubstanceRelation");
-		URI object = SemanticCore.getInstance().getUpper().getHelper().createURI(sgn + "-" + listID);
+		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(listID);
+		URI prop = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(ns, "hasSubstanceRelation");
+		URI object = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(sgn + "-" + listID);
 		try {
-			Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
+			Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(source, prop, object);
 			ioo.addStatement(stmt);
 		} catch (RepositoryException e) {
 			e.printStackTrace();

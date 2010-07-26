@@ -7,7 +7,7 @@ import org.apache.commons.fileupload.FileItem;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.taghandler.ImportKnOfficeHandler;
 import de.d3web.we.taghandler.OwlUploadHandler;
 import de.d3web.we.utils.KopicWriter;
@@ -118,7 +118,7 @@ public class KnOfficeUploadManager {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					ISemanticCore sc = SemanticCore.getInstance();
+					ISemanticCore sc = SemanticCoreDelegator.getInstance();
 					sc.getUpper().loadOwlFile(file);
 					return "redirect:Wiki.jsp?page=" + "SemanticSettings";
 				}
@@ -127,7 +127,7 @@ public class KnOfficeUploadManager {
 			if (fileItem.getFieldName().equals(
 					OwlUploadHandler.KEY_DELETE_OWL)) {
 				String filename = fileItem.getString();
-				SemanticCore.getInstance().removeFile(filename);
+				SemanticCoreDelegator.getInstance().removeFile(filename);
 				return "redirect:Wiki.jsp?page=" + "SemanticSettings";
 			}
 			if (fileItem.getFieldName().equals(ImportKnOfficeHandler.KEY_RULES)) {

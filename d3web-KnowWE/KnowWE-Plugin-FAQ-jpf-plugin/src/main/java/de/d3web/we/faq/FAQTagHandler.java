@@ -35,7 +35,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.utils.KnowWEUtils;
@@ -142,7 +142,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 		/**
 		 * establish connection and send query
 		 */
-		ISemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		Query query = null;
 		try {

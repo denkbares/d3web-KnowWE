@@ -13,7 +13,7 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.TaggingMangler;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
@@ -71,7 +71,7 @@ public class GroovySparqlRendererRendererTest {
 
 		String querystring = "<sparql render=\"junit\">SELECT ?q \n"
 				+ "WHERE {\n" + "?t rdf:object <"
-				+ SemanticCore.getInstance().getUpper().getLocaleNS()
+				+ SemanticCoreDelegator.getInstance().getUpper().getLocaleNS()
 				+ "tag> .\n" + "?t rdf:predicate ns:hasTag .\n"
 				+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n"
 				+ "}</sparql>";

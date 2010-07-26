@@ -18,7 +18,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 package de.d3web.we.d3webModule;
 
 import java.io.File;
@@ -40,7 +39,7 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.Annotation.Annotation;
 import de.d3web.we.kdom.kopic.renderer.AnnotationInlineAnswerRenderer;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -54,7 +53,7 @@ public class D3webModule {
 
 	private static final String defaultJarsPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/KBrepository/";
 	private static final String ontfile = "d3web.owl";
-	
+
 	public static ResourceBundle getKwikiBundle_d3web() {
 
 		return ResourceBundle.getBundle("KnowWE_plugin_d3web_messages");
@@ -77,23 +76,27 @@ public class D3webModule {
 	public static void initModule(ServletContext context) {
 		boolean registerRenderer = KnowWEEnvironment.getInstance()
 				.registerConditionalRendererToType(Annotation.class,
-				new AnnotationInlineAnswerRenderer());
+						new AnnotationInlineAnswerRenderer());
 		if (!registerRenderer) {
 			Logger.getLogger(KnowWEUtils.class.getName()).warning(
 					"Failed to register Renderer for Type: "
-					+ Annotation.class.getName() + " - "
-					+ AnnotationInlineAnswerRenderer.class.getName());
+							+ Annotation.class.getName() + " - "
+							+ AnnotationInlineAnswerRenderer.class.getName());
 
 		}
+		
 		// Introduce my ontology parts to the core
-		ISemanticCore sc = SemanticCore.getInstance();
-		sc.getUpper().loadOwlFile(
-				new File(KnowWEEnvironment.getInstance().getKnowWEExtensionPath()
-						+ File.separatorChar + ontfile));
+		ISemanticCore sc = SemanticCoreDelegator.getInstance();
+		if (sc != null) {
+			sc.getUpper().loadOwlFile(
+					new File(KnowWEEnvironment.getInstance()
+							.getKnowWEExtensionPath()
+							+ File.separatorChar + ontfile));
+			loadData(context);
+		}
 
-		loadData(context);
-
-		UploadManager.getInstance().registerHandler(new KnOfficeUploadHandler());
+		UploadManager.getInstance()
+				.registerHandler(new KnOfficeUploadHandler());
 	}
 
 	/**
@@ -113,11 +116,10 @@ public class D3webModule {
 						+ path.getAbsolutePath());
 				File dweb = new File(path + "/default_web");
 				dweb.mkdirs();
-			}
-			catch (SecurityException e) {
+			} catch (SecurityException e) {
 				System.err
 						.println("KB directory creation failed, check permissions!! path:"
-						+ path.getAbsolutePath());
+								+ path.getAbsolutePath());
 				e.printStackTrace();
 				// System.exit(1);
 			}
@@ -156,8 +158,8 @@ public class D3webModule {
 	 * @param topic
 	 * @return
 	 */
-	public static D3webKnowledgeService getAD3webKnowledgeServiceInTopic(String web,
-			String topic) {
+	public static D3webKnowledgeService getAD3webKnowledgeServiceInTopic(
+			String web, String topic) {
 		DPSEnvironment env = DPSEnvironmentManager.getInstance()
 				.getEnvironment(web, defaultJarsPath);
 		Collection<KnowledgeService> coll = env.getServices();
@@ -209,12 +211,11 @@ public class D3webModule {
 		URL url = null;
 		try {
 			url = new File(varPath).toURI().toURL();
-		}
-		catch (MalformedURLException e) {
+		} catch (MalformedURLException e) {
 			Logger.getLogger(KnowWEUtils.class.getName())
 					.warning(
-					"Cannot identify url for knowledgebase : "
-					+ e.getMessage());
+							"Cannot identify url for knowledgebase : "
+									+ e.getMessage());
 		}
 		return url;
 	}
@@ -252,9 +253,12 @@ public class D3webModule {
 		return varPath;
 	}
 
-	public static D3webKnowledgeHandler getKnowledgeRepresentationHandler(String web) {
-		Collection<KnowledgeRepresentationHandler> handlers = KnowWEEnvironment.getInstance().getKnowledgeRepresentationManager(web).getHandlers();
-		for (KnowledgeRepresentationHandler handler: handlers) {
+	public static D3webKnowledgeHandler getKnowledgeRepresentationHandler(
+			String web) {
+		Collection<KnowledgeRepresentationHandler> handlers = KnowWEEnvironment
+				.getInstance().getKnowledgeRepresentationManager(web)
+				.getHandlers();
+		for (KnowledgeRepresentationHandler handler : handlers) {
 			if (handler instanceof D3webKnowledgeHandler) {
 				return (D3webKnowledgeHandler) handler;
 			}

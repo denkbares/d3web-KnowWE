@@ -12,7 +12,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.hermes.maps.Placemark;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
 import de.d3web.we.taghandler.AbstractTagHandler;
@@ -59,7 +59,7 @@ public class ShowMapHandler extends AbstractTagHandler {
 		}
 
 		if (longitude == 0 && latitude == 0) {
-			OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
+			OwlHelper helper = SemanticCoreDelegator.getInstance().getUpper().getHelper();
 			String querystring = LOCATIONS_FOR_TOPIC.replaceAll("URI",
 					helper.createlocalURI(topic).toString());
 			TupleQueryResult queryResult = TimeEventSPARQLUtils.executeQuery(querystring);

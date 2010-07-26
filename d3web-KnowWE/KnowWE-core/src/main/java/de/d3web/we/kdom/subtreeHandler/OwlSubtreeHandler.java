@@ -6,7 +6,7 @@ package de.d3web.we.kdom.subtreeHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
@@ -28,7 +28,7 @@ public abstract class OwlSubtreeHandler<T extends KnowWEObjectType> extends
 	public void destroy(KnowWEArticle article, Section s) {
 		super.destroy(article, s);
 		try {
-			SemanticCore.getInstance().clearContext(s);
+			SemanticCoreDelegator.getInstance().clearContext(s);
 		}
 		catch (Exception e) {
 			// TODO find some fix for the exception in owlim (see underneath)

@@ -15,9 +15,11 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public interface ISemanticCore {
 
@@ -39,6 +41,8 @@ public interface ISemanticCore {
 	 */
 	public abstract UpperOntology getUpper();
 
+	
+	
 	/**
 	 * adds Statements to the repository
 	 *
@@ -183,5 +187,7 @@ public interface ISemanticCore {
 	 * @return
 	 */
 	public abstract String reduceNamespace(String s);
+
+	public abstract void init(KnowWEEnvironment wiki);
 
 }

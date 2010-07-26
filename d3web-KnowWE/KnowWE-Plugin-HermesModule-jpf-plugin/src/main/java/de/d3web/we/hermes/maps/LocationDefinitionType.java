@@ -22,7 +22,7 @@ package de.d3web.we.hermes.maps;
 import java.util.Collection;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -55,7 +55,7 @@ public class LocationDefinitionType extends DefaultAbstractKnowWEObjectType {
 			IntermediateOwlObject ioo = new IntermediateOwlObject();
 			Placemark placem = extractPlacemark(s);
 			MapType.addPlacemarkToOwlObject(placem, ioo);
-			SemanticCore.getInstance().addStatements(ioo, s);
+			SemanticCoreDelegator.getInstance().addStatements(ioo, s);
 			return null;
 		}
 

@@ -33,7 +33,7 @@ import org.openrdf.model.URI;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -96,7 +96,7 @@ public class SemanticAnnotationProperty extends DefaultAbstractKnowWEObjectType
 			} else if (prop.equals("type")) {
 				property = uo.getRDF(prop);
 			} else if (prop.contains(":")) {
-				String ns = SemanticCore.getInstance().getNameSpaces().get(
+				String ns = SemanticCoreDelegator.getInstance().getNameSpaces().get(
 						prop.split(":")[0]);
 				if (ns == null || ns.length() == 0) {
 					io.setBadAttribute("no namespace given");

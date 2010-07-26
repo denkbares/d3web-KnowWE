@@ -1,3 +1,4 @@
+package de.d3web.we.core.semantic;
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
@@ -18,7 +19,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.core.semantic;
+
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -72,18 +73,19 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
  */
 public class SemanticCore implements ISemanticCore {
 
-	private final UpperOntology uo;
-	private final KnowWEEnvironment knowWEEnvironment;
+	private UpperOntology uo;
+	private KnowWEEnvironment knowWEEnvironment;
 	private static ISemanticCore me;
 	private static ResourceBundle settingsbundle;
-	private final HashMap<String, Resource> contextmap;
-	private final HashMap<String, String> settings;
-	private final HashMap<String, WeakHashMap<Section, List<Statement>>> statementcache;
-	private final HashMap<String,List<Statement>> semsettings;
+	private HashMap<String, Resource> contextmap;
+	private HashMap<String, String> settings;
+	private HashMap<String, WeakHashMap<Section, List<Statement>>> statementcache;
+	private HashMap<String,List<Statement>> semsettings;
 	private HashMap<String, String> namespaces;
 	private HashMap<String, String> defaultnamespaces;
 
-	private SemanticCore(KnowWEEnvironment ke) {
+	@Override
+	public void init(KnowWEEnvironment ke) {
 		this.knowWEEnvironment = ke;
 		me = this;
 		contextmap = new HashMap<String, Resource>();
@@ -237,13 +239,13 @@ public class SemanticCore implements ISemanticCore {
 	 *
 	 * @return an instance, you're in trouble if it hasn't been initialized
 	 */
-	public static ISemanticCore getInstance() {
+	public static synchronized ISemanticCore getInstance() {
 		return me;
 	}
 
 	public static synchronized ISemanticCore getInstance(KnowWEEnvironment ke) {
 		if (me == null) {
-			me = new SemanticCore(ke);
+			me = new SemanticCore();
 		}
 		return me;
 	}

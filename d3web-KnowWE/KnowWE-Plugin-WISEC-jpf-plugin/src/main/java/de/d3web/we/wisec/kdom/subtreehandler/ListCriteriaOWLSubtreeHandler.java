@@ -11,7 +11,7 @@ import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
@@ -35,7 +35,7 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 		String upperlistID = DefaultMarkupType.getAnnotation(root, "UpperlistID");
 				
 		// Get the WISEC Namespace and create OwlObject
-		String ns = SemanticCore.getInstance().expandNamespace("w");
+		String ns = SemanticCoreDelegator.getInstance().expandNamespace("w");
 		IntermediateOwlObject ioo = new IntermediateOwlObject();
 		
 		// Create OnUpperList statement
@@ -52,7 +52,7 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 		}
 
 		// Add the created statements to KnowWE's SemanticCore
-		SemanticCore.getInstance().addStatements(ioo, s);  
+		SemanticCoreDelegator.getInstance().addStatements(ioo, s);  
 		return null;
 	}
 
@@ -122,11 +122,11 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 
 	private void createCharacteristicStatement(IntermediateOwlObject ioo,
 			String ns, String listID, String characteristic, String value) {
-		URI source = SemanticCore.getInstance().getUpper().getHelper().createURI(listID);
-		URI prop = SemanticCore.getInstance().getUpper().getHelper().createURI(ns, characteristic);
-		Literal object = SemanticCore.getInstance().getUpper().getHelper().createLiteral(value);
+		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(listID);
+		URI prop = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(ns, characteristic);
+		Literal object = SemanticCoreDelegator.getInstance().getUpper().getHelper().createLiteral(value);
 		try {
-			Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
+			Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(source, prop, object);
 			ioo.addStatement(stmt);
 		} catch (RepositoryException e) {
 			e.printStackTrace();
@@ -135,11 +135,11 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 
 	private void createOnUpperListStatement(IntermediateOwlObject ioo,
 			String ns, String listID, String upperlistID) {
-		URI source = SemanticCore.getInstance().getUpper().getHelper().createURI(listID);
-		URI prop = SemanticCore.getInstance().getUpper().getHelper().createURI(ns, "onUpperList");
-		URI object = SemanticCore.getInstance().getUpper().getHelper().createURI(upperlistID);
+		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(listID);
+		URI prop = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(ns, "onUpperList");
+		URI object = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(upperlistID);
 		try {
-			Statement stmt = SemanticCore.getInstance().getUpper().getHelper().createStatement(source, prop, object);
+			Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(source, prop, object);
 			ioo.addStatement(stmt);
 		} catch (RepositoryException e) {
 			e.printStackTrace();

@@ -32,7 +32,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.d3webModule.D3WebOWLVokab;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
@@ -106,7 +106,7 @@ public class XCLRelation extends DefaultAbstractKnowWEObjectType {
 			} catch (RepositoryException e) {
 				msgs.add(new SimpleMessageError(e.getMessage()));
 			}
-			SemanticCore.getInstance().addStatements(io, s);
+			SemanticCoreDelegator.getInstance().addStatements(io, s);
 			return msgs;
 
 		}

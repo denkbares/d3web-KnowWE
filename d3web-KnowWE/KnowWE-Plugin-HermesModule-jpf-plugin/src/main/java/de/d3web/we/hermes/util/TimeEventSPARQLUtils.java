@@ -23,7 +23,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.hermes.TimeEvent;
 import de.d3web.we.hermes.maps.Placemark;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
@@ -70,7 +70,7 @@ public class TimeEventSPARQLUtils {
 	}
 
 	public static TupleQueryResult executeQuery(String querystring) {
-		ISemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		// try {
 		// con.setAutoCommit(false);
@@ -209,7 +209,7 @@ public class TimeEventSPARQLUtils {
 	}
 
 	public static List<Placemark> findLocationsOfTimeEventsForTopic(String topic) {
-		OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
+		OwlHelper helper = SemanticCoreDelegator.getInstance().getUpper().getHelper();
 		String querystring = LOCATIONS_FOR_EVENTS_FOR_TOPIC_SPARQL.replaceAll(
 				"TOPIC", "<" + helper.createlocalURI(topic).toString() + ">");
 		TupleQueryResult queryResult = executeQuery(querystring);

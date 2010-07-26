@@ -30,7 +30,7 @@ import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.KnowWEAttributes;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 
 public class GraphMLOwlRenderer extends DeprecatedAbstractKnowWEAction {
 	private int id;
@@ -54,7 +54,7 @@ public class GraphMLOwlRenderer extends DeprecatedAbstractKnowWEAction {
 		String footer = "</graphml>";
 		String topicName = topic;
 		String output="";
-		ISemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		List<Statement> list = sc.getTopicStatements(topicName);
 		if (list != null) {
 			for (Statement cur : list) {

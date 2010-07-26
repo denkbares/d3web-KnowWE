@@ -33,7 +33,7 @@ import java.util.Map.Entry;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.TaggingMangler;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -104,11 +104,11 @@ public class StatsHandler extends AbstractTagHandler {
 		
 		
 		String querystring = "select DISTINCT ?t where { ?x rdf:predicate ns:hasTag . ?x rdf:subject ?t }";
-		ArrayList<String> erg = SemanticCore.getInstance().simpleQueryToList(
+		ArrayList<String> erg = SemanticCoreDelegator.getInstance().simpleQueryToList(
 				querystring, "t");
 		buffy.append(renderline("getaggte Artikel", erg.size() + ""));
 		querystring = "select DISTINCT ?tag where { ?x rdf:predicate ns:hasTag . ?x rdf:object ?tag }";
-		erg = SemanticCore.getInstance().simpleQueryToList(querystring, "tag");
+		erg = SemanticCoreDelegator.getInstance().simpleQueryToList(querystring, "tag");
 		buffy.append(renderline("Tags", erg.size() + ""));
 		buffy.append(renderline("Tags:",""));
 		HashMap<String, Float>tags=TaggingMangler.getInstance().getAllTagsWithWeight();

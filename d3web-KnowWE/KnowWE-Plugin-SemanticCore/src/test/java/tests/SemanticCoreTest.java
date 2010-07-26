@@ -17,7 +17,7 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.core.TaggingMangler;
 import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.RootType;
@@ -44,7 +44,7 @@ public class SemanticCoreTest {
 		am = ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB);
 
 		params = new KnowWEParameterMap("", "");
-		sc = SemanticCore.getInstance();
+		sc = SemanticCoreDelegator.getInstance();
 	}
 
 	@Test
@@ -60,33 +60,33 @@ public class SemanticCoreTest {
 
 		// check that the article was parsed and the statements are in the
 		// core
-		assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
+		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(hadesquery));
 		//shouldn't know anything about joe
-		assertFalse(SemanticCore.getInstance().booleanQuery(joequery));
+		assertFalse(SemanticCoreDelegator.getInstance().booleanQuery(joequery));
 		// now change the article to just contain joe and no hades and make
 		// sure
 		// this is updated in the core accordingly
 		ke.processAndUpdateArticleJunit(null, joe, testtopic,
 				KnowWEEnvironment.DEFAULT_WEB, type);
-		assertFalse(SemanticCore.getInstance().booleanQuery(hadesquery));
-		assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
+		assertFalse(SemanticCoreDelegator.getInstance().booleanQuery(hadesquery));
+		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(joequery));
 
 		// now add hades and joe
 		ke.processAndUpdateArticleJunit(null, hades + "\n " + joe, testtopic,
 				KnowWEEnvironment.DEFAULT_WEB, type);
-		assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
-		assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
+		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(hadesquery));
+		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(joequery));
 
 		// kill hades ;)
 		ke.processAndUpdateArticleJunit(null, joe, testtopic,
 				KnowWEEnvironment.DEFAULT_WEB, type);
-		assertFalse(SemanticCore.getInstance().booleanQuery(hadesquery));
-		assertTrue(SemanticCore.getInstance().booleanQuery(joequery));
+		assertFalse(SemanticCoreDelegator.getInstance().booleanQuery(hadesquery));
+		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(joequery));
 
 		// kill the article and make sure all statements are gone
 		am.deleteArticle(am.getArticle(testtopic));
-		assertFalse(SemanticCore.getInstance().booleanQuery(hadesquery));
-		assertFalse(SemanticCore.getInstance().booleanQuery(joequery));
+		assertFalse(SemanticCoreDelegator.getInstance().booleanQuery(hadesquery));
+		assertFalse(SemanticCoreDelegator.getInstance().booleanQuery(joequery));
 
 	}
 
@@ -94,7 +94,7 @@ public class SemanticCoreTest {
 	public void testNamespaceStuff() {
 		// check if we have sc
 		assertNotNull(sc);
-		assertNotNull(SemanticCore.getInstance());
+		assertNotNull(SemanticCoreDelegator.getInstance());
 		// set a new namespace
 		sc.addNamespace("swrc", "http://swrc.ontoware.org/ontology#");
 		// get all namespaces
@@ -159,11 +159,11 @@ public class SemanticCoreTest {
 
 		// check that the article was parsed and the statements are in the
 		// core
-		assertTrue(SemanticCore.getInstance().booleanQuery(hadesquery));
+		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(hadesquery));
 		//check that inferencing works
-		assertTrue(SemanticCore.getInstance().booleanQuery(hadesentityquery));
+		assertTrue(SemanticCoreDelegator.getInstance().booleanQuery(hadesentityquery));
 		
-		ArrayList<String> erg=SemanticCore.getInstance().simpleQueryToList("SELECT ?x WHERE { ?x rdf:type lns:entity .}", "x");
+		ArrayList<String> erg=SemanticCoreDelegator.getInstance().simpleQueryToList("SELECT ?x WHERE { ?x rdf:type lns:entity .}", "x");
 		//make sure that hades is returned on query for entities
 		assertTrue(erg.contains("hades"));
 		

@@ -36,7 +36,7 @@ import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup.Annotation;
@@ -85,7 +85,7 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler {
 		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 
 		IntermediateOwlObject io = new IntermediateOwlObject();
-		OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
+		OwlHelper helper = SemanticCoreDelegator.getInstance().getUpper().getHelper();
 
 		try {
 			// Access (or lazy build) parent concept
@@ -100,7 +100,7 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler {
 
 			// create a new instance for the markup section
 			// TODO: create node with section-id instead of blank node
-			BNode bnode = SemanticCore.getInstance().getUpper().getVf().createBNode();
+			BNode bnode = SemanticCoreDelegator.getInstance().getUpper().getVf().createBNode();
 			io.addStatement(helper.createStatement(bnode, RDF.TYPE, this.conceptURI));
 
 			// add content block as literal "hasContent"
@@ -134,7 +134,7 @@ public class DefaultMarkupOwlHandler extends OwlSubtreeHandler {
 			return msgs;
 		}
 
-		SemanticCore.getInstance().addStatements(io, section);
+		SemanticCoreDelegator.getInstance().addStatements(io, section);
 		return msgs;
 
 	}

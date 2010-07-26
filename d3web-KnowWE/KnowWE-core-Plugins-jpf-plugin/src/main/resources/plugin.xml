@@ -639,4 +639,12 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<extension plugin-id="KnowWEExtensionPoints" point-id="SemanticCoreImpl" id="SemanticCoreImpl">
+                <parameter id="class" value="de.d3web.we.core.semantic.SemanticCoreDummy"/>
+                <parameter id="name" value="SemanticCoreDummy"/>
+                <parameter id="description" value="core Dummy"/>
+                <parameter id="version"  value="0.0.1"/>
+                <parameter id="priority"  value="0" />
+        </extension>
+	
 </plugin>

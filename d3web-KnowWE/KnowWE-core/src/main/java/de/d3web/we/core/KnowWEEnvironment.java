@@ -42,7 +42,8 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.d3web.we.action.KnowWEActionDispatcher;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.ISemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.event.ArticleCreatedEvent;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.InitEvent;
@@ -247,7 +248,7 @@ public class KnowWEEnvironment {
 
 	public static void initKnowWE(KnowWEWikiConnector wiki) {
 		instance = new KnowWEEnvironment(wiki);
-		instance.initModules(wiki.getServletContext(), DEFAULT_WEB);
+		instance.initModules(wiki.getServletContext(), DEFAULT_WEB,wiki);
 
 		// firing the init event
 		EventManager.getInstance().fireEvent(InitEvent.getInstance(), DEFAULT_WEB, "system init", null);
@@ -361,7 +362,8 @@ public class KnowWEEnvironment {
 
 			// loadData(context);
 			initWikiSolutionsPage();
-			SemanticCore.getInstance(this); /// init lazy instance
+			
+			
 
 
 			System.out.println("INITIALISED KNOWWE ENVIRONMENT");
@@ -398,7 +400,7 @@ public class KnowWEEnvironment {
 	/**
 	 * Initializes the KnowWE modules
 	 */
-	private void initModules(ServletContext context, String web) {
+	private void initModules(ServletContext context, String web,KnowWEWikiConnector wiki) {
 		// add the default modules
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
 
@@ -454,6 +456,20 @@ public class KnowWEEnvironment {
 		for (TagHandler tagHandler: Plugins.getTagHandlers() ) {
 			initTagHandler(tagHandler);
 		}
+		
+		List<ISemanticCore> sclist = Plugins.getSemanticCoreImpl();
+		if (sclist.size()==1){
+			SemanticCoreDelegator.setImpl(sclist.get(0));			
+		} else {
+			for (ISemanticCore cur:sclist){
+				if (!cur.getClass().toString().contains("Dummy")){
+					SemanticCoreDelegator.setImpl(cur);
+				}
+			}
+		}
+		
+		SemanticCoreDelegator.initImpl(this);
+							
 
 		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
 			Sectionizer.getInstance().registerSectionizerModule(sm);
@@ -475,6 +491,7 @@ public class KnowWEEnvironment {
 
 		Plugins.initJS();
 	}
+
 
 	private void initTagHandler(TagHandler tagHandler) {
 		String tagName = tagHandler.getTagName();

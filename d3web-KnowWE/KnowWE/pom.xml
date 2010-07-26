@@ -305,6 +305,24 @@
 			</dependencies>
 		</profile>
 		
+		<!-- Semantic Core Plugin -->
+		<profile>
+			<id>KnowWE-Plugin-SemanticCore</id>
+			<activation>
+				<property>
+					<name>semanticcore-plugin</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-SemanticCore-jpf-plugin</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
 		<profile>
 			<id>denkbar</id>
 			<dependencies>
@@ -469,17 +487,6 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>org.openrdf</groupId>
-			<artifactId>sesame</artifactId>
-			<version>2.2.4</version>
-			<classifier>onejar</classifier>
-		</dependency>
-		<dependency>
-			<groupId>com.ontotext</groupId>
-			<artifactId>owlim</artifactId>
-			<version>3.0_beta9</version>
-		</dependency>
-		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Dialog2</artifactId>
 			<version>0.2-SNAPSHOT</version>
@@ -566,6 +573,13 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
 			<version>0.2-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-SemanticCore-jpf-plugin</artifactId>
+			<version>0.2-SNAPSHOT</version>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>		
 	</dependencies>

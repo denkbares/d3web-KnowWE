@@ -9,6 +9,7 @@ import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.we.action.Action;
 import de.d3web.we.core.KnowWERessourceLoader;
+import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.kdom.ExpandedSectionizerModule;
 import de.d3web.we.kdom.IncludeSectionizerModule;
 import de.d3web.we.kdom.IncrementalSectionizerModule;
@@ -144,11 +145,11 @@ public class Plugins {
 	 * 
 	 * @return List of SemanticCores
 	 */
-	public static List<TagHandler> getSemanticCoreImpl() {
+	public static List<ISemanticCore> getSemanticCoreImpl() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_SemanticCore);
-		List<TagHandler> ret = new ArrayList<TagHandler>();
+		List<ISemanticCore> ret = new ArrayList<ISemanticCore>();
 		for (Extension e: extensions) {
-			ret.add((TagHandler) e.getSingleton());
+			ret.add((ISemanticCore) e.getSingleton());
 		}
 		return ret;
 	}

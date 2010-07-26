@@ -12,7 +12,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.hermes.kdom.TimeEventType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -213,7 +213,7 @@ public class ConceptOccurrenceRenderer extends KnowWEDomRenderer {
 
 	private String[] filterOpts(URI subject, String originalText,
 			String[] opts) {
-		OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
+		OwlHelper helper = SemanticCoreDelegator.getInstance().getUpper().getHelper();
 		List<String> goodOpts = new ArrayList<String>();
 
 		for (String relation : opts) {

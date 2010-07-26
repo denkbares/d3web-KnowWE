@@ -12,7 +12,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 
 public class SPARQLUtil {
@@ -25,7 +25,7 @@ public class SPARQLUtil {
 	 * @return
 	 */
 	public static Boolean executeBooleanQuery(String q) {
-		ISemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		// try {
 		// con.setAutoCommit(false);
@@ -56,7 +56,7 @@ public class SPARQLUtil {
 	}
 
 	public static TupleQueryResult executeTupleQuery(String q, String topic) {
-		ISemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		// try {
 		// con.setAutoCommit(false);
@@ -87,7 +87,7 @@ public class SPARQLUtil {
 	}
 
 	public static TupleQueryResult executeTupleQuery(String q) {
-		ISemanticCore sc = SemanticCore.getInstance();
+		ISemanticCore sc = SemanticCoreDelegator.getInstance();
 		RepositoryConnection con = sc.getUpper().getConnection();
 		// try {
 		// con.setAutoCommit(false);

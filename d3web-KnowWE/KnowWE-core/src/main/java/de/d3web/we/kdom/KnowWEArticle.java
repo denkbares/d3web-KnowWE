@@ -36,7 +36,7 @@ import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEIncludeManager;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.include.Include;
@@ -169,7 +169,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		startTime = System.currentTimeMillis();
 
 		if (fullParse) {
-			SemanticCore.getInstance().clearContext(this);
+			SemanticCoreDelegator.getInstance().clearContext(this);
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.FINE,
 					"<- Cleared SemanticCore context in "

@@ -27,7 +27,7 @@ package de.d3web.we.kdom.owlextension;
 import java.util.Collection;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.core.semantic.UpperOntology;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -63,7 +63,7 @@ public class OwlPropertiesContent extends XMLContent{
 				if (cur.trim().length()>0)
 				    io.merge(UpperOntology.getInstance().getHelper().createlocalProperty(cur.trim()));		
 			    }
-			    SemanticCore.getInstance().addStatements(io, s);
+			    SemanticCoreDelegator.getInstance().addStatements(io, s);
 			    return null;	    
 		}
 		

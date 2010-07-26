@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 import de.d3web.we.action.Action;
 import de.d3web.we.action.ActionContext;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.knowwe.plugin.Plugins;
 
 /**
@@ -210,6 +210,6 @@ public class KnowWEFacade {
 	 * @return
 	 */
 	public void writeOwl(OutputStream stream) {
-		SemanticCore.getInstance().writeDump(stream);
+		SemanticCoreDelegator.getInstance().writeDump(stream);
 	}
 }

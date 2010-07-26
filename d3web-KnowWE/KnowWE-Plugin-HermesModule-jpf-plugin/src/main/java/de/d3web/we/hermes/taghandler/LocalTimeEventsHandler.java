@@ -9,7 +9,7 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
 
 import de.d3web.we.core.semantic.OwlHelper;
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.hermes.TimeStamp;
 import de.d3web.we.hermes.util.TimeEventSPARQLUtils;
 import de.d3web.we.taghandler.AbstractTagHandler;
@@ -30,7 +30,7 @@ public class LocalTimeEventsHandler extends AbstractTagHandler {
     public String render(String topic, KnowWEUserContext user,
 	    Map<String, String> values, String web) {
 
-		OwlHelper helper = SemanticCore.getInstance().getUpper().getHelper();
+		OwlHelper helper = SemanticCoreDelegator.getInstance().getUpper().getHelper();
 
 	String yearAfter = getIntAsString(-10000, values, TIME_AFTER);
 	String querystring = null;

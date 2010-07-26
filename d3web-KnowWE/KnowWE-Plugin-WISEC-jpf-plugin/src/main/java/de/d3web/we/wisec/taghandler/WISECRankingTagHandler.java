@@ -37,7 +37,7 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.we.core.semantic.SemanticCore;
+import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.taghandler.AbstractTagHandler;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
@@ -161,7 +161,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	 */
 	private Query createQuery(String criteria) throws RepositoryException, MalformedQueryException {
 
-		String queryString = SemanticCore.getInstance().getSparqlNamespaceShorts() +
+		String queryString = SemanticCoreDelegator.getInstance().getSparqlNamespaceShorts() +
 								"SELECT ?substance ?score " +
 								"WHERE { " +
 								"?substance w:onListRelation ?substancelistrelation . " +
@@ -169,7 +169,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 								"?list w:" + criteria + " ?score " +
 								"}";
 
-		RepositoryConnection con = SemanticCore.getInstance().getUpper().getConnection();
+		RepositoryConnection con = SemanticCoreDelegator.getInstance().getUpper().getConnection();
 		return con.prepareQuery(QueryLanguage.SPARQL, queryString);
 	}
 
