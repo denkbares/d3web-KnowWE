@@ -49,38 +49,12 @@ public abstract class AnswerReference
 		extends D3webTermReference<Choice>
 		implements NotUniqueKnowWETerm<Choice> {
 
-	String fontcolor;
 	
 	public AnswerReference() {
-		this.setCustomRenderer(new ReferenceRenderer());
-		this.fontcolor = FontColorRenderer.COLOR1;
+		this.setCustomRenderer(new ReferenceRenderer(FontColorRenderer.COLOR1));
 	}
 	
-	class ReferenceRenderer extends KnowWEDomRenderer<AnswerReference>  {
-
-		@Override
-		public void render(KnowWEArticle article, Section<AnswerReference> sec, KnowWEUserContext user, StringBuilder string) {
-			String refText = sec.get().getTermName(sec);
-			String originalText = sec.getOriginalText();
-			int index = originalText.indexOf(refText);
-			
-		//	new FontColorRenderer(fontcolor).render(article, sec, user, string);
-			
-			if(index < 0) {
-				string.append("error: KnowWETermname not contained in text");
-			}else {
-				string.append(originalText.substring(0, index));
-				string.append(KnowWEUtils.maskHTML("<span")); 
-				string.append(" style='").append(fontcolor).append("'");
-				string.append(KnowWEUtils.maskHTML(">"));
-				string.append(refText);
-				string.append(KnowWEUtils.maskHTML("</span>"));
-				string.append(originalText.substring(index+refText.length(), originalText.length()));
-			}
-			
-		}
-		
-	}
+	
 
 	@Override
 	@SuppressWarnings("unchecked")

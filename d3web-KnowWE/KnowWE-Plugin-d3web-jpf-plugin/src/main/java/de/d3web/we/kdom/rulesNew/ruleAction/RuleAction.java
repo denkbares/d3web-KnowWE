@@ -34,6 +34,8 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType{
 		this.childrenTypes.add(new AddValueAction());
 		this.addChildType(new SetQuestionValue());
 		this.childrenTypes.add(new AbstractionRuleAction());
+		this.childrenTypes.add(new ContraIndicationAction());
 		this.childrenTypes.add(new IndicationRuleAction());
+		
 	}
 }
