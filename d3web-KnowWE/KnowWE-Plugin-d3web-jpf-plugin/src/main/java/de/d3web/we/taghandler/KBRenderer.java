@@ -22,6 +22,8 @@ package de.d3web.we.taghandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -141,8 +143,9 @@ public class KBRenderer extends AbstractTagHandler {
 			// TODO: Fix
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
-			Collection<KnowledgeSlice> rules = kb
-					.getAllKnowledgeSlices();
+			List<KnowledgeSlice> rules = new ArrayList<KnowledgeSlice>(kb
+					.getAllKnowledgeSlices());
+			Collections.sort(rules, new KnowledgeSliceComparator());
 
 			boolean appendedRulesHeadline = false;
 			Map<String, String> idMap = new HashMap<String, String>();
@@ -414,5 +417,14 @@ public class KBRenderer extends AbstractTagHandler {
 			}
 		}
 		return null;
+	}
+
+	private class KnowledgeSliceComparator implements Comparator<KnowledgeSlice> {
+
+		@Override
+		public int compare(KnowledgeSlice o1, KnowledgeSlice o2) {
+			return o1.toString().compareTo(o2.toString());
+		}
+
 	}
 }
