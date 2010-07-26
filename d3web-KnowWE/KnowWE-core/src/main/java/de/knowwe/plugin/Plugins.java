@@ -32,7 +32,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_TagHandler = "TagHandler";
 	public static final String EXTENDED_POINT_PageAppendHandler = "PageAppendHandler";
 	public static final String EXTENDED_POINT_Instantiation = "Instantiation";
-	
+	public static final String EXTENDED_POINT_SemanticCore="SemanticCoreImpl";
 	/**
 	 * Returns all plugged Instantiations
 	 * These are used to initialize plugins.
@@ -139,6 +139,19 @@ public class Plugins {
 		return ret;
 	}
 
+	/**
+	 * Returns a List of all plugged SemanticCores
+	 * 
+	 * @return List of SemanticCores
+	 */
+	public static List<TagHandler> getSemanticCoreImpl() {
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_SemanticCore);
+		List<TagHandler> ret = new ArrayList<TagHandler>();
+		for (Extension e: extensions) {
+			ret.add((TagHandler) e.getSingleton());
+		}
+		return ret;
+	}
 	/**
 	 * Returns a list of all plugged PageAppendHandlers.
 	 * 
