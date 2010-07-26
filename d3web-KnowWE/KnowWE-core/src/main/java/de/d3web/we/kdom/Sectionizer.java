@@ -201,10 +201,11 @@ public class Sectionizer {
 
 				Collections.sort(results);
 				validateNonOverlaps(results, secText, ob);
-				// validateConstraints(results, father, ob);
+
 
 				List<Section<?>> findings = new ArrayList<Section<?>>();
 				for (SectionFinderResult result : results) {
+					// here the actual Section objects will be 'created' possibly using incremental parse-moduls
 					Section s = createSection(article, ob, father, thisSection, secText, result);
 					if (s != null) {
 						s.startPosFromTmp = new PairOfInts(result.getStart(),
