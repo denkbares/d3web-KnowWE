@@ -94,7 +94,7 @@ public abstract class AnswerDefinition
 			qdef = getQuestionSection((Section<AnswerDefinition>) s);
 		}
 
-		String question = KnowWEUtils.trimQuotes(qdef.getOriginalText());
+		String question = qdef.get().getTermName(qdef);
 
 		return question + " " + answer;
 	}
