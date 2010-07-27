@@ -7,7 +7,7 @@ import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.condition.CompositeCondition;
-import de.d3web.we.kdom.objects.TermRelationDefinition;
+import de.d3web.we.kdom.objects.TermRelatedDefinition;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -23,7 +23,7 @@ import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
  *         can be set via setTerminalConditions()
  *
  */
-public class ConditionActionRule extends TermRelationDefinition {
+public class ConditionActionRule extends TermRelatedDefinition {
 
 	ConditionArea condArea = new ConditionArea();
 

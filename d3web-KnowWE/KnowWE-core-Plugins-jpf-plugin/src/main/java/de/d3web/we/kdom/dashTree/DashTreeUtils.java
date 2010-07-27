@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.objects.TermReference;
 
 
 public class DashTreeUtils {
@@ -130,7 +132,11 @@ public class DashTreeUtils {
 		Section<?> subtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, dashLevel);
 
 		if (subtreeAncestor != null) {
-			if (subtreeAncestor.isOrHasChangedTermDefSuccessor(article.getTitle())) {
+			List<Class<? extends KnowWEObjectType>> filteredTypes =
+					new ArrayList<Class<? extends KnowWEObjectType>>(1);
+			filteredTypes.add(TermReference.class);
+
+			if (subtreeAncestor.isOrHasChangedSuccessor(article.getTitle(), filteredTypes)) {
 				return true;
 			}
 		}

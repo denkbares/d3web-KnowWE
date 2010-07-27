@@ -33,7 +33,7 @@ import de.d3web.we.kdom.constraint.ExactlyOneFindingConstraint;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.objects.SolutionDefinition;
-import de.d3web.we.kdom.objects.TermRelationDefinition;
+import de.d3web.we.kdom.objects.TermRelatedDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.NonEmptyLineSectionFinder;
@@ -51,7 +51,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
  *
  *
  */
-public class ListSolutionType extends TermRelationDefinition {
+public class ListSolutionType extends TermRelatedDefinition {
 
 	public ListSolutionType() {
 		ConstraintSectionFinder solutionFinder =  new ConstraintSectionFinder(new NonEmptyLineSectionFinder());
@@ -65,7 +65,7 @@ public class ListSolutionType extends TermRelationDefinition {
 		closing.setSectionFinder(new StringSectionFinderUnquoted("{"));
 		this.addChildType(closing);
 
-		SolutionDefinition solDef = new SolutionDefinition();
+		XCListSolutionDefinition solDef = new XCListSolutionDefinition();
 		ConstraintSectionFinder allFinder = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 		allFinder.addConstraint(ExactlyOneFindingConstraint.getInstance());
 		solDef.setSectionFinder(allFinder);

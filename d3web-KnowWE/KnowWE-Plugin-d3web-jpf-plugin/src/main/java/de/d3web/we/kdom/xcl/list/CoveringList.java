@@ -39,7 +39,7 @@ import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.bulletLists.CommentRenderer;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.objects.SolutionDefinition;
-import de.d3web.we.kdom.objects.TermRelationDefinition;
+import de.d3web.we.kdom.objects.TermRelatedDefinition;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
@@ -100,7 +100,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	class CoveringRelation extends TermRelationDefinition {
+	class CoveringRelation extends TermRelatedDefinition {
 
 		public CoveringRelation() {
 

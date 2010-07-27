@@ -25,62 +25,49 @@ import java.util.Map;
 
 public class KnowWESectionInfoStorage {
 	
-	private Map<String, InfoStorePerArticle> articleStores = new HashMap<String, InfoStorePerArticle>();
+	private final Map<String, InfoStorePerArticle> articleStores = new HashMap<String, InfoStorePerArticle>();
 	
-	private Map<String, InfoStorePerArticle> lastArticleStores = new HashMap<String, InfoStorePerArticle>();
-	
-	private InfoStorePerArticle getStoreForArticle(String articleName) {
-		InfoStorePerArticle store =  articleStores.get(articleName);
-		if(store == null) {
-			store = new InfoStorePerArticle();
-			articleStores.put(articleName, store);
-		}
-		return store;
-		
-	}
-	
-	private InfoStorePerArticle getStoreForLastVersionOfArticle(String articleName) {
-		InfoStorePerArticle store =  lastArticleStores.get(articleName);
-		if(store == null) {
-			store = new InfoStorePerArticle();
-			lastArticleStores.put(articleName, store);
-		}
-		return store;
-		
-	}
+	private final Map<String, InfoStorePerArticle> lastArticleStores = new HashMap<String, InfoStorePerArticle>();
 
 	public Object getStoredObject(String articleName, String kdomid, String key) {
-		InfoStorePerArticle artStore = this.getStoreForArticle(articleName);
-		return artStore.getObject(kdomid, key);
-			
+		InfoStorePerArticle artStore = articleStores.get(articleName);
+		if (artStore != null) return artStore.getObject(kdomid, key);
+		return null;
 	}
 	
 	public Object getLastStoredObject(String articleName, String kdomid, String key) {
-		InfoStorePerArticle oldArtStore = this.getStoreForLastVersionOfArticle(articleName);
-		return oldArtStore.getObject(kdomid, key);
-			
+		InfoStorePerArticle oldArtStore = lastArticleStores.get(articleName);
+		if (oldArtStore != null) return oldArtStore.getObject(kdomid, key);
+		return null;
 	}
 	
 	public SectionStore getStoredObjects(String articleName, String kdomid) {
-		InfoStorePerArticle artStore = this.getStoreForArticle(articleName);
-		return artStore.getStoreForKDOMID(kdomid);
-			
+		InfoStorePerArticle artStore = articleStores.get(articleName);
+		if (artStore != null) return artStore.getSectionStore(kdomid);
+		return null;
 	}
 	
 	public SectionStore getLastStoredObjects(String articleName, String kdomid) {
-		InfoStorePerArticle oldArtStore = this.getStoreForLastVersionOfArticle(articleName);
-		return oldArtStore.getStoreForKDOMID(kdomid);
-			
+		InfoStorePerArticle oldArtStore = lastArticleStores.get(articleName);
+		if (oldArtStore != null) return oldArtStore.getSectionStore(kdomid);
+		return null;
 	}
 	
 	public void storeObject(String articleName, String kdomid, String key, Object o) {
-		InfoStorePerArticle artStore = this.getStoreForArticle(articleName);
-		SectionStore secStore = artStore.getStoreForKDOMID(kdomid);
-		secStore.storeObject(key, o);
+		InfoStorePerArticle artStore = articleStores.get(articleName);
+		if (artStore == null) {
+			artStore = new InfoStorePerArticle();
+			articleStores.put(articleName, artStore);
+		}
+		artStore.storeObject(kdomid, key, o);
 	}
 	
 	public void putSectionStore(String articleName, String kdomid, SectionStore store) {
-		InfoStorePerArticle artStore = this.getStoreForArticle(articleName);
+		InfoStorePerArticle artStore = articleStores.get(articleName);
+		if (artStore == null) {
+			artStore = new InfoStorePerArticle();
+			articleStores.put(articleName, artStore);
+		}
 		artStore.putSectionStore(kdomid, store);
 	}
 	

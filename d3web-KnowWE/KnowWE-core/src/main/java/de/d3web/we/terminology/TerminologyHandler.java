@@ -203,12 +203,12 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 				article, r);
 
 		for (Section<?> ref : refs) {
-			// ref.setReusedBy(article.getTitle(), false);
-			Section<?> father = ref;
-			while (father != null) {
-				father.setReusedBy(article.getTitle(), false);
-				father = father.getFather();
-			}
+			ref.setReusedBy(article.getTitle(), false);
+			// Section<?> father = ref;
+			// while (father != null) {
+			// father.setReusedBy(article.getTitle(), false);
+			// father = father.getFather();
+			// }
 		}
 	}
 

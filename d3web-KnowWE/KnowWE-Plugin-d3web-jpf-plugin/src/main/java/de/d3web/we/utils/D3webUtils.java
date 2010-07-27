@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.DCElement;
 import de.d3web.core.knowledge.terminology.info.DCMarkup;
@@ -237,6 +238,26 @@ public class D3webUtils {
 		}
 		
 		return score;
+	}
+
+	/**
+	 * Deletes a terminology object and all potential children from the
+	 * knowledge base. Before the deletion the corresponding knowledge instances
+	 * (KnowledgeSlices) are also removed.
+	 * 
+	 * @param object the object to be removed
+	 */
+	public static void removeRecursively(NamedObject object) {
+		for (TerminologyObject to : object.getChildren()) {
+			removeRecursively((NamedObject) to);
+		}
+		try {
+			object.getKnowledgeBase().remove(object);
+		}
+		catch (IllegalAccessException e) {
+			// shouldn't happen...
+			e.printStackTrace();
+		}
 	}
 
 }

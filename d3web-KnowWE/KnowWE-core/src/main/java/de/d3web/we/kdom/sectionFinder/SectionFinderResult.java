@@ -74,6 +74,18 @@ public class SectionFinderResult implements Comparable<SectionFinderResult>{
 		return end;
 	}
 
+	/**
+	 * If you overwrite this method to return true for your own
+	 * SectionFinderResult, the result will not be validated in the Sectionizer.
+	 * Use with care and only if you know what you are doing!
+	 * 
+	 * @created 26.07.2010
+	 * @return
+	 */
+	public boolean excludeFromValidating() {
+		return false;
+	}
+
 	@Override
 	public int compareTo(SectionFinderResult o) {
 		return Integer.valueOf(this.getStart())

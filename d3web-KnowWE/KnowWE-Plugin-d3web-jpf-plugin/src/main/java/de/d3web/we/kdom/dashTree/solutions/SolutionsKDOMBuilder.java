@@ -23,11 +23,11 @@ package de.d3web.we.kdom.dashTree.solutions;
 import java.util.List;
 import java.util.Stack;
 
+import de.d3web.we.kdom.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.dashTree.DashTreeKDOMBuilder;
 import de.d3web.we.kdom.dashTree.Tilde;
-import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 
 public class SolutionsKDOMBuilder implements DashTreeKDOMBuilder {
 

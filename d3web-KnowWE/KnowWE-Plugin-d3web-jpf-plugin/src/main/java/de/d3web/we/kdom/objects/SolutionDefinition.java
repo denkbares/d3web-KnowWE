@@ -26,6 +26,7 @@ import java.util.Collection;
 import de.d3web.core.knowledge.terminology.IDObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
+import de.d3web.we.kdom.IncrementalConstraints;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -35,6 +36,7 @@ import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedWarning;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -44,12 +46,19 @@ import de.d3web.we.utils.KnowWEUtils;
  * @author Jochen/Albrecht
  * @created 26.07.2010 
  */
-public class SolutionDefinition extends D3webTermDefinition<Solution> {
+public abstract class SolutionDefinition
+		extends D3webTermDefinition<Solution>
+		implements IncrementalConstraints {
 
 	public SolutionDefinition() {
 		super("QUESTION_STORE_KEY");
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 		this.addSubtreeHandler(Priority.HIGHEST, new CreateSolutionHandler());
+	}
+
+	@Override
+	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
+		return false;
 	}
 
 	static class CreateSolutionHandler extends D3webSubtreeHandler<SolutionDefinition> {
@@ -95,18 +104,14 @@ public class SolutionDefinition extends D3webTermDefinition<Solution> {
 		@Override
 		public void destroy(KnowWEArticle article, Section<SolutionDefinition> solution) {
 			Solution kbsol = solution.get().getTermObjectFromLastVersion(article, solution);
-			try {
-				if (kbsol != null) {
-					kbsol.getKnowledgeBase().remove(kbsol);
-					KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-							article, solution);
-				}
-			}
-			catch (IllegalAccessException e) {
-				article.setFullParse(true, this);
+			if (kbsol != null) {
+				D3webUtils.removeRecursively(kbsol);
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
+						article, solution);
 			}
 		}
 
 	}
+
 
 }

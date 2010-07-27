@@ -22,9 +22,6 @@ package de.d3web.we.kdom.solutionTree;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.d3web.core.inference.Rule;
-import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -34,24 +31,23 @@ import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.SolutionDefinition;
-import de.d3web.we.kdom.objects.SolutionReference;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author Jochen
- *
+ * 
  *         A DashTreeElementContent for the Solution-DashTree. It is injected
  *         into a dash-tree @see {@link SolutionsDashTree} It contains a
- *         SolutionDef type (which itself interally creates a solution object)
+ *         SolutionDef type (which itself internally creates a solution object)
  *         and CreateSubSolutionRelationHandler which established the
  *         hierarchical relations defined by the dashtree
- *
- *
+ * 
+ * 
  */
 public class SolutionDashTreeElementContent extends DashTreeElementContent implements KnowWETerm<Object> {
 	
@@ -59,11 +55,16 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 
 	public SolutionDashTreeElementContent() {
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
-		SolutionDefinition solutionDef = new SolutionDefinition();
+		SolutionTreeSolutionDefinition solutionDef = new SolutionTreeSolutionDefinition();
 		ConstraintSectionFinder f = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 		f.addConstraint(SingleChildConstraint.getInstance());
 		solutionDef.setSectionFinder(f);
 		this.addChildType(solutionDef);
+	}
+
+	@Override
+	public String getTermName(Section<? extends KnowWETerm<Object>> s) {
+		return s.getOriginalText().trim();
 	}
 
 	/**
@@ -114,11 +115,6 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 			return null;
 		}
 
-	}
-
-	@Override
-	public String getTermName(Section<? extends KnowWETerm<Object>> s) {
-		return s.getOriginalText().trim();
 	}
 
 }

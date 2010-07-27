@@ -10,7 +10,6 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.we.action.Action;
 import de.d3web.we.core.KnowWERessourceLoader;
 import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.kdom.ExpandedSectionizerModule;
 import de.d3web.we.kdom.IncludeSectionizerModule;
 import de.d3web.we.kdom.IncrementalSectionizerModule;
 import de.d3web.we.kdom.KnowWEObjectType;
@@ -33,6 +32,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_TagHandler = "TagHandler";
 	public static final String EXTENDED_POINT_PageAppendHandler = "PageAppendHandler";
 	public static final String EXTENDED_POINT_Instantiation = "Instantiation";
+	public static final String EXTENDED_POINT_SectionizerModule = "SectionizerModule";
 	public static final String EXTENDED_POINT_SemanticCore="SemanticCoreImpl";
 	/**
 	 * Returns all plugged Instantiations
@@ -115,9 +115,13 @@ public class Plugins {
 	}
 
 	public static Collection<SectionizerModule> getSectionizerModules() {
+		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_SectionizerModule);
 		Collection<SectionizerModule> sm = new ArrayList<SectionizerModule>();
+		for (Extension e : extensions) {
+			sm.add((SectionizerModule) e.getSingleton());
+		}
 		sm.add(new IncrementalSectionizerModule());
-		sm.add(new ExpandedSectionizerModule());
 		sm.add(new IncludeSectionizerModule());
 		return sm;
 	}

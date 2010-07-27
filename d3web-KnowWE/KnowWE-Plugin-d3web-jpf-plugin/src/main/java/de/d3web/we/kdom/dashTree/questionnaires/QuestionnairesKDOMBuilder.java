@@ -23,13 +23,13 @@ package de.d3web.we.kdom.dashTree.questionnaires;
 import java.util.List;
 import java.util.Stack;
 
+import de.d3web.we.kdom.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.basic.LineBreak;
 import de.d3web.we.kdom.basic.TextLine;
 import de.d3web.we.kdom.dashTree.DashTreeKDOMBuilder;
 import de.d3web.we.kdom.dashTree.Dashes;
 import de.d3web.we.kdom.dashTree.Tilde;
 import de.d3web.we.kdom.decisionTree.QClassID;
-import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 
 public class QuestionnairesKDOMBuilder implements DashTreeKDOMBuilder {
 

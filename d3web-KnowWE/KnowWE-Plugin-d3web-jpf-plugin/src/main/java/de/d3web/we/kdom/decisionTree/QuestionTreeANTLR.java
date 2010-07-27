@@ -36,10 +36,10 @@ import de.d3web.KnOfficeParser.decisiontree.DecisionTree;
 import de.d3web.KnOfficeParser.util.DefaultD3webParserErrorHandler;
 import de.d3web.report.Message;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.kopic.renderer.DefaultLineNumberDeligateRenderer;
-import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 

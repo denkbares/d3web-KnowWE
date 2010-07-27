@@ -22,6 +22,8 @@ package de.d3web.we.taghandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -201,7 +203,10 @@ public class KBRenderer extends AbstractTagHandler {
 					}
 				}
 			}
-			de.d3web.core.inference.Rule[] sort = sortHSet(duplRules);
+			// de.d3web.core.inference.Rule[] sort = sortHSet(duplRules);
+			List<de.d3web.core.inference.Rule> sort = new ArrayList<de.d3web.core.inference.Rule>(
+					duplRules);
+			Collections.sort(sort, new RuleComparator());
 			for (de.d3web.core.inference.Rule r : sort) {
 				String kdomid = idMap.get(r.getId());
 				if (kdomid != null) {
@@ -416,21 +421,22 @@ public class KBRenderer extends AbstractTagHandler {
 		return result.toString();
 	}
 
-	private de.d3web.core.inference.Rule[] sortHSet(
-			HashSet<de.d3web.core.inference.Rule> set) {
-		de.d3web.core.inference.Rule[] sorted = new de.d3web.core.inference.Rule[set
-				.size()];
-		for (de.d3web.core.inference.Rule r : set) {
-			String[] getID = r.getId().split("[\\p{Alpha}]+");
-			if (getID.length == 1) {
-				sorted[0] = r;
-			} else {
-				Integer index = Integer.parseInt(getID[1]);
-				sorted[index - 1] = r;
-			}
-		}
-		return sorted;
-	}
+	// private de.d3web.core.inference.Rule[] sortHSet(
+	// HashSet<de.d3web.core.inference.Rule> set) {
+	// de.d3web.core.inference.Rule[] sorted = new
+	// de.d3web.core.inference.Rule[set
+	// .size()];
+	// for (de.d3web.core.inference.Rule r : set) {
+	// String[] getID = r.getId().split("[\\p{Alpha}]+");
+	// if (getID.length == 1) {
+	// sorted[0] = r;
+	// } else {
+	// Integer index = Integer.parseInt(getID[1]);
+	// sorted[index - 1] = r;
+	// }
+	// }
+	// return sorted;
+	// }
 
 	public static String getPrompt(Question q) {
 		MMInfoStorage storage = (MMInfoStorage) q.getProperties().getProperty(
@@ -450,6 +456,23 @@ public class KBRenderer extends AbstractTagHandler {
 			}
 		}
 		return null;
+	}
+
+	private class RuleComparator implements Comparator<de.d3web.core.inference.Rule> {
+
+		@Override
+		public int compare(de.d3web.core.inference.Rule o1, de.d3web.core.inference.Rule o2) {
+			try {
+				Integer i1 = Integer.parseInt(o1.getId().substring(1));
+				Integer i2 = Integer.parseInt(o2.getId().substring(1));
+				return i1.compareTo(i2);
+			}
+			catch (NumberFormatException e) {
+				// shouldn't happen, fallback...
+				return o1.getId().compareTo(o2.getId());
+			}
+		}
+
 	}
 
 }

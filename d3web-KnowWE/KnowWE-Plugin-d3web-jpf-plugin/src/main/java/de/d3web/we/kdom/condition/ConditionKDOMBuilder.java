@@ -26,13 +26,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.d3web.KnOfficeParser.ConditionBuilder;
+import de.d3web.we.kdom.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.Annotation.Finding;
 import de.d3web.we.kdom.Annotation.FindingAnswer;
 import de.d3web.we.kdom.Annotation.FindingComparator;
 import de.d3web.we.kdom.Annotation.FindingQuestion;
 import de.d3web.we.kdom.condition.old.Conjunct;
 import de.d3web.we.kdom.rules.RuleCondLine;
-import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 
 /**
  * Klasse um den KDOM Tree mithilfe des ANTLR Parsers zu Erstellen

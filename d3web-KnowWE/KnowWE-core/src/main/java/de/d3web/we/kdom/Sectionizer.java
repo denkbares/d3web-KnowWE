@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import de.d3web.we.kdom.basic.PlainText;
-import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.PairOfInts;
@@ -337,7 +336,7 @@ public class Sectionizer {
 		int i = 0;
 		int invalid = -1;
 		for (SectionFinderResult result : results) {
-			if (result instanceof ExpandedSectionFinderResult) {
+			if (result.excludeFromValidating()) {
 				continue;
 			}
 			int a = result.getStart();

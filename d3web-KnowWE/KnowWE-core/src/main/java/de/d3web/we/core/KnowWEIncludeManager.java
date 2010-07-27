@@ -326,12 +326,10 @@ public class KnowWEIncludeManager {
 					}
 					// articles that reuse the include besides the owner of the
 					// include also do not reuse these last targets
-					Map<String, Boolean> reusedBy = inc.isReusedBy();
-					for (String title : reusedBy.keySet()) {
-						if (reusedBy.get(title)) {
-							for (Section<? extends KnowWEObjectType> unusedLastTar : diff) {
-								unusedLastTar.setReusedStateRecursively(title, false);
-							}
+					Set<String> reusedBy = inc.isReusedBy();
+					for (String title : reusedBy) {
+						for (Section<? extends KnowWEObjectType> unusedLastTar : diff) {
+							unusedLastTar.setReusedStateRecursively(title, false);
 						}
 					}
 				}

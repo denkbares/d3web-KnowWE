@@ -24,8 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import tests.d3webSectionFinderTest;
-
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
@@ -44,6 +42,7 @@ import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.QASetDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.objects.QuestionnaireDefinition;
+import de.d3web.we.kdom.objects.TermRelatedDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition.QuestionType;
 import de.d3web.we.kdom.questionTreeNew.indication.IndicationHandler;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -441,7 +440,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 *
 	 */
-	static class AbstractFlag extends DefaultAbstractKnowWEObjectType {
+	static class AbstractFlag extends TermRelatedDefinition {
 
 		public AbstractFlag() {
 			this.sectionFinder = new OneOfStringEnumFinder(new String[] {

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Stack;
 
 import de.d3web.KnOfficeParser.dashtree.DashTBuilder;
-import de.d3web.we.kdom.sectionFinder.ExpandedSectionFinderResult;
+import de.d3web.we.kdom.ExpandedSectionFinderResult;
 
 public interface DashTreeKDOMBuilder extends DashTBuilder {
 

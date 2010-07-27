@@ -540,7 +540,10 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 	public void setFullParse(boolean fullParse, SubtreeHandler<?> source) {
 		if (fullParse) {
-			handlersUnableToDestroy.add(source.getClass().getSimpleName());
+			handlersUnableToDestroy.add(source.getClass().isAnonymousClass()
+					? source.getClass().getName().substring(
+							source.getClass().getName().lastIndexOf(".") + 1)
+					: source.getClass().getSimpleName());
 		}
 		this.fullParse = fullParse;
 	}

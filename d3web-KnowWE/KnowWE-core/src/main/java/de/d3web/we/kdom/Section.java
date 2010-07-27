@@ -25,11 +25,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.d3web.report.Message;
 import de.d3web.we.core.KnowWEDomParseReport;
@@ -42,7 +43,6 @@ import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeAddress;
 import de.d3web.we.kdom.objects.KnowWETerm;
-import de.d3web.we.kdom.objects.TermDefinition;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
@@ -69,7 +69,7 @@ import de.d3web.we.utils.PairOfInts;
  */
 public class Section<T extends KnowWEObjectType> implements Visitable, Comparable<Section<? extends KnowWEObjectType>> {
 
-	private final Map<String, Boolean> reusedBy = new HashMap<String, Boolean>();
+	private final Set<String> reusedBy = new HashSet<String>(4);
 
 	// private final Map<String, Boolean> positionChangedFor = new
 	// HashMap<String, Boolean>();
@@ -1283,14 +1283,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	public boolean isReusedBy(String title) {
-		Boolean reused = reusedBy.get(title);
-		if (reused == null) {
-			reused = false;
-		}
-		return reused;
+		return reusedBy.contains(title);
 	}
 
-	public Map<String, Boolean> isReusedBy() {
+	public Set<String> isReusedBy() {
 		return reusedBy;
 	}
 
@@ -1320,22 +1316,30 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	/**
 	 * Checks whether this Section or a successor is not reused. Sections and
-	 * successors with a KnowWEObjectType contained in the filter set will not
+	 * successors with a KnowWEObjectType contained in the Set of classes will
 	 * be ignored.
 	 * 
 	 * @created 10.07.2010
-	 * @param filter
 	 * @param title
 	 * @return
 	 */
-	public boolean isOrHasChangedTermDefSuccessor(String title) {
-		if (objectType instanceof TermDefinition<?>
-				&& (!isReusedBy(title) || isPositionChangedFor(title))) {
+	public boolean isOrHasChangedSuccessor(String title, Collection<Class<? extends KnowWEObjectType>> filteredTypes) {
+		boolean filteredType = false;
+		if (filteredTypes != null) {
+			for (Class<?> c : filteredTypes) {
+				if (c.isAssignableFrom(objectType.getClass())) {
+					filteredType = true;
+					break;
+				}
+			}
+		}
+		if (!filteredType &&
+				(!isReusedBy(title) || isPositionChangedFor(title))) {
 			return true;
 		}
 		else {
 			for (Section<?> child : this.getChildren()) {
-				if (child.isOrHasChangedTermDefSuccessor(title)) return true;
+				if (child.isOrHasChangedSuccessor(title, filteredTypes)) return true;
 			}
 			return false;
 		}
@@ -1359,7 +1363,12 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	// }
 
 	public void setReusedBy(String title, boolean reused) {
-		reusedBy.put(title, reused);
+		if (reused) {
+			reusedBy.add(title);
+		}
+		else {
+			reusedBy.remove(title);
+		}
 	}
 
 	/**

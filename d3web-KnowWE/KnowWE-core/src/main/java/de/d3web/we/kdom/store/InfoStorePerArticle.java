@@ -25,23 +25,29 @@ import java.util.Map;
 
 public class InfoStorePerArticle {
 
-	private Map<String, SectionStore> map = new HashMap<String, SectionStore>();
-	
-	public SectionStore getStoreForKDOMID(String kdomID) {
-		SectionStore store = map.get(kdomID);
-		if(store == null) {
-			store = new SectionStore();
-			map.put(kdomID, store);
-		}
-		return store;
-	}
-	
-	public Object getObject(String kdomID, String key) {
-		SectionStore store = this.getStoreForKDOMID(kdomID);
-		return store.getObjectForKey(key);
-	}
+	private final Map<String, SectionStore> map = new HashMap<String, SectionStore>(4);
 	
 	public void putSectionStore(String kdomID, SectionStore store) {
 		map.put(kdomID, store);
 	}
+
+	public SectionStore getSectionStore(String kdomID) {
+		return map.get(kdomID);
+	}
+	
+	public Object getObject(String kdomID, String key) {
+		SectionStore store = map.get(kdomID);
+		if (store != null) return store.getObjectForKey(key);
+		return null;
+	}
+	
+	public void storeObject(String kdomID, String key, Object o) {
+		SectionStore secStore = map.get(kdomID);
+		if (secStore == null) {
+			secStore = new SectionStore();
+			map.put(kdomID, secStore);
+		}
+		secStore.storeObject(key, o);
+	}
+
 }

@@ -34,6 +34,7 @@ import de.d3web.we.kdom.report.message.NewObjectCreated;
 import de.d3web.we.kdom.report.message.ObjectAlreadyDefinedError;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
 
 /**
@@ -153,16 +154,11 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 		public void destroy(KnowWEArticle article, Section<QuestionDefinition> question) {
 
 			Question q = question.get().getTermObjectFromLastVersion(article, question);
-			try {
-				if (q != null) {
-					q.getKnowledgeBase().remove(q);
-					KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-							article, question);
-				}
-			}
-			catch (IllegalAccessException e) {
-				article.setFullParse(true, this);
-				// e.printStackTrace();
+
+			if (q != null) {
+				D3webUtils.removeRecursively(q);
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
+						article, question);
 			}
 
 		}
