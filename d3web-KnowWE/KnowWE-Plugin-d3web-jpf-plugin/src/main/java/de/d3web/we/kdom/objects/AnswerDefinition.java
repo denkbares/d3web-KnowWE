@@ -22,6 +22,8 @@ package de.d3web.we.kdom.objects;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -42,12 +44,13 @@ import de.d3web.we.utils.KnowWEUtils;
 /**
  * 
  * @author Jochen/Albrecht
- * @created 26.07.2010 
+ * @created 26.07.2010
  * 
  * 
- * This is the type to be used for markup defining new (d3web-) Choice-Answers.
- * It checks whether the corresponding question is existing and is compatible.
- * In case it creates the Answer object in the knowledge base.
+ *          This is the type to be used for markup defining new (d3web-)
+ *          Choice-Answers. It checks whether the corresponding question is
+ *          existing and is compatible. In case it creates the Answer object in
+ *          the knowledge base.
  * 
  * 
  * 
@@ -64,16 +67,16 @@ public abstract class AnswerDefinition
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
 		this.setOrderSensitive(true);
 	}
-	
+
 	public abstract int getPosition(Section<? extends AnswerDefinition> s);
-	
+
 	/**
 	 * 
 	 * returns the section of the question this answer belongs to
 	 * 
 	 * @created 26.07.2010
 	 * @param s
-	 * @return 
+	 * @return
 	 */
 	public abstract Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s);
 
@@ -94,7 +97,19 @@ public abstract class AnswerDefinition
 			qdef = getQuestionSection((Section<AnswerDefinition>) s);
 		}
 
-		String question = qdef.get().getTermName(qdef);
+		String question = null;
+		if (qdef == null) {
+			// should not happen, if does check whether getQuestion() is
+			// (correctly) overridden by the (custom) AnswerDefintion
+			question = "questionNotFound";
+			Logger.getLogger(this.getClass().getName())
+					.log(Level.SEVERE,
+							"QuestionSection for AnswerDefintion couldnt be found: '" +
+									answer + "'!");
+		}
+		else {
+			question = qdef.get().getTermName(qdef);
+		}
 
 		return question + " " + answer;
 	}
@@ -102,17 +117,16 @@ public abstract class AnswerDefinition
 	/**
 	 * 
 	 * @author Jochen
-	 * @created 26.07.2010 
+	 * @created 26.07.2010
 	 * 
-	 * This handler actually creates the Answer as an object of the knowledge base
+	 *          This handler actually creates the Answer as an object of the
+	 *          knowledge base
 	 */
 	static class CreateAnswerHandler extends D3webSubtreeHandler<AnswerDefinition> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article,
 				Section<AnswerDefinition> s) {
-
-			
 
 			String name = s.get().getTermName(s);
 
@@ -126,7 +140,8 @@ public abstract class AnswerDefinition
 						this.getClass()));
 			}
 
-			KnowWEUtils.storeSectionInfo(article, s, AnswerDefinition.QUESTION_FOR_ANSWER_KEY, qDef);
+			KnowWEUtils.storeSectionInfo(article, s,
+					AnswerDefinition.QUESTION_FOR_ANSWER_KEY, qDef);
 
 			Question q = qDef.get().getTermObject(article, qDef);
 
@@ -190,6 +205,5 @@ public abstract class AnswerDefinition
 			// hooked in in the last KDOM.
 		}
 	}
-
 
 }

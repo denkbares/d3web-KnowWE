@@ -113,7 +113,6 @@ public class QuestionSetValueNumLine extends DefaultAbstractKnowWEObjectType {
 	private KnowWEObjectType createObjectRefTypeBefore(
 			KnowWEObjectType typeAfter) {
 		QuestionReference qid = new QuestionReference();
-		qid.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR1));
 		qid.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(typeAfter));
 		qid.addSubtreeHandler(new CreateSetValueNumRuleHandler());
 		return qid;

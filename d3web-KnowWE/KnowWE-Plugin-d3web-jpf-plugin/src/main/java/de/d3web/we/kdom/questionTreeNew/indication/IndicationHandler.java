@@ -67,7 +67,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<KnowWETerm<?>> s) {
-		return super.needsToCreate(article, s) 
+		return super.needsToCreate(article, s)
 				|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
 	}
 
@@ -80,7 +80,9 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 		if (element == null) {
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.WARNING,
-					"The " + this.getClass().getSimpleName() + " only works inside "
+					"The "
+							+ this.getClass().getSimpleName()
+							+ " only works inside "
 							+ QuestionDashTree.class.getSimpleName()
 							+ "s. It seems the handler is used with the wrong KnowWEObjectType.");
 			return new ArrayList<KDOMReportMessage>(0);
@@ -88,11 +90,15 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 		Section<? extends DashTreeElement> dashTreeFather = DashTreeUtils
 				.getFatherDashTreeElement(element);
-		
-		if(dashTreeFather == null) {
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-					D3webModule.getKwikiBundle_d3web().
-							getString("KnowWE.rulesNew.indicationnotcreated")+" - no dashTreeFather found"));
+
+		if (dashTreeFather == null) {
+			// In case, that the element is already root element, no indication
+			// rule has to be defined, this a warning is not reasonable
+			return new ArrayList<KDOMReportMessage>(0);	
+			//return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+			//		D3webModule.getKwikiBundle_d3web().
+			//				getString("KnowWE.rulesNew.indicationnotcreated")
+			//				+ " - no dashTreeFather found"));
 		}
 
 		Section<QuestionTreeAnswerDefinition> answerSec = dashTreeFather
@@ -146,7 +152,6 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
 					Rule.class.getSimpleName()));
 		}
-
 
 		return new ArrayList<KDOMReportMessage>(0);
 	}

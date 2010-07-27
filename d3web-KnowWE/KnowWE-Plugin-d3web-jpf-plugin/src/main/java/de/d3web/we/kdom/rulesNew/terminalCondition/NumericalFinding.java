@@ -66,7 +66,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 		this.childrenTypes.add(comparator);
 
 		// question
-		QuestionReference question = new NumQuestionReferenceImpl();
+		QuestionReference question = new QuestionReference();
 		ConstraintSectionFinder questionFinder = new ConstraintSectionFinder( new AllTextFinderTrimmed());
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
@@ -97,13 +97,7 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 	}
 
-	class Comparator extends DefaultAbstractKnowWEObjectType {
 
-	}
-
-	class NumQuestionReferenceImpl extends QuestionReference {
-
-	}
 
 	@Override
 	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<NumericalFinding> s) {

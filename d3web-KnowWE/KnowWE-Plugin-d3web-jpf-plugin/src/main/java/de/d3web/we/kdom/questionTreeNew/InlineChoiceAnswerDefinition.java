@@ -23,6 +23,7 @@ package de.d3web.we.kdom.questionTreeNew;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
+import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.objects.AnswerDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -87,8 +88,7 @@ public class InlineChoiceAnswerDefinition extends DefaultAbstractKnowWEObjectTyp
 
 		@Override
 		public Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s) {
-			// TODO Auto-generated method stub
-			return null;
+			return s.findAncestorOfType(DashTreeElementContent.class).findSuccessor(QuestionDefinition.class);
 		}
 
 	}
