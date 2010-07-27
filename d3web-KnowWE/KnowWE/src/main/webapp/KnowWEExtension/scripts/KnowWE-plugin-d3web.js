@@ -125,10 +125,34 @@ KNOWWE.plugin.d3web.actions = function(){
             // Restore the Highlighting that was before
             var restore = document.getElementById('uniqueMarker');
             if (restore) {
-                KNOWWE.core.rerendercontent.updateNode(restore.className, rel.topic, null);
+                KNOWWE.plugin.d3web.actions.updateNode(restore.className, rel.topic, null);
             }
             KNOWWE.plugin.d3web.actions.highlightNode(rel.kdomid, rel.topic, rel.depth, rel.breadth, event);
         },
+        /**
+         * Function: updateNode - Duplicated from KnowWE-Core:
+         * 			 Calls rerendercontent.execute with 'replace'
+         * 			 So highlighting 'yellow' functions more than once.
+         * 			 TODO: After Highlighting there exist 2 spans with
+         * 		           the same attributes.
+         * Updates a node.
+         * 
+         * Parameters:
+         *     node - The node that should be updated.
+         *     topic - The name of the page that contains the node.
+         */
+        updateNode : function(node, topic, ajaxToHTML) {
+            var params = {
+                action : 'ReRenderContentPartAction',
+                KWikiWeb : 'default_web',
+                KdomNodeId : node,
+                KWiki_Topic : topic,
+                ajaxToHTML : ajaxToHTML
+
+            }
+            var url = KNOWWE.core.util.getURL( params );
+            KNOWWE.core.rerendercontent.execute(url, node, 'replace');
+        },      
         /**
          * Function: highlightRule
          * 
