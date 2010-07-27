@@ -27,7 +27,7 @@ public class SolutionTreeMarkup extends DefaultMarkupType {
 	private static DefaultMarkup m = null;
 
 	static {
-		m = new DefaultMarkup("Solutions");
+		m = new DefaultMarkup("Solution");
 		m.addContentType(new SolutionsDashTree());
 	}
 
