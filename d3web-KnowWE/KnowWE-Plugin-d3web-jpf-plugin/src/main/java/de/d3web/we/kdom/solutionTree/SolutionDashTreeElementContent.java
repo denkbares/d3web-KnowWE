@@ -83,29 +83,10 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
 		}
 		
-		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
-			return super.needsToDestroy(article, s)
-					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
-		}
-
+		
 		@Override
 		public void destroy(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
-			Section<SolutionDefinition> solSec = s.findSuccessor(SolutionDefinition.class);
-			Solution sol = (Solution) KnowWEUtils.getObjectFromLastVersion(article, s,
-					STORE_KEY_SOLUTION);
-			
-			try {
-				if (sol != null) {
-					sol.getKnowledgeBase().remove(sol);
-					KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermDefinition(
-							article, solSec);
-				}
-			}
-			catch (IllegalAccessException e) {
-				article.setFullParse(true, this);
-				// e.printStackTrace();
-			}
+			//will be destroyed by SolutionDefinition#destroy()
 
 		}
 		

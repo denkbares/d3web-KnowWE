@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import tests.d3webSectionFinderTest;
+
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.MMInfoSubject;
@@ -59,6 +61,7 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.StringEnumChecker;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.SplitUtility;
 
@@ -445,7 +448,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 					"<abstract>", "<abstrakt>" });
 			this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
 
-			this.addSubtreeHandler(new SubtreeHandler<AbstractFlag>() {
+			this.addSubtreeHandler(new D3webSubtreeHandler<AbstractFlag>() {
 
 				@Override
 				public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<AbstractFlag> s) {
