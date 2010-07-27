@@ -22,9 +22,8 @@ package de.d3web.we.taghandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -78,17 +77,21 @@ public class KBRenderer extends AbstractTagHandler {
 
 	@Override
 	public String getDescription(KnowWEUserContext user) {
-		return D3webModule.getKwikiBundle_d3web(user).getString("KnowWE.KBRenderer.description");
+		return D3webModule.getKwikiBundle_d3web(user).getString(
+				"KnowWE.KBRenderer.description");
 	}
 
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String, String> values, String web) {
-		D3webKnowledgeService service = D3webModule.getAD3webKnowledgeServiceInTopic(web, topic);
+	public String render(String topic, KnowWEUserContext user,
+			Map<String, String> values, String web) {
+		D3webKnowledgeService service = D3webModule
+				.getAD3webKnowledgeServiceInTopic(web, topic);
 
 		ResourceBundle rb = D3webModule.getKwikiBundle_d3web(user);
 
-		StringBuilder text = new StringBuilder("<div id=\"knowledge-panel\" class=\"panel\"><h3>"
-				+ rb.getString("KnowWE.KBRenderer.header") + "</h3>");
+		StringBuilder text = new StringBuilder(
+				"<div id=\"knowledge-panel\" class=\"panel\"><h3>"
+						+ rb.getString("KnowWE.KBRenderer.header") + "</h3>");
 		text.append("<div>");
 		text.append("<p>");
 		if (service != null) {
@@ -108,12 +111,14 @@ public class KBRenderer extends AbstractTagHandler {
 			for (Solution diagnosis2 : diagnosis) {
 				if (!diagnosis2.getName().equals("P000")) {
 					if (!appendedSolutionsHeadline) {
-						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.solutions")
+						text.append("<strong>"
+								+ rb.getString("KnowWE.KBRenderer.solutions")
 								+ ":</strong><p/>");
 						appendedSolutionsHeadline = true;
 					}
 					text.append(VerbalizationManager.getInstance().verbalize(
-							diagnosis2, RenderingFormat.HTML) + "<br/>");
+							diagnosis2, RenderingFormat.HTML)
+							+ "<br/>");
 				}
 			}
 			text.append("<p/>");
@@ -140,69 +145,85 @@ public class KBRenderer extends AbstractTagHandler {
 			// }
 
 			// Rules
-			// TODO: Fix
+			// TODO: Sort Rules (ID)
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 			List<KnowledgeSlice> rules = new ArrayList<KnowledgeSlice>(kb
 					.getAllKnowledgeSlices());
-			Collections.sort(rules, new KnowledgeSliceComparator());
 
 			boolean appendedRulesHeadline = false;
 			Map<String, String> idMap = new HashMap<String, String>();
+			HashSet<de.d3web.core.inference.Rule> duplRules = new HashSet<de.d3web.core.inference.Rule>();
 			for (KnowledgeSlice knowledgeSlice : rules) {
 				if (knowledgeSlice instanceof RuleSet) {
 					RuleSet rs = (RuleSet) knowledgeSlice;
 					for (de.d3web.core.inference.Rule r : rs.getRules()) {
+						duplRules.add(r);
 						if (!appendedRulesHeadline) {
 							if (appendedSolutionsHeadline) {
 								text.append("<br/>");
 							}
-							text.append("<strong>" + rb.getString("KnowWE.KBRenderer.rules")
+							text.append("<strong>"
+									+ rb.getString("KnowWE.KBRenderer.rules")
 									+ ":</strong><p/>");
 							appendedRulesHeadline = true;
 							List<Section<Rule>> allRules = new ArrayList<Section<de.d3web.we.kdom.rules.Rule>>();
 							List<Section<BulletContentType>> allBulletContentTypes = new ArrayList<Section<BulletContentType>>();
 
-							KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
-									.getSection().findSuccessorsOfType(BulletContentType.class,
+							KnowWEEnvironment.getInstance().getArticleManager(
+									web).getArticle(topic).getSection()
+									.findSuccessorsOfType(
+											BulletContentType.class,
 											allBulletContentTypes);
-							KnowWEEnvironment.getInstance().getArticleManager(web).getArticle(topic)
-									.getSection().findSuccessorsOfType(Rule.class, allRules);
+							KnowWEEnvironment.getInstance().getArticleManager(
+									web).getArticle(topic).getSection()
+									.findSuccessorsOfType(Rule.class, allRules);
 							for (Section<Rule> rule : allRules) {
-								String kbRuleId = (String) KnowWEUtils.getStoredObject(
-										rule.getWeb(), topic,
-										rule.getID(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
+								String kbRuleId = (String) KnowWEUtils
+										.getStoredObject(
+												rule.getWeb(),
+												topic,
+												rule.getID(),
+												de.d3web.we.kdom.rules.Rule.KBID_KEY);
 								idMap.put(kbRuleId, rule.getID());
 							}
 
 							for (Section<BulletContentType> bullet : allBulletContentTypes) {
-								String kbRuleId = (String) KnowWEUtils.getStoredObject(
-										bullet.getWeb(), topic,
-										bullet.getID(), de.d3web.we.kdom.rules.Rule.KBID_KEY);
+								String kbRuleId = (String) KnowWEUtils
+										.getStoredObject(
+												bullet.getWeb(),
+												topic,
+												bullet.getID(),
+												de.d3web.we.kdom.rules.Rule.KBID_KEY);
 								idMap.put(kbRuleId, bullet.getID());
 							}
 						}
-						String kdomid = idMap.get(r.getId());
-						if (kdomid != null) {
-							String button = ("<img src=KnowWEExtension/images/page_white_find.png "
-									+ "class=\"highlight-rule\" "
-									+ "rel=\"{kdomid: '" + kdomid + "', topic: '" + topic
-									+ "', depth: 0, breadth: 0}\""
-									+ "/></img>");
-							text.append(button);
-						}
-
-						text.append("Rule: " + VerbalizationManager.getInstance().verbalize(
-								r.getCondition(), RenderingFormat.PLAIN_TEXT));
-						text.append(" --> ");
-						text.append(VerbalizationManager.getInstance().verbalize(
-								r.getAction(), RenderingFormat.HTML, parameterMap));
-						text.append("\n <br />"); // \n only to avoid hmtl-code
-						// being cut by JspWiki
-						// (String.length > 10000)
 					}
-					text.append("Slices:<br />");
 				}
+			}
+			de.d3web.core.inference.Rule[] sort = sortHSet(duplRules);
+			for (de.d3web.core.inference.Rule r : sort) {
+				String kdomid = idMap.get(r.getId());
+				if (kdomid != null) {
+					String button = ("<img src=KnowWEExtension/images/page_white_find.png "
+							+ "class=\"highlight-rule\" "
+							+ "rel=\"{kdomid: '"
+							+ kdomid
+							+ "', topic: '"
+							+ topic
+							+ "', depth: 0, breadth: 0}\"" + "/></img>");
+					text.append(button);
+				}
+
+				text.append("Rule: "
+						+ VerbalizationManager.getInstance().verbalize(
+								r.getCondition(), RenderingFormat.PLAIN_TEXT));
+				text.append(" --> ");
+				text.append(VerbalizationManager.getInstance().verbalize(
+						r.getAction(), RenderingFormat.HTML, parameterMap));
+				text.append("\n <br />"); // \n only to avoid hmtl-code
+				// being cut by JspWiki
+				// (String.length > 10000)
 			}
 			text.append("<p/>");
 
@@ -218,13 +239,14 @@ public class KBRenderer extends AbstractTagHandler {
 						if (appendedSolutionsHeadline || appendedRulesHeadline) {
 							text.append("<br/>");
 						}
-						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.questions")
+						text.append("<strong>"
+								+ rb.getString("KnowWE.KBRenderer.questions")
 								+ ":</strong><p/>");
 						appendedQuestionHeadline = true;
 					}
 					if (q1 instanceof QContainer) {
-						text.append("<span style=\"color: rgb(128, 128, 0);\">" + q1.getName()
-								+ "</span><br/>");
+						text.append("<span style=\"color: rgb(128, 128, 0);\">"
+								+ q1.getName() + "</span><br/>");
 						text.append(getAll(q1.getChildren(), 1));
 						text.append("<br/>");
 					}
@@ -243,7 +265,8 @@ public class KBRenderer extends AbstractTagHandler {
 								|| appendedQuestionHeadline) {
 							text.append("<br/>");
 						}
-						text.append("<strong>" + rb.getString("KnowWE.KBRenderer.xclModels")
+						text.append("<strong>"
+								+ rb.getString("KnowWE.KBRenderer.xclModels")
 								+ ":</strong>");
 						appendedXCLHeadline = true;
 					}
@@ -269,12 +292,12 @@ public class KBRenderer extends AbstractTagHandler {
 					Map<XCLRelationType, Collection<XCLRelation>> relationMap = model
 							.getTypedRelations();
 
-					for (Entry<XCLRelationType, Collection<XCLRelation>> entry : relationMap.entrySet()) {
+					for (Entry<XCLRelationType, Collection<XCLRelation>> entry : relationMap
+							.entrySet()) {
 						XCLRelationType type = entry.getKey();
 						Collection<XCLRelation> relations = entry.getValue();
 						for (XCLRelation rel : relations) {
-							Condition cond = rel
-									.getConditionedFinding();
+							Condition cond = rel.getConditionedFinding();
 							String weight = "";
 							String kdomid = rel.getKdmomID();
 							if (type == XCLRelationType.explains) {
@@ -288,8 +311,7 @@ public class KBRenderer extends AbstractTagHandler {
 										+ kdomid
 										+ "', topic: '"
 										+ topic
-										+ "', depth: 0, breadth: 0}\""
-										+ "/></img>");
+										+ "', depth: 0, breadth: 0}\"" + "/></img>");
 								text.append(button);
 							}
 
@@ -297,7 +319,8 @@ public class KBRenderer extends AbstractTagHandler {
 							text.append("&nbsp;&nbsp;&nbsp;"
 									+ VerbalizationManager.getInstance()
 											.verbalize(cond,
-													RenderingFormat.PLAIN_TEXT, parameterMap));
+													RenderingFormat.PLAIN_TEXT,
+													parameterMap));
 
 							boolean id = false;
 							if (id) {
@@ -323,10 +346,9 @@ public class KBRenderer extends AbstractTagHandler {
 					}
 				}
 			}
-		}
-		else {
-			text.append("<p class=\"box error\">" + rb.getString("KnowWE.KBRenderer.error")
-					+ "</p>");
+		} else {
+			text.append("<p class=\"box error\">"
+					+ rb.getString("KnowWE.KBRenderer.error") + "</p>");
 		}
 		return text.append("</p></div></div>").toString();
 	}
@@ -358,8 +380,7 @@ public class KBRenderer extends AbstractTagHandler {
 					result.append("<span style=\"color: rgb(0, 128, 0);\">"
 							+ t1.toString() + " " + properties + " [mc] "
 							+ range + "</span><br/>");
-				}
-				else {
+				} else {
 					result.append("<span style=\"color: rgb(0, 128, 0);\">"
 							+ t1.toString() + " " + properties + " [oc] "
 							+ range + "</span><br/>");
@@ -369,21 +390,17 @@ public class KBRenderer extends AbstractTagHandler {
 						result.append("-");
 					}
 					result.append("<span style=\"color: rgb(0, 0, 255);\">"
-							+ c1.toString()
-							+ "</span><br/>");
+							+ c1.toString() + "</span><br/>");
 				}
-			}
-			else if (t1 instanceof QuestionText) {
+			} else if (t1 instanceof QuestionText) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + properties + " [text] " + range
 						+ "</span><br/>");
-			}
-			else if (t1 instanceof QuestionNum) {
+			} else if (t1 instanceof QuestionNum) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + properties + " [num] " + range
 						+ "</span><br/>");
-			}
-			else if (t1 instanceof QuestionDate) {
+			} else if (t1 instanceof QuestionDate) {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + properties + " [date] " + range
 						+ "</span><br/>");
@@ -399,14 +416,30 @@ public class KBRenderer extends AbstractTagHandler {
 		return result.toString();
 	}
 
+	private de.d3web.core.inference.Rule[] sortHSet(
+			HashSet<de.d3web.core.inference.Rule> set) {
+		de.d3web.core.inference.Rule[] sorted = new de.d3web.core.inference.Rule[set
+				.size()];
+		for (de.d3web.core.inference.Rule r : set) {
+			String[] getID = r.getId().split("[\\p{Alpha}]+");
+			if (getID.length == 1) {
+				sorted[0] = r;
+			} else {
+				Integer index = Integer.parseInt(getID[1]);
+				sorted[index - 1] = r;
+			}
+		}
+		return sorted;
+	}
+
 	public static String getPrompt(Question q) {
-		MMInfoStorage storage = (MMInfoStorage) q.getProperties()
-				.getProperty(Property.MMINFO);
+		MMInfoStorage storage = (MMInfoStorage) q.getProperties().getProperty(
+				Property.MMINFO);
 		if (storage != null) {
 			DCMarkup dcMarkup = new DCMarkup();
 			dcMarkup.setContent(DCElement.SOURCE, q.getId());
-			dcMarkup.setContent(DCElement.SUBJECT,
-					MMInfoSubject.PROMPT.getName());
+			dcMarkup.setContent(DCElement.SUBJECT, MMInfoSubject.PROMPT
+					.getName());
 			Set<MMInfoObject> info = storage.getMMInfo(dcMarkup);
 
 			if (info != null) {
@@ -419,12 +452,4 @@ public class KBRenderer extends AbstractTagHandler {
 		return null;
 	}
 
-	private class KnowledgeSliceComparator implements Comparator<KnowledgeSlice> {
-
-		@Override
-		public int compare(KnowledgeSlice o1, KnowledgeSlice o2) {
-			return o1.toString().compareTo(o2.toString());
-		}
-
-	}
 }
