@@ -1,25 +1,29 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.faq;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -44,16 +48,16 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 /**
  * e.g. [{KnowWEPlugin faq=all; status=I; major=BAInf;}] renders all faq entries
  * where status = I (Informatics) and major = BAInf (Bachelor Informatics)
- *
+ * 
  * falls faq=all --> alle Einträge rendern = SPARQL_ALL
- *
+ * 
  * falls nicht --> der Reihe nach die Attribute abfragen was gegeben ist, und
  * wenn ja dynamisch ins SPARQL_BASE reinziehen
- *
+ * 
  * TODO für die Attribute prüfen ob nur eins oder mehrere gegeben sind, ggf den
  * SPARQL anders dynamisch zusammensetzen. Solche mehreren Attribute müssen wenn
  * mit Leerzeichen getrennt werden
- *
+ * 
  * @author Martina Freiberg
  * @date July 2010
  */
@@ -111,33 +115,38 @@ public class FAQTagHandler extends AbstractTagHandler {
 			// get the value nevertheless
 			if (values.get("major") != null) {
 				major = values.get("major");
-				String[] majors = major.split(" ");
-				for (String m : majors) {
-					try {
-						querystring = querystring.replace("}", ". ?t lns:hasmajor \"" + m + "\" }");
-					}
-					catch (Exception e) {
-						return "Illegal query String: " + querystring + "<br />"
-								+ " no valid parameter for: " + "MAJOR";
-					}
+				// String[] majors = major.split(" ");
+				// for (String m : majors) {
+				try {
+					querystring = querystring.replace("}", ". ?t lns:hasmajor \"" + major + "\" }");
+					querystring = querystring.replace("}", ". FILTER (regex(?m, \"" + major
+							+ "\"))}");
 				}
+
+				// FILTER (regex(?title, "SPARQL")) .
+				catch (Exception e) {
+					return "Illegal query String: " + querystring + "<br />"
+								+ " no valid parameter for: " + "MAJOR";
+				}
+				// }
 
 			}
 			if (values.get("status") != null) {
 				status = values.get("status");
-				String[] states = status.split(" ");
-				for (String s : states) {
-					try {
-						querystring = querystring.replace("}", ". ?t lns:hasstatus \"" + s
+				// String[] states = status.split(" ");
+				// for (String s : states) {
+				try {
+					querystring = querystring.replace("}", ". ?t lns:hasstatus \"" + status
 								+ "\" }");
-					}
-					catch (Exception e) {
-						return "Illegal query String: " + querystring + "<br />"
-							+ " no valid parameter for: " + "STATUS";
-					}
 				}
+				catch (Exception e) {
+					return "Illegal query String: " + querystring + "<br />"
+								+ " no valid parameter for: " + "STATUS";
+				}
+				// }
 			}
 		}
+		// System.out.println(querystring);
 
 		/**
 		 * establish connection and send query
@@ -193,7 +202,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 
 	/**
 	 * Assembles the actual HTML String for display in the wiki page
-	 *
+	 * 
 	 * @created 06.07.2010
 	 * @param result the result of the SPARQL query that is to be displayed in
 	 *        the page
@@ -203,56 +212,106 @@ public class FAQTagHandler extends AbstractTagHandler {
 	 */
 	private String renderQueryResult(TupleQueryResult result) throws QueryEvaluationException {
 
-
+		List<String> sortedFAQs = sortAlphabetically(result);
 		StringBuilder string = new StringBuilder();
 
-		String answer = "";
-		String question = "";
-		String status = "";
-		String major = "";
-
 		// go through all binding sets, i.e., result sets of the query
-		while (result.hasNext()) {
+		for (int i = 0; i < sortedFAQs.size(); i++) {
 
-			// check for each annotation if there exists corresponding binding,
-			// in case yes, write result to variable
-			BindingSet set = result.next();
-			if (set.getValue("a") != null) {
-				answer = "A: ";
-				String a = set.getValue("a").stringValue();
-				a = a.trim();
-				answer = answer.concat(a);
-			}
-			if (set.getValue("q") != null) {
-				question = set.getValue("q").stringValue();
-			}
-			if (set.getValue("s") != null) {
-				status = set.getValue("s").stringValue();
-			}
-			if (set.getValue("m") != null) {
-				major = set.getValue("m").stringValue();
-			}
+			String[] resultVals = sortedFAQs.get(i).split("----");
 
 			// build the HTML
 			string.append(KnowWEUtils.maskHTML("<div class='faq_question'> Q: "));
-			string.append(KnowWEUtils.maskHTML(question));
+			string.append(KnowWEUtils.maskHTML(resultVals[0]));
 			string.append(KnowWEUtils.maskHTML("</div>"));
 			string.append(KnowWEUtils.maskHTML("<div class='faq_answer'> "));
-			string.append(KnowWEUtils.maskHTML(answer));
+			string.append(KnowWEUtils.maskHTML(resultVals[1]));
 			string.append(KnowWEUtils.maskHTML("<div class='faq_tags'> "));
-			string.append(KnowWEUtils.maskHTML(status));
+			string.append(KnowWEUtils.maskHTML(resultVals[2]));
 			string.append(KnowWEUtils.maskHTML(" "));
-			string.append(KnowWEUtils.maskHTML(major));
+			string.append(KnowWEUtils.maskHTML(resultVals[3]));
 			string.append(KnowWEUtils.maskHTML("</div>"));
 			string.append(KnowWEUtils.maskHTML("</div>"));
+			// string.append("[www.google.de]");
 		}
 		return string.toString();
 	}
 
+	private List<String> sortAlphabetically(TupleQueryResult result) {
+
+		List<String> faqList = new ArrayList<String>();
+		HashMap<String, String> capitals = new HashMap<String, String>();
+
+		try {
+			while (result.hasNext()) {
+				StringBuilder bui = new StringBuilder();
+				BindingSet set = result.next();
+
+				if (set.getValue("q") != null) {
+					String value = set.getValue("q").stringValue();
+					String small = value;
+					small = small.toLowerCase();
+					capitals.put(small, value);
+					bui.append(small);
+					bui.append("----");
+				}
+				else {
+					bui.append("");
+					bui.append("----");
+				}
+				if (set.getValue("a") != null) {
+					bui.append("A: ");
+					String a = set.getValue("a").stringValue();
+					a = a.trim();
+					bui.append(a);
+					bui.append("----");
+				}
+				else {
+					bui.append("");
+					bui.append("----");
+				}
+				if (set.getValue("s") != null) {
+					bui.append(set.getValue("s").stringValue());
+					bui.append("----");
+				}
+				else {
+					bui.append("");
+					bui.append("----");
+				}
+				if (set.getValue("m") != null) {
+					bui.append(set.getValue("m").stringValue());
+				}
+				else {
+					bui.append("");
+				}
+				faqList.add(bui.toString());
+				System.out.println(bui.toString());
+			}
+		}
+		catch (QueryEvaluationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Collections.sort(faqList);
+
+		// replace all values with their corresponding not-only-small-values
+		// from HashMap
+
+		for (String s : faqList) {
+			String sm = s.split("----")[0];
+			if (capitals.containsKey(sm)) {
+				s.replace(sm, capitals.get(sm));
+			}
+		}
+
+		System.out.println(faqList.toString());
+		return faqList;
+	}
 
 	/**
 	 * Create the frame for correctly rendering the plugin
-	 *
+	 * 
 	 * @created 13.07.2010
 	 * @return
 	 */
