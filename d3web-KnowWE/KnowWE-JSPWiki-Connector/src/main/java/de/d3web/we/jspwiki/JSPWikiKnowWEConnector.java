@@ -25,11 +25,13 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -437,7 +439,58 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		}
 		
 		return pagedata;
-	}	
+	}
+
+
+	@Override
+	public Map<Integer, Date> getModificationHistory(String name) {
+		// Surrounded this because getPage()
+		// caused a Nullpointer on first KnowWE startup
+		try {
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+		}
+		catch (NullPointerException e) {
+			return null;
+		}
+
+		Map<Integer, Date> map = new TreeMap<Integer, Date>();
+
+		for (Object o : this.engine.getVersionHistory(name)) {
+			if (o instanceof WikiPage) {
+				WikiPage wp = (WikiPage) o;
+				map.put(wp.getVersion(), wp.getLastModified());
+			}
+		}
+		return map;
+	}
+
+	@Override
+	public Date getLastModifiedDate(String name, int version) {
+		// Surrounded this because getPage()
+		// caused a Nullpointer on first KnowWE startup
+		try {
+			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+		}
+		catch (NullPointerException e) {
+			return null;
+		}
+
+		WikiContext context = new WikiContext(this.engine, this.engine
+				.getPage(name));
+
+		Date lastModified = null;
+		try {
+			if (context.getEngine().pageExists(context.getPage().getName(), version)) {
+				lastModified = context.getEngine().getPage(context.getPage().getName(),
+						version).getLastModified();
+			}
+		}
+		catch (ProviderException e) {
+			return null;
+		}
+
+		return lastModified;
+	}
 	
 	@Override
 	public String getAuthor(String name, int version) {

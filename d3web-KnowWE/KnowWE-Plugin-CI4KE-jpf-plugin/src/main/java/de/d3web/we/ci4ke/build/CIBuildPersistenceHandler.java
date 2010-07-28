@@ -23,8 +23,10 @@ package de.d3web.we.ci4ke.build;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -126,6 +128,27 @@ public class CIBuildPersistenceHandler {
 		return intBuildNum;
 	}
 
+	public Date getCurrentBuildExecutionDate() {
+
+		Date buildExecuted = null;
+		// try to parse the most current build NR
+		Object o = selectSingleNode("/builds/build[last()]/@executed");
+		if (o instanceof Attribute) {
+			Attribute attr = (Attribute) o;
+			String attrValue = attr.getValue();
+			if (attrValue != null && !attrValue.isEmpty()) {
+				try {
+					buildExecuted = DATE_FORMAT.parse(attrValue);
+				}
+				catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return buildExecuted;
+	}
+
 	/**
 	 * Writes a test-resultset to the XML Build-File
 	 * 
@@ -153,6 +176,7 @@ public class CIBuildPersistenceHandler {
 			xmlDocument.getRootElement().setAttribute(CIBuilder.
 					ACTUAL_BUILD_STATUS, overallResult.toString());
 
+			Element tests = new Element("tests");
 			// iterate over the testresults contained in the build-resultset
 			for (Map.Entry<String, CITestResult> entry : resultset.getResults().entrySet()) {
 				String testname = entry.getKey();
@@ -164,8 +188,20 @@ public class CIBuildPersistenceHandler {
 
 				if (testresult.getTestResultMessage().length() > 0) e.setAttribute("message",
 						testresult.getTestResultMessage());
-				build.addContent(e);
+				tests.addContent(e);
 			}
+			build.addContent(tests);
+			// write the modified articles
+			Element modifiedArticles = new Element("modifiedArticles");
+			for (ModifiedArticleWrapper m : resultset.getModifiedArticles()) {
+				Element article = new Element("modifiedArticle");
+				article.setAttribute("title", m.getArticleTitle());
+				article.setAttribute("rangeFrom", m.getVersionRangeFrom().toString());
+				article.setAttribute("rangeTo", m.getVersionRangeTo().toString());
+				modifiedArticles.addContent(article);
+			}
+			build.addContent(modifiedArticles);
+
 			// add the build-element to the JDOM Tree
 			xmlDocument.getRootElement().addContent(build);
 			// and print it to file

@@ -20,7 +20,10 @@
 
 package de.d3web.we.ci4ke.build;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -34,8 +37,11 @@ import de.d3web.we.ci4ke.handling.CITestResult;
 import de.d3web.we.ci4ke.handling.CIHookManager.CIHook;
 import de.d3web.we.ci4ke.util.CIUtilities;
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.include.Include;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 public class CIBuilder {
 
@@ -100,8 +106,7 @@ public class CIBuilder {
 	 */
 	public void executeBuild() {
 
-		// Logger.getLogger(this.getClass().getName()).log(Level.INFO,
-		// ">>> starting to execute a new build! >>>");
+		KnowWEWikiConnector conny = KnowWEEnvironment.getInstance().getWikiConnector();
 
 		Map<String, Class<? extends CITest>> testClasses =
 				CIUtilities.parseTestClasses(this.config.getTestNames());
@@ -179,7 +184,35 @@ public class CIBuilder {
 		// write the resultset to XML
 		CIBuildPersistenceHandler persi = new
 				CIBuildPersistenceHandler(this.config.getDashboardID());
-		persi.write(resultset, this.config.getMonitoredArticleTitle());
 
+		// ------ TEST INCLUDES PARSEN --------
+
+		Date executedDate = persi.getCurrentBuildExecutionDate();
+		KnowWEArticle monitored = KnowWEEnvironment.getInstance().getArticle(
+				KnowWEEnvironment.DEFAULT_WEB, this.config.getMonitoredArticleTitle());
+
+		List<Section<Include>> list = new ArrayList<Section<Include>>();
+		monitored.getSection().findSuccessorsOfType(Include.class, list);
+		for (Section<Include> sec : list) {
+			String targetArticle = sec.getIncludeAddress().getTargetArticle();
+			Map<Integer, Date> history =
+					conny.getModificationHistory(targetArticle);
+
+			int currentVersion = conny.getVersion(targetArticle);
+			int lastVersion = 1;
+
+			for (Map.Entry<Integer, Date> e : history.entrySet()) {
+
+				if (e.getValue().before(executedDate)) {
+					lastVersion = e.getKey();
+				}
+			}
+			if (lastVersion < currentVersion) {
+				resultset.addModifiedArticle(new ModifiedArticleWrapper(targetArticle,
+						lastVersion, currentVersion));
+			}
+		}
+
+		persi.write(resultset, this.config.getMonitoredArticleTitle());
 	}
 }

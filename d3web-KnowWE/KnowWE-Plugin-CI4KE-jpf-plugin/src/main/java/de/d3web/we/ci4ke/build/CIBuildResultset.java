@@ -21,7 +21,10 @@
 package de.d3web.we.ci4ke.build;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -55,11 +58,17 @@ public final class CIBuildResultset {
 	 */
 	private final Map<String, CITestResult> results;
 
+	/**
+	 * the articles which were modified before execution of this build
+	 */
+	private List<ModifiedArticleWrapper> modifiedArticles;
+
 	public CIBuildResultset() {
 		super();
 		this.articleVersion = -1;
 		this.buildExecutionDate = new Date();
 		this.results = new TreeMap<String, CITestResult>();
+		this.modifiedArticles = new LinkedList<ModifiedArticleWrapper>();
 	}
 
 	@Deprecated
@@ -152,5 +161,16 @@ public final class CIBuildResultset {
 	public void setArticleVersion(int articleVersion) {
 		this.articleVersion = articleVersion;
 	}
+
+	public void addModifiedArticle(ModifiedArticleWrapper modified) {
+		if (modified != null) {
+			this.modifiedArticles.add(modified);
+		}
+	}
+	
+	public List<ModifiedArticleWrapper> getModifiedArticles() {
+		return Collections.unmodifiableList(this.modifiedArticles);
+	}
+
 
 }

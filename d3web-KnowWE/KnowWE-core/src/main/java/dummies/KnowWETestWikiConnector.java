@@ -23,6 +23,7 @@ package dummies;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -273,6 +274,18 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
 	@Override
 	public String getAuthor(String name, int version) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Date getLastModifiedDate(String name, int version) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<Integer, Date> getModificationHistory(String name) {
 		// TODO Auto-generated method stub
 		return null;
 	}

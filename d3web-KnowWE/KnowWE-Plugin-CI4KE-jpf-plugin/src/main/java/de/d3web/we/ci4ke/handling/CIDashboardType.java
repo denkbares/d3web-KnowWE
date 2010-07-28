@@ -314,7 +314,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	
 		buffy.append("<div id='" + dashboardID + "-column-middle' class='ci-column-middle'>");
 	
-		String xPath = "builds/build[@nr=%s]/test";
+		String xPath = "builds/build[@nr=%s]/tests/test";
 		List<?> tests = handler.selectNodes(String.format(xPath, selectedBuildNumber));
 	
 		buffy.append("<h3 style=\"background-color: #CCCCCC;\">" +
@@ -375,7 +375,9 @@ public class CIDashboardType extends DefaultMarkupType {
 			monitoredArticleTitle = ((Attribute) attrib).getValue();
 		}
 		attrib = null;
-	
+
+		// ---------------
+
 		// xPath to select the article version of a buildNumber
 		xPath = "builds/build[@nr=%s]/@articleVersion";
 	
@@ -413,7 +415,24 @@ public class CIDashboardType extends DefaultMarkupType {
 					author + "</div>");
 		}
 	
+		xPath = "builds/build[@nr=%s]/modifiedArticles/modifiedArticle";
+		List<?> articles = handler.selectNodes(String.format(xPath, selectedBuildNumber));
 		DiffEngine diff = DiffFactory.defaultDiffEngine();
+
+		for (Object o : articles) {
+			if (o instanceof Element) {
+				Element e = (Element) o;
+				String title = e.getAttributeValue("title");
+				Integer rangeFrom = Integer.parseInt(e.getAttributeValue("rangeFrom"));
+				Integer rangeTo = Integer.parseInt(e.getAttributeValue("rangeTo"));
+
+				buffy.append("Changes in " + title + ":<br/>");
+				buffy.append(diff.makeDiffHtml(
+						conny.getArticleSource(title, rangeFrom),
+						conny.getArticleSource(title, rangeTo)));
+			}
+		}
+
 		buffy.append(diff.makeDiffHtml(
 						conny.getArticleSource(monitoredArticleTitle,
 								articleVersionPrevious),

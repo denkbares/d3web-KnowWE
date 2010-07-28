@@ -22,6 +22,7 @@ package de.d3web.we.wikiConnector;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -177,6 +178,18 @@ public interface KnowWEWikiConnector {
 	 * @return the author of the specified version or null
 	 */
 	public String getAuthor(String name, int version);
+
+	public Map<Integer, Date> getModificationHistory(String name);
+
+	/**
+	 * Gets the Date when the specified version of the article was last modified
+	 * 
+	 * @created 17.07.2010
+	 * @param name the name of the article
+	 * @param version the version of the article
+	 * @return the Date when the selected articleversion was modified
+	 */
+	public Date getLastModifiedDate(String name, int version);
 
 	/**
 	 * Returns a map of all wiki pages with page names as key and page sources
