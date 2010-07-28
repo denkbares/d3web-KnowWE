@@ -80,18 +80,6 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <TermObject> Set<Section<? extends TermReference<TermObject>>> getTermReferencesTo(
-			KnowWEArticle article, TermIdentifier t) {
-
-		if (getTermReferenceLogsMap(article.getTitle()).containsKey(t)) {
-			return getTermReferenceLogsMap(article.getTitle()).get(t).getReferences();
-		}
-		else {
-			return new HashSet<Section<? extends TermReference<TermObject>>>(0);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
 	private <TermObject> TermReferenceLog<TermObject> getTermReferenceLog(KnowWEArticle article,
 			Section<? extends KnowWETerm<TermObject>> r) {
 		return getTermReferenceLogsMap(article.getTitle()).get(
@@ -192,8 +180,15 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <TermObject> Set<Section<? extends TermReference<TermObject>>> getTermReferenceSections(KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> r) {
-		return getTermReferencesTo(article, new TermIdentifier(article, r));
+		TermIdentifier t = new TermIdentifier(article, r);
+		if (getTermReferenceLogsMap(article.getTitle()).containsKey(t)) {
+			return getTermReferenceLogsMap(article.getTitle()).get(t).getReferences();
+		}
+		else {
+			return new HashSet<Section<? extends TermReference<TermObject>>>(0);
+		}
 	}
 
 	public <TermObject> void setTermReferencesToNotReused(KnowWEArticle article,
@@ -287,13 +282,31 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
 		@SuppressWarnings("unchecked")
 		public <TermObject> TermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> s) {
+
+			String termObjectClass = "UnidentifiedTerm";
+			Class<?> tempClass = s.get().getClass();
+			while (tempClass.getSuperclass() != null
+				&& !tempClass.getGenericSuperclass().toString().endsWith(">")) {
+				tempClass = tempClass.getSuperclass();
+			}
+			if (tempClass.getGenericSuperclass() != null) {
+				String fullGenericClassName = tempClass.getGenericSuperclass().toString();
+				int start = fullGenericClassName.indexOf("<");
+				int stop = fullGenericClassName.lastIndexOf(">");
+				if (start > 0 && stop > 0) termObjectClass = fullGenericClassName.substring(start + 1, stop);
+			}
+
+			String tempTermpIdentifier;
 			if (s.get() instanceof NotUniqueKnowWETerm) {
 				Section<? extends NotUniqueKnowWETerm> nus = (Section<? extends NotUniqueKnowWETerm>) s;
-				termIdentifier = nus.get().getUniqueTermIdentifier(article, nus);
+				tempTermpIdentifier = nus.get().getUniqueTermIdentifier(article, nus);
 			}
 			else {
-				termIdentifier = s.get().getTermName(s);
+				tempTermpIdentifier = s.get().getTermName(s);
 			}
+			termIdentifier = termObjectClass + " " + tempTermpIdentifier;
+
+			// System.out.println(termIdentifier);
 		}
 
 		@Override
