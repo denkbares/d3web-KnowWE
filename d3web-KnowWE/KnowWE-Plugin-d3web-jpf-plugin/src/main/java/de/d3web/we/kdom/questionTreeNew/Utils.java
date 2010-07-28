@@ -90,6 +90,10 @@ public class Utils {
 				.findSuccessor(QuestionTreeAnswerDefinition.class);
 		Section<QuestionDefinition> qSec = grandFather.findSuccessor(QuestionDefinition.class);
 
+		if(qSec == null) {
+			return null;
+		}
+		
 		Question q = qSec.get().getTermObject(article, qSec);
 
 		if (answerSec != null && q instanceof QuestionChoice) {

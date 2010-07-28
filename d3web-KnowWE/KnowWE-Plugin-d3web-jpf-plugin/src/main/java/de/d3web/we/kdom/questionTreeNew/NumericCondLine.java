@@ -39,7 +39,7 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 			}
 		};
 
-		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR7));
+		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR8));
 
 	}
 
