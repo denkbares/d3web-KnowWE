@@ -54,22 +54,16 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 					rb.getString("KnowWE.TableContentRenderer.setQE")));
 		}
 		
-		buffi.append( "<table style='border:1px solid #999999;' class='wikitable knowwetable' border='1'><tbody>" );
-		buffi.append(getHeader());
-		buffi.append( b.toString() );
-		buffi.append( "</tbody></table>" );
-		
 		if (sec.hasQuickEditModeSet(user.getUsername())) {
 
 			// adds the buttons for addRow/addCol
-			buffi.replace(
-					buffi.indexOf("<table style='border:1px solid #999999;'"),
-					buffi.indexOf("</tbody></table>"),
-					"<table style='border:1px solid #999999; float: left' class='wikitable knowwetable' border='1'><tbody>"
-							+ getHeader() + b.toString());
-			buffi.append("<img id=\"addCol\" class=\"addCol\" style=\"margin-top: 15px; margin-left: 5px\" src=\"KnowWEExtension/images/plus.png\" title=\"Spalte hinzufügen\" onclick=\"return Testcase.addCol()\">");
+			buffi.append("<table style='border:1px solid #999999; float: left' class='wikitable knowwetable' border='1'><tbody>");
+			buffi.append(getHeader());
+			buffi.append(b.toString());
+			buffi.append("</tbody></table>");
+			buffi.append("<div id=\"addCol\" class=\"addCol\" title=\"Spalte hinzufügen\" onclick=\"return Testcase.addCol(this)\"></div>");
 			buffi.append("<div style=\"width: 50%; clear: left\"></div>");
-			buffi.append("<img id=\"addRow\" class=\"addRow\" style=\"margin-left: 10px; margin-top: 5px; margin-right: 5px; float:left\" src=\"KnowWEExtension/images/plus.png\" title=\"Zeile hinzufügen\" onclick=\"return Testcase.addRow()\">");
+			buffi.append("<div id=\"addRow\" class=\"addRow\" title=\"Zeile hinzufügen\" onclick=\"return Testcase.addRow(this)\"></div>");
 
 			buffi.append("<input class=\"pointer\" id=\""
 					+ sec.getID()
@@ -82,7 +76,14 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 					+ "\" src=\"KnowWEExtension/images/msg_cross.png\"/>");
 
 		}
+		else {
+			buffi.append("<table style='border:1px solid #999999;' class='wikitable knowwetable' border='1'><tbody>");
+			buffi.append(getHeader());
+			buffi.append(b.toString());
+			buffi.append("</tbody></table>");
+		}
 		
+
 		buffi.append( getClosingTag() );
 		
 		string.append(KnowWEUtils.maskHTML( buffi.toString() ));

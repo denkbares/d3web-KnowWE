@@ -174,6 +174,9 @@ KNOWWE.core.actions = function(){
                 }
             }
             new _KA( options ).send();
+            if (id.substring(id.length - 13) === 'TestcaseTable') {
+            	(function() {Testcase.addNewAnswers($(id));}).delay(500);
+            }
         },
         
         /**

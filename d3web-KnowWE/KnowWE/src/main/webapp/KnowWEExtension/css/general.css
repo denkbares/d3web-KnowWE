@@ -864,6 +864,29 @@ div.collapsible-questiontree ul .pointer{
 }
 
 /* ################################################## */
+/* -------------- TestcaseTable       --------------- */
+/* ################################################## */
+
+div.addRow{
+	height: 12px;
+	width: 12px;
+	margin-left: 10px;
+	margin-top: 5px; 
+	margin-right: 5px; 
+	float:left;
+	background-image: url(../images/plus.png);
+}
+
+div.addCol{
+	height: 12px;
+	width: 12px;
+	margin-top: 15px; 
+	margin-left: 5px;
+	float:left;
+	background-image: url(../images/plus.png);
+}
+
+/* ################################################## */
 /* ----------Image Question TagHandler--------------- */
 /* ################################################## */
 .qImageHover:hover {
