@@ -884,7 +884,7 @@ KNOWWE.core.renaming = function(){
                 + rel.words + ":" + rel.direction;
             
             var params = {
-                action : 'RenamingAction',
+                action : 'WordBasedRenamingAction',
                 ATMUrl : atmUrl,
                 KWikiFocusedTerm : _KS('#replaceInputField').value,
                 TargetNamespace : _KS('#renameInputField').value,

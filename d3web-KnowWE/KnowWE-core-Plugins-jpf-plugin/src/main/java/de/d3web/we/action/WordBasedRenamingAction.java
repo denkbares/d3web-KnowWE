@@ -20,6 +20,7 @@
 
 package de.d3web.we.action;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,7 +48,7 @@ import de.d3web.we.kdom.Section;
  * @author Johannes Dienst
  *
  */
-public class WordBasedRenamingAction extends DeprecatedAbstractKnowWEAction {
+public class WordBasedRenamingAction extends AbstractAction {
 
 	private ResourceBundle rb;
 
@@ -56,8 +57,10 @@ public class WordBasedRenamingAction extends DeprecatedAbstractKnowWEAction {
 	public final static String TXT_SEPERATOR = ":";
 	
 	@Override
-	public String perform(KnowWEParameterMap parameterMap) {
-		rb = KnowWEEnvironment.getInstance().getKwikiBundle(parameterMap.getRequest());
+	public void execute(ActionContext context) throws IOException {
+		
+		KnowWEParameterMap parameterMap = context.getKnowWEParameterMap();
+		rb = KnowWEEnvironment.getInstance().getKwikiBundle(context.getRequest());
 		// get the selected sections from the section selection tree
 		String[] sections = null;
 		if (parameterMap.containsKey("SelectedSections")) {
@@ -88,13 +91,14 @@ public class WordBasedRenamingAction extends DeprecatedAbstractKnowWEAction {
 
 		// handle show additional text
 		if (atmUrl != null) {
-			return getAdditionalMatchText(atmUrl, web, queryString);
+			 context.getWriter().write(getAdditionalMatchText(atmUrl, web, queryString));
+			 return;
 		}
 
 		Map<KnowWEArticle, Collection<WordBasedRenameFinding>> findings = 
 							scanForFindings(web, queryContext, queryContextPrevious.length(), sections);
 
-		return renderFindingsSelectionMask(findings, queryString, replacement);
+		context.getWriter().write(renderFindingsSelectionMask(findings, queryString, replacement));
 	}
 
 	/**
