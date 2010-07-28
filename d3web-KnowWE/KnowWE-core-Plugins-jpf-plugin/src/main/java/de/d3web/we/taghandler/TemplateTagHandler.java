@@ -37,8 +37,8 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * @author Johannes Dienst
  *
  * Used to Generate WikiPages out of a TemplateType
- * @see TemplateType
- * @see TemplateGenerationAction
+ * {@link TemplateType}
+ * {@link TemplateGenerationAction}
  */
 public class TemplateTagHandler extends AbstractTagHandler{
 
@@ -54,19 +54,19 @@ public class TemplateTagHandler extends AbstractTagHandler{
 	}
 	
 	@Override
-	public String render(String topic, KnowWEUserContext user, Map<String,String> values, String web) {
-		
-		ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
+	public String render(String topic, KnowWEUserContext user,
+			Map<String, String> values, String web) {
 
-		List<Section<Template>> templates =
-						getTemplateTypes(
-								KnowWEEnvironment.getInstance().getArticle(web, topic));
-		
+		ResourceBundle rb = KnowWEEnvironment.getInstance()
+				.getKwikiBundle(user);
+
+		List<Section<Template>> templates = getTemplateTypes(KnowWEEnvironment
+				.getInstance().getArticle(web, topic));
+
 		StringBuffer html = new StringBuffer();
-		
+
 		html.append("<div id=\"TemplateTagHandler\" class=\"panel\"><h3>"
-					+ rb.getString("KnowWE.TemplateTagHandler.topic")
-					+ "</h3>");
+				+ rb.getString("KnowWE.TemplateTagHandler.topic") + "</h3>");
 		html.append("<form method='post' action=''>");
 		html.append("<fieldset>");
 
@@ -74,43 +74,56 @@ public class TemplateTagHandler extends AbstractTagHandler{
 
 			int i = 0;
 			String secName = "";
-			for(ListIterator<Section<Template>> it = templates.listIterator();it.hasNext();i++) {
-				
+			for (ListIterator<Section<Template>> it = templates.listIterator(); it
+					.hasNext(); i++) {
+
 				Section<Template> temp = it.next();
-				secName = AbstractXMLObjectType.getAttributeMapFor(temp).get("name");
-				
+				secName = AbstractXMLObjectType.getAttributeMapFor(temp).get(
+						"name");
+
 				html.append("<div>");
 				html.append("<p><img src='KnowWEExtension/images/arrow_right.png' border='0'/> "
-						+ rb.getString("KnowWE.TemplateTagHandler.copy") + " " + secName + "</p>");
-				html.append("<label for='" + "Template"+ i + "'>" + rb.getString("KnowWE.TemplateTagHandler.newpage") + "</label>");
-				html.append("<input id='" + "Template" + i + "' type='text' name='templateTerm' class='field' title=''/>");
-				
+								+ rb
+										.getString("KnowWE.TemplateTagHandler.copy")
+								+ " " + secName + "</p>");
+				html.append("<label for='" + "Template" + i + "'>"
+						+ rb.getString("KnowWE.TemplateTagHandler.newpage")
+						+ "</label>");
+				html.append("<input id='"
+								+ "Template"
+								+ i
+								+ "' type='text' name='templateTerm' class='field' title=''/>");
+
 				html.append("<input type='button' value='"
-						+ rb.getString("KnowWE.TemplateTagHandler.copyButton")
-						+ "' name='generate' class='button generate-template' title='' rel='{jar : \"Template"+i+"\"}'/>");
-				
-				html.append("</div> \n"); // \n only to avoid hmtl-code being cut by JspWiki (String.length > 10000)
+								+ rb.getString("KnowWE.TemplateTagHandler.copyButton")
+								+ "' name='generate' class='button generate-template' "
+								+ "title='' rel='{jar : \"Template"
+								+ i + "\"}'/>");
+
+				html.append("</div> \n"); // \n only to avoid hmtl-code being
+											// cut by JspWiki (String.length >
+											// 10000)
 
 			}
 		} else {
 			html.append("<div>");
 			html.append("<p class='info box'>"
-			+ rb.getString("KnowWE.TemplateTagHandler.noTemplate")
-			+ "</p>");
+					+ rb.getString("KnowWE.TemplateTagHandler.noTemplate")
+					+ "</p>");
 			html.append("</div>");
-			
+
 		}
-		
+
 		// div for generating info
 		html.append("<div id ='TemplateGeneratingInfo'>");
 		html.append("</div>");
-		
+
 		html.append("</fieldset> ");
-		
+
 		html.append("</form>");
-		
+
 		html.append("</div>");
-		
+
 		return html.toString();
 	}
 
