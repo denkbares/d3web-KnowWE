@@ -40,10 +40,8 @@ public class RulesMarkup extends DefaultMarkupType {
 	private static DefaultMarkup m = null;
 
 	static {
-		m = new DefaultMarkup("Rules");
+		m = new DefaultMarkup("Rule");
 		m.addContentType(new RuleContentType());
-
-
 	}
 
 	public RulesMarkup() {
