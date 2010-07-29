@@ -1,6 +1,7 @@
 package de.d3web.wisec.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,18 +9,47 @@ import java.util.Map;
 
 public class SubstanceList {
 
-	public String id;
-	public String name;
-	public List<String> attributes = new ArrayList<String>();
+	public final static String[] CRITERIA_NAMES = new String[] {
+			"CMR", "Persistence", "Bioakumulation_Potential", "Aqua_Tox", "PBT", "vPvB", "EDC",
+			"Multiple_Tox", "LRT", "Climatic_Change", "drinking_water", " surface_water", "sea",
+			"groundwater", "Risk_related", "Exposure", "compartment", "Market_Volume",
+			"Wide_d_use", "Political", "SVHC_regulated", "Regulated", "ecological_concerns" };
+	
+	private final String id;
+	// public String name;
+
+	public List<String> substanceAttributes = new ArrayList<String>();
+
+	public Map<String, String> info = new HashMap<String, String>();
+
 	public List<Substance> substances = new ArrayList<Substance>();
 	public Map<String, String> criteria = new LinkedHashMap<String, String>();
-	public String filename = "";
-	public UpperList upperList;
+	// public String filename = "";
+	// public SourceList upperList;
 	
 	public SubstanceList(String id) {
 		this.id = id;
 	}
 	
+	public String getId() {
+		if (this.id != null) {
+			return this.id;
+		}
+		else {
+			return "NO_ID";
+		}
+	}
+
+	public String getName() {
+		String name = this.info.get("Name");
+		if (name != null) {
+			return name;
+		}
+		else {
+			return "NO_NAME";
+		}
+	}
+
 	public void add(Substance substance) {
 		this.substances.add(substance);
 	}
@@ -33,6 +63,41 @@ public class SubstanceList {
 			if (s.getName().equals(name)) {
 				return true;
 			}	
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		SubstanceList other = (SubstanceList) obj;
+		if (id == null) {
+			if (other.id != null) return false;
+		}
+		else if (!id.equals(other.id)) return false;
+		if (getName() == null) {
+			if (other.getName() != null) return false;
+		}
+		else if (!getName().equals(other.getName())) return false;
+		return true;
+	}
+
+	public boolean contains(String substanceName) {
+		for (Substance substance : this.substances) {
+			if (substance.getName().equalsIgnoreCase(substanceName)) {
+				return true;
+			}
 		}
 		return false;
 	}

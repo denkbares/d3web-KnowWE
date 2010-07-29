@@ -2,20 +2,17 @@ package de.d3web.wisec.writers;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
-import de.d3web.wisec.model.UpperList;
+import de.d3web.wisec.model.SourceList;
 import de.d3web.wisec.model.WISECModel;
 
-public class UpperListOverviewWriter extends WISECWriter {
+public class SourceListOverviewWriter extends WISECWriter {
 	private static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX
-			+ "InformationSources";
+			+ "All_Sources";
 
-	private static final String[] PRINTABLE_ATTRIBUTES = new String[] {
-			WISECExcelConverter.NUMBER_KEY, "Name", "Author", "Criteria_code",
-			"Inclusion_WISEC" };
-
-	public UpperListOverviewWriter(WISECModel model, String outputDirectory) {
+	public SourceListOverviewWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
 	}
 
@@ -26,14 +23,14 @@ public class UpperListOverviewWriter extends WISECWriter {
 
 		writeHeader(writer);
 		StringBuffer buffy = new StringBuffer();
-		for (UpperList list : model.getUpperLists()) {
-			for (String attribute : PRINTABLE_ATTRIBUTES) {
+		for (SourceList list : model.sourceLists) {
+			for (String attribute : list.getAttributes()) {
 				String value = list.get(attribute);
 				if (value != null) {
 					value = ConverterUtils.clean(value);
 					if (value.equals(list.getName())) {
 						value = "[" + value + " | "
-								+ UpperListWriter.getWikiFilename(value) + "]";
+								+ SourceListWriter.getWikiFilename(list.getId()) + "]";
 					} else if (attribute.equals(WISECExcelConverter.NUMBER_KEY)) {
 						value = ConverterUtils.toShoppedString(value);
 					}
@@ -60,9 +57,14 @@ public class UpperListOverviewWriter extends WISECWriter {
 		// open the rebra and the sortable table
 		writer.append("%%zebra-table\n%%sortable\n");
 		// write all header names
-		for (String attribute : PRINTABLE_ATTRIBUTES) {
+		for (String attribute : getHeaderNames()) {
 			writer.append("|| " + attribute);
 		}
 		writer.append("\n");
+	}
+
+	private Collection<String> getHeaderNames() {
+		SourceList list = (SourceList) model.sourceLists.toArray()[0];
+		return list.getAttributes();
 	}
 }

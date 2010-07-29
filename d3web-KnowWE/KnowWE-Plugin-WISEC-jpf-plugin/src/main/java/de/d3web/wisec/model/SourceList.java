@@ -2,7 +2,6 @@ package de.d3web.wisec.model;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -11,9 +10,12 @@ import java.util.Map;
  * @author joba
  *
  */
-public class UpperList {
+public class SourceList {
+
+
 	Map<String, String> attributes = new LinkedHashMap<String, String>();
-	private final Collection<SubstanceList> children = new LinkedList<SubstanceList>();
+	// private final Collection<SubstanceList> children = new
+	// LinkedList<SubstanceList>();
 	public String filename = "";
 	
 	public void add(String attribute, String value) {
@@ -34,16 +36,33 @@ public class UpperList {
 		return get("Name");
 	}
 
+	public String getId() {
+		return get("ID");
+	}
+
 	public Collection<String> getAttributes() {
 		return this.attributes.keySet();
 	}
 	
-	public void addChild(SubstanceList list) {
-		this.children.add(list);
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((attributes == null) ? 0 : attributes.hashCode());
+		return result;
 	}
-	
-	public Collection<SubstanceList> getChildren() {
-		return this.children;
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		SourceList other = (SourceList) obj;
+		if (attributes == null) {
+			if (other.attributes != null) return false;
+		}
+		else if (!attributes.equals(other.attributes)) return false;
+		return true;
 	}
-	
+
 }

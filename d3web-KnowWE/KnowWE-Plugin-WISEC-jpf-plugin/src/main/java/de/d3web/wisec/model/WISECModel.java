@@ -24,11 +24,22 @@ import de.d3web.wisec.writers.SubstanceRatingListWriter;
  */
 public class WISECModel {
 
-	Map<String, UpperList> upperLists;
-	Map<String, SubstanceList> substanceLists;
-	Map<String, Substance> substances;
-	Map<String, Integer> usesInList;
+
 	Map<String, String> substanceRatings;
+
+	// new model from here
+
+	// the names of all known substances
+	public Collection<String> substances = new HashSet<String>();
+	// the names of all active substances (subset of substances)
+	public Collection<String> activeSubstances = new HashSet<String>();
+	// all imported source lists
+	public Collection<SourceList> sourceLists = new HashSet<SourceList>();
+	// all imported substance lists
+	public Collection<SubstanceList> substanceLists = new HashSet<SubstanceList>();
+	// a map to store, in which substance lists the particular substances are
+	// included
+	Map<String, Collection<SubstanceList>> substanceInList = new HashMap<String, Collection<SubstanceList>>();
 
 	// EC_no for the given CAS
 	Map<String, Collection<String>> CAS2EC;
@@ -37,16 +48,8 @@ public class WISECModel {
 	// CAS2IUPAC_name for the given CAS
 	Map<String, Collection<String>> CAS2IUPACname;
 
-	public int SUBSTANCE_OCCURRENCE_THRESHOLD = 2;
-
-	// the CAS names of substances that are initially active
-	public Collection<String> activeSubstances;
 
 	public WISECModel() {
-		upperLists = new LinkedHashMap<String, UpperList>();
-		substanceLists = new LinkedHashMap<String, SubstanceList>();
-		substances = new HashMap<String, Substance>();
-		usesInList = new HashMap<String, Integer>();
 		substanceRatings = new LinkedHashMap<String, String>();
 		CAS2EC = new HashMap<String, Collection<String>>();
 		CAS2ChemNames = new HashMap<String, Collection<String>>();
@@ -78,29 +81,23 @@ public class WISECModel {
 	}
 	
 	public void add(SubstanceList substanceList) {
-		this.substanceLists.put(substanceList.name, substanceList);
+		this.substanceLists.add(substanceList);
 		updateSubstanceOccurences(substanceList);
 	}
 
 	private void updateSubstanceOccurences(SubstanceList substanceList) {
-		List<String> doublettes = new ArrayList<String>(substanceList.substances.size());
 		for (Substance substance : substanceList.substances) {
-			if (!doublettes.contains(substance.getName())) {
-				doublettes.add(substance.getName());
-				// update uses
-				Integer uses = usesInLists(substance) + 1;
-				usesInList.put(substance.getName(), uses);
-				// update references in substance
-				Substance storedSubstance = substances.get(substance.getName());
-				if (storedSubstance == null) {
-					storedSubstance = substance;
-				}
-				storedSubstance.usesInLists.add(substanceList);
-				substances.put(storedSubstance.getName(), storedSubstance);
-				update("EC_No", CAS2EC, substance);
-				update("Chemical_name", CAS2ChemNames, substance);
-				update("IUPAC_name", CAS2IUPACname, substance);
+			String substanceName = substance.getName();
+			substances.add(substanceName);
+			Collection<SubstanceList> lists = substanceInList.get(substanceName);
+			if (lists == null) {
+				lists = new HashSet<SubstanceList>();
 			}
+			lists.add(substanceList);
+			update("EC_No", CAS2EC, substance);
+			update("Chemical_name", CAS2ChemNames, substance);
+			update("IUPAC_name", CAS2IUPACname, substance);
+
 		}
 
 	}
@@ -119,31 +116,13 @@ public class WISECModel {
 		}
 	}
 
-	public Integer usesInLists(Substance substance) {
-		Integer uses = usesInList.get(substance.getName());
-		if (uses == null) {
-			return Integer.valueOf(0);
-		}
-		else {
-			return uses;
-		}
-	}
-
 	public Collection<SubstanceList> getSubstanceLists() {
-		return this.substanceLists.values();
+		return this.substanceLists;
 	}
 
-	public Collection<Substance> getSubstances() {
-		return substances.values();
-	}
-
-	public void add(UpperList upperList) {
-		this.upperLists.put(upperList.getName(), upperList);
+	public void add(SourceList sourceList) {
+		this.sourceLists.add(sourceList);
 		// TODO update relation with substances
-	}
-
-	public Collection<UpperList> getUpperLists() {
-		return upperLists.values();
 	}
 
 	public Map<SubstanceList, String> listsWithCriteria(String substancename, String criteria) {
@@ -157,14 +136,14 @@ public class WISECModel {
 		return result;
 	}
 
-	public List<SubstanceList> getSubstanceListsContaining(String substancename) {
-		List<SubstanceList> result = new ArrayList<SubstanceList>();
-		for (SubstanceList list : getSubstanceLists()) {
-			if (list.hasSubstanceWithName(substancename)) {
-				result.add(list);
-			}
+	public Collection<SubstanceList> getSubstanceListsContaining(String substancename) {
+		Collection<SubstanceList> lists = substanceInList.get(substancename);
+		if (lists == null) {
+			return Collections.emptySet();
 		}
-		return result;
+		else {
+			return lists;
+		}
 	}
 
 	public List<SubstanceList> listsWithCriteriaHavingValue(String substancename, String criteriaName, String criteriaValue) {
@@ -190,5 +169,41 @@ public class WISECModel {
 		return SubstanceRatingListWriter.getFileNameFor(ratingName);
 	}
 
+	public SubstanceList getSubstanceListWithID(String listID) {
+		for (SubstanceList list : this.substanceLists) {
+			if (list.getId().equals(listID)) {
+				return list;
+			}
+		}
+		return null;
+	}
+
+	public Collection<String> getListsWithSource(String name) {
+		Collection<String> lists = new HashSet<String>();
+		for (SubstanceList list : this.substanceLists) {
+			if (list.info.get("Source_ID").equalsIgnoreCase(name)) {
+				lists.add(list.getName());
+			}
+		}
+		return lists;
+	}
+
+	public SubstanceList getListWithName(String listname) {
+		for (SubstanceList list : this.substanceLists) {
+			if (list.getName().equals(listname)) {
+				return list;
+			}
+		}
+		return null;
+	}
+
+	public String getSourceListNameForID(String sourceID) {
+		for (SourceList sourceList : this.sourceLists) {
+			if (sourceList.getId().equals(sourceID)) {
+				return sourceList.getName();
+			}
+		}
+		return "NO_ID";
+	}
 
 }

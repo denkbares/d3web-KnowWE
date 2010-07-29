@@ -9,22 +9,23 @@ import java.util.Date;
 import java.util.List;
 
 import jxl.Workbook;
+import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
 import de.d3web.wisec.model.WISECModel;
 import de.d3web.wisec.readers.WISECReader;
 import de.d3web.wisec.readersnew.ActiveSubstancesReader;
+import de.d3web.wisec.readersnew.ListsReader;
+import de.d3web.wisec.readersnew.SourceListReader;
 import de.d3web.wisec.readersnew.SubstanceListsReader;
-import de.d3web.wisec.readersnew.UpperListReader;
 import de.d3web.wisec.scoring.ScoringWeightsConfiguration;
 import de.d3web.wisec.writers.OverviewWriter;
-import de.d3web.wisec.writers.RatingOverviewWriter;
+import de.d3web.wisec.writers.SourceListOverviewWriter;
+import de.d3web.wisec.writers.SourceListWriter;
+import de.d3web.wisec.writers.SubstanceInfoWriter;
 import de.d3web.wisec.writers.SubstanceListWriter;
 import de.d3web.wisec.writers.SubstanceListsOverviewWriter;
 import de.d3web.wisec.writers.SubstanceRatingListWriter;
-import de.d3web.wisec.writers.SubstanceWriter;
 import de.d3web.wisec.writers.SubstancesOverviewWriter;
-import de.d3web.wisec.writers.UpperListOverviewWriter;
-import de.d3web.wisec.writers.UpperListWriter;
 import de.d3web.wisec.writers.WISECWriter;
 
 /**
@@ -43,11 +44,12 @@ import de.d3web.wisec.writers.WISECWriter;
  */
 public class WISECExcelConverter {
 	// The master database file, that is the input of all knowledge
-	public static String WISEC_FILE = "20100721_WISEC_v2.xls";
+	public static String WISEC_FILE = "20100727_WISEC_v1.xls";
 	// The directory of the master database file
 	public static String workspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
-	public static String wikiworkspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/wikicontent_gen/";
+	public static String wikiworkspace = "/Users/joba/Desktop/KnowWE/wikicontent/";
+	// "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/wikicontent_gen/";
 	// public static String wikiworkspace =
 	// "/Users/sebastian/Projekte/Temp/KnowWE/WISEC/wikicontent/Treshold-40/";
 	// Praefix of most of the generated files
@@ -57,16 +59,10 @@ public class WISECExcelConverter {
 	public static String SUBSTANCE_IDENTIFIER = "CAS_No";
 	// Include semantic annotations etc. in the generation process
 	public static boolean GENERATE_WITH_KNOWLEDGE = true;
-	// Minimum number of occurrences of a substance, that is required before it is considered for the model
-	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 40; // takes
-	// 9min
-	public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 10; // takes
-	// 40min
-	// public static final int NUMBER_OF_SUBSTANCES_THRESHOLD = 5; // takes
-	// 110min
+
 	// The generation of lists is limited by the maxListsToConvert threshold 
 	// public static final int maxListsToConvert = 10;
-	public static final int maxListsToConvert = 1000000;
+	public static final int maxListsToConvert = 10000000;
 	
 	// Excel identifier for the numbers
 	public static final String NUMBER_KEY = "ID";
@@ -86,15 +82,19 @@ public class WISECExcelConverter {
 
 
 	private void convert() throws BiffException, IOException {
-		Workbook workbook = Workbook.getWorkbook(new File(workspace+WISEC_FILE));
-		WISECModel model = new WISECModel();
-		model.SUBSTANCE_OCCURRENCE_THRESHOLD = NUMBER_OF_SUBSTANCES_THRESHOLD;
 
+		WorkbookSettings ws = new WorkbookSettings();
+		ws.setEncoding("cp1252");
+		ws.setCharacterSet(0);
+
+		Workbook workbook = Workbook.getWorkbook(new File(workspace + WISEC_FILE), ws);
+		WISECModel model = new WISECModel();
 		
 		List<? extends WISECReader> readers = Arrays.asList(
-					new UpperListReader(workbook),
+					new SourceListReader(workbook),
+					new ListsReader(workbook),
 					new SubstanceListsReader(workbook),
-				new ActiveSubstancesReader(workbook)
+					new ActiveSubstancesReader(workbook)
 				);
 		for (WISECReader wisecReader : readers) {
 			wisecReader.read(model);
@@ -112,22 +112,24 @@ public class WISECExcelConverter {
 			String outputDirectory) {
 		List<WISECWriter> writers = new ArrayList<WISECWriter>();
 
-		writers.add(new UpperListWriter(model, outputDirectory));
+		writers.add(new SourceListWriter(model, outputDirectory));
 		
 		// The substance list writer
 		SubstanceListWriter w = new SubstanceListWriter(model, outputDirectory);
 		w.setWithKnowledge(GENERATE_WITH_KNOWLEDGE);
 		writers.add(w);
 		
-		writers.add(new SubstanceWriter(model, outputDirectory));
+		writers.add(new SubstanceInfoWriter(model, outputDirectory));
 		
-		writers.add(new UpperListOverviewWriter(model, outputDirectory));
+		writers.add(new SourceListOverviewWriter(model, outputDirectory));
 		writers.add(new SubstanceListsOverviewWriter(model, outputDirectory));
 		
 		writers.add(new SubstancesOverviewWriter(model, outputDirectory));
-		
-		writers.addAll(configureRatingConfigurations(model, outputDirectory));
-		writers.add(new RatingOverviewWriter(model, outputDirectory));
+
+		// ////// Substance Ratings
+		// writers.addAll(configureRatingConfigurations(model,
+		// outputDirectory));
+		// writers.add(new RatingOverviewWriter(model, outputDirectory));
 
 		// the overview should be the last in the list, since it uses some  
 		// information generated in previous writers
@@ -221,5 +223,30 @@ public class WISECExcelConverter {
 		else {
 			return "[[]";
 		}
-	}	
+	}
+
+	public static String asString(String string) {
+		if (string != null) {
+			return string.replaceAll("\\[", "[[");
+		}
+		else {
+			return "[[]";
+		}
+	}
+
+	public static String asBulletList(Collection<String> collection, int indent) {
+		if (collection != null) {
+			StringBuffer buffy = new StringBuffer();
+			for (String string : collection) {
+				for (int i = 0; i < indent; i++) {
+					buffy.append("*");
+				}
+				buffy.append(" " + asString(string) + "\n");
+			}
+			return buffy.toString();
+		}
+		else {
+			return "";
+		}
+	}
 }

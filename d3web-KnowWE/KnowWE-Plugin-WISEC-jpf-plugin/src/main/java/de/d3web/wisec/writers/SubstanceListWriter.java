@@ -2,8 +2,6 @@ package de.d3web.wisec.writers;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
 import de.d3web.wisec.model.Substance;
@@ -12,7 +10,7 @@ import de.d3web.wisec.model.WISECModel;
 
 public class SubstanceListWriter extends WISECWriter {
 
-	private static String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX+"SL_";
+	private static String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "SUL_";
 	private boolean withKnowledge;
 
 	public SubstanceListWriter(WISECModel model, String outputDirectory) {
@@ -22,8 +20,8 @@ public class SubstanceListWriter extends WISECWriter {
 	@Override
 	public void write() throws IOException {
 		for (SubstanceList list : model.getSubstanceLists()) {
-			list.filename = getWikiFileNameFor(list.id);
-			Writer writer = ConverterUtils.createWriter(this.outputDirectory + list.filename
+			Writer writer = ConverterUtils.createWriter(this.outputDirectory
+					+ getWikiFileNameFor(list.getId())
 					+ ".txt");
 			write(list, writer);
 			writer.close();
@@ -31,11 +29,11 @@ public class SubstanceListWriter extends WISECWriter {
 	}
 
 	public static String getWikiFileNameFor(String name) {
-		return FILE_PRAEFIX + clean(name);
+		return FILE_PRAEFIX + ConverterUtils.cleanForFilename(name);
 	}
 
 	private void write(SubstanceList list, Writer writer) throws IOException {
-		writer.write("!!! " + list.name + "\n\n");
+		writer.write("!!! " + list.getName() + "\n\n");
 
 		// WRITE THE SUBSTANCE LIST CRITERIA
 		writer.write("!! Criteria \n\n");
@@ -43,30 +41,30 @@ public class SubstanceListWriter extends WISECWriter {
 		writeKnowledge(writer, "%%ListCriteria\n");
 
 		for (String key : list.criteria.keySet()) {
-			String value = clean(list.criteria.get(key));
-			if (value == null) value = "";
-			writer.write("| " + key + " | " + value + " \n");
+			String value = ConverterUtils.clean(list.criteria.get(key));
+			if (value != null && !value.isEmpty()) {
+				writer.write("|| " + key + " | " + value + " \n");
+			}
 		}
-		writeKnowledge(writer, "-\n" +
-				"@ListID: " + list.name + "\n" +
-				// TODO: Replace WISECUPPER with list.upperlist.getName() but
-				// atm the id is not recognized in the upperlist
-				"@UpperlistID: WISECUPPER \n" +
-				"%\n");
 
-		writer.write("\n __Upper list:__ ");
-		if (list.upperList == null) {
-			writer.write(" - none - ");
+		String sourceID = list.info.get("Source_ID");
+		if (sourceID != null) {
+			writeKnowledge(writer, "-\n\n" +
+					"@ListID: " + list.getId() + "\n\n" +
+					"@UpperlistID: " + sourceID + "\n" +
+					"%\n");
+
+			writer.write("\n __Source:__ ");
+			writer.write("[ " + model.getSourceListNameForID(sourceID) + " | "
+						+ SourceListWriter.getWikiFilename(sourceID) + "]");
 		}
 		else {
-			writer.write("[ " + list.upperList.getName() + " | "
-					+ UpperListWriter.getWikiFilename(list.upperList.getName()) + "]");
+			writer.write("__Attention:__ No source list known.");
 		}
-
 		writer.write("\n\n");
 
 		// WRITE THE LIST OF SUBSTANCES
-		writeSubstanceTables(writer, list);
+		writeSubstanceTable(writer, list);
 	}
 
 	private void writeKnowledge(Writer writer, String knowledge) throws IOException {
@@ -75,60 +73,39 @@ public class SubstanceListWriter extends WISECWriter {
 		}
 	}
 
-	private static String clean(String string) {
-		string = string.replaceAll("&", "_AND_");
-		string = string.replaceAll("ä", "ae");
-		string = string.replaceAll("ö", "oe");
-		string = string.replaceAll("ü", "ue");
-		string = string.replaceAll("ß", "ss");
-		string = string.replaceAll("\n", " ");
-		string = ConverterUtils.clean(string);
-		return string;
+	private void writeSubstanceTable(Writer writer, SubstanceList list) throws IOException {
+		writer.write("!! Substances \n\n");
+		writeKnowledge(writer, "%%ListSubstances\n");
+
+		printSubstanceTable(writer, list);
+
+		writeKnowledge(writer, "-\n\n");
+		writeKnowledge(writer, "@ListID: " + list.getId() + "  \n");
+		writeKnowledge(writer, "%\n");
+
 	}
 
-	private void writeSubstanceTables(Writer writer, SubstanceList list) throws IOException {
-		// First divide into substances to print and substances that are not
-		// considered for knowledge generation
-		List<Substance> consideredSubstances = new ArrayList<Substance>();
-		List<Substance> notConsideredSubstances = new ArrayList<Substance>();
-		for (Substance substance : list.substances) {
-			if (considerSubstance(substance)) {
-				consideredSubstances.add(substance);
-			}
-			else {
-				notConsideredSubstances.add(substance);
-			}
-		}
-
-		if (consideredSubstances.size() > 0) {
-			writer.write("!! Substances \n\n");
-			writeKnowledge(writer, "%%ListSubstances\n");
-			printSubstanceTable(writer, list, consideredSubstances, true);
-			writeKnowledge(writer, "-\n");
-			writeKnowledge(writer, "@ListID: " + list.name + "  \n");
-			writeKnowledge(writer, "%\n");
-		}
-		// writerStatistics.substanceListConsideredSubstances.put(list.name,
-		// consideredSubstances.size());
-
-		if (notConsideredSubstances.size() > 0) {
-			writer.write("\n\n!! Further Substances (not considered for knowledge generation): \n\n");
-			printSubstanceTable(writer, list, notConsideredSubstances, false);
-		}
-	}
-
-	private void printSubstanceTable(Writer writer, SubstanceList list,
-			List<Substance> substances, boolean trackStatistics) throws IOException {
-		for (String attribute : list.attributes) {
-			writer.write("|| " + attribute + " ");
+	private void printSubstanceTable(Writer writer, SubstanceList list) throws IOException {
+		for (String header : list.substanceAttributes) {
+			writer.write("|| " + header + " ");
 		}
 		writer.write("\n");
-		for (Substance substance : substances) {
-			for (String attribute : list.attributes) {
-				String value = clean(substance.values.get(attribute));
-				writer.write("| " + value + " ");
+		for (Substance substance : list.substances) {
+			for (String attribute : list.substanceAttributes) {
+				String value = ConverterUtils.clean(substance.values.get(attribute));
+				writer.write("| ");
 				if (attribute.equals(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
-					writer.write(" [ > | " + SubstanceWriter.getWikiFileNameFor(value) + "]");
+					if (model.activeSubstances.contains(substance)) {
+						writer.write(" [ " + value + " | "
+								+ SubstanceInfoWriter.getWikiFileNameFor(value) + "] ");
+					}
+					else {
+						writer.write(" [activate] " + value + " ");
+					}
+
+				}
+				else {
+					writer.write(value + " ");
 				}
 			}
 			writer.write("\n");
@@ -136,9 +113,6 @@ public class SubstanceListWriter extends WISECWriter {
 		writer.write("\n");
 	}
 
-	private boolean considerSubstance(Substance substance) {
-		return model.activeSubstances.contains(substance.getName());
-	}
 
 	public void setFilePraefix(String praefix) {
 		FILE_PRAEFIX = praefix;
@@ -153,7 +127,8 @@ public class SubstanceListWriter extends WISECWriter {
 	}
 
 	public static String asWikiMarkup(SubstanceList list) {
-		return "[ " + list.name + " | " + SubstanceListWriter.getWikiFileNameFor(list.id) + "]";
+		return "[ " + list.getName() + " | " + SubstanceListWriter.getWikiFileNameFor(list.getId())
+				+ "]";
 	}
 
 	public static String getCriteriaString(SubstanceList list) {

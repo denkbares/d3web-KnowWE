@@ -23,7 +23,7 @@ public class SubstanceRatingListWriter extends WISECWriter {
 		Double rating;
 
 		public String asWikiString() {
-			return SubstanceWriter.asWikiMarkup(substanceName) + " " + rating;
+			return SubstanceInfoWriter.asWikiMarkup(substanceName) + " " + rating;
 		}
 
 		@Override
@@ -56,7 +56,7 @@ public class SubstanceRatingListWriter extends WISECWriter {
 		b.append("\n\n");
 		b.append("!! Rating\n");
 		for (SubstanceWithRating substanceWithRating : substances) {
-			b.append("# " + SubstanceWriter.asWikiMarkup(substanceWithRating.substanceName) +
+			b.append("# " + SubstanceInfoWriter.asWikiMarkup(substanceWithRating.substanceName) +
 					" - "
 					+ WISECExcelConverter.asString(model.getChemNamesFor(substanceWithRating.substanceName))
 					+

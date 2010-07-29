@@ -2,25 +2,24 @@ package de.d3web.wisec.writers;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
-import de.d3web.wisec.model.Substance;
 import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.WISECModel;
 import de.d3web.wisec.scoring.DefaultScoringWeightsConfiguration;
 import de.d3web.wisec.scoring.ScoringUtils;
 
-public class SubstanceWriter extends WISECWriter {
+public class SubstanceInfoWriter extends WISECWriter {
 
 	public static final String FILE_PRAEFIX = WISECExcelConverter.FILE_PRAEFIX + "SUB_";
 	private static final int MAXLENGTH = 10;
 	private static Map<String, String> filenameMap = new HashMap<String, String>();
 
-	public SubstanceWriter(WISECModel model, String outputDirectory) {
+	public SubstanceInfoWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
 	}
 
@@ -30,15 +29,15 @@ public class SubstanceWriter extends WISECWriter {
 			// for (Substance substance : model.getSubstances()) {
 			String filename = getWikiFileNameFor(substanceName);
 			Writer writer = ConverterUtils.createWriter(this.outputDirectory + filename + ".txt");
-			Substance substance = findSubstanceWithName(substanceName, model);
+			String substance = findSubstanceWithName(substanceName, model);
 			if (substance != null) write(substance, writer);
 			writer.close();
 		}
 	}
 
-	private Substance findSubstanceWithName(String substanceName, WISECModel model) {
-		for (Substance substance : model.getSubstances()) {
-			if (substance.getName().equalsIgnoreCase(substanceName)) {
+	private String findSubstanceWithName(String substanceName, WISECModel model) {
+		for (String substance : model.substances) {
+			if (substance.equalsIgnoreCase(substanceName)) {
 				return substance;
 			}
 		}
@@ -46,21 +45,24 @@ public class SubstanceWriter extends WISECWriter {
 	}
 
 
-	private void write(Substance substance, Writer writer) throws IOException {
+	private void write(String substance, Writer writer) throws IOException {
 		StringBuffer b = new StringBuffer();
-		Map<String, List<SubstanceList>> differentNames = computeUsesOfAttribute(substance,
-				"Chemical");
-		String substanceName = substance.get(substance.getName());
-		if (differentNames.keySet().size() == 1) {
-			substanceName = differentNames.keySet().toArray()[0].toString();
-		}
-		b.append("!!! " + substanceName + "\n\n");
-		if (differentNames.keySet().size() > 1) {
-			for (String key : differentNames.keySet()) {
-				b.append(key + "\n");
-			}
-			b.append("\n");
-		}
+
+		// Map<String, List<SubstanceList>> differentNames =
+		// computeUsesOfAttribute(substance,
+		// "Chemical");
+		// if (differentNames.keySet().size() == 1) {
+		// substance = differentNames.keySet().toArray()[0].toString();
+		// }
+
+		b.append("!!! Substance Info: " + substance + "\n\n");
+		// if (differentNames.keySet().size() > 1) {
+		// for (String key : differentNames.keySet()) {
+		// b.append(key + "\n");
+		// }
+		// b.append("\n");
+		// }
+
 
 		writeCASReferences(substance, b);
 		writeCriteriaScoring(substance, b);
@@ -69,7 +71,7 @@ public class SubstanceWriter extends WISECWriter {
 		writer.append(b.toString());
 	}
 
-	private void writeCriteriaScoring(Substance substance, StringBuffer b) {
+	private void writeCriteriaScoring(String substance, StringBuffer b) {
 		String[] criteriaValues = new String[] {
 				"1", "2", "3", "X", "u", "LAW" };
 		b.append("!! Criteria Scoring\n\n");
@@ -104,78 +106,49 @@ public class SubstanceWriter extends WISECWriter {
 		b.append("\n");
 	}
 
-	private void printCriteriaForCriteriaGroup(Substance substance,
+	private void printCriteriaForCriteriaGroup(String substance,
 			StringBuffer b, String[] criteriaValues, String[] aGroup) {
-		List<SubstanceList> lists = getSubstanceListsWith(substance);
+		Collection<SubstanceList> lists = model.getSubstanceListsContaining(substance);
 		for (String criteria : aGroup) {
 			b.append("| " + criteria + " | ");
 			for (SubstanceList substanceList : lists) {
 				String value = substanceList.criteria.get(criteria);
 				if (value != null && value.length() > 0) {
 					b.append(" [" + value + " | " +
-							SubstanceListWriter.getWikiFileNameFor(substanceList.id) +
+							SubstanceListWriter.getWikiFileNameFor(substanceList.getId()) +
 							"]");
 				}
 			}
 			for (String cValue : criteriaValues) {
-				List<SubstanceList> list = model.listsWithCriteriaHavingValue(substance.getName(),
+				List<SubstanceList> list = model.listsWithCriteriaHavingValue(substance,
 						criteria, cValue);
 				b.append(" | " + list.size());
 			}
 
 			double score = ScoringUtils.computeScoreFor(model,
-					new DefaultScoringWeightsConfiguration(), substance.getName(), criteria);
+					new DefaultScoringWeightsConfiguration(), substance, criteria);
 			b.append(" | " + ScoringUtils.prettyPrint(score));
 			b.append("\n");
 		}
 	}
 
-	private List<SubstanceList> getSubstanceListsWith(Substance substance) {
-		List<SubstanceList> resultList = new ArrayList<SubstanceList>();
-		for (SubstanceList list : model.getSubstanceLists()) {
-			if (list.hasSubstanceWithName(substance.getName())) {
-				resultList.add(list);
-			}
-		}
-		return resultList;
-	}
-
-	private void writeCASReferences(Substance substance, StringBuffer b) {
-		b.append("* Chemical names: "
-				+ WISECExcelConverter.asString(model.getChemNamesFor(substance.getName())) + " \n");
+	private void writeCASReferences(String substance, StringBuffer b) {
+		b.append("* Chemical names: \n"
+				+ WISECExcelConverter.asBulletList(model.getChemNamesFor(substance), 2) + " \n");
 		b.append("* EC_No: "
-				+ WISECExcelConverter.asString(model.getECNamesFor(substance.getName())) + " \n");
+				+ WISECExcelConverter.asString(model.getECNamesFor(substance)) + " \n");
 		b.append("* IUPAC:  "
-				+ WISECExcelConverter.asString(model.getIUPACFor(substance.getName())) + " \n");
+				+ WISECExcelConverter.asString(model.getIUPACFor(substance)) + " \n");
 		b.append("\n");
 	}
 
-	private Map<String, List<SubstanceList>> computeUsesOfAttribute(
-			Substance substance, String attributeName) {
-		Map<String, List<SubstanceList>> casUses = new HashMap<String, List<SubstanceList>>();
-		for (SubstanceList list : model.getSubstanceLists()) {
-			if (list.hasSubstanceWithName(substance.getName())) {
-				String casName = substance.get(attributeName);
-				List<SubstanceList> listNames = casUses.get(casName);
-				if (listNames == null) {
-					List<SubstanceList> l = new ArrayList<SubstanceList>();
-					l.add(list);
-					casUses.put(casName, l);
-				}
-				else {
-					listNames.add(list);
-					casUses.put(casName, listNames);
-				}
-			}
-		}
-		return casUses;
-	}
-
-	private void writeOnListsRelation(Substance substance, StringBuffer b) {
+	private void writeOnListsRelation(String substance, StringBuffer b) {
 		b.append("!! On Lists \n\n");
-		for (SubstanceList list : substance.usesInLists) {
-			b.append("* " + SubstanceListWriter.asWikiMarkup(list) + " ("
-					+ SubstanceListWriter.getCriteriaString(list) + ")\n");
+		for (SubstanceList list : model.substanceLists) {
+			if (list.contains(substance)) {
+				b.append("* " + SubstanceListWriter.asWikiMarkup(list) + " ("
+						+ SubstanceListWriter.getCriteriaString(list) + ")\n");
+			}
 		}
 	}
 
@@ -194,7 +167,7 @@ public class SubstanceWriter extends WISECWriter {
 
 	public static String asWikiMarkup(String substanceName) {
 		return "[ " + clean(substanceName) + " | "
-				+ SubstanceWriter.getWikiFileNameFor(substanceName) + "]";
+				+ SubstanceInfoWriter.getWikiFileNameFor(substanceName) + "]";
 	}
 
 	private static String clean(String name) {
