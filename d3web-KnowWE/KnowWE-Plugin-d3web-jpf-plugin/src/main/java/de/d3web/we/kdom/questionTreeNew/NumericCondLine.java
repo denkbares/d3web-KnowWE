@@ -24,14 +24,15 @@ import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 
 public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 
 
 	@Override
 	protected void init() {
-		this.sectionFinder = new ConditionalAllTextFinder() {
+		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section father) {

@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.d3web.we.kdom.rulesNew.ruleAction;
+package de.d3web.we.kdom.kopic.rules.ruleActionLine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,7 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.objects.QuestionnaireReference;
+import de.d3web.we.kdom.rulesNew.ruleAction.D3webRuleAction;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 

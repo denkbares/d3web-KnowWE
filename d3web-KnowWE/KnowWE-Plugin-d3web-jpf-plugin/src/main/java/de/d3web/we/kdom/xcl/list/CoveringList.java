@@ -50,7 +50,9 @@ import de.d3web.we.kdom.rulesNew.terminalCondition.Finding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalIntervallFinding;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimSpaces;
+import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
@@ -94,7 +96,15 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 		// the rest is CoveringRelations
 		this.addChildType(new CoveringRelation());
-
+		
+		
+		// anything left is comment
+		AnonymousType residue = new AnonymousType("derRest");
+		residue.setSectionFinder(new AllTextFinderTrimmed());
+		residue.setCustomRenderer(new CommentRenderer());
+		this.addChildType(residue);
+		
+		
 		// quick edit
 		this.setCustomRenderer(new EditSectionRenderer());
 
@@ -104,7 +114,20 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 		public CoveringRelation() {
 
-			this.setSectionFinder(new AllTextFinderTrimSpaces());
+			this.setSectionFinder(new ConditionalSectionFinder(new AllTextFinderTrimSpaces()) {
+				
+				// hack to allow for comment after last relation
+				// TODO: find better way
+				@Override
+				protected boolean condition(String text, Section<?> father) {
+					// if starts as a comment and there is no next line, there is CoveringRelation in it
+					if (text.trim().startsWith("//") && !(text.contains("\n"))) {
+						return false;
+					}
+					return true;
+				}
+			});
+			
 			this.addSubtreeHandler(Priority.LOW, new CreateXCLRelationHandler());
 
 			// here also a comment might occur:

@@ -24,7 +24,8 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 
 public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
@@ -34,7 +35,7 @@ public class QuestionRefLine extends DefaultAbstractKnowWEObjectType {
 	public QuestionRefLine() {
 
 		// every line containing [...] (unquoted) is recognized as QuestionLine
-		this.sectionFinder = new ConditionalAllTextFinder() {
+		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {

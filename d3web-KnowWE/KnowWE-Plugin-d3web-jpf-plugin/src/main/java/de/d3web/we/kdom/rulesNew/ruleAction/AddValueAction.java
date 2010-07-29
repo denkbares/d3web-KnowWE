@@ -33,7 +33,8 @@ import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.rulesNew.terminalCondition.AnswerReferenceImpl;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.utils.SplitUtility;
 
@@ -44,7 +45,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 	public AddValueAction() {
 		this.addChildType(new NumericalAddValueAction());
 		this.addChildType(new ChoiceAddValueAction());
-		this.setSectionFinder(new ConditionalAllTextFinder() {
+		this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 			@Override
 			protected boolean condition(String text, Section father) {
 				return SplitUtility.containsUnquoted(text, ADD_VALUE_SIGN);
@@ -68,7 +69,7 @@ public class AddValueAction extends DefaultAbstractKnowWEObjectType {
 			a.setSectionFinder(new AllTextFinderTrimmed());
 			this.childrenTypes.add(a);
 
-			this.setSectionFinder(new ConditionalAllTextFinder() {
+			this.setSectionFinder(new ConditionalSectionFinder(new AllTextSectionFinder()) {
 				@Override
 				protected boolean condition(String text, Section father) {
 					int index = SplitUtility.indexOfUnquoted(text, ADD_VALUE_SIGN);

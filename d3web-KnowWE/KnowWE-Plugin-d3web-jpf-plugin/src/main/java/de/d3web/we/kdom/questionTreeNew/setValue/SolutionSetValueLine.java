@@ -42,7 +42,8 @@ import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllBeforeTypeSectionFinder;
-import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.terminology.D3webSubtreeHandler;
@@ -71,7 +72,11 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 
 	}
 	
-	class SolutionSetValueFinder extends ConditionalAllTextFinder {
+	class SolutionSetValueFinder extends ConditionalSectionFinder {
+
+		public SolutionSetValueFinder() {
+			super(new AllTextSectionFinder());
+		}
 
 		@Override
 		protected boolean condition(String text, Section<?> father) {
@@ -90,7 +95,6 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 					return true;
 				}
 			}
-			
 			
 			return false;
 		}

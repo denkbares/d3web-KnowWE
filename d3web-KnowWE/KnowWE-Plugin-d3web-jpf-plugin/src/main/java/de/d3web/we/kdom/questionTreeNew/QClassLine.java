@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -32,12 +31,11 @@ import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.QuestionnaireDefinition;
-import de.d3web.we.kdom.objects.SolutionDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
-import de.d3web.we.kdom.solutionTree.SolutionDashTreeElementContent;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 
 public class QClassLine extends DefaultAbstractKnowWEObjectType {
@@ -121,7 +119,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 	}
 
 	private void initSectionFinder() {
-		this.sectionFinder = new ConditionalAllTextFinder() {
+		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 
 			@Override
 			protected boolean condition(String text, Section<?> father) {

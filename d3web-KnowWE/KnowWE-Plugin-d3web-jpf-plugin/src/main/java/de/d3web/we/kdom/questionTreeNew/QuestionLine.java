@@ -51,7 +51,8 @@ import de.d3web.we.kdom.report.SimpleMessageError;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
 import de.d3web.we.kdom.report.message.ObjectCreationError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.d3web.we.kdom.sectionFinder.ConditionalAllTextFinder;
+import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
 import de.d3web.we.kdom.sectionFinder.MatchUntilEndFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
@@ -77,7 +78,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	public QuestionLine() {
 
 		// every line containing [...] (unquoted) is recognized as QuestionLine
-		this.sectionFinder = new ConditionalAllTextFinder() {
+		this.sectionFinder = new ConditionalSectionFinder(new AllTextSectionFinder()) {
 			@Override
 			protected boolean condition(String text, Section<?> father) {
 				return SplitUtility.containsUnquoted(text, "[")
