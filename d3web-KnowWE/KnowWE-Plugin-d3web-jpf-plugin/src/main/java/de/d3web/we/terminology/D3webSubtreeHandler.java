@@ -48,10 +48,12 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 */
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return super.needsToCreate(article, s)
-				|| (!(s.get() instanceof KnowWETerm<?>)
-						&& KnowWEUtils.getTerminologyHandler(article.getWeb())
-								.areTermDefinitionsModifiedFor(article));
+		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).hasKnowledgeBase(
+						article.getTitle())
+						&& (super.needsToCreate(article, s)
+								|| (!(s.get() instanceof KnowWETerm<?>)
+										&& KnowWEUtils.getTerminologyHandler(article.getWeb())
+												.areTermDefinitionsModifiedFor(article)));
 	}
 
 	/*
@@ -62,10 +64,12 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 */
 	@Override
 	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return super.needsToDestroy(article, s)
-				|| (!(s.get() instanceof KnowWETerm<?>)
-						&& KnowWEUtils.getTerminologyHandler(article.getWeb())
-								.areTermDefinitionsModifiedFor(article));
+		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).hasKnowledgeBase(
+				article.getTitle())
+				&& (super.needsToDestroy(article, s)
+						|| (!(s.get() instanceof KnowWETerm<?>)
+								&& KnowWEUtils.getTerminologyHandler(article.getWeb())
+										.areTermDefinitionsModifiedFor(article)));
 	}
 
 	@Override
