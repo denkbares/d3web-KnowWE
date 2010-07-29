@@ -36,6 +36,7 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 public class QuestionReference extends D3webTermReference<Question> {
 
 	public QuestionReference() {
+		super(Question.class);
 		this.setCustomRenderer(new ReferenceRenderer(FontColorRenderer.COLOR3));
 	}
 

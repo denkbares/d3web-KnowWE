@@ -30,6 +30,20 @@ public abstract class TermReference<TermObject>
 		extends DefaultAbstractKnowWEObjectType
 		implements KnowWETerm<TermObject> {
 
+	protected Class<TermObject> termObjectClass;
+
+	public TermReference(Class<TermObject> termObjectClass) {
+		if (termObjectClass == null) {
+			throw new IllegalArgumentException("termObjectClass can not be null");
+		}
+		this.termObjectClass = termObjectClass;
+		this.addSubtreeHandler(new TermRegistration());
+	}
+
+	public Class<TermObject> getTermObjectClass() {
+		return this.termObjectClass;
+	}
+
 	/**
 	 * Allows quick and simple access to the object this sections is refering
 	 * to.
@@ -52,10 +66,6 @@ public abstract class TermReference<TermObject>
 	 */
 	public TermObject getTermObjectFallback(KnowWEArticle article, Section<? extends TermReference<TermObject>> s) {
 		return null;
-	}
-
-	public TermReference() {
-		this.addSubtreeHandler(new TermRegistration());
 	}
 
 	class TermRegistration extends SubtreeHandler<TermReference<TermObject>> {

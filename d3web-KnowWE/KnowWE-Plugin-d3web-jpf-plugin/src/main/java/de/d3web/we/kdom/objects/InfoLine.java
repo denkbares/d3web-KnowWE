@@ -18,7 +18,6 @@
  */
 package de.d3web.we.kdom.objects;
 
-import de.d3web.we.kdom.objects.D3webTermDefinition;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 /**
  * KnowWEObjectType representing text containing information
@@ -28,7 +27,7 @@ import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 public class InfoLine extends D3webTermDefinition<String> {
 
 	public InfoLine() {
-		super("info");
+		super(String.class);
 		setSectionFinder(new AllTextFinderTrimmed());
 	}
 

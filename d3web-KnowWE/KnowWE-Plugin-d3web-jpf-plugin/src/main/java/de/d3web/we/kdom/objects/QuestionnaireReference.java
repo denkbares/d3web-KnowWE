@@ -36,6 +36,7 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 public class QuestionnaireReference extends D3webTermReference<QContainer> {
 
 	public QuestionnaireReference() {
+		super(QContainer.class);
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR5));
 		this.setOrderSensitive(true);
 	}

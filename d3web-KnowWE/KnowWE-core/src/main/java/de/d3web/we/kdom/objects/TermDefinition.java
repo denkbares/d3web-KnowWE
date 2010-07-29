@@ -22,8 +22,18 @@ public abstract class TermDefinition<TermObject>
 
 	protected String key;
 
-	public TermDefinition(String key) {
-		this.key=key;
+	protected Class<TermObject> termObjectClass;
+
+	public TermDefinition(Class<TermObject> termObjectClass) {
+		if (termObjectClass == null) {
+			throw new IllegalArgumentException("termObjectClass can not be null");
+		}
+		this.termObjectClass = termObjectClass;
+		this.key = termObjectClass.getName() + "_STORE_KEY";
+	}
+
+	public Class<TermObject> getTermObjectClass() {
+		return this.termObjectClass;
 	}
 
 	/**

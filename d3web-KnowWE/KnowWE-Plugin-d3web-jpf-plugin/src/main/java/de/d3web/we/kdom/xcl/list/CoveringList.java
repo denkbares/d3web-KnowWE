@@ -38,8 +38,8 @@ import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.bulletLists.CommentRenderer;
 import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.objects.SolutionDefinition;
-import de.d3web.we.kdom.objects.TermRelatedDefinition;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
@@ -110,7 +110,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 	}
 
-	class CoveringRelation extends TermRelatedDefinition {
+	class CoveringRelation extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 
 		public CoveringRelation() {
 

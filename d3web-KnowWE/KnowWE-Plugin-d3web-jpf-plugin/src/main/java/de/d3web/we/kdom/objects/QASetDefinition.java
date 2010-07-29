@@ -37,8 +37,8 @@ public abstract class QASetDefinition<TermObject extends QASet>
 		extends D3webTermDefinition<TermObject>
 		implements IncrementalConstraints {
 
-	public QASetDefinition(String key) {
-		super(key);
+	public QASetDefinition(Class<TermObject> termObjectClass) {
+		super(termObjectClass);
 	}
 
 	@Override

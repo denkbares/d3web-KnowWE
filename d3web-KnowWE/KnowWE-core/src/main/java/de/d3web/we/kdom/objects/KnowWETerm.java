@@ -1,6 +1,5 @@
 package de.d3web.we.kdom.objects;
 
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
 /**
@@ -10,7 +9,9 @@ import de.d3web.we.kdom.Section;
  * 
  * @param <TermObject>
  */
-public interface KnowWETerm<TermObject> extends KnowWEObjectType {
+public interface KnowWETerm<TermObject> extends KnowWETermMarker {
 
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s);
+
+	public Class<TermObject> getTermObjectClass();
 }

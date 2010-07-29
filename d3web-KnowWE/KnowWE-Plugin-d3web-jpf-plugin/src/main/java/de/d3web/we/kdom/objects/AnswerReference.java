@@ -28,9 +28,7 @@ import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
-import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 
 
@@ -51,6 +49,7 @@ public abstract class AnswerReference
 
 	
 	public AnswerReference() {
+		super(Choice.class);
 		this.setCustomRenderer(new ReferenceRenderer(FontColorRenderer.COLOR1));
 	}
 	

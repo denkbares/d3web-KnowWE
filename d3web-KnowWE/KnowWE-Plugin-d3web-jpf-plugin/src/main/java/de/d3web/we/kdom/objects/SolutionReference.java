@@ -36,6 +36,7 @@ import de.d3web.we.kdom.renderer.FontColorRenderer;
 public class SolutionReference extends D3webTermReference<Solution> {
 
 	public SolutionReference() {
+		super(Solution.class);
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 	}
 

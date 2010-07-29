@@ -32,8 +32,8 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public abstract class D3webTermDefinition<TermObject> extends TermDefinition<TermObject> {
 
-	public D3webTermDefinition(String key) {
-		super(key);
+	public D3webTermDefinition(Class<TermObject> termObjectClass) {
+		super(termObjectClass);
 	}
 
 	@Override

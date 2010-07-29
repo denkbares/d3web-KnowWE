@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
@@ -32,8 +33,8 @@ import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.ExactlyOneFindingConstraint;
 import de.d3web.we.kdom.defaultMarkup.AnnotationType;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.objects.SolutionDefinition;
-import de.d3web.we.kdom.objects.TermRelatedDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.NonEmptyLineSectionFinder;
@@ -51,7 +52,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
  *
  *
  */
-public class ListSolutionType extends TermRelatedDefinition {
+public class ListSolutionType extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 
 	public ListSolutionType() {
 		ConstraintSectionFinder solutionFinder =  new ConstraintSectionFinder(new NonEmptyLineSectionFinder());

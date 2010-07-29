@@ -51,7 +51,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	}
 
 	public QuestionDefinition() {
-		super("QUESTION_STORE_KEY");
+		super(Question.class);
 		this.addSubtreeHandler(Priority.HIGHER, new CreateQuestionHandler());
 		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR3));
 		this.setOrderSensitive(true);

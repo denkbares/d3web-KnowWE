@@ -33,6 +33,10 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public abstract class D3webTermReference<TermObject> extends TermReference<TermObject> {
 
+	public D3webTermReference(Class<TermObject> termObjectClass) {
+		super(termObjectClass);
+	}
+
 	@Override
 	public String getTermName(Section<? extends KnowWETerm<TermObject>> s) {
 		return KnowWEUtils.trimQuotes(s.getOriginalText());

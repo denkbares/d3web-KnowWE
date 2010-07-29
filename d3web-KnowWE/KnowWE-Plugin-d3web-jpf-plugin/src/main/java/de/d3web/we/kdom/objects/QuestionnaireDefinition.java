@@ -51,7 +51,7 @@ import de.d3web.we.utils.KnowWEUtils;
 public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer> {
 
 	public QuestionnaireDefinition() {
-		super("QUESTIONAIRE_STORE_KEY");
+		super(QContainer.class);
 		addSubtreeHandler(Priority.HIGHEST, new CreateQuestionnaireHandler());
 		setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR5));
 		setOrderSensitive(true);

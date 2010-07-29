@@ -51,7 +51,7 @@ public abstract class SolutionDefinition
 		implements IncrementalConstraints {
 
 	public SolutionDefinition() {
-		super("QUESTION_STORE_KEY");
+		super(Solution.class);
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 		this.addSubtreeHandler(Priority.HIGHEST, new CreateSolutionHandler());
 	}

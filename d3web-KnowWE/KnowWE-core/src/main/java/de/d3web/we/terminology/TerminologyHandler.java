@@ -82,8 +82,18 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 	@SuppressWarnings("unchecked")
 	private <TermObject> TermReferenceLog<TermObject> getTermReferenceLog(KnowWEArticle article,
 			Section<? extends KnowWETerm<TermObject>> r) {
-		return getTermReferenceLogsMap(article.getTitle()).get(
+		TermReferenceLog refLog = getTermReferenceLogsMap(article.getTitle()).get(
 				new TermIdentifier(article, r));
+		if (refLog != null && refLog.getTermObjectClass().equals(r.get().getTermObjectClass())) {
+			return refLog;
+		}
+		else {
+			return null;
+		}
+	}
+
+	private TermReferenceLog<?> getTermReferenceLog(KnowWEArticle article, String termName) {
+		return getTermReferenceLogsMap(article.getTitle()).get(new TermIdentifier(termName));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -125,17 +135,72 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 				setTermReferencesToNotReused(article, r);
 			}
 		}
-		getTermReferenceLogsMap(article.getTitle()).put(termName, new TermReferenceLog<TermObject>(r));
+		getTermReferenceLogsMap(article.getTitle()).put(termName,
+				new TermReferenceLog<TermObject>(r.get().getTermObjectClass(), r));
 		modifiedTermDefinitions.put(article.getTitle(), true);
 	}
 
 	public <TermObject> void registerTermReference(KnowWEArticle article, Section<? extends TermReference<TermObject>> r) {
 		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, r);
 		if (refLog == null) {
-			refLog = new TermReferenceLog<TermObject>(null);
+			refLog = new TermReferenceLog<TermObject>(r.get().getTermObjectClass(), null);
 			getTermReferenceLogsMap(article.getTitle()).put(new TermIdentifier(article, r), refLog);
 		}
 		refLog.addTermReference(r);
+	}
+
+	/**
+	 * Returns whether a term is defined through an TermDefinition
+	 */
+	public boolean isDefinedTerm(KnowWEArticle article, String termName) {
+		TermReferenceLog<?> termRef = getTermReferenceLog(article, termName);
+		if (termRef != null) {
+			return termRef.termDefiningSection != null;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns whether there are TermReferences for this Term, but no
+	 * TermDefinition
+	 */
+	public boolean isUndefinedTerm(KnowWEArticle article, String termName) {
+		TermReferenceLog<?> termRef = getTermReferenceLog(article, termName);
+		if (termRef != null) {
+			return termRef.termDefiningSection == null;
+		}
+		return false;
+	}
+
+	/**
+	 * For a TermName the TermDefinition is returned.
+	 * 
+	 * @param <TermObject>
+	 * @param s
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Section<? extends TermDefinition> getTermDefinitionSection(
+			KnowWEArticle article, String termName) {
+
+		TermReferenceLog refLog = getTermReferenceLog(article, termName);
+
+		if (refLog != null) {
+			return refLog.termDefiningSection;
+		}
+
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<Section<? extends TermReference>> getTermReferenceSections(KnowWEArticle article, String termName) {
+		TermReferenceLog refLog = getTermReferenceLog(article, termName);
+
+		if (refLog != null) {
+			return refLog.getReferences();
+		}
+
+		return new HashSet<Section<? extends TermReference>>(0);
 	}
 
 	/**
@@ -180,15 +245,15 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <TermObject> Set<Section<? extends TermReference<TermObject>>> getTermReferenceSections(KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> r) {
-		TermIdentifier t = new TermIdentifier(article, r);
-		if (getTermReferenceLogsMap(article.getTitle()).containsKey(t)) {
-			return getTermReferenceLogsMap(article.getTitle()).get(t).getReferences();
+
+		TermReferenceLog<TermObject> refLog = getTermReferenceLog(article, r);
+
+		if (refLog != null) {
+			return refLog.getReferences();
 		}
-		else {
-			return new HashSet<Section<? extends TermReference<TermObject>>>(0);
-		}
+
+		return new HashSet<Section<? extends TermReference<TermObject>>>(0);
 	}
 
 	public <TermObject> void setTermReferencesToNotReused(KnowWEArticle article,
@@ -262,8 +327,18 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 
 		private final Set<Section<? extends TermReference<TermObject>>> termReferingSections = new HashSet<Section<? extends TermReference<TermObject>>>();
 
-		public TermReferenceLog(Section<? extends TermDefinition<TermObject>> d) {
+		private final Class<TermObject> termObjectClass;
+
+		public TermReferenceLog(Class<TermObject> termObjectClass, Section<? extends TermDefinition<TermObject>> d) {
+			if (termObjectClass == null) {
+				throw new IllegalArgumentException("termObjectClass can not be null");
+			}
+			this.termObjectClass = termObjectClass;
 			this.termDefiningSection = d;
+		}
+
+		public Class<TermObject> getTermObjectClass() {
+			return this.termObjectClass;
 		}
 
 		public void addTermReference(Section<? extends TermReference<TermObject>> r) {
@@ -281,32 +356,18 @@ public class TerminologyHandler implements KnowledgeRepresentationHandler {
 		private final String termIdentifier;
 
 		@SuppressWarnings("unchecked")
-		public <TermObject> TermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm<TermObject>> s) {
-
-			String termObjectClass = "UnidentifiedTerm";
-			Class<?> tempClass = s.get().getClass();
-			while (tempClass.getSuperclass() != null
-				&& !tempClass.getGenericSuperclass().toString().endsWith(">")) {
-				tempClass = tempClass.getSuperclass();
-			}
-			if (tempClass.getGenericSuperclass() != null) {
-				String fullGenericClassName = tempClass.getGenericSuperclass().toString();
-				int start = fullGenericClassName.indexOf("<");
-				int stop = fullGenericClassName.lastIndexOf(">");
-				if (start > 0 && stop > 0) termObjectClass = fullGenericClassName.substring(start + 1, stop);
-			}
-
-			String tempTermpIdentifier;
+		public TermIdentifier(KnowWEArticle article, Section<? extends KnowWETerm> s) {
 			if (s.get() instanceof NotUniqueKnowWETerm) {
 				Section<? extends NotUniqueKnowWETerm> nus = (Section<? extends NotUniqueKnowWETerm>) s;
-				tempTermpIdentifier = nus.get().getUniqueTermIdentifier(article, nus);
+				termIdentifier = nus.get().getUniqueTermIdentifier(article, nus);
 			}
 			else {
-				tempTermpIdentifier = s.get().getTermName(s);
+				termIdentifier = s.get().getTermName(s);
 			}
-			termIdentifier = termObjectClass + " " + tempTermpIdentifier;
+		}
 
-			// System.out.println(termIdentifier);
+		public TermIdentifier(String termName) {
+			termIdentifier = termName;
 		}
 
 		@Override

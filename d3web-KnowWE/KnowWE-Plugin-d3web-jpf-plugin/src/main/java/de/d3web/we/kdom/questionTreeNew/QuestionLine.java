@@ -39,10 +39,10 @@ import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
+import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.objects.QASetDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition;
 import de.d3web.we.kdom.objects.QuestionnaireDefinition;
-import de.d3web.we.kdom.objects.TermRelatedDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition.QuestionType;
 import de.d3web.we.kdom.questionTreeNew.indication.IndicationHandler;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
@@ -441,7 +441,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 *
 	 */
-	static class AbstractFlag extends TermRelatedDefinition {
+	static class AbstractFlag extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
 
 		public AbstractFlag() {
 			this.sectionFinder = new OneOfStringEnumFinder(new String[] {

@@ -62,7 +62,7 @@ public abstract class AnswerDefinition
 	private static final String QUESTION_FOR_ANSWER_KEY = "QUESTION_FOR_ANSWER_KEY";
 
 	public AnswerDefinition() {
-		super("ANSWER_STORE_KEY");
+		super(Choice.class);
 		this.addSubtreeHandler(Priority.HIGH, new CreateAnswerHandler());
 		this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR1));
 		this.setOrderSensitive(true);

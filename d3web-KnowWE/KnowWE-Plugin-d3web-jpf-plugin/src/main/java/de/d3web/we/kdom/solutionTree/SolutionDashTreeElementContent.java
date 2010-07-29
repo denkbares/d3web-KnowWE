@@ -29,14 +29,12 @@ import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.dashTree.DashTreeElementContent;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
-import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.objects.SolutionDefinition;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.RelationCreatedMessage;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.terminology.D3webSubtreeHandler;
-import de.d3web.we.utils.D3webUtils;
-import de.d3web.we.utils.KnowWEUtils;
 
 /**
  * @author Jochen
@@ -49,9 +47,10 @@ import de.d3web.we.utils.KnowWEUtils;
  * 
  * 
  */
-public class SolutionDashTreeElementContent extends DashTreeElementContent implements KnowWETerm<Object> {
+public class SolutionDashTreeElementContent extends DashTreeElementContent implements KnowWETermMarker {
 	
-	private static String STORE_KEY_SOLUTION = "solution-object";
+
+	// private static String STORE_KEY_SOLUTION = "solution-object";
 
 	public SolutionDashTreeElementContent() {
 		this.addSubtreeHandler(new CreateSubSolutionRelationHandler());
@@ -60,11 +59,6 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 		f.addConstraint(SingleChildConstraint.getInstance());
 		solutionDef.setSectionFinder(f);
 		this.addChildType(solutionDef);
-	}
-
-	@Override
-	public String getTermName(Section<? extends KnowWETerm<Object>> s) {
-		return s.getOriginalText().trim();
 	}
 
 	/**
