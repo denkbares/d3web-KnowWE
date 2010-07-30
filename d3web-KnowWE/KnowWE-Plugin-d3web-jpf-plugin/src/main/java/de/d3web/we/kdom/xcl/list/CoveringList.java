@@ -177,7 +177,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 				if(solutionDef == null) return false;
 				
 				return super.needsToCreate(article, s)
-						|| !solutionDef.isReusedBy(article.getTitle());
+						|| !solutionDef.isReusedBy(article.getTitle())
+						|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
 			}
 
 			/*
@@ -274,11 +275,11 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 						.getString("KnowWE.xcllist.relationfail")));
 			}
 
-//			@Override
-//			public boolean needsToDestroy(KnowWEArticle article, Section<CoveringRelation> s) {
-//				return super.needsToDestroy(article, s)
-//						|| !getCorrespondingSolutionDef(s).isReusedBy(article.getTitle());
-//			}
+			@Override
+			public boolean needsToDestroy(KnowWEArticle article, Section<CoveringRelation> s) {
+				return super.needsToDestroy(article, s)
+						|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
+			}
 
 			@Override
 			public void destroy(KnowWEArticle article, Section<CoveringRelation> s) {

@@ -99,6 +99,12 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		private final String ruleStoreKey = "RULE_STORE_KEY";
 
 		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<ConditionActionRule> s) {
+			return super.needsToCreate(article, s)
+					|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
+		}
+
+		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ConditionActionRule> s) {
 
 			if (s.hasErrorInSubtree()) {
@@ -138,6 +144,12 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 					D3webModule.getKwikiBundle_d3web().
 					getString("KnowWE.rulesNew.notcreated")
 			));
+		}
+
+		@Override
+		public boolean needsToDestroy(KnowWEArticle article, Section<ConditionActionRule> s) {
+			return super.needsToDestroy(article, s)
+					|| s.isOrHasSuccessorNotReusedBy(article.getTitle());
 		}
 
 		@Override
