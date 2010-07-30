@@ -41,7 +41,7 @@ public class IndicationRuleAction extends DefaultAbstractKnowWEObjectType {
 		this.childrenTypes.add(new InstantIndication());
 		this.childrenTypes.add(new ContraIndication());
 		this.childrenTypes.add(new SuppressAnswerAlternativesIndication());
-		this.childrenTypes.add(new QuestionIndication());
+		//this.childrenTypes.add(new QuestionIndication());
 		// to find single questionnaires
 		QuestionIndication qI = new QuestionIndication();
 		qI.setSectionFinder(new SetQuestionValue().new WordSectionFinder());
@@ -59,9 +59,7 @@ public class IndicationRuleAction extends DefaultAbstractKnowWEObjectType {
 			
 			String[] parts = text.split(" ");
 			for (String s : parts) {
-				if (s.equals("INSTANT") || s.equals("NOT")
-						|| s.equals("HIDE") || !s.contains("=")
-						|| !s.contains("+=") || s.contains(";")) {
+				if (s.equals("INSTANT") || s.equals("HIDE")) {
 					
 					int start = 0;
 					int end = text.length();

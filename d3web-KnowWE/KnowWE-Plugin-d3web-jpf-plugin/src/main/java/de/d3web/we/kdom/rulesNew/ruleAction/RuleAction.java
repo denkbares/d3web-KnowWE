@@ -32,10 +32,11 @@ public class RuleAction extends DefaultAbstractKnowWEObjectType{
 		sectionFinder = new AllTextSectionFinder();
 		this.childrenTypes.add(new SolutionValueAssignment());
 		this.childrenTypes.add(new AddValueAction());
-		this.addChildType(new SetQuestionValue());
+		this.childrenTypes.add(new SetQuestionValue());
 		this.childrenTypes.add(new AbstractionRuleAction());
 		this.childrenTypes.add(new ContraIndicationAction());
-		this.childrenTypes.add(new IndicationRuleAction());
+		this.childrenTypes.add(new InstantIndication());
+		this.childrenTypes.add(new QASetIndicationAction());
 		
 	}
 }

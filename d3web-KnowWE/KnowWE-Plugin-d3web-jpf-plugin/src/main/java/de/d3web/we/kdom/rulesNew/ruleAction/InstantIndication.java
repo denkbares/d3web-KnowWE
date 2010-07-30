@@ -25,26 +25,21 @@ import de.d3web.core.inference.PSAction;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.indication.ActionContraIndication;
+import de.d3web.indication.ActionInstantIndication;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
-import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.QuestionReference;
-import de.d3web.we.kdom.sectionFinder.ISectionFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
-import de.d3web.we.utils.KnowWEUtils;
-import de.d3web.we.utils.SplitUtility;
+import de.d3web.we.kdom.rulesNew.ruleAction.ContraIndicationAction.QuestionReferenceInBrackets;
 
 /**
  * 
  * @author Jochen
- * @created 26.07.2010
+ * @created 30.07.2010 
  */
-public class ContraIndicationAction extends BracketsAction<ContraIndicationAction> {
-	
-
-	public ContraIndicationAction() {
-		super(new String[]{"NICHT", "NOT"});
+public class InstantIndication extends BracketsAction<InstantIndication> {
+	public InstantIndication() {
+		super(new String[]{"INSTANT", "SOFORT"});
 
 	}
 
@@ -54,47 +49,15 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 	}
 	
 	@Override
-	public PSAction getAction(KnowWEArticle article, Section<ContraIndicationAction> s) {
+	public PSAction getAction(KnowWEArticle article, Section<InstantIndication> s) {
 		Section<QuestionReference> qSec = s.findSuccessor(QuestionReference.class);
 		Question termObject = qSec.get().getTermObject(article, qSec);
 		
-		ActionContraIndication actionContraIndication = new ActionContraIndication();
+		ActionInstantIndication actionContraIndication = new ActionInstantIndication();
 		List<QASet> obs = new ArrayList<QASet>();
 		obs.add(termObject);
 		actionContraIndication.setQASets(obs);
 		return actionContraIndication;
 	}
-
-	static class QuestionReferenceInBrackets extends QuestionReference{
-		
-
-		public QuestionReferenceInBrackets() {
-			this.sectionFinder = new ISectionFinder() {
-				@Override
-				public List<SectionFinderResult> lookForSections(String text,
-						Section father, KnowWEObjectType type) {
-
-					return SectionFinderResult
-							.createSingleItemList(new SectionFinderResult(
-									SplitUtility.indexOfUnquoted(text, OPEN),
-									SplitUtility.indexOfUnquoted(text, CLOSE) + 1));
-				}
-			};
-		}
-		
-		
-		@Override
-		public String getTermName(Section<? extends KnowWETerm<Question>> s) {
-			String text = s.getOriginalText().trim();
-			String questionName = "";
-			if (text.indexOf(OPEN) == 0 && text.lastIndexOf(CLOSE) == text.length() - 1) {
-				questionName = text.substring(1, text.length() - 1).trim();
-			}
-			
-			return KnowWEUtils.trimQuotes(questionName);
-		}
-	}
-
-
 
 }
