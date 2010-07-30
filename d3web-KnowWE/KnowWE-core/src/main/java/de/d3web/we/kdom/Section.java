@@ -1502,15 +1502,15 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	
 	@SuppressWarnings("unchecked")
 	public boolean setType(KnowWEObjectType newType) {
-		if(objectType.getClass() != (newType.getClass()) && objectType.getClass().isAssignableFrom(newType.getClass())) {
+		//if(objectType.getClass() != (newType.getClass()) && objectType.getClass().isAssignableFrom(newType.getClass())) {
 			this.objectType = (T) newType;
 			for (Priority p:objectType.getSubtreeHandlers().descendingKeySet()) {
 				letSubtreeHandlersCreate(getArticle(), p);
 			}
 			
 			return true;
-		}
-		return false;
+		//}
+		//return false;
 	}
 
 	private class TextOrderComparator implements Comparator<Section<? extends KnowWEObjectType>> {
