@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+This target copies all .js-,*.jsp-, .css-files and pics to the build target.
+Can be called while running tomcat to replace above mentioned files.
+So no need to build after changes in these files. Reloading the page is sufficient   
+
+-->
+<project name="project" default="replacemootools">
+
+	<property name="flowchartDir" value="${basedir}/../../../../KnowWE-Plugin-Flowchart-jpf-plugin" />
+
+	<property name="buildDir"  value="${basedir}/../../../../KnowWE/target/KnowWE-0.2-SNAPSHOT"/>
+	
+	<target name="replacemootools">
+
+		<mkdir dir="${buildDir}/cc" />
+		
+
+		<!--copy todir="${buildDir}/scripts" verbose="true">
+			<fileset dir="${flowchartDir}/src/main/resources/webapp/cc/mootools11">
+				<include name="mootools.js" />
+			</fileset>
+		</copy-->
+
+		<copy todir="${buildDir}/scripts" verbose="true">
+			<fileset dir="${flowchartDir}/src/main/resources/webapp/cc/mootools12">
+				<include name="mootools.js" />
+				<include name="mootools-more.js" />
+				<include name="mootools-upgrade.js"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${buildDir}/scripts" verbose="true">
+			<fileset dir="${flowchartDir}/src/main/resources/webapp/jspwiki284">
+				<include name="jspwiki-common.js" />
+				<include name="jspwiki-commonstyles.js" />
+				<include name="jspwiki-edit.js" />
+				<include name="jspwiki-prefs.js" />
+			</fileset>
+		</copy>
+ 
+		<!--copy todir="${buildDir}/scripts" verbose="true">
+			<fileset dir="${flowchartDir}/src/main/resources/webapp/jspwiki3">
+				<include name="jspwiki-common.js" />
+				<include name="jspwiki-commonstyles.js" />
+				<include name="jspwiki-edit.js" />
+				<include name="jspwiki-prefs.js" />
+			</fileset>
+		</copy-->
+
+
+	</target>
+
+
+</project>
