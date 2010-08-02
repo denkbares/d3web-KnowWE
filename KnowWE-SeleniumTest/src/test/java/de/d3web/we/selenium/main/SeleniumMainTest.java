@@ -22,11 +22,7 @@ package de.d3web.we.selenium.main;
 
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-
-import org.kohsuke.junit.ParallelTestSuite;
-
 import de.d3web.we.selenium.tests.CalendarTest;
-import de.d3web.we.selenium.tests.CarDiagnosisDialogTest;
 import de.d3web.we.selenium.tests.CarDiagnosisTest;
 import de.d3web.we.selenium.tests.CommentTest;
 import de.d3web.we.selenium.tests.QuickEditTest;
@@ -38,7 +34,7 @@ import de.d3web.we.selenium.tests.QuickEditTest;
  * Because Selenium is a browser based test, some clients are started with
  * StartClients.bat and closed after the test with KillClients.bat.
  * Test:
- * First the needed pages are set up and afterwards the tests will be run 
+ * First the needed pages are set up and afterwards the tests will be run
  * in PARALLEL.
  * @author Max Diez
  *
@@ -69,13 +65,13 @@ public class SeleniumMainTest extends TestSuite {
 //		parallelSuite.addTestSuite(CommentTest.class);
 		
 //		mainSuite.addTest(parallelSuite);
-		mainSuite.addTestSuite(CarDiagnosisDialogTest.class);
+		// mainSuite.addTestSuite(CarDiagnosisDialogTest.class);
 		mainSuite.addTestSuite(CalendarTest.class);
 		mainSuite.addTestSuite(CarDiagnosisTest.class);
 		mainSuite.addTestSuite(CommentTest.class);
 		mainSuite.addTestSuite(QuickEditTest.class);
 
-		return mainSuite;		
+		return mainSuite;
 	}
 
 
@@ -87,11 +83,11 @@ public class SeleniumMainTest extends TestSuite {
 	public void run(TestResult result){
 		//Use this code if you don't want to set up clients
 		//manually and shut them down.
-//		String appsPath = System.getProperty("user.dir") + 
+//		String appsPath = System.getProperty("user.dir") +
 //				ResourceBundle.getBundle("KnowWE-Selenium-Test")
 //					.getString("KnowWE.SeleniumTest.path");
-//	
-//		try {			
+//
+//		try {
 //			Runtime.getRuntime().exec(appsPath + "StartClients.bat");
 //			System.out.println("#######\nClients started\n#######");
 //		} catch (Exception e) {
