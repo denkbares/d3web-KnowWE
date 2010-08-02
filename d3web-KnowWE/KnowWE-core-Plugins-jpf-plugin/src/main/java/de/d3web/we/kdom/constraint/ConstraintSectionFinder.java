@@ -26,6 +26,12 @@ public class ConstraintSectionFinder extends SectionFinder {
 	
 	public ConstraintSectionFinder(SectionFinder finder) {
 		this.finder = finder;
+	}	
+	
+	public ConstraintSectionFinder(SectionFinder finder, SectionFinderConstraint c) {
+		this.finder = finder;
+		this.constraintList = new ArrayList<SectionFinderConstraint>();
+		this.constraintList.add(c);
 	}
 
 	/**

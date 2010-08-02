@@ -30,6 +30,7 @@ import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
+import de.d3web.we.kdom.constraint.AtMostOneFindingConstraint;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.ExclusiveType;
 import de.d3web.we.kdom.dashTree.LineEndComment;
@@ -291,7 +292,8 @@ class NegatedExpression extends NonTerminalCondition {
 	@Override
 	protected void init() {
 		AnonymousType negationSign = new AnonymousType("NegationSign");
-		negationSign.setSectionFinder(new OneOfStringEnumFinder(NEG_SIGNS));
+		ConstraintSectionFinder finder = new ConstraintSectionFinder(new OneOfStringEnumFinder(NEG_SIGNS), AtMostOneFindingConstraint.getInstance());
+		negationSign.setSectionFinder(finder);
 		this.addChildType(negationSign);
 
 		this.sectionFinder = new SectionFinder() {

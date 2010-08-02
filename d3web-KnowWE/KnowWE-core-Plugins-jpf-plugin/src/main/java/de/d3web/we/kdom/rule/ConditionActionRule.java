@@ -6,6 +6,9 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.basic.AnonymousType;
+import de.d3web.we.kdom.basic.EndLineComment;
+import de.d3web.we.kdom.bulletLists.CommentRenderer;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
@@ -38,6 +41,12 @@ public class ConditionActionRule extends DefaultAbstractKnowWEObjectType impleme
 
 		condArea.setSectionFinder(AllBeforeTypeSectionFinder.createFinder(then));
 		this.addChildType(condArea);
+		
+		
+		EndLineComment endLineComment = new EndLineComment();
+		endLineComment.setCustomRenderer(new CommentRenderer());
+		this.addChildType(endLineComment);
+		
 		action.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(action);
 
