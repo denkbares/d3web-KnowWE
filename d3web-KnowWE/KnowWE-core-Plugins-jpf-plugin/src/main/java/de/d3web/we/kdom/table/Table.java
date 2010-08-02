@@ -46,7 +46,7 @@ import de.d3web.we.kdom.xml.XMLContent;
  * 
  * Now all tables will be prefixed with a button called "QuickEditFlag". This buttons
  * enabled a quick edit mode for the table. If selected, each cell will be rendered
- * as an HTML input field. Also a save button occours to save the changes. 
+ * as an HTML input field. Also a save button occours to save the changes.
  * 
  * The <code>Table</code> tag is extendible with the following attributes:
  * <ul>
@@ -56,7 +56,7 @@ import de.d3web.we.kdom.xml.XMLContent;
  *   <li>row</li>
  * </ul>
  * 
- * With the <code> default </code> attribute you can specify default values. This 
+ * With the <code> default </code> attribute you can specify default values. This
  * values are used to render a HTML DropDown element instead of the input field.
  * 
  * The <code>width</code> attribute declares the width of each input field. Use this if you
@@ -82,15 +82,23 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType{
 	public static final String ATT_WIDTH  = "width";
 	
 	/**
-	 * Attribute name. Lets the user specify columns and row that are non editable. 
+	 * Attribute name. Lets the user specify columns and row that are non editable.
 	 */
 	public static final String ATT_NOEDIT_COLUMN = "column";
 	public static final String ATT_NOEDIT_ROW    = "row";
 	
-	private TableAttributesProvider tableAttributesProvider;
+	private final TableAttributesProvider tableAttributesProvider;
 	
 	public Table(TableAttributesProvider tableAttributesProvider) {
 		this.tableAttributesProvider = tableAttributesProvider;
+	}
+
+	public TableAttributesProvider getTableAttributesProvider() {
+		return tableAttributesProvider;
+	}
+
+	public boolean isSortable() {
+		return false;
 	}
 
 	@Override
@@ -101,9 +109,6 @@ public abstract class Table extends DefaultAbstractKnowWEObjectType{
 		this.addSubtreeHandler(new TableSubTreeHandler());
 	}
 	
-	public TableAttributesProvider getTableAttributesProvider() {
-		return tableAttributesProvider;
-	}
 
 	private class TableSubTreeHandler extends SubtreeHandler {
 

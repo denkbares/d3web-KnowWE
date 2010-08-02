@@ -2429,11 +2429,14 @@ Testcase.addNewAnswers = function(table) {
 		return;
 	}
 	
-	var headerNodes = wikitable.getElement('tr').getElements('td');
+	var headerNodes = wikitable.getElement('tr').getElements('th');
+	if (!headerNodes || headerNodes.length == 0) {
+		headerNodes = wikitable.getElement('tr').getElements('td');
+	}
 	
 	for (var j = 0; j < headerNodes.length; j++) {
 		
-			if (headerNodes[j].firstChild.nodeName != '#text') {
+			if (headerNodes[j].firstChild && headerNodes[j].firstChild.nodeName != '#text') {
 				var select = headerNodes[j].firstChild;
 				$(select).addEvent('change', function(event) {
 					Testcase.changeEvent(event);
@@ -2607,5 +2610,67 @@ Testcase.checkForChange = function(newAnswers, sampleChild) {
 Testcase.saveInputAfterChange = function(event) {
     var el = _KE.target(event);
 	KNOWWE.core.table.getMap().set(el.id, el.value);
+}
+
+/**
+ * runs a Testcase from the TestcaseTable.
+ * Takes all values from the line and the header line with the keys
+ * and sends them to RunTestcaseAction.
+ */
+Testcase.runTestcase = function(element) {
+	var table = Testcase.findParentWikiTable(element);
+	var lines = Testcase.getTableLines(table);
+	var headerLine = lines[0].getElements('td');
+	if (!headerLine || headerLine.length == 0) {
+		headerLine = lines[0].getElements('th');
+	}
+	var currentLine = Testcase.findLineOfElement(element).getElements('td');
+	
+	var headerLineToLine = '';
+	var currentLineToLine = '';
+	for (var i = 0; i < headerLine.length; i++) {
+		if (headerLine[i].childNodes.length > 0) {
+			headerLineToLine += headerLine[i].lastChild.nodeValue + ',.,';
+		}
+		currentLineToLine += currentLine[i].lastChild.nodeValue + ',.,'; 
+	}
+	
+	headerLineToLine = headerLineToLine.substring(0, headerLineToLine.length - 3);
+	currentLineToLine = currentLineToLine.substring(0, currentLineToLine.length -3 );
+
+		
+	
+	var topic = KNOWWE.helper.gup('page')
+		
+	var params = {
+        action : 'RunTestcaseAction',
+        KWiki_Topic : topic,
+        headerLine : headerLineToLine,
+        currentLine : currentLineToLine
+    }
+
+    var options = {
+        url : KNOWWE.core.util.getURL ( params ),
+        loader : true,
+        response : {
+            action : 'none',
+            fn : function(){
+			
+			}
+
+        }
+    }
+    new _KA( options ).send();
+}
+
+Testcase.findLineOfElement = function(element) {
+	var e = $(element);
+	while (e.tagName != 'BODY') {
+		if (e.tagName == 'TR') {
+			return e;
+		} else {
+			e = e.parentNode;
+		}
+	}
 }
 

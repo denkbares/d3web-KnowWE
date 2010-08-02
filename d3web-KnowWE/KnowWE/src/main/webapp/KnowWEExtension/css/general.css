@@ -886,6 +886,14 @@ div.addCol{
 	background-image: url(../images/plus.png);
 }
 
+div.startTestcase{
+	height: 15px;
+	width: 9px;
+	float: left;
+	margin-right: 5px;
+	background-image: url(../images/arrow_right.png);
+}
+
 /* ################################################## */
 /* ----------Image Question TagHandler--------------- */
 /* ################################################## */

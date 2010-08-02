@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 
 public class TableUtils {
@@ -51,7 +52,7 @@ public class TableUtils {
 				return null;
 			}
 		}
-		return sections;		
+		return sections;
 	}
 
 	/**
@@ -86,7 +87,7 @@ public class TableUtils {
 		
 		int col = getColumn(section)-1;
 		for(int i = 0; i < sections.size(); i++)
-		{			
+		{
 			List<Section> tmpSections = new ArrayList<Section>();
 			getCertainSections( sections.get(i), TableCellContent.class.getName(), tmpSections );
 			if(tmpSections.size() > col && tmpSections.get(col).equals( section )) return i + 1;
@@ -95,7 +96,7 @@ public class TableUtils {
 	}
 
 	/**
-	 * Checks if the current cell is editable. Returns<code>TRUE</code> if so, 
+	 * Checks if the current cell is editable. Returns<code>TRUE</code> if so,
 	 * otherwise <code>FALSE</code>.
 	 * 
 	 * @param section
@@ -131,7 +132,7 @@ public class TableUtils {
 	 * @return
 	 */
 	public static String quote( String content ) {
-		if(!(content.contains("\"") || content.contains("'"))) 
+		if(!(content.contains("\"") || content.contains("'")))
 			return content.trim();
 		
 		content = content.replace("\"", "\\\"");
@@ -172,6 +173,44 @@ public class TableUtils {
 	    } else {
 		    return "";
 	    }
+	}
+
+	/**
+	 * returns whether the current Section is a table and is sortable
+	 * @created 31.07.2010
+	 * @param sec
+	 * @return
+	 */
+	public static boolean sortOption(Section sec) {
+		Section<Table> tableType = sec.findAncestorOfType(Table.class);
+		boolean sortable = false;
+		if (tableType != null && tableType.getObjectType() instanceof Table) {
+			Table table = tableType.getObjectType();
+			sortable = table.isSortable();
+		}
+		return sortable;
+	}
+
+	/**
+	 * returns whether the current Section gets a sort button
+	 * @created 31.07.2010
+	 * @param sec
+	 * @return
+	 */
+	public static boolean sortTest(Section sec) {
+		boolean sortable = sortOption(sec);
+
+		Section<TableHeaderLine> headerLine = sec.findAncestorOfType(TableHeaderLine.class);
+		boolean isHeaderLine = false;
+		if (headerLine != null) {
+			isHeaderLine = headerLine.getObjectType() instanceof TableHeaderLine;
+		}
+		return (sortable && isHeaderLine);
+	}
+
+	public static KnowWEObjectType getTableType(Section sec) {
+		Section table = sec.findAncestorOfType(Table.class);
+		return table != null ? table.getObjectType() : null;
 	}
 
 }

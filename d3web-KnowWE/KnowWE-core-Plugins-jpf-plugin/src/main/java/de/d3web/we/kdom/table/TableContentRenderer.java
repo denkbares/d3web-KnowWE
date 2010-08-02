@@ -44,6 +44,8 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 		
 		final ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
 			
+		boolean sortable = TableUtils.sortOption(sec);
+
 		StringBuilder b = new StringBuilder();
 		StringBuilder buffi = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
@@ -77,10 +79,16 @@ public class TableContentRenderer extends KnowWEDomRenderer {
 
 		}
 		else {
+			if (sortable) {
+				buffi.append("<div class=\"sortable\">");
+			}
 			buffi.append("<table style='border:1px solid #999999;' class='wikitable knowwetable' border='1'><tbody>");
 			buffi.append(getHeader());
 			buffi.append(b.toString());
 			buffi.append("</tbody></table>");
+			if (sortable) {
+				buffi.append("</div>");
+			}
 		}
 		
 

@@ -66,7 +66,7 @@ public class GetNewQuickEditAnswersAction extends AbstractAction {
 							.getAllAlternatives()) {
 						buffy.append(c.getName() + "[:;:]");
 					}
-					context.getWriter().write((buffy.substring(0, buffy.length() - 1)).toString());
+					context.getWriter().write(buffy.substring(0, buffy.length() - 5));
 					break;
 				}
 				else {

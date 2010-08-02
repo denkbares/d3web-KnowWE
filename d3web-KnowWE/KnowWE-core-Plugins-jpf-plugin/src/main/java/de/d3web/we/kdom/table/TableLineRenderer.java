@@ -29,7 +29,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * This is a renderer for the TableLine. It wraps the <code>TableLine</code>
- * into the according HTML element and delegates the rendering of each <code>TableCell</code> 
+ * into the according HTML element and delegates the rendering of each <code>TableCell</code>
  * to its own renderer.
  * 
  * @author smark
@@ -41,7 +41,7 @@ public class TableLineRenderer extends KnowWEDomRenderer {
 		StringBuilder b = new StringBuilder();
 		StringBuilder buffi = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
-		buffi.append( "<tr>" );
+		buffi.append("<tr>");
 		buffi.append( b.toString() );
 		buffi.append( "\n</tr>" );
 						

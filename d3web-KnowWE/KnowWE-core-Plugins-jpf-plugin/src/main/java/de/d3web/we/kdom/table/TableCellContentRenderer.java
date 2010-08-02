@@ -35,7 +35,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * an HTML input field, containing the text of the cell.</p>
  * <p>If the <code>value</code> attribute (@see Table) is given the input filed is replaced
  * by an drop down list. If <code>FALSE</code> simple text is rendered.</p>
- *  
+ * 
  * <p>e.g:</p>
  * <code>
  * Cell given in JSPWiki syntax "| cell 1"
@@ -73,11 +73,24 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 	
 		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
-		html.append( "<td>" );
+
+		boolean sort = TableUtils.sortTest(sec);
+
+		if (sort) {
+			html.append("<th class=\"sort\">");
+		}
+		else {
+			html.append("<td>");
+		}
 
 		generateContent(sectionText, sec, user, sectionID, html);
 		
-		html.append( "</td>" );
+		if (sort) {
+			html.append("</th>");
+		}
+		else {
+			html.append("</td>");
+		}
 		return KnowWEUtils.maskHTML( html.toString() );
 	}
 
@@ -102,7 +115,7 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 				if( values != null ) {
 					html.append( createDefaultValueDropDown( values, sectionText, sectionID, size));
 				} else {
-					html.append( "<input type='text' name='" + sectionText + "' id='" + sectionID + "' value='" + sectionText 
+					html.append( "<input type='text' name='" + sectionText + "' id='" + sectionID + "' value='" + sectionText
 				            + "' class='table-edit-node' " + TableUtils.getWidth( size ) + "/>" );
 				}
 			} else {
