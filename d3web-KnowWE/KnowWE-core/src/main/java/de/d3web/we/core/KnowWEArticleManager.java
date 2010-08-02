@@ -21,6 +21,7 @@
 package de.d3web.we.core;
 
 import java.io.File;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -208,7 +209,7 @@ public class KnowWEArticleManager {
 	private void appendTextReplaceNode(Section sec,
 			Map<String, String> nodesMap, StringBuffer newText) {
 		if (nodesMap.containsKey(sec.getID())) {
-			newText.append(nodesMap.get(sec.getID()));
+			newText.append(URLDecoder.decode(nodesMap.get(sec.getID())));
 			return;
 		}
 		List<Section> children = sec.getChildren();
