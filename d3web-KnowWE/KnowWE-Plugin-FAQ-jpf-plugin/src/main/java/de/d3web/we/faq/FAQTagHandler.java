@@ -20,10 +20,11 @@
 
 package de.d3web.we.faq;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -214,25 +215,28 @@ public class FAQTagHandler extends AbstractTagHandler {
 
 		List<String> sortedFAQs = sortAlphabetically(result);
 		StringBuilder string = new StringBuilder();
+		String[] resultVals = null;
 
 		// go through all binding sets, i.e., result sets of the query
 		for (int i = 0; i < sortedFAQs.size(); i++) {
 
-			String[] resultVals = sortedFAQs.get(i).split("----");
+			resultVals = sortedFAQs.get(i).split("----");
 
 			// build the HTML
 			string.append(KnowWEUtils.maskHTML("<div class='faq_question'> Q: "));
 			string.append(KnowWEUtils.maskHTML(resultVals[0]));
 			string.append(KnowWEUtils.maskHTML("</div>"));
 			string.append(KnowWEUtils.maskHTML("<div class='faq_answer'> "));
-			string.append(KnowWEUtils.maskHTML(resultVals[1]));
+			String answer = resolvePDFs(createLinks(resultVals[1]));
+			string.append(KnowWEUtils.maskHTML(answer));
 			string.append(KnowWEUtils.maskHTML("<div class='faq_tags'> "));
 			string.append(KnowWEUtils.maskHTML(resultVals[2]));
 			string.append(KnowWEUtils.maskHTML(" "));
 			string.append(KnowWEUtils.maskHTML(resultVals[3]));
 			string.append(KnowWEUtils.maskHTML("</div>"));
 			string.append(KnowWEUtils.maskHTML("</div>"));
-			// string.append("[www.google.de]");
+
+			System.out.println(string.toString());
 		}
 		return string.toString();
 	}
@@ -240,7 +244,6 @@ public class FAQTagHandler extends AbstractTagHandler {
 	private List<String> sortAlphabetically(TupleQueryResult result) {
 
 		List<String> faqList = new ArrayList<String>();
-		HashMap<String, String> capitals = new HashMap<String, String>();
 
 		try {
 			while (result.hasNext()) {
@@ -249,10 +252,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 
 				if (set.getValue("q") != null) {
 					String value = set.getValue("q").stringValue();
-					String small = value;
-					small = small.toLowerCase();
-					capitals.put(small, value);
-					bui.append(small);
+					bui.append(value);
 					bui.append("----");
 				}
 				else {
@@ -263,6 +263,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 					bui.append("A: ");
 					String a = set.getValue("a").stringValue();
 					a = a.trim();
+					a = createLinks(a);
 					bui.append(a);
 					bui.append("----");
 				}
@@ -293,20 +294,30 @@ public class FAQTagHandler extends AbstractTagHandler {
 			e.printStackTrace();
 		}
 
-		Collections.sort(faqList);
+		Collator coll = Collator.getInstance(Locale.GERMAN);
+		coll.setStrength(Collator.SECONDARY);
+		Collections.sort(faqList, coll);
 
-		// replace all values with their corresponding not-only-small-values
-		// from HashMap
-
-		for (String s : faqList) {
-			String sm = s.split("----")[0];
-			if (capitals.containsKey(sm)) {
-				s.replace(sm, capitals.get(sm));
-			}
-		}
-
-		System.out.println(faqList.toString());
 		return faqList;
+	}
+
+	private String createLinks(String a) {
+		a = a.replaceAll("-L-", "<a href='");
+		a = a.replaceAll("-/L-", "' ><b>" + "link" + "</b></a>");
+
+		return a;
+	}
+
+	private String resolvePDFs(String a) {
+		if (a.isEmpty() || a.equals(" ") || !a.contains("-A-")) {
+			return a;
+		}
+		String name = a.substring(a.indexOf("-A-") + 3, a.indexOf("-/A-"));
+		System.out.println(name);
+		a = a.replaceAll("-A-", "<b><a href='/KnowWE/attach/FAQ%20Entry/" + name + "'>");
+		a = a.replaceAll("-/A-", "</a></b>");
+		System.out.println(a);
+		return a;
 	}
 
 	/**
