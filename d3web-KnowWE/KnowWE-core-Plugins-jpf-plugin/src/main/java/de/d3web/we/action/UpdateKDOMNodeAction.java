@@ -20,6 +20,7 @@
 
 package de.d3web.we.action;
 
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,10 +39,10 @@ import de.d3web.we.core.KnowWEParameterMap;
 public class UpdateKDOMNodeAction extends DeprecatedAbstractKnowWEAction {
 		
 	@Override
-	public String perform(KnowWEParameterMap parameterMap) 
+	public String perform(KnowWEParameterMap parameterMap)
 	{
 		String web = parameterMap.getWeb();
-		String text = parameterMap.get(KnowWEAttributes.TARGET);
+		String text = URLDecoder.decode(parameterMap.get(KnowWEAttributes.TARGET));
 		String name = parameterMap.getTopic();
 		String id = parameterMap.get(KnowWEAttributes.SECTION_ID);
 		
@@ -50,7 +51,7 @@ public class UpdateKDOMNodeAction extends DeprecatedAbstractKnowWEAction {
 
 		if( text != "" )
 		{
-			if( id != null ) 
+			if( id != null )
 			{
 				Map<String, String> nodesMap = new HashMap<String, String>();
 				nodesMap.put(id, text);
