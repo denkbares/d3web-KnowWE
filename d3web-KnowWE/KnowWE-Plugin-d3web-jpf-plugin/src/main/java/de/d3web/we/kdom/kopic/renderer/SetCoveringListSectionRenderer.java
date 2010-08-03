@@ -61,14 +61,18 @@ public class SetCoveringListSectionRenderer extends KnowWEDomRenderer {
 			}
 		}
 		
-		string.append(KnowWEUtils.maskHTML(
-				"<div id=\"" + sec.getID() + "\"><pre class=\"ReRenderSectionMarker\" id=\"" + sec.getID() + "-pre\" rel=\"{id:'"+sec.getID()+"'}\">"));
+
+		// string.append(KnowWEUtils.maskHTML(
+		// "<div id=\"" + sec.getID()
+		// + "\"><pre class=\"ReRenderSectionMarker\" id=\"" + sec.getID()
+		// + "-pre\" rel=\"{id:'" + sec.getID() + "'}\">"));
 		
 		StringBuilder b = new StringBuilder();
 		DelegateRenderer.getInstance().render(article, sec, user, b);
-		string.append(b.toString());
+		string.append("{{{" + b.toString() + "}}}");
 		
-		string.append(KnowWEUtils.maskHTML("</pre></div>"));
+
+		// string.append(KnowWEUtils.maskHTML("</pre></div>"));
 		
 		//string.append("/%\n");
 	}
