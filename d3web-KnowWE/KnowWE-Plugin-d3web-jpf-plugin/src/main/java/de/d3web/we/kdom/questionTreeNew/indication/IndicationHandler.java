@@ -94,11 +94,12 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 		if (dashTreeFather == null) {
 			// In case, that the element is already root element, no indication
 			// rule has to be defined, this a warning is not reasonable
-			return new ArrayList<KDOMReportMessage>(0);	
-			//return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
-			//		D3webModule.getKwikiBundle_d3web().
-			//				getString("KnowWE.rulesNew.indicationnotcreated")
-			//				+ " - no dashTreeFather found"));
+			return new ArrayList<KDOMReportMessage>(0);
+			// return Arrays.asList((KDOMReportMessage) new
+			// CreateRelationFailed(
+			// D3webModule.getKwikiBundle_d3web().
+			// getString("KnowWE.rulesNew.indicationnotcreated")
+			// + " - no dashTreeFather found"));
 		}
 
 		Section<QuestionTreeAnswerDefinition> answerSec = dashTreeFather
@@ -140,13 +141,16 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 				Condition cond = Utils.createCondition(article,
 						DashTreeUtils.getAncestorDashTreeElements(element));
 
-				Rule r = RuleFactory.createIndicationRule(newRuleID, qaset, cond);
+				if (cond != null) {
 
-				if (r != null) {
-					KnowWEUtils.storeSectionInfo(article, s, indicationStoreKey, r);
-					return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
-							r.getClass() + " : "
-									+ r.getId()));
+					Rule r = RuleFactory.createIndicationRule(newRuleID, qaset, cond);
+
+					if (r != null) {
+						KnowWEUtils.storeSectionInfo(article, s, indicationStoreKey, r);
+						return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+								r.getClass() + " : "
+										+ r.getId()));
+					}
 				}
 			}
 			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(

@@ -20,12 +20,25 @@
 
 package de.d3web.we.kdom.questionTreeNew;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
+import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 
 public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 
@@ -40,11 +53,43 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 			}
 		};
 
+		
+		this.addSubtreeHandler(new CheckConditionHandler());
+		
 		this.setCustomRenderer(new FontColorRenderer(FontColorRenderer.COLOR8));
 
 	}
+	
+	
+	/**
+	 * 
+	 * This handler just checks whether a valid condition COULD be created from this NumericConditionLine
+	 * using the same method as when real rules are created
+	 * 
+	 * @author Jochen
+	 * @created 03.08.2010 
+	 */
+	static class CheckConditionHandler extends SubtreeHandler<NumericCondLine>  {
+
+		@Override
+		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumericCondLine> s) {
+			
+			Section<DashTreeElement> dte = s.findAncestorOfType(DashTreeElement.class);
+			Section<? extends DashTreeElement> fatherDashTreeElement = DashTreeUtils.getFatherDashTreeElement(dte);
+			
+			Condition simpleCondition = Utils.createSimpleCondition(article, dte, fatherDashTreeElement);
+			if(simpleCondition == null) {
+				return Arrays.asList((KDOMReportMessage) new InvalidNumberError(
+						"invalid numeric condition"));
+			}
+			
+			return new ArrayList<KDOMReportMessage>(0);
+		}
+		
+	}
 
 	public static Double getValue(Section<NumericCondLine> sec) {
+		
 		String content = sec.getOriginalText();
 		if(content.startsWith("\"") && content.endsWith("\"")) {
 			content = content.substring(1, content.length()-1);
@@ -84,7 +129,11 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 					return new NumericalInterval(Double.parseDouble(doubles[0]),
 							Double.parseDouble(doubles[1]));
 				}
-				catch (NumberFormatException e) {
+				catch (NumberFormatException e ) {
+					return null;
+				}
+				catch (IntervalException ie) {
+					return null;
 				}
 			}
 		}

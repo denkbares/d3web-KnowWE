@@ -115,6 +115,7 @@ public class Utils {
 			}
 			else {
 				Double d = NumericCondLine.getValue(numCondSec);
+				if(d == null) return null;
 				String comp = NumericCondLine.getComparator(numCondSec);
 
 				if (d != null && comp != null) return FindingToConditionBuilder
