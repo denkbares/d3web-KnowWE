@@ -18,7 +18,7 @@ public class AllBeforeTypeSectionFinder extends SectionFinder {
 	}
 
 	
-	public static SectionFinder createFinder(KnowWEObjectType type) {
+	public static ISectionFinder createFinder(KnowWEObjectType type) {
 		
 			ConstraintSectionFinder f = new ConstraintSectionFinder(new AllBeforeTypeSectionFinder(type));
 			f.addConstraint(new SingleChildConstraint());

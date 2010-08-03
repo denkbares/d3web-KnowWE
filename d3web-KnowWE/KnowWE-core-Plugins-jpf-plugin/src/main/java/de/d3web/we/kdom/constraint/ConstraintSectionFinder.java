@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
@@ -20,15 +21,15 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
  *         matches
  * 
  */
-public class ConstraintSectionFinder extends SectionFinder {
+public class ConstraintSectionFinder implements ISectionFinder {
 	
-	private SectionFinder finder;
+	private ISectionFinder finder;
 	
-	public ConstraintSectionFinder(SectionFinder finder) {
+	public ConstraintSectionFinder(ISectionFinder finder) {
 		this.finder = finder;
 	}	
 	
-	public ConstraintSectionFinder(SectionFinder finder, SectionFinderConstraint c) {
+	public ConstraintSectionFinder(ISectionFinder finder, SectionFinderConstraint c) {
 		this.finder = finder;
 		this.constraintList = new ArrayList<SectionFinderConstraint>();
 		this.constraintList.add(c);

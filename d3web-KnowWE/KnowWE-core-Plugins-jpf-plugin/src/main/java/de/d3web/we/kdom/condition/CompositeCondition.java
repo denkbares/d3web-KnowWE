@@ -25,20 +25,22 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
+import de.d3web.we.kdom.bulletLists.CommentRenderer;
 import de.d3web.we.kdom.constraint.AtMostOneFindingConstraint;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.ExclusiveType;
-import de.d3web.we.kdom.dashTree.LineEndComment;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.SyntaxError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumFinder;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.utils.SplitUtility;
 
@@ -46,10 +48,10 @@ import de.d3web.we.utils.SplitUtility;
  * This class defines a KDOM-Schema to parse composite conditions as known from
  * proposition logics, using 'AND', 'OR', 'NOT' as keywords and brackets '(' and
  * ')' for to express association boundaries
- *
- *
+ * 
+ * 
  * @author Jochen
- *
+ * 
  */
 public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
@@ -76,7 +78,8 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 		// and
 		// comments
 		braced.addChildType(bracedContent);
-		braced.addChildType(new LineEndComment()); // explicit nodes for the
+		braced.addChildType(new CompCondLineEndComment()); // explicit nodes for
+															// the
 		// endline-comments
 		bracedContent.addChildType(this);
 
@@ -105,10 +108,10 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * Sets the set of terminalConditions for this CompositeCondition
-	 *
+	 * 
 	 * Any terminal that is not accepted by one of these will be marked by an
 	 * UnrecognizedTerminalCondition causing an error
-	 *
+	 * 
 	 * @param types
 	 */
 	public void setAllowedTerminalConditions(List<KnowWEObjectType> types) {
@@ -117,7 +120,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * tells whether a CompositeCondition is a disjunction
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -127,7 +130,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * returns the disjuncts of a disjunction
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -142,7 +145,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * tells whether a CompositeCondition is a Conjunction
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -152,7 +155,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * returns the conjunts of a conjunction
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -167,7 +170,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * tells whether a CompositeCondition is a bracedexpression
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -177,7 +180,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * returns the BracedCondition
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -190,7 +193,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * tells whether a CompositeCondition is a NegatedExpression
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -200,7 +203,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * returns the NegatedExpression of a Negation
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -214,7 +217,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * tells whether this CompositeCondition is a TerminalCondition
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -224,7 +227,7 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 	/**
 	 * returns the TerminalCondition of a (terminal-)CompositeCondition
-	 *
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -235,17 +238,39 @@ public class CompositeCondition extends DefaultAbstractKnowWEObjectType {
 
 		return terminal;
 	}
-
+	
+	/**
+	 * 
+	 * @created 03.08.2010
+	 * @param trimmed
+	 * @return
+	 */
+	static boolean hasLineBreakAfterComment(String text) {
+		int start = SplitUtility.lastIndexOfUnquoted(text, "//");
+		if (start != -1) {
+			Pattern pattern = Pattern.compile("\\r?\\n");
+			Matcher matcher = pattern.matcher(text);
+			int lineBreak = -1;
+			while (matcher.find()) {
+				// attempts to find the last line break
+				lineBreak = matcher.start();
+			}
+			if (lineBreak > start) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }
 
 /**
  * @author Jochen
- *
+ * 
  *         Type for a disjunct element in the CompositeCondition
- *
+ * 
  *         example: 'a OR b' here 'a' and 'b' are nodes of type disjunct
- *
+ * 
  */
 class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionFinder.ExclusiveType {
 	@Override
@@ -258,13 +283,13 @@ class Disjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionF
 
 /**
  * @author Jochen
- *
+ * 
  *         Type for a conjunct element in the CompositeCondition
- *
+ * 
  *         example: 'a AND b' here 'a' and 'b' are nodes of type conjunct
- *
+ * 
  */
-class Conjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionFinder.ExclusiveType{
+class Conjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionFinder.ExclusiveType {
 
 	static String[] CONJ_SIGNS = {
 			"AND", "UND", "&" };
@@ -278,11 +303,11 @@ class Conjunct extends NonTerminalCondition implements de.d3web.we.kdom.sectionF
 
 /**
  * @author Jochen
- *
+ * 
  *         Type for a negated element in the CompositeCondition
- *
+ * 
  *         example: 'NOT b' here 'b' is not nodes of type NegatedExpression
- *
+ * 
  */
 class NegatedExpression extends NonTerminalCondition {
 
@@ -292,11 +317,13 @@ class NegatedExpression extends NonTerminalCondition {
 	@Override
 	protected void init() {
 		AnonymousType negationSign = new AnonymousType("NegationSign");
-		ConstraintSectionFinder finder = new ConstraintSectionFinder(new OneOfStringEnumFinder(NEG_SIGNS), AtMostOneFindingConstraint.getInstance());
+		ConstraintSectionFinder finder = new ConstraintSectionFinder(
+				new OneOfStringEnumFinder(NEG_SIGNS),
+				AtMostOneFindingConstraint.getInstance());
 		negationSign.setSectionFinder(finder);
 		this.addChildType(negationSign);
 
-		this.sectionFinder = new SectionFinder() {
+		this.sectionFinder = new ISectionFinder() {
 
 			@Override
 			public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
@@ -304,7 +331,7 @@ class NegatedExpression extends NonTerminalCondition {
 				for (String sign : NEG_SIGNS) {
 					if (trimmed.startsWith(sign)) {
 						return new AllTextFinderTrimmed().lookForSections(text,
-								father,type);
+								father, type);
 					}
 				}
 				return null;
@@ -314,19 +341,20 @@ class NegatedExpression extends NonTerminalCondition {
 
 }
 
-class ConjunctSectionFinder extends SectionFinder {
+class ConjunctSectionFinder implements ISectionFinder {
 
 	private final String[] signs;
-	
-	public static SectionFinder createConjunctFinder(String[] signs) {
-		ConstraintSectionFinder csf = new ConstraintSectionFinder(new ConjunctSectionFinder(signs));
+
+	public static ISectionFinder createConjunctFinder(String[] signs) {
+		ConstraintSectionFinder csf = new ConstraintSectionFinder(
+				new ConjunctSectionFinder(signs));
 		csf.addConstraint(ExclusiveType.getInstance());
 		return csf;
 	}
 
 	private ConjunctSectionFinder(String[] signs) {
 		this.signs = signs;
-		
+
 	}
 
 	@Override
@@ -337,7 +365,7 @@ class ConjunctSectionFinder extends SectionFinder {
 			List<Integer> indicesOfUnbraced = SplitUtility.findIndicesOfUnbraced(text,
 					symbol,
 					CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
-			// store all found operator sign occ indices and its length
+			// store all found operator sign oc indices and its length
 			for (Integer integer : indicesOfUnbraced) {
 				allFoundOps.put(integer, symbol.length());
 			}
@@ -367,10 +395,10 @@ class ConjunctSectionFinder extends SectionFinder {
 
 /**
  * @author Jochen
- *
+ * 
  *         Content of an EmbracedCondition (without the brackets)
  * @see BracedCondition
- *
+ * 
  */
 class BracedConditionContent extends NonTerminalCondition {
 	@Override
@@ -378,7 +406,7 @@ class BracedConditionContent extends NonTerminalCondition {
 		this.sectionFinder = new BracedConditionContentFinder();
 	}
 
-	class BracedConditionContentFinder extends SectionFinder {
+	class BracedConditionContentFinder implements ISectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
@@ -400,10 +428,10 @@ class BracedConditionContent extends NonTerminalCondition {
 
 /**
  * @author Jochen
- *
+ * 
  *         Any expression enclosed with brackets is a BracedCondition each has a
  *         child of type BracedConditionContent
- *
+ * 
  */
 class BracedCondition extends NonTerminalCondition {
 
@@ -411,78 +439,139 @@ class BracedCondition extends NonTerminalCondition {
 	protected void init() {
 		this.sectionFinder = EmbracedExpressionFinder.createEmbracedExpressionFinder();
 	}
-	
+
 }
 
-	/**
-	 *
-	 * creates EmbracedExpressions if expression starts with a opening bracket
-	 * and concludes with a closing brackets AND these two correspond to each
-	 * other
-	 *
-	 * @author Jochen
-	 *
-	 */
-	class EmbracedExpressionFinder extends SectionFinder {
-		
-		public static SectionFinder createEmbracedExpressionFinder() {
-			ConstraintSectionFinder sectionFinder = new ConstraintSectionFinder(new EmbracedExpressionFinder());
-			sectionFinder.addConstraint(ExclusiveType.getInstance());
-			return sectionFinder;
-		}
-		
-		@Override
-		public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
-			String trimmed = text.trim();
-			int leadingSpaces = text.indexOf(trimmed);
-			int followingSpaces = text.length() - trimmed.length() - leadingSpaces;
-			boolean startsWithOpen = trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN));
-			int closingBracket = SplitUtility.findIndexOfClosingBracket(trimmed, 0,
+/**
+ * 
+ * creates EmbracedExpressions if expression starts with a opening bracket and
+ * concludes with a closing brackets AND these two correspond to each other
+ * 
+ * @author Jochen
+ * 
+ */
+class EmbracedExpressionFinder implements ISectionFinder {
+
+	public static ISectionFinder createEmbracedExpressionFinder() {
+		ConstraintSectionFinder sectionFinder = new ConstraintSectionFinder(
+				new EmbracedExpressionFinder());
+		sectionFinder.addConstraint(ExclusiveType.getInstance());
+		return sectionFinder;
+	}
+
+	@Override
+	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
+		String trimmed = text.trim();
+		int leadingSpaces = text.indexOf(trimmed);
+		int followingSpaces = text.length() - trimmed.length() - leadingSpaces;
+		boolean startsWithOpen = trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN));
+		int closingBracket = SplitUtility.findIndexOfClosingBracket(trimmed, 0,
 					CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 
-			// if it doesnt start with an opening bracket
-			if (!startsWithOpen) {
-				// its not an embraced expression for sure => return null
-				return null;
-			}
-
-			// throw error if no corresponding closing bracket can be found
-			if (closingBracket == -1) {
-				KDOMReportMessage.storeSingleError(father.getArticle(), father, this.getClass(), new SyntaxError("missing \")\""));
-				return null;
-			} else {
-				KDOMReportMessage.clearMessages(father.getArticle(), father, this.getClass());
-			}
-
-			// an embracedExpression needs to to start and end with '(' and ')'
-			if (startsWithOpen
-					&& trimmed.endsWith(Character.toString(CompositeCondition.BRACE_CLOSED))) {
-				// and the ending ')' needs to close the opening
-				if (closingBracket == trimmed.length() - 1) {
-					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
-							leadingSpaces, text.length() - followingSpaces));
-				}
-
-			}
-
-			// OR an embracedExpression can be concluded with a lineEnd-comment
-			int lastEndLineCommentSymbol = SplitUtility.lastIndexOfUnquoted(text, "//");
-			// so has to start with '(' and have a lineend-comment-sign after
-			// the closing bracket but nothing in between!
-			if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {
-				if (lastEndLineCommentSymbol > -1) {
-					// TODO fix: < 3 is inaccurate
-					// better check that there is no other expression in between
-					if (lastEndLineCommentSymbol - closingBracket < 3) {
-						return SectionFinderResult.createSingleItemList(new SectionFinderResult(
-								leadingSpaces, text.length()));
-					}
-				}
-
-			}
-
+		// if it doesnt start with an opening bracket
+		if (!startsWithOpen) {
+			// its not an embraced expression for sure => return null
 			return null;
 		}
-	
 
+		// throw error if no corresponding closing bracket can be found
+		if (closingBracket == -1) {
+			KDOMReportMessage.storeSingleError(father.getArticle(), father,
+					this.getClass(), new SyntaxError("missing \")\""));
+			return null;
+		}
+		else {
+			KDOMReportMessage.clearMessages(father.getArticle(), father, this.getClass());
+		}
+
+		// an embracedExpression needs to to start and end with '(' and ')'
+		if (startsWithOpen
+					&& trimmed.endsWith(Character.toString(CompositeCondition.BRACE_CLOSED))) {
+			// and the ending ')' needs to close the opening
+			if (closingBracket == trimmed.length() - 1) {
+				return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+							leadingSpaces, text.length() - followingSpaces));
+			}
+
+		}
+
+		// OR an embracedExpression can be concluded with a lineEnd-comment
+		int lastEndLineCommentSymbol = SplitUtility.lastIndexOfUnquoted(text, "//");
+		// so has to start with '(' and have a lineend-comment-sign after
+		// the closing bracket but nothing in between!
+		if (trimmed.startsWith(Character.toString(CompositeCondition.BRACE_OPEN))) {
+			if (lastEndLineCommentSymbol > -1 && !CompositeCondition.hasLineBreakAfterComment(trimmed)) {
+				// TODO fix: < 3 is inaccurate
+				// better check that there is no other expression in between
+				if (lastEndLineCommentSymbol - closingBracket < 3) {
+					return SectionFinderResult.createSingleItemList(new SectionFinderResult(
+								leadingSpaces, text.length()));
+				}
+			}
+
+		}
+
+		return null;
+	}
+
+
+
+}
+
+class CompCondLineEndComment extends DefaultAbstractKnowWEObjectType {
+
+	@Override
+	protected void init() {
+		this.setSectionFinder(new LineEndCommentFinder());
+		setCustomRenderer(new CommentRenderer());
+	}
+
+	/**
+	 * @author Jochen
+	 * 
+	 * 
+	 */
+	class LineEndCommentFinder implements ISectionFinder {
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text,
+					Section father, KnowWEObjectType type) {
+
+			// looks for an unquoted occurrence of '//'
+			int start = SplitUtility.lastIndexOfUnquoted(text, "//");
+			if (start != -1) {
+				// needs to check, whether the comment is in the last line of
+				// the content
+				Pattern pattern = Pattern.compile("\\r?\\n");
+				Matcher matcher = pattern.matcher(text);
+				int lineBreak = -1;
+				while (matcher.find()) {
+					// attempts to find the last line break
+					lineBreak = matcher.start();
+				}
+
+				//if no linebreak, then everthing from '//'
+				if (lineBreak == -1) {
+
+					return SectionFinderResult
+							.createSingleItemList(new SectionFinderResult(start,
+									text.length()));
+				} // linebreak check whether it is before or after the endline-comment
+				else {
+					if (CompositeCondition.hasLineBreakAfterComment(text)) {
+						// not comment for current expression
+						return null;
+					}
+					else {
+						return SectionFinderResult
+								.createSingleItemList(new SectionFinderResult(start,
+										lineBreak));
+					}
+
+				}
+			}
+			return null;
+		}
+
+	}
 }
