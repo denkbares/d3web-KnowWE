@@ -128,8 +128,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 			PSAction d3action = action.get().getAction(article, action);
 			
 			
-			if (d3action != null) {
-
+			if (d3action != null && d3Cond != null) {
 				Rule r = RuleFactory.createRule(mgn.createRuleID(), d3action, d3Cond,
 						null, null);
 				if (r != null) {

@@ -70,6 +70,19 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 		return super.needsToCreate(article, s)
 				|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
 	}
+	
+	@Override
+	public boolean needsToDestroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
+		return super.needsToDestroy(article, s)
+				|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+	}
+
+	@Override
+	public void destroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
+		Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
+				indicationStoreKey);
+		if (kbr != null) kbr.remove();
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -160,17 +173,6 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 		return new ArrayList<KDOMReportMessage>(0);
 	}
 
-	@Override
-	public boolean needsToDestroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
-		return super.needsToDestroy(article, s)
-				|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
-	}
 
-	@Override
-	public void destroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
-		Rule kbr = (Rule) KnowWEUtils.getObjectFromLastVersion(article, s,
-				indicationStoreKey);
-		if (kbr != null) kbr.remove();
-	}
 
 }

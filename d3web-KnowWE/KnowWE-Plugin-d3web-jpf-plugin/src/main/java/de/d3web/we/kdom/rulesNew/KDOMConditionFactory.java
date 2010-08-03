@@ -62,6 +62,7 @@ public class KDOMConditionFactory {
 			for (Section<? extends NonTerminalCondition> conjunct : conjuncts) {
 				Section<? extends CompositeCondition> subCondSection = conjunct.findChildOfType(CompositeCondition.class);
 				Condition subCond = createCondition(article, (Section<CompositeCondition>) subCondSection);
+				if(subCond == null) return null;
 				conds.add(subCond);
 			}
 
@@ -79,6 +80,7 @@ public class KDOMConditionFactory {
 				Section<? extends CompositeCondition> subCondSection = disjunct.findChildOfType(CompositeCondition.class);
 				Condition subCond = createCondition(article,
 						(Section<CompositeCondition>) subCondSection);
+				if(subCond == null) return null;
 				conds.add(subCond);
 			}
 
@@ -94,6 +96,7 @@ public class KDOMConditionFactory {
 			Section<? extends CompositeCondition> subCondSection = neg.findChildOfType(CompositeCondition.class);
 			Condition subCond = createCondition(article,
 					(Section<CompositeCondition>) subCondSection);
+			if(subCond == null) return null;
 			Condition cond = new CondNot(subCond);
 			return cond;
 		}
@@ -106,6 +109,7 @@ public class KDOMConditionFactory {
 
 			Condition cond = termChild.get().getTerminalCondition(article, termChild);
 
+			
 			return cond;
 		}
 

@@ -19,6 +19,9 @@
  */
 package de.d3web.we.kdom.rulesNew.terminalCondition;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.inference.condition.CondNumEqual;
@@ -32,24 +35,33 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
+import de.d3web.we.kdom.Priority;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.constraint.ConstraintSectionFinder;
 import de.d3web.we.kdom.constraint.SingleChildConstraint;
 import de.d3web.we.kdom.objects.QuestionReference;
+import de.d3web.we.kdom.objects.TermDefinition;
+import de.d3web.we.kdom.objects.TermReference;
+import de.d3web.we.kdom.report.KDOMError;
+import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.message.NoSuchObjectError;
 import de.d3web.we.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.d3web.we.kdom.sectionFinder.OneOfStringEnumUnquotedFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.TerminologyHandler;
+import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.SplitUtility;
 
 /**
  * A type implementing a cond-num TerminalCondition {@link TerminalCondition} It
  * has a allowed list of comparators
- *
+ * 
  * syntax: <questionID> <comp> <number> e.g.: mileage evaluation >= 130
- *
+ * 
  * @author Jochen
- *
+ * 
  */
 public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
@@ -66,8 +78,9 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 		this.childrenTypes.add(comparator);
 
 		// question
-		QuestionReference question = new QuestionReference();
-		ConstraintSectionFinder questionFinder = new ConstraintSectionFinder( new AllTextFinderTrimmed());
+		QuestionReference question = new QuestionNumReference();
+		ConstraintSectionFinder questionFinder = new ConstraintSectionFinder(
+				new AllTextFinderTrimmed());
 		questionFinder.addConstraint(SingleChildConstraint.getInstance());
 		question.setSectionFinder(questionFinder);
 		this.childrenTypes.add(question);
@@ -97,8 +110,6 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 	}
 
-
-
 	@Override
 	public TerminalCondition getTerminalCondition(KnowWEArticle article, Section<NumericalFinding> s) {
 		Section<QuestionReference> qRef = s.findSuccessor(QuestionReference.class);
@@ -113,7 +124,9 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 		if (!(q instanceof QuestionNum)) {
 			// TODO some reasonable error handling here!
+			return null;
 		}
+		
 
 		if (number != null && q != null && q instanceof QuestionNum) {
 
@@ -140,5 +153,56 @@ public class NumericalFinding extends D3webTerminalCondition<NumericalFinding> {
 
 		}
 		return null;
+	}
+
+	class QuestionNumReference extends QuestionReference {
+		
+		public QuestionNumReference() {
+			super();
+			this.subtreeHandler.clear();
+			this.addSubtreeHandler(Priority.HIGH,new TermRegistrationNum());
+			
+		}
+
+		class TermRegistrationNum extends SubtreeHandler<QuestionNumReference> {
+
+			@Override
+			public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionNumReference> s) {
+				
+				TerminologyHandler terminologyHandler = KnowWEUtils.getTerminologyHandler(article.getWeb());
+				
+				terminologyHandler.registerTermReference(
+						article, s);
+				
+				
+				
+				if (!terminologyHandler.isDefinedTerm(
+						article, s)
+						&& s.get().getTermObjectFallback(article, s) == null) {
+
+					return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
+							s.get().getName()
+									+ ": " + s.get().getTermName(s)));
+				}
+
+				// check for QuestionNum
+				Section<? extends TermDefinition<Question>> definitionSection = terminologyHandler.getTermDefinitionSection(article, s);
+				Question question = definitionSection.get().getTermObject(article, definitionSection);
+				if(! (question instanceof QuestionNum)) {
+					return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(
+							s.get().getName()
+									+ " QuestionNum expected:  " + s.get().getTermName(s)));
+				}
+				
+				return new ArrayList<KDOMReportMessage>(0);
+			}
+
+			@Override
+			public void destroy(KnowWEArticle article, Section<QuestionNumReference> s) {
+				KnowWEUtils.getTerminologyHandler(article.getWeb()).unregisterTermReference(
+						article, s);
+			}
+
+		}
 	}
 }

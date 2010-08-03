@@ -33,12 +33,14 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
+import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
+import de.d3web.we.terminology.D3webSubtreeHandler;
 
 public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 
@@ -69,7 +71,13 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 	 * @author Jochen
 	 * @created 03.08.2010 
 	 */
-	static class CheckConditionHandler extends SubtreeHandler<NumericCondLine>  {
+	static class CheckConditionHandler extends D3webSubtreeHandler<NumericCondLine>  {
+		
+		@Override
+		public boolean needsToCreate(KnowWEArticle article, Section<NumericCondLine> s) {
+			return super.needsToCreate(article, s)
+					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		}
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NumericCondLine> s) {
