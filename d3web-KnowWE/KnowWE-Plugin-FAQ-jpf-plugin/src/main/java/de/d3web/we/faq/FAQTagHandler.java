@@ -116,42 +116,32 @@ public class FAQTagHandler extends AbstractTagHandler {
 			if (values.get("major") != null) {
 
 				major = values.get("major");
-
 				try {
 					querystring =
 							querystring.replace("WHERE {", "WHERE { " +
 									"FILTER (regex(?m, \"" + major + "\")) .");
-					querystring = querystring.replace("}", ". ?t lns:hasmajor \"" + major + "\" .}");
 				}
-
-				// SELECT ?title
-				// WHERE {
-				// _:book :title ?title .
-				// FILTER (regex(?title, "SPARQL")) .
-				// }
 
 				catch (Exception e) {
 					return "Illegal query String: " + querystring + "<br />"
 								+ " no valid parameter for: " + "MAJOR";
 				}
-
 			}
+
 			if (values.get("status") != null) {
+
 				status = values.get("status");
-				// String[] states = status.split(" ");
-				// for (String s : states) {
 				try {
-					querystring = querystring.replace("}", ". ?t lns:hasstatus \"" + status
-								+ "\" }");
+					querystring =
+							querystring.replace("WHERE {", "WHERE { " +
+									"FILTER (regex(?s, \"" + status + "\")) .");
 				}
 				catch (Exception e) {
 					return "Illegal query String: " + querystring + "<br />"
 								+ " no valid parameter for: " + "STATUS";
 				}
-				// }
 			}
 		}
-		System.out.println(querystring);
 
 		/**
 		 * establish connection and send query
@@ -186,18 +176,16 @@ public class FAQTagHandler extends AbstractTagHandler {
 					e.getMessage();
 		}
 		finally {
-
 		}
 
 		/**
 		 * get actual HTML String based on the query result and return it
 		 */
 		String resultString = "";
-		String inner = "";
 		try {
 
-			inner = renderQueryResult(result);
-			resultString = renderPlugin(inner);
+			resultString = renderQueryResult(result);
+			resultString = renderPlugin(resultString);
 		}
 		catch (QueryEvaluationException e) {
 		}
@@ -215,6 +203,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 	 *         page
 	 * @throws QueryEvaluationException
 	 */
+	// * TODO wirft noch Fehler falls leeres Markup in der SEITE
 	private String renderQueryResult(TupleQueryResult result) throws QueryEvaluationException {
 
 		List<String> sortedFAQs = sortAlphabetically(result);
