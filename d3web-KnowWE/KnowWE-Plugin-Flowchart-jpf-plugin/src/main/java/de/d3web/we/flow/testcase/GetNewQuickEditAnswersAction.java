@@ -57,7 +57,7 @@ public class GetNewQuickEditAnswersAction extends AbstractAction {
 		for (Question q : questions) {
 			if (q.getName().equals(element)) {
 				if (q instanceof QuestionYN) {
-					context.getWriter().write("yes[:;:]no");
+					context.getWriter().write("Yes[:;:]No");
 					break;
 				}
 				else if (q instanceof QuestionChoice) {
