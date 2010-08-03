@@ -47,17 +47,13 @@ import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
- * e.g. [{KnowWEPlugin faq=all; status=I; major=BAInf;}] renders all faq entries
- * where status = I (Informatics) and major = BAInf (Bachelor Informatics)
+ * e.g. [{KnowWEPlugin faq=all; status=stud; major=inf;}] renders all faq
+ * entries where status = stud (student) and major = inf (informatics)
  * 
- * falls faq=all --> alle Einträge rendern = SPARQL_ALL
+ * if isset faq=all --> render all entries = SPARQL_ALL-querystring
  * 
- * falls nicht --> der Reihe nach die Attribute abfragen was gegeben ist, und
- * wenn ja dynamisch ins SPARQL_BASE reinziehen
- * 
- * TODO für die Attribute prüfen ob nur eins oder mehrere gegeben sind, ggf den
- * SPARQL anders dynamisch zusammensetzen. Solche mehreren Attribute müssen wenn
- * mit Leerzeichen getrennt werden
+ * if not isset faq=all --> query the attributes major and status and adapt the
+ * SPARQL accordingly
  * 
  * @author Martina Freiberg
  * @date July 2010
@@ -220,7 +216,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 			string.append(KnowWEUtils.maskHTML(resultVals[0]));
 			string.append(KnowWEUtils.maskHTML("</div>"));
 			string.append(KnowWEUtils.maskHTML("<div class='faq_answer'> "));
-			String answer = resolvePDFs(createLinks(resultVals[1]));
+			String answer = resolveLinks(resultVals[1]);
 			string.append(KnowWEUtils.maskHTML(answer));
 			string.append(KnowWEUtils.maskHTML("<div class='faq_tags'> "));
 			string.append(KnowWEUtils.maskHTML(resultVals[2]));
@@ -263,7 +259,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 					bui.append("A: ");
 					String a = set.getValue("a").stringValue();
 					a = a.trim();
-					a = createLinks(a);
+					a = resolveLinks(a);
 					bui.append(a);
 					bui.append("----");
 				}
@@ -309,16 +305,37 @@ public class FAQTagHandler extends AbstractTagHandler {
 	 * @param a the String potentially containing the link
 	 * @return the correctly HTML-marked-up answer string
 	 */
-	private String createLinks(String a) {
-		if (a.isEmpty() || a.equals(" ") || !a.contains("-L-")) {
+	private String resolveLinks(String a) {
+		if (a.isEmpty() || a.equals(" ") || !a.contains("[")) {
 			return a;
 		}
+		String complete = "";
 		String link = "";
-		while (a.contains("-L-")) {
-			link = a.substring(a.indexOf("-L-") + 3, a.indexOf("-/L-"));
-			a = a.replaceFirst("-L-", "<b><a href='" + link + "'>");
-			a = a.replaceFirst("-/L-", "</a></b>");
+		String linktext = "";
+
+		while (a.contains("[")) {
+
+			complete = a.substring(a.indexOf("[") + 1, a.indexOf("]"));
+			if (a.contains("|")) {
+				link = a.substring(a.indexOf("[") + 1, a.indexOf("|"));
+				linktext = a.substring(a.indexOf("|") + 1, a.indexOf("]"));
+			}
+			else {
+				link = complete;
+				linktext = complete;
+			}
+
+			if (a.contains(".pdf")) {
+				a = a.replace(complete, "<b><a href=\"/KnowWE/attach/FAQ%20Entry/" + link + "\">"
+						+ linktext + "</a></b>");
+			}
+			else {
+				a = a.replace(complete, "<b><a href=\"" + link + "\">" + linktext + "</a></b>");
+			}
+			a = a.replaceFirst("\\[", "");
+			a = a.replaceFirst("\\]", "");
 		}
+		System.out.println(a);
 		return a;
 	}
 
