@@ -56,7 +56,7 @@ public class Utils {
 
 		List<Condition> simpleConds = new ArrayList<Condition>();
 
-		for (int i = 0; i + 2 < ancestors.size(); i += 2) {
+		for (int i = 0; i + 2 <= ancestors.size(); i += 2) {
 			Condition simpleCond = createSimpleCondition(article, ancestors
 					.get(i), ancestors.get(i + 1));
 			if (simpleCond != null) {
