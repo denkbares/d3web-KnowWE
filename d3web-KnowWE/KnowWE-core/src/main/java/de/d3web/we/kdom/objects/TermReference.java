@@ -37,7 +37,7 @@ public abstract class TermReference<TermObject>
 			throw new IllegalArgumentException("termObjectClass can not be null");
 		}
 		this.termObjectClass = termObjectClass;
-		this.addSubtreeHandler(new TermRegistration());
+		this.addSubtreeHandler(new TermRegistrationHandler());
 	}
 
 	public Class<TermObject> getTermObjectClass() {
@@ -68,15 +68,14 @@ public abstract class TermReference<TermObject>
 		return null;
 	}
 
-	class TermRegistration extends SubtreeHandler<TermReference<TermObject>> {
+	class TermRegistrationHandler extends SubtreeHandler<TermReference<TermObject>> {
 
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<TermReference<TermObject>> s) {
 
 			KnowWEUtils.getTerminologyHandler(article.getWeb()).registerTermReference(article, s);
 
-			if (!KnowWEUtils.getTerminologyHandler(article.getWeb()).isDefinedTerm(article, s)
-					&& s.get().getTermObjectFallback(article, s) == null) {
+			if (s.get().getTermObject(article, s) == null) {
 
 				return Arrays.asList((KDOMReportMessage) new NoSuchObjectError(s.get().getName()
 						+ ": " + s.get().getTermName(s)));

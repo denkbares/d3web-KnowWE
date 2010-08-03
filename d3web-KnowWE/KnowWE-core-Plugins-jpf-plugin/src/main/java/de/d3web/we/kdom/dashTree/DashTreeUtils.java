@@ -69,16 +69,16 @@ public class DashTreeUtils {
 	@SuppressWarnings("unchecked")
 	public static Section<DashSubtree> getAncestorDashSubtree(Section<?> s, int dashLevel) {
 		if (dashLevel < 0) return null;
-		Section<?> father = s.findAncestorOfType(DashSubtree.class);
-		if (father != null) {
-			int fLevel = getDashLevel(father);
+		Section<?> dashSubtree = s.findAncestorOfType(DashSubtree.class);
+		if (dashSubtree != null) {
+			int fLevel = getDashLevel(dashSubtree);
 			if (fLevel < dashLevel) {
 				return null;
 			}
 			for (int i = fLevel; i > dashLevel; i--) {
-				father = father.getFather();
+				dashSubtree = dashSubtree.getFather();
 			}
-			return (Section<DashSubtree>) father;
+			return (Section<DashSubtree>) dashSubtree;
 		}
 		return null;
 	}
@@ -127,7 +127,11 @@ public class DashTreeUtils {
 		return 0;
 	}
 
-	public static boolean isChangedTermDefInAncestorSubtree(KnowWEArticle article, Section<?> s, int dashLevel) {
+	/**
+	 * Checks in the Subtree with the given dash level, if there are changed
+	 * Sections. Ignores TermReferences!
+	 */
+	public static boolean isChangeInAncestorSubtree(KnowWEArticle article, Section<?> s, int dashLevel) {
 
 		Section<?> subtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, dashLevel);
 
@@ -136,9 +140,8 @@ public class DashTreeUtils {
 					new ArrayList<Class<? extends KnowWEObjectType>>(1);
 			filteredTypes.add(TermReference.class);
 
-			if (subtreeAncestor.isOrHasChangedSuccessor(article.getTitle(), filteredTypes)) {
-				return true;
-			}
+			return subtreeAncestor.isOrHasChangedSuccessor(article.getTitle(), filteredTypes);
+
 		}
 		return false;
 	}

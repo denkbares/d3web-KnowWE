@@ -34,12 +34,18 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.KnowWEArticle;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.FindingToConditionBuilder;
+import de.d3web.we.kdom.dashTree.DashSubtree;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
+import de.d3web.we.kdom.dashTree.DashTreeUtils;
+import de.d3web.we.kdom.objects.KnowWETerm;
+import de.d3web.we.kdom.objects.QASetDefinition;
 import de.d3web.we.kdom.objects.QuestionDefinition;
+import de.d3web.we.kdom.objects.TermReference;
 
-public class Utils {
+public class QuestionDashTreeUtils {
 
 	/**
 	 * Creates a condition from a List of DashTreeElements. The List is supposed
@@ -126,6 +132,46 @@ public class Utils {
 
 		return null;
 
+	}
+
+	/**
+	 * Checks if the Subtree of the root Question has changed. Ignores
+	 * TermReferences!
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean isChangeInRootQuestionSubtree(KnowWEArticle article, Section<?> s) {
+
+		Section<?> rootQuestionSubtree = null;
+		
+		Section<DashTreeElement> thisElement = s.findAncestorOfType(DashTreeElement.class);
+		if (s.get() instanceof QuestionDefinition && DashTreeUtils.getDashLevel(thisElement) == 0) {
+			rootQuestionSubtree = thisElement.findAncestorOfType(DashSubtree.class);
+		}
+
+		if (rootQuestionSubtree == null) {
+			Section<?> lvl1SubtreeAncestor = DashTreeUtils.getAncestorDashSubtree(s, 1);
+			if (lvl1SubtreeAncestor != null) {
+				Section<DashTreeElement> lvl1Element = lvl1SubtreeAncestor.findChildOfType(DashTreeElement.class);
+				Section<? extends KnowWETerm> termRefSection = lvl1Element.findSuccessor(KnowWETerm.class);
+
+				if (termRefSection.get() instanceof QASetDefinition) {
+					rootQuestionSubtree = lvl1SubtreeAncestor;
+				}
+				else {
+					rootQuestionSubtree = lvl1SubtreeAncestor.getFather();
+				}
+			}
+		}
+
+		if (rootQuestionSubtree != null) {
+			List<Class<? extends KnowWEObjectType>> filteredTypes =
+					new ArrayList<Class<? extends KnowWEObjectType>>(1);
+			filteredTypes.add(TermReference.class);
+
+			return rootQuestionSubtree.isOrHasChangedSuccessor(article.getTitle(), filteredTypes);
+
+		}
+		return false;
 	}
 
 }

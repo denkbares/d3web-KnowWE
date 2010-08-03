@@ -63,7 +63,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
-			return DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
 	}
@@ -82,7 +82,7 @@ public class QClassLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<QClassLine> s) {
 			return super.needsToCreate(article, s) 
-					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 		
 		

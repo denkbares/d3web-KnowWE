@@ -41,7 +41,7 @@ public class QuestionTreeAnswerDefinition extends AnswerDefinition {
 
 	@Override
 	public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
-		return DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+		return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 	}
 
 }

@@ -156,7 +156,7 @@ public class QuestionLine extends DefaultAbstractKnowWEObjectType {
 
 		@Override
 		public boolean hasViolatedConstraints(KnowWEArticle article, Section<?> s) {
-			return DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+			return QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
 	}

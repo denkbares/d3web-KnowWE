@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
@@ -33,13 +32,10 @@ import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.dashTree.DashTreeElement;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
-import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.renderer.FontColorRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.kdom.sectionFinder.ConditionalSectionFinder;
-import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 
 public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
@@ -76,7 +72,7 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<NumericCondLine> s) {
 			return super.needsToCreate(article, s)
-					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
 		@Override
@@ -85,7 +81,7 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 			Section<DashTreeElement> dte = s.findAncestorOfType(DashTreeElement.class);
 			Section<? extends DashTreeElement> fatherDashTreeElement = DashTreeUtils.getFatherDashTreeElement(dte);
 			
-			Condition simpleCondition = Utils.createSimpleCondition(article, dte, fatherDashTreeElement);
+			Condition simpleCondition = QuestionDashTreeUtils.createSimpleCondition(article, dte, fatherDashTreeElement);
 			if(simpleCondition == null) {
 				return Arrays.asList((KDOMReportMessage) new InvalidNumberError(
 						"invalid numeric condition"));
@@ -94,6 +90,11 @@ public class NumericCondLine extends DefaultAbstractKnowWEObjectType {
 			return new ArrayList<KDOMReportMessage>(0);
 		}
 		
+		@Override
+		public void destroy(KnowWEArticle article, Section<NumericCondLine> s) {
+			// nothing to do here, the message destroys itself.
+		}
+
 	}
 
 	public static Double getValue(Section<NumericCondLine> sec) {

@@ -75,7 +75,7 @@ public class SolutionDashTreeElementContent extends DashTreeElementContent imple
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<SolutionDashTreeElementContent> s) {
 			return super.needsToCreate(article, s) 
-					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+					|| DashTreeUtils.isChangeInAncestorSubtree(article, s, 1);
 		}
 		
 		

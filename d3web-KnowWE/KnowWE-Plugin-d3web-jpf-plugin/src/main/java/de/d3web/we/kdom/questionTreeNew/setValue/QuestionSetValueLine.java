@@ -38,8 +38,7 @@ import de.d3web.we.kdom.dashTree.DashTreeUtils;
 import de.d3web.we.kdom.objects.AnswerReference;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.objects.QuestionReference;
-import de.d3web.we.kdom.questionTreeNew.Utils;
-import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.questionTreeNew.QuestionDashTreeUtils;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -96,13 +95,13 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<QuestionReference> s) {
 			return super.needsToCreate(article, s) 
-					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 		
 		@Override
 		public boolean needsToDestroy(KnowWEArticle article, Section<QuestionReference> s) {
 			return super.needsToDestroy(article, s)
-					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
 		@Override
@@ -138,7 +137,7 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 					if(a != null) {
 						String newRuleID = getKBM(article).createRuleID();
 
-						Condition cond = Utils.createCondition(article,
+						Condition cond = QuestionDashTreeUtils.createCondition(article,
 								DashTreeUtils.getAncestorDashTreeElements(s));
 						if(cond == null) {
 							return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()+": check condition"));

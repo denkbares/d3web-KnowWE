@@ -34,9 +34,8 @@ import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.dashTree.DashTreeUtils;
-import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.objects.SolutionReference;
-import de.d3web.we.kdom.questionTreeNew.Utils;
+import de.d3web.we.kdom.questionTreeNew.QuestionDashTreeUtils;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
@@ -150,13 +149,13 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<SolutionReference> s) {
 			return super.needsToCreate(article, s) 
-					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 		
 		@Override
 		public boolean needsToDestroy(KnowWEArticle article, Section<SolutionReference> s) {
 			return super.needsToDestroy(article, s)
-					|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
 
 		@Override
@@ -179,7 +178,7 @@ public class SolutionSetValueLine extends DefaultAbstractKnowWEObjectType {
 				if(score != null) {
 					String newRuleID = getKBM(article).createRuleID();
 
-					Condition cond = Utils.createCondition(article,
+					Condition cond = QuestionDashTreeUtils.createCondition(article,
 							DashTreeUtils.getAncestorDashTreeElements(s));
 
 					Rule r = RuleFactory.createHeuristicPSRule(newRuleID, sol, score, cond);

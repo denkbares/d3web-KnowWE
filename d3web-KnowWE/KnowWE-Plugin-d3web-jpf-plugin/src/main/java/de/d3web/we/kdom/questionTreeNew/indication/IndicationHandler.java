@@ -41,8 +41,8 @@ import de.d3web.we.kdom.objects.QuestionReference;
 import de.d3web.we.kdom.objects.QuestionnaireReference;
 import de.d3web.we.kdom.questionTreeNew.NumericCondLine;
 import de.d3web.we.kdom.questionTreeNew.QuestionDashTree;
+import de.d3web.we.kdom.questionTreeNew.QuestionDashTreeUtils;
 import de.d3web.we.kdom.questionTreeNew.QuestionTreeAnswerDefinition;
-import de.d3web.we.kdom.questionTreeNew.Utils;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -68,13 +68,13 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 		return super.needsToCreate(article, s)
-				|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+				|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 	}
 	
 	@Override
 	public boolean needsToDestroy(KnowWEArticle article, Section<KnowWETerm<?>> s) {
 		return super.needsToDestroy(article, s)
-				|| DashTreeUtils.isChangedTermDefInAncestorSubtree(article, s, 1);
+				|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class IndicationHandler extends D3webSubtreeHandler<KnowWETerm<?>> {
 
 				KnowledgeBaseManagement mgn = getKBM(article);
 				String newRuleID = mgn.createRuleID();
-				Condition cond = Utils.createCondition(article,
+				Condition cond = QuestionDashTreeUtils.createCondition(article,
 						DashTreeUtils.getAncestorDashTreeElements(element));
 
 				if (cond != null) {
