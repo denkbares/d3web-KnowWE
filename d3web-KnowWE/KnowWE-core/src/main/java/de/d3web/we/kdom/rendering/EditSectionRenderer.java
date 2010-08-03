@@ -85,7 +85,7 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		if(highlight && !isEditable) {
 			string.append(KnowWEUtils.maskHTML("<div class=\"searchword\">"));
 		}
-		string.append( KnowWEUtils.maskHTML( "<a name=\""+sec.getID()+"\"></a><div id=\"" + sec.getID() + "\">" ));
+		string.append( KnowWEUtils.maskHTML( "<a name=\""+sec.getID()+"\"></a><span id=\"" + sec.getID() + "\">" ));
 
 		if( sec.getArticle().equals( article ) ) {
 			string.append(KnowWEUtils.maskHTML( this.generateQuickEdit
@@ -117,7 +117,7 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 			// beginning of this method
 			string.append(subTreeContent);
 		}
-		string.append( KnowWEUtils.maskHTML( "</div>" ));
+		string.append( KnowWEUtils.maskHTML( "</span>" ));
 		if(highlight && !isEditable) {
 			string.append(KnowWEUtils.maskHTML("</div>"));
 		}
