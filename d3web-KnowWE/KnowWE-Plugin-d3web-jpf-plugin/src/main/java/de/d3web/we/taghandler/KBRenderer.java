@@ -64,7 +64,9 @@ import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.bulletLists.BulletContentType;
+import de.d3web.we.kdom.rule.ConditionActionRule;
 import de.d3web.we.kdom.rules.Rule;
+import de.d3web.we.kdom.rulesNew.RuleContentType;
 import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLRelation;
@@ -190,6 +192,24 @@ public class KBRenderer extends AbstractTagHandler {
 								idMap.put(kbRuleId, rule.getID());
 							}
 
+							// TODO:Johannes: Refactor this after old rule rendering
+							// is deprecated
+							List<Section<ConditionActionRule>> allRulesNew =
+								new ArrayList<Section<ConditionActionRule>>();
+							KnowWEEnvironment.getInstance().getArticleManager(
+									web).getArticle(topic).getSection()
+									.findSuccessorsOfType(ConditionActionRule.class, allRulesNew);
+							for (Section<ConditionActionRule> rule : allRulesNew) {
+								de.d3web.core.inference.Rule kbRuleId =
+									(de.d3web.core.inference.Rule) KnowWEUtils
+										.getStoredObject(
+												rule.getWeb(),
+												topic,
+												rule.getID(),
+												RuleContentType.ruleStoreKey);
+								idMap.put(kbRuleId.getId(), rule.getID());
+							}
+							
 							for (Section<BulletContentType> bullet : allBulletContentTypes) {
 								String kbRuleId = (String) KnowWEUtils
 										.getStoredObject(
@@ -207,18 +227,20 @@ public class KBRenderer extends AbstractTagHandler {
 			List<de.d3web.core.inference.Rule> sort = new ArrayList<de.d3web.core.inference.Rule>(
 					duplRules);
 			Collections.sort(sort, new RuleComparator());
+			// TODO:Johannes: Highlighting does not work
+			// due to strange JS Problems
 			for (de.d3web.core.inference.Rule r : sort) {
 				String kdomid = idMap.get(r.getId());
-				if (kdomid != null) {
-					String button = ("<img src=KnowWEExtension/images/page_white_find.png "
-							+ "class=\"highlight-rule\" "
-							+ "rel=\"{kdomid: '"
-							+ kdomid
-							+ "', topic: '"
-							+ topic
-							+ "', depth: 0, breadth: 0}\"" + "/></img>");
-					text.append(button);
-				}
+//				if (kdomid != null) {
+//					String button = ("<img src=KnowWEExtension/images/page_white_find.png "
+//							+ "class=\"highlight-rule\" "
+//							+ "rel=\"{kdomid: '"
+//							+ kdomid
+//							+ "', topic: '"
+//							+ topic
+//							+ "', depth: 1, breadth: 1}\"" + "/></img>");
+//					text.append(button);
+//				}
 
 				text.append("Rule: "
 						+ VerbalizationManager.getInstance().verbalize(
@@ -308,17 +330,19 @@ public class KBRenderer extends AbstractTagHandler {
 							if (type == XCLRelationType.explains) {
 								weight = "[" + rel.getWeight() + "]";
 							}
-
-							if (kdomid != null) {
-								String button = ("<img src=\"KnowWEExtension/images/page_white_find.png\" "
-										+ "class=\"highlight-xcl-relation\" "
-										+ "rel=\"{kdomid: '"
-										+ kdomid
-										+ "', topic: '"
-										+ topic
-										+ "', depth: 0, breadth: 0}\"" + "/></img>");
-								text.append(button);
-							}
+							
+							// TODO:Johannes: Highlighting does not work
+							// due to strange JS Problems
+//							if (kdomid != null) {
+//								String button = ("<img src=\"KnowWEExtension/images/page_white_find.png\" "
+//										+ "class=\"highlight-xcl-relation\" "
+//										+ "rel=\"{kdomid: '"
+//										+ kdomid
+//										+ "', topic: '"
+//										+ topic
+//										+ "', depth: 0, breadth: 0}\"" + "/></img>");
+//								text.append(button);
+//							}
 
 							text.append(type.getName() + weight + ": ");
 							text.append("&nbsp;&nbsp;&nbsp;"

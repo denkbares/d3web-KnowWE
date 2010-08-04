@@ -28,6 +28,7 @@ import java.util.List;
 import de.d3web.core.inference.KnowledgeSlice;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.session.Session;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -38,9 +39,14 @@ import de.d3web.we.kdom.basic.AnonymousType;
 import de.d3web.we.kdom.basic.CommentLineType;
 import de.d3web.we.kdom.bulletLists.CommentRenderer;
 import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.kopic.renderer.ReRenderSectionMarkerRenderer;
 import de.d3web.we.kdom.objects.KnowWETermMarker;
 import de.d3web.we.kdom.objects.SolutionDefinition;
+import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.EditSectionRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.InvalidNumberWarning;
@@ -57,9 +63,12 @@ import de.d3web.we.kdom.sectionFinder.EmbracedContentFinder;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;
 import de.d3web.we.kdom.sectionFinder.StringSectionFinderUnquoted;
 import de.d3web.we.kdom.sectionFinder.UnquotedExpressionFinder;
+import de.d3web.we.kdom.xcl.CoveringListContent;
+import de.d3web.we.kdom.xcl.XCLRelationWeight;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
@@ -81,7 +90,7 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 		this.sectionFinder = new AllTextSectionFinder();
 		this.addChildType(new ListSolutionType());
 
-		// cut the optinoal closing }
+		// cut the optional closing }
 		AnonymousType closing = new AnonymousType("closing-bracket");
 		closing.setSectionFinder(new StringSectionFinderUnquoted("}"));
 		this.addChildType(closing);
@@ -96,18 +105,16 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 		// the rest is CoveringRelations
 		this.addChildType(new CoveringRelation());
-		
-		
+
+		// quick edit with ReRenderSectionMarker
+		this.setCustomRenderer(new ReRenderSectionMarkerRenderer(
+				new EditSectionRenderer()));
+
 		// anything left is comment
 		AnonymousType residue = new AnonymousType("derRest");
 		residue.setSectionFinder(new AllTextFinderTrimmed());
 		residue.setCustomRenderer(new CommentRenderer());
 		this.addChildType(residue);
-		
-		
-		// quick edit
-		this.setCustomRenderer(new EditSectionRenderer());
-
 	}
 
 	class CoveringRelation extends DefaultAbstractKnowWEObjectType implements KnowWETermMarker {
@@ -129,7 +136,8 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 			});
 			
 			this.addSubtreeHandler(Priority.LOW, new CreateXCLRelationHandler());
-
+			this.setCustomRenderer(new CoveringRelationRenderer());
+			
 			// here also a comment might occur:
 			AnonymousType relationComment = new AnonymousType("comment");
 			relationComment.setSectionFinder(new RegexSectionFinder("[\\t ]*"
@@ -255,6 +263,9 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 											getKBM(article).getKnowledgeBase(),
 											condition,
 											solution, type, w, null);
+							
+							// set KDOMID here used in {@link KBRenderer}
+							relation.setKdmomID(s.getID());
 
 							KnowWEUtils.storeSectionInfo(article, s, relationStoreKey, relation);
 
@@ -316,5 +327,142 @@ public class CoveringList extends DefaultAbstractKnowWEObjectType {
 
 		}
 	}
+	
+	/**
+	 * @author Johannes Dienst
+	 * 
+	 * 			Highlights XCLRelations.
+	 * 			Answer Right: Green
+	 * 			Answer wrong: Red
+	 * 			Answer unknown: No Highlighting
+	 * 
+	 */
+	class CoveringRelationRenderer extends KnowWEDomRenderer<CoveringRelation> {
 
+		@Override
+		public void render(KnowWEArticle article, Section<CoveringRelation> sec, KnowWEUserContext user, StringBuilder string) {
+			
+			// wrapper for highlighting
+			string.append(KnowWEUtils.maskHTML("<span id='" + sec.getID()
+					+ "' class = 'XCLRelationInList'>"));
+			
+			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(sec
+					.getArticle().getWeb(), sec.getTitle(), sec.getID(),
+					CoveringListContent.KBID_KEY);
+
+			if (relation == null) {
+				DelegateRenderer.getInstance().render(article, sec, user, string);
+				return;
+			}
+
+			Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
+			
+			if (session != null) {
+				// eval the Relation to find the right Rendering
+				try {
+					boolean fulfilled = relation.eval(session);
+					// Highlight Relation
+					this.renderRelation(article, sec, user, fulfilled, string, true);
+					//close the wrapper
+					string.append(KnowWEUtils.maskHTML("</span>"));
+					return;
+				} catch (Exception e) {
+					// Call the XCLRelationMarkerHighlightingRenderer
+					// without any additional info
+					// string.append(this.renderRelationChildren(sec, user,
+					// false, false);
+				}
+			}
+			// Something went wrong: Delegate to children
+			this.renderRelation(article, sec, user, false, string, false);
+			// close the wrapper
+			string.append(KnowWEUtils.maskHTML("</span>"));
+		}		
+
+		/***
+		 * Replaces the SpecialDelegateRenderer functionality to enable highlighting
+		 * of Relations without their RelationWeights.
+		 * 
+		 * @param sec
+		 * @param user
+		 * @param web
+		 * @param topic
+		 * @param fulfilled
+		 * @param string
+		 * @return
+		 */
+		private void renderRelation(KnowWEArticle article, Section<CoveringRelation> sec,
+				KnowWEUserContext user, boolean fulfilled, StringBuilder string, boolean highlight) {
+
+			StringBuilder buffi = new StringBuilder();
+
+			// need a span below XCLRelationInList
+			if (!highlight) {
+				List<Section<?>> children = sec.getChildren();
+				for (Section<?> s : children) {
+					buffi.append(this.renderRelationChild(article, s,
+							fulfilled, user, ""));
+				}
+				string.append(KnowWEUtils.maskHTML(buffi.toString()));
+				return;
+			}
+			
+			// b true: Color green
+			if (fulfilled) {
+				// Iterate over children of the relation.
+				List<Section<?>> children = sec.getChildren();
+				for (Section<?> s : children) {
+					buffi.append(this.renderRelationChild(article, s,
+							fulfilled, user, "#33FF33"));
+				}
+
+			} else {
+				// b false: Color red
+				List<Section<?>> children = sec.getChildren();
+				for (Section<?> s : children) {
+					buffi.append(this.renderRelationChild(article, s,
+							fulfilled, user, "#FF9900"));
+				}
+
+			}
+			string.append(KnowWEUtils.maskHTML(buffi.toString()));
+		}
+		
+		/**
+		 * Renders the children of a CoveringRelation.
+		 * 
+		 * @param article
+		 * @param sec
+		 * @param fulfilled
+		 * @param user
+		 * @param color
+		 * @return
+		 */
+		private String renderRelationChild(KnowWEArticle article,
+				Section<?> sec, boolean fulfilled, KnowWEUserContext user,
+				String color) {
+			StringBuilder buffi = new StringBuilder();
+			KnowWEObjectType type = sec.getObjectType();
+
+			if (type instanceof XCLRelationWeight) { // renders contradiction in
+														// red if fulfilled
+
+				if (fulfilled && sec.getOriginalText().trim().equals("[--]")) {
+					FontColorBackgroundRenderer.getRenderer(
+							FontColorRenderer.COLOR2, null).render(article,
+							sec, user, buffi);
+				} else {
+					type.getRenderer().render(article, sec, user, buffi);
+				}
+
+			} else if (type instanceof CompositeCondition) {
+				FontColorBackgroundRenderer.getRenderer(null, color).render(
+						article, sec, user, buffi);
+			} else {
+				type.getRenderer().render(article, sec, user, buffi);
+			}
+
+			return buffi.toString();
+		}
+	}
 }

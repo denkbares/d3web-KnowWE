@@ -52,20 +52,23 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 	private static SolutionIDHighlightingRenderer instance;
 
 	@Override
-	public void render(KnowWEArticle article, Section sec, KnowWEUserContext user, StringBuilder string) {
+	public void render(KnowWEArticle article, Section sec,
+			KnowWEUserContext user, StringBuilder string) {
 		String solution = sec.getOriginalText().replace("\"", "").trim();
 
-		Session session = D3webUtils.getSession(article.getTitle(), user, article.getWeb());
+		Session session = D3webUtils.getSession(article.getTitle(), user,
+				article.getWeb());
 
-		String spanStart = KnowWEUtils.maskHTML("<span style=\"background-color: rgb(");
+		String spanStart = KnowWEUtils
+				.maskHTML("<span style=\"background-color: rgb(");
 		String spanStartEnd = KnowWEUtils.maskHTML(";\">");
 		String spanEnd = KnowWEUtils.maskHTML("</span>");
 
 		if (session != null) {
 
 			List<Solution> diags = session.getKnowledgeBase().getSolutions();
-			Collection<KnowledgeSlice> slices =
-					session.getKnowledgeBase().getAllKnowledgeSlicesFor(PSMethodXCL.class);
+			Collection<KnowledgeSlice> slices = session.getKnowledgeBase()
+					.getAllKnowledgeSlicesFor(PSMethodXCL.class);
 
 			for (Solution d : diags) {
 
@@ -73,19 +76,26 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 					Rating state;
 					XCLModel diagModel = this.findModel(solution, slices);
 
-					if (diagModel == null) state = new Rating(State.UNCLEAR);
-					else state = diagModel.getState(session);
+					if (diagModel == null)
+						state = new Rating(State.UNCLEAR);
+					else
+						state = diagModel.getState(session);
 
 					if (state.hasState(State.ESTABLISHED)) {
-						string.append(spanStart + "51, 255, 51)" + spanStartEnd);
+						string
+								.append(spanStart + "51, 255, 51)"
+										+ spanStartEnd);
 					}
 
 					if (state.hasState(State.EXCLUDED)) {
-						string.append(spanStart + "255, 153, 0)" + spanStartEnd);
+						string
+								.append(spanStart + "255, 153, 0)"
+										+ spanStartEnd);
 					}
 
 					if (state.hasState(State.SUGGESTED)) {
-						string.append(spanStart + "220, 200, 11)" + spanStartEnd);
+						string.append(spanStart + "220, 200, 11)"
+								+ spanStartEnd);
 					}
 
 					if (state.hasState(State.UNCLEAR)) {
@@ -93,14 +103,13 @@ public class SolutionIDHighlightingRenderer extends KnowWEDomRenderer {
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			string.append("");
 		}
 
-		new ObjectInfoLinkRenderer(
-				FontColorRenderer.getRenderer(FontColorRenderer.COLOR1)).
-				render(article, sec, user, string);
+		new ObjectInfoLinkRenderer(FontColorRenderer
+				.getRenderer(FontColorRenderer.COLOR1)).render(article, sec,
+				user, string);
 		string.append(spanEnd);
 	}
 

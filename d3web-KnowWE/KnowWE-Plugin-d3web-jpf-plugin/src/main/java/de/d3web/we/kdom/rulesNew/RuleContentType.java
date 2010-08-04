@@ -28,14 +28,21 @@ import java.util.List;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.inference.condition.UnknownAnswerException;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.manage.RuleFactory;
+import de.d3web.core.session.Session;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.condition.CompositeCondition;
+import de.d3web.we.kdom.kopic.renderer.ReRenderSectionMarkerRenderer;
+import de.d3web.we.kdom.renderer.FontColorBackgroundRenderer;
+import de.d3web.we.kdom.renderer.FontColorRenderer;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.report.KDOMReportMessage;
 import de.d3web.we.kdom.report.message.CreateRelationFailed;
 import de.d3web.we.kdom.report.message.ObjectCreatedMessage;
@@ -48,7 +55,10 @@ import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalFinding;
 import de.d3web.we.kdom.rulesNew.terminalCondition.NumericalIntervallFinding;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
 import de.d3web.we.terminology.D3webSubtreeHandler;
+import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.KnowWEUtils;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
+import de.d3web.we.kdom.rendering.EditSectionRenderer;
 
 /**
  * @author Jochen
@@ -59,6 +69,8 @@ import de.d3web.we.utils.KnowWEUtils;
  */
 public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 
+	public static final String ruleStoreKey = "RULE_STORE_KEY";
+	
 	/**
 	 * Here the type is configured. It takes all the text is gets. A
 	 * ConditionActionRule-type is initialized and inserted as child-type.
@@ -67,9 +79,15 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 	public RuleContentType() {
 		// take all the text that is passed
 		this.sectionFinder = new AllTextSectionFinder();
+		
+		// Add DIV with ReRenderSectionMarker
+		this.setCustomRenderer(
+				new ReRenderSectionMarkerRenderer(
+						DelegateRenderer.getInstance()));
 
 		// configure the rule
 		ConditionActionRule rule = new ConditionActionRule(new RuleAction());
+		rule.setCustomRenderer(new RuleHighlightingRenderer());
 		List<KnowWEObjectType> termConds = new ArrayList<KnowWEObjectType>();
 
 		// add all the various allowed TerminalConditions here
@@ -86,7 +104,7 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		this.addChildType(rule);
 
 	}
-
+	
 	/**
 	 * @author Jochen
 	 *
@@ -95,8 +113,6 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 	 *
 	 */
 	class RuleCompiler extends D3webSubtreeHandler<ConditionActionRule> {
-
-		private final String ruleStoreKey = "RULE_STORE_KEY";
 
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<ConditionActionRule> s) {
@@ -161,8 +177,79 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		}
 
 	}
+	
+	/**
+	 * @author Johannes Dienst
+	 * 
+	 * 			Highlights Rules according to state.
+	 * 
+	 */
+	class RuleHighlightingRenderer extends KnowWEDomRenderer<ConditionActionRule> {
 
+		@Override
+		public void render(KnowWEArticle article,
+				Section<ConditionActionRule> sec, KnowWEUserContext user,
+				StringBuilder string) {
 
+			Session session = D3webUtils.getSession(article.getTitle(), user,
+					article.getWeb());
+			Rule rule = (Rule) KnowWEUtils.getStoredObject(sec.getWeb(), sec
+					.getTitle(), sec.getID(),
+					RuleContentType.ruleStoreKey);
+			
+			this.highlightRule(article, sec, rule, session, user, string);
+		}
+		
+		private static final String highlightMarker = "HIGHLIGHT_MARKER";
+		
+		/**
+		 * Stores the Renderer used in <b>highlightRule<b>
+		 */
+		@SuppressWarnings("unchecked")
+		KnowWEDomRenderer greenRenderer = 
+			new EditSectionRenderer(FontColorBackgroundRenderer
+				.getRenderer(highlightMarker, FontColorRenderer.COLOR5, "#33FF33"));
+		
+		@SuppressWarnings("unchecked")
+		KnowWEDomRenderer redRenderer = 
+			new EditSectionRenderer(FontColorBackgroundRenderer
+				.getRenderer(highlightMarker, FontColorRenderer.COLOR5, "#FF9900"));
+		
+		@SuppressWarnings("unchecked")
+		KnowWEDomRenderer exceptionRenderer = 
+			new EditSectionRenderer(FontColorBackgroundRenderer
+				.getRenderer(highlightMarker, FontColorRenderer.COLOR5, null));
+		
+		/**
+		 * Renders the Rule with highlighting.
+		 *
+		 * @param sec
+		 * @param rc
+		 * @param session
+		 * @return
+		 */
+		@SuppressWarnings("unchecked")
+		private void highlightRule(KnowWEArticle article,
+				Section<ConditionActionRule> sec, Rule r, Session session,
+				KnowWEUserContext user, StringBuilder string) {
+
+			if (r == null)
+				DelegateRenderer.getInstance().
+					render(article, sec, user, string);
+
+			try {
+				if (r.canFire(session))
+					this.greenRenderer.render(article, sec, user, string);
+				else
+					this.redRenderer.render(article, sec, user, string);
+			} catch (UnknownAnswerException e) {
+				this.exceptionRenderer.render(article, sec, user, string);
+			} catch (Exception e) {
+				this.exceptionRenderer.render(article, sec, user, string);
+			}
+		}
+
+	}
 }
 
 

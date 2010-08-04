@@ -64,7 +64,7 @@ KNOWWE.plugin.d3web.actions = function(){
             //add highlight rule
             if(_KS('.highlight-rule').length != 0){
                 _KS('.highlight-rule').each(function( element ){
-                    _KE.add('click', element, KNOWWE.plugin.d3web.actions.highlightXCLRelation);
+                    _KE.add('click', element, KNOWWE.plugin.d3web.actions.highlightRule);
                 });
             } 
         },
@@ -166,7 +166,7 @@ KNOWWE.plugin.d3web.actions = function(){
             // Restore the Highlighting that was before
             var restore = document.getElementById('uniqueMarker');
             if (restore) {
-                KNOWWE.core.rerendercontent.updateNode(restore.className, rel.topic, null);
+                KNOWWE.plugin.d3web.actions.updateNode(restore.className, rel.topic, null);
             }
             KNOWWE.plugin.d3web.actions.highlightNode(rel.kdomid, rel.topic, rel.depth, rel.breadth, event);
         },
@@ -202,7 +202,7 @@ KNOWWE.plugin.d3web.actions = function(){
                 response : {
                     action : 'update',
                     ids : [],
-                    fn : function() {                       
+                    fn : function() {
                         // set the new Marker: Get the root node
                         var element = document.getElementById(node);
                           
@@ -212,16 +212,31 @@ KNOWWE.plugin.d3web.actions = function(){
                         }
                             
                         // get to the given breadth
-                        for (var j = 0; j < breadth; j++) {                       
+                        for (var j = 0; j < breadth; j++) {
                             if (element.nextSibling)
                                 element = element.nextSibling;
                         }
-                                                  
+                        
+                        // TODO:Johannes:This is an ugly fix
+                        //  for a highlighting problem
+                        if (element.firstChild.style == undefined) {
+                        	element = element.firstChild.nextSibling;
+                        }
+                              
                         if (element) {
-                            element.firstChild.style.backgroundColor = "yellow";
+                        	// for quoted questions and rules
+                        	if (element.firstChild.style == undefined 
+                        		|| element.className == 'HIGHLIGHT_MARKER') {
+                        		element.style.backgroundColor = "yellow";
+                            	element.id = "uniqueMarker";
+                            	element.className = node;
+                            	element.scrollIntoView(true);
+                        	} else {
+                        	element.firstChild.style.backgroundColor = "yellow";
                             element.firstChild.id = "uniqueMarker";
                             element.firstChild.className = node;
                             element.scrollIntoView(true);
+                        	}
                         }
                     }
                 }

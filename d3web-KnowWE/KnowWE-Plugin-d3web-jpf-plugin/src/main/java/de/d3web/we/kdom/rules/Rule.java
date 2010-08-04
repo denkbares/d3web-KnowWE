@@ -51,7 +51,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 public class Rule extends DefaultAbstractKnowWEObjectType {
 
-	public static final String KBID_KEY = "kbid";
+	public static final String KBID_KEY = "RULE_STORE_KEY";
 	public static final String KDOMID_KEY = "kdomid";
 
 	@Override

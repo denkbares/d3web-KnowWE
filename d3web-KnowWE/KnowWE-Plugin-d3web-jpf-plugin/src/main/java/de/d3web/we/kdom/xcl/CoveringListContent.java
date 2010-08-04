@@ -49,7 +49,7 @@ import de.d3web.xcl.inference.PSMethodXCL;
 
 public class CoveringListContent extends XMLContent {
 
-	public static final String KBID_KEY = "kbid";
+	public static final String KBID_KEY = "XCLRELATION_STORE_KEY";
 	private final Pattern p = Pattern.compile("\"");
 
 	@Override
