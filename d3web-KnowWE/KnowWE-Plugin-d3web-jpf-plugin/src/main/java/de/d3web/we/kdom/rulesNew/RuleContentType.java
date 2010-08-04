@@ -233,17 +233,17 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 				Section<ConditionActionRule> sec, Rule r, Session session,
 				KnowWEUserContext user, StringBuilder string) {
 
-			if (r == null)
+			if (r == null || session == null)
 				DelegateRenderer.getInstance().
 					render(article, sec, user, string);
 
 			try {
-				if (r.canFire(session))
+				if (r.hasFired(session))
 					this.greenRenderer.render(article, sec, user, string);
 				else
-					this.redRenderer.render(article, sec, user, string);
-			} catch (UnknownAnswerException e) {
-				this.exceptionRenderer.render(article, sec, user, string);
+					DelegateRenderer.getInstance().
+						render(article, sec, user, string);
+//					this.redRenderer.render(article, sec, user, string);
 			} catch (Exception e) {
 				this.exceptionRenderer.render(article, sec, user, string);
 			}
