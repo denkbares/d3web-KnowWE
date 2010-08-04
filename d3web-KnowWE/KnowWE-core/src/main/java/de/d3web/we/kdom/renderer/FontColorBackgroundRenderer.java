@@ -41,7 +41,8 @@ public class FontColorBackgroundRenderer extends StyleRenderer {
 	/**
 	 * Use static Method getRenderer() instead!
 	 * 
-	 * @param s
+	 * @param color
+	 * @param background
 	 */	
 	public FontColorBackgroundRenderer(String color, String background) {
 		super(
@@ -51,13 +52,40 @@ public class FontColorBackgroundRenderer extends StyleRenderer {
 	}
 	
 	/**
+	 * Use static Method getRenderer() instead!
+	 * 
+	 * @param color
+	 * @param background
+	 */	
+	public FontColorBackgroundRenderer(String cssClass, String color, String background) {
+		super(	cssClass,
+				(color == null ? "" : color+";") +
+				(background == null ? "" : "background-color:" + background)
+				);
+	}
+	
+	/**
 	 * When normal functionality as in FontColorRenderer: Set background null;
 	 * 
 	 * @param color
+	 * @param background
 	 * @return
 	 */
 	public static FontColorBackgroundRenderer getRenderer(String color, String background) {
 		return new FontColorBackgroundRenderer(color, background);
+	}
+	
+	/**
+	 * Allows for setting the class attribute.
+	 * 
+	 * @param cssClass
+	 * @param color
+	 * @param background
+	 * @return
+	 */
+	public static FontColorBackgroundRenderer getRenderer(String cssClass,
+			String color, String background) {
+		return new FontColorBackgroundRenderer(cssClass, color, background);
 	}
 	
 }
