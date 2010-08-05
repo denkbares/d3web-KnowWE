@@ -30,8 +30,6 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.d3web.we.core.semantic.ISemanticCore;
-import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.include.Include;
@@ -59,7 +57,6 @@ public class KnowWEArticleManager {
 	}
 
 	private final String web;
-	private final ISemanticCore sc;
 
 	public String jarsPath;
 	public String reportPath;
@@ -86,7 +83,6 @@ public class KnowWEArticleManager {
 					+ File.separatorChar + "reports";
 
 		}
-		sc = SemanticCoreDelegator.getInstance(env);
 	}
 
 	public String getWebname() {
