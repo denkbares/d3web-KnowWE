@@ -131,7 +131,7 @@ public class OwlHelper {
 		} catch (IllegalArgumentException e) {
 
 		}
-
+		
 		try {
 			return URLEncoder.encode(temp, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -232,6 +232,7 @@ public class OwlHelper {
 	 * @throws RepositoryException
 	 */
 	public URI createURI(String value) {
+		if(value == null) return null;
 		value = beautify(value);
 		return repositoryConn.getValueFactory().createURI(basens, value);
 	}
