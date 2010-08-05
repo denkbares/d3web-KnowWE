@@ -207,7 +207,8 @@ public class KBRenderer extends AbstractTagHandler {
 												topic,
 												rule.getID(),
 												RuleContentType.ruleStoreKey);
-								idMap.put(kbRuleId.getId(), rule.getID());
+								if (kbRuleId != null)
+									idMap.put(kbRuleId.getId(), rule.getID());
 							}
 							
 							for (Section<BulletContentType> bullet : allBulletContentTypes) {
