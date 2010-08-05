@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 
 import de.d3web.we.action.Action;
 import de.d3web.we.action.ActionContext;
-import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.knowwe.plugin.Plugins;
 
 /**
@@ -204,12 +203,4 @@ public class KnowWEFacade {
 		return KnowWEEnvironment.getInstance().getNodeData(web, topic, nodeID);
 	}
 
-	/**
-	 * This returns a dump of the current Ontology
-	 * 
-	 * @return
-	 */
-	public void writeOwl(OutputStream stream) {
-		SemanticCoreDelegator.getInstance().writeDump(stream);
-	}
 }
