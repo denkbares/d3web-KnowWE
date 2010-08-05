@@ -37,10 +37,12 @@ import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEIncludeManager;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
+import de.d3web.we.event.EventManager;
+import de.d3web.we.event.FullParseEvent;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.include.Include;
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.kdom.validation.Validator;
@@ -169,6 +171,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		startTime = System.currentTimeMillis();
 
 		if (fullParse) {
+			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null, this.sec);
+			// Semantic Core should listen to this event instead of being referenced directly
 			SemanticCoreDelegator.getInstance().clearContext(this);
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.FINE,
@@ -383,7 +387,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	 * out article is root node, so no sectioner necessary
 	 */
 	@Override
-	public SectionFinder getSectioner() {
+	public ISectionFinder getSectioner() {
 		// Is not needed for KnowWEArticle
 		return null;
 	}
