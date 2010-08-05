@@ -2,8 +2,11 @@ package de.d3web.wisec.writers;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.List;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
+import de.d3web.wisec.model.SourceList;
 import de.d3web.wisec.model.Substance;
 import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.WISECModel;
@@ -33,11 +36,14 @@ public class SubstanceListWriter extends WISECWriter {
 	}
 
 	private void write(SubstanceList list, Writer writer) throws IOException {
+		writeBreadcrumb(writer, list);
 		writer.write("!!! " + list.getName() + "\n\n");
+
+		// WRITE THE IDENTIFICATION HEADER
+		writeIdentificationHeader(writer, list);
 
 		// WRITE THE SUBSTANCE LIST CRITERIA
 		writer.write("!! Criteria \n\n");
-
 		writeKnowledge(writer, "%%ListCriteria\n");
 
 		for (String key : list.criteria.keySet()) {
@@ -46,12 +52,11 @@ public class SubstanceListWriter extends WISECWriter {
 				writer.write("|| " + key + " | " + value + " \n");
 			}
 		}
-
 		String sourceID = list.info.get("Source_ID");
 		if (sourceID != null) {
 			writeKnowledge(writer, "-\n\n" +
 					"@ListID: " + list.getId() + "\n\n" +
-					"@UpperlistID: " + sourceID + "\n" +
+					"@SourceID: " + sourceID + "\n" +
 					"%\n");
 
 			writer.write("\n __Source:__ ");
@@ -65,6 +70,51 @@ public class SubstanceListWriter extends WISECWriter {
 
 		// WRITE THE LIST OF SUBSTANCES
 		writeSubstanceTable(writer, list);
+	}
+
+	private void writeIdentificationHeader(Writer writer, SubstanceList list) throws IOException {
+		SourceList sourceList = model.getSourceListForID(list.info.get("Source_ID"));
+		StringBuffer buffy = new StringBuffer();
+		buffy.append("|| Source_ID   | " + getWikiedValueForAttribute("Source_ID", list) + "\n");
+		buffy.append("|| Source_Name | [" + sourceList.get("Name") + " | " +
+				SourceListWriter.getWikiFilename(sourceList.getId()) + "]\n");
+		buffy.append("|| List_ID     | " + getWikiedValueForAttribute("ID", list) + "\n");
+		buffy.append("|| List_Name   | " + getWikiedValueForAttribute("Name", list) + "\n");
+		buffy.append("|| Author      | " + sourceList.get("Author") + "\n");
+		buffy.append("|| Country     | " + sourceList.get("Country") + "\n");
+
+		buffy.append("|| Criteria_Code | " + getWikiedValueForAttribute("Criteria_Code", list)
+				+ "\n");
+		buffy.append("|| List_allocation | " + getWikiedValueForAttribute("List_allocation", list)
+				+ "\n");
+		buffy.append("|| Number_of_substances | "
+				+ getWikiedValueForAttribute("Number_of_substances", list) + "\n");
+
+		buffy.append("\n");
+		writer.write(buffy.toString());
+
+	}
+
+	private String getWikiedValueForAttribute(String attribute, SubstanceList list) {
+		StringBuffer buffy = new StringBuffer();
+		if (attribute.equalsIgnoreCase("Name")) {
+			buffy.append("[" + ConverterUtils.clean(list.getName()) + " | "
+					+ SubstanceListWriter.getWikiFileNameFor(list.getId()) + "] ");
+		}
+		else {
+			String value = list.info.get(attribute);
+			if (value == null) {
+				value = "";
+			}
+			buffy.append(ConverterUtils.clean(value) + " ");
+		}
+		return buffy.toString();
+	}
+
+	private void writeBreadcrumb(Writer writer, SubstanceList list) throws IOException {
+		super.writeBreadcrumb(writer);
+		writer.write(" > [Index of Lists|" + SubstanceListsOverviewWriter.FILENAME + "] > "
+				+ list.getName() + "\n\n");
 	}
 
 	private void writeKnowledge(Writer writer, String knowledge) throws IOException {
@@ -86,31 +136,67 @@ public class SubstanceListWriter extends WISECWriter {
 	}
 
 	private void printSubstanceTable(Writer writer, SubstanceList list) throws IOException {
-		for (String header : list.substanceAttributes) {
-			writer.write("|| " + header + " ");
+		StringBuffer buffy = new StringBuffer();
+
+		buffy.append("%%zebra-table \n%%sortable\n");
+
+		List<String> FIRST_HEADERS = Arrays.asList(new String[] {
+				"CAS_No", "Action", "EC_No", "IUPAC_name", "Chemical_name" });
+
+		for (String header : FIRST_HEADERS) {
+			buffy.append("|| " + header + " ");
 		}
-		writer.write("\n");
+		for (String header : list.substanceAttributes) {
+			if (!FIRST_HEADERS.contains(header)) {
+				buffy.append("|| " + header + " ");
+			}
+		}
+
+		buffy.append("\n");
 		for (Substance substance : list.substances) {
-			for (String attribute : list.substanceAttributes) {
-				String value = ConverterUtils.clean(substance.values.get(attribute));
-				writer.write("| ");
-				if (attribute.equals(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
-					if (model.activeSubstances.contains(substance)) {
-						writer.write(" [ " + value + " | "
-								+ SubstanceInfoWriter.getWikiFileNameFor(value) + "] ");
+			for (String header : FIRST_HEADERS) {
+				if (header.equals("Action")) {
+					if (model.activeSubstances.contains(substance.getName())) {
+						buffy.append("| A ");
 					}
 					else {
-						writer.write(" [activate] " + value + " ");
-					}
-
-				}
+						buffy.append("| [+ | dummy] ");
+					}					
+				} 
 				else {
-					writer.write(value + " ");
+					buffy.append("| ");
+					getCellValue(buffy, substance, header);
 				}
 			}
-			writer.write("\n");
+			for (String header : list.substanceAttributes) {
+				if (!FIRST_HEADERS.contains(header)) {
+					buffy.append("| ");
+					getCellValue(buffy, substance, header);
+				}
+			}
+			buffy.append("\n");
 		}
-		writer.write("\n");
+		buffy.append("\n");
+		buffy.append("/%\n/%\n");
+		writer.write(buffy.toString());
+	}
+
+
+	private void getCellValue(StringBuffer buffy, Substance substance, String header) {
+		String value = ConverterUtils.clean(substance.values.get(header));
+		if (header.equals(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
+			if (model.activeSubstances.contains(substance.getName())) {
+				buffy.append(" [ " + value + " | "
+						+ SubstanceInfoWriter.getWikiFileNameFor(value) + "] ");
+			}
+			else {
+				buffy.append(value + " ");
+			}
+
+		}
+		else {
+			buffy.append(value + " ");
+		}
 	}
 
 

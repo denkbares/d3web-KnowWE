@@ -30,15 +30,13 @@ public class OverviewWriter extends WISECWriter {
 
 
 	private void writeGeneralSettings(Writer writer) throws IOException {
-		// writer.write("!!! General \n");
-		// writer.write("* Set occurrence threshold: " +
-		// model.SUBSTANCE_OCCURRENCE_THRESHOLD + "\n");
-		writer.write("* Number of substances used: " + model.activeSubstances.size() + "\n");
-		// writer.write("* Total use of substances in lists: " +
-		// computeNumberOfTotalUse() + "\n");
-		writer.write("* [List of all substances | " + ALL_SUBSTANCES + "]\n");
-		writer.write("* [List of all substance lists | " + ALL_SUBSTANCE_LISTS + "]\n");
-
+		writer.write("* [List of all sources | " + WISECExcelConverter.FILE_PRAEFIX
+				+ "All_Sources ] (" + model.sourceLists.size() + " sources)\n");
+		writer.write("* [List of all substance lists | " + ALL_SUBSTANCE_LISTS + "] ("
+				+ model.substanceLists.size() + " lists)\n");
+		writer.write("* [List of all substances | " + ALL_SUBSTANCES + "] ("
+				+ model.activeSubstances.size() + " active of " + model.substances.size()
+				+ " substances)\n");
 		writer.write("\n\n");
 		
 	}

@@ -16,6 +16,9 @@ public class SourceListWriter extends WISECWriter {
 	private static String filePraefix = WISECExcelConverter.FILE_PRAEFIX + "SOL_";
 	private static Map<String, String> listID2fileName = new HashMap<String, String>();
 
+	private static String[] OVERVIEW_ATTR = new String[] {
+			"ID", "Name" };
+	
 	public SourceListWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
 	}
@@ -34,9 +37,12 @@ public class SourceListWriter extends WISECWriter {
 	}
 
 	private void write(SourceList list, Writer w) throws IOException {
+		writeBreadcrumb(w, list);
+
 		w.write("!!! " + list.getName() + "\n\n");
 		
-		w.write("!! Attributes \n\n");
+
+		// w.write("!! Attributes \n\n");
 		for (String attribute: list.getAttributes()) {
 			String value = list.get(attribute);
 			if (value != null && value.length() >0) { 
@@ -47,11 +53,19 @@ public class SourceListWriter extends WISECWriter {
 		Collection<String> lists = model.getListsWithSource(list.getId());
 		if (!lists.isEmpty()) {
 			w.write("!! Lists\n\n");
-			w.write(SubstanceListsOverviewWriter.writeTableHeader() + "\n");
+			// w.write(SubstanceListsOverviewWriter.writeTableHeader() + "\n");
+			// write header
+			w.write("%%zebra-table\n%%sortable\n");
+			for (String headerName : OVERVIEW_ATTR) {
+				w.write("|| " + headerName + " ");
+			}
+			w.write("|| Count\n");
 			for (String listname : lists) {
 				SubstanceList substancelist = model.getListWithName(listname);
 				if (substancelist != null) {
-					w.write(SubstanceListsOverviewWriter.generateOverviewLineFor(substancelist)
+					w.write(SubstanceListsOverviewWriter.generateOverviewLineFor(substancelist,
+							OVERVIEW_ATTR)
+							+ " | " + substancelist.substances.size()
 							+ "\n");
 				}
 				else {
@@ -59,7 +73,17 @@ public class SourceListWriter extends WISECWriter {
 				}
 				// w.write("* "+SubstanceListWriter.asWikiMarkup(substancelist)+"\n");
 			}
+			w.write("/%\n/%\n");
+
+			w.write("[(+) Add list|Dummy]\n");
 		}
+	}
+
+	protected void writeBreadcrumb(Writer writer, SourceList list) throws IOException {
+		super.writeBreadcrumb(writer);
+		writer.append(" > [Index of Sources|" + SourceListOverviewWriter.FILENAME +
+				"] > " + list.getName());
+		writer.append("\n\n");
 	}
 
 

@@ -2,16 +2,20 @@ package de.d3web.wisec.writers;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Collection;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
 import de.d3web.wisec.model.SourceList;
 import de.d3web.wisec.model.WISECModel;
 
 public class SourceListOverviewWriter extends WISECWriter {
-	private static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX
+
+	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX
 			+ "All_Sources";
 
+	private static final String[] WRITEABLE_ATTRIBUTES = new String[] {
+		"ID","Name","Author","Country","Inclusion_WISEC"
+	};
+	
 	public SourceListOverviewWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
 	}
@@ -21,10 +25,11 @@ public class SourceListOverviewWriter extends WISECWriter {
 		Writer writer = ConverterUtils.createWriter(this.outputDirectory
 				+ FILENAME + ".txt");
 
+		writeBreadcrumb(writer);
 		writeHeader(writer);
 		StringBuffer buffy = new StringBuffer();
 		for (SourceList list : model.sourceLists) {
-			for (String attribute : list.getAttributes()) {
+			for (String attribute : WRITEABLE_ATTRIBUTES) {
 				String value = list.get(attribute);
 				if (value != null) {
 					value = ConverterUtils.clean(value);
@@ -57,14 +62,16 @@ public class SourceListOverviewWriter extends WISECWriter {
 		// open the rebra and the sortable table
 		writer.append("%%zebra-table\n%%sortable\n");
 		// write all header names
-		for (String attribute : getHeaderNames()) {
+		for (String attribute : WRITEABLE_ATTRIBUTES) {
 			writer.append("|| " + attribute);
 		}
 		writer.append("\n");
 	}
 
-	private Collection<String> getHeaderNames() {
-		SourceList list = (SourceList) model.sourceLists.toArray()[0];
-		return list.getAttributes();
+	@Override
+	protected void writeBreadcrumb(Writer writer) throws IOException {
+		super.writeBreadcrumb(writer);
+		writer.append(" > Index of Sources \n\n");
 	}
+
 }

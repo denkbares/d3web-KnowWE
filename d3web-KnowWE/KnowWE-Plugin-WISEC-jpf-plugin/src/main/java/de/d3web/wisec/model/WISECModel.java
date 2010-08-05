@@ -206,4 +206,13 @@ public class WISECModel {
 		return "NO_ID";
 	}
 
+	public SourceList getSourceListForID(String sourceID) {
+		for (SourceList sourceList : this.sourceLists) {
+			if (sourceList.getId().equals(sourceID)) {
+				return sourceList;
+			}
+		}
+		return null;
+	}
+
 }

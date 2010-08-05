@@ -18,6 +18,7 @@ import de.d3web.wisec.readersnew.ListsReader;
 import de.d3web.wisec.readersnew.SourceListReader;
 import de.d3web.wisec.readersnew.SubstanceListsReader;
 import de.d3web.wisec.scoring.ScoringWeightsConfiguration;
+import de.d3web.wisec.writers.AllSubstancesWriter;
 import de.d3web.wisec.writers.OverviewWriter;
 import de.d3web.wisec.writers.SourceListOverviewWriter;
 import de.d3web.wisec.writers.SourceListWriter;
@@ -25,7 +26,7 @@ import de.d3web.wisec.writers.SubstanceInfoWriter;
 import de.d3web.wisec.writers.SubstanceListWriter;
 import de.d3web.wisec.writers.SubstanceListsOverviewWriter;
 import de.d3web.wisec.writers.SubstanceRatingListWriter;
-import de.d3web.wisec.writers.SubstancesOverviewWriter;
+import de.d3web.wisec.writers.ActiveSubstancesWriter;
 import de.d3web.wisec.writers.WISECWriter;
 
 /**
@@ -44,7 +45,8 @@ import de.d3web.wisec.writers.WISECWriter;
  */
 public class WISECExcelConverter {
 	// The master database file, that is the input of all knowledge
-	public static String WISEC_FILE = "20100727_WISEC_v1.xls";
+	public static String WISEC_FILE = "20100804_WISEC_v1.xls";
+	public final static String EXCEL_ENCODING = "cp1252";
 	// The directory of the master database file
 	public static String workspace = "/Users/joba/Documents/Projekte/Temp/KnowWE/WISEC/";
 	// Destination directory, where the generated files are put
@@ -84,7 +86,7 @@ public class WISECExcelConverter {
 	private void convert() throws BiffException, IOException {
 
 		WorkbookSettings ws = new WorkbookSettings();
-		ws.setEncoding("cp1252");
+		ws.setEncoding(EXCEL_ENCODING);
 		ws.setCharacterSet(0);
 
 		Workbook workbook = Workbook.getWorkbook(new File(workspace + WISEC_FILE), ws);
@@ -122,9 +124,13 @@ public class WISECExcelConverter {
 		writers.add(new SubstanceInfoWriter(model, outputDirectory));
 		
 		writers.add(new SourceListOverviewWriter(model, outputDirectory));
-		writers.add(new SubstanceListsOverviewWriter(model, outputDirectory));
+
+		writers.add(new SubstanceListsOverviewWriter(model,
+				outputDirectory));
+
+		writers.add(new AllSubstancesWriter(model, outputDirectory));
 		
-		writers.add(new SubstancesOverviewWriter(model, outputDirectory));
+		writers.add(new ActiveSubstancesWriter(model, outputDirectory));
 
 		// ////// Substance Ratings
 		// writers.addAll(configureRatingConfigurations(model,

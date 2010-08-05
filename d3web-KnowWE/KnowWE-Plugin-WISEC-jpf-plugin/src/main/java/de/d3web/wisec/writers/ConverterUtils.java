@@ -34,6 +34,9 @@ public class ConverterUtils {
 	}
 
 	public static String clean(String string) {
+		if (string == null) {
+			return "";
+		}
 		string = string.replaceAll("\\[", "[[");
 		string = string.replaceAll("\\n", "\\\\");
 		string = string.replaceAll("&", " and ");
