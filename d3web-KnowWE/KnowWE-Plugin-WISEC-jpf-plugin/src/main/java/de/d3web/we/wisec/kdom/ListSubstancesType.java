@@ -38,6 +38,6 @@ public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
 				new ListSubstancesOWLSubtreeHandler());
 
 		// addSubtreeHandler(new ListSubstancesD3SubtreeHandler());
-		addChildType(new WISECTable());
+		//addChildType(new WISECTable());
 	}
 }

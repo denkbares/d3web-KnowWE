@@ -22,6 +22,7 @@ package de.d3web.we.wisec.kdom;
 
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.wisec.kdom.subtreehandler.ListCriteriaOWLSubtreeHandler;
 
 /**
  * The root type of the ListCriteria section
@@ -36,7 +37,9 @@ public class ListCriteriaRootType extends DefaultMarkupType {
 		m = new DefaultMarkup("ListCriteria");
 		m.addContentType(new ListCriteriaType());
 		m.addAnnotation("ListID", true);
-		m.addAnnotation("UpperlistID", true);
+		//m.addAnnotation("UpperlistID", true);
+		m.addAnnotation(ListCriteriaOWLSubtreeHandler.UPPERLIST_ID, true);
+		
 	}
 	
 	public ListCriteriaRootType() {

@@ -66,7 +66,7 @@ public class WISECRankingTagHandler extends AbstractTagHandler {
 	
 	@Override
 	public String getExampleString() {
-		return "[{KnowWEPlugin wisec-ranking=n, P=3, B=1, Risk_related=2, ... , printinfo=true }]";
+		return "[{KnowWEPlugin wisec-ranking, wisec-substances=8, P=3, B=1, Risk_related=2, ... , printinfo=true }]";
 	}
 	
 	@Override

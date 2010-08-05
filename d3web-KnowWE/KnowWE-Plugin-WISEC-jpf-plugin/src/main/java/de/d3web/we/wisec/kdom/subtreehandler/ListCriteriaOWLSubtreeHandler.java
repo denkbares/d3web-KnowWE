@@ -11,12 +11,12 @@ import org.openrdf.model.URI;
 import org.openrdf.repository.RepositoryException;
 
 import de.d3web.we.core.semantic.IntermediateOwlObject;
+import de.d3web.we.core.semantic.OwlSubtreeHandler;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
 import de.d3web.we.kdom.report.KDOMReportMessage;
-import de.d3web.we.kdom.subtreeHandler.OwlSubtreeHandler;
 import de.d3web.we.kdom.table.TableCellContent;
 import de.d3web.we.kdom.table.TableLine;
 import de.d3web.we.logging.Logging;
@@ -26,13 +26,15 @@ import de.d3web.we.wisec.kdom.WISECTable;
 
 public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteriaType> {
 	
+	public static final String UPPERLIST_ID = "SourceID";
+	
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListCriteriaType> s) {
 
 		// Get the necessary Annotations
 		Section<ListCriteriaRootType> root = s.findAncestorOfType(ListCriteriaRootType.class);
 		String listID = DefaultMarkupType.getAnnotation(root, "ListID");
-		String upperlistID = DefaultMarkupType.getAnnotation(root, "UpperlistID");
+		String upperlistID = DefaultMarkupType.getAnnotation(root, UPPERLIST_ID);
 				
 		// Get the WISEC Namespace and create OwlObject
 		String ns = SemanticCoreDelegator.getInstance().expandNamespace("w");
