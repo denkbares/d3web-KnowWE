@@ -23,7 +23,13 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 			"groundwater", "Risk_related", "Exposure", "compartment", "Market_Volume",
 			"Wide_d_use", "Political", "SVHC_regulated", "Regulated", "ecological_concerns" };
 	
-	private final static String[] WRITEABLE_ATTR = new String[] {
+	public final static String[] CRITERIA_ATTRIBUTES = new String[] {
+			"CMR", "Persistence", "Bioakumulation_Potential", "Aqua_Tox", "PBT", "vPvB", "EDC",
+			"Multiple_Tox", "LRT", "Climatic_Change", "drinking_water", " surface_water", "sea",
+			"groundwater", "Risk_related", "Exposure", "compartment", "Market_Volume",
+			"Wide_d_use", "Political", "SVHC_regulated", "Regulated", "ecological_concerns" };
+
+	public final static String[] WRITEABLE_ATTR = new String[] {
 			"Source_ID", "Source_Name", "ID", "Name", "Author", "Country"
 	};
 	
@@ -46,27 +52,29 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 			}
 		});
 
+		StringBuffer buffy = new StringBuffer();
 		for (SubstanceList list : sortedSubstances) {
 			SourceList sourceList = model.getSourceListForID(list.info.get("Source_ID"));
-
-			StringBuffer buffy = new StringBuffer();
-			
-
-			buffy.append("| " + getWikiedValueForAttribute("Source_ID", list) + " ");
-			buffy.append("| [" + sourceList.get("Name") + " | " +
-					SourceListWriter.getWikiFilename(sourceList.getId()) + "] ");
-			buffy.append("| " + getWikiedValueForAttribute("ID", list) + " ");
-			buffy.append("| " + getWikiedValueForAttribute("Name", list) + " ");
-			buffy.append("| " + sourceList.get("Author") + " ");
-			buffy.append("| " + sourceList.get("Country") + " ");
-			buffy.append("\n");
-			writer.write(buffy.toString());
+			buffy.append(getInfoRowForSubstanceList(list, sourceList) + "\n");
 
 		}
+		writer.append(buffy.toString());
 		
 		writeFooter(writer);
 		writer.close();
 
+	}
+
+	public static String getInfoRowForSubstanceList(SubstanceList list, SourceList sourceList) {
+		StringBuffer buffy = new StringBuffer();
+		buffy.append("| " + getWikiedValueForAttribute("Source_ID", list) + " ");
+		buffy.append("| [" + sourceList.get("Name") + " | " +
+				SourceListWriter.getWikiFilename(sourceList.getId()) + "] ");
+		buffy.append("| " + getWikiedValueForAttribute("ID", list) + " ");
+		buffy.append("| " + getWikiedValueForAttribute("Name", list) + " ");
+		buffy.append("| " + sourceList.get("Author") + " ");
+		buffy.append("| " + sourceList.get("Country") + " ");
+		return buffy.toString();
 	}
 
 	@Override
@@ -101,7 +109,7 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 		return buffy.toString();
 	}
 
-	private String getWikiedValueForAttribute(String attribute, SubstanceList list) {
+	private static String getWikiedValueForAttribute(String attribute, SubstanceList list) {
 		StringBuffer buffy = new StringBuffer();
 		if (attribute.equalsIgnoreCase("Name")) {
 			buffy.append("[" + clean(list.getName()) + " | "
@@ -132,15 +140,9 @@ public class SubstanceListsOverviewWriter extends WISECWriter {
 		// open the zebra and the sortable table
 		writer.append("%%zebra-table\n%%sortable\n");
 		// write all header names
-		writer.append(writeTableHeader() + "\n");
-		// writer.append("|| No || Upper List || List || Used || Unused || Criteria \n");
-	}
-
-	public static String writeTableHeader() {
-		StringBuffer b = new StringBuffer();
 		for (String header : WRITEABLE_ATTR) {
-			b.append("|| " + header + " ");
+			writer.append("|| " + header + " ");
 		}
-		return b.toString();
+		writer.append("\n");
 	}
 }

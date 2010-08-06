@@ -2,8 +2,11 @@ package de.d3web.wisec.writers;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
@@ -60,13 +63,17 @@ public class SourceListWriter extends WISECWriter {
 				w.write("|| " + headerName + " ");
 			}
 			w.write("|| Count\n");
-			for (String listname : lists) {
+			List<String> sortedLists = new ArrayList<String>(lists);
+			Collections.sort(sortedLists);
+			for (String listname : sortedLists) {
 				SubstanceList substancelist = model.getListWithName(listname);
-				if (substancelist != null) {
-					w.write(SubstanceListsOverviewWriter.generateOverviewLineFor(substancelist,
+				if (substancelist != null && substancelist.getId() != null
+						&& !substancelist.getId().isEmpty()) {
+					String line = SubstanceListsOverviewWriter.generateOverviewLineFor(substancelist,
 							OVERVIEW_ATTR)
 							+ " | " + substancelist.substances.size()
-							+ "\n");
+							+ "\n";
+					w.write(line);
 				}
 				else {
 					System.err.println("Substance lists with name " + listname + " not found.");

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -12,13 +11,18 @@ import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
 import de.d3web.wisec.model.WISECModel;
+import de.d3web.wisec.readers.ActiveSubstancesReader;
+import de.d3web.wisec.readers.GroupsReader;
+import de.d3web.wisec.readers.ListsReader;
+import de.d3web.wisec.readers.SourceListReader;
+import de.d3web.wisec.readers.SubstanceListsReader;
+import de.d3web.wisec.readers.TeamsReader;
 import de.d3web.wisec.readers.WISECReader;
-import de.d3web.wisec.readersnew.ActiveSubstancesReader;
-import de.d3web.wisec.readersnew.ListsReader;
-import de.d3web.wisec.readersnew.SourceListReader;
-import de.d3web.wisec.readersnew.SubstanceListsReader;
 import de.d3web.wisec.scoring.ScoringWeightsConfiguration;
+import de.d3web.wisec.writers.ActiveSubstancesWriter;
 import de.d3web.wisec.writers.AllSubstancesWriter;
+import de.d3web.wisec.writers.GroupInfoWriter;
+import de.d3web.wisec.writers.GroupsWriter;
 import de.d3web.wisec.writers.OverviewWriter;
 import de.d3web.wisec.writers.SourceListOverviewWriter;
 import de.d3web.wisec.writers.SourceListWriter;
@@ -26,7 +30,8 @@ import de.d3web.wisec.writers.SubstanceInfoWriter;
 import de.d3web.wisec.writers.SubstanceListWriter;
 import de.d3web.wisec.writers.SubstanceListsOverviewWriter;
 import de.d3web.wisec.writers.SubstanceRatingListWriter;
-import de.d3web.wisec.writers.ActiveSubstancesWriter;
+import de.d3web.wisec.writers.TeamInfoWriter;
+import de.d3web.wisec.writers.TeamsWriter;
 import de.d3web.wisec.writers.WISECWriter;
 
 /**
@@ -71,6 +76,7 @@ public class WISECExcelConverter {
 	
 	
 	public static void main(String[] args) throws BiffException, IOException {
+
 		Stopwatch timer = new Stopwatch();
 		timer.start();
 		System.out.println("Conversion started: " + new Date());
@@ -96,7 +102,9 @@ public class WISECExcelConverter {
 					new SourceListReader(workbook),
 					new ListsReader(workbook),
 					new SubstanceListsReader(workbook),
-					new ActiveSubstancesReader(workbook)
+					new ActiveSubstancesReader(workbook),
+					new GroupsReader(workbook),
+					new TeamsReader(workbook)
 				);
 		for (WISECReader wisecReader : readers) {
 			wisecReader.read(model);
@@ -131,6 +139,11 @@ public class WISECExcelConverter {
 		writers.add(new AllSubstancesWriter(model, outputDirectory));
 		
 		writers.add(new ActiveSubstancesWriter(model, outputDirectory));
+
+		writers.add(new GroupsWriter(model, outputDirectory));
+		writers.add(new GroupInfoWriter(model, outputDirectory));
+		writers.add(new TeamsWriter(model, outputDirectory));
+		writers.add(new TeamInfoWriter(model, outputDirectory));
 
 		// ////// Substance Ratings
 		// writers.addAll(configureRatingConfigurations(model,
@@ -213,46 +226,5 @@ public class WISECExcelConverter {
 		writers.add(toxicSubstances);
 
 		return writers;
-	}
-
-	/**
-	 * Creates a pretty formated, Wiki-save String of the given Collection.
-	 * 
-	 * @created 22.07.2010
-	 * @param collection
-	 * @return
-	 */
-	public static String asString(Collection<String> collection) {
-		if (collection != null) {
-			return collection.toString().replaceAll("\\[", "[[");
-		}
-		else {
-			return "[[]";
-		}
-	}
-
-	public static String asString(String string) {
-		if (string != null) {
-			return string.replaceAll("\\[", "[[");
-		}
-		else {
-			return "[[]";
-		}
-	}
-
-	public static String asBulletList(Collection<String> collection, int indent) {
-		if (collection != null) {
-			StringBuffer buffy = new StringBuffer();
-			for (String string : collection) {
-				for (int i = 0; i < indent; i++) {
-					buffy.append("*");
-				}
-				buffy.append(" " + asString(string) + "\n");
-			}
-			return buffy.toString();
-		}
-		else {
-			return "";
-		}
 	}
 }

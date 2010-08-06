@@ -16,7 +16,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.d3web.wisec.readersnew;
+package de.d3web.wisec.readers;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -24,7 +24,6 @@ import java.util.HashSet;
 import jxl.Sheet;
 import jxl.Workbook;
 import de.d3web.wisec.model.WISECModel;
-import de.d3web.wisec.readers.WISECReader;
 
 
 /**

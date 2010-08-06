@@ -1,4 +1,4 @@
-package de.d3web.wisec.readersnew;
+package de.d3web.wisec.readers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,6 @@ import de.d3web.wisec.converter.WISECExcelConverter;
 import de.d3web.wisec.model.Substance;
 import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.WISECModel;
-import de.d3web.wisec.readers.WISECReader;
 import de.d3web.wisec.writers.ConverterUtils;
 
 /**

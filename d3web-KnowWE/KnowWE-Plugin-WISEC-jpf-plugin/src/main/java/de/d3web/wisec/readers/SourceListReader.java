@@ -1,4 +1,4 @@
-package de.d3web.wisec.readersnew;
+package de.d3web.wisec.readers;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -8,7 +8,6 @@ import jxl.Sheet;
 import jxl.Workbook;
 import de.d3web.wisec.model.SourceList;
 import de.d3web.wisec.model.WISECModel;
-import de.d3web.wisec.readers.WISECReader;
 
 /**
  * Updated reader which is compatible with the new Excel structure.

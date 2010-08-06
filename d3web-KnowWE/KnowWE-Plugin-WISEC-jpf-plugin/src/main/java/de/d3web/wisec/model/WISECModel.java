@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.d3web.wisec.writers.SubstanceRatingListWriter;
 
@@ -41,6 +42,9 @@ public class WISECModel {
 	// included
 	Map<String, Collection<SubstanceList>> substanceInList = new HashMap<String, Collection<SubstanceList>>();
 
+	// relation: group name -> List of substance ids stored in this group
+	public Map<String, List<String>> groups = new HashMap<String, List<String>>();
+
 	// EC_no for the given CAS
 	Map<String, Collection<String>> CAS2EC;
 	// Chemical_name for the given CAS
@@ -48,6 +52,8 @@ public class WISECModel {
 	// CAS2IUPAC_name for the given CAS
 	Map<String, Collection<String>> CAS2IUPACname;
 
+	public Map<String, List<String>> teamSubstances = new HashMap<String, List<String>>();
+	public Map<String, List<String>> teamGroups = new HashMap<String, List<String>>();
 
 	public WISECModel() {
 		substanceRatings = new LinkedHashMap<String, String>();
@@ -55,6 +61,40 @@ public class WISECModel {
 		CAS2ChemNames = new HashMap<String, Collection<String>>();
 		CAS2IUPACname = new HashMap<String, Collection<String>>();
 		activeSubstances = new HashSet<String>();
+		groups = new HashMap<String, List<String>>();
+	}
+
+	public void addToGroup(String groupName, String substanceID) {
+		List<String> gsubstances = groups.get(groupName);
+		if (gsubstances == null) {
+			gsubstances = new ArrayList<String>();
+		}
+		if (!gsubstances.contains(substanceID)) {
+			gsubstances.add(substanceID);
+			groups.put(groupName, gsubstances);
+		}
+	}
+
+	public void addSubstanceToTeam(String teamName, String substance) {
+		List<String> tsubstances = teamSubstances.get(teamName);
+		if (tsubstances == null) {
+			tsubstances = new ArrayList<String>();
+		}
+		if (!tsubstances.contains(substance)) {
+			tsubstances.add(substance);
+			teamSubstances.put(teamName, tsubstances);
+		}
+	}
+
+	public void addGroupToTeam(String teamName, String group) {
+		List<String> tgroups = teamGroups.get(teamName);
+		if (tgroups == null) {
+			tgroups = new ArrayList<String>();
+		}
+		if (!tgroups.contains(group)) {
+			tgroups.add(group);
+			teamGroups.put(teamName, tgroups);
+		}
 	}
 
 	public Collection<String> getECNamesFor(String substanceName) {
@@ -94,6 +134,7 @@ public class WISECModel {
 				lists = new HashSet<SubstanceList>();
 			}
 			lists.add(substanceList);
+			substanceInList.put(substanceName, lists);
 			update("EC_No", CAS2EC, substance);
 			update("Chemical_name", CAS2ChemNames, substance);
 			update("IUPAC_name", CAS2IUPACname, substance);
@@ -213,6 +254,18 @@ public class WISECModel {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * 
+	 * @created 06.08.2010
+	 * @return
+	 */
+	public Collection<String> getAllTeamNames() {
+		Set<String> teams = new HashSet<String>();
+		teams.addAll(this.teamGroups.keySet());
+		teams.addAll(this.teamSubstances.keySet());
+		return teams;
 	}
 
 }

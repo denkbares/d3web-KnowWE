@@ -2,16 +2,19 @@ package de.d3web.wisec.writers;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import de.d3web.wisec.converter.WISECExcelConverter;
+import de.d3web.wisec.model.SourceList;
 import de.d3web.wisec.model.SubstanceList;
 import de.d3web.wisec.model.WISECModel;
-import de.d3web.wisec.scoring.DefaultScoringWeightsConfiguration;
-import de.d3web.wisec.scoring.ScoringUtils;
 
 public class SubstanceInfoWriter extends WISECWriter {
 
@@ -44,112 +47,166 @@ public class SubstanceInfoWriter extends WISECWriter {
 		return null;
 	}
 
+	protected void writeBreadcrumb(Writer writer, String substance) throws IOException {
+		super.writeBreadcrumb(writer);
+		writer.write(" > [List of Substances|" + AllSubstancesWriter.FILENAME + "] > "
+				+ "[Active Substances|" + ActiveSubstancesWriter.FILENAME + "] > " + substance
+				+ "\n\n");
+	}
 
 	private void write(String substance, Writer writer) throws IOException {
+		writeBreadcrumb(writer, substance);
 		StringBuffer b = new StringBuffer();
-
-		// Map<String, List<SubstanceList>> differentNames =
-		// computeUsesOfAttribute(substance,
-		// "Chemical");
-		// if (differentNames.keySet().size() == 1) {
-		// substance = differentNames.keySet().toArray()[0].toString();
-		// }
-
-		b.append("!!! Substance Info: " + substance + "\n\n");
-		// if (differentNames.keySet().size() > 1) {
-		// for (String key : differentNames.keySet()) {
-		// b.append(key + "\n");
-		// }
-		// b.append("\n");
-		// }
-
-
+		b.append("!!! Substance: " + substance + "\n\n");
+		// Kopfbereich zur Identifizierung
 		writeCASReferences(substance, b);
+
+		// Write groups that include this substance
+		writeAdjacentGroups(substance, b);
+
+		// Write all lists that include this substance
+		writeAdjacentLists(substance, b);
+
 		writeCriteriaScoring(substance, b);
-		writeOnListsRelation(substance, b);
 
 		writer.append(b.toString());
 	}
 
-	private void writeCriteriaScoring(String substance, StringBuffer b) {
-		String[] criteriaValues = new String[] {
-				"1", "2", "3", "X", "u", "LAW" };
-		b.append("!! Criteria Scoring\n\n");
+	private void writeAdjacentLists(String substance, StringBuffer b) {
+		Collection<SubstanceList> lists = this.model.getSubstanceListsContaining(substance);
+		List<String> usedCriteria = criteriaContainedInAtLeastOneList(lists);
 
-		b.append("|| Criteria || Values ");
-		for (String cValue : criteriaValues) {
-			b.append(" || " + cValue);
+		b.append("!! On Lists\n\n");
+		// write header of table
+		b.append("%%zebra-table\n%%sortable\n");
+		// write all header names
+		for (String header : SubstanceListsOverviewWriter.WRITEABLE_ATTR) {
+			b.append("|| " + header + " ");
 		}
-		b.append("|| Score");
+		for (String criteria : usedCriteria) {
+			b.append("|| " + criteria + " ");
+		}
 		b.append("\n");
-
-		printCriteriaForCriteriaGroup(substance, b,
-				criteriaValues, new String[] {
-						"P", "B", "Aqua_Tox", "Multiple_Tox", "EDC", "CMR" });
-
-		String HOR_RULER = "| _ | | | | | | | \n";
-		b.append(HOR_RULER);
-		printCriteriaForCriteriaGroup(substance, b,
-				criteriaValues, new String[] {
-						"LRT", "Climatic_Change" });
-
-		b.append(HOR_RULER);
-		printCriteriaForCriteriaGroup(substance, b,
-				criteriaValues, new String[] {
-						"Risk_related", "Political", "Exposure" });
-
-		b.append(HOR_RULER);
-		printCriteriaForCriteriaGroup(substance, b,
-				criteriaValues, new String[] {
-						"HPV", "Regulated", "SVHC_regulated" });
-
-		b.append("\n");
-	}
-
-	private void printCriteriaForCriteriaGroup(String substance,
-			StringBuffer b, String[] criteriaValues, String[] aGroup) {
-		Collection<SubstanceList> lists = model.getSubstanceListsContaining(substance);
-		for (String criteria : aGroup) {
-			b.append("| " + criteria + " | ");
-			for (SubstanceList substanceList : lists) {
-				String value = substanceList.criteria.get(criteria);
-				if (value != null && value.length() > 0) {
-					b.append(" [" + value + " | " +
-							SubstanceListWriter.getWikiFileNameFor(substanceList.getId()) +
-							"]");
-				}
+		
+		// write the content of the table
+		for (SubstanceList substanceList : lists) {
+			SourceList sourceList = model.getSourceListForID(substanceList.info.get("Source_ID"));
+			String row = SubstanceListsOverviewWriter.getInfoRowForSubstanceList(substanceList,
+					sourceList);
+			b.append(row);
+			for (String criteria : usedCriteria) {
+				String criteriaValue = substanceList.criteria.get(criteria);
+				if (criteriaValue == null) criteriaValue = "";
+				b.append("| " + criteriaValue + " ");
 			}
-			for (String cValue : criteriaValues) {
-				List<SubstanceList> list = model.listsWithCriteriaHavingValue(substance,
-						criteria, cValue);
-				b.append(" | " + list.size());
-			}
-
-			double score = ScoringUtils.computeScoreFor(model,
-					new DefaultScoringWeightsConfiguration(), substance, criteria);
-			b.append(" | " + ScoringUtils.prettyPrint(score));
 			b.append("\n");
 		}
+		b.append("/%\n/%\n");
 	}
-
-	private void writeCASReferences(String substance, StringBuffer b) {
-		b.append("* Chemical names: \n"
-				+ WISECExcelConverter.asBulletList(model.getChemNamesFor(substance), 2) + " \n");
-		b.append("* EC_No: "
-				+ WISECExcelConverter.asString(model.getECNamesFor(substance)) + " \n");
-		b.append("* IUPAC:  "
-				+ WISECExcelConverter.asString(model.getIUPACFor(substance)) + " \n");
-		b.append("\n");
-	}
-
-	private void writeOnListsRelation(String substance, StringBuffer b) {
-		b.append("!! On Lists \n\n");
-		for (SubstanceList list : model.substanceLists) {
-			if (list.contains(substance)) {
-				b.append("* " + SubstanceListWriter.asWikiMarkup(list) + " ("
-						+ SubstanceListWriter.getCriteriaString(list) + ")\n");
+	
+	public static List<String> criteriaContainedInAtLeastOneList(Collection<SubstanceList> lists) {
+		List<String> criteria = new ArrayList<String>();
+		for (String crit : SubstanceListsOverviewWriter.CRITERIA_ATTRIBUTES) {
+			if (isInOneList(crit, lists)) {
+				criteria.add(crit);
 			}
 		}
+		return criteria;
+	}
+	
+
+	private static boolean isInOneList(String crit, Collection<SubstanceList> lists) {
+		for (SubstanceList substanceList : lists) {
+			String value = substanceList.criteria.get(crit);
+			if (value != null && !value.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void writeAdjacentGroups(String substance, StringBuffer b) {
+		List<String> includedGroups = new ArrayList<String>();
+		for (String group : this.model.groups.keySet()) {
+			List<String> substances = this.model.groups.get(group);
+			if (substances.contains(substance)) {
+				includedGroups.add(group);
+			}
+		}
+		if (!includedGroups.isEmpty()) {
+			b.append("* Groups: " + ConverterUtils.asStringNoBraces(includedGroups) + "\n\n");
+		}
+		
+	}
+
+	private void writeCriteriaScoring(String substance, StringBuffer b) {
+		// String[] criteriaValues = new String[] {
+		// "3", "2", "1", "0", "-1", "-2", "-3" };
+
+		b.append("!! Criteria Scoring\n\n");
+
+		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(
+				new Locale("en", "US")));
+		Collection<SubstanceList> lists = this.model.getSubstanceListsContaining(substance);
+		List<String> usedCriteria = criteriaContainedInAtLeastOneList(lists);
+		b.append("|| Criteria || Lists || Scoring\n");
+		double totalScore = 0;
+		for (String criteria : usedCriteria) {
+			int count = 0;
+			double sum = 0;
+			b.append("| " + criteria + " | ");
+			for (SubstanceList list : lists) {
+				String value = list.criteria.get(criteria);
+				if (value != null && !value.isEmpty()) {
+					count++;
+					sum += Double.valueOf(value);
+					b.append(" [" + value + "|"
+							+ SubstanceListWriter.getWikiFileNameFor(list.getId()) + "]");
+				}
+			}
+			if (count > 0) {
+				double score = sum / count;
+				totalScore += score;
+				b.append("| " + df.format(score));
+			}
+			else {
+				b.append("| 0 ");
+			}
+			b.append("\n");
+		}
+		if (totalScore > 0) {
+			b.append("Total score: " + df.format(totalScore));
+		}
+
+	}
+
+
+	private void writeCASReferences(String substance, StringBuffer b) {
+		b.append("* Chemical names: ");
+		if (model.getChemNamesFor(substance).size() > 1) {
+			b.append("\n" + ConverterUtils.asBulletList(model.getChemNamesFor(substance), 2)
+					+ " \n");
+		}
+		else {
+			b.append(model.getChemNamesFor(substance).toArray()[0] + "\n");
+		}
+		b.append("* EC_No: ");
+		if (model.getECNamesFor(substance).isEmpty()) {
+			b.append(" - \n");
+		}
+		else {
+			b.append(ConverterUtils.asString(model.getECNamesFor(substance)) + " \n");
+		}
+
+		b.append("* IUPAC:  ");
+		if (model.getIUPACFor(substance).isEmpty()) {
+			b.append(" - \n");
+		}
+		else {
+			b.append(ConverterUtils.asString(model.getIUPACFor(substance)) + " \n");
+		}
+
+		b.append("\n");
 	}
 
 	public static String getWikiFileNameFor(String name) {
@@ -158,25 +215,18 @@ public class SubstanceInfoWriter extends WISECWriter {
 			String choppedName = name.substring(0, MAXLENGTH);
 			realName = filenameMap.get(name);
 			if (realName == null) {
-				realName = clean(choppedName);
+				realName = ConverterUtils.cleanForFilename(choppedName);
 				filenameMap.put(name, realName);
 			}
 		}
-		return FILE_PRAEFIX + clean(realName);
+		return FILE_PRAEFIX + ConverterUtils.cleanForFilename(realName);
 	}
 
 	public static String asWikiMarkup(String substanceName) {
-		return "[ " + clean(substanceName) + " | "
+		return "[ " + ConverterUtils.clean(substanceName) + " | "
 				+ SubstanceInfoWriter.getWikiFileNameFor(substanceName) + "]";
 	}
 
-	private static String clean(String name) {
-		name = name.replace("/", "-");
-		name = name.replace(",", "-");
-		name = name.replace(".", "-");
-		name = name.replace(":", "-");
-		name = ConverterUtils.clean(name);
-		return name;
-	}
+
 
 }

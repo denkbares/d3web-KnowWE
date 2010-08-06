@@ -8,7 +8,7 @@ import de.d3web.wisec.model.WISECModel;
 
 public class ActiveSubstancesWriter extends WISECWriter {
 
-	private static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "ActiveSubstances";
+	public static final String FILENAME = WISECExcelConverter.FILE_PRAEFIX + "ActiveSubstances";
 
 	public ActiveSubstancesWriter(WISECModel model, String outputDirectory) {
 		super(model, outputDirectory);
@@ -32,9 +32,9 @@ public class ActiveSubstancesWriter extends WISECWriter {
 		for (String substanceName : model.activeSubstances) {
 			// String casName = substance.getCAS();
 			b.append("| [" + substanceName + " | WI_SUB_" + substanceName + "] | "
-					+ WISECExcelConverter.asString(model.getECNamesFor(substanceName)) + "| "
-					+ WISECExcelConverter.asString(model.getIUPACFor(substanceName)) + " | "
-					+ WISECExcelConverter.asString(model.getChemNamesFor(substanceName)) + "\n");
+					+ ConverterUtils.asString(model.getECNamesFor(substanceName)) + "| "
+					+ ConverterUtils.asString(model.getIUPACFor(substanceName)) + " | "
+					+ ConverterUtils.asString(model.getChemNamesFor(substanceName)) + "\n");
 			// + " | " + model.usesInLists(substance) + "\n");
 		}
 		
