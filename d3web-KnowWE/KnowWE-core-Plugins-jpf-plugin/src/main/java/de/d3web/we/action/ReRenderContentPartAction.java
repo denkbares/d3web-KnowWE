@@ -74,9 +74,20 @@ public class ReRenderContentPartAction extends DeprecatedAbstractKnowWEAction  {
 				}
 			}
 			
+			
+			// If the node is in <pre> than do not
+			// render it through the JSPWikiPipeline
+			String inPre = map.get("inPre");
 			String pagedata = b.toString();
-			pagedata = KnowWEEnvironment.getInstance().getWikiConnector().renderWikiSyntax(pagedata, map);
-
+			
+			if (inPre == null)
+				pagedata = KnowWEEnvironment.getInstance().getWikiConnector()
+						.renderWikiSyntax(pagedata, map);
+			if (inPre != null)
+				if (inPre.equals("false"))
+					pagedata = KnowWEEnvironment.getInstance()
+							.getWikiConnector().renderWikiSyntax(pagedata, map);
+			
 			return KnowWEUtils.unmaskHTML( pagedata );
 		}
 		return null;

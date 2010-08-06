@@ -147,8 +147,8 @@ KNOWWE.plugin.d3web.actions = function(){
                 KWikiWeb : 'default_web',
                 KdomNodeId : node,
                 KWiki_Topic : topic,
-                ajaxToHTML : ajaxToHTML
-
+                ajaxToHTML : ajaxToHTML,
+                inPre : KNOWWE.helper.tagParent(_KS('#' + node), 'pre') != document
             }
             var url = KNOWWE.core.util.getURL( params );
             KNOWWE.core.rerendercontent.execute(url, node, 'replace');

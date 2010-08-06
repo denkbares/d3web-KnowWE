@@ -1227,7 +1227,8 @@ KNOWWE.core.rerendercontent = function(){
                         KWikiWeb : 'default_web',
                         KdomNodeId : rel.id,
                         KWiki_Topic : KNOWWE.helper.gup('page'),
-                        ajaxToHTML : "render"
+                        ajaxToHTML : "render",
+                        inPre : KNOWWE.helper.tagParent(_KS('#' + rel.id), 'pre') != document 
                     }           
                     var url = KNOWWE.core.util.getURL( params );
                     KNOWWE.core.rerendercontent.execute(url, rel.id, 'replace');

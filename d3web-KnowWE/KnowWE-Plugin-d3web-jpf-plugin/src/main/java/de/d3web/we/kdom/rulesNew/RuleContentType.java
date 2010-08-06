@@ -232,21 +232,23 @@ public class RuleContentType extends DefaultAbstractKnowWEObjectType {
 		private void highlightRule(KnowWEArticle article,
 				Section<ConditionActionRule> sec, Rule r, Session session,
 				KnowWEUserContext user, StringBuilder string) {
-
-			if (r == null || session == null)
+	
+			if (r == null || session == null) {
 				DelegateRenderer.getInstance().
 					render(article, sec, user, string);
+				return;
+			}
 
 			try {
 				if (r.hasFired(session))
 					this.greenRenderer.render(article, sec, user, string);
 				else
-					DelegateRenderer.getInstance().
-						render(article, sec, user, string);
+					this.exceptionRenderer.render(article, sec, user, string);
 //					this.redRenderer.render(article, sec, user, string);
 			} catch (Exception e) {
 				this.exceptionRenderer.render(article, sec, user, string);
 			}
+
 		}
 
 	}
