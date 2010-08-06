@@ -28,6 +28,8 @@ import java.util.logging.Logger;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.basic.PlainText;
+import de.d3web.we.kdom.renderer.DefaultTextRenderer;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMNotice;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -154,7 +156,11 @@ public class DelegateRenderer extends KnowWEDomRenderer {
 
 		// use subSection's renderer
 		KnowWEDomRenderer renderer = getRenderer(subSection, user);
-		renderer.render(article, subSection, user, builder);
+		if(renderer == null) {
+			DefaultTextRenderer.getInstance().render(article, subSection, user, builder);
+		} else {
+			renderer.render(article, subSection, user, builder);
+		}
 
 		// then call post rendering for all messages of this subsection
 		renderMessagesPost(article, subSection, user, builder);
