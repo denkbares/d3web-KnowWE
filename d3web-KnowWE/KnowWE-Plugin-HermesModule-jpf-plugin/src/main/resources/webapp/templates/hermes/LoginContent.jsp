@@ -80,7 +80,7 @@
 
 <!-- Dirty hardcoding -->
     <div>
-	<i><b>Probleme mit dem Login?</b> Kontaktieren Sie uns per E-Mail an <a href="mailto:hermeswiki@efzwo.de">hermeswiki@efzwo.de</a></i>
+	<i><b>Probleme mit dem Login?</b> Kontaktieren Sie uns per E-Mail an <a href="mailto:hermes@ki.informatik.uni-wuerzburg.de">hermes@ki.informatik.uni-wuerzburg.de</a></i>
 	<br/><br/><br/>
     </div>
 <!-- End of hardcoding -->
