@@ -236,6 +236,17 @@ public class D3webUtils {
 		if(argument.equals("?")) {
 			score = Score.P5;
 		}
+		if(argument.equals("excluded")) {
+			score = Score.N7;
+		}
+		if(argument.equals("established")) {
+			score = Score.P7;
+		}
+		if(argument.equals("suggested")) {
+			score = Score.P5;
+		}
+		
+	
 		
 		return score;
 	}
