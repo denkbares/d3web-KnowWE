@@ -4,60 +4,31 @@
 
 
 /* dont display the blue plugin panel border */
+#faq .panel{ border: none; }
 
-#faq .panel{
-	border: none;
-}
 
 /* dont display a header for the faq plugin */
-
-#faq .panel h3{
-	display: none;
-}
+#faq .panel h3{ display: none; }
 
 
 /* the question text style */
-
-.faq_question{
-	font-weight: bold;
-	background-color: #CCC;
-	margin-left: 5px;
-	margin-right: 5px;
-	margin-top: 20px;
-	margin-bottom: 0px;
-	-moz-box-shadow: 0 0 2px #003366;
-	-webkit-box-shadow: 0 0 2px #003366;
-	box-shadow: 0 0 2px #003366;
-	padding: 5px;
-	padding-left: 7px;
-}
+.faq_question{ font-weight: bold; background-color: #CCC; margin: 7.5px 5px 10px 0px; -moz-box-shadow: 0 0 2px #003366;
+	-webkit-box-shadow: 0 0 2px #003366; box-shadow: 0 0 2px #003366; padding: 5px; padding-left: 7px; }
 
 
 /* the answer text style */
+.faq_answer{ background-color: #EEE; margin-left: 8px; margin-right: 8px; margin-bottom: 20px; margin-top: 3px;
+	-moz-box-shadow: 0 0 3px black; -webkit-box-shadow: 0 0 3px black; box-shadow: 0 0 3px black; padding: 5px; }
 
-.faq_answer{
-	background-color: #EEE;
-	margin-left: 8px;
-	margin-right: 8px;
-	margin-bottom: 20px;
-	margin-top: 3px;
-	-moz-box-shadow: 0 0 3px black;
-	-webkit-box-shadow: 0 0 3px black;
-	box-shadow: 0 0 3px black;
-	padding: 5px;
-}
 
-.faq_answer p{
-	margin: 0px;
-	padding: 0px;
-}
+/* style p tags without margin and padding */
+.faq_answer p{ margin: 0px; padding: 0px; }
+
 
 /* the tags style */
+.faq_tags{ font-size: 0.7em; font-weight: bold; margin-right: 5px; text-align: right; margin: 0px; }
 
-.faq_tags{
-	font-size: 0.7em;
-	font-weight: bold;
-	margin-right: 5px;
-	text-align: right;
-	margin: 0px;
-}
+
+/* Styling of the alphabetical symbol-anchors for grouping the faq entries */
+.cat { background-color: rgb(176, 196, 222); padding: 2px 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
+      -moz-box-shadow: 0 0 2px #888; -webkit-box-shadow: 0 0 2px #888; display: inline; }

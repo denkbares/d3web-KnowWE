@@ -94,4 +94,43 @@ public class FAQUtils {
 		string.append(KnowWEUtils.maskHTML("</div>"));
 		return string.toString();
 	}
+
+	/**
+	 * Generates the HTML representation for rendering the category (e.g., A, B,
+	 * ... Z) of the FAQ entries
+	 * 
+	 * @created 09.08.2010
+	 * @param cat
+	 * @return
+	 */
+	public static String printCategory(FAQCats cat) {
+		StringBuilder string = new StringBuilder();
+		string.append(KnowWEUtils.maskHTML("<div class='cat'>"));
+
+		if (cat.toString().equals("NUM")) {
+			string.append("<a name='" + cat.toString() + "'>0...9</a><br/>");
+		}
+		else {
+			string.append("<a name='" + cat.toString() + "'>" + cat.toString() + "</a><br/>");
+		}
+
+		string.append(KnowWEUtils.maskHTML("</div>"));
+		return string.toString();
+	}
+
+	public static String renderCategoriesAchorLinks() {
+		StringBuilder string = new StringBuilder();
+		string.append("<div id='catAnchors'>");
+		for (FAQCats cat : FAQCats.values()) {
+			if (cat.toString().equals("NUM")) {
+				string.append("<a href\"#" + cat.toString() + "\">0...9  </a>");
+			}
+			else {
+				string.append("<a href=\"#" + cat.toString() + "\">" + cat.toString()
+						+ "  </a>");
+			}
+		}
+		string.append("</div><br/><br/>");
+		return string.toString();
+	}
 }

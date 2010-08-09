@@ -202,14 +202,37 @@ public class FAQTagHandler extends AbstractTagHandler {
 		StringBuilder string = new StringBuilder();
 		String[] resultVals = null;
 
+		string.append(FAQUtils.renderCategoriesAchorLinks());
+
 		// go through all binding sets, i.e., result sets of the query
-		for (int i = 0; i < sortedFAQs.size(); i++) {
 
-			resultVals = sortedFAQs.get(i).split("----");
+		for (FAQCats symbol : FAQCats.values()) {
 
-			string.append(FAQUtils.renderFAQPluginInner(
-					resultVals[0], resultVals[1], resultVals[2], resultVals[3]));
+			string.append(FAQUtils.printCategory(symbol));
+
+			for (int i = 0; i < sortedFAQs.size(); i++) {
+
+				resultVals = sortedFAQs.get(i).split("----");
+
+				if (Character.isDigit(resultVals[0].charAt(0))) {
+					string.append(FAQUtils.renderFAQPluginInner(
+							resultVals[0], resultVals[1], resultVals[2], resultVals[3]));
+					sortedFAQs.remove(i);
+				}
+				else {
+
+					if (resultVals[0].startsWith(symbol.toString()) ||
+							resultVals[0].startsWith(symbol.toString().toLowerCase())) {
+
+						string.append(FAQUtils.renderFAQPluginInner(
+								resultVals[0], resultVals[1], resultVals[2], resultVals[3]));
+						sortedFAQs.remove(i);
+					}
+				}
+			}
+
 		}
+
 		return string.toString();
 	}
 
@@ -267,7 +290,6 @@ public class FAQTagHandler extends AbstractTagHandler {
 					bui.append("");
 				}
 				faqList.add(bui.toString());
-				System.out.println(bui.toString());
 			}
 		}
 		catch (QueryEvaluationException e) {
