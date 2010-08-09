@@ -109,23 +109,28 @@ public class KBRenderer extends AbstractTagHandler {
 			// Container
 
 			// Solutions
-			List<Solution> diagnosis = kb.getSolutions();
-
+			Solution diagnosis = kb.getRootSolution();
 			boolean appendedSolutionsHeadline = false;
-			for (Solution diagnosis2 : diagnosis) {
-				if (!diagnosis2.getName().equals("P000")) {
+			if (diagnosis.getName().equals("P000")) {
 					if (!appendedSolutionsHeadline) {
 						text.append("<strong>"
 								+ rb.getString("KnowWE.KBRenderer.solutions")
 								+ ":</strong><p/>");
 						appendedSolutionsHeadline = true;
 					}
-					text.append(VerbalizationManager.getInstance().verbalize(
-							diagnosis2, RenderingFormat.HTML)
-							+ "<br/>");
+				TerminologyObject[] getRoots = diagnosis.getChildren();
+				for (TerminologyObject t1 : getRoots) {
+					if (t1.getParents().length == 1) {
+						text
+								.append("<span style=\"color: rgb(150, 110, 120);\">"
+										+ t1.getName() + "</span><br/>");
+						text.append(getAll(t1.getChildren(), 1));
+						text.append("<br/>");
+					}
 				}
 			}
 			text.append("<p/>");
+
 
 			// text.append("<br /><b>SCRelations: </b><br />");
 			//
@@ -149,7 +154,6 @@ public class KBRenderer extends AbstractTagHandler {
 			// }
 
 			// Rules
-			// TODO: Sort Rules (ID)
 			Map<String, Object> parameterMap = new HashMap<String, Object>();
 			parameterMap.put(Verbalizer.IS_SINGLE_LINE, Boolean.TRUE);
 			List<KnowledgeSlice> rules = new ArrayList<KnowledgeSlice>(kb
@@ -224,7 +228,6 @@ public class KBRenderer extends AbstractTagHandler {
 					}
 				}
 			}
-			// de.d3web.core.inference.Rule[] sort = sortHSet(duplRules);
 			List<de.d3web.core.inference.Rule> sort = new ArrayList<de.d3web.core.inference.Rule>(
 					duplRules);
 			Collections.sort(sort, new RuleComparator());
@@ -434,6 +437,10 @@ public class KBRenderer extends AbstractTagHandler {
 				result.append("<span style=\"color: rgb(0, 128, 0);\">"
 						+ t1.getName() + " " + properties + " [date] " + range
 						+ "</span><br/>");
+			} else if (t1 instanceof Solution) {
+				result.append("<span style=\"color: rgb(150, 110, 120);\">"
+						+ VerbalizationManager.getInstance().verbalize(t1,
+								RenderingFormat.HTML) + "</span><br/>");
 			}
 			properties = new StringBuffer();
 			range = new StringBuffer();
@@ -445,23 +452,6 @@ public class KBRenderer extends AbstractTagHandler {
 		}
 		return result.toString();
 	}
-
-	// private de.d3web.core.inference.Rule[] sortHSet(
-	// HashSet<de.d3web.core.inference.Rule> set) {
-	// de.d3web.core.inference.Rule[] sorted = new
-	// de.d3web.core.inference.Rule[set
-	// .size()];
-	// for (de.d3web.core.inference.Rule r : set) {
-	// String[] getID = r.getId().split("[\\p{Alpha}]+");
-	// if (getID.length == 1) {
-	// sorted[0] = r;
-	// } else {
-	// Integer index = Integer.parseInt(getID[1]);
-	// sorted[index - 1] = r;
-	// }
-	// }
-	// return sorted;
-	// }
 
 	public static String getPrompt(Question q) {
 		MMInfoStorage storage = (MMInfoStorage) q.getProperties().getProperty(
