@@ -22,6 +22,7 @@ package de.d3web.we.wisec.kdom;
 
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 
 /**
@@ -41,7 +42,7 @@ public class ListSubstancesRootType extends DefaultMarkupType {
 	
 	@Override
 	public KnowWEDomRenderer getRenderer() {
-		return null;
+		return DelegateRenderer.getInstance();
 	}
 	
 	public ListSubstancesRootType() {

@@ -21,8 +21,13 @@
 package de.d3web.we.wisec.kdom;
 
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
+import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Priority;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.AllTextSectionFinder;
+import de.d3web.we.wikiConnector.KnowWEUserContext;
 import de.d3web.we.wisec.kdom.subtreehandler.ListSubstancesOWLSubtreeHandler;
 
 /**
@@ -36,8 +41,26 @@ public class ListSubstancesType extends DefaultAbstractKnowWEObjectType {
 		setSectionFinder(new AllTextSectionFinder());
 		addSubtreeHandler(Priority.LOWEST,
 				new ListSubstancesOWLSubtreeHandler());
+		this.setCustomRenderer(new ListSubstancesRenderer());
 
 		// addSubtreeHandler(new ListSubstancesD3SubtreeHandler());
 		//addChildType(new WISECTable());
+	}
+	
+	class ListSubstancesRenderer extends KnowWEDomRenderer<ListSubstancesType> {
+
+		@Override
+		public void render(KnowWEArticle article, Section<ListSubstancesType> sec, KnowWEUserContext user, StringBuilder string) {
+
+			//%%zebra-table
+			//%%sortable
+			string.append("\n%%zebra-table");
+			string.append("\n%%sortable\n");
+			DelegateRenderer.getInstance().render(article, sec, user, string);
+			string.append("\n/%");
+			string.append("\n/%\n");
+			
+		}
+		
 	}
 }

@@ -22,6 +22,8 @@ package de.d3web.we.wisec.kdom;
 
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkup;
 import de.d3web.we.kdom.defaultMarkup.DefaultMarkupType;
+import de.d3web.we.kdom.rendering.DelegateRenderer;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.wisec.kdom.subtreehandler.ListCriteriaOWLSubtreeHandler;
 
 /**
@@ -40,6 +42,11 @@ public class ListCriteriaRootType extends DefaultMarkupType {
 		//m.addAnnotation("UpperlistID", true);
 		m.addAnnotation(ListCriteriaOWLSubtreeHandler.UPPERLIST_ID, true);
 		
+	}
+	
+	@Override
+	public KnowWEDomRenderer getRenderer() {
+		return DelegateRenderer.getInstance();
 	}
 	
 	public ListCriteriaRootType() {

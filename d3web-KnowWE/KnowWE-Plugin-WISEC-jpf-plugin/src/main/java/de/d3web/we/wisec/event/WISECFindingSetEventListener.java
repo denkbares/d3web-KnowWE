@@ -92,6 +92,7 @@ public class WISECFindingSetEventListener implements EventListener<FindingSetEve
 		KnowledgeBaseManagement kbm = 
 			KnowledgeBaseManagement.createInstance(question.getKnowledgeBase());
 		QContainer qc = kbm.findQContainer("Substances");
+		if(qc == null) return false;
 		return qc.hasChild(question);
 	}
 
