@@ -52,11 +52,11 @@ public class ReRenderSectionMarkerRenderer extends KnowWEDomRenderer {
 	public void render(KnowWEArticle article, Section sec,
 			KnowWEUserContext user, StringBuilder string) {
 		string.append(KnowWEUtils
-				.maskHTML("<div class=\"ReRenderSectionMarker\"" + " id=\""
+				.maskHTML("<span class=\"ReRenderSectionMarker\"" + " id=\""
 						+ sec.getID() + "\"" + " rel=\"{id:'" + sec.getID()
 						+ "'}\">"));
 		renderer.render(article, sec, user, string);
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append(KnowWEUtils.maskHTML("</span>"));
 	}
 
 }
