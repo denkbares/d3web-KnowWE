@@ -23,7 +23,9 @@ package de.d3web.we.taghandler;
 import java.util.List;
 import java.util.Map;
 
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.semantic.ISemanticCore;
@@ -52,9 +54,18 @@ public class PageViewHandler extends AbstractTagHandler {
 		List<Statement> list = sc.getTopicStatements(topic);
 		if (list != null) {
 			for (Statement cur : list) {
-				String s = cur.getSubject().stringValue();
+				Resource subject = cur.getSubject();
+				String s = "subject of statement is null";
+				if(subject != null) {
+					s = subject.stringValue();
+				}
 				String p = cur.getPredicate().stringValue();
-				String o = cur.getObject().stringValue();
+				Value object = cur.getObject();
+				String o = "object of statement is null";
+				if(object != null) {
+					o = object.stringValue();
+				}
+				 
 				s = SemanticCoreDelegator.getInstance().reduceNamespace(s);
 				p = SemanticCoreDelegator.getInstance().reduceNamespace(p);
 				o = SemanticCoreDelegator.getInstance().reduceNamespace(o);
