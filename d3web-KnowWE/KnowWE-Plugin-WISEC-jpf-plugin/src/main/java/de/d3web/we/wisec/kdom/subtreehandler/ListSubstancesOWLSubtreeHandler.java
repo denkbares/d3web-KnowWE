@@ -131,6 +131,7 @@ public class ListSubstancesOWLSubtreeHandler extends OwlSubtreeHandler<ListSubst
 			// look for the headline
 			while (!(lines[headLine].trim().startsWith("|") && lines[headLine].contains(CAS_IDENTIFIER_COLUMN))) {
 				headLine++;
+				if(headLine >= lines.length) return; // no headline - no cas - no data
 			}
 			sgnIndex = findSGNIndex(lines[headLine]);
 		}

@@ -25,9 +25,9 @@ import de.d3web.we.wisec.kdom.ListCriteriaType;
 import de.d3web.we.wisec.kdom.WISECTable;
 
 public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteriaType> {
-	
+
 	public static final String UPPERLIST_ID = "SourceID";
-	
+
 	@Override
 	public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<ListCriteriaType> s) {
 
@@ -35,115 +35,145 @@ public class ListCriteriaOWLSubtreeHandler extends OwlSubtreeHandler<ListCriteri
 		Section<ListCriteriaRootType> root = s.findAncestorOfType(ListCriteriaRootType.class);
 		String listID = DefaultMarkupType.getAnnotation(root, "ListID");
 		String upperlistID = DefaultMarkupType.getAnnotation(root, UPPERLIST_ID);
-				
+
 		// Get the WISEC Namespace and create OwlObject
 		String ns = SemanticCoreDelegator.getInstance().expandNamespace("w");
 		IntermediateOwlObject ioo = new IntermediateOwlObject();
-		
+
 		// Create OnUpperList statement
 		createOnUpperListStatement(ioo, ns, listID, upperlistID);
-		
+
 		// Check if we want to use the KDOM
 		boolean useKDom = s.get().getAllowedChildrenTypes().size() > 0 ? true : false;
-		
+
 		// Process the Table Content
-		if (useKDom)
- createOWLUsingKDom(s, ioo, ns, listID);
+		if (useKDom) createOWLUsingKDom(s, ioo, ns, listID);
 		else {
 			createOWL(s.getOriginalText().trim(), ioo, ns, listID);
 		}
 
 		// Add the created statements to KnowWE's SemanticCore
-		SemanticCoreDelegator.getInstance().addStatements(ioo, s);  
+		SemanticCoreDelegator.getInstance().addStatements(ioo, s);
 		return null;
 	}
 
 	/**
-	 * Creates OWL Statements by traversing the KDOM and extracting
-	 * the necessary information from it.
-	 * @param section the current section
-	 * @param ioo the already created IntermediateOwlObject which stores the statements
-	 * @param ns the WISEC Namespace
-	 * @param listID the ID of the list
+	 * Creates OWL Statements by traversing the KDOM and extracting the
+	 * necessary information from it.
+	 * 
+	 * @param section
+	 *            the current section
+	 * @param ioo
+	 *            the already created IntermediateOwlObject which stores the
+	 *            statements
+	 * @param ns
+	 *            the WISEC Namespace
+	 * @param listID
+	 *            the ID of the list
 	 */
 	private void createOWLUsingKDom(Section<ListCriteriaType> section,
 			IntermediateOwlObject ioo, String ns, String listID) {
 
 		// Check if the table was recognized
 		if (section.findSuccessor(WISECTable.class) != null) {
-			
+
 			// Get all lines
 			List<Section<TableLine>> tableLines = new ArrayList<Section<TableLine>>();
 			section.findSuccessorsOfType(TableLine.class, tableLines);
-			
+
 			for (Section<TableLine> line : tableLines) {
-				
+
 				// Get the content of all cells
 				ArrayList<Section<TableCellContent>> contents = new ArrayList<Section<TableCellContent>>();
 				line.findSuccessorsOfType(TableCellContent.class, contents);
-				
+
 				// Create OWL from cell content
-				if (contents.size() == 2 && !contents.get(1).getOriginalText().matches("\\s*"))
-					createCharacteristicStatement(ioo, 
-												  ns, 
-												  listID, 
-												  contents.get(0).getOriginalText().trim(), 
-												  contents.get(1).getOriginalText().trim()
-												  );
+				if (contents.size() == 2
+						&& !contents.get(1).getOriginalText().matches("\\s*"))
+					createCharacteristicStatement(
+							ioo,
+													ns,
+													listID,
+													contents.get(0).getOriginalText().trim(),
+													contents.get(1).getOriginalText().trim()
+													);
 			}
-		} else {
-			Logging.getInstance().warning("Processing via KDOM failed, trying it without KDOM");
+		}
+		else {
+			Logging.getInstance().warning(
+					"Processing via KDOM failed, trying it without KDOM");
 			createOWL(section.getOriginalText().trim(), ioo, ns, listID);
 		}
-		
+
 	}
 
 	/**
 	 * Creates OWL Statements <b>without</b> traversing the KDOM
-	 * @param tableContent the Content of the Table
-	 * @param ioo the already created IntermediateOwlObject which stores the statements
-	 * @param ns the WISEC Namespace
-	 * @param listID the ID of the list
+	 * 
+	 * @param tableContent
+	 *            the Content of the Table
+	 * @param ioo
+	 *            the already created IntermediateOwlObject which stores the
+	 *            statements
+	 * @param ns
+	 *            the WISEC Namespace
+	 * @param listID
+	 *            the ID of the list
 	 */
 	private void createOWL(String tableContent, IntermediateOwlObject ioo,
 			String ns, String listID) {
-		
+
 		// Remove the trailing dashes
 		StringBuilder bob = new StringBuilder(tableContent);
 		while (bob.charAt(bob.length() - 1) == '-')
 			bob.delete(bob.length() - 1, bob.length());
 		tableContent = bob.toString();
-		
+
 		Pattern cellPattern = Pattern.compile("\\s*\\|+\\s*");
 		String[] cells = cellPattern.split(tableContent);
 		for (int i = 1; i < cells.length - 1; i += 2) {
-			if (!cells[i+1].equals(""))
-				createCharacteristicStatement(ioo, ns, listID, cells[i].trim(), cells[i+1].trim());
+			if (!cells[i + 1].equals(""))
+				createCharacteristicStatement(ioo, ns, listID, cells[i].trim(),
+						cells[i + 1].trim());
 		}
 	}
 
 	private void createCharacteristicStatement(IntermediateOwlObject ioo,
 			String ns, String listID, String characteristic, String value) {
-		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(listID);
-		URI prop = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(ns, characteristic);
-		Literal object = SemanticCoreDelegator.getInstance().getUpper().getHelper().createLiteral(value);
+		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(
+				listID);
+		URI prop = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(
+				ns, characteristic);
+		Literal object = SemanticCoreDelegator.getInstance().getUpper().getHelper().createLiteral(
+				value);
 		try {
-			Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(source, prop, object);
-			ioo.addStatement(stmt);
-		} catch (RepositoryException e) {
+			if (source != null && prop != null && object != null) {
+				Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(
+						source, prop, object);
+				ioo.addStatement(stmt);
+			}
+		}
+		catch (RepositoryException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void createOnUpperListStatement(IntermediateOwlObject ioo,
 			String ns, String listID, String upperlistID) {
-		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(listID);
-		URI prop = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(ns, "onUpperList");
-		URI object = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(upperlistID);
+		URI source = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(
+				listID);
+		URI prop = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(
+				ns, "onUpperList");
+		URI object = SemanticCoreDelegator.getInstance().getUpper().getHelper().createURI(
+				upperlistID);
 		try {
-			Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(source, prop, object);
+			if (source != null && prop != null && object != null) {
+			Statement stmt = SemanticCoreDelegator.getInstance().getUpper().getHelper().createStatement(
+					source, prop, object);
 			ioo.addStatement(stmt);
-		} catch (RepositoryException e) {
+			}
+		}
+		catch (RepositoryException e) {
 			e.printStackTrace();
 		}
 	}
