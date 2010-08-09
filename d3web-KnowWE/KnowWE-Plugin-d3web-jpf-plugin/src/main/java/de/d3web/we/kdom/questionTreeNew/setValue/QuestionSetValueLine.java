@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import de.d3web.abstraction.ActionSetValue;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -56,7 +57,6 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 	private static final String SETVALUE_ARGUMENT = "SetValueArgument";
 	private static final String OPEN = "(";
 	private static final String CLOSE = ")";
-	
 
 	/**
 	 *
@@ -87,17 +87,14 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 		return qid;
 	}
 
-	
-
 	static class CreateSetValueRuleHandler extends D3webSubtreeHandler<QuestionReference> {
 
-		
 		@Override
 		public boolean needsToCreate(KnowWEArticle article, Section<QuestionReference> s) {
-			return super.needsToCreate(article, s) 
+			return super.needsToCreate(article, s)
 					|| QuestionDashTreeUtils.isChangeInRootQuestionSubtree(article, s);
 		}
-		
+
 		@Override
 		public boolean needsToDestroy(KnowWEArticle article, Section<QuestionReference> s) {
 			return super.needsToDestroy(article, s)
@@ -110,68 +107,78 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 					SETVALUE_ARGUMENT);
 			if (kbr != null) kbr.remove();
 		}
-		
-		
+
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<QuestionReference> s) {
 
 			Question q = s.get().getTermObject(article, s);
 
-			Section<AnswerReference> answerSec = s.getFather().findSuccessor(AnswerReference.class);
-			
+			Section<AnswerReference> answerSec = s.getFather().findSuccessor(
+					AnswerReference.class);
+
 			String answerName = answerSec.get().getTermName(answerSec);
 
-			
-			
-			if(q != null) {
+			if (q != null) {
 				Choice a = null;
-				if(q instanceof QuestionChoice) {
-					QuestionChoice qc = (QuestionChoice )q;
+				if (q instanceof QuestionChoice) {
+					QuestionChoice qc = (QuestionChoice) q;
 					List<Choice> allAlternatives = qc.getAllAlternatives();
 					for (Choice answerChoice : allAlternatives) {
-						if(answerChoice.getName().equals(answerName)) {
+						if (answerChoice.getName().equals(answerName)) {
 							a = answerChoice;
 							break;
 						}
 					}
-					if(a != null) {
+
+					if (a != null) {
 						String newRuleID = getKBM(article).createRuleID();
 
 						Condition cond = QuestionDashTreeUtils.createCondition(article,
 								DashTreeUtils.getAncestorDashTreeElements(s));
-						if(cond == null) {
-							return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()+": check condition"));
+						if (cond == null) {
+							return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+									Rule.class.getSimpleName() + ": check condition"));
 						}
-						
-						Rule r = RuleFactory.createSetValueRule(newRuleID, qc, new Object[]{a}, cond, null);
-						
+
+						ActionSetValue ac = null;
+						if (q != null && a != null) {
+							ac = new ActionSetValue();
+							ac.setQuestion(q);
+							ac.setValue(a);
+						}
+
+						Rule r = null;
+						if (ac != null) {
+							r = RuleFactory.createRule(newRuleID, ac, cond, null, null);
+						}
+
 						if (r != null) {
 							KnowWEUtils.storeSectionInfo(article, s, SETVALUE_ARGUMENT, r);
-							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(r.getClass() + " : "
-									+ r.getId()));
+							return Arrays.asList((KDOMReportMessage) new ObjectCreatedMessage(
+									r.getClass() + " : "
+											+ r.getId()));
 						}
 
 					}
 				}
 			}
-			
 
-			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(Rule.class.getSimpleName()));
+			return Arrays.asList((KDOMReportMessage) new CreateRelationFailed(
+					Rule.class.getSimpleName()));
 
 		}
 
-
 	}
-	
+
 	/**
 	 * 
 	 * A type for an AnswerReference in brackets like '(AnswerXY)'
 	 * 
 	 * @author Jochen
-	 * @created 26.07.2010 
+	 * @created 26.07.2010
 	 */
 	class AnswerReferenceInBrackets extends AnswerReference {
-		
+
 		public AnswerReferenceInBrackets() {
 			this.sectionFinder = new ISectionFinder() {
 				@Override
@@ -198,7 +205,7 @@ public class QuestionSetValueLine extends DefaultAbstractKnowWEObjectType {
 			if (text.indexOf(OPEN) == 0 && text.lastIndexOf(CLOSE) == text.length() - 1) {
 				answer = text.substring(1, text.length() - 1).trim();
 			}
-			
+
 			return KnowWEUtils.trimQuotes(answer);
 		}
 
