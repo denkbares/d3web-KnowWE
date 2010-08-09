@@ -43,7 +43,6 @@ import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.kdom.sparql.SparqlDelegateRenderer;
 import de.d3web.we.taghandler.AbstractTagHandler;
-import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
@@ -156,8 +155,6 @@ public class FAQTagHandler extends AbstractTagHandler {
 			return e.getMessage();
 		}
 
-		// System.out.println(querystring);
-
 		/**
 		 * If query returned result, evaluate result
 		 */
@@ -179,9 +176,8 @@ public class FAQTagHandler extends AbstractTagHandler {
 		 */
 		String resultString = "";
 		try {
-
 			resultString = renderQueryResult(result);
-			resultString = renderPlugin(resultString);
+			resultString = FAQUtils.renderFAQPluginFrame(resultString);
 		}
 		catch (QueryEvaluationException e) {
 		}
@@ -211,19 +207,8 @@ public class FAQTagHandler extends AbstractTagHandler {
 
 			resultVals = sortedFAQs.get(i).split("----");
 
-			// build the HTML represnting one faq entry
-			string.append(KnowWEUtils.maskHTML("<div class='faq_question'> Q: "));
-			string.append(KnowWEUtils.maskHTML(resultVals[0]));
-			string.append(KnowWEUtils.maskHTML("</div>"));
-			string.append(KnowWEUtils.maskHTML("<div class='faq_answer'> "));
-			String answer = resolveLinks(resultVals[1]);
-			string.append(KnowWEUtils.maskHTML(answer));
-			string.append(KnowWEUtils.maskHTML("<div class='faq_tags'> "));
-			string.append(KnowWEUtils.maskHTML(resultVals[2]));
-			string.append(KnowWEUtils.maskHTML(" "));
-			string.append(KnowWEUtils.maskHTML(resultVals[3]));
-			string.append(KnowWEUtils.maskHTML("</div>"));
-			string.append(KnowWEUtils.maskHTML("</div>"));
+			string.append(FAQUtils.renderFAQPluginInner(
+					resultVals[0], resultVals[1], resultVals[2], resultVals[3]));
 		}
 		return string.toString();
 	}
@@ -259,7 +244,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 					bui.append("A: ");
 					String a = set.getValue("a").stringValue();
 					a = a.trim();
-					a = resolveLinks(a);
+					a = FAQUtils.resolveLinks(a);
 					bui.append(a);
 					bui.append("----");
 				}
@@ -295,83 +280,5 @@ public class FAQTagHandler extends AbstractTagHandler {
 		Collections.sort(faqList, coll);
 
 		return faqList;
-	}
-
-	/**
-	 * replaces the link-markup within a FAQ answer text "-L- -/L-" with correct
-	 * HTML linking markup
-	 * 
-	 * @created 03.08.2010
-	 * @param a the String potentially containing the link
-	 * @return the correctly HTML-marked-up answer string
-	 */
-	private String resolveLinks(String a) {
-		if (a.isEmpty() || a.equals(" ") || !a.contains("[")) {
-			return a;
-		}
-		String complete = "";
-		String link = "";
-		String linktext = "";
-
-		while (a.contains("[")) {
-
-			complete = a.substring(a.indexOf("[") + 1, a.indexOf("]"));
-			if (a.contains("|")) {
-				link = a.substring(a.indexOf("[") + 1, a.indexOf("|"));
-				linktext = a.substring(a.indexOf("|") + 1, a.indexOf("]"));
-			}
-			else {
-				link = complete;
-				linktext = complete;
-			}
-
-			if (a.contains(".pdf")) {
-				a = a.replace(complete, "<b><a href=\"/KnowWE/attach/FAQ%20Entry/" + link + "\">"
-						+ linktext + "</a></b>");
-			}
-			else {
-				a = a.replace(complete, "<b><a href=\"" + link + "\">" + linktext + "</a></b>");
-			}
-			a = a.replaceFirst("\\[", "");
-			a = a.replaceFirst("\\]", "");
-		}
-		System.out.println(a);
-		return a;
-	}
-
-	/**
-	 * replaces the attachment-markup within a FAQ answer text "-A- -/A-" with
-	 * correct HTML linking markup for attached files, e.g. PDFs
-	 * 
-	 * @created 03.08.2010
-	 * @param a the String potentially containing the attachment-link
-	 * @return the correctly HTML-marked-up answer string
-	 */
-	private String resolvePDFs(String a) {
-		if (a.isEmpty() || a.equals(" ") || !a.contains("-A-")) {
-			return a;
-		}
-		String name = "";
-		while (a.contains("-A-")) {
-			name = a.substring(a.indexOf("-A-") + 3, a.indexOf("-/A-"));
-			a = a.replaceAll("-A-", "<b><a href='/KnowWE/attach/FAQ%20Entry/" + name + "'>");
-			a = a.replaceAll("-/A-", "</a></b>");
-		}
-		return a;
-	}
-
-	/**
-	 * Create the frame for correctly rendering the plugin
-	 * 
-	 * @created 13.07.2010
-	 * @return
-	 */
-	private String renderPlugin(String pluginInner) {
-		StringBuilder string = new StringBuilder();
-		string.append(KnowWEUtils.maskHTML("<div class='panel'>"));
-		string.append(KnowWEUtils.maskHTML("<h3>FAQ Plugin</h3>"));
-		string.append(KnowWEUtils.maskHTML(pluginInner));
-		string.append(KnowWEUtils.maskHTML("</div>"));
-		return string.toString();
 	}
 }
