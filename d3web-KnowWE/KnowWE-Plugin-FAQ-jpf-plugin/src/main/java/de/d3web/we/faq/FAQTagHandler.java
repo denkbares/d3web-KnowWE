@@ -54,7 +54,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
  * if not isset faq=all --> query the attributes major and status and adapt the
  * SPARQL accordingly
  * 
- * @author Martina Freiberg
+ * @author M. Freiberg
  * @date July 2010
  */
 public class FAQTagHandler extends AbstractTagHandler {
@@ -202,22 +202,23 @@ public class FAQTagHandler extends AbstractTagHandler {
 		StringBuilder string = new StringBuilder();
 		String[] resultVals = null;
 
-		string.append(FAQUtils.renderCategoriesAchorLinks());
+		// render the topmost category-link line
+		// TODO string.append(FAQUtils.renderCategoriesAnchorLinks());
 
-		// go through all binding sets, i.e., result sets of the query
-
+		// go through all possible FAQ categories, for each check whether the
+		// current entry from the list starts with that symbol, if yes append
 		for (FAQCats symbol : FAQCats.values()) {
 
+			// print the category symbol
 			string.append(FAQUtils.printCategory(symbol));
 
 			for (int i = 0; i < sortedFAQs.size(); i++) {
-
 				resultVals = sortedFAQs.get(i).split("----");
 
 				if (Character.isDigit(resultVals[0].charAt(0))) {
 					string.append(FAQUtils.renderFAQPluginInner(
 							resultVals[0], resultVals[1], resultVals[2], resultVals[3]));
-					sortedFAQs.remove(i);
+
 				}
 				else {
 
@@ -226,13 +227,11 @@ public class FAQTagHandler extends AbstractTagHandler {
 
 						string.append(FAQUtils.renderFAQPluginInner(
 								resultVals[0], resultVals[1], resultVals[2], resultVals[3]));
-						sortedFAQs.remove(i);
+
 					}
 				}
 			}
-
 		}
-
 		return string.toString();
 	}
 

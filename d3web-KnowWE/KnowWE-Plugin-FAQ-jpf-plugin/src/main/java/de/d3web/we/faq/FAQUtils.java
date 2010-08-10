@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
 package de.d3web.we.faq;
 
 import de.d3web.we.utils.KnowWEUtils;
@@ -64,17 +84,17 @@ public class FAQUtils {
 	public static String renderFAQPluginInner(String question, String answer, String status, String major) {
 		StringBuilder string = new StringBuilder();
 
-		string.append(KnowWEUtils.maskHTML("<div class='faq_question'> Q: "));
-		string.append(KnowWEUtils.maskHTML(question));
-		string.append(KnowWEUtils.maskHTML("</div>"));
-		string.append(KnowWEUtils.maskHTML("<div class='faq_answer'> "));
-		string.append(KnowWEUtils.maskHTML(answer));
-		string.append(KnowWEUtils.maskHTML("<div class='faq_tags'> "));
-		string.append(KnowWEUtils.maskHTML(status));
-		string.append(KnowWEUtils.maskHTML(" "));
-		string.append(KnowWEUtils.maskHTML(major));
-		string.append(KnowWEUtils.maskHTML("</div>"));
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append("<div class='faq_question'> Q: ");
+		string.append(question);
+		string.append("</div>");
+		string.append("<div class='faq_answer'> ");
+		string.append(answer);
+		string.append("<div class='faq_tags'> ");
+		string.append(status);
+		string.append(" ");
+		string.append(major);
+		string.append("</div>");
+		string.append("</div>");
 
 		return string.toString();
 	}
@@ -105,32 +125,43 @@ public class FAQUtils {
 	 */
 	public static String printCategory(FAQCats cat) {
 		StringBuilder string = new StringBuilder();
-		string.append(KnowWEUtils.maskHTML("<div class='cat'>"));
+		string.append("<div class=\"cat\">");
 
 		if (cat.toString().equals("NUM")) {
-			string.append("<a name='" + cat.toString() + "'>0...9</a><br/>");
+			string.append("<a name=\"" + cat.toString() + "\">0...9</a>");
 		}
 		else {
-			string.append("<a name='" + cat.toString() + "'>" + cat.toString() + "</a><br/>");
+			string.append("<a name=\"" + cat.toString() + "\">"
+					+ cat.toString() + "</a>");
 		}
 
-		string.append(KnowWEUtils.maskHTML("</div>"));
+		string.append("</div> <br />");
 		return string.toString();
 	}
 
-	public static String renderCategoriesAchorLinks() {
+	/**
+	 * Generates the HTML displaying the anchor links to the FAQ categories in
+	 * the top of the page
+	 * 
+	 * @created 10.08.2010
+	 * @return
+	 */
+	public static String renderCategoriesAnchorLinks() {
 		StringBuilder string = new StringBuilder();
 		string.append("<div id='catAnchors'>");
 		for (FAQCats cat : FAQCats.values()) {
 			if (cat.toString().equals("NUM")) {
-				string.append("<a href\"#" + cat.toString() + "\">0...9  </a>");
+				string.append("<div class='cattop'>");
+				string.append("<a href=\"#" + cat.toString() + "\">0...9</a>");
+				string.append("</div>");
 			}
 			else {
-				string.append("<a href=\"#" + cat.toString() + "\">" + cat.toString()
-						+ "  </a>");
+				string.append("<div class='cattop'>");
+				string.append("<a href=\"#" + cat.toString() + "\">" + cat.toString() + "</a>");
+				string.append("</div>");
 			}
 		}
-		string.append("</div><br/><br/>");
+		string.append("</div>");
 		return string.toString();
 	}
 }
