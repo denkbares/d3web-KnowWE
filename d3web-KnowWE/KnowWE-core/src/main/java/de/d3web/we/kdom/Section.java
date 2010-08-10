@@ -878,8 +878,10 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 */
 	@SuppressWarnings("unchecked")
 	public <OT extends KnowWEObjectType> Section<OT> findAncestorOfType(Class<OT> clazz) {
+		
+		if(father == null) return null;
 
-		if (clazz.isAssignableFrom(objectType.getClass())) return (Section<OT>) this;
+		if (clazz.isAssignableFrom(father.getObjectType().getClass())) return (Section<OT>) father;
 
 		return father != null ? father.findAncestorOfType(clazz) : null;
 	}

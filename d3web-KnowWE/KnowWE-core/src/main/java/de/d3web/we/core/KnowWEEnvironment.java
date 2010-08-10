@@ -471,15 +471,6 @@ public class KnowWEEnvironment {
 			}
 		}
 
-
-		for (Instantiation inst: Plugins.getInstantiations()) {
-			inst.init(context);
-		}
-
-		for (TagHandler tagHandler: Plugins.getTagHandlers() ) {
-			initTagHandler(tagHandler);
-		}
-		
 		List<ISemanticCore> sclist = Plugins.getSemanticCoreImpl();
 		if (sclist.size()==1){
 			SemanticCoreDelegator.setImpl(sclist.get(0));			
@@ -492,6 +483,15 @@ public class KnowWEEnvironment {
 		}
 		
 		SemanticCoreDelegator.initImpl(this);
+
+		for (Instantiation inst: Plugins.getInstantiations()) {
+			inst.init(context);
+		}
+
+		for (TagHandler tagHandler: Plugins.getTagHandlers() ) {
+			initTagHandler(tagHandler);
+		}
+		
 							
 
 		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
