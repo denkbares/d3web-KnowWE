@@ -126,8 +126,11 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 
 			boolean lazy = false;
 			Section xml = s.findAncestorOfType(AbstractXMLObjectType.class);
-			Map<String, String> attributes = AbstractXMLObjectType
-					.getAttributeMapFor(xml);
+			Map<String, String> attributes = null;
+			if (xml != null) {
+				attributes = AbstractXMLObjectType
+						.getAttributeMapFor(xml);
+			}
 			if (attributes != null && attributes.containsKey("lazy")) {
 				String l = attributes.get("lazy");
 				if (l != null) {
@@ -158,7 +161,8 @@ public class Rule extends DefaultAbstractKnowWEObjectType {
 								.getRuleIDs().get(0));
 					}
 
-					AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(), bm);
+					AbstractKnowWEObjectType.storeMessages(article, s, this.getClass(),
+							bm);
 					List<Message> errors = new ArrayList<Message>();
 					for (Message message : bm) {
 						if (message.getMessageType().equals(Message.ERROR)

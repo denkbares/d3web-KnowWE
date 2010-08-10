@@ -185,9 +185,9 @@ public class FindingToConditionBuilder {
 		Section answer = f.findSuccessor(FindingAnswer.class);
 
 		// clean out all old Messages from a previous run of this builder...
-		KnowWEUtils.clearMessages(article, comp, FindingToConditionBuilder.class, Message.class);
-		KnowWEUtils.clearMessages(article, question, FindingToConditionBuilder.class, Message.class);
-		KnowWEUtils.clearMessages(article, answer, FindingToConditionBuilder.class, Message.class);
+		if(comp != null) KnowWEUtils.clearMessages(article, comp, FindingToConditionBuilder.class, Message.class);
+		if(question != null) KnowWEUtils.clearMessages(article, question, FindingToConditionBuilder.class, Message.class);
+		if(answer != null) KnowWEUtils.clearMessages(article, answer, FindingToConditionBuilder.class, Message.class);
 
 		String questiontext = question.getOriginalText().replaceAll(p.toString(), "").trim();
 		if (answer == null) {
