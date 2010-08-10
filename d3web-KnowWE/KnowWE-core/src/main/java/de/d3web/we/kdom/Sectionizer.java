@@ -381,7 +381,7 @@ public class Sectionizer {
 				Section.createTypedSection(section.getOriginalText(),
 						PlainText.getInstance(),
 						father, section.getOffSetFromFatherText(),
-						article, null, false, null, PlainText.getInstance());
+						article, null, false);
 			}
 		}
 

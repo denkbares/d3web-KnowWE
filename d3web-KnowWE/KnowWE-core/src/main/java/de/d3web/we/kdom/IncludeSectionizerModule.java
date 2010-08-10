@@ -1,8 +1,10 @@
 package de.d3web.we.kdom;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.include.IncludeSectionFinderResult;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
+import de.d3web.we.utils.KnowWEUtils;
 
 
 public class IncludeSectionizerModule implements SectionizerModule {
@@ -22,9 +24,11 @@ public class IncludeSectionizerModule implements SectionizerModule {
 							+ result.getStart(),
 					article,
 					result.getId(),
-					false,
-					((IncludeSectionFinderResult) result).getIncludeAddress(),
-					ob);
+					false);
+
+			KnowWEUtils.storeSectionInfo(s.getWeb(), s.getTitle(), s.getID(),
+					Include.INCLUDE_ADDRESS_KEY,
+					((IncludeSectionFinderResult) result).getIncludeAddress());
 			KnowWEEnvironment.getInstance().getIncludeManager(
 					s.getWeb()).registerInclude(s);
 

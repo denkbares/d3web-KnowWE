@@ -32,6 +32,7 @@ public class QuestionTreeRootType extends QuestionTree{
 		m = new DefaultMarkup("QuestionTree");
 		m.addContentType(new QuestionDashTree());
 		m.addAnnotation("dialog", false);
+		m.addAnnotation("namespace", false);
 	}
 
 	public QuestionTreeRootType() {

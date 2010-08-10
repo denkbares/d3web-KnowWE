@@ -28,7 +28,6 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.include.Include;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.store.SectionStore;
-import de.d3web.we.utils.KnowWEUtils;
 
 
 public class IncrementalSectionizerModule implements SectionizerModule {
@@ -86,7 +85,8 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 				// determine, if the position has changes in the
 				// new version of the KDOM
 
-				match.lastPositions = KnowWEUtils.getPositionsInKDOM(match);
+				match.setLastPositionInKDOM(match.getPositionInKDOM());
+				match.clearPositionInKDOM();
 
 				// use match instead of creating a new Section
 				// (thats the idea of updating ;) )
@@ -102,10 +102,10 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 				s.getAllNodesPreOrder(newNodes);
 				for (Section<?> node : newNodes) {
 
-					List<Integer> lastPositions = KnowWEUtils.getPositionsInKDOM(
-							node, match);
-					lastPositions.addAll(match.lastPositions);
-					node.lastPositions = lastPositions;
+					List<Integer> lastPositions = node.calcPositionTil(match);
+					lastPositions.addAll(match.getLastPositionInKDOM());
+					node.setLastPositionInKDOM(lastPositions);
+					node.clearPositionInKDOM();
 
 					if (node.getObjectType() instanceof Include) {
 						article.getIncludeSections().add(

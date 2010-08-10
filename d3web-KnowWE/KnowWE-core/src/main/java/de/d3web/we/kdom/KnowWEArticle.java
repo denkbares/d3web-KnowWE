@@ -35,13 +35,13 @@ import java.util.logging.Logger;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEDomParseReport;
 import de.d3web.we.core.KnowWEEnvironment;
-import de.d3web.we.core.KnowWEIncludeManager;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.event.EventManager;
 import de.d3web.we.event.FullParseEvent;
 import de.d3web.we.kdom.contexts.ContextManager;
 import de.d3web.we.kdom.contexts.DefaultSubjectContext;
 import de.d3web.we.kdom.include.Include;
+import de.d3web.we.kdom.include.KnowWEIncludeManager;
 import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.store.KnowWESectionInfoStorage;
 import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
@@ -137,8 +137,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		clearTypeStore(rootType, title);
 
 		// create new Section, here the KDOM is created recursively
-		sec = Section.createTypedSection(text, this, null, 0, this, null,
-				false, null, this);
+		sec = Section.createTypedSection(text, this, null, 0, this, null, false);
 
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
@@ -462,13 +461,13 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	public List<Section<? extends KnowWEObjectType>> getAllNodesPostOrder() {
-		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
+		List<Section<? extends KnowWEObjectType>> nodes = new LinkedList<Section<? extends KnowWEObjectType>>();
 		sec.getAllNodesPostOrder(nodes);
 		return nodes;
 	}
 	
 	public List<Section<? extends KnowWEObjectType>> getAllNodesToDestroyPostOrder() {
-		List<Section<? extends KnowWEObjectType>> nodes = new ArrayList<Section<? extends KnowWEObjectType>>();
+		List<Section<? extends KnowWEObjectType>> nodes = new LinkedList<Section<? extends KnowWEObjectType>>();
 		if (lastVersion != null) lastVersion.sec.getAllNodesToDestroyPostOrder(this, nodes);
 		return nodes;
 	}

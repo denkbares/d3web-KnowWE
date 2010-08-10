@@ -194,7 +194,7 @@ public class CIBuilder {
 		List<Section<Include>> list = new ArrayList<Section<Include>>();
 		monitored.getSection().findSuccessorsOfType(Include.class, list);
 		for (Section<Include> sec : list) {
-			String targetArticle = sec.getIncludeAddress().getTargetArticle();
+			String targetArticle = Include.getIncludeAddress(sec).getTargetArticle();
 			Map<Integer, Date> history =
 					conny.getModificationHistory(targetArticle);
 

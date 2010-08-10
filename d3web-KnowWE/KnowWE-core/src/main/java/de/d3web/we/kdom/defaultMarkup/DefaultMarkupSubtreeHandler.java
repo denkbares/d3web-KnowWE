@@ -2,9 +2,11 @@ package de.d3web.we.kdom.defaultMarkup;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.report.Message;
+import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.AbstractKnowWEObjectType;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
@@ -38,6 +40,24 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 			}
 		}
 
+		// TODO: refactor this to somewhere else
+		Annotation namespaceAnno = this.markup.getAnnotation("namespace");
+		if (namespaceAnno != null) {
+			Section<? extends AnnotationType> annotationSection =
+					DefaultMarkupType.getAnnotationSection(markupSection, namespaceAnno.getName());
+			if (annotationSection != null) {
+				String value = annotationSection.getOriginalText();
+				System.out.println(value);
+				List<Section<?>> nodes = new LinkedList<Section<?>>();
+				markupSection.getAllNodesPostOrder(nodes);
+				for (Section<?> node : nodes) {
+					node.addNamespace(value);
+				}
+				KnowWEEnvironment.getInstance().getNamespaceManager(article.getWeb()).registerNamespaceDefinition(
+						markupSection);
+			}
+		}
+
 		// check unrecognized annotations
 		List<Section<?>> unknownSections = markupSection.findChildrenOfType(UnknownAnnotationType.class);
 		for (Section<?> annotationSection : unknownSections) {
@@ -62,5 +82,26 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 			AbstractKnowWEObjectType.storeMessages(article, markupSection, this.getClass(), msgs);
 		
 		return null;
+	}
+
+	@Override
+	public void destroy(KnowWEArticle article, Section markupSection) {
+		// TODO: refactor this to somewhere else
+		Annotation namespaceAnno = this.markup.getAnnotation("namespace");
+		if (namespaceAnno != null) {
+			Section<? extends AnnotationType> annotationSection =
+					DefaultMarkupType.getAnnotationSection(markupSection, namespaceAnno.getName());
+			if (annotationSection != null) {
+				String value = annotationSection.getOriginalText();
+				System.out.println(value);
+				List<Section<?>> nodes = new LinkedList<Section<?>>();
+				markupSection.getAllNodesPostOrder(nodes);
+				for (Section<?> node : nodes) {
+					node.removeNamespace(value);
+				}
+				KnowWEEnvironment.getInstance().getNamespaceManager(article.getWeb()).unregisterNamespaceDefinition(
+						markupSection);
+			}
+		}
 	}
 }

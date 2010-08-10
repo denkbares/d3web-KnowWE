@@ -73,11 +73,11 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="KnowWEObjectType"
-		id="KnowledgeBaseMarker">
+		id="CompileMarker">
 		<parameter id="class"
-			value="de.d3web.we.terminology.KnowledgeBaseMarker" />
-		<parameter id="name" value="KnowledgeBaseMarker" />
-		<parameter id="description" value="KnowWEObjectType KnowledgeBaseMarker" />
+			value="de.d3web.we.terminology.CompileMarker" />
+		<parameter id="name" value="CompileMarker" />
+		<parameter id="description" value="KnowWEObjectType CompileMarker" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5.0" />
 		<parameter id="scope" value="root" />

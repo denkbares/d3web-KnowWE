@@ -10,7 +10,9 @@ public class Priority implements Comparable<Priority> {
 
 	private static final TreeSet<Priority> registeredPriorities = new TreeSet<Priority>();
 
-	public static final Priority HIGHEST = new Priority(Integer.MAX_VALUE);
+	public static final Priority PRECOMPILE = new Priority(100000);
+
+	public static final Priority HIGHEST = new Priority(300);
 
 	public static final Priority HIGHER = new Priority(200);
 
@@ -22,7 +24,7 @@ public class Priority implements Comparable<Priority> {
 
 	public static final Priority LOWER = new Priority(-200);
 
-	public static final Priority LOWEST = new Priority(Integer.MIN_VALUE);
+	public static final Priority LOWEST = new Priority(-300);
 
 	private final int value;
 

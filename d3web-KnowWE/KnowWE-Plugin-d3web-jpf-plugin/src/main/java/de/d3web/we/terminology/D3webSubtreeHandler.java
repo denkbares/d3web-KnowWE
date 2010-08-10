@@ -40,6 +40,22 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 				article.getTitle());
 	}
 
+	private boolean isMatchingNamespace(KnowWEArticle article, Section<T> s) {
+		return true;
+		
+		// Set<String> namespaceIncludes =
+		// KnowWEEnvironment.getInstance().getNamespaceManager(
+		// article.getWeb()).getIncludedNamespaces(article);
+		// Set<String> namespaces = s.getNamespaces();
+		//		
+		// for (String ns : namespaces) {
+		// if (namespaceIncludes.contains(ns)) return true;
+		// }
+		//		
+		// return false;
+	}
+
+
 	/*
 	 * Checking for a Section with an KnowWEObjectType implementing
 	 * KnowWETermMarker is necessary for the compatibility with
@@ -51,12 +67,11 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 */
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
-		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).hasKnowledgeBase(
-						article.getTitle())
-						&& (super.needsToCreate(article, s)
-								|| (!(s.get() instanceof KnowWETermMarker)
-										&& KnowWEUtils.getTerminologyHandler(article.getWeb())
-												.areTermDefinitionsModifiedFor(article)));
+		return isMatchingNamespace(article, s)
+				&& (super.needsToCreate(article, s)
+						|| (!(s.get() instanceof KnowWETermMarker)
+								&& KnowWEUtils.getTerminologyHandler(article.getWeb())
+										.areTermDefinitionsModifiedFor(article)));
 	}
 
 	/*
@@ -70,8 +85,7 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	 */
 	@Override
 	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
-		return D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).hasKnowledgeBase(
-				article.getTitle())
+		return isMatchingNamespace(article, s)
 				&& (super.needsToDestroy(article, s)
 						|| (!(s.get() instanceof KnowWETermMarker)
 								&& KnowWEUtils.getTerminologyHandler(article.getWeb())

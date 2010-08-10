@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +42,6 @@ import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.basic.VerbatimType;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.include.Include;
-import de.d3web.we.kdom.include.IncludeAddress;
 import de.d3web.we.kdom.objects.KnowWETerm;
 import de.d3web.we.kdom.report.KDOMError;
 import de.d3web.we.kdom.report.KDOMReportMessage;
@@ -50,7 +50,6 @@ import de.d3web.we.kdom.visitor.Visitable;
 import de.d3web.we.kdom.visitor.Visitor;
 import de.d3web.we.logging.Logging;
 import de.d3web.we.user.UserSettingsManager;
-import de.d3web.we.utils.KnowWEUtils;
 import de.d3web.we.utils.PairOfInts;
 
 /**
@@ -69,22 +68,19 @@ import de.d3web.we.utils.PairOfInts;
  */
 public class Section<T extends KnowWEObjectType> implements Visitable, Comparable<Section<? extends KnowWEObjectType>> {
 
-	private final Set<String> reusedBy = new HashSet<String>(4);
-
-	// private final Map<String, Boolean> positionChangedFor = new
-	// HashMap<String, Boolean>();
+	private HashSet<String> reusedBy = null;
 	
-	protected List<Integer> lastPositions = null;
+	private List<Integer> position = null;
 
-	// protected int lastChildrenListSize = -1;
+	private List<Integer> lastPositions = null;
 
 	protected boolean hasReusedSuccessor = false;
 
 	protected PairOfInts startPosFromTmp;
 
-	private IncludeAddress address;
-
 	protected KnowWEArticle article;
+
+	private HashSet<String> namespaces = null;
 
 	protected boolean isExpanded = false;
 	
@@ -125,7 +121,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
-	protected final List<Section<? extends KnowWEObjectType>> children = new ArrayList<Section<? extends KnowWEObjectType>>();
+	protected final List<Section<? extends KnowWEObjectType>> children =
+			new ArrayList<Section<? extends KnowWEObjectType>>(5);
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through
@@ -152,8 +149,8 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return objectType;
 	}
 
-	public static <T extends KnowWEObjectType> Section<T> createTypedSection(String text, T o, Section<? extends KnowWEObjectType> father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded, IncludeAddress adress, T type) {
-        return new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded,adress);
+	public static <T extends KnowWEObjectType> Section<T> createTypedSection(String text, T o, Section<? extends KnowWEObjectType> father, int beginIndexOfFather, KnowWEArticle article, SectionID id, boolean isExpanded) {
+		return new Section<T>(text, o, father, beginIndexOfFather, article, id, isExpanded);
     }
 
 
@@ -171,17 +168,16 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	 * @param beginIndexFather
 	 * @param article
 	 *          is the article this section is hooked in
-	 * @param address
 	 */
 	@SuppressWarnings("unchecked")
 	private Section(String text, T objectType, Section<? extends KnowWEObjectType> father,
 			int beginIndexFather, KnowWEArticle article, SectionID sectionID,
-			boolean isExpanded, IncludeAddress address) {
+			boolean isExpanded) {
 
 
 		this.article = article;
 		this.isExpanded = isExpanded;
-		this.address = address;
+		// this.address = address;
 
 		this.father = father;
 		if (father != null)
@@ -296,6 +292,61 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	/**
+	 * If the compared Sections are from different articles, a value less than 0
+	 * will be returned, if the title of this Section is lexicographically less
+	 * than the title of the arguments Section, greater than 0 if the title of
+	 * arguments Section is lexicographically greater.<br/>
+	 * If the Sections are from the same article, a value less than 0 will be
+	 * returned, if the Section is textually located above the argument Section,
+	 * a value greater than 0, if below.<br/>
+	 * If a Sections is compared with itself, 0 will be returned.
+	 */
+	@Override
+	public int compareTo(Section<? extends KnowWEObjectType> o) {
+		if (this == o) return 0;
+		int comp = getTitle().compareTo(o.getTitle());
+		if (comp == 0) {
+			List<Integer> thisPos = getPositionInKDOM();
+			List<Integer> otherPos = o.getPositionInKDOM();
+			ListIterator<Integer> thisIter = thisPos.listIterator(thisPos.size());
+			ListIterator<Integer> otherIter = otherPos.listIterator(otherPos.size());
+
+			while (comp == 0 && thisIter.hasPrevious() && otherIter.hasPrevious()) {
+				comp = thisIter.previous().compareTo(otherIter.previous());
+			}
+			if (comp == 0) {
+				comp = otherPos.size() - thisPos.size();
+			}
+		}
+		return comp;
+	}
+
+	/**
+	 * part of the visitor pattern
+	 * 
+	 * @see de.d3web.we.kdom.visitor.Visitable#accept(de.d3web.we.kdom.visitor.Visitor)
+	 */
+	@Override
+	public void accept(Visitor v) {
+		v.visit(this);
+
+	}
+
+	public boolean equalsOrIsChildrenOf(Section<? extends KnowWEObjectType> sec) {
+		if (sec == this) {
+			return true;
+		}
+		else {
+			if (father == null) {
+				return false;
+			}
+			else {
+				return father.equalsOrIsChildrenOf(sec);
+			}
+		}
+	}
+
+	/**
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 *
 	 */
@@ -326,9 +377,9 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return originalText;
 	}
 
-	public IncludeAddress getIncludeAddress() {
-		return this.address;
-	}
+	// public IncludeAddress getIncludeAddress() {
+	// return this.address;
+	// }
 
 	/**
 	 * Sets the text of this node. This IS an article source edit operation!
@@ -569,6 +620,28 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return this.article.getTitle();
 	}
 
+	public void addNamespace(String namespace) {
+		initNamespaces();
+		namespaces.add(namespace);
+	}
+
+	public boolean removeNamespace(String namespace) {
+		initNamespaces();
+		return namespaces.remove(namespace);
+	}
+
+	public Set<String> getNamespaces() {
+		initNamespaces();
+		return Collections.unmodifiableSet(namespaces);
+	}
+
+	private void initNamespaces() {
+		if (namespaces == null) {
+			namespaces = new HashSet<String>(4);
+			namespaces.add(getTitle());
+		}
+	}
+
 	public String getWeb() {
 		return this.article.getWeb();
 	}
@@ -644,20 +717,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		return false;
 	}
 
-
-	/**
-	 * part of the visitor pattern
-	 *
-	 * @see de.d3web.we.kdom.visitor.Visitable#accept(de.d3web.we.kdom.visitor.Visitor)
-	 */
-	@Override
-	public void accept(Visitor v) {
-		v.visit(this);
-
-	}
-	
-
-
 	/**
 	 * Verbalizes this node
 	 *
@@ -730,12 +789,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 				+ temp.substring(temp.lastIndexOf(SectionID.SEPARATOR));
 		}
 		return temp;
-	}
-
-	@Override
-	public int compareTo(Section<? extends KnowWEObjectType> o) {
-		return Integer.valueOf(this.getOffSetFromFatherText())
-				.compareTo(Integer.valueOf(o.getOffSetFromFatherText()));
 	}
 
 	/**
@@ -1226,20 +1279,6 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 		}
 	}
 
-	public boolean equalsOrIsChildrenOf(Section<? extends KnowWEObjectType> sec) {
-		if (sec == this) {
-			return true;
-		}
-		else {
-			if (father == null) {
-				return false;
-			}
-			else {
-				return father.equalsOrIsChildrenOf(sec);
-			}
-		}
-	}
-
 	public void setFather(Section<? extends KnowWEObjectType> father) {
 		this.father = father;
 	}
@@ -1283,11 +1322,13 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	public boolean isReusedBy(String title) {
-		return reusedBy.contains(title);
+		return reusedBy == null ? false : reusedBy.contains(title);
 	}
 
 	public Set<String> isReusedBy() {
-		return reusedBy;
+		return reusedBy == null
+				? Collections.unmodifiableSet(new HashSet<String>(0))
+				: Collections.unmodifiableSet(reusedBy);
 	}
 
 	public boolean isOrHasSuccessorReusedBy(String title) {
@@ -1364,10 +1405,11 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public void setReusedBy(String title, boolean reused) {
 		if (reused) {
+			if (reusedBy == null) reusedBy = new HashSet<String>(4);
 			reusedBy.add(title);
 		}
 		else {
-			reusedBy.remove(title);
+			if (reusedBy != null) reusedBy.remove(title);
 		}
 	}
 
@@ -1404,9 +1446,42 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 
 	public boolean isPositionChangedFor(String title) {
 		if (lastPositions == null) return false;
-		List<Integer> posis = KnowWEUtils.getPositionsInKDOM(this);
-		return !lastPositions.equals(posis);
+		return !lastPositions.equals(getPositionInKDOM());
+	}
 
+	protected void clearPositionInKDOM() {
+		position = null;
+	}
+
+	public List<Integer> getPositionInKDOM() {
+		if (position == null) {
+			position = calcPositionInKDOM();
+		}
+		return Collections.unmodifiableList(position);
+	}
+
+	protected void setLastPositionInKDOM(List<Integer> lastPositions) {
+		this.lastPositions = lastPositions;
+	}
+
+	public List<Integer> getLastPositionInKDOM() {
+		return lastPositions == null ? null : Collections.unmodifiableList(lastPositions);
+	}
+
+	public List<Integer> calcPositionTil(Section<?> end) {
+		List<Integer> positions = new ArrayList<Integer>();
+		Section<?> temp = this;
+		Section<?> tempFather = temp.getFather();
+		while (temp != end && tempFather != null) {
+			positions.add(tempFather.getChildren().indexOf(temp));
+			temp = tempFather;
+			tempFather = temp.getFather();
+		}
+		return positions;
+	}
+
+	public List<Integer> calcPositionInKDOM() {
+		return calcPositionTil(getArticle().getSection());
 	}
 
 	/*

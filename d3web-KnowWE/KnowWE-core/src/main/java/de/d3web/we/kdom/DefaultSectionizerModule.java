@@ -14,9 +14,7 @@ public class DefaultSectionizerModule implements SectionizerModule {
 				thisSection.getOffSetFromFatherText() + result.getStart(),
 				article,
 				result.getId(),
-				false,
-				null,
-				ob);
+				false);
 
 	}
 

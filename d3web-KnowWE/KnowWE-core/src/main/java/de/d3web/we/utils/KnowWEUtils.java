@@ -265,8 +265,8 @@ public class KnowWEUtils {
 		return getStoredObject(s.getWeb(), s.getTitle(), s.getID(), key);
 	}
 
-	public static void storeSectionInfo(KnowWEArticle article, Section<?> sec, String key, Object o) {
-		storeSectionInfo(article.getWeb(), article.getTitle(), sec.getID(), key, o);
+	public static void storeSectionInfo(KnowWEArticle article, Section<?> s, String key, Object o) {
+		storeSectionInfo(article.getWeb(), article.getTitle(), s.getID(), key, o);
 	}
 
 	public static Object getStoredObject(KnowWEArticle article, Section<?> s, String key) {
@@ -292,22 +292,6 @@ public class KnowWEUtils {
 	public static TerminologyHandler getTerminologyHandler(String web) {
 		return (TerminologyHandler) KnowWEEnvironment.getInstance()
 				.getKnowledgeRepresentationManager(web).getHandler(TerminologyHandler.HANDLER_KEY);
-	}
-
-	public static List<Integer> getPositionsInKDOM(Section<?> s) {
-		return getPositionsInKDOM(s, s.getArticle().getSection());
-	}
-
-	public static List<Integer> getPositionsInKDOM(Section<?> start, Section<?> end) {
-		List<Integer> positions = new ArrayList<Integer>();
-		Section<?> temp = start;
-		Section<?> tempFather = temp.getFather();
-		while (temp != end && tempFather != null) {
-			positions.add(tempFather.getChildren().indexOf(temp));
-			temp = tempFather;
-			tempFather = temp.getFather();
-		}
-		return positions;
 	}
 
 	public static String convertUmlaut(String text) {

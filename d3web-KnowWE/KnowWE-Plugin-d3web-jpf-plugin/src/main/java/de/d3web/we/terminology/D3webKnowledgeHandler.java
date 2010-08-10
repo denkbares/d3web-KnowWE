@@ -25,9 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -55,8 +53,6 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 */
 	private static Map<String, KnowledgeBaseManagement> kbms = new HashMap<String, KnowledgeBaseManagement>();
 
-	private static Set<String> articlesWithKB = new HashSet<String>();
-
 	/**
 	 * Stores for each Article if the jar file already got built
 	 */
@@ -74,11 +70,6 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 
 	public D3webKnowledgeHandler() {
 		this.web = KnowWEEnvironment.DEFAULT_WEB;
-	}
-
-	public boolean hasKnowledgeBase(String title) {
-		return true;
-		// return articlesWithKB.contains(title);
 	}
 
 	/**
@@ -100,12 +91,6 @@ public class D3webKnowledgeHandler implements KnowledgeRepresentationHandler {
 	 */
 	@Override
 	public void initArticle(KnowWEArticle art) {
-//		if (art.getSection().findSuccessor(KnowledgeBaseMarker.class) != null) {
-//			articlesWithKB.add(art.getTitle());
-//		}
-//		else {
-//			articlesWithKB.remove(art.getTitle());
-//		}
 		DPSEnvironment env = D3webModule.getDPSE(web);
 		String id = art.getTitle() + ".." + KnowWEEnvironment.generateDefaultID(art.getTitle());
 		KnowledgeService service = env.getService(id);

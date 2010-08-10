@@ -26,17 +26,15 @@ import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 public class IncludeSectionFinderResult extends SectionFinderResult {
 
-	private IncludeAddress a;
+	private final IncludeAddress a;
 	
 	public IncludeSectionFinderResult(int start, int end, SectionID sectionID, IncludeAddress a) {
 		super(start, end, sectionID);
 		this.a = a;
 	}
-	
+
 	public IncludeAddress getIncludeAddress() {
 		return a;
 	}
-
-
 
 }

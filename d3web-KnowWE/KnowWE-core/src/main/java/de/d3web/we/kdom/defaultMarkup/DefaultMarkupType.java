@@ -1,16 +1,10 @@
 package de.d3web.we.kdom.defaultMarkup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
-import de.d3web.report.Message;
 import de.d3web.we.kdom.DefaultAbstractKnowWEObjectType;
-import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.kdom.sectionFinder.RegexSectionFinder;

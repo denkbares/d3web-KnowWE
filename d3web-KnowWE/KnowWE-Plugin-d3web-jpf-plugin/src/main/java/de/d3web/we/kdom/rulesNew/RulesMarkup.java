@@ -42,6 +42,7 @@ public class RulesMarkup extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("Rule");
 		m.addContentType(new RuleContentType());
+		m.addAnnotation("namespace", false);
 	}
 
 	public RulesMarkup() {

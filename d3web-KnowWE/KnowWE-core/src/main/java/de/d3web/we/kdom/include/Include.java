@@ -22,11 +22,13 @@ package de.d3web.we.kdom.include;
 
 import java.util.Map;
 
+import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.SectionID;
 import de.d3web.we.kdom.sectionFinder.SectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.kdom.xml.XMLSectionFinder;
+import de.d3web.we.utils.KnowWEUtils;
 
 
 public class Include extends AbstractXMLObjectType {
@@ -68,6 +70,13 @@ public class Include extends AbstractXMLObjectType {
 			return new IncludeSectionFinderResult(start, end, sectionID, null);
 		}
 		
+	}
+
+	public static final String INCLUDE_ADDRESS_KEY = "INCLUDE_ADDRESS_KEY";
+
+	public static IncludeAddress getIncludeAddress(Section<Include> s) {
+		return (IncludeAddress) KnowWEUtils.getStoredObject(s.getWeb(), s.getArticle().getTitle(),
+				s.getID(), INCLUDE_ADDRESS_KEY);
 	}
 
 }

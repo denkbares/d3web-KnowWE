@@ -24,9 +24,21 @@ import de.d3web.we.kdom.Section;
 public abstract class OwlSubtreeHandler<T extends KnowWEObjectType> extends
 		SubtreeHandler<T> {
 
+	// no need to create (and destroy) all the OWL statements again for included
+	// Sections
 	@Override
-	public void destroy(KnowWEArticle article, Section s) {
-		super.destroy(article, s);
+	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
+		return s.getTitle().equals(article.getTitle()) && super.needsToCreate(article, s);
+	}
+
+	@Override
+	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
+		return s.getTitle().equals(article.getTitle()) && super.needsToDestroy(article, s);
+	}
+
+	@Override
+	public void destroy(KnowWEArticle article, Section<T> s) {
+
 		try {
 			SemanticCoreDelegator.getInstance().clearContext(s);
 		}

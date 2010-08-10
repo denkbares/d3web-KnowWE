@@ -29,6 +29,7 @@ public class SolutionTreeMarkup extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup("Solution");
 		m.addContentType(new SolutionsDashTree());
+		m.addAnnotation("namespace", false);
 	}
 
 	public SolutionTreeMarkup() {

@@ -59,14 +59,15 @@ public class IncludeSectionRenderer extends KnowWEDomRenderer {
 		StringBuilder content = new  StringBuilder();
 		
 		String srclink;
-		if (sec.getObjectType() instanceof Include && sec.getIncludeAddress() != null) {
+		if (sec.getObjectType() instanceof Include && Include.getIncludeAddress(sec) != null) {
 			Section<Include> child = (Section<Include>) sec.getChildren().get(0);
 			String baseURL = KnowWEEnvironment.getInstance().getWikiConnector().getBaseUrl();
 			srclink = "<a href=\"" + baseURL + (baseURL.endsWith("/") ? "" : "/") 
 				+ "Wiki.jsp?page=" 
-				+ sec.getIncludeAddress().getTargetArticle() 
+					+ Include.getIncludeAddress(sec).getTargetArticle()
 				+ (!child.getTitle().equals(sec.getTitle()) ? "#" + child.getID() : "") + "\">" 
-				+ "Include: src=\"" +  sec.getIncludeAddress().getOriginalAddress() + "\"</a>";
+					+ "Include: src=\"" + Include.getIncludeAddress(sec).getOriginalAddress()
+					+ "\"</a>";
 		} else {
 			srclink = "Unknown Source";
 		}

@@ -42,6 +42,7 @@ import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
 import de.d3web.plugin.Resource;
 import de.d3web.we.action.KnowWEActionDispatcher;
+import de.d3web.we.core.namespace.KnowWENamespaceManager;
 import de.d3web.we.core.semantic.ISemanticCore;
 import de.d3web.we.core.semantic.SemanticCoreDelegator;
 import de.d3web.we.event.ArticleCreatedEvent;
@@ -53,6 +54,7 @@ import de.d3web.we.kdom.RootType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.Sectionizer;
 import de.d3web.we.kdom.SectionizerModule;
+import de.d3web.we.kdom.include.KnowWEIncludeManager;
 import de.d3web.we.kdom.renderer.ConditionalRenderer;
 import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
@@ -121,8 +123,8 @@ public class KnowWEEnvironment {
 	private final Map<String, KnowWEArticleManager> articleManagers = new HashMap<String, KnowWEArticleManager>();
 
 	/**
-	 * An knowledge manager for each web. In case of JSPWiki there is only on
-	 * web ('default_web')
+	 * A knowledge manager for each web. In case of JSPWiki there is only on web
+	 * ('default_web')
 	 */
 	private final Map<String, KnowledgeRepresentationManager> knowledgeManagers = new HashMap<String, KnowledgeRepresentationManager>();
 
@@ -131,6 +133,12 @@ public class KnowWEEnvironment {
 	 * ('default_web')
 	 */
 	private final Map<String, KnowWEIncludeManager> includeManagers = new HashMap<String, KnowWEIncludeManager>();
+
+	/**
+	 * A namespace manager for each web. In case of JSPWiki there is only on web
+	 * ('default_web')
+	 */
+	private final Map<String, KnowWENamespaceManager> namespaceManagers = new HashMap<String, KnowWENamespaceManager>();
 
 	// /**
 	// * The servlet context of the running application. Necessary to determine
@@ -307,8 +315,8 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 * returns the ArtilceManager for a given web
-	 *
+	 * returns the IncludeManager for a given web
+	 * 
 	 * @param web
 	 * @return
 	 */
@@ -317,6 +325,21 @@ public class KnowWEEnvironment {
 		if (mgr == null) {
 			mgr = new KnowWEIncludeManager(web);
 			includeManagers.put(web, mgr);
+		}
+		return mgr;
+	}
+
+	/**
+	 * returns the NamespaceManager for a given web
+	 * 
+	 * @param web
+	 * @return
+	 */
+	public KnowWENamespaceManager getNamespaceManager(String web) {
+		KnowWENamespaceManager mgr = this.namespaceManagers.get(web);
+		if (mgr == null) {
+			mgr = new KnowWENamespaceManager(web);
+			namespaceManagers.put(web, mgr);
 		}
 		return mgr;
 	}

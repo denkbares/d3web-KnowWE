@@ -133,7 +133,7 @@ public abstract class SubtreeHandler<T extends KnowWEObjectType> {
 	 * @param s is the old, not reused Section whose stuff you want to destroy
 	 */
 	public void destroy(KnowWEArticle article, Section<T> s) {
-		return;
+
 	}
 	
 
