@@ -44,6 +44,19 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
  * 
  */
 public class TableLine extends DefaultAbstractKnowWEObjectType {
+	
+	protected AbstractKnowWEObjectType colHeaderType;
+
+	
+	public TableLine() {
+		this(new TableColumnHeaderCellContent());
+	}
+	
+	
+	
+	public TableLine(TableCellContent colHeaderType) {
+		this.colHeaderType = colHeaderType;
+	}
 
 	@Override
 	protected void init() {
@@ -91,11 +104,15 @@ public class TableLine extends DefaultAbstractKnowWEObjectType {
 				Section content = colHeaderCell
 						.findChildOfType(TableCellContent.class);
 				if (content != null) {
-					AbstractKnowWEObjectType colHeaderType = new TableColumnHeaderCellContent();
-					content.setType(colHeaderType);
+					
+					content.setType(TableLine.this.colHeaderType);
 				}
 			}
 			return null;
 		}
+	}
+
+	public AbstractKnowWEObjectType getColHeaderType() {
+		return colHeaderType;
 	}
 }
