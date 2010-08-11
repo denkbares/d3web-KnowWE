@@ -203,7 +203,7 @@ public class FAQTagHandler extends AbstractTagHandler {
 		String[] resultVals = null;
 
 		// render the topmost category-link line
-		// TODO string.append(FAQUtils.renderCategoriesAnchorLinks());
+		string.append(FAQUtils.renderCategoriesAnchorLinks());
 
 		// go through all possible FAQ categories, for each check whether the
 		// current entry from the list starts with that symbol, if yes append

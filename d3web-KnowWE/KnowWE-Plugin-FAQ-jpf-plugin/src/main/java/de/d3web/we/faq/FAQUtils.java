@@ -148,20 +148,16 @@ public class FAQUtils {
 	 */
 	public static String renderCategoriesAnchorLinks() {
 		StringBuilder string = new StringBuilder();
-		string.append("<div id='catAnchors'>");
 		for (FAQCats cat : FAQCats.values()) {
 			if (cat.toString().equals("NUM")) {
-				string.append("<div class='cattop'>");
-				string.append("<a href=\"#" + cat.toString() + "\">0...9</a>");
-				string.append("</div>");
+				string.append("<a class=\"cattop\" href=\"#" + cat.toString() + "\">0...9</a>");
 			}
 			else {
-				string.append("<div class='cattop'>");
-				string.append("<a href=\"#" + cat.toString() + "\">" + cat.toString() + "</a>");
-				string.append("</div>");
+				string.append("<a class=\"cattop\" href=\"#" + cat.toString() + "\">"
+						+ cat.toString() + "</a>");
 			}
 		}
-		string.append("</div>");
+		string.append("<p />");
 		return string.toString();
 	}
 }
