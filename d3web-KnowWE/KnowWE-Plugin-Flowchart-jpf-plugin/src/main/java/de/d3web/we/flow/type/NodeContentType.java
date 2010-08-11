@@ -51,6 +51,7 @@ public class NodeContentType extends XMLContent{
 		this.childrenTypes.add(PositionType.getInstance());
 		this.childrenTypes.add(ActionType.getInstance());
 		this.childrenTypes.add(CommentType.getInstance());
+		this.childrenTypes.add(SnapshotType.getInstance());
 		
 		
 	}

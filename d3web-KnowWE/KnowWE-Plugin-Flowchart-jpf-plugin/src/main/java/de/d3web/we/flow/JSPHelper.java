@@ -27,6 +27,9 @@ import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.core.KnowWEParameterMap;
 import de.d3web.we.flow.kbinfo.GetInfoObjects;
 import de.d3web.we.flow.kbinfo.SearchInfoObjects;
+import de.d3web.we.flow.type.FlowchartType;
+import de.d3web.we.kdom.Section;
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 
 public class JSPHelper {
 
@@ -70,12 +73,11 @@ public class JSPHelper {
 
 		// fill the response buffer
 		StringBuffer buffer = new StringBuffer();
-		GetInfoObjects getter = new GetInfoObjects();
-		getter.appendHeader(this.parameterMap, buffer);
+		GetInfoObjects.appendHeader(this.parameterMap, buffer);
 		for (String id : matches) {
-			getter.appendInfoObject(this.parameterMap.getWeb(), id, buffer);
+			GetInfoObjects.appendInfoObject(this.parameterMap.getWeb(), id, buffer);
 		}
-		getter.appendFooter(this.parameterMap, buffer);
+		GetInfoObjects.appendFooter(this.parameterMap, buffer);
 
 		// and done
 		return buffer.toString();
@@ -88,20 +90,36 @@ public class JSPHelper {
 
 		// fill the response buffer
 		StringBuffer buffer = new StringBuffer();
-		GetInfoObjects getter = new GetInfoObjects();
-		getter.appendHeader(this.parameterMap, buffer);
+		GetInfoObjects.appendHeader(this.parameterMap, buffer);
 		for (String id : matches) {
-			getter.appendInfoObject(this.parameterMap.getWeb(), id, buffer);
+			GetInfoObjects.appendInfoObject(this.parameterMap.getWeb(), id, buffer);
 		}
-		getter.appendFooter(this.parameterMap, buffer);
+		GetInfoObjects.appendFooter(this.parameterMap, buffer);
 
 		// and done
 		return buffer.toString();
 	}
 
 	public String getKDOMNodeContent(String kdomID) {
-		String articleID = this.parameterMap.getTopic();
-		return KnowWEEnvironment.getInstance().getNodeData(KnowWEEnvironment.DEFAULT_WEB,
-				articleID, kdomID);
+		return KnowWEEnvironment.getInstance().getNodeData(parameterMap.getWeb(),
+				parameterMap.getTopic(), kdomID);
+	}
+	
+	public String getFlowchartID() {
+		return getFlowchartAttributeValue("fcid");
+	}
+	
+	public String getFlowchartWidth() {
+		return getFlowchartAttributeValue("width");
+	}
+	
+	public String getFlowchartHeight() {
+		return getFlowchartAttributeValue("height");
+	}
+	
+	private String getFlowchartAttributeValue(String attributeName) {
+		Section<FlowchartType> section = (Section<FlowchartType>) KnowWEEnvironment.getInstance().getArticle(parameterMap.getWeb(), parameterMap.getTopic()).findSection(parameterMap.get("kdomID"));
+		
+		return AbstractXMLObjectType.getAttributeMapFor(section).get(attributeName);
 	}
 }

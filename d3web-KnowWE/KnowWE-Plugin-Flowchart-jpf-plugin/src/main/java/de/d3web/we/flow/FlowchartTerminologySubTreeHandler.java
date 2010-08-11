@@ -31,14 +31,14 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.manage.KnowledgeBaseManagement;
-import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.diaFlux.IndicateFlowAction;
+import de.d3web.diaFlux.NoopAction;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.IEdge;
 import de.d3web.diaFlux.flow.INode;
-import de.d3web.diaFlux.flow.NamedNode;
+import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.report.Message;
 import de.d3web.we.flow.type.ExitType;
@@ -50,6 +50,7 @@ import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.filter.SectionFilter;
 import de.d3web.we.kdom.report.KDOMReportMessage;
+import de.d3web.we.kdom.report.KDOMWarning;
 import de.d3web.we.kdom.xml.AbstractXMLObjectType;
 import de.d3web.we.terminology.D3webSubtreeHandler;
 
@@ -103,10 +104,22 @@ public class FlowchartTerminologySubTreeHandler extends D3webSubtreeHandler {
 		createTerminology(flow, kbm);
 		
 		
-		if (!errors.isEmpty())
-			System.out.println(errors.size() +" errors in Flow '" + name +"': " + errors);
+		List<KDOMReportMessage> msgs = new ArrayList<KDOMReportMessage>();
 		
-		return null;
+		for (final Message message : errors) {
+			msgs.add(new KDOMWarning() {
+				@Override
+				public String getVerbalization() {
+					
+	
+					return message.getLineNo() + ": "
+					+ message.getMessageText();
+				}
+			});
+		}
+		
+		
+		return msgs;
 		
 	}
 
@@ -123,8 +136,6 @@ public class FlowchartTerminologySubTreeHandler extends D3webSubtreeHandler {
 		
 		if (flowQC == null)
 			flowQC = kbm.createQContainer(name);
-//		else
-//			System.out.println("QContainer found:" + name);
 
 		QuestionMC startQ = createQuestion(flowQC, flow.getName() + "_" + STARTNODES_QUESTION_NAME, flow.getStartNodes(), kbm);
 		createRules(flow, startQ, kbm);
@@ -150,7 +161,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webSubtreeHandler {
 	}
 
 	private QuestionMC createQuestion(QContainer flowQC, String name,
-			List<? extends NamedNode> nodes, KnowledgeBaseManagement kbm) {
+			List<? extends Node> nodes, KnowledgeBaseManagement kbm) {
 		
 		String[] answers = new String[nodes.size()];
 		
@@ -207,7 +218,7 @@ public class FlowchartTerminologySubTreeHandler extends D3webSubtreeHandler {
 	private INode createEndNode(String id, Section section) {
 		String name = ((Section) section.getChildren().get(1)).getOriginalText();
 		
-		return FlowFactory.getInstance().createEndNode(id, name, null);
+		return FlowFactory.getInstance().createEndNode(id, name, NoopAction.INSTANCE);
 	}
 
 	private INode createStartNode(String id, Section section) {

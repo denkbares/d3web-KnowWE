@@ -31,7 +31,7 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
-import de.d3web.diaFlux.inference.FluxSolver;
+import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
 import de.d3web.we.core.DPSEnvironment;
 import de.d3web.we.core.KnowWEEnvironment;
@@ -113,7 +113,7 @@ public class SearchInfoObjects extends DeprecatedAbstractKnowWEAction {
 				// add Flowcharts
 				if (classes.contains("flowchart")) {
 
-					FlowSet flowSet = FluxSolver.getFlowSet(base);
+					FlowSet flowSet = DiaFluxUtils.getFlowSet(base);
 
 					if (flowSet != null) {
 						for (Flow flow : flowSet.getFlows()) {

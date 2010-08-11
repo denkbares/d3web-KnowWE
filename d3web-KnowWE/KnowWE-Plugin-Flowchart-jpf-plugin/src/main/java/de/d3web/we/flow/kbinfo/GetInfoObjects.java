@@ -109,11 +109,11 @@ public class GetInfoObjects extends DeprecatedAbstractKnowWEAction {
 		return buffer.toString();
 	}
 
-	public void appendHeader(KnowWEParameterMap parameterMap, StringBuffer buffer) {
+	public static void appendHeader(KnowWEParameterMap parameterMap, StringBuffer buffer) {
 		buffer.append("<kbinfo>\n");
 	}
 
-	public void appendFooter(KnowWEParameterMap parameterMap, StringBuffer buffer) {
+	public static void appendFooter(KnowWEParameterMap parameterMap, StringBuffer buffer) {
 		buffer.append("</kbinfo>");
 	}
 

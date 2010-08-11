@@ -18,56 +18,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+package de.d3web.we.flow.type;
+
+import de.d3web.we.kdom.xml.AbstractXMLObjectType;
+
 /**
  * 
+ * @author Reinhard Hatko
+ * @created 05.08.10 
  */
-package de.d3web.diaFlux.flow;
+public class SnapshotType extends AbstractXMLObjectType {
 
-import java.util.List;
+	private static SnapshotType instance;
 
-import de.d3web.core.inference.PSAction;
-import de.d3web.core.session.CaseObjectSource;
+	private SnapshotType() {
+		super("snapshot");
+	}
 
-/**
- * @author hatko
- *
- */
-public interface INode extends CaseObjectSource {
-	
-	/**
-	 * 
-	 * @return s a list of this node's outgoing edges.
-	 */
-	List<IEdge> getOutgoingEdges();
-	
-	
-	/**
-	 * 
-	 * @return s the action this node is doing when reached
-	 */
-	PSAction getAction();
-	
-	/**
-	 * @return s the id of the node
-	 */
-	String getID();
-	
-	
-	/**
-	 * @return s the flow this node belongs to
-	 */
-	Flow getFlow();
-	
-	
-	/**
-	 * sets this nodes containing flow
-	 */
-	void setFlow(Flow flow);
-	
-	
-	
-	
-	
-	
+	public static SnapshotType getInstance() {
+		if (instance == null)
+			instance = new SnapshotType();
+
+		return instance;
+	}
+
 
 }
