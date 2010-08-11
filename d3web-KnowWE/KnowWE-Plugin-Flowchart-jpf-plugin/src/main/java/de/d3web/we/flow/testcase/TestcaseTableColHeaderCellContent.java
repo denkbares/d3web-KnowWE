@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2010 University Wuerzburg, Computer Science VI
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -17,34 +16,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package de.d3web.we.flow.testcase;
 
-import de.d3web.we.kdom.table.Table;
-import de.d3web.we.kdom.table.TableLine;
+import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
+import de.d3web.we.kdom.table.TableCellContent;
 
 /**
  * @author Florian Ziegler
+ * @created 10.08.2010
  */
-public class TestcaseTable extends Table{
+public class TestcaseTableColHeaderCellContent extends TableCellContent {
 
-	public TestcaseTable() {
-		super(new TestcaseTableAttributesProvider());
-
-	}
-	
 	@Override
-	public boolean isSortable() {
-		return true;
+	protected void init() {
+		setCustomRenderer(new TestcaseTableColHeaderCellContentRenderer());
+
 	}
 
 	@Override
-	public void init() {
-		super.init();
-		this.childrenTypes.clear();
-		this.childrenTypes.add(new TableLine(new TestcaseTableColHeaderCellContent()));
+	public KnowWEDomRenderer getRenderer() {
+		return new TestcaseTableColHeaderCellContentRenderer();
 	}
 
 	
 }
-

@@ -20,7 +20,9 @@
 
 package de.d3web.we.kdom.table;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import de.d3web.we.kdom.KnowWEArticle;
@@ -145,6 +147,9 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 		html.append( "<select id='" + nodeID + "' class='table-edit-node' " + TableUtils.getWidth( width ) + ">" );
 		
 		List<String> defaultValues = Arrays.asList(values);
+		if (defaultValues.contains("[:;:]")) {
+			return createTestcaseValueDropDown(defaultValues, cellcontent, nodeID, width);
+		}
 		
 		if( !defaultValues.contains( cellcontent )) {
 			html.append( "<option value='" + cellcontent + "' selected=\"selected\">" + cellcontent + "</option>" );
@@ -159,6 +164,85 @@ public class TableCellContentRenderer  extends KnowWEDomRenderer<TableCellConten
 		
 		
 		html.append( "</select>" );
+		return html.toString();
+	}
+
+	/**
+	 * creates the Dropdown for TestcaseTables
+	 * 
+	 * @created 03.08.2010
+	 * @param values
+	 * @param cellcontent
+	 * @param nodeID
+	 * @param width
+	 * @return
+	 */
+	private String createTestcaseValueDropDown(List<String> values, String cellcontent, String nodeID, String width) {
+		StringBuilder html = new StringBuilder();
+		html.append("<select id='" + nodeID + "' class='table-edit-node' "
+				+ TableUtils.getWidth(width) + ">");
+
+		if (!values.contains(cellcontent)) {
+			html.append("<option value='" + cellcontent + "' selected=\"selected\">" + cellcontent
+					+ "</option>");
+		}
+
+		// extracts the questions and solutions from the values
+		// and sorts them
+		List<String> questions = new ArrayList<String>();
+		List<String> solutions = new ArrayList<String>();
+		boolean question = true;
+		for (String s : values) {
+			if (s.equals("[:;:]")) {
+				question = false;
+				;
+			}
+			else if (question) {
+				questions.add(s);
+			}
+			else {
+				solutions.add(s);
+			}
+		}
+
+		Collections.sort(questions);
+		Collections.sort(solutions);
+
+
+		// build the select dropdown
+		// with 2 optgroups, 1 for questions
+		// and 1 for solutions
+		html.append(createOptgroup(questions, "questions", cellcontent));
+		html.append(createOptgroup(solutions, "solutions", cellcontent));
+
+		return html.toString();
+	}
+
+	/**
+	 * creates optgroups for dropdown, with type as label
+	 * 
+	 * @created 03.08.2010
+	 * @param values
+	 * @param type
+	 * @param cellcontent
+	 * @return
+	 */
+	private String createOptgroup(List<String> values, String type, String cellcontent) {
+		StringBuilder html = new StringBuilder();
+		html.append("<optgroup label=\"" + type + "\">");
+
+		for (String s : values) {
+			if (cellcontent.equals(s)) {
+				html.append("<option value='" + cellcontent + "' selected=\"selected\">"
+						+ cellcontent + "</option>");
+			}
+			else {
+				html.append("<option value='" + s + "'>" + s + "</option>");
+			}
+
+		}
+
+		html.append("</optgroup>");
 		return html.toString();
 	}
 }

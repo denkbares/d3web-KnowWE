@@ -25,6 +25,7 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.action.AbstractAction;
 import de.d3web.we.action.ActionContext;
 import de.d3web.we.core.KnowWEParameterMap;
@@ -52,12 +53,16 @@ public class GetNewQuickEditAnswersAction extends AbstractAction {
 		D3webKnowledgeService knowledgeService = D3webModule.getAD3webKnowledgeServiceInTopic(
 				web, topic);
 		List<Question> questions = knowledgeService.getBase().getQuestions();
+		List<Solution> solutions = knowledgeService.getBase().getSolutions();
+
+		boolean question = false;
 
 
 		for (Question q : questions) {
 			if (q.getName().equals(element)) {
 				if (q instanceof QuestionYN) {
-					context.getWriter().write("Yes[:;:]No");
+					context.getWriter().write("Yes[:;:]No[:;:]Unknown");
+					question = true;
 					break;
 				}
 				else if (q instanceof QuestionChoice) {
@@ -66,11 +71,23 @@ public class GetNewQuickEditAnswersAction extends AbstractAction {
 							.getAllAlternatives()) {
 						buffy.append(c.getName() + "[:;:]");
 					}
-					context.getWriter().write(buffy.substring(0, buffy.length() - 5));
+					buffy.append("Unknown");
+					context.getWriter().write(buffy.toString());
+					question = true;
 					break;
 				}
 				else {
 					context.getWriter().write("[:]EMPTY[:]");
+					question = true;
+					break;
+				}
+			}
+		}
+
+		if (!question) {
+			for (Solution s : solutions) {
+				if (s.getName().equals(element)) {
+					context.getWriter().write("established[:;:]suggested[:;:]excluded");
 				}
 			}
 		}

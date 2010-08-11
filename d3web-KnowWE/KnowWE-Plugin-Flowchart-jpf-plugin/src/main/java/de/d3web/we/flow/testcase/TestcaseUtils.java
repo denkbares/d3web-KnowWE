@@ -27,6 +27,7 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
 import de.d3web.we.kdom.Section;
@@ -34,7 +35,6 @@ import de.d3web.we.kdom.basic.PlainText;
 import de.d3web.we.kdom.table.Table;
 import de.d3web.we.kdom.table.TableCell;
 import de.d3web.we.kdom.table.TableCellContent;
-import de.d3web.we.kdom.table.TableColumnHeaderCellContent;
 import de.d3web.we.kdom.table.TableHeaderLine;
 
 
@@ -51,18 +51,20 @@ public class TestcaseUtils {
 
 		D3webKnowledgeService knowledgeService = D3webModule.getAD3webKnowledgeServiceInTopic(
 				s.getWeb(), s.getTitle());
-		List<Question> qlist = knowledgeService.getBase().getQuestions();
+		List<Question> questions = knowledgeService.getBase().getQuestions();
+		List<Solution> solutions = knowledgeService.getBase().getSolutions();
 
-		if (s.getObjectType() instanceof TableColumnHeaderCellContent) {
+
+		if (s.getObjectType() instanceof TestcaseTableColHeaderCellContent) {
 			return null;
 		}
 
 		if (s.getObjectType() instanceof TableCellContent) {
 			if (s.getFather().getFather().getObjectType() instanceof TableHeaderLine) {
-				return getHeaderAlternatives(s, qlist);
+				return getHeaderAlternatives(s, questions, solutions);
 			}
 			else {
-				return getSimpleTableCellAlternatives(s, qlist);
+				return getSimpleTableCellAlternatives(s, questions, solutions);
 			}
 		}
 
@@ -76,7 +78,7 @@ public class TestcaseUtils {
 	 * @param questions all questions of the knowledgeBase
 	 * @return question alternatives
 	 */
-	public static String[] getHeaderAlternatives(Section<?> s, List<Question> questions) {
+	public static String[] getHeaderAlternatives(Section<?> s, List<Question> questions, List<Solution> solutions) {
 
 		List<String> temp = new ArrayList<String>();
 		
@@ -84,6 +86,13 @@ public class TestcaseUtils {
 			temp.add("" + q);
 		}
 		
+		temp.add("[:;:]");
+		for (Solution sol : solutions) {
+			if (!("" + sol).equals("P000")) {
+				temp.add("" + sol);
+			}
+		}
+
 		return temp.toArray(new String[temp.size()]);
 	}
 	
@@ -96,7 +105,7 @@ public class TestcaseUtils {
 	 * @return answer alternatives
 	 */
 	public static String[] getSimpleTableCellAlternatives(Section<?> s,
-			List<Question> questions) {
+			List<Question> questions, List<Solution> solutions) {
 		
 		if (questions == null) {
 			return null;
@@ -116,7 +125,7 @@ public class TestcaseUtils {
 			if (q.getName().equals(text)) {
 				if (q instanceof QuestionYN) {
 					return new String[] {
-							"yes", "no" };
+							"Yes", "No", "Unknown" };
 				}
 				else if (q instanceof QuestionChoice) {
 
@@ -124,9 +133,19 @@ public class TestcaseUtils {
 							.getAllAlternatives()) {
 						temp.add(c.getName());
 					}
+					temp.add("Unknown");
 				}
 				else {
 					return null;
+				}
+			}
+		}
+
+		if (temp.isEmpty()) {
+			for (Solution sol : solutions) {
+				if (sol.getName().equals(text)) {
+					return new String[] {
+							"established", "suggested", "excluded" };
 				}
 			}
 		}
@@ -153,14 +172,14 @@ public class TestcaseUtils {
 			return null;
 		}
 
-		Section<TableHeaderLine> tableHeaderLine = (Section<TableHeaderLine>) table.findChildOfType(
+		Section<TableHeaderLine> tableHeaderLine = table.findChildOfType(
 				TableHeaderLine.class);
 		if (tableHeaderLine == null || tableHeaderLine.getChildren() == null
 				|| tableHeaderLine.getChildren().size() < 1) {
 			return null;
 		}
 
-		Section<TableCellContent> colHeader = (Section<TableCellContent>) ((Section<TableCell>) tableHeaderLine.getChildren().get(
+		Section<TableCellContent> colHeader = ((Section<TableCell>) tableHeaderLine.getChildren().get(
 				number - 1)).findChildOfType(
 				TableCellContent.class);
 		if (colHeader == null) {

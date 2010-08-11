@@ -894,6 +894,10 @@ div.startTestcase{
 	background-image: url(../images/arrow_right.png);
 }
 
+td.testcaseExecuted{
+	background-color: #CDFECD ;
+}
+
 /* ################################################## */
 /* ----------Image Question TagHandler--------------- */
 /* ################################################## */

@@ -2363,7 +2363,12 @@ var Testcase = {};
  * adds a new row (as last row) to the table
  */
 Testcase.addRow = function(element) {
-	Testcase.sendRequest('row', element);
+	// save the table, so changed fields
+	// stay after the request
+	Testcase.saveTable();
+	
+	// delay the request, otherwise save would not work
+	(function() {Testcase.sendRequest('row', element);}).delay(500);
 }
 
 
@@ -2371,7 +2376,12 @@ Testcase.addRow = function(element) {
  * adds a new column (as last column) to the table
  */
 Testcase.addCol = function(element) {
-	Testcase.sendRequest('col', element);
+	// save the table, so changed fields
+	// stay after the request
+	Testcase.saveTable();
+	
+	// delay the request, otherwise save would not work
+	(function() {Testcase.sendRequest('col', element);}).delay(500);
 }
 
 /**
@@ -2382,7 +2392,7 @@ Testcase.sendRequest = function(type, element) {
 	if (type != 'row' && type != 'col') {
 		return;
 	}
-	
+
 	var topic = KNOWWE.helper.gup('page')
 	var table = element.parentNode.id;
 		
@@ -2405,7 +2415,7 @@ Testcase.sendRequest = function(type, element) {
         }
     }
     new _KA( options ).send();
-	(function() {Testcase.addNewAnswers(table);}).delay(500);
+	(function() {Testcase.addNewAnswers(table);}).delay(700);
 }
 
 
@@ -2618,6 +2628,7 @@ Testcase.saveInputAfterChange = function(event) {
  * and sends them to RunTestcaseAction.
  */
 Testcase.runTestcase = function(element) {
+	element.parentNode.className = 'testcaseExecuted';
 	var table = Testcase.findParentWikiTable(element);
 	var lines = Testcase.getTableLines(table);
 	var headerLine = lines[0].getElements('td');
@@ -2673,4 +2684,35 @@ Testcase.findLineOfElement = function(element) {
 		}
 	}
 }
+
+
+/**
+ * saves the table before adding a new col/row
+ */
+Testcase.saveTable = function() {
+    var n = '';
+    KNOWWE.core.table.getMap().forEach(function(key, value){
+        n += key + ";-;" + value + "::";
+    });
+    n = n.substring(0, n.lastIndexOf('::'));
+
+    var params = {
+        action : 'UpdateTableKDOMNodesAction',
+        TargetNamespace : n,
+        KWiki_Topic : KNOWWE.helper.gup('page')
+    }
+
+    var options = {
+        url : KNOWWE.core.util.getURL ( params ),
+        loader : true,
+        response : {
+            action : 'none',
+            fn : function(){
+    			
+            }
+        }
+    }
+    new _KA( options ).send();
+}
+
 
