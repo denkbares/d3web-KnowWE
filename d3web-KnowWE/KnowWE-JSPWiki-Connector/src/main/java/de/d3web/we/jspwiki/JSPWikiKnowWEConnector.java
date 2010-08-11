@@ -23,7 +23,6 @@ package de.d3web.we.jspwiki;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.ecyrd.jspwiki.NoRequiredPropertyException;
 import com.ecyrd.jspwiki.PageLock;
 import com.ecyrd.jspwiki.PageManager;
-import com.ecyrd.jspwiki.SearchResult;
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
 import com.ecyrd.jspwiki.WikiException;
@@ -54,16 +52,14 @@ import com.ecyrd.jspwiki.providers.ProviderException;
 
 import de.d3web.we.action.KnowWEActionDispatcher;
 import de.d3web.we.core.KnowWEParameterMap;
-import de.d3web.we.core.TaggingMangler;
-import de.d3web.we.search.GenericSearchResult;
 import de.d3web.we.wikiConnector.ConnectorAttachment;
 import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 
 /**
  * For code documentation look at the KnowWEWikiConnector interface definition
- *
+ * 
  * @author Jochen
- *
+ * 
  */
 public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
@@ -411,7 +407,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 				context.getPage().getName(), context.getPage().getVersion());
 		return pagedata;
 	}
-	
+
 	@Override
 	public String getArticleSource(String name, int version) {
 
@@ -430,24 +426,25 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 		String pagedata = null;
 		try {
-			if(context.getEngine().pageExists(context.getPage().getName(), version)) {
+			if (context.getEngine().pageExists(context.getPage().getName(), version)) {
 				pagedata = context.getEngine().getPureText(
 						context.getPage().getName(), version);
 			}
-		} catch (ProviderException e) {
+		}
+		catch (ProviderException e) {
 			return null;
 		}
-		
+
 		return pagedata;
 	}
-
 
 	@Override
 	public Map<Integer, Date> getModificationHistory(String name) {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
+				return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -469,7 +466,8 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
+				return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -491,13 +489,14 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 		return lastModified;
 	}
-	
+
 	@Override
 	public String getAuthor(String name, int version) {
 		// Surrounded this because getPage()
 		// caused a Nullpointer on first KnowWE startup
 		try {
-			if ((this.engine == null) || (this.engine.getPage(name) == null)) return null;
+			if ((this.engine == null) || (this.engine.getPage(name) == null))
+				return null;
 		}
 		catch (NullPointerException e) {
 			return null;
@@ -522,11 +521,9 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	@Override
 	public int getVersion(String name) {
 		WikiContext context = new WikiContext(this.engine, this.engine
-				.getPage(name));		
+				.getPage(name));
 		return context.getPage().getVersion();
 	}
-	
-	
 
 	@Override
 	public String getBaseUrl() {
@@ -537,7 +534,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current user has the rights to edit the given page.
 	 * IReturns TRUE if the user has editing permission, otherwise FALSE and
 	 * editing of the page is denied.
-	 *
+	 * 
 	 * @param articlename
 	 */
 	@Override
@@ -555,7 +552,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current user has the rights to edit the given page.
 	 * IReturns TRUE if the user has editing permission, otherwise FALSE and
 	 * editing of the page is denied.
-	 *
+	 * 
 	 * @param articlename
 	 * @param r
 	 *            HttpRequest
@@ -576,7 +573,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	 * Checks if the current page has an access lock. If TRUE no user other then
 	 * the lock owner can edit the page. If FALSE the current page has no lock
 	 * and can be edited by anyone.
-	 *
+	 * 
 	 * @param articlename
 	 */
 	@Override
@@ -590,7 +587,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	/**
 	 * Checks if the current page has been locked by the current user. Returns
 	 * TRUE if yes, FALSE otherwise.
-	 *
+	 * 
 	 * @param articlename
 	 * @param user
 	 * @return
@@ -612,7 +609,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 
 	/**
 	 * Locks a page in the WIKI so no other user can edit the page.
-	 *
+	 * 
 	 * @param articlename
 	 */
 	@Override
@@ -629,7 +626,7 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 	/**
 	 * Removes a page lock from a certain page in the WIKI so other users can
 	 * edit the page.
-	 *
+	 * 
 	 * @param articlename
 	 */
 	@Override
@@ -662,27 +659,6 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 				.getPage("Main"));
 
 		return Preferences.getLocale(wikiContext);
-	}
-
-	@Override
-	@Deprecated
-	// why should this be in the jspwiki-dependant project??
-	// how should knowwe call this not knowing the class SearchResultImpl nor
-	// its interface???
-	public Collection findPages(String query) {
-		ArrayList<SearchResult> result = new ArrayList<SearchResult>();
-		if (query.contains("#")) {
-			return null;
-		}
-
-		for (GenericSearchResult cur : TaggingMangler.getInstance()
-				.searchPages(query.trim())) {
-			WikiPage page = this.engine.getPage(cur.getPagename());
-			result.add(new SearchResultImpl(page, cur.getContexts(), cur
-					.getScore()));
-		}
-
-		return result;
 	}
 
 	@Override
@@ -758,7 +734,6 @@ public class JSPWikiKnowWEConnector implements KnowWEWikiConnector {
 		WikiPage page = new WikiPage(engine, articleName);
 		WikiContext context = new WikiContext(this.engine, r, this.engine
 				.getPage(articleName));
-
 
 		Principal[] princ = context.getWikiSession().getRoles();
 
