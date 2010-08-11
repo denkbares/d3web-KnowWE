@@ -61,7 +61,8 @@ public class TagsContent extends XMLContent {
 						URI ouri = uo.getHelper().createlocalURI(cur.trim());
 						io.merge(uo.getHelper().createProperty(suri, puri,
 								ouri, s));
-					} catch (UnsupportedEncodingException e) {
+					}
+					catch (UnsupportedEncodingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}

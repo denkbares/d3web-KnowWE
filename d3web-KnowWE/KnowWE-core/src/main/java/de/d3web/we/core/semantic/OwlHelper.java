@@ -76,7 +76,6 @@ public class OwlHelper {
 	public static URI TEXTORIGIN;
 	public static URI HASNODE;
 	public static URI HASORIGIN;
-	
 
 	static {
 		ValueFactory factory = ValueFactoryImpl.getInstance();
@@ -127,14 +126,17 @@ public class OwlHelper {
 		String temp = value;
 		try {
 			temp = URLDecoder.decode(value, "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-		} catch (IllegalArgumentException e) {
+		}
+		catch (UnsupportedEncodingException e1) {
+		}
+		catch (IllegalArgumentException e) {
 
 		}
-		
+
 		try {
 			return URLEncoder.encode(temp, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -162,7 +164,8 @@ public class OwlHelper {
 			io.merge(createTextOrigin(source, to));
 			io.addStatement(uo.getHelper().createStatement(attachto,
 					RDFS.ISDEFINEDBY, to));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -232,7 +235,7 @@ public class OwlHelper {
 	 * @throws RepositoryException
 	 */
 	public URI createURI(String value) {
-		if(value == null) return null;
+		if (value == null) return null;
 		value = beautify(value);
 		return repositoryConn.getValueFactory().createURI(basens, value);
 	}
@@ -267,23 +270,28 @@ public class OwlHelper {
 		Query query = null;
 		try {
 			query = con.prepareQuery(QueryLanguage.SPARQL, querystring);
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			return false;
-		} catch (MalformedQueryException e) {
+		}
+		catch (MalformedQueryException e) {
 			return false;
 		}
 		try {
 			if (query instanceof TupleQuery) {
 				TupleQueryResult result = ((TupleQuery) query).evaluate();
 				return result.hasNext();
-			} else if (query instanceof GraphQuery) {
+			}
+			else if (query instanceof GraphQuery) {
 				GraphQueryResult result = ((GraphQuery) query).evaluate();
 				return result.hasNext();
-			} else if (query instanceof BooleanQuery) {
+			}
+			else if (query instanceof BooleanQuery) {
 				boolean result = ((BooleanQuery) query).evaluate();
 				return result;
 			}
-		} catch (QueryEvaluationException e) {
+		}
+		catch (QueryEvaluationException e) {
 			return false;
 		}
 		return false;
@@ -309,7 +317,8 @@ public class OwlHelper {
 			try {
 				io.addStatement(uo.getHelper().createStatement(prop,
 						RDFS.SUBCLASSOF, naryprop));
-			} catch (RepositoryException e) {
+			}
+			catch (RepositoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -330,7 +339,8 @@ public class OwlHelper {
 			try {
 				io.addStatement(uo.getHelper().createStatement(prop,
 						RDFS.SUBCLASSOF, naryprop));
-			} catch (RepositoryException e) {
+			}
+			catch (RepositoryException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -377,7 +387,8 @@ public class OwlHelper {
 			io.addStatement(helper.createStatement(nary, RDF.SUBJECT, suri));
 			io.addLiteral(nary);
 
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -414,7 +425,8 @@ public class OwlHelper {
 
 			io.addLiteral(nary);
 
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -430,7 +442,8 @@ public class OwlHelper {
 			io.merge(createTextOrigin(source, to, type));
 			io.addStatement(uo.getHelper().createStatement(attachto,
 					RDFS.ISDEFINEDBY, to));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -465,7 +478,8 @@ public class OwlHelper {
 					.getValueFactory().createBNode();
 			io.merge(createTextOrigin(s, to, type));
 			io.addStatement(createStatement(bnode, RDFS.ISDEFINEDBY, to));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

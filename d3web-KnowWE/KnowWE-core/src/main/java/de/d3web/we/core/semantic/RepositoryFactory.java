@@ -50,8 +50,8 @@ public class RepositoryFactory {
 			HashMap<String, String> settings) {
 		if (type.equals(DEFAULTREPOSITORY)) {
 			return fileRepository(settings);
-		} else
-			return null;
+		}
+		else return null;
 
 	}
 
@@ -102,7 +102,8 @@ public class RepositoryFactory {
 			Evaluator = new EvaluationStrategyImpl(new TripleSourceImpl(
 					repositoryConn, new ValueFactoryImpl()));
 			repositoryConn.close();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			// throw new RuntimeException(ex);
 		}
 		return repository;

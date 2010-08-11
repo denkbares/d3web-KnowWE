@@ -34,7 +34,6 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-
 /**
  * This class manages semantic properties, n-ary as well as simple ones
  * 
@@ -44,7 +43,7 @@ import org.openrdf.repository.RepositoryException;
 public class PropertyManager {
 
 	static PropertyManager instance;
-	private UpperOntology uo;
+	private final UpperOntology uo;
 
 	/**
 	 * 

@@ -108,7 +108,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 			nodesMap.put(keep.getID(), output);
 			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
 					.replaceKDOMNodes(params, pagename, nodesMap);
-		} else {
+		}
+		else {
 			addNewTagSection(pagename, tag, params);
 		}
 	}
@@ -166,7 +167,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 					+ "?t rdf:predicate ns:hasTag .\n"
 					+ "?t rdfs:isDefinedBy ?o .\n" + "?o ns:hasTopic ?q .\n"
 					+ "}";
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -185,7 +187,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 		String topicenc = pagename;
 		try {
 			topicenc = URLEncoder.encode(pagename, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 
@@ -250,7 +253,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 			if (countlist.get(cur) == null) {
 				countlist.put(cur, new Float(1));
 				c = 1;
-			} else {
+			}
+			else {
 				c = countlist.get(cur) + 1;
 				countlist.put(cur, c);
 			}
@@ -320,7 +324,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 			nodesMap.put(keep.getID(), output);
 			ke.getArticleManager(KnowWEEnvironment.DEFAULT_WEB)
 					.replaceKDOMNodes(params, topic, nodesMap);
-		} else {
+		}
+		else {
 			addNewTagSection(topic, output, params);
 		}
 	}
@@ -363,17 +368,20 @@ public class TaggingMangler implements KnowWESearchProvider {
 						+ "?t rdf:predicate ns:hasTag .\n"
 						+ "?t rdfs:isDefinedBy ?o .\n"
 						+ "?o ns:hasTopic ?q .\n" + "}";
-			} catch (UnsupportedEncodingException e) {
+			}
+			catch (UnsupportedEncodingException e) {
 				// should not happen as the encoding is hardcoded
 			}
-		} else {
+		}
+		else {
 			querystring = "SELECT ?q \n" + "WHERE {\n";
 			for (String cur : tags) {
 				try {
 
 					querystring += "?t" + i + " rdf:object <" + lns
 							+ URLEncoder.encode(cur, "UTF-8") + "> .\n";
-				} catch (UnsupportedEncodingException e) {
+				}
+				catch (UnsupportedEncodingException e) {
 					// should not happen as the encoding is hardcoded
 				}
 				querystring += "?t" + i + " rdf:predicate ns:hasTag .\n";
@@ -398,7 +406,8 @@ public class TaggingMangler implements KnowWESearchProvider {
 			ArrayList<GenericSearchResult> pages = TaggingMangler.getInstance()
 					.searchPages(querystring);
 			return renderResults(pages);
-		} else {
+		}
+		else {
 			return ("no query");
 		}
 	}

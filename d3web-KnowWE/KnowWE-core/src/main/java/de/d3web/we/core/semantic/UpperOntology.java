@@ -65,27 +65,27 @@ public class UpperOntology {
 		return me;
 	}
 
-	private String config_file;
+	private final String config_file;
 
 	private String localens;
 
 	private org.openrdf.repository.Repository myRepository;
 	private String ontfile = "knowwe_base.owl";
-	private OwlHelper owlhelper;
+	private final OwlHelper owlhelper;
 	private RepositoryConnection repositoryConn;
-	private HashMap<String, String> settings;
+	private final HashMap<String, String> settings;
 	private File persistencedir;
 	private SailRepository persistentRepository;
 	protected RepositoryConfig repConfig;
 
-	private String reppath;
+	private final String reppath;
 
 	private UpperOntology(String path) {
 		settings = new HashMap<String, String>();
 		ontfile = path + File.separatorChar + ontfile;
 		settings.put("ontfile", ontfile);
 		reppath = System.getProperty("java.io.tmpdir") + File.separatorChar
-				+ "repository"+(new Date()).toString().hashCode();
+				+ "repository" + (new Date()).toString().hashCode();
 
 		settings.put("reppath", reppath);
 		config_file = path + File.separatorChar + "owlim.ttl";
@@ -100,7 +100,8 @@ public class UpperOntology {
 		// ON JUnit test running no ontology is read
 		try {
 			readOntology();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		owlhelper = new OwlHelper(repositoryConn);
@@ -131,7 +132,8 @@ public class UpperOntology {
 				if (c.isDirectory()) {
 					delete(c);
 					c.delete();
-				} else {
+				}
+				else {
 					boolean r = c.delete();
 					if (!r) {
 						// error
@@ -190,7 +192,8 @@ public class UpperOntology {
 			repositoryConn = myRepository.getConnection();
 			repositoryConn.setAutoCommit(true);
 			loadOwlFile(new File(ontfile));
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -221,11 +224,13 @@ public class UpperOntology {
 			RepositoryConnection pcon = persistentRepository.getConnection();
 			try {
 				persistentRepository.initialize();
-			} finally {
+			}
+			finally {
 				con.close();
 				pcon.close();
 			}
-		} catch (OpenRDFException e) {
+		}
+		catch (OpenRDFException e) {
 			// handle exception
 		}
 
@@ -245,10 +250,12 @@ public class UpperOntology {
 
 		try {
 			repositoryConn.export(handler);
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (RDFHandlerException e) {
+		}
+		catch (RDFHandlerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -266,19 +273,23 @@ public class UpperOntology {
 			con.add(f, null, RDFFormat.RDFXML, filebnode);
 			con.commit();
 
-		} catch (RepositoryException e) {
+		}
+		catch (RepositoryException e) {
 			try {
 				con.rollback();
-			} catch (RepositoryException e1) {
+			}
+			catch (RepositoryException e1) {
 				Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 						e1.getMessage());
 			}
-		} catch (RDFParseException e) {
+		}
+		catch (RDFParseException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					e.getMessage());
 			output = e.getMessage();
 
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			Logger.getLogger(this.getClass().getName()).log(Level.WARNING,
 					e.getMessage());
 			output = e.getMessage();
