@@ -85,7 +85,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -110,7 +110,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+-->
 		</plugins>
 	</build>
 </project>
