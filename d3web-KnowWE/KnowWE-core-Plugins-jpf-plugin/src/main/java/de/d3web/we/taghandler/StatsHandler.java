@@ -55,22 +55,23 @@ public class StatsHandler extends AbstractTagHandler {
 		return "<tr><th>" + name + "</th><td>" + value
 				+ "</td></tr>\n";
 	}
-		/** inner class to do soring of the map **/
-		private class ValueComparer implements Comparator {
-			private Map<String,Float>  _data = null;
-			
-			public ValueComparer (Map<String,Float> data){
-				super();
-				_data = data;
-			}
 
-	         public int compare(Object o1, Object o2) {
-	        	 Float e1 = _data.get(o1);
-	             Float e2 = _data.get(o2);
-	             return e2.compareTo(e1);
-	         }
+	/** inner class to do soring of the map **/
+	private class ValueComparer implements Comparator {
+		private Map<String, Float> _data = null;
+
+		public ValueComparer(Map<String, Float> data) {
+			super();
+			_data = data;
 		}
-	
+
+		public int compare(Object o1, Object o2) {
+			Float e1 = _data.get(o1);
+			Float e2 = _data.get(o2);
+			return e2.compareTo(e1);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -90,19 +91,19 @@ public class StatsHandler extends AbstractTagHandler {
 		Map<String, Integer> edits = KnowWEEnvironment.getInstance()
 				.getWikiConnector().getVersionCounts();
 
-//		int alledits = 0;
-//		SortedMap<String,Integer> sortedarts = new TreeMap(new MapValueSort.ValueComparer(unsortedData));
-//		Map<String,Integer> sortedarts=sortByValue(edits);		
-//		for (Entry<String, Integer> c : edits.entrySet()) {
-//			alledits += c.getValue();
-//		}
-//		if (alledits==arts.size()){
-//			buffy.append(renderline("Edits", "A versioning File Provider has to be used"));
-//		} else {
-//		buffy.append(renderline("Edits", alledits + ""));}
+		// int alledits = 0;
+		// SortedMap<String,Integer> sortedarts = new TreeMap(new
+		// MapValueSort.ValueComparer(unsortedData));
+		// Map<String,Integer> sortedarts=sortByValue(edits);
+		// for (Entry<String, Integer> c : edits.entrySet()) {
+		// alledits += c.getValue();
+		// }
+		// if (alledits==arts.size()){
+		// buffy.append(renderline("Edits",
+		// "A versioning File Provider has to be used"));
+		// } else {
+		// buffy.append(renderline("Edits", alledits + ""));}
 
-		
-		
 		String querystring = "select DISTINCT ?t where { ?x rdf:predicate ns:hasTag . ?x rdf:subject ?t }";
 		ArrayList<String> erg = SemanticCoreDelegator.getInstance().simpleQueryToList(
 				querystring, "t");
@@ -110,17 +111,18 @@ public class StatsHandler extends AbstractTagHandler {
 		querystring = "select DISTINCT ?tag where { ?x rdf:predicate ns:hasTag . ?x rdf:object ?tag }";
 		erg = SemanticCoreDelegator.getInstance().simpleQueryToList(querystring, "tag");
 		buffy.append(renderline("Tags", erg.size() + ""));
-		buffy.append(renderline("Tags:",""));
-		HashMap<String, Float>tags=TaggingMangler.getInstance().getAllTagsWithWeight();
-		SortedMap<String,Float> sortedtags = new TreeMap<String, Float>(new ValueComparer(tags));		
-		sortedtags.putAll(tags);		
-		int count=0;
-		for (Entry<String,Float> c:sortedtags.entrySet()){
-			buffy.append(renderline(c.getKey(),c.getValue()+""));
+		buffy.append(renderline("Tags:", ""));
+		HashMap<String, Float> tags = TaggingMangler.getInstance().getAllTagsWithWeight();
+		SortedMap<String, Float> sortedtags = new TreeMap<String, Float>(
+				new ValueComparer(tags));
+		sortedtags.putAll(tags);
+		int count = 0;
+		for (Entry<String, Float> c : sortedtags.entrySet()) {
+			buffy.append(renderline(c.getKey(), c.getValue() + ""));
 			count++;
-			if (count>4) break;
+			if (count > 4) break;
 		}
-		
+
 		buffy.append("</table>");
 		return KnowWEUtils.maskHTML(buffy.toString());
 	}
