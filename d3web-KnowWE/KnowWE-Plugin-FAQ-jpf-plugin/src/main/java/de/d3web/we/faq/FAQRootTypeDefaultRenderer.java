@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2010 University Wuerzburg, Computer Science VI
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ * Computer Science VI, University of Wuerzburg
  * 
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
