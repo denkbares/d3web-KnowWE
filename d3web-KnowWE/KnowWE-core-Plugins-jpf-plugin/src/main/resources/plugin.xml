@@ -273,6 +273,8 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<!-- was moved out
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="TagHandlingAction">
 		<parameter id="class"
@@ -282,6 +284,8 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+	
+	-->
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="AddKWikiUserAction">
@@ -446,6 +450,8 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<!-- was moved out
+	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="TagCloud">
 		<parameter id="class"
@@ -454,7 +460,7 @@
 		<parameter id="description" value="TagHandler TagCloud" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-	</extension>
+	</extension> 
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="TagEditPanel">
@@ -474,7 +480,9 @@
 		<parameter id="description" value="TagHandler TagSearchHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-	</extension>
+	</extension> 
+	
+	-->
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="ValidatorHandler">
@@ -546,6 +554,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 	
+	<!--was moved out
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="StatsHandler">
 		<parameter id="class"
@@ -554,7 +563,8 @@
 		<parameter id="description" value="TagHandler StatsHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-	</extension>
+	</extension> 
+	-->
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="ImportKnOfficeHandler">
