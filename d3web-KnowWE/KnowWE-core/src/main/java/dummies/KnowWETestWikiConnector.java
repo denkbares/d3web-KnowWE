@@ -42,9 +42,9 @@ import de.d3web.we.wikiConnector.KnowWEWikiConnector;
 /**
  * Used in the tests. A WikiConnector is needed to initialize the
  * KnowWEEnvironment. The methods are empty.
- *
+ * 
  * @author Johannes Dienst
- *
+ * 
  */
 public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 
@@ -63,8 +63,9 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	 * This constructor can be used to define a relative path of this project to
 	 * the KnowWEExtensions. This must be used for all projects, which are no
 	 * subdirectories of d3web-KnowWE
-	 *
-	 * @param path relative path to the KnowWEExtensions
+	 * 
+	 * @param path
+	 *            relative path to the KnowWEExtensions
 	 */
 	public KnowWETestWikiConnector(String path) {
 		hackedPath = path;
@@ -73,7 +74,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	/**
 	 * This returns a path, that enables the use of this connector in tests of
 	 * projects
-	 *
+	 * 
 	 * @return relative Path to KnowWEExtensions
 	 */
 	public String getHackedPath() {
@@ -115,7 +116,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public String getArticleSource(String name, int version) {
 		// TODO Auto-generated method stub
@@ -126,7 +127,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	public int getVersion(String name) {
 		// TODO Auto-generated method stub
 		return 0;
-	}	
+	}
 
 	@Override
 	public String getAttachmentPath(String JarName) {
@@ -168,7 +169,7 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 		KnowWEEnvironment.getInstance().getArticleManager(
 				KnowWEEnvironment.DEFAULT_WEB).saveUpdatedArticle(
 				new KnowWEArticle(text, name, KnowWEEnvironment.getInstance()
-				.getRootType(), KnowWEEnvironment.DEFAULT_WEB));
+						.getRootType(), KnowWEEnvironment.DEFAULT_WEB));
 		return true;
 	}
 
@@ -218,12 +219,6 @@ public class KnowWETestWikiConnector implements KnowWEWikiConnector {
 	@Override
 	public Locale getLocale(HttpServletRequest request) {
 		return Locale.CANADA_FRENCH;
-	}
-
-	@Override
-	public Collection findPages(String query) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

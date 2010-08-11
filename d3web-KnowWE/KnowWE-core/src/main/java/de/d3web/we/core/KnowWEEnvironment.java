@@ -60,7 +60,6 @@ import de.d3web.we.kdom.rendering.KnowWEDomRenderer;
 import de.d3web.we.knowRep.KnowledgeRepresentationHandler;
 import de.d3web.we.knowRep.KnowledgeRepresentationManager;
 import de.d3web.we.module.PageAppendHandler;
-import de.d3web.we.search.MultiSearchEngine;
 import de.d3web.we.taghandler.TagHandler;
 import de.d3web.we.terminology.TerminologyHandler;
 import de.d3web.we.user.UserSettingsManager;
@@ -75,13 +74,13 @@ import dummies.KnowWETestWikiConnector;
 
 /**
  * @author Jochen
- *
+ * 
  *         This is the core class of KnowWE2. It manages the ArticleManager(s)
  *         and provides methods to access KnowWE-Articles, KnowWE-Modules and
  *         Parse-reports. Further it is connected to the used Wiki-engine,
  *         holding an instance of KnowWEWikiConnector and allows page saves.
- *
- *
+ * 
+ * 
  */
 
 public class KnowWEEnvironment {
@@ -107,7 +106,6 @@ public class KnowWEEnvironment {
 	 * should NOT BE USED, path a read from the KnowWE_config properties file.
 	 */
 	private String knowweExtensionPath = "/var/lib/tomcat-6/webapps/JSPWiki/KnowWEExtension/";
-
 
 	/**
 	 * @return the defaultModulesPath
@@ -155,14 +153,14 @@ public class KnowWEEnvironment {
 
 	/**
 	 * holding the default tag handlers of KnowWE2
-	 *
+	 * 
 	 * @see renderTags
 	 */
 	private final HashMap<String, TagHandler> tagHandlers = new HashMap<String, TagHandler>();
 
 	/**
 	 * grants access on the default tag handlers of KnowWE2
-	 *
+	 * 
 	 * @return HashMap holding the default tag handlers of KnowWE2
 	 */
 	public HashMap<String, TagHandler> getDefaultTagHandlers() {
@@ -252,14 +250,13 @@ public class KnowWEEnvironment {
 		return UserSettingsManager.getInstance();
 	}
 
-
-
 	public static void initKnowWE(KnowWEWikiConnector wiki) {
 		instance = new KnowWEEnvironment(wiki);
-		instance.initModules(wiki.getServletContext(), DEFAULT_WEB,wiki);
+		instance.initModules(wiki.getServletContext(), DEFAULT_WEB, wiki);
 
 		// firing the init event
-		EventManager.getInstance().fireEvent(InitEvent.getInstance(), DEFAULT_WEB, "system init", null);
+		EventManager.getInstance().fireEvent(InitEvent.getInstance(), DEFAULT_WEB,
+				"system init", null);
 
 	}
 
@@ -281,7 +278,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Returns the KnowWEArticle object for a given web and pagename
-	 *
+	 * 
 	 * @param web
 	 * @param topic
 	 * @return
@@ -292,7 +289,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * returns the ArtilceManager for a given web
-	 *
+	 * 
 	 * @param web
 	 * @return
 	 */
@@ -346,9 +343,9 @@ public class KnowWEEnvironment {
 
 	/**
 	 * private contructor
-	 *
+	 * 
 	 * @see getInstance()
-	 *
+	 * 
 	 * @param wiki
 	 *            Connector to the used core wiki engine
 	 */
@@ -380,36 +377,34 @@ public class KnowWEEnvironment {
 
 			rootTypes = RootType.getInstance();
 
-			// adding TaggingMangler as SearchProvider to KnowWE-MultiSearch
-			MultiSearchEngine.getInstance().addProvider(TaggingMangler.getInstance());
-
 			System.out.println("INITIALISED KNOWWE ENVIRONMENT");
 		}
 		catch (Exception e) {
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
 			System.out.println("*****EXCEPTION IN initKnowWE !!! *********");
-			Logger.getLogger("KnowWE").log(Level.SEVERE, "unexpected exception during KnowWE initialization", e);
+			Logger.getLogger("KnowWE").log(Level.SEVERE,
+					"unexpected exception during KnowWE initialization", e);
 		}
 
 	}
 
-
-
 	/**
 	 * Initializes the KnowWE modules
 	 */
-	private void initModules(ServletContext context, String web,KnowWEWikiConnector wiki) {
+	private void initModules(ServletContext context, String web, KnowWEWikiConnector wiki) {
 		// add the default modules
 		// modules.add(new de.d3web.we.dom.kopic.KopicModule());
 
-		File libDir = new File(knowweExtensionPath+"/../WEB-INF/lib");
-		//when testing, libDir doesn't exist, but the pluginframework is initialised
-		//in junittest, so there is no problem
-		//if libDir is doesn't exist in runtime, nothing will work, so this code won't be reached ;-)
+		File libDir = new File(knowweExtensionPath + "/../WEB-INF/lib");
+		// when testing, libDir doesn't exist, but the pluginframework is
+		// initialised
+		// in junittest, so there is no problem
+		// if libDir is doesn't exist in runtime, nothing will work, so this
+		// code won't be reached ;-)
 		if (libDir.exists()) {
 			List<File> pluginFiles = new ArrayList<File>();
-			for (File file: libDir.listFiles()) {
+			for (File file : libDir.listFiles()) {
 				if (file.getName().contains("jpf-plugin")) {
 					pluginFiles.add(file);
 				}
@@ -418,14 +413,16 @@ public class KnowWEEnvironment {
 
 			Plugin[] plugins = PluginManager.getInstance().getPlugins();
 
-			for (Plugin p: plugins) {
+			for (Plugin p : plugins) {
 				Resource[] resources = p.getResources();
-				for (Resource r: resources) {
+				for (Resource r : resources) {
 					String pathName = r.getPathName();
-					if (!pathName.endsWith("/")&&pathName.startsWith("webapp/")) {
+					if (!pathName.endsWith("/") && pathName.startsWith("webapp/")) {
 						pathName = pathName.substring("webapp/".length());
 						try {
-							File file = new File(new File(knowweExtensionPath).getParentFile().getCanonicalPath()+"/"+pathName);
+							File file = new File(
+									new File(knowweExtensionPath).getParentFile().getCanonicalPath()
+											+ "/" + pathName);
 							File parent = file.getParentFile();
 							if (!parent.isDirectory()) {
 								parent.mkdirs();
@@ -434,13 +431,18 @@ public class KnowWEEnvironment {
 							InputStream in = r.getInputStream();
 							try {
 								stream(in, out);
-							} finally {
+							}
+							finally {
 								in.close();
 								out.close();
 							}
 						}
 						catch (IOException e) {
-							throw new InstantiationError("Cannot instantiate plugin "+p+", the following error occured while extracting its resources: "+e.getMessage());
+							throw new InstantiationError(
+									"Cannot instantiate plugin "
+											+ p
+											+ ", the following error occured while extracting its resources: "
+											+ e.getMessage());
 						}
 					}
 				}
@@ -448,27 +450,26 @@ public class KnowWEEnvironment {
 		}
 
 		List<ISemanticCore> sclist = Plugins.getSemanticCoreImpl();
-		if (sclist.size()==1){
-			SemanticCoreDelegator.setImpl(sclist.get(0));			
-		} else {
-			for (ISemanticCore cur:sclist){
-				if (!cur.getClass().toString().contains("Dummy")){
+		if (sclist.size() == 1) {
+			SemanticCoreDelegator.setImpl(sclist.get(0));
+		}
+		else {
+			for (ISemanticCore cur : sclist) {
+				if (!cur.getClass().toString().contains("Dummy")) {
 					SemanticCoreDelegator.setImpl(cur);
 				}
 			}
 		}
-		
+
 		SemanticCoreDelegator.initImpl(this);
 
-		for (Instantiation inst: Plugins.getInstantiations()) {
+		for (Instantiation inst : Plugins.getInstantiations()) {
 			inst.init(context);
 		}
 
-		for (TagHandler tagHandler: Plugins.getTagHandlers() ) {
+		for (TagHandler tagHandler : Plugins.getTagHandlers()) {
 			initTagHandler(tagHandler);
 		}
-		
-							
 
 		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
 			Sectionizer.getInstance().registerSectionizerModule(sm);
@@ -476,21 +477,19 @@ public class KnowWEEnvironment {
 
 		appendHandlers = Plugins.getPageAppendHandlers();
 
-		for (KnowWEObjectType type: Plugins.getRootTypes()) {
+		for (KnowWEObjectType type : Plugins.getRootTypes()) {
 			addRootType(type);
 		}
-		this.globalTypes=Plugins.getGlobalTypes();
+		this.globalTypes = Plugins.getGlobalTypes();
 		KnowledgeRepresentationManager manager = this.getKnowledgeRepresentationManager(web);
-		for (KnowledgeRepresentationHandler handler: Plugins.getKnowledgeRepresentationHandlers()) {
+		for (KnowledgeRepresentationHandler handler : Plugins.getKnowledgeRepresentationHandlers()) {
 			handler.setWeb(web);
 			manager.registerHandler(handler);
 		}
 		manager.registerHandler(new TerminologyHandler(web));
 
-
 		Plugins.initJS();
 	}
-
 
 	private void initTagHandler(TagHandler tagHandler) {
 		String tagName = tagHandler.getTagName();
@@ -498,7 +497,7 @@ public class KnowWEEnvironment {
 		if (tagHandlers.containsKey(tagName)) {
 			Logger.getLogger(this.getClass().getName()).warning(
 					"TagHandler for tag '" + tagName
-					+ "' had already been added.");
+							+ "' had already been added.");
 		}
 		else {
 			this.tagHandlers.put(tagName, tagHandler);
@@ -511,7 +510,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Getter for KnowWEWikiConnector
-	 *
+	 * 
 	 * @return this.wikiConnector
 	 */
 	public KnowWEWikiConnector getWikiConnector() {
@@ -521,9 +520,9 @@ public class KnowWEEnvironment {
 	/**
 	 * returns the ActionDispatcher from the WikiConnector (JSPWiki: used by
 	 * KnowWE.jsp)
-	 *
+	 * 
 	 * TODO factor out in KnowWE.jsp
-	 *
+	 * 
 	 * @return
 	 */
 	public KnowWEActionDispatcher getDispatcher() {
@@ -591,7 +590,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Replaced with introduction of DOM. Delete when DOM established
-	 *
+	 * 
 	 * @param user
 	 * @param topic
 	 * @param web
@@ -629,7 +628,7 @@ public class KnowWEEnvironment {
 				.getInstance().getRootType(), web);
 
 		// fire 'article-created' event
-		EventManager.getInstance().fireEvent(ArticleCreatedEvent.getInstance(), web, 
+		EventManager.getInstance().fireEvent(ArticleCreatedEvent.getInstance(), web,
 				username, article.getSection());
 
 		return this.getArticleManager(web).saveUpdatedArticle(
@@ -638,7 +637,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Called by the Core-Junit-Tests
-	 *
+	 * 
 	 * @param username
 	 * @param content
 	 * @param topic
@@ -659,7 +658,7 @@ public class KnowWEEnvironment {
 	/**
 	 * Knowledge Services (Kopic) needs to have an id. This is how a default id
 	 * is generated when users dont enter one.
-	 *
+	 * 
 	 * @param topic
 	 * @return
 	 */
@@ -690,9 +689,9 @@ public class KnowWEEnvironment {
 	// }
 
 	/**
-	 *
+	 * 
 	 * Writes a modified article to the wiki engine using the wikiConnector
-	 *
+	 * 
 	 * @param web
 	 * @param name
 	 * @param articleText
@@ -706,9 +705,9 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 *
+	 * 
 	 * use KnowWEUtils.unmaskHTML
-	 *
+	 * 
 	 * @param htmlContent
 	 * @return
 	 */
@@ -719,9 +718,9 @@ public class KnowWEEnvironment {
 	}
 
 	/**
-	 *
+	 * 
 	 * use KnowWEUtils.maskHTML
-	 *
+	 * 
 	 * @param htmlContent
 	 * @return
 	 */
@@ -748,7 +747,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * Collects all KnowWEObjectTypes.
-	 *
+	 * 
 	 * @return
 	 */
 	public List<KnowWEObjectType> getAllKnowWEObjectTypes() {
@@ -758,7 +757,7 @@ public class KnowWEEnvironment {
 
 			KnowWEObjectTypeSet s = KnowWEObjectTypeUtils
 					.getAllChildrenTypesRecursive(getRootType(),
-					new KnowWEObjectTypeSet());
+							new KnowWEObjectTypeSet());
 			allTypes.addAll(s.toList());
 
 			this.allKnowWEObjectTypes = allTypes.toLexicographicalList();
@@ -769,7 +768,7 @@ public class KnowWEEnvironment {
 
 	/**
 	 * @See KnowWEObjectTypeBrowserAction
-	 *
+	 * 
 	 * @param clazz
 	 * @return
 	 */
