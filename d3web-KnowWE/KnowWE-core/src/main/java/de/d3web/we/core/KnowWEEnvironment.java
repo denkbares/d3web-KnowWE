@@ -383,12 +383,6 @@ public class KnowWEEnvironment {
 			// adding TaggingMangler as SearchProvider to KnowWE-MultiSearch
 			MultiSearchEngine.getInstance().addProvider(TaggingMangler.getInstance());
 
-			// loadData(context);
-			initWikiSolutionsPage();
-			
-			
-
-
 			System.out.println("INITIALISED KNOWWE ENVIRONMENT");
 		}
 		catch (Exception e) {
@@ -400,25 +394,7 @@ public class KnowWEEnvironment {
 
 	}
 
-	/**
-	 * Initialises the WikiSolutionPage --> creates it if not existing
-	 */
-	private void initWikiSolutionsPage() {
 
-		if (this.wikiConnector.doesPageExist("WikiSolutions")) {
-			writeNewSolutionsPage();
-		}
-	}
-
-	/**
-	 * creates a WikiSolution-page.
-	 *
-	 * @see WikiSolutionTagHandler
-	 */
-	private void writeNewSolutionsPage() {
-		getWikiConnector().createWikiPage("WikiSolutions",
-				"[{KnowWEPlugin WikiSolutions}]", "engine");
-	}
 
 	/**
 	 * Initializes the KnowWE modules
