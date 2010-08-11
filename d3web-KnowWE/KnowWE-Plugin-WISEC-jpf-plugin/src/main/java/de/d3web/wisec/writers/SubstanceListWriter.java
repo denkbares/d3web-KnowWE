@@ -138,7 +138,7 @@ public class SubstanceListWriter extends WISECWriter {
 	private void printSubstanceTable(Writer writer, SubstanceList list) throws IOException {
 		StringBuffer buffy = new StringBuffer();
 
-		buffy.append("%%zebra-table \n%%sortable\n");
+		// buffy.append("%%zebra-table \n%%sortable\n");
 
 		List<String> FIRST_HEADERS = Arrays.asList(new String[] {
 				"CAS_No", "Action", "EC_No", "IUPAC_name", "Chemical_name" });
@@ -177,7 +177,7 @@ public class SubstanceListWriter extends WISECWriter {
 			buffy.append("\n");
 		}
 		buffy.append("\n");
-		buffy.append("/%\n/%\n");
+		// buffy.append("/%\n/%\n");
 		writer.write(buffy.toString());
 	}
 
