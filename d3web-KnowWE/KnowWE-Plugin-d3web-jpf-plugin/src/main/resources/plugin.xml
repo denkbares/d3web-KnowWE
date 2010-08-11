@@ -341,18 +341,6 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="QuickInterviewTagHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.QuickInterviewTagHandler" />
-		<parameter id="name" value="QuickInterviewTagHandler" />
-		<parameter id="description" value="TagHandler QuickInterviewTagHandler" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="script" value="KnowWE-plugin-d3web.js" />
-		<parameter id="script" value="silveripe.0.2.js" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="ObjectInfoTagHandler">
 		<parameter id="class"
 			value="de.d3web.we.taghandler.ObjectInfoTagHandler" />
