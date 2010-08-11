@@ -2,6 +2,7 @@ package de.d3web.we.taghandler;
 
 import java.util.Map;
 
+import org.openrdf.model.URI;
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
@@ -26,7 +27,7 @@ public class RenderClassMembersHandler extends AbstractTagHandler {
 		super("listClassMembers");
 	}
 
-	private static final String TIME_SPARQL = "SELECT ?x WHERE { ?x rdf:type lns:CLASS .} ORDER BY ASC(?x)";
+	private static final String TIME_SPARQL = "SELECT ?x WHERE { ?x rdf:type CLASS .} ORDER BY ASC(?x)";
 
 	@Override
 	public String render(String topic, KnowWEUserContext user,
@@ -37,9 +38,12 @@ public class RenderClassMembersHandler extends AbstractTagHandler {
 		if (className == null) {
 			return "No class given for list class members tag!";
 		}
-		String querystring = TIME_SPARQL.replaceAll("CLASS", className);
-
+		
 		ISemanticCore sc = SemanticCoreDelegator.getInstance();
+		URI classURI = sc.getUpper().getHelper().createlocalURI(className);
+			
+
+		String querystring = TIME_SPARQL.replaceAll("CLASS","<"+classURI.toString()+">" );
 		RepositoryConnection con = sc.getUpper().getConnection();
 		// try {
 		// con.setAutoCommit(false);
