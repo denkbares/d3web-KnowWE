@@ -1,4 +1,4 @@
-<%@page import="de.d3web.we.core.KnowWEFacade"%><%@ page import="com.ecyrd.jspwiki.*"%>
+<%@page import="de.d3web.we.core.semantic.SemanticCoreDelegator"%><%@ page import="com.ecyrd.jspwiki.*"%>
 <%@ page import="java.util.*,java.io.*"%>
 <%!
 String findParam( PageContext ctx, String key )
@@ -19,6 +19,7 @@ String findParam( PageContext ctx, String key )
 	response.setContentType ("application/txt");
 	//set the header and also the Name by which user will be prompted to save
 	response.setHeader ("Content-Disposition", "attachment;filename=\"ontology.owl\"");	
-		ServletOutputStream outs = response.getOutputStream();		
-		KnowWEFacade.getInstance().writeOwl(outs);
+		ServletOutputStream outs = response.getOutputStream();	
+		SemanticCoreDelegator.getInstance().writeDump(outs);
+		//KnowWEFacade.getInstance().writeOwl(outs);
 %>
