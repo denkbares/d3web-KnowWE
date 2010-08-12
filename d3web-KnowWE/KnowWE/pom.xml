@@ -324,6 +324,25 @@
 			</dependencies>
 		</profile>
 		
+		<!-- Solution Panel plugin -->
+		<profile>
+			<id>solutionPanel</id>
+			<activation>
+				<property>
+					<name>solutionPanel-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-SolutionPanel-jpf-plugin</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
 		<!-- Semantic Core Plugin -->
 		<profile>
 			<id>KnowWE-Plugin-SemanticCore</id>
