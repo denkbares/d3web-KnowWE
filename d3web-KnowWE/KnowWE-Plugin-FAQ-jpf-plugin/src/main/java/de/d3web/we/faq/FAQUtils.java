@@ -125,17 +125,17 @@ public class FAQUtils {
 	 */
 	public static String printCategory(FAQCats cat) {
 		StringBuilder string = new StringBuilder();
-		string.append("<div class=\"cat\">");
+		string.append("<div class='cat'>");
 
 		if (cat.toString().equals("NUM")) {
-			string.append("<a name=\"" + cat.toString() + "\">0...9</a>");
+			string.append("<a name='" + cat.toString() + "'>0...9</a>");
 		}
 		else {
-			string.append("<a name=\"" + cat.toString() + "\">"
+			string.append("<a name='" + cat.toString() + "'>"
 					+ cat.toString() + "</a>");
 		}
 
-		string.append("</div> <br />");
+		string.append("</div> <br>");
 		return string.toString();
 	}
 
@@ -150,14 +150,14 @@ public class FAQUtils {
 		StringBuilder string = new StringBuilder();
 		for (FAQCats cat : FAQCats.values()) {
 			if (cat.toString().equals("NUM")) {
-				string.append("<a class=\"cattop\" href=\"#" + cat.toString() + "\">0...9</a>");
+				string.append("<a class='cattop' href='#" + cat.toString() + "'>0...9</a>");
 			}
 			else {
-				string.append("<a class=\"cattop\" href=\"#" + cat.toString() + "\">"
+				string.append("<a class='cattop' href='#" + cat.toString() + "'>"
 						+ cat.toString() + "</a>");
 			}
 		}
-		string.append("<p />");
+		string.append("<p>");
 		return string.toString();
 	}
 }
