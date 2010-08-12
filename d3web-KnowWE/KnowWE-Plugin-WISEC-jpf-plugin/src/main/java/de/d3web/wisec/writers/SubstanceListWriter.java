@@ -77,7 +77,7 @@ public class SubstanceListWriter extends WISECWriter {
 		StringBuffer buffy = new StringBuffer();
 		buffy.append("|| Source_ID   | " + getWikiedValueForAttribute("Source_ID", list)
 				+ "\n");
-		buffy.append("|| Source_Name | [" + sourceList.get("Name") + " | " +
+		buffy.append("|| Source_Name | [" + sourceList.get("Name") + "|" +
 				SourceListWriter.getWikiFilename(sourceList.getId()) + "]\n");
 		buffy.append("|| List_ID     | " + getWikiedValueForAttribute("ID", list) + "\n");
 		buffy.append("|| List_Name   | " + getWikiedValueForAttribute("Name", list)
@@ -102,7 +102,7 @@ public class SubstanceListWriter extends WISECWriter {
 	private String getWikiedValueForAttribute(String attribute, SubstanceList list) {
 		StringBuffer buffy = new StringBuffer();
 		if (attribute.equalsIgnoreCase("Name")) {
-			buffy.append("[" + ConverterUtils.clean(list.getName()) + " | "
+			buffy.append("[" + ConverterUtils.clean(list.getName()) + "|"
 					+ SubstanceListWriter.getWikiFileNameFor(list.getId()) + "] ");
 		}
 		else {
@@ -190,7 +190,7 @@ public class SubstanceListWriter extends WISECWriter {
 		String value = ConverterUtils.clean(substance.values.get(header));
 		if (header.equals(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
 			if (model.activeSubstances.contains(substance.getName())) {
-				buffy.append(" [ " + value + " | "
+				buffy.append(" [ " + value + "|"
 						+ SubstanceInfoWriter.getWikiFileNameFor(value) + "] ");
 			}
 			else {
@@ -216,7 +216,7 @@ public class SubstanceListWriter extends WISECWriter {
 	}
 
 	public static String asWikiMarkup(SubstanceList list) {
-		return "[ " + list.getName() + " | "
+		return "[ " + list.getName() + "|"
 				+ SubstanceListWriter.getWikiFileNameFor(list.getId())
 				+ "]";
 	}
