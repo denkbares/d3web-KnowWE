@@ -583,7 +583,7 @@ KNOWWE.core.edit = function(){
 
             var options = {
                 url : KNOWWE.core.util.getURL ( params ),
-                data : 'TargetNamespace='+encodeURIComponent(_KS('#' + rel.id + '/default-edit-area').value),
+                data : 'TargetNamespace='+encodeURIComponent(_KS('#' + rel.id + '/default-edit-area').valuereplace(/\s+$/,"")),
                 loader : true,
                 response : {
                     action : 'none',
