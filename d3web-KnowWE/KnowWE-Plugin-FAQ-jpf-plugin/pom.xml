@@ -7,6 +7,7 @@
   </parent>
   <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-FAQ-jpf-plugin</artifactId>
+  <name>KnowWE-Plugin: FAQ</name>
   <version>0.2-SNAPSHOT</version>
   <dependencies>
   	<dependency>

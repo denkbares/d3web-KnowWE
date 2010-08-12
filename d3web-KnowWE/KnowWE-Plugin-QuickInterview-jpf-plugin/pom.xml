@@ -7,6 +7,7 @@
   </parent>
   <groupId>de.uniwue.d3web</groupId>
   <artifactId>KnowWE-Plugin-QuickInterview-jpf-plugin</artifactId>
+  <name>KnowWE-Plugin: QuickInterview</name>
   <version>0.2-SNAPSHOT</version>
   <description>The default KnowWE Interview, that allows for quickly testing knowledge within KnowWE by "flatly" displaying all quesitonnaires and questions, as well as their answers.</description>
   <dependencies>
