@@ -139,6 +139,8 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		// create new Section, here the KDOM is created recursively
 		sec = Section.createTypedSection(text, this, null, 0, this, null, false);
 
+		sec.addNamespace(title);
+
 		sec.absolutePositionStartInArticle = 0;
 		sec.setReusedSuccessorStateRecursively(false);
 
@@ -149,16 +151,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				activeIncludes);
 
 		// destroy no longer used knowledge and stuff from the last article
-		if (!this.fullParse) reviseLastArticleToDestroy();
-
-		// if a SubtreeHandlers uses KnowWEArticle#setFullParse(boolean,
-		// SubtreeHandler) he prevents incremental updating
-		if (!handlersUnableToDestroy.isEmpty()) {
-			Logger.getLogger(this.getClass().getName()).log(
-					Level.INFO, "The following SubtreeHandlers " +
-							"prevent inrememental updating:\n" +
-							handlersUnableToDestroy.toString());
-		}
+		reviseLastArticleToDestroy();
 
 		includeManager.removeSectionizingArticles(title);
 
@@ -234,6 +227,15 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				Level.FINE,
 				"<- Registered Knowledge in "
 						+ (System.currentTimeMillis() - startTime) + "ms <-");
+
+		// if a SubtreeHandlers uses KnowWEArticle#setFullParse(boolean,
+		// SubtreeHandler) he prevents incremental updating
+		if (!handlersUnableToDestroy.isEmpty()) {
+			Logger.getLogger(this.getClass().getName()).log(
+					Level.INFO, "The following SubtreeHandlers " +
+							"prevent inrememental updating:\n" +
+							handlersUnableToDestroy.toString());
+		}
 
 		// prevent memory leak
 		includeManager.unregisterIncludes(inactiveIncludes);

@@ -26,6 +26,8 @@ public class Priority implements Comparable<Priority> {
 
 	public static final Priority LOWEST = new Priority(-300);
 
+	public static final Priority POSTCOMPILE = new Priority(-100000);
+
 	private final int value;
 
 	private Priority(int value) {

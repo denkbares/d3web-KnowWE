@@ -621,24 +621,26 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 	}
 
 	public void addNamespace(String namespace) {
-		initNamespaces();
-		namespaces.add(namespace);
-	}
-
-	public boolean removeNamespace(String namespace) {
-		initNamespaces();
-		return namespaces.remove(namespace);
-	}
-
-	public Set<String> getNamespaces() {
-		initNamespaces();
-		return Collections.unmodifiableSet(namespaces);
-	}
-
-	private void initNamespaces() {
 		if (namespaces == null) {
 			namespaces = new HashSet<String>(4);
 			namespaces.add(getTitle());
+		}
+		namespaces.add(namespace.toLowerCase());
+	}
+
+	public boolean removeNamespace(String namespace) {
+		return namespaces == null ? false : namespaces.remove(namespace);
+	}
+
+	public Set<String> getNamespaces() {
+		if (namespaces == null) {
+			return Collections.unmodifiableSet(father.getNamespaces());
+		}
+		else {
+			Set<String> tempNamespaces = new HashSet<String>(4);
+			if (father != null) tempNamespaces.addAll(father.getNamespaces());
+			tempNamespaces.addAll(namespaces);
+			return Collections.unmodifiableSet(tempNamespaces);
 		}
 	}
 

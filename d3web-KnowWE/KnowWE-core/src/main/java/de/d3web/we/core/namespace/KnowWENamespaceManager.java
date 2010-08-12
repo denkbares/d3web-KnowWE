@@ -1,6 +1,5 @@
 package de.d3web.we.core.namespace;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -87,8 +86,8 @@ public class KnowWENamespaceManager {
 		Set<Section<? extends NamespaceInclude>> namespaceIncludes = getNamespaceIncludes(article);
 		HashSet<String> includedNamespaces = new HashSet<String>();
 		for (Section<? extends NamespaceInclude> nsInclude : namespaceIncludes) {
-			Collection<String> tempNamespaces = nsInclude.get().getIncludedNamespaces(nsInclude);
-			if (tempNamespaces != null) includedNamespaces.addAll(tempNamespaces);
+			String tempNamespace = nsInclude.get().getNamespaceToInclude(nsInclude);
+			if (tempNamespace != null) includedNamespaces.add(tempNamespace);
 		}
 		return Collections.unmodifiableSet(includedNamespaces);
 	}

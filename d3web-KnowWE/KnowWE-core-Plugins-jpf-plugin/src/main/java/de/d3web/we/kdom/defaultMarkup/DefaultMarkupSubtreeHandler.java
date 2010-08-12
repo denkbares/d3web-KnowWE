@@ -2,7 +2,6 @@ package de.d3web.we.kdom.defaultMarkup;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import de.d3web.report.Message;
@@ -47,12 +46,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 					DefaultMarkupType.getAnnotationSection(markupSection, namespaceAnno.getName());
 			if (annotationSection != null) {
 				String value = annotationSection.getOriginalText();
-				System.out.println(value);
-				List<Section<?>> nodes = new LinkedList<Section<?>>();
-				markupSection.getAllNodesPostOrder(nodes);
-				for (Section<?> node : nodes) {
-					node.addNamespace(value);
-				}
+				markupSection.addNamespace(value);
 				KnowWEEnvironment.getInstance().getNamespaceManager(article.getWeb()).registerNamespaceDefinition(
 						markupSection);
 			}
@@ -93,14 +87,9 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 					DefaultMarkupType.getAnnotationSection(markupSection, namespaceAnno.getName());
 			if (annotationSection != null) {
 				String value = annotationSection.getOriginalText();
-				System.out.println(value);
-				List<Section<?>> nodes = new LinkedList<Section<?>>();
-				markupSection.getAllNodesPostOrder(nodes);
-				for (Section<?> node : nodes) {
-					node.removeNamespace(value);
-				}
 				KnowWEEnvironment.getInstance().getNamespaceManager(article.getWeb()).unregisterNamespaceDefinition(
 						markupSection);
+				markupSection.removeNamespace(value);
 			}
 		}
 	}
