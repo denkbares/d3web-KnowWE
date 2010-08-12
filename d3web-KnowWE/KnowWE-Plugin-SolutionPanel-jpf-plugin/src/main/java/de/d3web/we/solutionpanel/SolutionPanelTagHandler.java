@@ -49,10 +49,13 @@ public class SolutionPanelTagHandler extends AbstractTagHandler {
 				+ rb.getString("KnowWE.Solutions.clear")
 				+ "' />\n"
 				+ "<img src='KnowWEExtension/images/application_view_list_big.png' id='sstate-findings' class='pointer' title='"
-				+ rb.getString("KnowWE.Solutions.findings") + "' />\n"
+				+ rb.getString("KnowWE.Solutions.findings")
+				+ "' />\n"
 				+ "</p>"
 				+ "<div id='sstate-result'></div>"
-				+ "</div></div>";
+				+ "</div></div>"
+				+ "<script type=text/javascript src=KnowWEExtension/scripts/ForumPlugin.js></script>\n";
+
 	}
 
 	public static void setSelected(String web, String user, int selectedOption) {

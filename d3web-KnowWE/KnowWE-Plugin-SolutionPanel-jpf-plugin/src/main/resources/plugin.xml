@@ -24,5 +24,6 @@
 		<parameter id="description" value="TagHandler SolutionPanelTagHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
+		<parameter id="script" value="solutionPanel.js" />
 	</extension>	
 </plugin>
