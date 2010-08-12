@@ -145,7 +145,7 @@
 		<parameter id="name" value="LocationDefinitionType" />
 		<parameter id="description" value="KnowWEObjectType LocationDefinitionType" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="3.9" />
+		<parameter id="priority" value="3.8" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="Hermes.js" />
 	</extension>

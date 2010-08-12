@@ -59,9 +59,13 @@ public class ShowMapHandler extends AbstractTagHandler {
 		}
 
 		if (longitude == 0 && latitude == 0) {
+			String concept = topic;
+			if (values.containsKey("concept")) {
+				concept = values.get("concept");
+			}
 			OwlHelper helper = SemanticCoreDelegator.getInstance().getUpper().getHelper();
 			String querystring = LOCATIONS_FOR_TOPIC.replaceAll("URI",
-					helper.createlocalURI(topic).toString());
+					helper.createlocalURI(concept).toString());
 			TupleQueryResult queryResult = TimeEventSPARQLUtils.executeQuery(querystring);
 			Collection<? extends Placemark> placemark = buildPlacemarksForLocation(queryResult);
 			if (placemark != null && placemark.size() > 0) {
@@ -121,7 +125,7 @@ public class ShowMapHandler extends AbstractTagHandler {
 	private String getJavaScript(double latitude, double longitude,
 			double zoom, String divID) {
 		String output = "";
-		output += "<script src=\"http://maps.google.com/maps?file=api&v=2&key=abcdefg&sensor=true_or_false\" type=\"text/javascript\"> </script>";
+		output += "<script src=\"http://maps.google.com/maps?file=api&v=2&key=abcdefg&sensor=false\" type=\"text/javascript\"> </script>";
 		output += "<script type=\"text/javascript\">\n";
 		output += "if (GBrowserIsCompatible()) {"
 				+ "var map = new GMap2(document.getElementById(\"" + divID
