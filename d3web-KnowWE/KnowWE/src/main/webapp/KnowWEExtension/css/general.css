@@ -913,15 +913,3 @@ td.testcaseExecuted{
 	border: 1px solid #777;
 }
 
-
-
-/* ################################################## */
-/* ------------ Quick Interview Styling ------------- */
-/* ################################################## */
-
-
-/* dont display a header for the faq plugin */
-
-#interview h3{
-	color: red;
-}
