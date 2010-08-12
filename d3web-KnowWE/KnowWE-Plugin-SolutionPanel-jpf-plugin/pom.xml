@@ -10,4 +10,40 @@
   <version>0.2-SNAPSHOT</version>
   <name>KnowWE-Plugin: SolutionPanel</name>
   <description>Panel for displaying the currently established, suggested, excluded solutions</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-core</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>4.8.1</version>
+  		<type>jar</type>
+  		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>de.uniwue.d3web</groupId>
+  		<artifactId>d3web-Kernel</artifactId>
+  		<version>0.2-SNAPSHOT</version>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.tomcat</groupId>
+  		<artifactId>servlet-api</artifactId>
+  		<version>6.0.28</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
 </project>
