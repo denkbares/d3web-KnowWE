@@ -66,14 +66,14 @@ public class QuickEditTest extends KnowledgeTestCase{
 		// Test: Input -> saving
 		oldCellValues.putAll(doQuickEditTableChange("/table/tbody/tr[4]/td[2]/select", "+", true));
 		refreshAndWait();
-		assertEquals("Input wasn't/wasn't adopted the right way", "+", selenium.getText(divLocator
+		assertEquals("Input wasn't adopted (in the right way).", "+", selenium.getText(divLocator
 				+ "//table/tbody/tr[4]/td[2]"));
 
 
 		// Test: Input -> not saving
 		oldCellValues.putAll(doQuickEditTableChange("//table/tbody/tr[2]/td[4]/select", "+", false));
 		refreshAndWait();
-		assertEquals("Input was adopted although quickedit being canceled", "hm",
+		assertEquals("Input was adopted although quickedit being canceled.", "hm",
 				selenium.getText(divLocator + "//table/tbody/tr[2]/td[4]"));
 
 		// Test: More changes in one "session" and refresh:
@@ -83,7 +83,7 @@ public class QuickEditTest extends KnowledgeTestCase{
 		input.put("//table/tbody/tr[3]/td[4]/select", "0");
 		oldCellValues.putAll(doQuickEditTableChange(input, true, true));
 		for (int i = 2; i <= 4; i++) {
-			assertEquals("Changes at Cell 3," + i + " had no effect", "0",
+			assertEquals("Changes at Cell 3," + i + " had no effect.", "0",
 					selenium.getText(divLocator + "//table/tbody/tr[3]/td[" + i + "]"));
 		}
 
@@ -96,7 +96,7 @@ public class QuickEditTest extends KnowledgeTestCase{
 		loadAndWait(B_EDIT);
 		final String newPageContent = selenium.getText(EA);
 		loadAndWait(B_SAVE);
-		assertEquals("There were unexpected changes in the content of the page", oldPageContent,
+		assertEquals("There were unexpected changes in the content of the page.", oldPageContent,
 				newPageContent);
 	}
 
@@ -110,7 +110,7 @@ public class QuickEditTest extends KnowledgeTestCase{
 
 		open(rb.getString("KnowWE.SeleniumTest.url") + "Wiki.jsp?page=Quick-Edit-Test");
 		assertTrue(selenium.getTitle().contains("KnowWE: Quick-Edit-Test"));
-		assertTrue("Solutionstates nicht eingebunden", selenium.isElementPresent(ST_LOC));
+		assertTrue("Solutionstates nicht eingebunden.", selenium.isElementPresent(ST_LOC));
 
 		// Copy actual page content
 		loadAndWait(B_EDIT);
@@ -122,12 +122,12 @@ public class QuickEditTest extends KnowledgeTestCase{
 		String sectionID = kopicID + "/SetCoveringList-section/SetCoveringList-section_content";
 		openQuickEdit(sectionID);
 		openQuickEdit("Quick-Edit-Test/RootType/Kopic/Kopic_content/Solutions-section/Solutions-section_content");
-		assertFalse("Quick-Edit button still present", selenium.isElementPresent(sectionID + QEB));
-		assertTrue("Save button is not existing", selenium.isElementPresent(sectionID + ACCEPT));
-		assertTrue("Cancel button is not existing", selenium.isElementPresent(sectionID + CANCEL));
+		assertFalse("Quick-Edit button still present.", selenium.isElementPresent(sectionID + QEB));
+		assertTrue("Save button is not existing.", selenium.isElementPresent(sectionID + ACCEPT));
+		assertTrue("Cancel button is not existing.", selenium.isElementPresent(sectionID + CANCEL));
 		String actText = selenium.getBodyText();
 		refreshAndWait();
-		assertEquals("Unsupposed changes in the HTML code by refreshing and an opened quick-edit",
+		assertEquals("Unsupposed changes in the HTML code by refreshing and an opened quick-edit.",
 				actText, selenium.getBodyText());
 
 		// Short check for questionsheet functionality
@@ -142,7 +142,7 @@ public class QuickEditTest extends KnowledgeTestCase{
 		// Adding new solution
 		sectionID = kopicID + "/Solutions-section/Solutions-section_content";
 		quickEditAdd(sectionID, "\nMissing wheel");
-		assertTrue("//div[@id='" + sectionID + "'] isn't present (yet)",
+		assertTrue("//div[@id='" + sectionID + "'] isn't present (yet).",
 				waitForElement("//div[@id='" + sectionID + "']"));
 		assertTrue("New solution \"Missing wheel\" wasn't saved.", selenium.getText(
 				"//div[@id='" + sectionID + "']").contains("Missing wheel"));
@@ -151,12 +151,10 @@ public class QuickEditTest extends KnowledgeTestCase{
 		sectionID = kopicID + "/Questions-section/Questions-section_content";
 		quickEditAdd(sectionID,
 				"\n-How many wheels do you have? [oc]\n-- \"< 4\"\n-- 4\n-- \"> 4\"\n");
+		refreshAndWait();
 		assertTrue(
 				"Question 'How many wheels do you have?' isn't present (yet)",
 				waitForElement("//div[@id='questionsheet']//span[text()='How many wheels do you have?']"));
-		assertTrue(
-				"Adding new question failed",
-				selenium.isElementPresent("//div[@id='questionsheet']//span[text()='How many wheels do you have?']"));
 
 		// Adding new rule connecting solution and question
 		sectionID = kopicID + "/Rules-section/Rules-section_content";
@@ -232,9 +230,11 @@ public class QuickEditTest extends KnowledgeTestCase{
 	private void quickEditAdd(String sectionID, String newText) {
 		openQuickEdit(sectionID);
 		doSelActionAndWait("//div[@id='" + sectionID + "']//textarea[@id='" + sectionID + "/default-edit-area']",
-				"type", selenium.getValue("//div[@id='" + sectionID + "']/textarea[@id='" + sectionID + "/default-edit-area']")
+				"type", selenium.getValue("//div[@id='" + sectionID + "']//textarea[@id='"
+						+ sectionID + "/default-edit-area']")
 				+ newText);
 		doSelActionAndWait(sectionID + ACCEPT, "click");
+		waitForElement(sectionID + QEB);
 	}
 
 	/**

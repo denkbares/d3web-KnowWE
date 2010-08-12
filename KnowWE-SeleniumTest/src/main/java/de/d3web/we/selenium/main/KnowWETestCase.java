@@ -57,10 +57,11 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 
 	
 	/**
-	 * This method specifies on which server the tests are run, with 
+	 * This method specifies on which server the tests are run, with
 	 * which browser on which port and the URL of the KnowWE under test.
 	 * All parameters can be set in the properties file.
 	 */
+	@Override
 	public void setUp() throws Exception {
 		setUp(rb.getString("KnowWE.SeleniumTest.url"),
 				rb.getString("KnowWE.SeleniumTest.browser"),
@@ -69,8 +70,8 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	}
 	
 	/**
-	 * This method opens, in the actual chosen window, a new page and waits 
-	 * for its loading. Mostly used at the beginning of the test, to start 
+	 * This method opens, in the actual chosen window, a new page and waits
+	 * for its loading. Mostly used at the beginning of the test, to start
 	 * a new session.
 	 * @param url Address of the new page
 	 */
@@ -80,8 +81,8 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	}
 	
 	/**
-	 * Use this method if you want to open a link, which opens 
-	 * a new window (e.g. because of "target=_blank"). Selenium can't 
+	 * Use this method if you want to open a link, which opens
+	 * a new window (e.g. because of "target=_blank"). Selenium can't
 	 * find this new window, so it's necessary to call this method.
 	 * @param url URL address of the page which should be opened.
 	 * @param name The window's name
@@ -113,7 +114,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	/**
 	 * This method is used if you want to open a link and wait for the
 	 * page to be loaded before continuing with the test. If this
-	 * link opens a new window (target=_blank or = kwiki-dialog) the 
+	 * link opens a new window (target=_blank or = kwiki-dialog) the
 	 * method openWindowBlank is called.
 	 * If pageLoadTime expires the test will quit by error.
 	 * @param linkName This is the string/locator Selenium uses to search
@@ -131,14 +132,14 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 				//opens a new Session with an URL specified by the homepage's URL
 				//and the location given by link's attribute href. If a dialog is
 				//opened forwarding has to be true.
-				openWindowBlank(rb.getString("KnowWE.SeleniumTest.url") + aHref , aHref, target.equals("kwiki-dialog"));			
+				openWindowBlank(rb.getString("KnowWE.SeleniumTest.url") + aHref , aHref, target.equals("kwiki-dialog"));
 			}
 		} catch (Exception e) {
 			// locator has no "a" parent or it has no attribute "target"
 			// no need of using openWindowBlank
 		}
 		if (!isNewTab) {
-			//Normal procedure using a link ('in-frame' load)
+			// Normal procedure using a link ('in-frame' load)
 			doSelActionAndWait(locator, "click");
 			selenium.waitForPageToLoad(pageLoadTime);
 		}
@@ -169,25 +170,31 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	 * (only limited number of Selenium commands available; they have to
 	 * be added manually to this method). If a command, not being added,
 	 * is used an IllegalSeleniumMethod Exception is thrown.
-	 * @param value Some additional parameter if being needed 
-	 * (e.g. for command select: optionLocator) 
+	 * @param value Some additional parameter if being needed
+	 * (e.g. for command select: optionLocator)
 	 */
 	protected void doSelActionAndWait (String locator, String selMethodName, String value) {
-		//wait until Element appears
-		waitForElement(locator);
+		// wait until Element appears (if not, try once a refresh)
+		if (!waitForElement(locator)) {
+			refreshAndWait();
+			waitForElement(locator);
+		}
 		
-			if (selMethodName.equals("click")) selenium.click(locator);
-			else if (selMethodName.equals("select")) selenium.select(locator, value);
-			else if (selMethodName.equals("type")) selenium.type(locator, value);
-			else { 
-				try {
-					throw new IllegalSeleniumMethod( selMethodName + " is not an accepted Selenium method (in case it exists in Selenese you can add it).");
-				} catch(IllegalSeleniumMethod ism) {
-					ism.printStackTrace();
-					KnowWETestCase.fail(ism.getMessage());
-				}
+		if (selMethodName.equals("click")) selenium.click(locator);
+		else if (selMethodName.equals("select")) selenium.select(locator, value);
+		else if (selMethodName.equals("type")) selenium.type(locator, value);
+		else {
+			try {
+				throw new IllegalSeleniumMethod(
+						selMethodName
+								+ " is not an accepted Selenium method (in case it exists in Selenese you can add it).");
 			}
-		threadSleep(sleepTime);
+			catch (IllegalSeleniumMethod ism) {
+				ism.printStackTrace();
+				KnowWETestCase.fail(ism.getMessage());
+			}
+		}
+		// threadSleep(sleepTime);
 	}
 	
 	/**
@@ -201,10 +208,16 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	protected boolean waitForElement(String locator) {
 		Long startTime = System.currentTimeMillis();
 		boolean elemPresent = selenium.isElementPresent(locator);
-		while (!elemPresent 
-				&& System.currentTimeMillis() - startTime < 
+		while (!elemPresent
+				&& System.currentTimeMillis() - startTime <
 				Long.parseLong(rb.getString("KnowWE.SeleniumTest.RetryTime"))) {
-			refreshAndWait();
+			// refreshAndWait();
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException ie) {
+				ie.printStackTrace();
+			}
 			elemPresent = selenium.isElementPresent(locator);
 		}
 		return elemPresent;
@@ -223,7 +236,7 @@ public abstract class KnowWETestCase extends KnowWESeleneseTestCase {
 	}
 	
 	/**
-	 * A little help if you have a locator but want to access an 
+	 * A little help if you have a locator but want to access an
 	 * ancestor of a special type of the given element.
 	 * @param locator xpath specifying the element (child)
 	 * @param type specifies the ancestor's type (i.e. "a" or "div")
