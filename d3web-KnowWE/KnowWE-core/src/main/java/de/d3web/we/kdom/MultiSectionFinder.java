@@ -23,51 +23,55 @@ package de.d3web.we.kdom;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.we.kdom.sectionFinder.SectionFinder;
+import de.d3web.we.kdom.sectionFinder.ISectionFinder;
 import de.d3web.we.kdom.sectionFinder.SectionFinderResult;
 
 /**
  * @author Jochen
  * 
- * The MultiSectionFinder allows to combine multiple SectionFinder for one type
- * (i.e. alternative syntax). It contains a list of SectionFinders, call them all,
- * and returns all FindingResults to the parser
+ *         The MultiSectionFinder allows to combine multiple SectionFinder for
+ *         one type (i.e. alternative syntax). It contains a list of
+ *         SectionFinders, call them all, and returns all FindingResults to the
+ *         parser
  * 
- * WARNING: As the different SectionFinder are called independently with the same 
- * text, they possibly might allocate overlapping sections. 
- * The resulting  (invalid) SectionFinderResult-Set will be returned to the parsing-algorithm
- * which THEN reject all these findings (if any invalid allocations contained).
- *
+ *         WARNING: As the different SectionFinder are called independently with
+ *         the same text, they possibly might allocate overlapping sections. The
+ *         resulting (invalid) SectionFinderResult-Set will be returned to the
+ *         parsing-algorithm which THEN reject all these findings (if any
+ *         invalid allocations contained).
+ * 
  */
-public class MultiSectionFinder extends SectionFinder {
 
-	private List<SectionFinder> finders = null;
+public class MultiSectionFinder implements ISectionFinder {
+
+	private List<ISectionFinder> finders = null;
 
 	public MultiSectionFinder() {
-		this.finders = new ArrayList<SectionFinder>();
+		this.finders = new ArrayList<ISectionFinder>();
 	}
-	
-	public MultiSectionFinder(SectionFinder first) {
+
+	public MultiSectionFinder(ISectionFinder first) {
 		this();
 		this.addSectionFinder(first);
 	}
 
-	public MultiSectionFinder(List<SectionFinder> initialList) {
+	public MultiSectionFinder(List<ISectionFinder> initialList) {
 		this.finders = initialList;
 	}
-	
-	public void addSectionFinder(SectionFinder f) {
+
+	public void addSectionFinder(ISectionFinder f) {
 		this.finders.add(f);
 	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section father, KnowWEObjectType type) {
 		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
-		
-		//  iterates all finders and gathers together all SectionFinderResults
-		for (SectionFinder finder : finders) {
-			List<SectionFinderResult> singleResult = finder.lookForSections(text, father, type);
-			if(singleResult != null) {
+
+		// iterates all finders and gathers together all SectionFinderResults
+		for (ISectionFinder finder : finders) {
+			List<SectionFinderResult> singleResult = finder.lookForSections(text, father,
+					type);
+			if (singleResult != null) {
 				results.addAll(singleResult);
 			}
 		}
