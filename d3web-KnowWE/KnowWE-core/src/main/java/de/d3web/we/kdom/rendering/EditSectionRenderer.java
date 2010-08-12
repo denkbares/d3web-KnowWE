@@ -22,6 +22,8 @@ package de.d3web.we.kdom.rendering;
 
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.kdom.KnowWEArticle;
@@ -64,10 +66,17 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		}
 
 		boolean isEditable = sec.hasQuickEditModeSet( user.getUsername() );
+		// Specifies whether the whole content is rendered in one line or not
+		boolean isInline = isInline(sec);
 		boolean highlight = false;
 		Map<String, String> urlParameterMap = user.getUrlParameterMap();
 
-
+		// don't append if multiline or javascript action (like
+		// ReRenderContentPartAction)
+		if (isInline && !urlParameterMap.containsKey("action")) {
+			insertTableBeforeMarkup(string, sec);
+			string.append(KnowWEUtils.maskHTML("</td><td style=\"vertical-align: top; padding: 0px\">"));
+		}
 		String highlightKDOMID = urlParameterMap.get("highlight");
 		if(highlightKDOMID != null) {
 			if(highlightKDOMID.equals(sec.getID())) {
@@ -85,14 +94,14 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 		if(highlight && !isEditable) {
 			string.append(KnowWEUtils.maskHTML("<div class=\"searchword\">"));
 		}
-		string.append( KnowWEUtils.maskHTML( "<a name=\""+sec.getID()+"\"></a><span id=\"" + sec.getID() + "\">" ));
+		string.append(KnowWEUtils.maskHTML("<a name=\"" + sec.getID() + "\"></a>"));
 
-		if( sec.getArticle().equals( article ) ) {
-			string.append(KnowWEUtils.maskHTML( this.generateQuickEdit
-					("Quickedit " + sec.getObjectType().getName() + " Section", sec.getID(),
-							isEditable, user)));
+		string.append(KnowWEUtils.maskHTML("<div id=\"" + sec.getID() + "\" style=\"width: 100%\">"));
+		if (sec.getArticle().equals(article)) {
+			string.append(KnowWEUtils.maskHTML(this.generateQuickEdit("Quickedit "
+					+ sec.getObjectType().getName() + " Section", sec.getID(), isEditable, user,
+					isInline)));
 		}
-
 		if ( isEditable ) {
 			// Setting pre-Environment to avoid textarea content being rendered
 			// by JSPWiki if page was refreshed (while QuickEdit being opened).
@@ -104,9 +113,13 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 				string.append("{{{");
 			}
 			String str = sec.getOriginalText();
-			string.append( KnowWEUtils.maskHTML( "<textarea name=\"default-edit-area\" id=\"" + sec.getID() + "/default-edit-area\" style=\"width:92%; height:"+this.getHeight(str)+"px;\">" ));
+			// padding right: 60px = space for the buttons
+			string.append(KnowWEUtils.maskHTML("<div style=\"padding-right: 60px\"><textarea name=\"default-edit-area\" id=\""
+					+ sec.getID()
+					+ "/default-edit-area\" style=\"width:100%; height:"
+					+ this.getHeight(str, isInline) + "px;\">"));
 			string.append( str );
-			string.append( KnowWEUtils.maskHTML( "</textarea>" ));
+			string.append(KnowWEUtils.maskHTML("</textarea></div>"));
 			if (preNeeded) {
 				string.append("}}}");
 			}
@@ -117,36 +130,43 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 			// beginning of this method
 			string.append(subTreeContent);
 		}
-		string.append( KnowWEUtils.maskHTML( "</span>" ));
+		string.append(KnowWEUtils.maskHTML("</div>"));
 		if(highlight && !isEditable) {
 			string.append(KnowWEUtils.maskHTML("</div>"));
 		}
+		// Close the Inline-table which was opened in front of the Markup.
+		if (isInline && !urlParameterMap.containsKey("action")) {
+			string.append(KnowWEUtils.maskHTML("</td></tr></table>"));
+		}
 	}
-
 
 	/**
 	 * Generates a link used to enable or disable the Quick-Edit-Flag.
-	 * @param
-	 *     id - of the section the flag should assigned to.
-	 * @param
-	 * 	   user - to get language preferences.
-	 * @param
-	 *     topic - name of the current page.
-	 * @return
-	 *     The quick edit menu panel.
+	 * 
+	 * @param id - of the section the flag should assigned to.
+	 * @param user - to get language preferences.
+	 * @param topic - name of the current page.
+	 * @param isInline - if accept and cancel button are in one line or not.
+	 * @return The quick edit menu panel.
 	 */
-	protected String generateQuickEdit(String tooltip, String id, boolean isEditable, KnowWEUserContext user) {
+	protected String generateQuickEdit(String tooltip, String id, boolean isEditable, KnowWEUserContext user, Boolean isInline) {
 		StringBuilder b = new StringBuilder();
 		final ResourceBundle rb = KnowWEEnvironment.getInstance().getKwikiBundle(user);
-		b.append( "<div " + getQuickEditDivAttributes() + ">" );
+		b.append("<div " + getQuickEditDivAttributes() + ">");
 		if (!isEditable) {
 			b.append("<img src=\"KnowWEExtension/images/pencil.png\" width=\"10\" title=\"" + tooltip + "\" class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\" name=\"" + id + "_pencil\"/><br />");
 		}
 		if( isEditable ){
-			b.append("<input class=\"pointer\" rel=\"{id : '" + id + "'}\" style=\"padding:0 0 0 0; width: 25px; height: 25px; background: #FFF url(KnowWEExtension/images/msg_checkmark.png) no-repeat; border: none; vertical-align:top;\" name=\"" + id + "_accept\" type=\"submit\" value=\"\" title=\"" + rb.getString("KnowWE.TableContentRenderer.accept") + "\"><br/>" );
+			// Accept Button
+			b.append("<input class=\"pointer\" rel=\"{id : '"
+					+ id + "'}\" style=\"padding:0 0 0 0; width: 25px; height: 25px; background: #FFF url(KnowWEExtension/images/msg_checkmark.png) no-repeat; border: none; vertical-align:top;\" name=\""
+					+ id + "_accept\" type=\"submit\" value=\"\" title=\""
+					+ rb.getString("KnowWE.TableContentRenderer.accept") + "\">");
+			if (!isInline) b.append("<br/>");
+			// Cancel Button
 			b.append("<img class=\"quickedit default pointer\" rel=\"{id : '" + id + "'}\" width=\"25\" title=\"" + rb.getString("KnowWE.TableContentRenderer.cancel") + "\" src=\"KnowWEExtension/images/msg_cross.png\" name=\"" + id + "_cancel\"/>");
 		}
-		b.append( "</div>" );
+		b.append("</div>");
 		return b.toString();
 	}
 
@@ -156,16 +176,84 @@ public class EditSectionRenderer extends KnowWEDomRenderer {
 
 	/**
 	 * Calculates the height of the HTML textarea.
-	 *
-	 * @param
-	 *      str - The string used to calculated the height.
-	 * @return
-	 *      The height of the HTML textarea element.
+	 * 
+	 * @param str - The string used to calculate the height.
+	 * @param isInline - If true the textarea gets no additional newlines.
+	 * @return The height of the HTML textarea element.
 	 */
-	private Integer getHeight( String str ){
+	private Integer getHeight(String str, Boolean isInline) {
+		int additionallines = 5;
+		if (isInline) additionallines = 0;
 		int linebreaks = str.split("\n|\f").length;
 		int lineHeight = 18; //px
-		return (linebreaks + 5) * lineHeight;
+		return (linebreaks + additionallines) * lineHeight;
 	}
 
+	/**
+	 * Searches the first ancestor Section of section with some text right in
+	 * front of the section's one, and checks whether both are separated by '\n'
+	 * or '\f' or not (inline).
+	 * 
+	 * @created 07.08.2010
+	 * @param sec The section used by the ESR which could be inline.
+	 * @return True if the section (its OrignialText) is in the same line as the
+	 *         text before; false if they are seperated by '\n' or '\f'.
+	 */
+	private boolean isInline(Section section) {
+		Section sec = section;
+		String text = sec.getOriginalText();
+		if (text.startsWith("\n") || text.startsWith("\f") || text.length() == 0) return false;
+		KnowWEArticle rootTypeObj = sec.getArticle().getSection().getObjectType();
+		// Move up the Section-DOM till you find one with 'more' OriginalText
+		while (sec.getFather().getObjectType() != rootTypeObj) {
+			sec = sec.getFather();
+			Matcher m = Pattern.compile(text, Pattern.LITERAL).matcher(sec.getOriginalText());
+			m.find();
+			// Text BEFORE section shouldn't end with '\n' or '\f'
+			if (m.start() != 0) {
+				String textBefore = sec.getOriginalText().substring(0, m.start());
+				return !textBefore.endsWith("\n") && !textBefore.endsWith("\f");
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * This method helps to realize the Inline-QuickEdit-Rendering. Therefore it
+	 * takes the last line of the actual string being rendered so far. The
+	 * table-code is inserted right in front of the last (can be changed in
+	 * while loop) text (which is no HTML-code) in this line.
+	 * 
+	 * @created 10.08.2010
+	 * @param string - The so far rendered page content.
+	 * @param sec - The section used by the ESR, used for the table's name.
+	 */
+	private void insertTableBeforeMarkup(StringBuilder string, Section sec) {
+		String[] lineSplit = string.toString().split("\n");
+		String lastLine = lineSplit[lineSplit.length - 1];
+		Integer charsTillLS = string.length() - lastLine.length();
+		Integer startInLine = 0;
+		// Find Text between HTML-Elements (>...(<))
+		Matcher m = Pattern.compile(
+				KnowWEEnvironment.HTML_GT + "(?!" + KnowWEEnvironment.HTML_ST + ")" + "(.(?!("
+						+ KnowWEEnvironment.HTML_ST + "|" + KnowWEEnvironment.HTML_GT + ")))*.").matcher(
+				lastLine);
+		// Get the last match
+		while (!m.hitEnd()) {
+			m.find();
+		}
+		try {
+			startInLine = m.start() + KnowWEEnvironment.HTML_GT.length();
+		}
+		catch (IllegalStateException ise) {
+			// No Text after/between HTML-tags found -> probably no HTML-code,
+			// insert at the beginning of the last line (startInLine = 0)
+		}
+		string.insert(
+				startInLine + charsTillLS,
+				KnowWEUtils.maskHTML("<table name=\""
+						+ sec.getID()
+						+ "_inlinetableByESR\" style=\"width: 100%\"><tr><td style=\"width: 1em; vertical-align: top; padding: 0px;\">"));
+
+	}
 }
