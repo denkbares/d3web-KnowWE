@@ -288,7 +288,7 @@
 		
 		<!-- FAQ plugin -->
 		<profile>
-			<id>faq-plugin</id>
+			<id>faq</id>
 			<activation>
 				<property>
 					<name>faq-plugin</name>
@@ -299,6 +299,25 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-FAQ-jpf-plugin</artifactId>
+					<version>0.2-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
+		<!-- Quick Interview plugin -->
+		<profile>
+			<id>quicki</id>
+			<activation>
+				<property>
+					<name>quicki-plugin</name>
+				</property>
+			</activation>
+
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-QuickInterview-jpf-plugin</artifactId>
 					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
