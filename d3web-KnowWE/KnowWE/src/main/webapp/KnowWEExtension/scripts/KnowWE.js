@@ -321,23 +321,15 @@ KNOWWE.core.util = function(){
          *     value - The value used for replacement.
          */
         replace : function(ids, value){
-            for (var i in ids ) {
-                if( typeof ids[i] != 'string' ) return;
+        	
+            for( var i = 0; i < ids.length; i++){
+                if( typeof ids[i] != 'string' ) continue;
                 
-                var tmpDiv = new _KN('div', {
-                    'styles': {
-                        'display': 'hidden' 
-                    },
-                    'id' : 'KnowWE-temp'
-                });
-                var old = _KS('#' + ids[i]);
-                tmpDiv._injectBefore( old );
-                tmpDiv._setHTML( value );
-                old._remove();
-                var old2 =_KS('#' + ids[i]);
-                var tmp = _KS('#KnowWE-temp'); 
-                old2._injectAfter(tmp );
-                tmpDiv._remove();
+                  var oldDOM = document.getElementById( ids[i] );
+                  var newDOMwrapper = document.createElement("div");
+                  newDOMwrapper.innerHTML = value;
+                  var newDOM = newDOMwrapper.firstChild;
+                  oldDOM.parentNode.replaceChild( newDOM, oldDOM );
             }
         }
     }
