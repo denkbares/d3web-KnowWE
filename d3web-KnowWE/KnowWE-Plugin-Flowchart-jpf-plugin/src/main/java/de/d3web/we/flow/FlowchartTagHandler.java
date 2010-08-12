@@ -17,7 +17,7 @@ import de.d3web.diaFlux.flow.INodeData;
 import de.d3web.diaFlux.flow.ISupport;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.Entry;
-import de.d3web.diaFlux.inference.Path;
+import de.d3web.diaFlux.inference.IPath;
 import de.d3web.we.core.KnowWEArticleManager;
 import de.d3web.we.core.KnowWEEnvironment;
 import de.d3web.we.flow.type.FlowchartType;
@@ -31,7 +31,7 @@ import de.d3web.we.wikiConnector.KnowWEUserContext;
 
 /**
  * [{KnowWEPlugin Flowchart}]
- * 
+ *
  * @author Florian Ziegler
  */
 public class FlowchartTagHandler extends AbstractTagHandler {
@@ -45,7 +45,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	@Override
 	public String render(String topic, KnowWEUserContext user,
 			Map<String, String> values, String web) {
-		
+
 		Session theCase = D3webUtils.getSession(topic, user, web);
 
 		if (!DiaFluxUtils.isFlowCase(theCase)) {
@@ -98,12 +98,12 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		// TODO
 		// String flowID =
 		// AbstractXMLObjectType.getAttributeMapFor(section).get("id");
-		//		
+		//
 		// CaseObjectSource flowSet = FluxSolver.getFlowSet(theCase);
-		//		
+		//
 		// DiaFluxCaseObject caseObject = (DiaFluxCaseObject)
 		// theCase.getCaseObject(flowSet);
-		//       
+		//
 		return true;
 	}
 
@@ -114,7 +114,7 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		FlowSet set = DiaFluxUtils.getFlowSet(theCase);
 
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) theCase.getCaseObject(set);
-		Collection<Path> pathes = caseObject.getPathes();
+		Collection<IPath> pathes = caseObject.getPathes();
 
 		StringBuilder builder = new StringBuilder();
 
@@ -125,21 +125,24 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		builder.append("<br/>");
 
 		int i = 0;
-		
-		for (Path path : pathes) {
-			
+
+		for (IPath path : pathes) {
+
 			Iterator<? extends Entry> it = path.iterator();
-			builder.append(++i + ". Path:<br/>");
-			
+			builder.append(++i + ". Path: " + path + "<br/>");
+
 			while (it.hasNext()) {
 				Entry entry = it.next();
+
 				builder.append(entry);
+				builder.append("  -  ");
+				builder.append(DiaFluxUtils.getNodeData(entry.getNode(), theCase));
 				builder.append("<br/>");
-				
+
 			}
 			builder.append("<br/>");
 			builder.append("<br/>");
-			
+
 		}
 
 
@@ -149,20 +152,20 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 	}
 
 	private String createPreviewWithHighlightedPath(Section section, Session session) {
-		
+
 		String preview = FlowchartUtils.extractPreview(section);
-		
+
 		if (session == null)
 			return preview;
-		
+
 		String flowID = AbstractXMLObjectType.getAttributeMapFor(section).get("fcid");
-		
+
 		CaseObjectSource flowSet = DiaFluxUtils.getFlowSet(session);
-		
+
 		DiaFluxCaseObject caseObject = (DiaFluxCaseObject) session.getCaseObject(flowSet);
-       
-        
-		for (Path path : caseObject.getPathes()) {
+
+
+		for (IPath path : caseObject.getPathes()) {
 
 			preview = highlightPath(preview, flowID, path, session);
 
@@ -171,20 +174,20 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 		return FlowchartUtils.createPreview(preview);
 	}
 
-	private String highlightPath(String preview, String flowID, Path path, Session session) {
+	private String highlightPath(String preview, String flowID, IPath path, Session session) {
 		// get all the nodes
 		String[] nodes = preview.split("<DIV class=\"Node\" id=\"");
 		String[] edges = preview.split("<DIV class=\"Rule\" id=\"");
 
 		Iterator<? extends Entry> it = path.iterator();
-		
+
 		while (it.hasNext()) {
-			
+
 			Entry pathEntry = it.next();
 
 			INode node = pathEntry.getNode();
 
-			//TODO 
+			//TODO
 			if (!node.getFlow().getId().equals(flowID)) return preview;
 
 			String nodeId = node.getID();
@@ -195,15 +198,15 @@ public class FlowchartTagHandler extends AbstractTagHandler {
 			}
 
 			INodeData nodeData = DiaFluxUtils.getNodeData(node, session);
-			
+
 			List<ISupport> supports = nodeData.getSupports();
 			for (ISupport support : supports) {
-				
+
 				if ((support instanceof EdgeSupport)) {
-					
+
 					IEdge edge = ((EdgeSupport) support).getEdge();
 					String edgeId = edge.getID();
-					
+
 					for (int i = 0; i < edges.length; i++) {
 						if (edges[i].contains(edgeId + "\"")) {
 							preview = colorEdge(edges[i], preview);

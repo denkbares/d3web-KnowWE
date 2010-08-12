@@ -56,7 +56,7 @@ public class RunTestcaseAction extends AbstractAction {
 		String topic = map.getTopic();
 		String headerLine = map.get("headerLine");
 		String currentLine = map.get("currentLine");
-		
+
 		String[] headerElements = headerLine.split(",.,");
 		String[] currentElements = currentLine.split(",.,");
 
@@ -67,37 +67,37 @@ public class RunTestcaseAction extends AbstractAction {
 			testcaseMap.put(headerElements[i], currentElements[i + 1]);
 		}
 
-		
-		
+		System.out.println(testcaseMap);
+
 		for (String questionName : testcaseMap.keySet()) {
-			
+
 			KnowledgeBaseManagement kbm = D3webModule.getKnowledgeRepresentationHandler(web).getKBM(topic);
 			String user = context.getWikiContext().getUsername();
 			Session session = D3webUtils.getSession(topic, user, web);
 			Blackboard blackboard = session.getBlackboard();
 
 			String valueString = testcaseMap.get(questionName);
-			
+
 			// Necessary for FindingSetEvent
 			Question question = kbm.findQuestion(questionName);
 			if (question == null) {
 				System.out.println("Could not find Question '" + questionName +"'.");
 				continue;
 			}
-			
+
 			//TODO
 			String namespace = "TODO";
 			Value value = kbm.findValue(question, valueString);
-			
-			
+
+
 			value = kbm.findValue(question, valueString);
-			
-			
-			
+
+
+
 			if (value == null) {
 				System.out.println("Could not set value '" + valueString +"' on Question '" + questionName +"'.");
 			}
-			
+
 			if (question instanceof QuestionMC && !value.equals(Unknown.getInstance())) {
 				Fact mcFact = blackboard.getValueFact(question);
 				if (mcFact != null && !mcFact.getValue().equals(Unknown.getInstance())) {
@@ -118,11 +118,11 @@ public class RunTestcaseAction extends AbstractAction {
 			EventManager.getInstance().fireEvent(
 					new FindingSetEvent(question, value, namespace),
 					web, user, null);
-			
-			
+
+
 		}
-		
-		
+
+
 	}
 
 }
