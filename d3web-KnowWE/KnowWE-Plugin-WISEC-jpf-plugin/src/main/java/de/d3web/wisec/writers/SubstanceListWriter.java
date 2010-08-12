@@ -60,7 +60,7 @@ public class SubstanceListWriter extends WISECWriter {
 					"%\n");
 
 			writer.write("\n __Source:__ ");
-			writer.write("[ " + model.getSourceListNameForID(sourceID) + " | "
+			writer.write("[ " + model.getSourceListNameForID(sourceID) + "|"
 						+ SourceListWriter.getWikiFilename(sourceID) + "]");
 		}
 		else {
@@ -75,17 +75,21 @@ public class SubstanceListWriter extends WISECWriter {
 	private void writeIdentificationHeader(Writer writer, SubstanceList list) throws IOException {
 		SourceList sourceList = model.getSourceListForID(list.info.get("Source_ID"));
 		StringBuffer buffy = new StringBuffer();
-		buffy.append("|| Source_ID   | " + getWikiedValueForAttribute("Source_ID", list) + "\n");
+		buffy.append("|| Source_ID   | " + getWikiedValueForAttribute("Source_ID", list)
+				+ "\n");
 		buffy.append("|| Source_Name | [" + sourceList.get("Name") + " | " +
 				SourceListWriter.getWikiFilename(sourceList.getId()) + "]\n");
 		buffy.append("|| List_ID     | " + getWikiedValueForAttribute("ID", list) + "\n");
-		buffy.append("|| List_Name   | " + getWikiedValueForAttribute("Name", list) + "\n");
+		buffy.append("|| List_Name   | " + getWikiedValueForAttribute("Name", list)
+				+ "\n");
 		buffy.append("|| Author      | " + sourceList.get("Author") + "\n");
 		buffy.append("|| Country     | " + sourceList.get("Country") + "\n");
 
-		buffy.append("|| Criteria_Code | " + getWikiedValueForAttribute("Criteria_Code", list)
+		buffy.append("|| Criteria_Code | "
+				+ getWikiedValueForAttribute("Criteria_Code", list)
 				+ "\n");
-		buffy.append("|| List_allocation | " + getWikiedValueForAttribute("List_allocation", list)
+		buffy.append("|| List_allocation | "
+				+ getWikiedValueForAttribute("List_allocation", list)
 				+ "\n");
 		buffy.append("|| Number_of_substances | "
 				+ getWikiedValueForAttribute("Number_of_substances", list) + "\n");
@@ -113,7 +117,8 @@ public class SubstanceListWriter extends WISECWriter {
 
 	private void writeBreadcrumb(Writer writer, SubstanceList list) throws IOException {
 		super.writeBreadcrumb(writer);
-		writer.write(" > [Index of Lists|" + SubstanceListsOverviewWriter.FILENAME + "] > "
+		writer.write(" > [Index of Lists|" + SubstanceListsOverviewWriter.FILENAME
+				+ "] > "
 				+ list.getName() + "\n\n");
 	}
 
@@ -160,9 +165,9 @@ public class SubstanceListWriter extends WISECWriter {
 						buffy.append("| A ");
 					}
 					else {
-						buffy.append("| [+ | dummy] ");
-					}					
-				} 
+						buffy.append("| [+|dummy] ");
+					}
+				}
 				else {
 					buffy.append("| ");
 					getCellValue(buffy, substance, header);
@@ -181,7 +186,6 @@ public class SubstanceListWriter extends WISECWriter {
 		writer.write(buffy.toString());
 	}
 
-
 	private void getCellValue(StringBuffer buffy, Substance substance, String header) {
 		String value = ConverterUtils.clean(substance.values.get(header));
 		if (header.equals(WISECExcelConverter.SUBSTANCE_IDENTIFIER)) {
@@ -199,7 +203,6 @@ public class SubstanceListWriter extends WISECWriter {
 		}
 	}
 
-
 	public void setFilePraefix(String praefix) {
 		FILE_PRAEFIX = praefix;
 	}
@@ -213,7 +216,8 @@ public class SubstanceListWriter extends WISECWriter {
 	}
 
 	public static String asWikiMarkup(SubstanceList list) {
-		return "[ " + list.getName() + " | " + SubstanceListWriter.getWikiFileNameFor(list.getId())
+		return "[ " + list.getName() + " | "
+				+ SubstanceListWriter.getWikiFileNameFor(list.getId())
 				+ "]";
 	}
 
