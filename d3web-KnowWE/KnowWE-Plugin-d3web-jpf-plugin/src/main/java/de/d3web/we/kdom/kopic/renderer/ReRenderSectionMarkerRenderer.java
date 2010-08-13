@@ -51,12 +51,15 @@ public class ReRenderSectionMarkerRenderer extends KnowWEDomRenderer {
 	@Override
 	public void render(KnowWEArticle article, Section sec,
 			KnowWEUserContext user, StringBuilder string) {
-		string.append(KnowWEUtils
-				.maskHTML("<span class=\"ReRenderSectionMarker\"" + " id=\""
-						+ sec.getID() + "\"" + " rel=\"{id:'" + sec.getID()
-						+ "'}\">"));
+		Boolean ajaxAction = user.getUrlParameterMap().containsKey("action");
+		if (!ajaxAction) {
+			string.append(KnowWEUtils
+					.maskHTML("<span class=\"ReRenderSectionMarker\"" + " id=\""
+							+ sec.getID() + "\"" + " rel=\"{id:'" + sec.getID()
+							+ "'}\">"));
+		}
 		renderer.render(article, sec, user, string);
-		string.append(KnowWEUtils.maskHTML("</span>"));
+		if (!ajaxAction) string.append(KnowWEUtils.maskHTML("</span>"));
 	}
 
 }
