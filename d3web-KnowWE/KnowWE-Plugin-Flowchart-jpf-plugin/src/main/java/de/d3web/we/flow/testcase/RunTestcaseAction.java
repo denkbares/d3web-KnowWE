@@ -90,12 +90,10 @@ public class RunTestcaseAction extends AbstractAction {
 			Value value = kbm.findValue(question, valueString);
 
 
-			value = kbm.findValue(question, valueString);
-
-
-
 			if (value == null) {
-				System.out.println("Could not set value '" + valueString +"' on Question '" + questionName +"'.");
+				System.out.println("Could not find value '" + valueString + "' on Question '"
+						+ questionName + "'.");
+				continue;
 			}
 
 			if (question instanceof QuestionMC && !value.equals(Unknown.getInstance())) {
