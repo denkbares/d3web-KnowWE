@@ -241,6 +241,9 @@ public class KnowWEArticleManager {
 		KnowWEEnvironment.getInstance().getIncludeManager(web)
 				.updateIncludesToArticle(art);
 
+		KnowWEEnvironment.getInstance().getNamespaceManager(web)
+				.updateNamespaceIncludes(art);
+
 		Logger.getLogger(this.getClass().getName()).log(
 				Level.FINE,
 				"<- Finished updating Includes to article '" + art.getTitle()

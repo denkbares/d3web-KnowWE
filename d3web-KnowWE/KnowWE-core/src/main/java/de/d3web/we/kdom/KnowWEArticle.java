@@ -111,18 +111,23 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		startTimeOverall = System.currentTimeMillis();
 		long startTime = startTimeOverall;
 
-		KnowWEEnvironment instance = KnowWEEnvironment.getInstance();
+		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
 		
-		KnowWEIncludeManager includeManager = instance.getIncludeManager(web);
-		
-		includeManager.addSectionizingArticle(title);
-
-		lastVersion = instance.getArticle(web, title);
+		lastVersion = env.getArticle(web, title);
 
 		this.fullParse = fullParse
 				|| lastVersion == null
 				|| ResourceBundle.getBundle("KnowWE_config").getString("incremental.fullparse")
 						.contains("true");
+
+		if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
+				this.sec);
+
+		// TODO: KnowWEIncludeManager should listen to the events instead of
+		// being referenced directly
+		KnowWEIncludeManager includeManager = env.getIncludeManager(web);
+
+		includeManager.addSectionizingArticle(title);
 
 		this.updateIncludesTo = updateIncludesTo;
 
@@ -151,7 +156,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 				activeIncludes);
 
 		// destroy no longer used knowledge and stuff from the last article
-		reviseLastArticleToDestroy();
+		if (!this.fullParse) reviseLastArticleToDestroy();
 
 		includeManager.removeSectionizingArticles(title);
 
@@ -162,9 +167,15 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 
 		startTime = System.currentTimeMillis();
 
-		if (fullParse) {
-			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null, this.sec);
-			// Semantic Core should listen to this event instead of being referenced directly
+		if (this.fullParse) {
+			// TODO: NamespaceManager should listen to the FullParseEvent
+			// instead of being referenced directly
+			env.getNamespaceManager(web).cleanForArticle(title);
+		}
+
+		if (this.fullParse) {
+			// TODO: Semantic Core should listen to the FullParseEvent instead
+			// of being referenced directly
 			SemanticCoreDelegator.getInstance().clearContext(this);
 			Logger.getLogger(this.getClass().getName()).log(
 					Level.FINE,
@@ -175,7 +186,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		
 		
 		// run initHooks at KnowledgeRepManager
-		instance.getKnowledgeRepresentationManager(web)
+		env.getKnowledgeRepresentationManager(web)
 				.initArticle(this);
 
 		Logger.getLogger(this.getClass().getName()).log(
@@ -186,7 +197,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 		startTime = System.currentTimeMillis();
 
 		// create default solution context as title name
-		if (instance != null) {
+		if (env != null) {
 			DefaultSubjectContext con = new DefaultSubjectContext();
 			con.setSubject(title);
 			ContextManager.getInstance().attachContext(sec, con);
@@ -501,7 +512,7 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	private void reviseCurrentArticleToCreate() {
-		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap = 
+		TreeMap<Priority, List<Section<? extends KnowWEObjectType>>> prioMap =
 				Priority.createPrioritySortedList(getAllNodesPostOrder());
 		
 		for (Priority priority:prioMap.descendingKeySet()) {
@@ -544,12 +555,18 @@ public class KnowWEArticle extends DefaultAbstractKnowWEObjectType {
 	}
 
 	public void setFullParse(boolean fullParse, SubtreeHandler<?> source) {
+		if (!this.fullParse && fullParse) {
+			EventManager.getInstance().fireEvent(new FullParseEvent(), web, null,
+					this.sec);
+		}
+		
 		if (fullParse) {
 			handlersUnableToDestroy.add(source.getClass().isAnonymousClass()
 					? source.getClass().getName().substring(
 							source.getClass().getName().lastIndexOf(".") + 1)
 					: source.getClass().getSimpleName());
 		}
+
 		this.fullParse = fullParse;
 	}
 

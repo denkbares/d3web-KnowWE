@@ -1,12 +1,17 @@
 package de.d3web.we.core.namespace;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
+import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.event.ArticleCreatedEvent;
+import de.d3web.we.event.EventManager;
 import de.d3web.we.kdom.KnowWEArticle;
 import de.d3web.we.kdom.Section;
 
@@ -14,9 +19,11 @@ public class KnowWENamespaceManager {
 
 	private final String web;
 
-	private final Map<String, TreeSet<Section<?>>> namespaceSectionsMap = new HashMap<String, TreeSet<Section<?>>>();
+	private final Map<String, LinkedList<Section<?>>> namespaceDefinitionsMap = new HashMap<String, LinkedList<Section<?>>>();
 
 	private final Map<String, HashSet<Section<? extends NamespaceInclude>>> namespaceIncludesMap = new HashMap<String, HashSet<Section<? extends NamespaceInclude>>>();
+
+	private final Set<String> changedNamespaces = new HashSet<String>();
 
 	public KnowWENamespaceManager(String web) {
 		this.web = web;
@@ -28,36 +35,62 @@ public class KnowWENamespaceManager {
 
 	public void registerNamespaceDefinition(Section<?> s) {
 		for (String namespace : s.getNamespaces()) {
-			TreeSet<Section<?>> namespaceList = namespaceSectionsMap.get(namespace);
+			if (namespace.equals(s.getTitle())) continue;
+			LinkedList<Section<?>> namespaceList = namespaceDefinitionsMap.get(namespace);
 			if (namespaceList == null) {
-				namespaceList = new TreeSet<Section<?>>();
-				namespaceSectionsMap.put(namespace, namespaceList);
+				namespaceList = new LinkedList<Section<?>>();
+				namespaceDefinitionsMap.put(namespace, namespaceList);
 			}
 			namespaceList.add(s);
+			changedNamespaces.add(namespace);
 		}
 	}
 	
 	public boolean unregisterNamespaceDefinition(Section<?> s) {
 		for (String namespace : s.getNamespaces()) {
-			Set<Section<?>> namespaceList = namespaceSectionsMap.get(namespace);
+			LinkedList<Section<?>> namespaceList = namespaceDefinitionsMap.get(namespace);
 			if (namespaceList != null) {
 				boolean removed = namespaceList.remove(s);
-				if (namespaceList.isEmpty()) namespaceSectionsMap.remove(namespace);
+				if (removed) changedNamespaces.add(namespace);
+				if (namespaceList.isEmpty()) namespaceDefinitionsMap.remove(namespace);
 				return removed;
 			}
 		}
 		return false;
 	}
 
-	public Set<Section<?>> getNamespaceDefinitions(String namespace) {
-		TreeSet<Section<?>> namespaceDefs = namespaceSectionsMap.get(namespace);
-		return namespaceDefs == null
-				? Collections.unmodifiableSet(new TreeSet<Section<?>>())
-				: Collections.unmodifiableSet(namespaceDefs);
+	public void cleanForArticle(String title) {
+		for (LinkedList<Section<?>> list : namespaceDefinitionsMap.values()) {
+			List<Section<?>> sectionsToRemove = new ArrayList<Section<?>>();
+			for (Section<?> sec : list) {
+				if (sec.getTitle().equals(title)) sectionsToRemove.add(sec);
+			}
+			list.removeAll(sectionsToRemove);
+		}
+		for (HashSet<Section<? extends NamespaceInclude>> set : namespaceIncludesMap.values()) {
+			List<Section<?>> sectionsToRemove = new ArrayList<Section<?>>();
+			for (Section<?> sec : set) {
+				if (sec.getTitle().equals(title)) sectionsToRemove.add(sec);
+			}
+			set.removeAll(sectionsToRemove);
+		}
+
+	}
+
+	public List<Section<?>> getNamespaceDefinitions(String namespace) {
+		LinkedList<Section<?>> namespaceDefs = namespaceDefinitionsMap.get(namespace);
+		if (namespaceDefs != null) {
+			Collections.sort(namespaceDefs);
+			return Collections.unmodifiableList(namespaceDefs);
+		}
+		else {
+			return Collections.unmodifiableList(new ArrayList<Section<?>>(0));
+		}
 	}
 
 	public void registerNamespaceInclude(KnowWEArticle article, Section<? extends NamespaceInclude> s) {
-		HashSet<Section<? extends NamespaceInclude>> namespaceIncludes = namespaceIncludesMap.get(article.getTitle());
+		HashSet<Section<? extends NamespaceInclude>> namespaceIncludes =
+				namespaceIncludesMap.get(article.getTitle());
 		if (namespaceIncludes == null) {
 			namespaceIncludes = new HashSet<Section<? extends NamespaceInclude>>(4);
 			namespaceIncludesMap.put(article.getTitle(), namespaceIncludes);
@@ -67,6 +100,7 @@ public class KnowWENamespaceManager {
 
 	public boolean unregisterNamespaceInclude(KnowWEArticle article, Section<? extends NamespaceInclude> s) {
 		Set<Section<? extends NamespaceInclude>> namespaceIncludes = namespaceIncludesMap.get(article.getTitle());
+
 		if (namespaceIncludes != null) {
 			boolean removed = namespaceIncludes.remove(s);
 			if (namespaceIncludes.isEmpty()) namespaceIncludesMap.remove(article.getTitle());
@@ -91,5 +125,35 @@ public class KnowWENamespaceManager {
 		}
 		return Collections.unmodifiableSet(includedNamespaces);
 	}
+
+	public void updateNamespaceIncludes(KnowWEArticle article) {
+		List<String> articlesToRevise = new ArrayList<String>();
+		
+		for (HashSet<Section<? extends NamespaceInclude>> includesSet : namespaceIncludesMap.values()) {
+			for (Section<? extends NamespaceInclude> nsInclude : includesSet) {
+				if (changedNamespaces.contains(nsInclude.get().getNamespaceToInclude(nsInclude))
+						&& !article.getTitle().equals(
+								nsInclude.get().getNamespaceToInclude(nsInclude))) {
+					articlesToRevise.add(nsInclude.getTitle());
+				}
+			}
+		}
+		
+		changedNamespaces.clear();
+
+		KnowWEEnvironment env = KnowWEEnvironment.getInstance();
+		for (String title : articlesToRevise) {
+			KnowWEArticle newArt = new KnowWEArticle(
+					env.getArticle(article.getWeb(), title).getSection().getOriginalText(), title,
+					env.getRootType(), web, article.getTitle(), false);
+
+			// fire 'article-created' event for the new article
+			EventManager.getInstance().fireEvent(ArticleCreatedEvent.getInstance(), web,
+					null, newArt.getSection());
+
+			env.getArticleManager(web).saveUpdatedArticle(newArt);
+		}
+	}
+
 
 }

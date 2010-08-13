@@ -65,15 +65,13 @@ public class CompileFlag extends DefaultMarkupType {
 		@Override
 		public Collection<KDOMReportMessage> create(KnowWEArticle article, Section<NamespaceIncludeType> s) {
 
-			article.setFullParse(true, this);
-
 			KnowWENamespaceManager nsMng = KnowWEEnvironment.getInstance().getNamespaceManager(
 					article.getWeb());
 			nsMng.registerNamespaceInclude(article, s);
 			
 			if (s.get().getNamespaceToInclude(s).equals(article.getTitle())) return null;
 
-			Set<Section<?>> namespaceDefinitions = nsMng.getNamespaceDefinitions(s.getOriginalText().trim());
+			List<Section<?>> namespaceDefinitions = nsMng.getNamespaceDefinitions(s.getOriginalText().trim());
 
 			KnowWEUtils.storeSectionInfo(article, s, NAMESPACEDEFS_SNAPSHOT_KEY,
 					namespaceDefinitions);
@@ -114,10 +112,6 @@ public class CompileFlag extends DefaultMarkupType {
 			return null;
 		}
 
-		@Override
-		public boolean needsToDestroy(KnowWEArticle article, Section<NamespaceIncludeType> s) {
-			return true;
-		}
 
 		@Override
 		@SuppressWarnings("unchecked")
@@ -126,10 +120,10 @@ public class CompileFlag extends DefaultMarkupType {
 			if (!article.isFullParse()
 					|| !s.get().getNamespaceToInclude(s).equals(article.getTitle())) {
 
-				Set<Section<?>> namespaceDefinitions = KnowWEEnvironment.getInstance().getNamespaceManager(
+				List<Section<?>> namespaceDefinitions = KnowWEEnvironment.getInstance().getNamespaceManager(
 						article.getWeb()).getNamespaceDefinitions(s.getOriginalText().trim());
 
-				Set<Section<?>> storedNamespaceDefinitions = (Set<Section<?>>) KnowWEUtils.getObjectFromLastVersion(
+				List<Section<?>> storedNamespaceDefinitions = (List<Section<?>>) KnowWEUtils.getObjectFromLastVersion(
 						article, s, NAMESPACEDEFS_SNAPSHOT_KEY);
 
 				Set<Section<?>> lastNamespaceDefinitions;

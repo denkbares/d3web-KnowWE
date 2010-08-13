@@ -31,7 +31,7 @@ import de.d3web.we.kdom.KnowWEArticle;
  * 
  */
 public interface KnowledgeRepresentationHandler {
-	
+
 	void initArticle(KnowWEArticle art);
 	
 	void finishArticle(KnowWEArticle art);

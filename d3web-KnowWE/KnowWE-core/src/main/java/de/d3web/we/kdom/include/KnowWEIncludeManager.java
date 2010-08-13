@@ -201,7 +201,8 @@ public class KnowWEIncludeManager {
 		if (matchingIDSection != null) {
 			targets.add(matchingIDSection);
 			
-		}  else if (!address.isWildcardSectionTarget() 
+		}
+		else if (!address.isWildcardSectionTarget()
 				&& (matchingObjectTypeNameSections.size() > 1 || matchingIdEndSections.size() > 1)) {
 			targets.add(new IncludeErrorSection("Error: Include '"
 					+ address.getOriginalAddress() + "' is ambiguous. Try IDs.", 
@@ -240,7 +241,7 @@ public class KnowWEIncludeManager {
 						= new HashSet<Section<? extends KnowWEObjectType>>(children);
 
 					List<Section<? extends KnowWEObjectType>> potentialDuplicates =
-						new ArrayList<Section<? extends KnowWEObjectType>>();
+							new ArrayList<Section<? extends KnowWEObjectType>>();
 				
 					for (Section<Include> inc:includeSec.getArticle().getIncludeSections()) {
 						if (inc != includeSec) {
@@ -307,7 +308,8 @@ public class KnowWEIncludeManager {
 	 */
 	public void updateIncludesToArticle(KnowWEArticle article) {
 		Set<String> reviseArticles = new HashSet<String>();
-		Set<Section<Include>> includes = new HashSet<Section<Include>>(getIncludingSectionsForArticle(article.getTitle()));
+		Set<Section<Include>> includes = new HashSet<Section<Include>>(
+				getIncludingSectionsForArticle(article.getTitle()));
 		for (Section<Include> inc:includes) {
 			// check if the target of the Include Section has changed
 			List<Section<?>> targets = findTargets(article, inc);
@@ -386,8 +388,8 @@ public class KnowWEIncludeManager {
 			updatingArticle = article.getTitle();
 		}
 		for (String title : reviseArticles) {
-			KnowWEArticle newArt = new KnowWEArticle(env.getArticle(article.getWeb(), title)
-					.getSection().getOriginalText(), title, 
+			KnowWEArticle newArt = new KnowWEArticle(
+					env.getArticle(article.getWeb(), title).getSection().getOriginalText(), title,
 					env.getRootType(), web, updatingArticle, false);
 
 			// fire 'article-created' event for the new article
@@ -561,8 +563,8 @@ public class KnowWEIncludeManager {
 			// also delete the Include from the set of Includes of
 			// the target article
 			if (Include.getIncludeAddress(inc) != null) {
-				getIncludingSectionsForArticle(Include.getIncludeAddress(inc).getTargetArticle()).remove(
-						inc);
+				getIncludingSectionsForArticle(
+						Include.getIncludeAddress(inc).getTargetArticle()).remove(inc);
 			}
 		}
 

@@ -46,9 +46,8 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	private boolean isMatchingNamespace(KnowWEArticle article, Section<T> s) {
 		boolean active = false;
 		if (active) {
-			Set<String> namespaceIncludes =
-					KnowWEEnvironment.getInstance().getNamespaceManager(
-							article.getWeb()).getIncludedNamespaces(article);
+			Set<String> namespaceIncludes = KnowWEEnvironment.getInstance().getNamespaceManager(
+					article.getWeb()).getIncludedNamespaces(article);
 			Set<String> namespaces = s.getNamespaces();
 
 			for (String ns : namespaces) {
@@ -75,10 +74,9 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	@Override
 	public boolean needsToCreate(KnowWEArticle article, Section<T> s) {
 		return isMatchingNamespace(article, s)
-				&& (super.needsToCreate(article, s)
-						|| (!(s.get() instanceof KnowWETermMarker)
-								&& KnowWEUtils.getTerminologyHandler(article.getWeb())
-										.areTermDefinitionsModifiedFor(article)));
+				&& (super.needsToCreate(article, s) || (!(s.get() instanceof KnowWETermMarker)
+						&& KnowWEUtils.getTerminologyHandler(
+						article.getWeb()).areTermDefinitionsModifiedFor(article)));
 	}
 
 	/*
@@ -93,10 +91,9 @@ public abstract class D3webSubtreeHandler<T extends KnowWEObjectType> extends Su
 	@Override
 	public boolean needsToDestroy(KnowWEArticle article, Section<T> s) {
 		return isMatchingNamespace(article, s)
-				&& (super.needsToDestroy(article, s)
-						|| (!(s.get() instanceof KnowWETermMarker)
-								&& KnowWEUtils.getTerminologyHandler(article.getWeb())
-										.areTermDefinitionsModifiedFor(article)));
+				&& (super.needsToDestroy(article, s) || (!(s.get() instanceof KnowWETermMarker)
+				&& KnowWEUtils.getTerminologyHandler(article.getWeb()).areTermDefinitionsModifiedFor(
+								article)));
 	}
 
 	@Override

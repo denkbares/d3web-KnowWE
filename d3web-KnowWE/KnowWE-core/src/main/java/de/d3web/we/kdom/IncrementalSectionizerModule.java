@@ -52,10 +52,10 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 			// find all Sections with same path of ObjectTypes
 			// in the last version
 			Map<String, List<Section<?>>> sectionsOfSameType = article.getLastVersionOfArticle()
-						.findChildrenOfTypeMap(path);
+					.findChildrenOfTypeMap(path);
 
-			List<Section<?>> matches = sectionsOfSameType.remove(secText
-					.substring(result.getStart(), result.getEnd()));
+			List<Section<?>> matches = sectionsOfSameType.remove(secText.substring(
+					result.getStart(), result.getEnd()));
 
 			Section<?> match = null;
 			if (matches != null && matches.size() == 1) {
@@ -112,10 +112,9 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 								(Section<Include>) node);
 					}
 
-					SectionStore lastStore = KnowWEEnvironment.getInstance()
-							.getArticleManager(father.getWeb()).getTypeStore()
-							.getLastStoredObjects(father.getTitle(),
-									node.getID());
+					SectionStore lastStore = KnowWEEnvironment.getInstance().getArticleManager(
+							father.getWeb()).getTypeStore().getLastStoredObjects(father.getTitle(),
+							node.getID());
 
 					// don't do the following if the node is
 					// included

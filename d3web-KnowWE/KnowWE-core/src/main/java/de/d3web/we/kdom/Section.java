@@ -625,7 +625,7 @@ public class Section<T extends KnowWEObjectType> implements Visitable, Comparabl
 			namespaces = new HashSet<String>(4);
 			namespaces.add(getTitle());
 		}
-		namespaces.add(namespace.toLowerCase());
+		namespaces.add(namespace);
 	}
 
 	public boolean removeNamespace(String namespace) {

@@ -41,7 +41,7 @@ public class DefaultMarkupSubtreeHandler extends SubtreeHandler {
 
 		// TODO: refactor this to somewhere else
 		Annotation namespaceAnno = this.markup.getAnnotation("namespace");
-		if (namespaceAnno != null) {
+		if (namespaceAnno != null && markupSection.getTitle().equals(article.getTitle())) {
 			Section<? extends AnnotationType> annotationSection =
 					DefaultMarkupType.getAnnotationSection(markupSection, namespaceAnno.getName());
 			if (annotationSection != null) {
