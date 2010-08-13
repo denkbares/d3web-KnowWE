@@ -1,24 +1,24 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
-package de.d3web.we.action;
+package de.d3web.we.solutionpanel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,12 +26,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.utilities.ISetMap;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
+import de.d3web.we.action.KnowWERenderUtils;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.SolutionState;
@@ -41,7 +43,6 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.taghandler.SolutionStateViewHandler;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 import de.d3web.we.utils.KnowWEUtils;
@@ -55,6 +56,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 	protected Comparator<Information> infComp = new InferenceComparator();
 
 	private class DerivationComparator implements Comparator<Term> {
+
 		private final ISetMap<Term, Information> assumptionMap;
 		private final Broker broker;
 
@@ -104,12 +106,15 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				int comp = i2 - i1;
 				if (comp > 0) {
 					return 1;
-				} else if (comp < 0) {
+				}
+				else if (comp < 0) {
 					return -1;
-				} else {
+				}
+				else {
 					return o1.compareTo(o2);
 				}
-			} else {
+			}
+			else {
 				return -res;
 			}
 
@@ -125,10 +130,8 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 	public class InferenceComparator implements Comparator<Information> {
 
 		public int compare(Information o1, Information o2) {
-			if (o1 == null)
-				return -1;
-			if (o2 == null)
-				return +1;
+			if (o1 == null) return -1;
+			if (o2 == null) return +1;
 
 			if (o1.getInformationType().equals(InformationType.XCLInferenceInformation)
 					&& o2.getInformationType().equals(InformationType.XCLInferenceInformation)) {
@@ -138,26 +141,22 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 
 				// Try to sort by confidence
 				if (confidence1 > confidence2) return 1;
-				else if (confidence1 < confidence2)
-					return -1;
+				else if (confidence1 < confidence2) return -1;
 				else { // confidence1 == confidence2 -> we sort by support
 
 					double support1 = (Double) o1.getValues().get(1);
 					double support2 = (Double) o2.getValues().get(1);
 
 					if (support1 > support2) return 1;
-					else if (support1 < support2)
-						return -1;
+					else if (support1 < support2) return -1;
 
 					return 0;
 				}
 			}
 
-			if (!o1.getInformationType().equals(InformationType.XCLInferenceInformation))
-				return -1;
+			if (!o1.getInformationType().equals(InformationType.XCLInferenceInformation)) return -1;
 
-			if (!o2.getInformationType().equals(InformationType.XCLInferenceInformation))
-				return 1;
+			if (!o2.getInformationType().equals(InformationType.XCLInferenceInformation)) return 1;
 
 			return 0;
 		}
@@ -178,7 +177,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			List<Term> list, ISetMap<Term, Information> assumptionMap, int index, String topic) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<ul>");
-		for (Term term : list) {		
+		for (Term term : list) {
 			sb.append("<li>");
 			String exactPrefix = KnowWEUtils.replaceUmlaut(((String) term
 					.getInfo(TermInfoType.TERM_NAME)))
@@ -200,17 +199,17 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 				if (index > 0
 						&& !namespace.substring(0, info.getNamespace().indexOf("..")).equals(
 								index == 1 ? topic
-						: SolutionStateViewHandler.getArticleNames(web, user).get(index - 2)))
-					continue;
+										: SolutionPanelTagHandler.getArticleNames(web, user).get(
+												index - 2))) continue;
 				String url = "encoding solution failed";
-						url = "KnowWE.jsp?renderer=XCLExplanation&KWikiTerm="
+				url = "KnowWE.jsp?renderer=XCLExplanation&KWikiTerm="
 								+ info.getObjectID()
 								+ "&KWikisessionid=" + namespace + "&KWikiWeb=" + web
 								+ "&KWikiUser=" + user;
 
-			
-				sb.append("<a href=\"#\" class=\"sstate-show-explanation\"" 
-						+ " rel=\"{term : '"+info.getObjectID()+"', session : '"+namespace+"', web : '"+web+"', user: '"+user+"'}\" >"
+				sb.append("<a href=\"#\" class=\"sstate-show-explanation\""
+						+ " rel=\"{term : '" + info.getObjectID() + "', session : '" + namespace
+						+ "', web : '" + web + "', user: '" + user + "'}\" >"
 						+ getInferenceInfo(b, term, namespace) + "</a>");
 			}
 
@@ -231,25 +230,29 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			// inner.append(KnowWERenderUtils.getDialogLinks(user, web, term,
 			// iconURL, "dps", true, true));
 
-			//sb.append(KnowWERenderUtils.getButtomLink(term, exactPrefix, inner)); /* not used???*/
+			// sb.append(KnowWERenderUtils.getButtomLink(term, exactPrefix,
+			// inner)); /* not used???*/
 			sb.append("</li>");
 		}
 		sb.append("</ul>");
 		return sb;
 	}
 
-//	private String findSolutionID(String solution, String topicName, String web) {
-//		D3webKnowledgeService b = D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web, topicName);
-//		Diagnosis d = b.getBase().searchDiagnosis(solution);
-//		List<Diagnosis> list = b.getBase().getDiagnoses();
-//		for (Diagnosis diagnosis : list) {
-//			if(diagnosis.getText().equals(solution)) {
-//				return diagnosis.getId();
-//			}
-//		}
-//		
-//		return null;
-//	}
+	// private String findSolutionID(String solution, String topicName, String
+	// web) {
+	// D3webKnowledgeService b =
+	// D3webModule.getInstance().getAD3webKnowledgeServiceInTopic(web,
+	// topicName);
+	// Diagnosis d = b.getBase().searchDiagnosis(solution);
+	// List<Diagnosis> list = b.getBase().getDiagnoses();
+	// for (Diagnosis diagnosis : list) {
+	// if(diagnosis.getText().equals(solution)) {
+	// return diagnosis.getId();
+	// }
+	// }
+	//
+	// return null;
+	// }
 
 	private String findTopicNameForSolution(String solution, String web) {
 		Collection<KnowledgeService> services = D3webModule.getKnowledgeServices(web);
@@ -274,15 +277,15 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 		Comparator<Information> comp = new InferenceComparator();
 		Collection<Information> orginal = b.getSession().getBlackboard()
 				.getInferenceInformation(term);
-		
-		if(term == null) {
+
+		if (term == null) {
 			return sb;
-			//return sb.append("term is null");
+			// return sb.append("term is null");
 		}
-		
-		if (orginal == null)
-			return sb;
-			//return sb.append("No Info found for Term:"+term.getInfo(TermInfoType.TERM_NAME));
+
+		if (orginal == null) return sb;
+		// return
+		// sb.append("No Info found for Term:"+term.getInfo(TermInfoType.TERM_NAME));
 		List<Information> infos = new ArrayList<Information>(orginal);
 
 		Collections.sort(infos, comp);
@@ -422,9 +425,9 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 
 	@Override
 	public String perform(KnowWEParameterMap parameterMap) {
-		
+
 		rb = D3webModule.getKwikiBundle_d3web(parameterMap.getRequest());
-		
+
 		String web = parameterMap.get(KnowWEAttributes.WEB);
 		String user = parameterMap.get(KnowWEAttributes.USER);
 		String index = parameterMap.get("ArticleSelection");
@@ -433,7 +436,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			index = "0";
 		}
 		int i = Integer.parseInt(index);
-		SolutionStateViewHandler.setSelected(web, user, i);
+		SolutionPanelTagHandler.setSelected(web, user, i);
 		return renderSolutionStates(web, user, topic, i);
 	}
 
@@ -452,7 +455,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 		List<Term> conflict = new ArrayList<Term>();
 		for (Entry<Term, SolutionState> entry : globalSolutions.entrySet()) {
 			Term term = entry.getKey();
-			
+
 			boolean skip = true;
 			if (index > 0) {
 				for (Information info : assumptionMap.get(term)) {
@@ -460,7 +463,7 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 							.equals(
 									index == 1
 											? topic
-											: SolutionStateViewHandler.getArticleNames(web, user).get(
+											: SolutionPanelTagHandler.getArticleNames(web, user).get(
 													index - 2))) {
 						skip = false;
 						continue;
@@ -470,16 +473,19 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 					continue;
 				}
 			}
-			
+
 			SolutionState solutionState = entry.getValue();
 			if (solutionState.equals(SolutionState.ESTABLISHED)) {
 				established.add(term);
-			} else if (solutionState
+			}
+			else if (solutionState
 					.equals(SolutionState.SUGGESTED)) {
 				suggested.add(term);
-			} else if (solutionState.equals(SolutionState.EXCLUDED)) {
+			}
+			else if (solutionState.equals(SolutionState.EXCLUDED)) {
 				excluded.add(term);
-			} else if (solutionState.equals(SolutionState.CONFLICT)) {
+			}
+			else if (solutionState.equals(SolutionState.CONFLICT)) {
 				conflict.add(term);
 			}
 		}
@@ -523,15 +529,17 @@ public class DPSSolutionsAction extends DeprecatedAbstractKnowWEAction {
 			painted = true;
 		}
 		/*
-		 * if (!excluded.isEmpty()) { if(painted) { sb.append("<hr/>"); painted =
-		 * false; } sb.append("<div>"); sb.append("<a
-		 * href=\"/bin/view/"+web+"/Excluded\"><b>"+rb.getString("KnowWE.solution.excludedSolutions")+":</b>");
+		 * if (!excluded.isEmpty()) { if(painted) { sb.append("<hr/>"); painted
+		 * = false; } sb.append("<div>"); sb.append("<a
+		 * href=\"/bin/view/"+web+"/Excluded\"><b>"
+		 * +rb.getString("KnowWE.solution.excludedSolutions")+":</b>");
 		 * sb.append("</a>"); sb.append(getSolutionLinkList(model, excluded,
 		 * assumptionMap)); sb.append("</div>"); painted = true; }
 		 * 
-		 * if (!conflict.isEmpty()) { if(painted) { sb.append("<hr/>"); painted =
-		 * false; } sb.append("<div>"); sb.append("<a
-		 * href=\"/bin/view/"+web+"/Conflict\"><b>"+rb.getString("KnowWE.solution.conflictSolutions")+":</b>");
+		 * if (!conflict.isEmpty()) { if(painted) { sb.append("<hr/>"); painted
+		 * = false; } sb.append("<div>"); sb.append("<a
+		 * href=\"/bin/view/"+web+"/Conflict\"><b>"
+		 * +rb.getString("KnowWE.solution.conflictSolutions")+":</b>");
 		 * sb.append("</a>"); sb.append(getSolutionLinkList(model, conflict,
 		 * assumptionMap)); sb.append("</div>"); painted = true; }
 		 */

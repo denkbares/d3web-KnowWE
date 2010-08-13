@@ -281,18 +281,6 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="SolutionStateViewHandler">
-		<parameter id="class"
-			value="de.d3web.we.taghandler.SolutionStateViewHandler" />
-		<parameter id="name" value="SolutionStateViewHandler" />
-		<parameter id="description" value="TagHandler SolutionStateViewHandler" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="script" value="KnowWE-plugin-d3web.js" />
-		<parameter id="script" value="silveripe.0.2.js" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="QuestionnaireValuesViewHandler">
 		<parameter id="class"
 			value="de.d3web.we.taghandler.QuestionnaireValuesViewHandler" />
