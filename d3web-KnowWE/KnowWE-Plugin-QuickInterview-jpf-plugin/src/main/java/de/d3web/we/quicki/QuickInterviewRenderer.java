@@ -106,7 +106,7 @@ public class QuickInterviewRenderer {
 	 */
 	private static String getInterviewPluginHeader() {
 		StringBuffer html = new StringBuffer();
-		html.append("<h3 onclick='KNOWWE.plugin.quicki.test()'>");
+		html.append("<h3>");
 		html.append("Quick Interview");
 		html.append("</h3>");
 		return html.toString();
@@ -188,8 +188,7 @@ public class QuickInterviewRenderer {
 	 */
 	private static String getQContainerTableHeader(String displayClass, QContainer container) {
 		StringBuffer html = new StringBuffer();
-		html.append("<div id='containerHeader_" + container.getId()
-				+ "' class='containerHeader' onclick='test()'>");
+		html.append("<div id='" + container.getId() + "' class='containerHeader'>");
 		html.append(" " + container.getName() + ": ");
 		html.append("</div>");
 		html.append("<table id='containerTable_" + container.getId() + "' " + displayClass + ">");

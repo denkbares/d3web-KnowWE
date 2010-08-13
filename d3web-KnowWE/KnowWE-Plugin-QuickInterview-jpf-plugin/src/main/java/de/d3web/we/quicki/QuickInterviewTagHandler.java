@@ -57,11 +57,4 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 
 		return iv;
 	}
-
-	// @Override
-	// public String render(String topic, KnowWEUserContext user, Map<String,
-	// String> values, String web) {
-	// return
-	// "here soon the new quick interview will be created and displayed :-)";
-	// }
 }
