@@ -19,6 +19,7 @@
 package de.d3web.we.flow.testcase;
 
 import de.d3web.we.core.KnowWEEnvironment;
+import de.d3web.we.kdom.KnowWEObjectType;
 import de.d3web.we.kdom.Section;
 import de.d3web.we.kdom.table.TableCellContentRenderer;
 import de.d3web.we.kdom.table.TableUtils;
@@ -40,15 +41,28 @@ public class TestcaseTableColHeaderCellContentRenderer extends TableCellContentR
 
 		String sectionID = sec.getID();
 		StringBuilder html = new StringBuilder();
+		boolean validTimeStamp = false;
+
+		for (KnowWEObjectType child : sec.getObjectType().getAllowedChildrenTypes()) {
+			if (child instanceof TimeStampType) {
+				if (((TimeStampType) child).isValid(sectionText)) {
+					validTimeStamp = true;
+					long l = ((TimeStampType) child).getTimeInMillis(sectionText);
+				}
+			}
+		}
 
 		boolean sort = TableUtils.sortTest(sec);
 
 		if (sort) {
 			html.append("<th class=\"sort\">");
 		}
-		else {
+		else if (validTimeStamp) {
 			html.append("<td><div class=\"startTestcase\" onclick=\"return Testcase.runTestcase(this)\"></div>");
 
+		}
+		else {
+			html.append("<td class=\"invalidTimeStamp\"><div class=\"invalidTimeStamp\">Ungültiger Timestamp</div>");
 		}
 
 		generateContent(sectionText, sec, user, sectionID, html);

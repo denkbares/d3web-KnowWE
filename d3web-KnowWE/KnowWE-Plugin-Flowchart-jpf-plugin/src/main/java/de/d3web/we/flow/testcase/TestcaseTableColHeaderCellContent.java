@@ -30,7 +30,7 @@ public class TestcaseTableColHeaderCellContent extends TableCellContent {
 	@Override
 	protected void init() {
 		setCustomRenderer(new TestcaseTableColHeaderCellContentRenderer());
-
+		childrenTypes.add(new TimeStampType());
 	}
 
 	@Override

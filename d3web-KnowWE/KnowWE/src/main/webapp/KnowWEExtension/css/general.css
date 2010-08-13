@@ -892,10 +892,31 @@ div.startTestcase{
 	float: left;
 	margin-right: 5px;
 	background-image: url(../images/arrow_right.png);
+	cursor: pointer;
 }
 
 td.testcaseExecuted{
 	background-color: #CDFECD ;
+}
+
+td.invalidTimeStamp{
+	background-color: red ;
+}
+
+td.invalidTimeStamp div.invalidTimeStamp{
+	display: none;
+}
+
+td.invalidTimeStamp:hover div.invalidTimeStamp {
+	margin-left: -10px;
+	margin-top: -5px;
+	height: 20px;
+	width: 160px;
+	background-color: red;
+	display: block;
+	position: absolute;
+	border: solid;
+	text-align: center;
 }
 
 /* ################################################## */
