@@ -37,7 +37,7 @@ import de.d3web.we.kdom.subtreeHandler.SubtreeHandler;
 import de.d3web.we.wikiConnector.ConnectorAttachment;
 
 /**
- * Stores a Attachment as a resource in the knowledgebase.
+ * Stores an Attachment as a resource in the knowledgebase.
  * 
  * @author Johannes Dienst
  *
