@@ -20,8 +20,6 @@ package de.knowwe.plugin.test;
 
 import java.io.IOException;
 
-import de.d3web.plugin.test.InitPluginManager;
-import de.knowwe.plugin.Plugins;
 import junit.framework.TestCase;
 
 /**
