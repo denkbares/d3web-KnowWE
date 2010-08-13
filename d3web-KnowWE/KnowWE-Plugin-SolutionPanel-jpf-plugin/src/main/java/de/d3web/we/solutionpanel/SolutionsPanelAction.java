@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- *                    Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 3 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package de.d3web.we.solutionpanel;
@@ -28,12 +28,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import de.d3web.core.inference.KnowledgeSlice;
-import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.Rating.State;
+import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.utilities.ISetMap;
@@ -48,7 +48,6 @@ import de.d3web.we.core.broker.Broker;
 import de.d3web.we.core.knowledgeService.D3webKnowledgeService;
 import de.d3web.we.core.knowledgeService.KnowledgeService;
 import de.d3web.we.d3webModule.D3webModule;
-import de.d3web.we.taghandler.SolutionStateViewHandler;
 import de.d3web.we.terminology.term.Term;
 import de.d3web.we.terminology.term.TermInfoType;
 import de.d3web.we.utils.D3webUtils;
@@ -88,7 +87,7 @@ public class SolutionsPanelAction extends AbstractAction {
 			index = "0";
 		}
 		int i = Integer.parseInt(index);
-		SolutionStateViewHandler.setSelected(web, user, i);
+		SolutionPanelTagHandler.setSelected(web, user, i);
 
 		if (configRB.getString("dps.active").equals("true")) {
 			context.getWriter().write(renderSolutionStates(web, user, topic, i));
@@ -122,10 +121,10 @@ public class SolutionsPanelAction extends AbstractAction {
 
 		}
 		else {
-			sessions.add(D3webUtils.getSession(SolutionStateViewHandler
+			sessions.add(D3webUtils.getSession(SolutionPanelTagHandler
 					.getArticleNames(web, user).get(index - 2), user, web));
 		}
-		
+
 		for (Session session : sessions) {
 			established.addAll(session.getBlackboard().getSolutions(State.ESTABLISHED));
 			suggested.addAll(session.getBlackboard().getSolutions(State.SUGGESTED));
@@ -162,9 +161,6 @@ public class SolutionsPanelAction extends AbstractAction {
 
 		return sb.toString();
 	}
-
-
-
 
 	private StringBuffer getSolutionLinkListNonDPS(String user, String web, Collection<Session> sessions,
 			State state) {
@@ -340,7 +336,6 @@ public class SolutionsPanelAction extends AbstractAction {
 
 	}
 
-
 	private StringBuffer getSolutionLinkList(String user, String web, Broker b,
 			List<Term> list, ISetMap<Term, Information> assumptionMap) {
 		StringBuffer sb = new StringBuffer();
@@ -412,7 +407,7 @@ public class SolutionsPanelAction extends AbstractAction {
 	// return diagnosis.getId();
 	// }
 	// }
-	//		
+	//
 	// return null;
 	// }
 
@@ -608,7 +603,7 @@ public class SolutionsPanelAction extends AbstractAction {
 							.equals(
 									index == 1
 											? topic
-											: SolutionStateViewHandler.getArticleNames(web, user).get(
+											: SolutionPanelTagHandler.getArticleNames(web, user).get(
 													index - 2))) {
 						skip = false;
 						continue;
