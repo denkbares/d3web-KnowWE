@@ -1,15 +1,58 @@
-KNOWWE.plugin.solutionstate = function(){
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+/**
+ * The KNOWWE global namespace object. If KNOWWE is already defined, the
+ * existing KNOWWE object will not be overwritten so that defined namespaces
+ * are preserved.
+ */
+if (typeof KNOWWE == "undefined" || !KNOWWE) {
+    var KNOWWE = {};
+}
+
+/**
+ * The KNOWWE.plugin global namespace object. If KNOWWE.plugin is already defined, the
+ * existing KNOWWE.plugin object will not be overwritten so that defined namespaces
+ * are preserved.
+ */
+if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
+	    KNOWWE.plugin = function(){
+	         return {  }
+	    }
+}
+
+/**
+ * The KNOWWE.plugin.solutionpanel global namespace object. If KNOWWE.plugin.solutionpanel is already defined, the
+ * existing KNOWWE.plugin.solutionpanel object will not be overwritten so that defined namespaces
+ * are preserved.
+ */
+KNOWWE.plugin.solutionpanel = function(){
     return {
     }
 }();
 
-
-
 /**
- * Namespace: KNOWWE.plugin.solutionstate
- * The solutionstate namespace.
+ * Namespace: KNOWWE.plugin.solutionpanel
+ * The solutionpanel namespace.
  */
-KNOWWE.plugin.solutionstate = function(){
+KNOWWE.plugin.solutionpanel = function(){
     return {
         /**
          * Function: init
@@ -17,8 +60,7 @@ KNOWWE.plugin.solutionstate = function(){
          * correct action.
          */
         init : function(){
-        	alert("solution panel");
-            var el = _KS('#sstate-update');
+        	var el = _KS('#sstate-update');
             if( el ){
                 _KE.add('click', el, this.updateSolutionstate);
             }
@@ -39,7 +81,7 @@ KNOWWE.plugin.solutionstate = function(){
          * Updates the solutions in the solutionstate panel.
          */
         updateSolutionstate : function(){
-            if(!_KS('#sstate-result')) return;
+            if(!_KS('#solutionPanelResults')) return;
             
             var params = {
                 action : 'SolutionsPanelAction',
@@ -54,7 +96,7 @@ KNOWWE.plugin.solutionstate = function(){
                 })()
             }
 
-            var id = 'sstate-result';
+            var id = 'solutionPanelResults';
             var options = {
                 url : KNOWWE.core.util.getURL( params ),
                 response : {
@@ -63,12 +105,12 @@ KNOWWE.plugin.solutionstate = function(){
                     fn : function(){
                         if(_KS('.sstate-show-explanation').length != 0){
                             _KS('.sstate-show-explanation').each(function(element){
-                                _KE.add('click', element, KNOWWE.plugin.solutionstate.showExplanation);
+                                _KE.add('click', element, KNOWWE.plugin.solutionpanel.showExplanation);
                             });
                         }
                         if(_KS('.show-solutions-log').length != 0){
                             _KS('.show-solutions-log').each(function(element){
-                                _KE.add('click', element, KNOWWE.plugin.solutionstate.showSolutionLog);
+                                _KE.add('click', element, KNOWWE.plugin.solutionpanel.showSolutionLog);
                             });
                         }
                     }
@@ -85,7 +127,7 @@ KNOWWE.plugin.solutionstate = function(){
                 action : 'ClearDPSSessionAction',
                 KWikiWeb : 'default_web'
             }
-            var id = 'sstate-result';
+            var id = 'solutionPanelResults';
             var options = {
                 url : KNOWWE.core.util.getURL( params ),
                 response : {
@@ -93,7 +135,7 @@ KNOWWE.plugin.solutionstate = function(){
                     ids : [ id ]
                 }
             }
-            if( _KS('#sstate-result') ) {
+            if( _KS('#solutionPanelResults') ) {
                 new _KA( options ).send();
                 KNOWWE.core.rerendercontent.update();
                 KNOWWE.plugin.d3web.rerenderquestionsheet.update();
@@ -171,3 +213,14 @@ KNOWWE.plugin.solutionstate = function(){
         }        
     }   
 }();
+
+/**
+ * Initializes the required JS functionality when DOM is readily loaded
+ */
+(function init(){ 
+    if( KNOWWE.helper.loadCheck( ['Wiki.jsp'] )){
+        window.addEvent( 'domready', function(){
+        	KNOWWE.plugin.solutionpanel.init();
+        });
+    }
+}());

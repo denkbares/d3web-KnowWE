@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package de.d3web.we.action;
+package de.d3web.we.solutionpanel;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -37,6 +37,9 @@ import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.manage.KnowledgeBaseManagement;
 import de.d3web.core.session.Session;
 import de.d3web.utilities.ISetMap;
+import de.d3web.we.action.AbstractAction;
+import de.d3web.we.action.ActionContext;
+import de.d3web.we.action.KnowWERenderUtils;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationType;
 import de.d3web.we.basic.SolutionState;

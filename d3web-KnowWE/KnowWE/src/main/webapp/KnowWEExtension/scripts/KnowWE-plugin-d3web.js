@@ -813,8 +813,6 @@ KNOWWE.plugin.d3web.dialog = function(){
     }
 }();
 
-
-
 /**
  * Namespace: KNOWWE.plugin.d3web.adminconsole
  * The KNOWWE plugin admin console.
@@ -1147,8 +1145,6 @@ KNOWWE.plugin.d3web.semantic = function(){
         }
     }
 }();
-
-
 /**
  * Namespace: KNOWWE.plugin.d3web.sessionvalues
  * The sessionvalues namespace.

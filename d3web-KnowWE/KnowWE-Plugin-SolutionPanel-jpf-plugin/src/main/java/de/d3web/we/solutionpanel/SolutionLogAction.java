@@ -18,7 +18,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.d3web.we.action;
+package de.d3web.we.solutionpanel;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -33,6 +33,8 @@ import java.util.ResourceBundle;
 
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.we.action.DeprecatedAbstractKnowWEAction;
+import de.d3web.we.action.KnowWERenderUtils;
 import de.d3web.we.basic.IdentifiableInstance;
 import de.d3web.we.basic.Information;
 import de.d3web.we.basic.InformationNamespaceComparator;
