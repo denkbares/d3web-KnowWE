@@ -1,8 +1,8 @@
-/**
- * Namespace: quicki
- * The KNOWWE quick interview namespace.
- * Initialized empty to ensure existence.
- */
+
+if (typeof KNOWWE == "undefined" || !KNOWWE) {
+    var KNOWWE = {};
+}
+
 KNOWWE.plugin.quicki = function(){
     return {
     }
@@ -12,6 +12,11 @@ KNOWWE.plugin.quicki = function(){
 KNOWWE.plugin.quicki = function(){
     
     return {
+    	
+    	test: function(){
+    		alert('This is a test.');
+    	}
+    	
         // Function: init
         // Creates an button in the top actions menu in the WIKI. This button
         // is use to insert an HTMLDialog into the current article.
@@ -24,12 +29,7 @@ KNOWWE.plugin.quicki = function(){
             //_KS('#actionsTop ul')[0].appendChild(li);
             //_KE.add('click', _KS('#bttn-dialog'), KNOWWE.plugin.d3web.dialog.insert);        
         //},
-        /**
-         * Function: initAction
-         * Adds some events to the Quick Interview. Without this QuickI does not 
-         * respond to any user action.
-         */
-        initAction : function(){
+     /*initAction : function(){
             _KS('.containerHeader').each(function(element){
                 _KE.add('click', element, alert('hallo'));
                 //var p = element.parentNode;
@@ -38,6 +38,6 @@ KNOWWE.plugin.quicki = function(){
             });
                
            
-        }
+        }*/
     }
 }();
