@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -121,7 +122,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		List props = (List) q.getProperties().getProperty(Property.IMAGE_QUESTION_INFO);
 		String imageName = (String)props.get(0);
 		
-		List<AnswerRegion> answerRegions = 
+		List<AnswerRegion> answerRegions =
 			this.buildAnswerRegions((List)props.get(1));
 		
 		// Layout is: Picture | Checkboxes with labels
@@ -147,7 +148,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 					+ "' class='panel'>"
 					+ "<h3> ImageQuestion </h3>");
 		}
-		buffi.append( 
+		buffi.append(
 			"<table id=\"imagetable_" + q.getId() + "\"><tr><td>"
 			+ renderedImage.toString()
 			+ "</td>"
@@ -208,7 +209,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 				+ ImageQuestionHandler.config_knowledgebase_path
 				+ this.topic + "PP" + KnowWEEnvironment.generateDefaultID(this.topic)
 				+ "/multimedia/" + questionImage;
-		path = path.replaceAll("KnowWEExtension", "");	
+		path = path.replaceAll("KnowWEExtension", "");
 		File imgFile = new File(path);
 		
 		// TODO: Does not work, because the image is not loaded in the
@@ -232,6 +233,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 							  + this.topic + "PP" + KnowWEEnvironment.generateDefaultID(this.topic)
 							  + "/multimedia/"
 							  + questionImage ;
+//		String relImagePath = "../../../StreamImageResourceAction/"+questionImage;
 		buffer.append("background-image:url(" + relImagePath + ");");
 		buffi.append(" style=\"" + buffer.toString() + "\">");
 
@@ -289,7 +291,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		styleString.append(" left: " + answerRegion.getXStart() + "px;");
 		styleString.append(" width: " + answerRegion.getWidth() + "px; height: "
 				+ answerRegion.getHeight() + "px;");
-		buffi.append(" style=\"" + styleString.toString() + "\"");		
+		buffi.append(" style=\"" + styleString.toString() + "\"");
 		buffi.append(">");
 
 		// insert a transparent gif (so that Internet Explorer can be supported)
@@ -358,7 +360,7 @@ public class ImageQuestionHandler extends AbstractTagHandler {
 		Value answer = session.getBlackboard().getValue(q);
 		boolean contains = false;
 		if (!(answer instanceof UndefinedValue)) {
-			List<Value> values = (List<Value>)answer.getValue();
+			Set<Value> values = (Set<Value>) answer.getValue();
 			for (Value val : values) {
 				if (val.equals(value)) {
 					contains = true;
