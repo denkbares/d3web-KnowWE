@@ -38,6 +38,8 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 		super("quickInterview");
 		KnowWERessourceLoader.getInstance().add("quicki.css",
 				KnowWERessourceLoader.RESOURCE_STYLESHEET);
+		KnowWERessourceLoader.getInstance().add("quicki.js",
+				KnowWERessourceLoader.RESOURCE_SCRIPT);
 
 	}
 

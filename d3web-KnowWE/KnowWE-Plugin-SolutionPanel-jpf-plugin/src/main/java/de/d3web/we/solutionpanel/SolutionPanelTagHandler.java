@@ -30,6 +30,8 @@ public class SolutionPanelTagHandler extends AbstractTagHandler {
 		super("solutionPanel");
 		KnowWERessourceLoader.getInstance().add("solPane.css",
 				KnowWERessourceLoader.RESOURCE_STYLESHEET);
+		KnowWERessourceLoader.getInstance().add("solutionPanel.js",
+				KnowWERessourceLoader.RESOURCE_SCRIPT);
 
 	}
 
@@ -54,7 +56,7 @@ public class SolutionPanelTagHandler extends AbstractTagHandler {
 				+ "</p>"
 				+ "<div id='sstate-result'></div>"
 				+ "</div></div>"
-				+ "<script type=text/javascript src=KnowWEExtension/scripts/ForumPlugin.js></script>\n";
+				+ "<script type=text/javascript src=KnowWEExtension/scripts/solutionPanel.js></script>\n";
 
 	}
 

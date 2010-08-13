@@ -1,8 +1,15 @@
+KNOWWE.plugin.solutionstate = function(){
+    return {
+    }
+}();
+
+
+
 /**
- * Namespace: KNOWWE.plugin.d3web.solutionstate
+ * Namespace: KNOWWE.plugin.solutionstate
  * The solutionstate namespace.
  */
-KNOWWE.plugin.d3web.solutionstate = function(){
+KNOWWE.plugin.solutionstate = function(){
     return {
         /**
          * Function: init
@@ -10,6 +17,7 @@ KNOWWE.plugin.d3web.solutionstate = function(){
          * correct action.
          */
         init : function(){
+        	alert("solution panel");
             var el = _KS('#sstate-update');
             if( el ){
                 _KE.add('click', el, this.updateSolutionstate);
@@ -55,12 +63,12 @@ KNOWWE.plugin.d3web.solutionstate = function(){
                     fn : function(){
                         if(_KS('.sstate-show-explanation').length != 0){
                             _KS('.sstate-show-explanation').each(function(element){
-                                _KE.add('click', element, KNOWWE.plugin.d3web.solutionstate.showExplanation);
+                                _KE.add('click', element, KNOWWE.plugin.solutionstate.showExplanation);
                             });
                         }
                         if(_KS('.show-solutions-log').length != 0){
                             _KS('.show-solutions-log').each(function(element){
-                                _KE.add('click', element, KNOWWE.plugin.d3web.solutionstate.showSolutionLog);
+                                _KE.add('click', element, KNOWWE.plugin.solutionstate.showSolutionLog);
                             });
                         }
                     }

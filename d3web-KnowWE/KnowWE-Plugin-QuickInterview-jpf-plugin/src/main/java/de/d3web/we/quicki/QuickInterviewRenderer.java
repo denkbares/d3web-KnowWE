@@ -60,6 +60,8 @@ public class QuickInterviewRenderer {
 
 		// Assembles the Interview
 		StringBuffer buffi = new StringBuffer();
+		buffi.append("<script type=text/javascript src=KnowWEExtension/scripts/quicki.js></script>");
+
 		KnowledgeBase b = c.getKnowledgeBase();
 
 		// Get the qcontainers for the current session / knowledge base
