@@ -4,45 +4,45 @@
 	<artifactId>d3web-TiRex</artifactId>
 	<name>d3web-TiRex</name>
 	<version>0.2-SNAPSHOT</version>
-
+	
 	<parent>
 		<artifactId>d3web-KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Kernel</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Persistence</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>tartarus</groupId>
 			<artifactId>libstemmer_java</artifactId>
 			<version>0</version>
-            <type>jar</type>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>tagger</groupId>
 			<artifactId>tagger</artifactId>
 			<version>0</version>
-            <type>jar</type>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.wchoen</groupId>
 			<artifactId>secondstring</artifactId>
 			<version>20060615</version>
-            <type>jar</type>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

@@ -9,7 +9,7 @@
 	<artifactId>KnowWE-Plugin-Calendar-jpf-plugin</artifactId>
 	<name>KnowWE Plugin: Calendar</name>
 	<version>0.2-SNAPSHOT</version>
-
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -28,19 +28,19 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-JSPWiki-Connector</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

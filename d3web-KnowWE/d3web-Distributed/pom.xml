@@ -4,54 +4,54 @@
 	<artifactId>d3web-Distributed</artifactId>
 	<name>d3web-Distributed</name>
 	<version>0.2-SNAPSHOT</version>
-
+	
 	<parent>
 		<artifactId>d3web-KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Kernel</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Persistence</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Utilities</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-CompareCase</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-CompareCase-Facade</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-CaseRepository</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-XCL-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

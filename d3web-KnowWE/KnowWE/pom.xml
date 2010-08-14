@@ -80,7 +80,7 @@
 							<goal>run</goal>
 						</goals>
 						<phase>process-resources</phase>
-
+						
 						<configuration>
 							<tasks>
 								<mkdir dir="${project.build.directory}/${pom.name}-${pom.version}/WEB-INF/resources/core-pages/" />
@@ -111,7 +111,7 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	
 	<profiles>
 		<profile>
 			<id>local</id>
@@ -132,7 +132,7 @@
 				</plugins>
 			</build>
 		</profile>
-
+		
 		<!-- ======= WIKI PLUGINS ======= -->
 		<!-- Comment plugin -->
 		<profile>
@@ -142,17 +142,17 @@
 					<name>comment-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Comment-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
-
+		
 		<!-- Calendar plugin -->
 		<profile>
 			<id>calendar-plugin</id>
@@ -161,12 +161,12 @@
 					<name>calendar-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Calendar-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -180,17 +180,17 @@
 					<name>drools-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Drools-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
-
+		
 		<!-- Refactoring plugin -->
 		<profile>
 			<id>refactoring-plugin</id>
@@ -199,12 +199,12 @@
 					<name>refactoring-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Refactoring-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -218,17 +218,18 @@
 					<name>ci4ke-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-CI4KE-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
-		</profile>		
-
+		</profile>
+			
+		
 		<!-- Hermes Module -->
 		<profile>
 			<id>hermes-plugin</id>
@@ -237,17 +238,17 @@
 					<name>hermes-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-HermesModule-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
-
+		
 		<!-- Flowchart Module -->
 		<profile>
 			<id>flowchart-plugin</id>
@@ -256,12 +257,12 @@
 					<name>flowchart-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Flowchart-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -275,12 +276,12 @@
 					<name>wisec-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-WISEC-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -294,12 +295,12 @@
 					<name>faq-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-FAQ-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -313,12 +314,12 @@
 					<name>quicki-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-QuickInterview-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -332,12 +333,12 @@
 					<name>solutionPanel-plugin</name>
 				</property>
 			</activation>
-
+			
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SolutionPanel-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -355,7 +356,7 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SemanticCore-jpf-plugin</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>${project.version}</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -436,9 +437,10 @@
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
-		</profile>		
+		</profile>
+			
 	</profiles>
-
+	
 	<dependencies>
 		<!--
 			Short explanation for JSPWiki: They don't really use Maven, so, the
@@ -527,27 +529,27 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Dialog2</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<type>war</type>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-TiRex</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-JSPWiki-Connector</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -592,36 +594,37 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Persistence-Basic-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-SharedKnowledgePersistence-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${d3webCoreVersion}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-SemanticCore-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>		
+		</dependency>
+			
 	</dependencies>
-    <properties>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-    </properties>
+	<properties>
+		<netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+	</properties>
 </project>

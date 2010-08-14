@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <artifactId>d3web-KnowWE</artifactId>
-    <groupId>de.uniwue.d3web</groupId>
-    <version>0.2-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<artifactId>d3web-KnowWE</artifactId>
+		<groupId>de.uniwue.d3web</groupId>
+		<version>0.2-SNAPSHOT</version>
+	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-WISEC-jpf-plugin</artifactId>
@@ -72,7 +72,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -83,7 +83,7 @@
 							<goal>run</goal>
 						</goals>
 						<phase>package</phase>
-
+						
 						<configuration>
 							<tasks>
 								<echo>Copying external Plugin ${project.name} into KnowWE...</echo>
@@ -97,7 +97,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			
 			<plugin>
 				<groupId>de.uniwue.maven.plugins</groupId>
 				<artifactId>knowwe-versionator</artifactId>
@@ -112,7 +112,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			
 		</plugins>
 	</build>
 	<properties>
@@ -144,12 +144,12 @@
 			</url>
 		</pluginRepository>
 	</pluginRepositories>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -170,13 +170,13 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core-Plugins-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-jpf-plugin</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<distributionManagement>
@@ -187,7 +187,7 @@
 			</url>
 		</snapshotRepository>
 	</distributionManagement>
-
+	
 	<organization>
 		<name>Universität Würzburg</name>
 		<url>http://uni-wuerzburg.de/</url>
