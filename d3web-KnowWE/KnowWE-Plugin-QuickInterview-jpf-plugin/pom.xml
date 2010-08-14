@@ -1,15 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
 	<parent>
 		<artifactId>d3web-KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
+	
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-QuickInterview-jpf-plugin</artifactId>
 	<name>KnowWE-Plugin: QuickInterview</name>
 	<version>0.2-SNAPSHOT</version>
 	<description>The default KnowWE Interview, that allows for quickly testing knowledge within KnowWE by "flatly" displaying all quesitonnaires and questions, as well as their answers.</description>
+	
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>

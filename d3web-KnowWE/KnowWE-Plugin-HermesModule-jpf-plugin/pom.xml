@@ -1,14 +1,36 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
 	<parent>
 		<artifactId>d3web-KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
 		<version>0.2-SNAPSHOT</version>
 	</parent>
-	<modelVersion>4.0.0</modelVersion>
+	
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE-Plugin-HermesModule-jpf-plugin</artifactId>
 	<name>KnowWE Plugin: Hermes Module</name>
 	<version>0.2-SNAPSHOT</version>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>de.uniwue.maven.plugins</groupId>
+				<artifactId>knowwe-versionator</artifactId>
+				<version>${versionatorVersion}</version>
+				<executions>
+					<execution>
+						<id>versionate-plugin</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>versionate-plugin</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
 	<dependencies>
 		<dependency>
 			<groupId>mysql</groupId>
@@ -45,72 +67,4 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<defaultGoal>package</defaultGoal>
-		<plugins>
-			<!-- Set Java 1.6 as source and target -->
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			<!-- Ignore test failures -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<testFailureIgnore>true</testFailureIgnore>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1-beta-1-uniwue-1</version>
-			</plugin>
-			
-			<plugin>
-				<groupId>de.uniwue.maven.plugins</groupId>
-				<artifactId>knowwe-versionator</artifactId>
-				<version>${versionatorVersion}</version>
-				<executions>
-					<execution>
-						<id>versionate-plugin</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>versionate-plugin</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>hermes-plugin</id>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<phase>package</phase>
-
-						<configuration>
-							<tasks>
-								<echo>Copying external Plugin ${project.name} into KnowWE...</echo>
-								<echo>KnowWE is expected at: ${project.build.directory}/../${knowwe.path}/</echo>
-								<copy todir="${project.build.directory}/../${knowwe.path}/target/KnowWE-${knowwe.version}/WEB-INF/lib/">
-									<fileset dir="target" includes="*.jar" />
-								</copy>
-								<echo>done.</echo>
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
--->
-		</plugins>
-	</build>
 </project>
